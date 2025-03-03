@@ -1,0 +1,73 @@
+{
+  "base": {
+    "title": "Welcome!",
+    "site_name": "My Website",
+    "nav": {
+      "home": "Home",
+      "game_area": "Game Area",
+      "login": "Login",
+      "logout": "Logout",
+      "register": "Register"
+    },
+    "language": {
+      "select": "Language",
+      "fr": "French",
+      "en": "English"
+    }
+  },
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome to our website",
+    "logged_in_as": "You are logged in as %username%",
+    "logout": "Logout",
+    "access_game": "Access game area",
+    "not_logged_in": "You are not logged in.",
+    "login": "Login",
+    "register": "Register",
+    "content": {
+      "title": "Home page content",
+      "description": "This is the home page of your application."
+    }
+  },
+  "registration": {
+    "title": "Registration",
+    "password": "Password",
+    "register": "Register",
+    "already_registered": "Already registered?",
+    "login_link": "Log in"
+  },
+  "security": {
+    "title": "Login",
+    "logged_in_as": "You are logged in as %username%",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "remember_me": "Remember me",
+    "login": "Log in",
+    "no_account": "Don't have an account yet?",
+    "register_link": "Register"
+  },
+  "game": {
+    "title": "Game Area",
+    "welcome_message": "Welcome to the game area, %email%",
+    "access_info": "This page is accessible only to logged in users.",
+    "game_section": {
+      "heading": "Your game",
+      "description": "Game content here. You can add your game logic in this section."
+    },
+    "controls": {
+      "start": "Start",
+      "pause": "Pause",
+      "stop": "Stop"
+    },
+    "statistics": {
+      "heading": "Statistics",
+      "score": "Score",
+      "level": "Level",
+      "game_time": "Game Time"
+    },
+    "footer": {
+      "back_to_home": "Back to Home"
+    }
+  }
+} 

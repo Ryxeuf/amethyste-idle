@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'home.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>{{ 'home.welcome'|trans }}</h1>
+    
+    {% if app.user %}
+        <div class="alert alert-success">
+            {{ 'home.logged_in_as'|trans({'%username%': app.user.username}) }}
+            <a href="{{ path('app_logout') }}" class="btn btn-sm btn-outline-danger">{{ 'home.logout'|trans }}</a>
+            <a href="{{ path('app_game') }}" class="btn btn-sm btn-outline-primary ms-2">{{ 'home.access_game'|trans }}</a>
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <p>{{ 'home.not_logged_in'|trans }}</p>
+            <a href="{{ path('app_login') }}" class="btn btn-primary">{{ 'home.login'|trans }}</a>
+            <a href="{{ path('app_register') }}" class="btn btn-success">{{ 'home.register'|trans }}</a>
+        </div>
+    {% endif %}
+    
+    <div class="mt-4">
+        <h2>{{ 'home.content.title'|trans }}</h2>
+        <p>{{ 'home.content.description'|trans }}</p>
+    </div>
+</div>
+{% endblock %} 

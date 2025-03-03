@@ -1,0 +1,73 @@
+{
+  "base": {
+    "title": "Bienvenue !",
+    "site_name": "Mon Site",
+    "nav": {
+      "home": "Accueil",
+      "game_area": "Espace de Jeu",
+      "login": "Connexion",
+      "logout": "Déconnexion",
+      "register": "Inscription"
+    },
+    "language": {
+      "select": "Langue",
+      "fr": "Français",
+      "en": "Anglais"
+    }
+  },
+  "home": {
+    "title": "Accueil",
+    "welcome": "Bienvenue sur notre site",
+    "logged_in_as": "Vous êtes connecté en tant que %username%",
+    "logout": "Déconnexion",
+    "access_game": "Accéder à l'espace de jeu",
+    "not_logged_in": "Vous n'êtes pas connecté.",
+    "login": "Connexion",
+    "register": "Inscription",
+    "content": {
+      "title": "Contenu de la page d'accueil",
+      "description": "Ceci est la page d'accueil de votre application."
+    }
+  },
+  "registration": {
+    "title": "Inscription",
+    "password": "Mot de passe",
+    "register": "S'inscrire",
+    "already_registered": "Déjà inscrit ?",
+    "login_link": "Connectez-vous"
+  },
+  "security": {
+    "title": "Connexion",
+    "logged_in_as": "Vous êtes connecté en tant que %username%",
+    "logout": "Déconnexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "remember_me": "Se souvenir de moi",
+    "login": "Se connecter",
+    "no_account": "Pas encore de compte ?",
+    "register_link": "Inscrivez-vous"
+  },
+  "game": {
+    "title": "Espace de Jeu",
+    "welcome_message": "Bienvenue dans l'espace de jeu, %email%",
+    "access_info": "Cette page est accessible uniquement aux utilisateurs connectés.",
+    "game_section": {
+      "heading": "Votre jeu",
+      "description": "Contenu du jeu ici. Vous pouvez ajouter votre logique de jeu dans cette section."
+    },
+    "controls": {
+      "start": "Démarrer",
+      "pause": "Pause",
+      "stop": "Arrêter"
+    },
+    "statistics": {
+      "heading": "Statistiques",
+      "score": "Score",
+      "level": "Niveau",
+      "game_time": "Temps de jeu"
+    },
+    "footer": {
+      "back_to_home": "Retour à l'accueil"
+    }
+  }
+} 

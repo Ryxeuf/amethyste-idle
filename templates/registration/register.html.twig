@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'registration.title'|trans }}{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h1 class="h3 mb-3 font-weight-normal">{{ 'registration.title'|trans }}</h1>
+                </div>
+                <div class="card-body">
+                    {{ form_start(registrationForm) }}
+                        {{ form_row(registrationForm.email) }}
+                        {{ form_row(registrationForm.plainPassword, {
+                            label: 'registration.password'|trans
+                        }) }}
+                        {{ form_row(registrationForm.agreeTerms) }}
+
+                        <button type="submit" class="btn btn-lg btn-primary">{{ 'registration.register'|trans }}</button>
+                    {{ form_end(registrationForm) }}
+                </div>
+                <div class="card-footer text-center">
+                    <p>{{ 'registration.already_registered'|trans }} <a href="{{ path('app_login') }}">{{ 'registration.login_link'|trans }}</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

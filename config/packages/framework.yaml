@@ -4,6 +4,9 @@ framework:
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true
+    
+    # Enables the translator
+    translator: { fallbacks: ['%default_locale%'] }
 
     #esi: true
     #fragments: true

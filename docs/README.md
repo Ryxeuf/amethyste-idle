@@ -49,3 +49,16 @@ Symfony Docker is available under the MIT License.
 ## Credits
 
 Created by [Kévin Dunglas](https://dunglas.dev), co-maintained by [Maxime Helias](https://twitter.com/maxhelias) and sponsored by [Les-Tilleuls.coop](https://les-tilleuls.coop).
+
+# Fixtures
+
+Le projet inclut des fixtures pour charger des données de test dans la base de données.
+
+## Utilisateur par défaut
+
+Un utilisateur par défaut est créé avec les identifiants suivants :
+- Login : remy
+- Email : remy@amethyste.game
+- Mot de passe : test
+
+Pour charger les fixtures, exécutez la commande suivante :
