@@ -4,13 +4,19 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Entity\App\Player;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`users`')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -36,6 +42,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastName = null;
+
+    /**
+     * @var Player[]|ArrayCollection
+     */
+    #[ORM\OneToMany(targetEntity: Player::class, mappedBy: 'user')]
+    private $players;
 
     public function getId(): ?int
     {
@@ -139,6 +151,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastName(?string $lastName): static
     {
         $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    public function getPlayers(): Collection
+    {
+        return $this->players;
+    }
+
+    public function addPlayer(Player $player): static
+    {
+        if (!$this->players->contains($player)) {
+            $this->players->add($player);
+        }
+
+        return $this;
+    }
+
+    public function removePlayer(Player $player): static
+    {
+        $this->players->removeElement($player);
 
         return $this;
     }

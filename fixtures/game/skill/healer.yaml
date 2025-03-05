@@ -1,0 +1,7 @@
+Api\Entity\Game\Skill:
+  healer_materia_1 (extends skill):
+    title: "Apprenti soigneur"
+    slug: healer-materia-1
+    description: "Permet d'utiliser les matéria de soigneur de niveau 1"
+    requiredPoints: 0
+    domain: '@healer'

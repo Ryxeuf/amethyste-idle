@@ -1,0 +1,29 @@
+Api\Entity\Game\Spell:
+  fire_ball (extends spell):
+    slug: fire-ball
+    damage: 2
+    element: "fire"
+    heal: null
+    name: 'Boule de feu'
+    description: 'Une boule de feu pour tout cramer'
+  flame (extends spell):
+    slug: flame
+    damage: 1
+    element: "fire"
+    heal: null
+    name: 'Flammèche'
+    description: 'Un sort de flammèche'
+  flamer (extends spell):
+    slug: flamer
+    damage: 3
+    element: "fire"
+    heal: null
+    name: 'Feu'
+    description: 'Un sort de feu'
+  flame_rain (extends spell):
+    slug: flame-rain
+    damage: 5
+    element: "fire"
+    heal: null
+    name: 'Pluie de feu'
+    description: 'Un sort de pluie de feu'

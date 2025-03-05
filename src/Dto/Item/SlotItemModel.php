@@ -1,0 +1,54 @@
+<?php
+
+namespace App\Dto\Item;
+
+use App\Dto\Skill\Requirement;
+use App\Dto\Spell\SpellModel;
+use App\Entity\App\PlayerItem as ItemEntity;
+
+class SlotItemModel
+{
+    public int $id;
+
+    public string $name;
+
+    public string $description;
+
+    public string $type;
+
+    public int $genericItemId;
+
+    public string $genericItemSlug;
+
+    /**
+     * @var int
+     */
+    public int $level;
+
+    public string $element;
+
+    public ?SpellModel $spell = null;
+
+    /**
+     * @var Requirement[]
+     */
+    public array $requirements = [];
+
+    public ?string $domain = null;
+
+    public function __construct(ItemEntity $item)
+    {
+        $this->id = $item->getId();
+        $this->name = $item->getGenericItem()->getName();
+        $this->description = $item->getGenericItem()->getDescription();
+        $this->element = $item->getGenericItem()->getElement();
+        $this->genericItemId = $item->getGenericItem()->getId();
+        $this->genericItemSlug = $item->getGenericItem()->getSlug();
+        $this->type = $item->getGenericItem()->getType();
+        $this->level = $item->getGenericItem()->getLevel();
+        $this->domain = $item->getGenericItem()->getDomain()?->getTitle();
+        if ($item->getGenericItem()->getSpell()) {
+            $this->spell = new SpellModel($item->getGenericItem()->getSpell());
+        }
+    }
+}

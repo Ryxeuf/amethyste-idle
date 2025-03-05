@@ -1,0 +1,15 @@
+Api\Entity\Game\Spell:
+  sword_10 (extends spell):
+    slug: slug-10
+    damage: 1
+    element: 'metal'
+    heal: null
+    name: "Coup d'épée"
+    description: "Un coup d'épée neutre"
+  sharp_blade (extends spell):
+    slug: sharp-blade
+    damage: 1
+    element: 'metal'
+    heal: null
+    name: "Lame tranchante"
+    description: "Un sort de lame tranchante"

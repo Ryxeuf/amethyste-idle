@@ -1,0 +1,21 @@
+Api\Entity\App\User:
+  user_demo:
+    email: "demo@amethyste.fr"
+    username: "demo"
+    email_canonical: "demo@amethyste.fr"
+    username_canonical: "demo"
+    roles: [ "ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_PLAYER" ]
+    plainPassword: "test"
+    enabled: 1
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+  user_demo_2:
+    email: "demo2@amethyste.fr"
+    username: "demo2"
+    email_canonical: "demo2@amethyste.fr"
+    username_canonical: "demo2"
+    roles: [ "ROLE_ADMIN", "ROLE_SUPER_ADMIN", "ROLE_PLAYER" ]
+    plainPassword: "test"
+    enabled: 1
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>

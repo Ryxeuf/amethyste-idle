@@ -1,0 +1,110 @@
+<?php
+
+namespace App\Helper;
+
+use App\Entity\App\Inventory;
+use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
+use App\Repository\App\PlayerRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+
+class PlayerHelper
+{
+    private ?Player $player = null;
+
+    public function __construct(private readonly Security $security, private readonly EntityManagerInterface $entityManager)
+    {
+    }
+
+    public function getPlayer(): ?Player
+    {
+        if ($this->player === null) {
+            /** @var PlayerRepository $playerRepository */
+            $playerRepository = $this->entityManager->getRepository(Player::class);
+            if ($this->security->getUser() && $this->security->getUser()->getPlayer()) {
+                /** @var Player $player */
+                $this->player = $playerRepository->find($this->security->getUser()->getPlayer()->getId());
+            }
+        }
+
+        return $this->player;
+    }
+
+    public function setPlayer(Player $player): void
+    {
+        $this->player = $player;
+    }
+
+    public function getInventory(): Inventory
+    {
+        return $this->getBagInventory();
+    }
+
+    public function getBagInventory()
+    {
+        foreach ($this->getPlayer()->getInventories() as $inventory) {
+            if ($inventory->isBag())
+                return $inventory;
+        }
+
+        return $this->createInventory(Inventory::TYPE_BAG);
+    }
+
+    public function getBankInventory()
+    {
+        foreach ($this->getPlayer()->getInventories() as $inventory) {
+            if ($inventory->isBank())
+                return $inventory;
+        }
+
+        return $this->createInventory(Inventory::TYPE_BANK);
+    }
+
+    public function getMateriaInventory()
+    {
+        foreach ($this->getPlayer()->getInventories() as $inventory) {
+            if ($inventory->isMateria())
+                return $inventory;
+        }
+
+        return $this->createInventory(Inventory::TYPE_MATERIA);
+    }
+
+    /**
+     * @return iterable|PlayerItem[]
+     */
+    public function getUsableItems()
+    {
+        foreach ($this->getBagInventory()->getItems() as $item) {
+            if ($item->getGenericItem()->getSpell() && $item->getGenericItem()->isObject()){
+                yield $item;
+            }
+        }
+    }
+
+    protected function createInventory(int $type): Inventory
+    {
+        $inventory = new Inventory();
+        $inventory->setSize($this->getInventorySizeByType($type));
+        $inventory->setType($type);
+        $inventory->setPlayer($this->getPlayer());
+        $this->getPlayer()->addInventory($inventory);
+
+        $this->entityManager->persist($inventory);
+        $this->entityManager->persist($this->getPlayer());
+        $this->entityManager->flush();
+
+        return $inventory;
+    }
+
+    protected function getInventorySizeByType(int $type)
+    {
+        return match ($type) {
+            Inventory::TYPE_BAG => 100,
+            Inventory::TYPE_BANK => 1000,
+            Inventory::TYPE_MATERIA => 50,
+            default => 0,
+        };
+    }
+}

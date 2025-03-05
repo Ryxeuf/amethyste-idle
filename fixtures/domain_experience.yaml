@@ -1,0 +1,15 @@
+Api\Entity\App\DomainExperience:
+  demo_pyrotechny:
+    player: '@player_demo'
+    domain: '@pyromancy'
+    totalExperience: 100
+    usedExperience: 0
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+  demo_soldier:
+    player: '@player_demo'
+    domain: '@soldier'
+    totalExperience: 0
+    usedExperience: 0
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>

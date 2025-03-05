@@ -1,0 +1,8 @@
+Api\Entity\Game\Spell:
+  wind_lame (extends spell):
+    slug: wind-lame
+    damage: 1
+    element: "wind"
+    heal: null
+    name: "Lame d'air"
+    description: "une lame d'air tranchante"

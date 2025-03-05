@@ -1,0 +1,35 @@
+Api\Entity\App\Mob:
+  mob (template):
+    map: '@map_1'
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+
+  ochu_1 (extends mob):
+    coordinates: '14.16'
+    monster: '@ochu'
+    life: '@ochu->life'
+    level: '@ochu->level'
+
+  zombie_1 (extends mob):
+    coordinates: '17.2'
+    monster: '@zombie'
+    life: '@zombie->life'
+    level: '@zombie->level'
+
+  zombie_2 (extends mob):
+    coordinates: '6.5'
+    monster: '@zombie'
+    life: '@zombie->life'
+    level: '@zombie->level'
+
+  skeleton_1 (extends mob):
+    coordinates: '26.5'
+    monster: '@skeleton'
+    life: '@skeleton->life'
+    level: '@skeleton->level'
+
+  taiju_1 (extends mob):
+    coordinates: '24.22'
+    monster: '@taiju'
+    life: '@taiju->life'
+    level: '@taiju->level'

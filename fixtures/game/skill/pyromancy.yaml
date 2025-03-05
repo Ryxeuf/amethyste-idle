@@ -1,0 +1,45 @@
+Api\Entity\Game\Skill:
+  pyro_materia_1 (extends skill):
+    title: 'Apprenti pyromancien'
+    slug: pyro-materia-1
+    description: "Permet d'utiliser les matéria de pyromancie de niveau 1"
+    requiredPoints: 0
+    domain: '@pyromancy'
+  pyro_critical_1 (extends skill):
+    title: 'Points faibles'
+    slug: pyro-critical-1
+    description: 'Augmente les chances de coup critique'
+    requiredPoints: 10
+    domain: '@pyromancy'
+    critical: 1
+    requirements: ['@pyro_materia_1']
+  pyro_damage_1 (extends skill):
+    title: 'Efficacité du feu'
+    slug: pyro-damage-1
+    description: 'Augmente les dégâts des matéria de pyromancie'
+    requiredPoints: 10
+    domain: '@pyromancy'
+    damage: 1
+    requirements: ['@pyro_materia_1']
+  pyro_materia_2 (extends skill):
+    title: 'Matéria niv 2'
+    slug: pyro-materia-2
+    description: "Permet d'utiliser les matéria de pyromancie de niveau 2"
+    requiredPoints: 20
+    domain: '@pyromancy'
+    requirements: ['@pyro_critical_1', '@pyro_damage_1']
+  pyro_materia_3 (extends skill):
+    title: 'Matéria niv 3'
+    slug: pyro-materia-3
+    description: "Permet d'utiliser les matéria de pyromancie de niveau 3"
+    requiredPoints: 30
+    domain: '@pyromancy'
+    requirements: ['@pyro_materia_2']
+  pyro_hit_1 (extends skill):
+    title: 'Chaude précision'
+    slug: pyro-hit-1
+    description: "Augmente les chances de toucher"
+    requiredPoints: 20
+    hit: 1
+    domain: '@pyromancy'
+    requirements: ['@pyro_materia_2']

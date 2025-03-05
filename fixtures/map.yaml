@@ -1,0 +1,8 @@
+Api\Entity\App\Map:
+    map_1:
+        name: Carte de test
+        world: '@world_1'
+        areaWidth: 60
+        areaHeight: 60
+        createdAt: <( new DateTime() )>
+        updatedAt: <( new DateTime() )>

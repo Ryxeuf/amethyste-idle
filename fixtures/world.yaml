@@ -1,0 +1,5 @@
+Api\Entity\App\World:
+  world_1:
+    name: Demo world
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>

@@ -1,0 +1,9 @@
+Api\Entity\Game\Spell:
+  life_heal (extends spell):
+    slug: life-heal
+    damage: null
+    element: "life"
+    heal: 5
+    hit: 100
+    name: 'Soin mineur'
+    description: 'Un soin mineur qui fait du bien'

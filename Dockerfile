@@ -32,6 +32,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get install -y nodejs \
     && npm install -g npm@latest
 
+# Installation de l'extension pcntl
+RUN docker-php-ext-install pcntl
+
 RUN set -eux; \
 	install-php-extensions \
 		@composer \

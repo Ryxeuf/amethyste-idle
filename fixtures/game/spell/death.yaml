@@ -1,0 +1,8 @@
+Api\Entity\Game\Spell:
+  punishment (extends spell):
+    slug: punishment
+    damage: 1
+    element: 'death'
+    heal: null
+    name: "Châtiment"
+    description: "Un sort de châtiment"

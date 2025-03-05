@@ -1,0 +1,8 @@
+Api\Entity\Game\Spell:
+  stone_throw (extends spell):
+    slug: stone-throw
+    damage: 1
+    element: 'earth'
+    heal: null
+    name: "Jet de cailloux"
+    description: "Un sort de jet de cailloux"

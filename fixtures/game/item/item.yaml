@@ -1,0 +1,5 @@
+Api\Entity\Game\Item:
+  item (template):
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+    level: 1

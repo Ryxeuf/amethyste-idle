@@ -1,0 +1,37 @@
+Api\Entity\Game\Item:
+  short_sword (extends item):
+    name: 'Epée courte'
+    description: 'Une épée courte de bonne facture'
+    type: 'gear'
+    spell: '@none_attack_1'
+    slug: 'short-sword'
+    gear_location: <( Api\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
+    requirements: ['@soldier_apprentice']
+    domain: '@soldier'
+  long_sword (extends item):
+    name: 'Epée longue'
+    description: 'Une épée longue de bonne facture'
+    type: 'gear'
+    spell: '@none_attack_2'
+    slug: 'long-sword'
+    gear_location: <( Api\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
+    requirements: ['@soldier_apprentice']
+    domain: '@soldier'
+  leather_boots (extends item):
+    name: "Bottes de cuir"
+    description: "Ca évite de marcher pieds nus"
+    type: "gear"
+    slug: 'leather-boots'
+    gear_location: <( Api\Entity\Game\Item::GEAR_LOCATION_FOOT )>
+  leather_armor (extends item):
+    name: "Armure de cuir"
+    description: "Une armure de cuir de vache simple"
+    type: "gear"
+    slug: 'leather-armor'
+    gear_location: <( Api\Entity\Game\Item::GEAR_LOCATION_CHEST )>
+  leather_hat (extends item):
+    name: "Chapeau de cuir"
+    description: "Un chapeau de cuir standard de manufacture classique"
+    type: "gear"
+    slug: 'leather-hat'
+    gear_location: <( Api\Entity\Game\Item::GEAR_LOCATION_HEAD )>

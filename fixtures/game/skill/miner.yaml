@@ -1,0 +1,56 @@
+Api\Entity\Game\Skill:
+  miner_ruby_xs (extends skill):
+    slug: miner-ruby-xs
+    title: "Minage du ruby débutant"
+    description: 'Permet de miner le ruby'
+    actions: [{action: 'harvest', spots: ['spot-ruby-xs']}]
+    requiredPoints: 0
+    domain: '@miner'
+  miner_ruby_s (extends skill):
+    slug: miner-ruby-s
+    title: "Minage du ruby apprenti"
+    description: 'Permet de miner le ruby'
+    actions: [{action: 'harvest', spots: ['spot-ruby-s']}]
+    requiredPoints: 10
+    domain: '@miner'
+    requirements: [ '@miner_ruby_xs' ]
+  miner_ruby_m (extends skill):
+    slug: miner-ruby-m
+    title: "Minage du ruby avancé"
+    description: 'Permet de miner le ruby'
+    actions: [{action: 'harvest', spots: ['spot-ruby-m']}]
+    requiredPoints: 50
+    domain: '@miner'
+    requirements: [ '@miner_ruby_s' ]
+  miner_ruby_l (extends skill):
+    slug: miner-ruby-l
+    title: "Minage du ruby avancé"
+    description: 'Permet de miner le ruby'
+    actions: [{action: 'harvest', spots: ['spot-ruby-l']}]
+    requiredPoints: 100
+    domain: '@miner'
+    requirements: [ '@miner_ruby_m' ]
+  miner_ruby_xl (extends skill):
+    slug: miner-ruby-xl
+    title: "Minage du ruby expert"
+    description: 'Permet de miner le ruby'
+    actions: [{action: 'harvest', spots: ['spot-ruby-xl']}]
+    requiredPoints: 200
+    domain: '@miner'
+    requirements: [ '@miner_ruby_l' ]
+  miner_iron_xs (extends skill):
+    slug: miner-iron-xs
+    title: "Minage du fer débutant"
+    description: "Permet de miner le fer"
+    actions: [{action: 'harvest', spots: ['spot-iron-xs']}]
+    requiredPoints: 10
+    domain: '@miner'
+    requirements: [ '@miner_ruby_xs' ]
+  miner_iron_s (extends skill):
+    slug: miner-iron-s
+    title: "Minage du fer apprenti"
+    description: "Permet de miner le fer"
+    actions: [{action: 'harvest', spots: ['spot-iron-s']}]
+    requiredPoints: 50
+    domain: '@miner'
+    requirements: [ '@miner_iron_xs' ]

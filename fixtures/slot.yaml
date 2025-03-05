@@ -1,0 +1,11 @@
+Api\Entity\App\Slot:
+  slot (template):
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+
+  slot_1 (extends slot):
+    item: '@player_short_sword'
+  slot_2 (extends slot):
+    item: '@player_short_sword'
+  slot_3 (extends slot):
+    item: '@player_leather_armor'

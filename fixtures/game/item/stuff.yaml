@@ -1,0 +1,77 @@
+Api\Entity\Game\Item:
+  life_potion (extends item):
+    id: 1
+    name: 'Potion de soin'
+    description: 'Une bonne potion de soin'
+    type: 'stuff'
+    spell: '@none_heal_2'
+    slug: 'life-potion'
+    effect: '{"action":"use_spell", "slug":"life-heal" }'
+    nbUsages: 1
+  fishing_rod (extends item):
+    id: 2
+    name: 'Canne à pèche'
+    description: 'Une canne à pèche pour attraper de la friture'
+    type: 'stuff'
+    slug: 'fishing-rod'
+    domain: '@fisherman'
+  beer_pint (extends item):
+    id: 3
+    name: 'Chope de bière'
+    description: 'Une chope de bière pour boire'
+    type: 'stuff'
+    slug: 'beer-pint'
+  mushroom (extends item):
+    id: 4
+    name: 'Champignon'
+    description: 'Un champignon, mais est-il comestible ?'
+    type: 'stuff'
+    slug: 'mushroom'
+  pickaxe (extends item):
+    id: 5
+    name: 'Pioche'
+    description: 'Permet de casser des cailloux'
+    type: 'stuff'
+    slug: 'pickaxe'
+  wood_log (extends item):
+    id: 6
+    name: 'Buche de bois'
+    description: 'Une bûche de bois'
+    type: 'stuff'
+    slug: 'wood-log'
+  leather_skin_1 (extends item):
+    id: 7
+    name: 'Peau de cuir'
+    description: 'Une peau de cuir brute'
+    type: 'stuff'
+    slug: 'leather-skin-1'
+  leather_skin_2 (extends item):
+    id: 8
+    name: 'Peau de cuir'
+    description: 'Une peau de cuir brute'
+    type: 'stuff'
+    slug: 'leather-skin-2'
+  life_domain_parchment (extends item):
+    id: 9
+    name: 'Apprentissage des soins'
+    description: 'Permet de devenir apprenti soigneur'
+    type: 'stuff'
+    slug: 'life-domain-parchment'
+    effect: '{"action":"learn_skill", "slug":"healer-materia-1" }'
+    nbUsages: 1
+  miner_domain_parchment (extends item):
+    id: 10
+    name: 'Découverte du minage'
+    description: 'Permet de devenir apprenti mineur'
+    type: 'stuff'
+    slug: 'miner-domain-parchment'
+    effect: '{"action":"learn_skill", "slug":"miner-ruby-xs" }'
+    nbUsages: 1
+  herbalist_domain_parchment (extends item):
+    id: 15
+    name: "Découverte de l'herborisme"
+    description: 'Permet de devenir apprenti herboriste'
+    type: 'stuff'
+    slug: 'herbalist-domain-parchment'
+    effect: '{"action":"learn_skill", "slug":"herbalist-mint-xs" }'
+    nbUsages: 1

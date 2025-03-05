@@ -9,6 +9,7 @@
         <link href="/css/flags.css" rel="stylesheet">
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}{% endblock %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">

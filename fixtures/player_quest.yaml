@@ -1,0 +1,4 @@
+#Api\Entity\App\PlayerQuest:
+#  player_taiju_1:
+#    player: '@player_demo'
+#    quest: '@quest_taiju_1'

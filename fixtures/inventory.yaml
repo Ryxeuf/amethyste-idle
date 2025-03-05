@@ -1,0 +1,31 @@
+Api\Entity\App\Inventory:
+  inventory (template):
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+
+  inventory_bag (extends inventory):
+    player: '@player_demo'
+    gold: 200
+    type: 1
+    size: 100
+  inventory_materia (extends inventory):
+    player: '@player_demo'
+    type: 2
+    size: 100
+  inventory_bank (extends inventory):
+    player: '@player_demo'
+    type: 3
+    size: 500
+  inventory_bag_2 (extends inventory):
+    player: '@player_demo_2'
+    gold: 200
+    type: 1
+    size: 100
+  inventory_materia_2 (extends inventory):
+    player: '@player_demo_2'
+    type: 2
+    size: 100
+  inventory_bank_2 (extends inventory):
+    player: '@player_demo_2'
+    type: 3
+    size: 500

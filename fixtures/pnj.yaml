@@ -1,0 +1,11 @@
+Api\Entity\App\Pnj:
+  pnj_demo:
+    name: Hello World
+    life: 1
+    maxLife: 1
+    map: '@map_1'
+    coordinates: '2.12'
+    classType: 'demo'
+    dialog: [ { "next": 1,"text": "Bien le bonjour" },{ "conditional_next": [ { "next": 4,"next_condition": { "quest_not": [ 1 ] } },{ "next": 2,"next_condition": { "quest": [ 1 ] } },{ "next": 3 } ],"text": "Bienvenue dans le monde d'am\u00e9thyste, je m'appelle Hello" },{ "text": "Merci d'avoir tu\u00e9 ces zombies pour moi" },{ "text": "As-tu tu\u00e9 tous les zombies pour moi ?" },{ "text": "J'ai un probl\u00e8me de zombies envahissants, pourrais tu m'en d\u00e9barrasser ?","choices": [ { "text": "Oui","data": { "quest": 1 },"action": "quest_offer" },{ "text": "Non","action": "close" } ] } ]
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>

@@ -1,0 +1,14 @@
+Api\Entity\Game\Skill:
+  soldier_apprentice (extends skill):
+    title: "Apprenti soldat"
+    slug: soldier-apprentice
+    description: 'Permet de savoir manier une épée'
+    requiredPoints: 0
+    domain: '@soldier'
+  soldier_materia_1 (extends skill):
+    title: "Swing de l'épée"
+    slug: soldier-materia-1
+    description: "Permet d'utiliser les matéria de soldat de niveau 1"
+    requiredPoints: 10
+    domain: '@soldier'
+    requirements: ['@soldier_apprentice']

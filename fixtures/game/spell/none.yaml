@@ -1,0 +1,22 @@
+Api\Entity\Game\Spell:
+  none_attack_1 (extends spell):
+    slug: none-attack-1
+    damage: 1
+    element: 'none'
+    heal: null
+    name: "Attaque"
+    description: "Attaque 1"
+  none_attack_2 (extends spell):
+    slug: none-attack-2
+    damage: 2
+    element: 'none'
+    heal: null
+    name: "Attaque"
+    description: "Attaque 2"
+  none_heal_2 (extends spell):
+    slug: none-heal-2
+    damage: null
+    element: 'none'
+    heal: 2
+    name: "Soin"
+    description: "Soin 2"

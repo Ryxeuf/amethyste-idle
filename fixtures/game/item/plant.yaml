@@ -1,0 +1,13 @@
+Api\Entity\Game\Item:
+  plant_mint (extends item):
+    id: 13
+    name: 'Menthe'
+    description: 'Minerai de Menthe'
+    type: 'plant'
+    slug: 'plant-mint'
+  plant_sage (extends item):
+    id: 14
+    name: 'Sauge'
+    description: 'Minerai de Sauge'
+    type: 'plant'
+    slug: 'plant-sage'

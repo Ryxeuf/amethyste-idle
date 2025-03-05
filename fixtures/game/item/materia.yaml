@@ -1,0 +1,106 @@
+Api\Entity\Game\Item:
+# LIFE
+  materia_soin (extends item):
+    name: "Soin"
+    type: "materia"
+    slug: 'm1-life'
+    element: "life"
+    description: "Matéria contenant un sort de soin"
+    spell: '@life_heal'
+    requirements: ['@healer_materia_1']
+    domain: '@healer'
+
+# FIRE
+  materia_fire_ball (extends item):
+    name: "Boule de feu"
+    description: ""
+    type: "materia"
+    element: "fire"
+    spell: '@fire_ball'
+    slug: 'm1-fire'
+    requirements: ['@pyro_materia_1']
+    domain: '@pyromancy'
+  materia_flame (extends item):
+    name: "Flammèche"
+    description: ""
+    type: "materia"
+    element: "fire"
+    spell: '@flame'
+    slug: 'm1-fire'
+    requirements: ['@pyro_materia_1']
+    domain: '@pyromancy'
+  materia_flamer (extends item):
+    name: "Feu"
+    description: ""
+    type: "materia"
+    element: "fire"
+    spell: '@flamer'
+    slug: 'm1-fire'
+    level: 2
+    requirements: ['@pyro_materia_2']
+    domain: '@pyromancy'
+  materia_flame_rain (extends item):
+    name: "Pluie de feu"
+    description: ""
+    type: "materia"
+    element: "fire"
+    spell: '@flame_rain'
+    slug: 'm1-fire'
+    level: 3
+    requirements: ['@pyro_materia_3']
+    domain: '@pyromancy'
+
+# WIND
+  materia_wind_lame (extends item):
+    name: "Lame d'air"
+    description: ""
+    type: "materia"
+    spell: '@wind_lame'
+    slug: 'm1-wind'
+    element: "wind"
+    requirements: ['@white_wizard_materia_1']
+    domain: '@white_wizard'
+
+# EARTH
+  materia_stone_throw (extends item):
+    name: "Jet de cailloux"
+    description: ""
+    type: "materia"
+    spell: '@stone_throw'
+    slug: 'm1-earth'
+    element: "earth"
+    requirements: ['@defender_materia_1']
+    domain: '@defender'
+
+# DEATH
+  materia_punishment (extends item):
+    name: "Châtiment"
+    description: ""
+    type: "materia"
+    spell: '@punishment'
+    slug: 'm1-death'
+    element: "death"
+    requirements: ['@necro_materia_1']
+    domain: '@necro'
+
+# NATURE
+  materia_liana_whip (extends item):
+    name: "Fouet de liane"
+    description: ""
+    type: "materia"
+    spell: '@liana_whip'
+    slug: 'm1-nature'
+    element: "nature"
+    requirements: ['@druid_materia_1']
+    domain: '@druid'
+
+# METAL
+  materia_sharp_blade (extends item):
+    name: "Lame tranchante"
+    description: ""
+    type: "materia"
+    spell: '@sharp_blade'
+    slug: 'm1-metal'
+    element: "metal"
+    requirements: ['@soldier_materia_1']
+    domain: '@soldier'

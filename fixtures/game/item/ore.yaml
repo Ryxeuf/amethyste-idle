@@ -1,0 +1,13 @@
+Api\Entity\Game\Item:
+  ore_ruby (extends item):
+    id: 11
+    name: 'Ruby'
+    description: 'Minerai de ruby'
+    type: 'ore'
+    slug: 'ore-ruby'
+  ore_iron (extends item):
+    id: 12
+    name: 'Fer'
+    description: 'Minerai de fer'
+    type: 'ore'
+    slug: 'ore-iron'

@@ -1,0 +1,81 @@
+App\Entity\App\ObjectLayer:
+  forest_object (template):
+    type: 'other'
+    map: '@map_1'
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+
+  # Feu de camp
+#  forest-object-96-160 (extends forest_object):
+#    name: 'Feu de camp'
+#    slug: 'forest-96-160'
+#    movement: -1
+#  forest-object-96-160-1 (extends forest_object):
+#    name: 'Feu de camp'
+#    slug: 'forest-96-160'
+#    movement: -1
+#  forest-object-288-96 (extends forest_object):
+#    name: ''
+#    slug: 'forest-288-96'
+#    movement: -1
+#  forest-object-320-96 (extends forest_object):
+#    name: ''
+#    slug: 'forest-320-96'
+#    movement: -1
+#  forest-object-224-96 (extends forest_object):
+#    name: ''
+#    slug: 'forest-224-96'
+#    movement: -1
+#  forest-object-256-96 (extends forest_object):
+#    name: ''
+#    slug: 'forest-256-96'
+#    movement: -1
+#  # Petite plante de respawn
+#  forest-object-416-32 (extends forest_object):
+#    name: ''
+#    slug: 'forest-416-32'
+#    movement: 0
+#  # Petit coffre
+#  small-chest-1 (extends forest_object):
+#    name: ''
+#    slug: 'small-chest'
+#    movement: 0
+#    usable: 1
+#  # Spot de ruby taille xs
+  spot-ruby-xs (extends forest_object):
+    name: ''
+    slug: 'spot-ruby-xs'
+    movement: -1
+    type: 'spot'
+    usable: 1
+    map: '@map_1'
+    coordinates: '95.24'
+    actions: [{action: 'harvest', distance: 1}]
+    items: [{id: 11, min: 1, max: 1}]
+#  # Spot de ruby taille s
+#  spot-ruby-s (extends forest_object):
+#    name: ''
+#    slug: 'spot-ruby-s'
+#    movement: -1
+#    type: 'spot'
+#    usable: 1
+#    actions: [{action: 'harvest', distance: 1}]
+#    items: [{id: 11, min: 1, max: 2}]
+#  # Spot de menthe taille xs
+#  spot-mint-xs (extends forest_object):
+#    name: ''
+#    slug: 'spot-mint-xs'
+#    movement: -1
+#    type: 'spot'
+#    usable: 1
+#    actions: [{action: 'harvest', distance: 1}]
+#    items: [{id: 13, min: 1, max: 1}]
+#  # Spot de sauge taille xs
+#  spot-sage-xs (extends forest_object):
+#    name: ''
+#    slug: 'spot-sage-xs'
+#    movement: -1
+#    type: 'spot'
+#    usable: 1
+#    actions: [{action: 'harvest', distance: 1}]
+#    items: [{id: 14, min: 1, max: 1}]

@@ -1,0 +1,35 @@
+Api\Entity\Game\Domain:
+  domain (template):
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+
+  pyromancy (extends domain):
+    title: 'Pyromancie'
+  soldier (extends domain):
+    title: 'Soldat'
+  healer (extends domain):
+    title: 'Soigneur'
+  defender (extends domain):
+    title: 'Défenseur'
+  necro (extends domain):
+    title: 'Nécro'
+  white_wizard (extends domain):
+    title: 'Mage blanc'
+  druid (extends domain):
+    title: 'Druide'
+  fisherman (extends domain):
+    title: 'Pêcheur'
+  miner (extends domain):
+    title: 'Mineur'
+  herbalist (extends domain):
+    title: 'Herboriste'
+  skinner (extends domain):
+    title: 'Dépeceur'
+  blacksmith (extends domain):
+    title: 'Forgeron'
+  leatherworker (extends domain):
+    title: 'Tanneur'
+  alchimist (extends domain):
+    title: 'Alchimiste'
+  jeweller (extends domain):
+    title: 'Joaillier'

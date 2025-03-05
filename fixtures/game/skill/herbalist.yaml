@@ -1,0 +1,23 @@
+Api\Entity\Game\Skill:
+  herbalist_dandelion (extends skill):
+    slug: herbalist-dandelion-xs
+    title: "Récolte de pissenlit"
+    description: 'Permet de récolter les pissenlits'
+    requiredPoints: 0
+    actions: [{action: 'harvest', spots: ['spot-dandelion-xs']}]
+    domain: '@herbalist'
+  herbalist_mint (extends skill):
+    slug: herbalist-mint-xs
+    title: "Récolte de menthe"
+    description: 'Permet de récolter la menthe'
+    requiredPoints: 0
+    actions: [{action: 'harvest', spots: ['spot-mint-xs']}]
+    domain: '@herbalist'
+  herbalist_sage (extends skill):
+    slug: herbalist-sage-xs
+    title: "Récolte de sauge"
+    description: 'Permet de récolter la sauge'
+    requiredPoints: 10
+    actions: [{action: 'harvest', spots: ['spot-sage-xs']}]
+    domain: '@herbalist'
+    requirements: [ '@herbalist_mint' ]

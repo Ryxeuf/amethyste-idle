@@ -1,0 +1,29 @@
+Api\Entity\App\Player:
+  player_demo:
+    name: "Player demo"
+    life: 10
+    maxLife: 10
+    energy: 80
+    maxEnergy: 100
+    map: '@map_1'
+    coordinates: '85.35'
+    lastCoordinates: '85.35'
+    user: '@user_demo'
+    skills: [ '@pyro_materia_1', '@soldier_apprentice' ]
+    classType: 'demo'
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
+  player_demo_2:
+    name: "Player demo 2"
+    life: 10
+    maxLife: 10
+    energy: 80
+    maxEnergy: 100
+    map: '@map_1'
+    coordinates: '85.36'
+    lastCoordinates: '85.36'
+    user: '@user_demo_2'
+    skills: [ '@pyro_materia_1', '@soldier_apprentice' ]
+    classType: 'demo-2'
+    createdAt: <( new DateTime() )>
+    updatedAt: <( new DateTime() )>
