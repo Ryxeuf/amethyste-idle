@@ -1,0 +1,41 @@
+<div {{ attributes }}>
+    <div class="card">
+        <div class="card-header">
+            <h2>
+                <div class="row">
+                    <div class="pull-left">
+                        {# {{ include("partials/player_display.html.twig") }} #}
+                    </div>
+                    <div class="pull-left">
+                        {#                &nbsp;Remy#}
+                        <span class="player-name">{{ this.name }}</span>
+                    </div>
+                </div>
+            </h2>
+        </div>
+        <div>
+            {#<div class="ibox-content no-padding border-left-right">#}
+            {#<img alt="image" class="img-responsive" src="{{ asset("bundles/app/img/profile_big.jpg") }}">#}
+            {#</div>#}
+            <div class="card-body">
+                <p><span class="strong">{{ "game.home.player.birthdate"|trans }} :</span> {{ this.createdAt|date('d/m/Y') }}</p>
+
+                <div><span class="fa fa-heart fa-fw life"></span> <span class="player-life">{{ this.life }}</span>/<span class="player-maxlife">{{ this.maxLife }}</span></div>
+                <div class="progress progress-mini">
+                    <div style="width: {{ this.life/this.maxLife*100 }}%;" class="progress-bar progress-bar-danger player-progress-life"></div>
+                </div>
+                <div class="player-statuses">
+
+                </div>
+    {#            <div class="m-t-sm"><span class="fa fa-bolt fa-fw text-red"></span> {{ player.energy }}/{{ player.maxEnergy }}</div>#}
+    {#            <div class="progress progress-mini">#}
+    {#                <div style="width: {{ player.energy/player.maxEnergy*100 }}%;" class="progress-bar"></div>#}
+    {#            </div>#}
+                <br>
+                <p><span class="fa fa-map fa-fw"></span> {{ this.mapName }}</p>
+                <p><span class="fa fa-map-marker fa-fw"></span> {{ this.x }} - {{ this.y }}</p>
+                {#<p><span class="strong">{{ "game.home.player.archetype"|trans }} :</span> -</p>#}
+            </div>
+        </div>
+    </div>
+</div>

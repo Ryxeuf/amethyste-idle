@@ -1,0 +1,25 @@
+<div id="cell-{{ cell.id }}" class="cell {{ cell.slug }} {{ cell.layerType }} {{ "cell-"~cell.x~'-'~cell.y }}"
+     data-x="{{ cell.x }}" data-y="{{ cell.y }}" data-mouvement="{{ cell.mouvement }}" data-id="{{ cell.id }}">
+    <div class="cell-hover"></div>
+    {% if cell.object %}
+        <div class="cell-layer {{ cell.object|objectClassCss }}"></div>
+    {% endif %}
+    {% if cell.mob %}
+        {#                <div id="mob-{{ cell.mob.id }}" class="monster monster-map {{ cell.mob|monsterClassCss }}" data-id="{{ cell.mob.id }}"></div>#}
+        {{ include('map/partials/cell_mob.html.twig', {'mob': cell.mob}) }}
+    {% endif %}
+    {% if cell.pnj %}
+        {#                <div id="pnj-{{ cell.pnj.id }}" class="pnj pnj-map {{ cell.pnj|pnjClassCss }}" data-id="{{ cell.pnj.id }}"></div>#}
+        {{ include('map/partials/cell_pnj.html.twig', {'pnj': cell.pnj}) }}
+    {% endif %}
+
+    {% for player in cell.players %}
+        {#                <div id="player-{{ player.id }}" class="player player-map {{ player|playerClassCss }} {{ player.self ? "player-self":"" }}"></div>#}
+        {{ include('map/partials/cell_player.html.twig', {'player': player}) }}
+    {% endfor %}
+
+{#    <div id="map-cell-actions-{{ cell.id }}" class="map-cell-actions">#}
+{#        {{ cell.actions|json_encode }}#}
+{#    </div>#}
+    {# {{ cell.x }} / {{ cell.y }} #}
+</div>

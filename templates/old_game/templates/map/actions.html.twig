@@ -1,0 +1,72 @@
+<div class="ibox" id="default-cell-actions">
+    <div class="ibox-title">
+        <h3>{{ "game.map.cell_actions"|trans }}</h3>
+    </div>
+    <div class="ibox-content">
+{#        <div class="mouvement-actions row">#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="UL"><i#}
+{#                            class="fa fa-arrow-circle-left fa-rotate-45"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="U"><i#}
+{#                            class="fa fa-arrow-circle-up"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="UR"><i class="fa fa-arrow-circle-up fa-rotate-45"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="L"><i class="fa fa-arrow-circle-left"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <span id="mouvement-center" class="btn btn-lg btn-default btn-block disabled map-action" data-action="mouvement" data-direction="">&nbsp;</span>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="R"><i class="fa fa-arrow-circle-right"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="DL"><i#}
+{#                            class="fa fa-arrow-circle-down fa-rotate-45"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="D"><i#}
+{#                            class="fa fa-arrow-circle-down"></i></a>#}
+{#            </div>#}
+{#            <div class="col-xs-4 content">#}
+{#                <a class="btn btn-lg btn-default btn-block map-action" data-action="mouvement" data-direction="DR"><i#}
+{#                            class="fa fa-arrow-circle-right fa-rotate-45"></i></a>#}
+{#            </div>#}
+{#        </div>#}
+
+{#        <br>#}
+
+        <div class="row">
+            <div id="cell-actions" class="col-xs-12">
+                {% if player_cell is defined %}
+                    {{ render(path("map_actions_render", {'actions': player_cell.actions|json_encode})) }}
+                {% endif %}
+            </div>
+            <br><br>
+        </div>
+
+        {# {% if cell_actions is defined %} #}
+        {# <br/> #}
+        {# <div class="row"> #}
+        {# {% for action in cell_actions.actions %} #}
+        {# <a class="btn btn-lg btn-block btn-primary">{{ ("game.map.cell_action."~action.action)|trans }}</a> #}
+        {# {% endfor %} #}
+        {# </div> #}
+        {# {% endif %} #}
+
+    </div>
+</div>
+
+
+<div id="cell-action-return">
+</div>
+
+{# <script> #}
+{# $(document).ready(function () { #}
+{# updateCellActions() #}
+{# }) #}
+{# </script> #}

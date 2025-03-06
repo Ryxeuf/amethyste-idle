@@ -1,0 +1,19 @@
+<table class="table table-condensed">
+    <tbody>
+    {% for item in items %}
+        <tr class="item-line item-line-{{ item.genericItemId }}">
+            <td class="flex">
+                <div class="item {{ item|itemClassCss }}"></div>
+                <span class="">{{ item.name }}</span>
+            </td>
+            <td class="text-right">x<span class="item-quantity item-quantity-{{ item.genericItemId }}">x</span></td>
+            <td class="col-xs-3">
+                <a class="btn btn-info btn-outline btn-block action-item fight-action fight-action-{{ item.genericItemId }}" data-href="{{ path("fight_item") }}" data-id="{{ item.id }}" data-target="player" data-content="Utilisation de {{ item.name }} en cours...">{{ "game.fight.target.self"|trans }}</a>
+            </td>
+            <td class="col-xs-3">
+                <a class="btn btn-info btn-outline btn-block action-item fight-action fight-action-{{ item.genericItemId }}" data-href="{{ path("fight_item") }}" data-id="{{ item.id }}" data-target="mob" data-content="Utilisation de {{ item.name }} en cours...">{{ "game.fight.target.mob"|trans }}</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

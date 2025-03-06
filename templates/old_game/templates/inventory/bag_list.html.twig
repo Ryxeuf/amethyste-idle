@@ -1,0 +1,43 @@
+<p>{{ inventory.gold }} {{ "game.inventory.gold"|trans }}</p>
+<p>{{ "game.inventory.space_occupied"|trans }} : {{ inventory.occupiedSpace }}/{{ inventory.size }}</p>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th></th>
+        <th>{{ "game.inventory.item.name"|trans }}</th>
+        <th>{{ "game.inventory.item.quantity"|trans }}</th>
+        <th>{{ "game.inventory.item.level"|trans }}</th>
+        <th>{{ "game.inventory.item.domain"|trans }}</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in inventory.items %}
+        <tr>
+            <td>
+                {#{{ include(":partials:object_display.html.twig", {"object": item}) }}#}
+                <div class="item {{ item|itemClassCss }}"></div>
+            </td>
+            <td>
+                <a class="item-infos item-infos-link" data-href="{{ path("item_infos") }}" data-target="#selected-item-infos" data-item="{{ item.id }}">{{ item.name }}</a>
+                {#{{ item.getName }}#}
+            </td>
+{#            <td>{{ item.type }}</td>#}
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.level }}</td>
+            <td>{{ item.domain }}</td>
+            <td>
+                {% if item.isGear %}
+                <a data-href="{{ path("gear_wear") }}" data-item="{{ item.id }}" class="gear-wear">{{ "game.gear.equip"|trans }}</a>
+                {% elseif item.isUsable %}
+                <a data-href="{{ path("item_use") }}" data-item="{{ item.id }}" data-name="{{ item.name }}" class="item-use">{{ "game.item.use"|trans }}</a>
+                {% endif %}
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="10">{{ "game.inventory.empty"|trans }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

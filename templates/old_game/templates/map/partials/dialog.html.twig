@@ -1,0 +1,19 @@
+<div class="ibox pnj-dialog">
+    <div class="ibox-title pnj-dialog-title">
+        <h3>{{ pnj.name }}</h3>
+    </div>
+    <div class="ibox-content pnj-dialog pnj-dialog-content" data-content="{{ dialog.sentences|json_encode }}">
+        <p id="dialog-sentence" class="dialog-sentence" data-index="0">{{ dialog.sentences.0.text|raw }}</p>
+        {% if dialog.sentences.0.next is defined %}
+            <a class="btn btn-info btn-outline btn-block dialog-next-sentence">
+                <span class="fa fa-angle-double-right"></span>
+            </a>
+        {% endif %}
+        <div id="pnj-dialog-choices"></div>
+    </div>
+    <div class="ibox-footer">
+        {% if dialog.sentences.0.next is defined %}
+            <a class="btn btn-info btn-block btn-outline return-to-default-cell-actions">{{ "game.dialog.close"|trans }}</a>
+        {% endif %}
+    </div>
+</div>

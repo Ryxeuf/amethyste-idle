@@ -1,0 +1,43 @@
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th class="col-xs-3">{{ "game.gear.location"|trans }}</th>
+        <th class="col-xs-1"></th>
+        <th>{{ "game.gear.item"|trans }}</th>
+        <th>{{ "game.item.slots"|trans }}</th>
+        <th class="col-xs-1"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for gear_slot in gear|keys %}
+        {% set item = gear[gear_slot] %}
+        <tr>
+            <td>{{ ("game.gear.locations."~gear_slot)|trans }}</td>
+            {% if item %}
+                <td>
+                    <div class="item {{ item|itemClassCss }}"></div>
+                </td>
+                <td>
+                    <a id="infos-gear-{{ item.id }}" class="item-infos gear-infos-link"
+                       data-href="{{ path("gear_infos") }}" data-target="#selected-item-infos"
+                       data-item="{{ item.id }}">{{ item.name }}</a>
+                </td>
+                <td class="flex">
+                    {% for slot in item.slots %}
+                        {% if slot.itemSet %}
+                            <div class="item equipped_{{ slot.itemSet|itemClassCss }}"></div>
+                        {% else %}
+                            <div class="item empty_materia_slot"></div>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    <a data-href="{{ path("gear_unwear") }}" data-item="{{ item.id }}" class="gear-unwear" title="{{ "game.gear.unequip"|trans }}"><span class="fa fa-ban"></span></a>
+                </td>
+            {% else %}
+                <td colspan="4">{{ "game.gear.locations.no_gear"|trans }}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

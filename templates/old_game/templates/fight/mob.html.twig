@@ -1,0 +1,23 @@
+<div id="mob" data-id="{{ mob.id }}"></div>
+<div class="ibox">
+    <div class="ibox-title">
+        <h2>
+            <div class="pull-left">
+                <div class="monster {{ mob|monsterClassCss }}" data-id="{{ mob.id }}"></div>
+            </div>
+            <div class="pull-left">
+                <span class="mob-name">{{ mob.name }}</span>
+            </div>
+        </h2>
+    </div>
+    <div class="ibox-content">
+        <div><span class="fa fa-heart fa-fw life"></span> <span class="mob-life">{{ mob.life }}</span>/<span class="mob-maxlife">{{ mob.maxLife }}</span></div>
+        <div class="progress progress-mini">
+            <div style="width: {{ mob.life/mob.maxLife*100 }}%;" class="progress-bar progress-bar-danger mob-progress-life"></div>
+        </div>
+
+        <div class="mob-statuses">
+
+        </div>
+    </div>
+</div>

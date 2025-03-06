@@ -1,0 +1,16 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ "app.contact.title"|trans }}{% endblock %}
+
+{% set active_contact = true %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="tabs-container">
+
+        <h1>{{ "app.contact.contact_us"|trans }}</h1>
+
+    </div>
+
+{% endblock %}

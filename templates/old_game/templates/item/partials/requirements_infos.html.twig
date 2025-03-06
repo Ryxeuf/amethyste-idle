@@ -1,0 +1,10 @@
+<div class="m-top-10">
+    <div class="col-xs-3">
+        <strong>{{ "game.item.requirements"|trans }}</strong>
+    </div>
+    <div class="col-xs-9">
+        {% for requirement in requirements %}
+            <p>{{ requirement.title }}</p>
+        {% endfor %}
+    </div>
+</div>

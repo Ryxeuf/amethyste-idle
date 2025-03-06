@@ -1,0 +1,90 @@
+{% extends "base_game.html.twig" %}
+
+{% block title %}{{ "title.map"|trans }}{% endblock %}
+
+{% block body_left_content %}
+    <div id="player-infos" class="render-box" data-url="{{ path("player_infos") }}"></div>
+    <div id="map-actions" class="render-box" data-url="{{ path("map_actions") }}"></div>
+    <div id="player-spells" class="render-box" data-url="{{ path("player_actions") }}"></div>
+{% endblock %}
+
+{% block body_right_content %}
+    {{ parent() }}
+
+{#    <div id="map-infos" class="render-box" data-url="{{ path("map_infos") }}"></div>#}
+    <div id="map-infos"></div>
+
+    <div id="map-data" style="display: none; visibility: hidden;">{{ map|json_encode }}</div>
+    <div id="map-dynamic-data" style="display: none; visibility: hidden;">{{ mapDynamic|json_encode }}</div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags('map') }}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ encore_entry_script_tags('map') }}
+
+{#    <script>#}
+{#        function Cell(cell) {#}
+{#            this.x = cell.x#}
+{#            this.y = cell.y#}
+{#            if (cell.id !== undefined) {#}
+{#                this.id = cell.id#}
+{#                this.mouvement = cell.mouvement#}
+{#                this.slug = cell.slug#}
+{#                this.layerType = cell.layerType#}
+{#            }#}
+{#        }#}
+
+{#        Cell.prototype.render = function() {#}
+{#            if (this.id === undefined) {#}
+{#                return this.renderDefault()#}
+{#            }#}
+
+{#            return '<div id="cell-' + this.id + '" class="cell ' + this.slug + ' ' + this.layerType + ' ' + "cell-" + this.x + '-' + this.y + '" ' +#}
+{#                'data-x="' + this.x + '" data-y="' + this.y + '" data-mouvement="' + this.mouvement + '" data-id="' + this.id + '">' +#}
+{#                '<div class="cell-hover"></div>'+#}
+{#                // object +#}
+{#                // mob +#}
+{#                // pnj +#}
+{#                // players +#}
+{#                '</div>'#}
+{#                ;#}
+{#        }#}
+
+{#        Cell.prototype.renderDefault = function() {#}
+{#            return '<div class="cell cell-default cell-'+this.x+'-'+this.y+'" data-x="'+this.x+'" data-y="'+this.y+'" data-mouvement="-1"></div>'#}
+{#        }#}
+
+{#        function Map(map) {#}
+{#            this.id = map.id#}
+{#            this.minX = map.minX#}
+{#            this.maxX = map.maxX#}
+{#            this.minY = map.minY#}
+{#            this.maxY = map.maxY#}
+{#            this.name = map.name#}
+{#            this.versionHash = map.versionHash#}
+{#            this.cells = []#}
+
+{#            map.cells.forEach(function(cell) {#}
+{#                if (this.cells[parseInt(cell.y)] === undefined) {#}
+{#                    this.cells[parseInt(cell.y)] = []#}
+{#                }#}
+{#                this.cells[parseInt(cell.y)][parseInt(cell.x)] = new Cell(cell)#}
+{#            }, this)#}
+{#        }#}
+
+{#        Map.prototype.render = function() {#}
+
+{#        }#}
+
+{#    </script>#}
+
+{% endblock %}

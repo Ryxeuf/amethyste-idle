@@ -1,0 +1,9 @@
+{% for action in actions %}
+    {% set label = ("game.map.cell_action."~action.action)|trans({'%spot%': (action.spot ?? '')}) %}
+    {% if action.action == 'talk' %}
+        {% set label = ("game.map.cell_action.talk"|trans({"%pnj_name%": action.data.pnj.name})) %}
+    {% endif %}
+    <a class="btn btn-info btn-block btn-outline cell-action" data-url="{{ path('map_cell_action') }}"
+       data-action="{{ action.action }}"
+       data-datas="{{ (action.data is defined ? action.data : [])|json_encode }}">{{ label }}</a>
+{% endfor %}

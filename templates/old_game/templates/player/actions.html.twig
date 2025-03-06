@@ -1,0 +1,16 @@
+<table class="table table-condensed">
+    <tbody>
+    {% for spell in actions %}
+        <tr>
+            <td class="flex">
+                <div class="item {{ spell|itemClassCss }}"></div>
+                <span class="">{{ spell.name }}</span>
+            </td>
+            <td class="col-xs-3">
+                <a class="btn btn-info btn-outline btn-block action-spell fight-action" data-href="{{ path("fight_spell") }}" data-id="{{ spell.id }}" data-target="player" data-content="Utilisation de {{ spell.name }} en cours...">{{ "game.map.cell_action.use"|trans }}</a>
+{#                <a class="btn btn-info btn-outline btn-block action-spell fight-action" data-href="{{ path("fight_spell") }}" data-id="{{ spell.id }}" data-target="mob" data-content="Utilisation de {{ spell.name }} en cours...">{{ "game.fight.target.mob"|trans }}</a>#}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

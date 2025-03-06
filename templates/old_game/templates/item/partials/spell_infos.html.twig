@@ -1,0 +1,26 @@
+<div class="m-top-10">
+    {% if spell.damage %}
+        <div class="col-xs-3">
+            <strong>{{ "game.spell.damage"|trans }}</strong>
+        </div>
+        <div class="col-xs-9">
+            {{ spell.damage }}
+        </div>
+    {% endif %}
+    {% if spell.heal %}
+        <div class="col-xs-3">
+            <strong>{{ "game.spell.heal"|trans }}</strong>
+        </div>
+        <div class="col-xs-9">
+            {{ spell.heal }}
+        </div>
+    {% endif %}
+    {% if spell.element %}
+        <div class="col-xs-3">
+            <strong>{{ "game.element.element"|trans }}</strong>
+        </div>
+        <div class="col-xs-9">
+            {{ ("game.element."~spell.element)|trans }}
+        </div>
+    {% endif %}
+</div>

@@ -1,0 +1,59 @@
+{% for quest in quests %}
+    <div class="ibox {{ quest.completed ? "" : "collapsed" }}">
+        <div class="ibox-title">
+            <h5>{{ quest.name }}</h5> &nbsp;[{{ quest.progress }}%]
+            <div class="ibox-tools">
+                <a class="collapse-link">
+                    <i class="fa fa-chevron-up"></i>
+                </a>
+            </div>
+        </div>
+        <div class="ibox-content">
+            {% if quest.tracking.monsters is defined %}
+                <div>
+                    <b>Monstres tues</b> :
+                    <ul>
+                        {% for monster in quest.tracking.monsters %}
+                            <li>
+                                {{ monster.name }} {{ monster.count }}/{{ monster.necessary }}
+                                <div class="progress progress-mini">
+                                    <div style="width: {{ monster.count/monster.necessary*100 }}%;"
+                                         class="progress-bar progress-bar-info"></div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            <br>
+            {% if quest.rewards is defined %}
+                <div>
+                    <b>Recompenses</b> :
+                    <ul>
+                        {% if quest.rewards.gold is defined %}
+                            <li>
+                                {{ quest.rewards.gold }} {{ "game.inventory.gold"|trans }}
+                            </li>
+                        {% endif %}
+                        {% if quest.rewards.items is defined %}
+                            {% for item in quest.rewards.items %}
+                                <li>
+                                    <div class="item {{ item|itemClassCss }}" style="display: inline-block"></div>
+                                    x{{ item.count }}
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+            {% endif %}
+            <div class="">
+                <a href="{{ path('quest_validate', {'quest': quest.id}) }}"
+                   class="btn btn-sm btn-primary {{ quest.completed ? "" : "disabled" }}">{{ "game.quest.validate"|trans }}</a>
+                <a href="{{ path('quest_abandon', {'quest': quest.id}) }}"
+                   class="btn btn-sm btn-danger">{{ "game.quest.abandon"|trans }}</a>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <i>{{ "game.quest.current.no_quest"|trans }}</i>
+{% endfor %}

@@ -1,0 +1,46 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>{{ skill.title }}</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>{{ "game.skills.cost"|trans }}</td>
+        <td>{{ skill.requiredPoints }}</td>
+    </tr>
+    {% if skill.requirements %}
+    <tr>
+        <td>{{ "game.skills.requirements"|trans }}</td>
+        <td>
+            {% for requirement in skill.requirements %}
+                {{ requirement.title }}{{ loop.last ? "" : "," }}
+            {% endfor %}
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td colspan="2">{{ skill.description }}</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td class="text-right">
+            {% if not skill.acquired %}
+                {% if skill.canBeAcquired %}
+                    <a class="btn btn-primary btn-sm acquire-skill-link" data-href="{{ path("skill_acquire") }}"
+                       data-skill="{{ skill.id }}" data-domain="{{ skill.domain.id }}"
+                       title="{{ "game.skills.learn"|trans }}"><span
+                                class="fa fa-check"></span> {{ "game.skills.learn"|trans }}</a>
+                {% else %}
+                    <a class="btn btn-danger btn-sm" title="{{ "game.skills.learn"|trans }}"><span
+                                class="fa fa-ban"></span> {{ "game.skills.learn"|trans }}</a>
+                {% endif %}
+            {% else %}
+                <div class="label label-primary" title="{{ "game.skills.learned"|trans }}"><span
+                            class="fa fa-check"></span> {{ "game.skills.learned"|trans }}</div>
+            {% endif %}
+        </td>
+    </tr>
+    </tbody>
+</table>

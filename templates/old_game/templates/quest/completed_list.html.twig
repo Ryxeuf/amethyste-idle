@@ -1,0 +1,10 @@
+<ul class="fa-ul">
+    {% for quest in quests %}
+        <li>
+            <span class="fa-li"><i class="fa fa-check"></i></span>
+            {{ "game.quest.completed.title"|trans({"%name%": quest.name, "%date%": quest.completedAt|format_datetime})|raw }}
+        </li>
+    {% else %}
+        <i>{{ "game.quest.completed.no_quest"|trans }}</i>
+    {% endfor %}
+</ul>

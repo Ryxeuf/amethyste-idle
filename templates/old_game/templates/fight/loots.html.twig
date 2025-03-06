@@ -1,0 +1,35 @@
+{% if fight.victory %}
+<form class="form-horizontal" action="{{ path("fight_loot") }}" role="form" method="post">
+    <input type="hidden" name="fight" value="{{ fight.id }}">
+    <table class="table table-condensed">
+        <thead>
+        <tr>
+            <th colspan="2">{{ "game.fight.loots.loot_list"|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in fight.loot %}
+            <tr class="item-line item-line-{{ item.genericItemId }}">
+                <td>
+                    <div class="objectlayer objectlayer-list {{ item|itemClassCss }}"></div>
+                    <span class="">{{ item.name }}</span>
+                </td>
+                <td class="col-xs-3">
+                    <input type="checkbox" class="i-checks" checked name="items[]" value="{{ item.id }}">
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+            <th></th>
+            <th>
+                <button type="submit" class="btn btn-lg btn-info btn-block btn-outline">{{ "game.fight.loots.loot"|trans }}</button>
+            </th>
+        </tr>
+        </tfoot>
+    </table>
+</form>
+{% else %}
+    <i>Vous êtes mort...</i>
+{% endif %}

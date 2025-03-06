@@ -1,0 +1,30 @@
+<div class="navbar-wrapper">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{{ path("home_index") }}">Légende d'Améthyste</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="{{ active_home is defined ? "active":"" }}"><a class="" href="{{ path("home_index") }}">{{ "menu.home"|trans({}, 'messages') }}</a></li>
+                    <li class="{{ active_game is defined ? "active":"" }}"><a class="" href="{{ path("game_index") }}">{{ "menu.game"|trans }}</a></li>
+{#                    <li class="{{ active_profile is defined ? "active":"" }}"><a class="" href="{{ path("user_profile") }}">{{ "menu.profile"|trans }}</a></li>#}
+{#                    <li class="{{ active_ is defined ? "active":"" }}"><a class="" href="#testimonials">Testimonials</a></li>#}
+{#                    <li class="{{ active_ is defined ? "active":"" }}"><a class="" href="#pricing">Pricing</a></li>#}
+{#                    <li class="{{ active_help is defined ? "active":"" }}"><a class="" href="{{ path("help_home") }}">{{ "menu.help"|trans }}</a></li>#}
+{#                    <li class="{{ active_contact is defined ? "active":"" }}"><a class="" href="{{ path("contact_index") }}">{{ "menu.contact"|trans }}</a></li>#}
+                    <li class="{{ active_tools is defined ? "active":"" }}"><a class="" href="{{ path("tools_index") }}">{{ "menu.tools"|trans }}</a></li>
+
+                    <li class="{{ active_login is defined ? "active":"" }}"><a class="" href="{{ path("auth_index") }}">{{ "app.login.title"|trans }}</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</div>
+<div class="m-t-xl">&nbsp;</div>

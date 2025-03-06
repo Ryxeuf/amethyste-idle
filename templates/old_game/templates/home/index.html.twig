@@ -1,0 +1,273 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ "title.home"|trans }}{% endblock %}
+
+{% set active_home = true %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container">
+
+        <h1>{{ "home.whats_new"|trans }}</h1>
+
+        <div id="vertical-timeline" class="vertical-container dark-timeline">
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-line-chart"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Minage</h2>
+                    <p>Sport de minage</p>
+                    <p>Récolte des spot</p>
+                    <span class="vertical-date"><small>{{ date("2023-02-12")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-bars"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Compétences</h2>
+                    <p>Affichage des compétences sous forme de tableau</p>
+                    <span class="vertical-date"><small>{{ date("2021-09-14")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-bars"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Déplacements</h2>
+                    <p>Déplacement avec les flèches directionnelles du clavier sur la carte possible</p>
+                    <span class="vertical-date"><small>{{ date("2021-09-14")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-bars"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>PNJ</h2>
+                    <p>Affichage des PNJs sur la carte</p>
+                    <p>Dialogues de PNJ disponibles</p>
+                    <span class="vertical-date"><small>{{ date("2020-08-20")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-image"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Éditeur d'icones</h2>
+                    <p>Ajout de l'éditeur d'icones</p>
+                    <span class="vertical-date"><small>{{ date("2020-06-10")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-line-chart"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Compétences</h2>
+                    <p>Possibilité d'apprendre des nouvelles compétences</p>
+                    <span class="vertical-date"><small>{{ date("2020-06-03")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-line-chart"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Expérience de domaine</h2>
+                    <p>Augmentation de l'expérience dans un domaine en utilisation un objet/sort de ce domaine</p>
+                    <span class="vertical-date"><small>{{ date("2020-06-01")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-laptop"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Équipement</h2>
+                    <p>Équipement des objets</p>
+                    <p>Utilisation des materia</p>
+                    <p>Changement de l'affichage des infos d'un objet</p>
+                    <p>Affichage et prise en compte des pré-requis pour les objets</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-28")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon navy-bg"><i class="fa fa-map-marker"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Carte globale</h2>
+                    <p>Vue de la carte globale</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-15")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon navy-bg"><i class="fa fa-map-marker"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Editeur de carte</h2>
+                    <p>Création d'un éditeur de carte avec export</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-14")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon navy-bg"><i class="fa fa-newspaper-o"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Récompenses de combat</h2>
+                    <p>génération des récompenses de combat et récupération possible</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-12")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon navy-bg"><i class="fa fa-newspaper-o"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Notifications</h2>
+                    <p>Affichage des notifications de combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-06")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon yellow-bg"><i class="fa fa-flask"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Objets & sorts</h2>
+                    <p>Objets et sorts préchargé en combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-05")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon yellow-bg"><i class="fa fa-bolt"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Objet</h2>
+                    <p>Objet utilisables en combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-04")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-clock-o"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Timeline de combat</h2>
+                    <p>Affichage de la timeline du combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-04")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon yellow-bg"><i class="fa fa-bolt"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Sort</h2>
+                    <p>Sorts utilisables en combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-04")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-newspaper-o"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Liste des mises à jour</h2>
+                    <p>Liste des mises à jour sur la page d'accueil</p>
+                    <span class="vertical-date"><small>{{ date("2020-05-04")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon yellow-bg"><i class="fa fa-backward"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Fuite</h2>
+                    <p>Ajout de l'action de fuite en combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-04-30")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon red-bg"><i class="fa fa-bolt"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Attaque</h2>
+                    <p>Ajout de l'action d'attaque</p>
+                    <span class="vertical-date"><small>{{ date("2020-04-30")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon navy-bg"><i class="fa fa-list"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Liste des objets</h2>
+                    <p>Retour de la liste des objets en combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-04-29")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-list-ul"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Liste des sorts</h2>
+                    <p>Retour de la liste de sorts en combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-04-29")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon navy-bg"><i class="fa fa-map-marker"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Mouvement sur la carte</h2>
+                    <p>Mouvement sauvergardé sur la carte</p>
+                    <span class="vertical-date"><small>{{ date("2020-04-27")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+            <div class="vertical-timeline-block">
+                <div class="vertical-timeline-icon lazur-bg"><i class="fa fa-laptop"></i></div>
+                <div class="vertical-timeline-content">
+                    <h2>Combat</h2>
+                    <p>Interface de combat</p>
+                    <span class="vertical-date"><small>{{ date("2020-04-24")|format_datetime('full','none') }}</small></span>
+                </div>
+            </div>
+
+{#            <div class="vertical-timeline-block">#}
+{#                <div class="vertical-timeline-icon blue-bg">#}
+{#                    <i class="fa fa-file-text"></i>#}
+{#                </div>#}
+
+{#                <div class="vertical-timeline-content">#}
+{#                    <h2>Send documents to Mike</h2>#}
+{#                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since.</p>#}
+{#                    <a href="#" class="btn btn-sm btn-success"> Download document </a>#}
+{#                    <span class="vertical-date">#}
+{#                                        Today <br>#}
+{#                                        <small>Dec 24</small>#}
+{#                                    </span>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="vertical-timeline-block">#}
+{#                <div class="vertical-timeline-icon lazur-bg">#}
+{#                    <i class="fa fa-coffee"></i>#}
+{#                </div>#}
+
+{#                <div class="vertical-timeline-content">#}
+{#                    <h2>Coffee Break</h2>#}
+{#                    <p>Go to shop and find some products. Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's. </p>#}
+{#                    <a href="#" class="btn btn-sm btn-info">Read more</a>#}
+{#                    <span class="vertical-date"> Yesterday <br><small>Dec 23</small></span>#}
+{#                </div>#}
+{#            </div>#}
+
+{#            <div class="vertical-timeline-block">#}
+{#                <div class="vertical-timeline-icon yellow-bg">#}
+{#                    <i class="fa fa-phone"></i>#}
+{#                </div>#}
+
+{#                <div class="vertical-timeline-content">#}
+{#                    <h2>Phone with Jeronimo</h2>#}
+{#                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Iusto, optio, dolorum provident rerum aut hic quasi placeat iure tempora laudantium ipsa ad debitis unde? Iste voluptatibus minus veritatis qui ut.</p>#}
+{#                    <span class="vertical-date">Yesterday <br><small>Dec 23</small></span>#}
+{#                </div>#}
+{#            </div>#}
+
+        </div>
+
+    </div>
+
+{% endblock %}

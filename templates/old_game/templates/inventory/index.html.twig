@@ -1,0 +1,90 @@
+{% extends "base_game.html.twig" %}
+
+{% block body_right_content %}
+    {{ parent() }}
+
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h2>
+                {{ "game.inventory.tab.gear"|trans }}
+            </h2>
+        </div>
+        <div class="ibox-content">
+            <div id="gear-list" class="render-box" data-url="{{ path("gear_list") }}"></div>
+        </div>
+    </div>
+
+    <div id="item-processing" class="display-none">
+        {{ include('partials/loader_processing.html.twig') }}
+    </div>
+    <div id="item-infos-container" class="display-none">
+        <div class="panel panel-default">
+        </div>
+    </div>
+
+    {# TODO : fix les inventaires pour les mettre sous forme d'onglets #}
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+{#            <li class=""><a data-toggle="tab" href="#tab-gear">{{ "game.inventory.tab.gear"|trans }}</a></li>#}
+            <li class="active"><a data-toggle="tab" href="#tab-bag">{{ "game.inventory.tab.inventory"|trans }}</a></li>
+{#            <li class=""><a data-toggle="tab" href="#tab-materia">{{ "game.inventory.tab.materia"|trans }}</a></li>#}
+        </ul>
+        <div class="tab-content">
+{#            <div id="tab-gear" class="tab-pane active">#}
+{#                <div class="panel-body">#}
+{#                    <div id="gear-list" class="render-box" data-url="{{ path("gear_list") }}"></div>#}
+{#                </div>#}
+{#            </div>#}
+            <div id="tab-bag" class="tab-pane active">
+                <div class="panel-body">
+                    <div id="bag-list" class="render-box" data-url="{{ path("inventory_bag_list") }}"></div>
+                </div>
+            </div>
+{#            <div id="tab-materia" class="tab-pane">#}
+{#                <div class="panel-body">#}
+{#                    <div id="materia-list" class="render-box" data-url="{{ path("inventory_materia_list") }}"></div>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+
+    <div id="selected-item-infos" class="modal inmodal" style="display: none;" role="dialog"></div>
+
+    </div>
+
+    <div class="tabs-container">
+        <ul class="nav nav-tabs">
+{#            <li class=""><a data-toggle="tab" href="#tab-gear">{{ "game.inventory.tab.gear"|trans }}</a></li>#}
+{#            <li class="active"><a data-toggle="tab" href="#tab-bag">{{ "game.inventory.tab.inventory"|trans }}</a></li>#}
+            <li class="active"><a data-toggle="tab" href="#tab-materia">{{ "game.inventory.tab.materia"|trans }}</a></li>
+        </ul>
+        <div class="tab-content">
+{#            <div id="tab-gear" class="tab-pane active">#}
+{#                <div class="panel-body">#}
+{#                    <div id="gear-list" class="render-box" data-url="{{ path("gear_list") }}"></div>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div id="tab-bag" class="tab-pan active">#}
+{#                <div class="panel-body">#}
+{#                    <div id="bag-list" class="render-box" data-url="{{ path("inventory_bag_list") }}"></div>#}
+{#                </div>#}
+{#            </div>#}
+            <div id="tab-materia" class="tab-pane active">
+                <div class="panel-body">
+                    <div id="materia-list" class="render-box" data-url="{{ path("inventory_materia_list") }}"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('inventory') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('inventory') }}
+{% endblock %}

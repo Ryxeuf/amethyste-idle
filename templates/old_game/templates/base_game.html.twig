@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ "title.game"|trans }}{% endblock %}
+
+{% set active_game = true %}
+
+{% block body %}
+    {{ parent() }}
+
+    <div class="container-fluid">
+        {% block game_tabs %}
+            <div class="ibox-content m-b-sm border-bottom">
+                <div class="row">
+
+                    <div class="pull-left">
+{#                        <a class="dropdown">#}
+{#                            <a data-toggle="dropdown" class="dropdown-toggle btn btn-primary" href="#">#}
+{#                                <span class="fa fa-user"></span> {{ "game.menu.player"|trans }}#}
+{#                            </a>#}
+{#                            <ul class="dropdown-menu" x-placement="bottom-start">#}
+{#                                <li><a href="{{ path("game_index") }}" class=""><span#}
+{#                                                class="fa fa-user"></span> {{ "game.menu.player"|trans }}</a></li>#}
+{#                                <li><a href="{{ path("inventory_index") }}" class=""><span#}
+{#                                                class="fa fa-suitcase"></span> {{ "game.menu.inventory"|trans }}</a>#}
+{#                                </li>#}
+{#                                <li><a href="{{ path("skill_index") }}" class=""><span#}
+{#                                                class="fa fa-graduation-cap"></span> {{ "game.menu.skills"|trans }}</a>#}
+{#                                </li>#}
+{#                                #}{# <li class="divider"></li> #}
+{#                                #}{# <li><a href="login.html">Logout</a></li> #}
+{#                            </ul>#}
+{#                        </a>#}
+                        <a href="{{ path("game_index") }}" class="btn btn-primary"><span
+                                    class="fa fa-user"></span> {{ "game.menu.player"|trans }}</a></li>
+                        <a href="{{ path("inventory_index") }}" class="btn btn-primary"><span
+                                    class="fa fa-suitcase"></span> {{ "game.menu.inventory"|trans }}</a>
+                        <a href="{{ path("skill_index") }}" class="btn btn-primary"><span
+                                    class="fa fa-graduation-cap"></span> {{ "game.menu.skills"|trans }}</a>
+                        <a href="{{ path("quest_index") }}" class="btn btn-primary">
+                            <span class="fa fa-list"></span>
+                            {{ "game.menu.quest"|trans }}
+                            <span id="quest-current-in-progress" class="label label-warning"></span>
+                            <span id="quest-current-completed" class="label label-info"></span>
+                        </a>
+                        <a href="{{ path("map_index") }}" class="btn btn-primary"><span
+                                    class="fa fa-globe"></span> {{ "game.menu.map"|trans }}</a>
+                        <a href="{{ path("map_world") }}" class="btn btn-primary"><span
+                                    class="fa fa-globe"></span> {{ "game.menu.world_map"|trans }}</a>
+
+                        {# <a href="{{ path("fight_index") }}" class="btn btn-primary"><span class="fa fa-graduation-cap"></span> {{ "menu.fight"|trans }}</a> #}
+                    </div>
+
+                    <div class="pull-right">
+                        {# <a href="#" class="btn btn-sm btn-defaul"><i class="fa fa-envelope"></i> <span class="badge badge-primary">10</span></a> #}
+                        {# <a href="#" class="btn btn-sm btn-defaul"><i class="fa fa-bell"></i> <span class="badge badge-info">1</span></a> #}
+                    </div>
+
+            </div>
+        </div>
+        {% endblock game_tabs %}
+    </div>
+
+    <div class="container-fluid">
+
+    {% block body_content %}
+        <div class="col-md-4">
+            {% block body_left_content %}
+                {#            {{ include("player/player_infos.html.twig", {'player': playerInfos}) }}#}
+                <div id="player-infos" class="render-box" data-url="{{ path("player_infos") }}"></div>
+            {% endblock %}
+        </div>
+        <div class="col-md-8">
+            <div class="ibox float-e-margins">
+
+                {% block body_right_content %}{% endblock %}
+
+            </div>
+
+        </div>
+        </div>
+    {% endblock %}
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('game') }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('game') }}
+{% endblock %}

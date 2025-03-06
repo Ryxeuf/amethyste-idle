@@ -1,0 +1,54 @@
+{% extends "tools/index.html.twig" %}
+
+{% block title %}{{ "app.tools.icons.title"|trans }}{% endblock %}
+
+{% block body_content %}
+    {{ parent() }}
+
+    <div class="col-xs-6" style="max-height: 600px; overflow: scroll;">
+        <div style="margin: 0px 10px 10px 0px; padding: 1px;">
+            <table id="item-icon" style="">
+                <tbody>
+                {% for y in 0..628 %}
+                    <tr>
+                        {% for x in 0..15 %}
+                            <td class="cell-icon" style="width: 24px; height: 24px;" data-x="{{ x }}" data-y="{{ y }}" data-bpx="{{ 24*x }}" data-bpy="{{ 24*y }}">
+                                <div style="background-color: black; opacity: 0; width: 24px; height: 24px"></div>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-xs-6">
+        <div>
+            <select name="" id="select-image-set" class="select">
+                <option value="" selected></option>
+                <option value="bigset" data-width="384px" data-height="15096px">Bigset</option>
+                <option value="objectusable" data-width="384px" data-height="432px">ObjectUsable</option>
+            </select>
+        </div>
+        <p>Icone sélectionnée</p>
+        <div id="selected-icon-container" style=""><div id="selected-icon" style=""></div></div>
+        <p></p>
+        <div>
+            <textarea id="selected-icon-text" cols="30" rows="10"></textarea>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags('icon-editor') }}
+{% endblock %}
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ encore_entry_script_tags('icon-editor') }}
+
+{% endblock %}

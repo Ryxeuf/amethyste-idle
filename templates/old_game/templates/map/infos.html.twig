@@ -1,0 +1,22 @@
+<h3>{{ map.name }}</h3>
+
+<div id="map" class="map" data-move-url="{{ path("player_move") }}" data-id="{{ map.id }}">
+
+    <div class="map-row">
+        {% for cell in map.cells %}
+
+        {% if cellY is not defined %}
+            {% set cellY = cell.y %}
+        {% endif %}
+
+        {% if cellY != cell.y %}
+        {% set cellY = cell.y %}
+    </div>
+    <div class="map-row">
+        {% endif %}
+        {{ include('map/partials/cell.html.twig', {'cell': cell}) }}
+        {% endfor %}
+
+    </div>
+</div>
+

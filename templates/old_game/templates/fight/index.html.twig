@@ -1,0 +1,33 @@
+{% extends "base_game.html.twig" %}
+
+{% block title %}{{ "title.fight"|trans }}{% endblock %}
+
+{% block game_tabs %}{% endblock game_tabs %}
+
+{% block body_right_content %}
+    {{ parent() }}
+
+{#    <div id="fight-infos" class="render-box" data-url="{{ path("fight_infos", {'mob': mobId}) }}"></div>#}
+    <div id="fight-infos">
+        {{ include("fight/infos.html.twig") }}
+    </div>
+
+    <div id="fight-notification-container" style="visibility: hidden; display: none;">
+        <div class="alert alert-%notification_type% alert-dismissable"><button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>%notification_content%</div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags('fight') }}
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ encore_entry_script_tags('fight') }}
+
+{% endblock %}

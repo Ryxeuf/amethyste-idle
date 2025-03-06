@@ -1,0 +1,42 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{{ "app.tools.map_editor.title"|trans }}{% endblock %}
+
+{% set active_tools = true %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container-fluid">
+        {% block game_tabs %}
+            <div class="ibox-content m-b-sm border-bottom">
+                <div class="row">
+                    <div class="pull-left">
+                        <a href="{{ path("map_editor") }}" class="btn btn-md btn-primary"><span class="fa fa-user"></span> {{ "app.tools.map_editor.title"|trans }}</a>
+                        <a href="{{ path("icon_editor") }}" class="btn btn-primary"><span class="fa fa-globe"></span> {{ "app.tools.icons.title"|trans }}</a>
+                    </div>
+                </div>
+            </div>
+        {% endblock game_tabs %}
+    </div>
+
+    <div class="container-fluid">
+
+    {% block body_content %}
+        <div class="col-md-4">
+            {% block body_left_content %}
+                {#            {{ include("player/player_infos.html.twig", {'player': playerInfos}) }}#}
+            {% endblock %}
+        </div>
+        <div class="col-md-8">
+            <div class="ibox float-e-margins">
+
+                {% block body_right_content %}{% endblock %}
+
+            </div>
+
+        </div>
+        </div>
+    {% endblock %}
+    </div>
+
+{% endblock %}

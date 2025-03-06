@@ -1,0 +1,47 @@
+{#<div id="skills-domain-{{ domain.id }}" class="skill-domain-tree cols-xs-12" style="height: 200px;"></div>#}
+<div id="skill-description-{{ domain.id }}"></div>
+
+<table class="table table-condensed">
+    <thead>
+    <tr class="skill-row-container skill-row-header">
+        <th class="skill-row-item">{{ "game.skills.title"|trans }}</th>
+        <th class="skill-row-item">{{ "game.skills.cost"|trans }}</th>
+        <th class="skill-row-item">{{ "game.skills.description"|trans }}</th>
+        <th class="skill-row-item">{{ "game.skills.requirements"|trans }}</th>
+        <th class="skill-row-item"></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for skill in domain.skills %}
+        <tr class="skill-row-container">
+            <td class="skill-row-item">{{ skill.title }}</td>
+            <td class="skill-row-item">{{ skill.requiredPoints }}</td>
+            <td class="skill-row-item">{{ skill.description }}</td>
+            <td class="skill-row-item">
+                {% set requirements = [] %}
+                {% for requirement in skill.requirements %}
+                    {% set requirements = requirements|merge([(requirement.title ~ ((requirement.acquired ? '&nbsp;<span class="fa fa-check"></span>' : '&nbsp;<span class="fa fa-times"></span>')|raw))]) %}
+                {% endfor %}
+                {{ requirements|join('<br>')|raw  }}
+            </td>
+            <td class="skill-row-item">
+                {% if not skill.acquired %}
+                    {% if skill.canBeAcquired %}
+                        <a class="btn btn-primary btn-sm acquire-skill-link" data-href="{{ path("skill_acquire") }}" data-skill="{{ skill.id }}" data-domain="{{ skill.domain.id }}" title="{{ "game.skills.learn"|trans }}">
+                            <span class="fa fa-check"></span>
+                            {{ "game.skills.learn"|trans }}</a>
+                    {% else %}
+                        <a class="label label-danger" title="{{ "game.skills.learn"|trans }}">
+                            <span class="fa fa-ban"></span>
+                            {{ "game.skills.learn"|trans }}</a>
+                    {% endif %}
+                {% else %}
+                    <div class="label label-info" title="{{ "game.skills.learned"|trans }}">
+{#                        <span class="fa fa-check"></span> #}
+                        {{ "game.skills.learned"|trans }}</div>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

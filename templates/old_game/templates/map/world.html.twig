@@ -1,0 +1,114 @@
+{% extends "base_game.html.twig" %}
+
+{% block title %}{{ "title.map"|trans }}{% endblock %}
+
+{% block body_content %}
+
+    <div class="container-fluid">
+        <h3>{{ map.name }}</h3>
+
+        <div id="map" class="map" data-id="{{ map.id }}" data-filename="{{ map.fileName }}">
+
+            <canvas width="{{ 32 * map.maxX }}px" height="{{ 32 * map.maxY }}px" id="map-ground"></canvas>
+
+{#            <div class="map-row">#}
+{#                {% for cell in map.cells %}#}
+
+{#                {% if cellY is not defined %}#}
+{#                    {% set cellY = cell.y %}#}
+{#                {% endif %}#}
+
+{#                {% if cellY != cell.y %}#}
+{#                {% set cellY = cell.y %}#}
+{#            </div>#}
+{#            <div class="map-row">#}
+{#                {% endif %}#}
+{#                {{ include('map/partials/cell.html.twig', {'cell': cell}) }}#}
+{#                {% endfor %}#}
+
+{#            </div>#}
+{#            {{ dump(map.cells) }}#}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    {{ encore_entry_link_tags('map') }}
+    <style>
+        #map-canvas {
+            /*width: 3000px;*/
+            /*height: 3000px;*/
+        }
+        .map {
+            width: 100%;
+            height: 640px;
+            overflow: scroll;
+            /*overflow-x: auto;*/
+            /*overflow-y: auto;*/
+            white-space: nowrap;
+        }
+        .map>.map-row {
+            width: 3000px;
+            height: 3000px;
+        }
+
+        .global-cell {
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+    </style>
+{% endblock %}
+
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {{ encore_entry_script_tags('map') }}
+    <script>
+        let canvas = document.getElementById('map-ground')
+        let context = canvas.getContext('2d');
+        let image = new Image();
+        image.src = '/build/images/forest.f3fa78c6.png';
+        let tileSize = 32;
+        let forestStyle = []
+        for (let i = 0; i < document.styleSheets.length; i++) {
+            let sheet = document.styleSheets.item(i)
+            for (let j = 0; j < sheet.cssRules.length; j++) {
+                let rule = sheet.cssRules.item(j)
+                if (rule.selectorText !== undefined && rule.selectorText.startsWith('.forest')) {
+                    let x = rule.style.backgroundPositionX.replace('-', '').replace('px', '')
+                    let y = rule.style.backgroundPositionY.replace('-', '').replace('px', '')
+                    let slug = rule.selectorText.replace('.', '')
+                    forestStyle[slug] = {'x': x, 'y': y, 'rule': rule}
+                }
+            }
+        }
+
+        let map = JSON.parse('{{ mapJson|raw }}')
+
+        let zoom = 1
+
+        function draw() {
+            context.clearRect(0,0, canvas.width, canvas.height)
+            context.scale(zoom, zoom)
+            map.cells.forEach(function (cell) {
+                let startX = 0;
+                let startY = 0;
+                if (forestStyle[cell.slug] !== undefined) {
+                    startX = parseInt(forestStyle[cell.slug]['x'])
+                    startY = parseInt(forestStyle[cell.slug]['y'])
+                }
+                // console.log(image, startX, startY, tileSize, tileSize, cell.x * tileSize, cell.y * tileSize , tileSize, tileSize)
+                context.drawImage(image, startX, startY, tileSize, tileSize, cell.x * tileSize, cell.y * tileSize , tileSize, tileSize);
+            });
+        }
+
+        draw()
+
+    </script>
+
+{% endblock %}

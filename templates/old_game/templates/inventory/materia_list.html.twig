@@ -1,0 +1,39 @@
+<p>{{ "game.inventory.space_occupied"|trans }} : {{ inventory.occupiedSpace }}/{{ inventory.size }}</p>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th></th>
+        <th>{{ "game.inventory.item.name"|trans }}</th>
+        <th>{{ "game.inventory.item.element"|trans }}</th>
+        <th>{{ "game.inventory.item.level"|trans }}</th>
+        <th>{{ "game.inventory.item.domain"|trans }}</th>
+        {#<th>{{ "game.inventory.item.space"|trans }}</th>#}
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in inventory.items %}
+        <tr>
+            <td>
+                <div class="item {{ item|itemClassCss }}"></div>
+            </td>
+            <td>
+                <a class="item-infos materia-infos-link" data-href="{{ path("materia_infos") }}" data-target="#selected-item-infos" data-item="{{ item.id }}">{{ item.name }}</a>
+            </td>
+            <td>{{ ("game.element."~item.element)|trans }}</td>
+            <td>{{ item.level }}</td>
+            <td>{{ item.domain }}</td>
+            {#<td>{{ item.getSpace * item.getQuantity }}</td>#}
+            <td>
+                {#{% if inventory_service.canBeEquiped(item) %}#}
+                {#<a href="{{ path("equipe_gear", {'id': item.getId}) }}">{{ "game.gear.equip"|trans }}</a>#}
+                {#{% endif %}#}
+            </td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="10">{{ "game.inventory.empty"|trans }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

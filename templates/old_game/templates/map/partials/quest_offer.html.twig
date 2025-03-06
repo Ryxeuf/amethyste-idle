@@ -1,0 +1,51 @@
+<div class="ibox quest-offer">
+    <div class="ibox-title quest-offer-title">
+        <h3>{{ quest.name }}</h3>
+    </div>
+    <div class="ibox-content pnj-dialog quest-offer-content">
+        <div class="quest-description">{{ quest.description }}</div>
+        <br>
+        <div class="quest-requirements">
+            {% if quest.requirements.monsters is defined %}
+                <p>Tu dois tuer :</p>
+                <ul>
+                    {% for monster in quest.requirements.monsters %}
+                        <li>
+                            <div class="col-xs-2">
+                                <div class="monster {{ monster|monsterClassCss }}" title="{{ monster.name }}"></div>
+                            </div>
+                            <span>x {{ monster.count }} </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <div class="clearfix"></div>
+        <div class="quest-rewards">
+            {% if quest.rewards is defined %}
+                <p>Ta recompense :</p>
+                <ul>
+                    {% for rewardType, reward in quest.rewards %}
+                        {% if rewardType == 'gold' %}
+                            <li>{{ reward }} {{ "game.inventory.gold"|trans }}</li>
+                        {% elseif rewardType == 'items' %}
+                            {% for item in reward %}
+                                <li>
+                                    <div class="col-xs-1">
+                                        <div class=" item {{ item|itemClassCss }}"></div>
+                                    </div>
+                                    <div class="col-xs-10">x {{ item.count }}</div>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+    <div class="ibox-footer">
+        <a class="btn btn-info btn-block btn-outline quest-accept-action" data-url="{{ path('map_cell_action') }}"
+           data-action="quest_accept" data-datas='{"quest":{{ quest.id }}}'>{{ "game.dialog.quest.accept"|trans }}</a>
+        <a class="btn btn-info btn-block btn-outline return-to-default-cell-actions">{{ "game.dialog.quest.refuse"|trans }}</a>
+    </div>
+</div>

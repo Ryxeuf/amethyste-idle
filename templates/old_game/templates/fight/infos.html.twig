@@ -1,0 +1,90 @@
+<div id="fight" data-id="{{ fight.id }}" style="visibility: hidden;display: none;">{{ fight|json_encode|raw }}</div>
+
+<div id="fight-timeline">
+    <div class="ibox">
+        <div class="ibox-title">
+            <h3>{{ "game.fight.timeline"|trans }}</h3>
+        </div>
+        <div class="ibox-content fight-timeline-content">
+            {% for item in fight.timeline %}
+{#                {{ include('fight/timeline/'~item.type~'.html.twig') }}#}
+                <span class="timeline-item timeline-{{ item.type }} p-xs b-r-sm border-left">{{ item.name }}</span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="col-xs-">
+
+    <div id="mob-container">
+        {{ include('fight/mob.html.twig', {'mob':fight.mob}) }}
+    </div>
+
+    <div id="fight-notification">
+        {% for notification in fight.notifications %}
+            <div class="alert alert-{{ notification.type }} alert-dismissable">
+                <button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>
+                {{ notification.content }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div id="fight-action-processing" class="display-none">
+        <div class="content"></div>
+        {{ include('partials/loader_processing.html.twig') }}
+    </div>
+
+    <div class="ibox {% if not fight.terminated %}display-none{% endif %}" id="fight-terminated">
+        <div class="ibox-title">
+            <h3>{{ "game.fight.terminated"|trans }}</h3>
+        </div>
+        <div class="ibox-content" id="fight-terminated-content">
+            {% if fight.victory %}
+                {{ include('fight/loots.html.twig') }}
+            {% endif %}
+        </div>
+    </div>
+    {% if not fight.terminated %}
+        <div class="ibox" id="fight-actions">
+            <div class="ibox-title">
+                <h3>{{ "game.fight.choose_action"|trans }}</h3>
+            </div>
+            <div class="ibox-content">
+                <div id="fight-action-container"></div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <a id="action-attack" class="btn btn-lg btn-info btn-block btn-outline fight-action" data-href="{{ path("fight_attack") }}" data-content="Attaque en cours...">{{ "game.fight.action.attack"|trans }}</a>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <a id="fight-spells" class="btn btn-lg btn-info btn-block btn-outline" data-href="{{ path("player_spells") }}" data-target="#fight-action-container">{{ "game.fight.action.spell"|trans }}</a>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <a id="fight-objects" class="btn btn-lg btn-info btn-block btn-outline" data-href="{{ path("player_items") }}" data-target="#fight-action-container">{{ "game.fight.action.object"|trans }}</a>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="row">
+                        <a id="action-flee" class="btn btn-lg btn-info btn-block btn-outline fight-action" data-href="{{ path("fight_flee") }}" data-content="Fuite en cours...">{{ "game.fight.action.flee"|trans }}</a>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div id="fight-spells-container" class="display-none">
+                    {{ include('player/spells.html.twig', {'spells': fight.spells}) }}
+                </div>
+                <div id="fight-items-container" class="display-none">
+                    {{ include('player/items.html.twig', {'items': fight.items}) }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+{#<script>#}
+{#    $(document).ready(function(){#}
+{#        updateFightReturn({{ fight|json_encode|raw }})#}
+{#    });#}
+{#</script>#}

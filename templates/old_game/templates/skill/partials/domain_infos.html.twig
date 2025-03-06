@@ -1,0 +1,19 @@
+<div class="ibox-title">
+    <h2>
+        {{ domain.title }}
+    </h2>
+    <div class="col-xs-6">
+        <p>{{ "game.domains.experience.available"|trans }} : {{ domain.availableExperience }}</p>
+        <p>{{ "game.domains.experience.total"|trans }} : {{ domain.totalExperience }}</p>
+    </div>
+    <div class="col-xs-6">
+        {% if domain.damage %}<p>{{ "game.domains.damage"|trans }} : +{{ domain.damage }}</p>{% endif %}
+        {% if domain.hit %}<p>{{ "game.domains.hit"|trans }} : {{ domain.hit }}%</p>{% endif %}
+        {% if domain.critical %}<p>{{ "game.domains.critical"|trans }} : {{ domain.critical }}%</p>{% endif %}
+    </div>
+</div>
+<div class="ibox-content">
+
+    {{ include('skill/partials/domain_tree.html.twig') }}
+
+</div>
