@@ -524,6 +524,15 @@ class SpellFixtures extends Fixture
                 'description' => 'Un pic rocheux jaillit du sol et transperce l\'ennemi',
                 'hit' => 90
             ],
+            'stone_spikes' => [
+                'slug' => 'stone-spikes',
+                'damage' => 4,
+                'element' => 'earth',
+                'heal' => null,
+                'name' => 'Pics de pierre',
+                'description' => 'Fait jaillir plusieurs pics de pierre acérés du sol',
+                'hit' => 88
+            ],
             'landslide' => [
                 'slug' => 'landslide',
                 'damage' => 5,
@@ -952,6 +961,15 @@ class SpellFixtures extends Fixture
                 'name' => 'Bourrasque',
                 'description' => 'Une puissante bourrasque qui repousse l\'ennemi',
                 'hit' => 95
+            ],
+            'air_dash' => [
+                'slug' => 'air-dash',
+                'damage' => 1,
+                'element' => 'wind',
+                'heal' => 1,
+                'name' => 'Ruée d\'air',
+                'description' => 'Permet de se déplacer rapidement sur un coussin d\'air',
+                'hit' => 100
             ],
             'air_slash' => [
                 'slug' => 'air-slash',
