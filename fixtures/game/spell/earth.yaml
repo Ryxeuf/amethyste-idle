@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   stone_throw (extends spell):
     slug: stone-throw
     damage: 1

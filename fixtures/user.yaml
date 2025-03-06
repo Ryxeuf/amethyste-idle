@@ -1,4 +1,4 @@
-Api\Entity\App\User:
+App\Entity\App\User:
   user_demo:
     email: "demo@amethyste.fr"
     username: "demo"

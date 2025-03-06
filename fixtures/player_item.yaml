@@ -1,4 +1,4 @@
-Api\Entity\App\PlayerItem:
+App\Entity\App\PlayerItem:
   player_item (template):
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>
@@ -35,22 +35,22 @@ Api\Entity\App\PlayerItem:
     genericItem: '@short_sword'
     inventory: '@inventory_bag'
     nbUsages: '@short_sword->nbUsages'
-    gear: <( Api\Entity\App\PlayerItem::GEAR_MAIN_WEAPON )>
+    gear: <( App\Entity\App\PlayerItem::GEAR_MAIN_WEAPON )>
   player_long_sword_2 (extends player_item):
     genericItem: '@long_sword'
     inventory: '@inventory_bag_2'
     nbUsages: '@long_sword->nbUsages'
-    gear: <( Api\Entity\App\PlayerItem::GEAR_MAIN_WEAPON )>
+    gear: <( App\Entity\App\PlayerItem::GEAR_MAIN_WEAPON )>
   player_leather_boots (extends player_item):
     genericItem: '@leather_boots'
     inventory: '@inventory_bag'
     nbUsages: '@leather_boots->nbUsages'
-    gear: <( Api\Entity\App\PlayerItem::GEAR_FOOT )>
+    gear: <( App\Entity\App\PlayerItem::GEAR_FOOT )>
   player_leather_armor (extends player_item):
     genericItem: '@leather_armor'
     inventory: '@inventory_bag'
     nbUsages: '@leather_armor->nbUsages'
-    gear: <( Api\Entity\App\PlayerItem::GEAR_CHEST )>
+    gear: <( App\Entity\App\PlayerItem::GEAR_CHEST )>
   player_leather_hat (extends player_item):
     genericItem: '@leather_hat'
     inventory: '@inventory_bag'

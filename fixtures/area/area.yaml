@@ -1,5 +1,0 @@
-App\Entity\App\Area:
-    area (template):
-        map: '@map_1'
-        createdAt: <( new DateTime() )>
-        updatedAt: <( new DateTime() )>

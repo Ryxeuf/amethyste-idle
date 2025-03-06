@@ -1,4 +1,4 @@
-Api\Entity\App\Pnj:
+App\Entity\App\Pnj:
   pnj_demo:
     name: Hello World
     life: 1

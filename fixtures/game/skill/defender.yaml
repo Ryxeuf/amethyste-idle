@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   defender_materia_1 (extends skill):
     title: "Apprenti défenseur"
     slug: defender-materia-1

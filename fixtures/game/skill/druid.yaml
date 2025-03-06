@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   druid_materia_1 (extends skill):
     title: "Apprenti druide"
     slug: druid-materia-1

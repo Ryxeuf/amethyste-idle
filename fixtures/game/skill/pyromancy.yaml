@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   pyro_materia_1 (extends skill):
     title: 'Apprenti pyromancien'
     slug: pyro-materia-1

@@ -29,6 +29,15 @@ class Item
     public const GEAR_LOCATION_TWO_HAND    = 'two_hand';
     public const GEAR_LOCATION_RANGED      = 'ranged';
     public const GEAR_LOCATION_AMMO        = 'ammo';
+    
+    public const GEAR_LOCATION_MAIN_WEAPON = 'main_weapon';
+    public const GEAR_LOCATION_SIDE_WEAPON = 'side_weapon';
+    public const GEAR_LOCATION_BELT        = 'belt';
+    public const GEAR_LOCATION_LEG         = 'leg';
+    public const GEAR_LOCATION_FOOT        = 'foot';
+    public const GEAR_LOCATION_RING_1      = 'ring_1';
+    public const GEAR_LOCATION_RING_2      = 'ring_2';
+    public const GEAR_LOCATION_SHOULDER    = 'shoulder';
 
     public const ELEMENT_NONE = 'none';
     public const ELEMENT_FIRE = 'fire';
@@ -37,6 +46,21 @@ class Item
     public const ELEMENT_AIR = 'air';
     public const ELEMENT_LIGHT = 'light';
     public const ELEMENT_DARK = 'dark';
+
+    public const GEAR_LOCATIONS = [
+        self::GEAR_LOCATION_HEAD,
+        self::GEAR_LOCATION_NECK,
+        self::GEAR_LOCATION_CHEST,
+        self::GEAR_LOCATION_HAND,
+        self::GEAR_LOCATION_MAIN_WEAPON,
+        self::GEAR_LOCATION_SIDE_WEAPON,
+        self::GEAR_LOCATION_BELT,
+        self::GEAR_LOCATION_LEG,
+        self::GEAR_LOCATION_FOOT,
+        self::GEAR_LOCATION_RING_1,
+        self::GEAR_LOCATION_RING_2,
+        self::GEAR_LOCATION_SHOULDER
+    ];
 
     public function __toString(): string
     {
@@ -90,7 +114,7 @@ class Item
     private $type = self::TYPE_STUFF;
 
     #[ORM\Column(name: "space", type: "integer")]
-    private $space;
+    private $space = 1;
 
     #[ORM\Column(name: "element", type: "string", length: 25)]
     private $element = self::ELEMENT_NONE;
@@ -110,6 +134,7 @@ class Item
 
     #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: "items")]
     #[ORM\JoinTable(name: "item_skill_requirement")]
+    /**  */
     private $requirements;
 
     #[ORM\Column(name: "level", type: "integer", nullable: true)]
@@ -371,11 +396,19 @@ class Item
     /**
      * Get requirements
      *
-     * @return Collection
+     * @return Collection<Skill>
      */
     public function getRequirements()
     {
         return $this->requirements;
+    }
+
+    /**
+     * @param array<Skill> $requirements
+     */
+    public function setRequirements(array $requirements): void
+    {
+        $this->requirements = new ArrayCollection($requirements);
     }
 
     /**
@@ -461,5 +494,10 @@ class Item
     public function getEffect(): ?string
     {
         return $this->effect;
+    }
+
+    public function setEffect(string $effect): void
+    {
+        $this->effect = $effect;
     }
 }

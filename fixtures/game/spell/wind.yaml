@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   wind_lame (extends spell):
     slug: wind-lame
     damage: 1

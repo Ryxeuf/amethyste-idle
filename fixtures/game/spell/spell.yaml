@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   spell (template):
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>

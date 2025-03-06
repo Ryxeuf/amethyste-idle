@@ -1,4 +1,4 @@
-Api\Entity\App\Inventory:
+App\Entity\App\Inventory:
   inventory (template):
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>

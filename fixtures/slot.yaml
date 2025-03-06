@@ -1,4 +1,4 @@
-Api\Entity\App\Slot:
+App\Entity\App\Slot:
   slot (template):
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>

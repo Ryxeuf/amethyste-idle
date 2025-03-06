@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   white_wizard_materia_1 (extends skill):
     title: "Apprenti mage blanc"
     slug: white-wizard-materia-1

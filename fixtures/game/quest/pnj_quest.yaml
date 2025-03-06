@@ -1,4 +1,4 @@
-Api\Entity\Game\Quest:
+App\Entity\Game\Quest:
   quest (template):
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>

@@ -1,4 +1,4 @@
-Api\Entity\Game\Item:
+App\Entity\Game\Item:
 # LIFE
   materia_soin (extends item):
     name: "Soin"

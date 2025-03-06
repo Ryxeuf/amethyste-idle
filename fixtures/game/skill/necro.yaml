@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   necro_materia_1 (extends skill):
     title: "Apprenti nécro"
     slug: necro-materia-1

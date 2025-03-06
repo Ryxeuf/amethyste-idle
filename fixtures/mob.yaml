@@ -1,4 +1,4 @@
-Api\Entity\App\Mob:
+App\Entity\App\Mob:
   mob (template):
     map: '@map_1'
     createdAt: <( new DateTime() )>

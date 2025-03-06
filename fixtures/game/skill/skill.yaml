@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   skill (template):
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>

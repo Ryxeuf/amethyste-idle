@@ -1,4 +1,4 @@
-Api\Entity\Game\Item:
+App\Entity\Game\Item:
   plant_mint (extends item):
     id: 13
     name: 'Menthe'

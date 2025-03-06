@@ -1,4 +1,4 @@
-Api\Entity\Game\Item:
+App\Entity\Game\Item:
   ore_ruby (extends item):
     id: 11
     name: 'Ruby'

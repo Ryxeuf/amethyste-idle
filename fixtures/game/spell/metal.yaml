@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   sword_10 (extends spell):
     slug: slug-10
     damage: 1

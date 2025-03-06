@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   fire_ball (extends spell):
     slug: fire-ball
     damage: 2

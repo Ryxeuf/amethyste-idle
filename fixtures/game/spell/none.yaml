@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   none_attack_1 (extends spell):
     slug: none-attack-1
     damage: 1

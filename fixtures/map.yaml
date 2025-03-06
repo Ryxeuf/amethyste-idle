@@ -1,4 +1,4 @@
-Api\Entity\App\Map:
+App\Entity\App\Map:
     map_1:
         name: Carte de test
         world: '@world_1'

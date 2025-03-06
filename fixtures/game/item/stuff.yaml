@@ -1,4 +1,4 @@
-Api\Entity\Game\Item:
+App\Entity\Game\Item:
   life_potion (extends item):
     id: 1
     name: 'Potion de soin'

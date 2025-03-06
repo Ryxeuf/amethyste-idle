@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   soldier_apprentice (extends skill):
     title: "Apprenti soldat"
     slug: soldier-apprentice

@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   herbalist_dandelion (extends skill):
     slug: herbalist-dandelion-xs
     title: "Récolte de pissenlit"

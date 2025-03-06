@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   miner_ruby_xs (extends skill):
     slug: miner-ruby-xs
     title: "Minage du ruby débutant"

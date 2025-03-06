@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   life_heal (extends spell):
     slug: life-heal
     damage: null

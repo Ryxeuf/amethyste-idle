@@ -1,4 +1,4 @@
-Api\Entity\Game\Spell:
+App\Entity\Game\Spell:
   punishment (extends spell):
     slug: punishment
     damage: 1

@@ -1,4 +1,4 @@
-Api\Entity\Game\Skill:
+App\Entity\Game\Skill:
   healer_materia_1 (extends skill):
     title: "Apprenti soigneur"
     slug: healer-materia-1

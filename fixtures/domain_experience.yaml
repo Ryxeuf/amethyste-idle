@@ -1,4 +1,4 @@
-Api\Entity\App\DomainExperience:
+App\Entity\App\DomainExperience:
   demo_pyrotechny:
     player: '@player_demo'
     domain: '@pyromancy'
