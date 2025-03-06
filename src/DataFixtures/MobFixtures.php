@@ -35,6 +35,43 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '24.22',
                 'monster' => 'taiju',
             ],
+            // Nouveaux mobs
+            'goblin_1' => [
+                'coordinates' => '10.8',
+                'monster' => 'goblin',
+            ],
+            'goblin_2' => [
+                'coordinates' => '12.10',
+                'monster' => 'goblin',
+            ],
+            'troll_1' => [
+                'coordinates' => '20.15',
+                'monster' => 'troll',
+            ],
+            'dragon_1' => [
+                'coordinates' => '30.30',
+                'monster' => 'dragon',
+            ],
+            'werewolf_1' => [
+                'coordinates' => '18.12',
+                'monster' => 'werewolf',
+            ],
+            'banshee_1' => [
+                'coordinates' => '22.8',
+                'monster' => 'banshee',
+            ],
+            'griffin_1' => [
+                'coordinates' => '28.18',
+                'monster' => 'griffin',
+            ],
+            'minotaur_1' => [
+                'coordinates' => '15.25',
+                'monster' => 'minotaur',
+            ],
+            'gargoyle_1' => [
+                'coordinates' => '8.20',
+                'monster' => 'gargoyle',
+            ],
         ];
         
         foreach ($mobs as $key => $data) {
