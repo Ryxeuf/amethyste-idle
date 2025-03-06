@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class ObjectLayer
 {
     use TimestampableEntity;
+    use CoordinatesTrait;
 
     const TYPE_OTHER = 'other';
     const TYPE_CHEST = 'chest';

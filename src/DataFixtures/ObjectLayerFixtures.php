@@ -14,26 +14,28 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
     {
         // Création des objets de la forêt
         $forestObjects = [
-            'forest-object-96-160' => [
-                'name' => 'Feu de camp',
-                'slug' => 'forest-96-160',
-                'type' => 'other',
-                'movement' => -1,
-                'map' => 'map_1'
-            ],
-            'forest-object-96-160-1' => [
-                'name' => 'Feu de camp',
-                'slug' => 'forest-96-160',
-                'type' => 'other',
-                'movement' => -1,
-                'map' => 'map_1'
-            ],
-            'forest-object-288-96' => [
+            // Spot de ruby taille xs
+            'spot-ruby-xs' => [
                 'name' => '',
-                'slug' => 'forest-288-96',
-                'type' => 'other',
+                'slug' => 'spot-ruby-xs',
+                'type' => 'spot',
                 'movement' => -1,
-                'map' => 'map_1'
+                'map' => 'map_1',
+                'usable' => true,
+                'coordinates' => '95.24',
+                'actions' => [
+                    [
+                        'action' => 'harvest',
+                        'distance' => 1
+                    ]
+                ],
+                'items' => [
+                    [
+                        'slug' => 'ore-ruby',
+                        'min' => 1,
+                        'max' => 1
+                    ]
+                ]
             ]
         ];
         
@@ -45,6 +47,23 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             $objectLayer->setType($data['type']);
             $objectLayer->setMovement($data['movement']);
             $objectLayer->setMap($this->getReference($data['map'], Map::class));
+            
+            if (isset($data['usable'])) {
+                $objectLayer->setUsable($data['usable']);
+            }
+            
+            if (isset($data['coordinates'])) {
+                $objectLayer->setCoordinates($data['coordinates']);
+            }
+            
+            if (isset($data['actions'])) {
+                $objectLayer->setActions($data['actions']);
+            }
+            
+            if (isset($data['items'])) {
+                $objectLayer->setItems($data['items']);
+            }
+            
             $objectLayer->setCreatedAt(new \DateTime());
             $objectLayer->setUpdatedAt(new \DateTime());
             
