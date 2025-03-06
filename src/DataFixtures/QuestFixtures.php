@@ -10,37 +10,82 @@ class QuestFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        // Création des quêtes
+        // Création des quêtes basées sur le contenu de pnj_quest.yaml
         $quests = [
             'quest_zombie_1' => [
-                'name' => 'Éliminer les zombies',
-                'description' => 'Éliminez 5 zombies qui rôdent autour du village.',
+                'name' => 'Sus aux zombies',
+                'description' => 'Les zombies deviennent gênants dans la region, pourrais-tu m\'en débarrasser ? Je t\'apprendrai comment miner.',
                 'requirements' => [
-                    'kill' => [
-                        'zombie' => 5
+                    'monsters' => [
+                        [
+                            'name' => 'Zombie',
+                            'slug' => 'zombie',
+                            'count' => 2
+                        ]
+                    ]
+                ],
+                'rewards' => [
+                    'gold' => 1,
+                    'items' => [
+                        [
+                            'item' => 3,
+                            'type' => 'stuff',
+                            'count' => 1,
+                            'genericItemSlug' => 'beer-pint'
+                        ],
+                        [
+                            'item' => 10,
+                            'type' => 'stuff',
+                            'count' => 1,
+                            'genericItemSlug' => 'miner-domain-parchment'
+                        ]
+                    ]
+                ]
+            ],
+            'quest_skeleton_1' => [
+                'name' => 'Sus aux squelettes',
+                'description' => 'Les squelettes deviennent gênants dans la region, pourrais-tu m\'en débarrasser ?',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Squelette',
+                            'slug' => 'skeleton',
+                            'count' => 2
+                        ]
+                    ]
+                ],
+                'rewards' => [
+                    'gold' => 1,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 1,
+                            'genericItemSlug' => 'beer-pint'
+                        ]
+                    ]
+                ]
+            ],
+            'quest_taiju_1' => [
+                'name' => 'Le Taiju menaçant',
+                'description' => 'Un Taiju dangereux a été aperçu dans la forêt. Éliminez-le pour assurer la sécurité des villageois.',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Taiju',
+                            'slug' => 'taiju',
+                            'count' => 1
+                        ]
                     ]
                 ],
                 'rewards' => [
                     'xp' => 100,
                     'gold' => 50,
                     'items' => [
-                        'mushroom' => 2
-                    ]
-                ]
-            ],
-            'quest_taiju_1' => [
-                'name' => 'Le Taiju solitaire',
-                'description' => 'Un Taiju a été aperçu près de la forêt. Éliminez-le avant qu\'il ne cause des dégâts.',
-                'requirements' => [
-                    'kill' => [
-                        'taiju' => 1
-                    ]
-                ],
-                'rewards' => [
-                    'xp' => 200,
-                    'gold' => 100,
-                    'items' => [
-                        'leather_skin_1' => 1
+                        [
+                            'type' => 'stuff',
+                            'count' => 1,
+                            'genericItemSlug' => 'liana-whip'
+                        ]
                     ]
                 ]
             ],
