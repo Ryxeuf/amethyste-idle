@@ -51,6 +51,16 @@
     "title": "Game Area",
     "welcome_message": "Welcome to the game area, %email%",
     "access_info": "This page is accessible only to logged in users.",
+    "nav": {
+      "dashboard": "Dashboard",
+      "inventory": "Inventory",
+      "quests": "Quests",
+      "map": "Map",
+      "shop": "Shop",
+      "skills": "Skills"
+    },
+    "currency": "Gold",
+    "energy": "Energy",
     "game_section": {
       "heading": "Your game",
       "description": "Game content here. You can add your game logic in this section."

@@ -1,40 +1,59 @@
 <div {{ attributes }}>
-    <div class="card">
-        <div class="card-header">
-            <h2>
-                <div class="row">
-                    <div class="pull-left">
-                        {# {{ include("partials/player_display.html.twig") }} #}
-                    </div>
-                    <div class="pull-left">
-                        {#                &nbsp;Remy#}
-                        <span class="player-name">{{ this.name }}</span>
-                    </div>
-                </div>
+    <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-purple-800">
+        <div class="bg-gradient-to-r from-purple-900 to-purple-700 px-4 py-3">
+            <h2 class="text-lg font-bold text-white flex items-center">
+                {# Icône du joueur #}
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                </svg>
+                <span class="player-name">{{ this.name }}</span>
             </h2>
         </div>
-        <div>
-            {#<div class="ibox-content no-padding border-left-right">#}
-            {#<img alt="image" class="img-responsive" src="{{ asset("bundles/app/img/profile_big.jpg") }}">#}
-            {#</div>#}
-            <div class="card-body">
-                <p><span class="strong">{{ "game.home.player.birthdate"|trans }} :</span> {{ this.createdAt|date('d/m/Y') }}</p>
-
-                <div><span class="fa fa-heart fa-fw life"></span> <span class="player-life">{{ this.life }}</span>/<span class="player-maxlife">{{ this.maxLife }}</span></div>
-                <div class="progress progress-mini">
-                    <div style="width: {{ this.life/this.maxLife*100 }}%;" class="progress-bar progress-bar-danger player-progress-life"></div>
+        <div class="p-4 text-gray-300">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-sm text-gray-400">{{ "game.home.player.birthdate"|trans }}</span>
+                <span class="font-medium">{{ this.createdAt|date('d/m/Y') }}</span>
+            </div>
+            
+            <div class="mb-4">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="flex items-center">
+                        <svg class="w-4 h-4 text-red-500 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Vie</span>
+                    </div>
+                    <span class="player-life">{{ this.life }}</span>/<span class="player-maxlife">{{ this.maxLife }}</span>
                 </div>
-                <div class="player-statuses">
-
+                <div class="w-full bg-gray-700 rounded-full h-2">
+                    <div class="bg-red-600 h-2 rounded-full player-progress-life" style="width: {{ this.life/this.maxLife*100 }}%"></div>
                 </div>
-    {#            <div class="m-t-sm"><span class="fa fa-bolt fa-fw text-red"></span> {{ player.energy }}/{{ player.maxEnergy }}</div>#}
-    {#            <div class="progress progress-mini">#}
-    {#                <div style="width: {{ player.energy/player.maxEnergy*100 }}%;" class="progress-bar"></div>#}
-    {#            </div>#}
-                <br>
-                <p><span class="fa fa-map fa-fw"></span> {{ this.mapName }}</p>
-                <p><span class="fa fa-map-marker fa-fw"></span> {{ this.x }} - {{ this.y }}</p>
-                {#<p><span class="strong">{{ "game.home.player.archetype"|trans }} :</span> -</p>#}
+            </div>
+            
+            <div class="player-statuses mb-4">
+                {# Statuts du joueur seront affichés ici #}
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="bg-gray-700 p-3 rounded-lg">
+                    <div class="flex items-center text-sm text-gray-400 mb-1">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+                        </svg>
+                        <span>Carte</span>
+                    </div>
+                    <div class="font-medium truncate">{{ this.mapName }}</div>
+                </div>
+                <div class="bg-gray-700 p-3 rounded-lg">
+                    <div class="flex items-center text-sm text-gray-400 mb-1">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>Position</span>
+                    </div>
+                    <div class="font-medium">{{ this.x }} - {{ this.y }}</div>
+                </div>
             </div>
         </div>
     </div>

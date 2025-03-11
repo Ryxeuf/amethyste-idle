@@ -17,6 +17,7 @@
         "doctrine/orm": "^2.20.2",
         "runtime/frankenphp-symfony": "^0.2.0",
         "stof/doctrine-extensions-bundle": "^1.13",
+        "symfony/asset": "7.2.*",
         "symfony/asset-mapper": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
@@ -33,6 +34,7 @@
         "symfony/ux-twig-component": "^2.23",
         "symfony/validator": "7.2.*",
         "symfony/yaml": "7.2.*",
+        "symfonycasts/tailwind-bundle": "^0.8.0",
         "twig/extra-bundle": "^2.12|^3.20",
         "twig/twig": "^2.12|^3.20"
     },

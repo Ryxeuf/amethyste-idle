@@ -51,6 +51,16 @@
     "title": "Espace de Jeu",
     "welcome_message": "Bienvenue dans l'espace de jeu, %email%",
     "access_info": "Cette page est accessible uniquement aux utilisateurs connectés.",
+    "nav": {
+      "dashboard": "Tableau de bord",
+      "inventory": "Inventaire",
+      "quests": "Quêtes",
+      "map": "Carte",
+      "shop": "Boutique",
+      "skills": "Compétences"
+    },
+    "currency": "Or",
+    "energy": "Énergie",
     "game_section": {
       "heading": "Votre jeu",
       "description": "Contenu du jeu ici. Vous pouvez ajouter votre logique de jeu dans cette section."
