@@ -57,7 +57,8 @@
       "quests": "Quests",
       "map": "Map",
       "shop": "Shop",
-      "skills": "Skills"
+      "skills": "Skills",
+      "settings": "Settings"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -76,8 +77,123 @@
       "level": "Level",
       "game_time": "Game Time"
     },
+    "inventory": {
+      "title": "Inventory",
+      "description": "Manage your equipment, items and materials",
+      "tab": {
+        "equipment": "Equipment",
+        "items": "Items",
+        "materials": "Materials"
+      },
+      "equipped": "Equipped",
+      "available_equipment": "Available Equipment",
+      "items": "Items",
+      "materials": "Materials",
+      "stats": "Statistics",
+      "slot": {
+        "head": "Head",
+        "chest": "Chest",
+        "weapon": "Weapon",
+        "accessory": "Accessory"
+      },
+      "actions": {
+        "equip": "Equip",
+        "unequip": "Unequip",
+        "use": "Use",
+        "sell": "Sell",
+        "details": "Details"
+      },
+      "item_details": {
+        "name": "Name",
+        "type": "Type",
+        "rarity": "Rarity",
+        "level": "Level",
+        "description": "Description",
+        "effects": "Effects",
+        "value": "Value"
+      },
+      "empty": "No items found"
+    },
+    "stats": {
+      "attack": "Attack",
+      "defense": "Defense",
+      "magic": "Magic",
+      "speed": "Speed",
+      "health": "Health",
+      "mana": "Mana"
+    },
     "footer": {
       "back_to_home": "Back to Home"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Customize your gaming experience",
+      "save": "Save",
+      "cancel": "Cancel",
+      "tabs": {
+        "general": "General",
+        "appearance": "Appearance",
+        "notifications": "Notifications",
+        "account": "Account"
+      },
+      "general": {
+        "game_settings": "Game Settings",
+        "game_settings_desc": "Configure general settings for your gaming experience",
+        "language": "Language",
+        "difficulty": "Difficulty",
+        "difficulty_easy": "Easy",
+        "difficulty_normal": "Normal",
+        "difficulty_hard": "Hard",
+        "show_tutorial": "Show tutorials",
+        "show_tutorial_desc": "Display guides and tutorials for new features",
+        "enable_sound": "Enable sound",
+        "enable_sound_desc": "Enable sound effects and background music"
+      },
+      "appearance": {
+        "title": "Appearance",
+        "desc": "Customize the visual appearance of the game",
+        "theme": "Theme",
+        "theme_system": "System (default)",
+        "theme_light": "Light",
+        "theme_dark": "Dark",
+        "font_size": "Font size",
+        "small": "Small",
+        "normal": "Normal",
+        "large": "Large"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "desc": "Manage your notification preferences",
+        "quests": "Quest notifications",
+        "quests_desc": "Receive notifications for new quests and completed objectives",
+        "energy": "Energy notifications",
+        "energy_desc": "Receive notifications when your energy is recharged",
+        "events": "Event notifications",
+        "events_desc": "Receive notifications for special events and updates"
+      },
+      "account": {
+        "title": "Account",
+        "desc": "Manage your account information",
+        "username": "Username",
+        "email": "Email address",
+        "current_password": "Current password",
+        "new_password": "New password",
+        "confirm_password": "Confirm password",
+        "danger_zone": "Danger Zone",
+        "danger_zone_desc": "The actions below are irreversible. Be careful.",
+        "delete_account": "Delete my account"
+      }
     }
+  },
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "loading": "Loading..."
   }
 } 

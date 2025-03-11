@@ -1,0 +1,294 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.settings.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <div class="bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-700">
+            <h1 class="text-2xl font-bold text-white">{{ 'game.settings.title'|trans }}</h1>
+            <p class="text-gray-400 mt-1">{{ 'game.settings.subtitle'|trans }}</p>
+        </div>
+
+        <div class="p-6">
+            <!-- Onglets de navigation -->
+            <div class="border-b border-gray-700 mb-6">
+                <nav class="flex -mb-px space-x-8">
+                    <a href="#" class="settings-tab active whitespace-nowrap py-4 px-1 border-b-2 border-purple-500 font-medium text-sm text-purple-400" data-target="general">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {{ 'game.settings.tabs.general'|trans }}
+                    </a>
+                    <a href="#" class="settings-tab whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-gray-300 hover:border-gray-300" data-target="appearance">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                        </svg>
+                        {{ 'game.settings.tabs.appearance'|trans }}
+                    </a>
+                    <a href="#" class="settings-tab whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-gray-300 hover:border-gray-300" data-target="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        {{ 'game.settings.tabs.notifications'|trans }}
+                    </a>
+                    <a href="#" class="settings-tab whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-400 hover:text-gray-300 hover:border-gray-300" data-target="account">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        {{ 'game.settings.tabs.account'|trans }}
+                    </a>
+                </nav>
+            </div>
+
+            <!-- Contenu des onglets -->
+            <div class="settings-content" id="general-content">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-medium text-white">{{ 'game.settings.general.game_settings'|trans }}</h3>
+                        <p class="mt-1 text-sm text-gray-400">{{ 'game.settings.general.game_settings_desc'|trans }}</p>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                            <label for="language" class="block text-sm font-medium text-gray-300">{{ 'game.settings.general.language'|trans }}</label>
+                            <div class="mt-1">
+                                <select id="language" name="language" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                                    <option value="fr">Français</option>
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label for="difficulty" class="block text-sm font-medium text-gray-300">{{ 'game.settings.general.difficulty'|trans }}</label>
+                            <div class="mt-1">
+                                <select id="difficulty" name="difficulty" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                                    <option value="easy">{{ 'game.settings.general.difficulty_easy'|trans }}</option>
+                                    <option value="normal">{{ 'game.settings.general.difficulty_normal'|trans }}</option>
+                                    <option value="hard">{{ 'game.settings.general.difficulty_hard'|trans }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="tutorial" name="tutorial" type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700">
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="tutorial" class="font-medium text-gray-300">{{ 'game.settings.general.show_tutorial'|trans }}</label>
+                                <p class="text-gray-400">{{ 'game.settings.general.show_tutorial_desc'|trans }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="flex items-start">
+                            <div class="flex items-center h-5">
+                                <input id="sound" name="sound" type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700" checked>
+                            </div>
+                            <div class="ml-3 text-sm">
+                                <label for="sound" class="font-medium text-gray-300">{{ 'game.settings.general.enable_sound'|trans }}</label>
+                                <p class="text-gray-400">{{ 'game.settings.general.enable_sound_desc'|trans }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-content hidden" id="appearance-content">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-medium text-white">{{ 'game.settings.appearance.title'|trans }}</h3>
+                        <p class="mt-1 text-sm text-gray-400">{{ 'game.settings.appearance.desc'|trans }}</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <fieldset>
+                            <legend class="text-sm font-medium text-gray-300">{{ 'game.settings.appearance.theme'|trans }}</legend>
+                            <div class="mt-4 space-y-4">
+                                <div class="flex items-center">
+                                    <input id="theme-system" name="theme" type="radio" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 bg-gray-700" checked>
+                                    <label for="theme-system" class="ml-3 block text-sm font-medium text-gray-300">
+                                        {{ 'game.settings.appearance.theme_system'|trans }}
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="theme-light" name="theme" type="radio" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 bg-gray-700">
+                                    <label for="theme-light" class="ml-3 block text-sm font-medium text-gray-300">
+                                        {{ 'game.settings.appearance.theme_light'|trans }}
+                                    </label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="theme-dark" name="theme" type="radio" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 bg-gray-700">
+                                    <label for="theme-dark" class="ml-3 block text-sm font-medium text-gray-300">
+                                        {{ 'game.settings.appearance.theme_dark'|trans }}
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div class="mt-6">
+                        <label for="font-size" class="block text-sm font-medium text-gray-300">{{ 'game.settings.appearance.font_size'|trans }}</label>
+                        <div class="mt-1">
+                            <input type="range" id="font-size" name="font-size" min="80" max="120" value="100" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                            <div class="flex justify-between text-xs text-gray-400 px-2 mt-1">
+                                <span>{{ 'game.settings.appearance.small'|trans }}</span>
+                                <span>{{ 'game.settings.appearance.normal'|trans }}</span>
+                                <span>{{ 'game.settings.appearance.large'|trans }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-content hidden" id="notifications-content">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-medium text-white">{{ 'game.settings.notifications.title'|trans }}</h3>
+                        <p class="mt-1 text-sm text-gray-400">{{ 'game.settings.notifications.desc'|trans }}</p>
+                    </div>
+
+                    <div class="mt-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input id="quest-notifications" name="quest-notifications" type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700" checked>
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="quest-notifications" class="font-medium text-gray-300">{{ 'game.settings.notifications.quests'|trans }}</label>
+                                    <p class="text-gray-400">{{ 'game.settings.notifications.quests_desc'|trans }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input id="energy-notifications" name="energy-notifications" type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700" checked>
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="energy-notifications" class="font-medium text-gray-300">{{ 'game.settings.notifications.energy'|trans }}</label>
+                                    <p class="text-gray-400">{{ 'game.settings.notifications.energy_desc'|trans }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="flex items-center h-5">
+                                    <input id="event-notifications" name="event-notifications" type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700" checked>
+                                </div>
+                                <div class="ml-3 text-sm">
+                                    <label for="event-notifications" class="font-medium text-gray-300">{{ 'game.settings.notifications.events'|trans }}</label>
+                                    <p class="text-gray-400">{{ 'game.settings.notifications.events_desc'|trans }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-content hidden" id="account-content">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-lg font-medium text-white">{{ 'game.settings.account.title'|trans }}</h3>
+                        <p class="mt-1 text-sm text-gray-400">{{ 'game.settings.account.desc'|trans }}</p>
+                    </div>
+
+                    <div class="mt-6 grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                        <div class="sm:col-span-3">
+                            <label for="username" class="block text-sm font-medium text-gray-300">{{ 'game.settings.account.username'|trans }}</label>
+                            <div class="mt-1">
+                                <input type="text" name="username" id="username" value="{{ app.user.username|default('') }}" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label for="email" class="block text-sm font-medium text-gray-300">{{ 'game.settings.account.email'|trans }}</label>
+                            <div class="mt-1">
+                                <input type="email" name="email" id="email" value="{{ app.user.email|default('') }}" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-6">
+                            <label for="current-password" class="block text-sm font-medium text-gray-300">{{ 'game.settings.account.current_password'|trans }}</label>
+                            <div class="mt-1">
+                                <input type="password" name="current-password" id="current-password" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label for="new-password" class="block text-sm font-medium text-gray-300">{{ 'game.settings.account.new_password'|trans }}</label>
+                            <div class="mt-1">
+                                <input type="password" name="new-password" id="new-password" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label for="confirm-password" class="block text-sm font-medium text-gray-300">{{ 'game.settings.account.confirm_password'|trans }}</label>
+                            <div class="mt-1">
+                                <input type="password" name="confirm-password" id="confirm-password" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full sm:text-sm border-gray-600 rounded-md">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 border-t border-gray-700 pt-6">
+                        <h3 class="text-lg font-medium text-red-400">{{ 'game.settings.account.danger_zone'|trans }}</h3>
+                        <p class="mt-1 text-sm text-gray-400">{{ 'game.settings.account.danger_zone_desc'|trans }}</p>
+                        
+                        <div class="mt-4">
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                {{ 'game.settings.account.delete_account'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-6 py-4 bg-gray-900 border-t border-gray-700 flex justify-end">
+            <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-600 text-sm font-medium rounded-md text-gray-300 bg-gray-800 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 mr-3">
+                {{ 'game.settings.cancel'|trans }}
+            </button>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                {{ 'game.settings.save'|trans }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion des onglets
+        const tabs = document.querySelectorAll('.settings-tab');
+        const contents = document.querySelectorAll('.settings-content');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Désactiver tous les onglets
+                tabs.forEach(t => {
+                    t.classList.remove('active', 'border-purple-500', 'text-purple-400');
+                    t.classList.add('border-transparent', 'text-gray-400', 'hover:text-gray-300', 'hover:border-gray-300');
+                });
+                
+                // Activer l'onglet cliqué
+                this.classList.add('active', 'border-purple-500', 'text-purple-400');
+                this.classList.remove('border-transparent', 'text-gray-400', 'hover:text-gray-300', 'hover:border-gray-300');
+                
+                // Masquer tous les contenus
+                contents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+                
+                // Afficher le contenu correspondant
+                const target = this.getAttribute('data-target');
+                document.getElementById(`${target}-content`).classList.remove('hidden');
+            });
+        });
+    });
+</script>
+{% endblock %} 

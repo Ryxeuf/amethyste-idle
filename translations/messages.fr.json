@@ -48,7 +48,7 @@
     "register_link": "Inscrivez-vous"
   },
   "game": {
-    "title": "Espace de Jeu",
+    "title": "Améthyste",
     "welcome_message": "Bienvenue dans l'espace de jeu, %email%",
     "access_info": "Cette page est accessible uniquement aux utilisateurs connectés.",
     "nav": {
@@ -57,7 +57,8 @@
       "quests": "Quêtes",
       "map": "Carte",
       "shop": "Boutique",
-      "skills": "Compétences"
+      "skills": "Compétences",
+      "settings": "Paramètres"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -76,8 +77,123 @@
       "level": "Niveau",
       "game_time": "Temps de jeu"
     },
+    "inventory": {
+      "title": "Inventaire",
+      "description": "Gérez votre équipement, vos objets et vos matériaux",
+      "tab": {
+        "equipment": "Équipement",
+        "items": "Objets",
+        "materials": "Matériaux"
+      },
+      "equipped": "Équipement porté",
+      "available_equipment": "Équipement disponible",
+      "items": "Objets",
+      "materials": "Matériaux",
+      "stats": "Statistiques",
+      "slot": {
+        "head": "Tête",
+        "chest": "Torse",
+        "weapon": "Arme",
+        "accessory": "Accessoire"
+      },
+      "actions": {
+        "equip": "Équiper",
+        "unequip": "Déséquiper",
+        "use": "Utiliser",
+        "sell": "Vendre",
+        "details": "Détails"
+      },
+      "item_details": {
+        "name": "Nom",
+        "type": "Type",
+        "rarity": "Rareté",
+        "level": "Niveau",
+        "description": "Description",
+        "effects": "Effets",
+        "value": "Valeur"
+      },
+      "empty": "Aucun élément trouvé"
+    },
+    "stats": {
+      "attack": "Attaque",
+      "defense": "Défense",
+      "magic": "Magie",
+      "speed": "Vitesse",
+      "health": "Santé",
+      "mana": "Mana"
+    },
     "footer": {
       "back_to_home": "Retour à l'accueil"
+    },
+    "settings": {
+      "title": "Paramètres",
+      "subtitle": "Personnalisez votre expérience de jeu",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "tabs": {
+        "general": "Général",
+        "appearance": "Apparence",
+        "notifications": "Notifications",
+        "account": "Compte"
+      },
+      "general": {
+        "game_settings": "Paramètres de jeu",
+        "game_settings_desc": "Configurez les paramètres généraux de votre expérience de jeu",
+        "language": "Langue",
+        "difficulty": "Difficulté",
+        "difficulty_easy": "Facile",
+        "difficulty_normal": "Normal",
+        "difficulty_hard": "Difficile",
+        "show_tutorial": "Afficher les tutoriels",
+        "show_tutorial_desc": "Afficher les guides et tutoriels pour les nouvelles fonctionnalités",
+        "enable_sound": "Activer le son",
+        "enable_sound_desc": "Activer les effets sonores et la musique de fond"
+      },
+      "appearance": {
+        "title": "Apparence",
+        "desc": "Personnalisez l'apparence visuelle du jeu",
+        "theme": "Thème",
+        "theme_system": "Système (par défaut)",
+        "theme_light": "Clair",
+        "theme_dark": "Sombre",
+        "font_size": "Taille de police",
+        "small": "Petite",
+        "normal": "Normale",
+        "large": "Grande"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "desc": "Gérez vos préférences de notifications",
+        "quests": "Notifications de quêtes",
+        "quests_desc": "Recevoir des notifications pour les nouvelles quêtes et les objectifs accomplis",
+        "energy": "Notifications d'énergie",
+        "energy_desc": "Recevoir des notifications lorsque votre énergie est rechargée",
+        "events": "Notifications d'événements",
+        "events_desc": "Recevoir des notifications pour les événements spéciaux et les mises à jour"
+      },
+      "account": {
+        "title": "Compte",
+        "desc": "Gérez les informations de votre compte",
+        "username": "Nom d'utilisateur",
+        "email": "Adresse e-mail",
+        "current_password": "Mot de passe actuel",
+        "new_password": "Nouveau mot de passe",
+        "confirm_password": "Confirmer le mot de passe",
+        "danger_zone": "Zone de danger",
+        "danger_zone_desc": "Les actions ci-dessous sont irréversibles. Soyez prudent.",
+        "delete_account": "Supprimer mon compte"
+      }
     }
+  },
+  "common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "loading": "Chargement..."
   }
 } 
