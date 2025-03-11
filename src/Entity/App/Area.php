@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 
-#[ORM\Entity(repositoryClass: "App\Repository\App\MapRepository")]
+#[ORM\Entity()]
 #[ORM\Table(name: "area")]
 #[ORM\Index(name: "area_coordinates_idx", columns: ["coordinates"])]
 class Area

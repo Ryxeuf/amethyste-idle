@@ -15,7 +15,7 @@ use App\Entity\User;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'player')]
-#[ORM\Entity(repositoryClass: 'App\Repository\App\PlayerRepository')]
+#[ORM\Entity()]
 class Player implements CharacterInterface
 {
     use CharacterStatsTrait;

@@ -114,6 +114,78 @@
       },
       "empty": "Aucun élément trouvé"
     },
+    "map": {
+      "title": "Carte du Monde",
+      "description": "Explorez les différentes régions du monde et découvrez de nouveaux lieux",
+      "select_region": "Sélectionnez une région",
+      "click_region": "Cliquez sur une région pour voir ses détails",
+      "difficulty": "Difficulté",
+      "resources": "Ressources",
+      "enemies": "Ennemis",
+      "explore": "Explorer",
+      "available_quests": "Quêtes disponibles",
+      "discovered_locations": "Lieux découverts",
+      "energy_cost": "Coût en énergie",
+      "start_quest": "Commencer la quête",
+      "fast_travel": "Voyage rapide",
+      "exploration_message": "Vous commencez à explorer cette région...",
+      "regions": {
+        "forest": "Forêt Mystique",
+        "mountains": "Montagnes Brumeuses",
+        "desert": "Désert Ardent",
+        "swamp": "Marais Obscurs",
+        "capital": "Capitale Royale"
+      },
+      "region_descriptions": {
+        "forest": "Une forêt dense et mystérieuse, abritant une grande variété de plantes et de créatures. Les rayons du soleil percent à peine à travers la canopée.",
+        "mountains": "Des pics escarpés et des vallées profondes, où le vent siffle entre les rochers. Les créatures les plus dangereuses du royaume y ont élu domicile.",
+        "desert": "Une vaste étendue de sable brûlant, où l'eau est rare et précieuse. Les ruines d'anciennes civilisations sont enfouies sous les dunes.",
+        "swamp": "Un marécage sombre et humide, où la brume s'accroche aux arbres tordus. Des créatures étranges rôdent dans les eaux troubles.",
+        "capital": "Le centre du royaume, où se dressent de magnifiques bâtiments et où les marchands proposent leurs marchandises. C'est ici que réside la famille royale."
+      },
+      "resources": {
+        "wood": "Bois",
+        "herbs": "Herbes",
+        "fruits": "Fruits",
+        "stone": "Pierre",
+        "ore": "Minerai",
+        "crystal": "Cristal",
+        "sand": "Sable",
+        "cactus": "Cactus",
+        "fossil": "Fossile",
+        "mushroom": "Champignon",
+        "poison": "Poison",
+        "moss": "Mousse",
+        "gold": "Or",
+        "food": "Nourriture",
+        "knowledge": "Connaissance"
+      },
+      "enemies": {
+        "wolf": "Loup",
+        "bandit": "Bandit",
+        "spider": "Araignée",
+        "troll": "Troll",
+        "golem": "Golem",
+        "dragon": "Dragon",
+        "scorpion": "Scorpion",
+        "mummy": "Momie",
+        "sandworm": "Ver des sables",
+        "frog": "Grenouille venimeuse",
+        "witch": "Sorcière",
+        "slime": "Slime",
+        "thief": "Voleur",
+        "guard": "Garde corrompu",
+        "noble": "Noble arrogant"
+      },
+      "quest_example": {
+        "title": "La Menace des Ombres",
+        "description": "Des créatures des ombres ont été aperçues dans la région. Éliminez-les avant qu'elles ne deviennent une menace plus importante."
+      },
+      "location_example": {
+        "title": "Tour du Mage",
+        "description": "Une tour ancienne où réside un puissant mage. Il propose des services d'enchantement et vend des potions rares."
+      }
+    },
     "stats": {
       "attack": "Attaque",
       "defense": "Défense",
@@ -183,7 +255,31 @@
         "danger_zone_desc": "Les actions ci-dessous sont irréversibles. Soyez prudent.",
         "delete_account": "Supprimer mon compte"
       }
-    }
+    },
+    "skills": {
+      "title": "Compétences",
+      "description": "Développez vos compétences pour devenir plus puissant",
+      "cost": "Coût",
+      "requirements": "Prérequis",
+      "learn": "Apprendre",
+      "learned": "Acquise",
+      "list": "Liste des compétences",
+      "status": "Statut",
+      "no_requirements": "Aucun prérequis"
+    },
+    "domains": {
+      "experience": {
+        "available": "Expérience disponible",
+        "total": "Expérience totale"
+      },
+      "damage": "Dégâts",
+      "hit": "Précision",
+      "critical": "Critique",
+      "details": "Détails du domaine",
+      "statistics": "Statistiques",
+      "progress": "Progression"
+    },
+    "back": "Retour"
   },
   "common": {
     "cancel": "Annuler",
@@ -195,5 +291,8 @@
     "next": "Suivant",
     "previous": "Précédent",
     "loading": "Chargement..."
+  },
+  "title": {
+    "skills": "Compétences"
   }
 } 

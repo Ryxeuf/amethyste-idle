@@ -175,4 +175,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+
+    public function getPlayer(): ?Player
+    {
+        return $this->getPlayers()->first();
+    }
 } 

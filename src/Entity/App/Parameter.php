@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'parameter')]
-#[ORM\Entity(repositoryClass: 'App\Repository\App\ParameterRepository')]
+#[ORM\Entity()]
 class Parameter
 {
     use TimestampableEntity;

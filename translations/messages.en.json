@@ -1,7 +1,7 @@
 {
   "base": {
     "title": "Welcome!",
-    "site_name": "My Website",
+    "site_name": "My Site",
     "nav": {
       "home": "Home",
       "game_area": "Game Area",
@@ -17,7 +17,7 @@
   },
   "home": {
     "title": "Home",
-    "welcome": "Welcome to our website",
+    "welcome": "Welcome to our site",
     "logged_in_as": "You are logged in as %username%",
     "logout": "Logout",
     "access_game": "Access game area",
@@ -44,13 +44,13 @@
     "password": "Password",
     "remember_me": "Remember me",
     "login": "Log in",
-    "no_account": "Don't have an account yet?",
+    "no_account": "No account yet?",
     "register_link": "Register"
   },
   "game": {
-    "title": "Game Area",
+    "title": "Amethyst",
     "welcome_message": "Welcome to the game area, %email%",
-    "access_info": "This page is accessible only to logged in users.",
+    "access_info": "This page is accessible only to logged-in users.",
     "nav": {
       "dashboard": "Dashboard",
       "inventory": "Inventory",
@@ -75,11 +75,11 @@
       "heading": "Statistics",
       "score": "Score",
       "level": "Level",
-      "game_time": "Game Time"
+      "game_time": "Game time"
     },
     "inventory": {
       "title": "Inventory",
-      "description": "Manage your equipment, items and materials",
+      "description": "Manage your equipment, items, and materials",
       "tab": {
         "equipment": "Equipment",
         "items": "Items",
@@ -89,7 +89,7 @@
       "available_equipment": "Available Equipment",
       "items": "Items",
       "materials": "Materials",
-      "stats": "Statistics",
+      "stats": "Stats",
       "slot": {
         "head": "Head",
         "chest": "Chest",
@@ -114,6 +114,78 @@
       },
       "empty": "No items found"
     },
+    "map": {
+      "title": "World Map",
+      "description": "Explore different regions of the world and discover new locations",
+      "select_region": "Select a region",
+      "click_region": "Click on a region to see its details",
+      "difficulty": "Difficulty",
+      "resources": "Resources",
+      "enemies": "Enemies",
+      "explore": "Explore",
+      "available_quests": "Available Quests",
+      "discovered_locations": "Discovered Locations",
+      "energy_cost": "Energy Cost",
+      "start_quest": "Start Quest",
+      "fast_travel": "Fast Travel",
+      "exploration_message": "You begin exploring this region...",
+      "regions": {
+        "forest": "Mystic Forest",
+        "mountains": "Misty Mountains",
+        "desert": "Burning Desert",
+        "swamp": "Dark Swamp",
+        "capital": "Royal Capital"
+      },
+      "region_descriptions": {
+        "forest": "A dense and mysterious forest, home to a wide variety of plants and creatures. Sunlight barely penetrates through the canopy.",
+        "mountains": "Steep peaks and deep valleys, where the wind whistles between the rocks. The most dangerous creatures in the realm have made their home here.",
+        "desert": "A vast expanse of burning sand, where water is scarce and precious. The ruins of ancient civilizations are buried beneath the dunes.",
+        "swamp": "A dark and humid marshland, where mist clings to twisted trees. Strange creatures lurk in the murky waters.",
+        "capital": "The center of the kingdom, where magnificent buildings stand and merchants offer their wares. This is where the royal family resides."
+      },
+      "resources": {
+        "wood": "Wood",
+        "herbs": "Herbs",
+        "fruits": "Fruits",
+        "stone": "Stone",
+        "ore": "Ore",
+        "crystal": "Crystal",
+        "sand": "Sand",
+        "cactus": "Cactus",
+        "fossil": "Fossil",
+        "mushroom": "Mushroom",
+        "poison": "Poison",
+        "moss": "Moss",
+        "gold": "Gold",
+        "food": "Food",
+        "knowledge": "Knowledge"
+      },
+      "enemies": {
+        "wolf": "Wolf",
+        "bandit": "Bandit",
+        "spider": "Spider",
+        "troll": "Troll",
+        "golem": "Golem",
+        "dragon": "Dragon",
+        "scorpion": "Scorpion",
+        "mummy": "Mummy",
+        "sandworm": "Sandworm",
+        "frog": "Poisonous Frog",
+        "witch": "Witch",
+        "slime": "Slime",
+        "thief": "Thief",
+        "guard": "Corrupt Guard",
+        "noble": "Arrogant Noble"
+      },
+      "quest_example": {
+        "title": "The Shadow Threat",
+        "description": "Shadow creatures have been spotted in the region. Eliminate them before they become a greater threat."
+      },
+      "location_example": {
+        "title": "Mage's Tower",
+        "description": "An ancient tower where a powerful mage resides. He offers enchantment services and sells rare potions."
+      }
+    },
     "stats": {
       "attack": "Attack",
       "defense": "Defense",
@@ -123,11 +195,11 @@
       "mana": "Mana"
     },
     "footer": {
-      "back_to_home": "Back to Home"
+      "back_to_home": "Back to home"
     },
     "settings": {
       "title": "Settings",
-      "subtitle": "Customize your gaming experience",
+      "subtitle": "Customize your game experience",
       "save": "Save",
       "cancel": "Cancel",
       "tabs": {
@@ -138,14 +210,14 @@
       },
       "general": {
         "game_settings": "Game Settings",
-        "game_settings_desc": "Configure general settings for your gaming experience",
+        "game_settings_desc": "Configure general settings for your game experience",
         "language": "Language",
         "difficulty": "Difficulty",
         "difficulty_easy": "Easy",
         "difficulty_normal": "Normal",
         "difficulty_hard": "Hard",
         "show_tutorial": "Show tutorials",
-        "show_tutorial_desc": "Display guides and tutorials for new features",
+        "show_tutorial_desc": "Show guides and tutorials for new features",
         "enable_sound": "Enable sound",
         "enable_sound_desc": "Enable sound effects and background music"
       },
@@ -179,11 +251,35 @@
         "current_password": "Current password",
         "new_password": "New password",
         "confirm_password": "Confirm password",
-        "danger_zone": "Danger Zone",
+        "danger_zone": "Danger zone",
         "danger_zone_desc": "The actions below are irreversible. Be careful.",
         "delete_account": "Delete my account"
       }
-    }
+    },
+    "skills": {
+      "title": "Skills",
+      "description": "Develop your skills to become more powerful",
+      "cost": "Cost",
+      "requirements": "Requirements",
+      "learn": "Learn",
+      "learned": "Learned",
+      "list": "Skills list",
+      "status": "Status",
+      "no_requirements": "No requirements"
+    },
+    "domains": {
+      "experience": {
+        "available": "Available experience",
+        "total": "Total experience"
+      },
+      "damage": "Damage",
+      "hit": "Accuracy",
+      "critical": "Critical",
+      "details": "Domain details",
+      "statistics": "Statistics",
+      "progress": "Progress"
+    },
+    "back": "Back"
   },
   "common": {
     "cancel": "Cancel",
@@ -195,5 +291,8 @@
     "next": "Next",
     "previous": "Previous",
     "loading": "Loading..."
+  },
+  "title": {
+    "skills": "Skills"
   }
 } 

@@ -5,7 +5,7 @@ namespace App\Entity\App;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: "App\Repository\App\WorldRepository")]
+#[ORM\Entity()]
 #[ORM\Table(name: "world")]
 class World
 {

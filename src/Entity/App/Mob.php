@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'mob')]
-#[ORM\Entity(repositoryClass: 'App\Repository\App\MobRepository')]
+#[ORM\Entity()]
 class Mob implements CharacterInterface
 {
     use CharacterStatsTrait;

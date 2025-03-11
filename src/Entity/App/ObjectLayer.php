@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'object_layer')]
-#[ORM\Entity(repositoryClass: 'App\Repository\App\ObjectLayerRepository')]
+#[ORM\Entity()]
 class ObjectLayer
 {
     use TimestampableEntity;

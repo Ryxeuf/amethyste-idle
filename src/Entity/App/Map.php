@@ -8,7 +8,7 @@ use Doctrine\ORM\PersistentCollection;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'map')]
-#[ORM\Entity(repositoryClass: 'App\Repository\App\MapRepository')]
+#[ORM\Entity()]
 class Map
 {
     use TimestampableEntity;

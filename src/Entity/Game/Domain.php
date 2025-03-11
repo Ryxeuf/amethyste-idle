@@ -8,7 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: "App\Repository\Game\DomainRepository")]
+#[ORM\Entity()]
 #[ORM\Table(name: "game_domains")]
 class Domain
 {

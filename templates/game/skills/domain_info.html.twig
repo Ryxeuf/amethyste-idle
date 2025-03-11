@@ -1,0 +1,168 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ domain.title }} - {{ "title.skills"|trans }}{% endblock %}
+
+{% block game_content %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="mb-4 {% if label == 'success' %}bg-green-100 border-l-4 border-green-500 text-green-700{% else %}bg-red-100 border-l-4 border-red-500 text-red-700{% endif %} p-4 rounded">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            {% if label == 'success' %}
+                                <svg class="h-5 w-5 text-green-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                            {% else %}
+                                <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                </svg>
+                            {% endif %}
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm">{{ message }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <div class="bg-gray-800 shadow-lg rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">{{ domain.title }}</h1>
+                    <p class="text-gray-400 mt-1">{{ "game.domains.details"|trans }}</p>
+                </div>
+                <a href="{{ path('app_game_skills') }}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                    </svg>
+                    {{ "game.back"|trans }}
+                </a>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-gray-900 p-4 rounded-lg">
+                        <h2 class="text-xl font-bold text-white mb-4">{{ "game.domains.statistics"|trans }}</h2>
+                        <div class="space-y-2">
+                            <p class="text-gray-300">
+                                <span class="font-medium">{{ "game.domains.experience.available"|trans }}:</span> 
+                                <span class="font-bold text-white">{{ domain.availableExperience }}</span>
+                            </p>
+                            <p class="text-gray-300">
+                                <span class="font-medium">{{ "game.domains.experience.total"|trans }}:</span> 
+                                <span class="font-bold text-white">{{ domain.totalExperience }}</span>
+                            </p>
+                            {% if domain.damage %}
+                                <p class="text-gray-300">
+                                    <span class="font-medium">{{ "game.domains.damage"|trans }}:</span> 
+                                    <span class="font-bold text-white">+{{ domain.damage }}</span>
+                                </p>
+                            {% endif %}
+                            {% if domain.hit %}
+                                <p class="text-gray-300">
+                                    <span class="font-medium">{{ "game.domains.hit"|trans }}:</span> 
+                                    <span class="font-bold text-white">{{ domain.hit }}%</span>
+                                </p>
+                            {% endif %}
+                            {% if domain.critical %}
+                                <p class="text-gray-300">
+                                    <span class="font-medium">{{ "game.domains.critical"|trans }}:</span> 
+                                    <span class="font-bold text-white">{{ domain.critical }}%</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-900 p-4 rounded-lg">
+                        <h2 class="text-xl font-bold text-white mb-4">{{ "game.domains.progress"|trans }}</h2>
+                        <div class="w-full bg-gray-700 rounded-full h-4 mb-4">
+                            {% set progress = domain.skills|filter(s => s.acquired)|length / domain.skills|length * 100 %}
+                            <div class="bg-purple-600 h-4 rounded-full" style="width: {{ progress }}%"></div>
+                        </div>
+                        <p class="text-gray-300 text-center">
+                            <span class="font-bold text-white">{{ domain.skills|filter(s => s.acquired)|length }}</span> / {{ domain.skills|length }} 
+                            {{ "game.skills.learned"|trans }}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <h2 class="text-xl font-bold text-white mb-4">{{ "game.skills.list"|trans }}</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th class="px-6 py-3 bg-gray-800 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">{{ "game.skills.title"|trans }}</th>
+                                    <th class="px-6 py-3 bg-gray-800 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">{{ "game.skills.cost"|trans }}</th>
+                                    <th class="px-6 py-3 bg-gray-800 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">{{ "game.skills.description"|trans }}</th>
+                                    <th class="px-6 py-3 bg-gray-800 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">{{ "game.skills.requirements"|trans }}</th>
+                                    <th class="px-6 py-3 bg-gray-800 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">{{ "game.skills.status"|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-gray-900 divide-y divide-gray-800">
+                                {% for skill in domain.skills %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ skill.title }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ skill.requiredPoints }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">{{ skill.description }}</td>
+                                        <td class="px-6 py-4 text-sm text-gray-300">
+                                            {% if skill.requirements|length > 0 %}
+                                                <ul class="list-disc list-inside">
+                                                    {% for requirement in skill.requirements %}
+                                                        <li class="{% if requirement.acquired %}text-green-500{% else %}text-red-500{% endif %}">
+                                                            {{ requirement.title }}
+                                                            {% if requirement.acquired %}
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            {% else %}
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1" viewBox="0 0 20 20" fill="currentColor">
+                                                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            {% endif %}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% else %}
+                                                <span class="text-gray-500">{{ "game.skills.no_requirements"|trans }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            {% if skill.acquired %}
+                                                <span class="bg-blue-600 text-white font-bold py-2 px-4 rounded text-xs">
+                                                    {{ "game.skills.learned"|trans }}
+                                                </span>
+                                            {% else %}
+                                                {% if skill.canBeAcquired %}
+                                                    <form action="{{ path('app_game_skill_acquire') }}" method="post" class="inline">
+                                                        <input type="hidden" name="skill_id" value="{{ skill.id }}">
+                                                        <input type="hidden" name="domain_id" value="{{ domain.id }}">
+                                                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded text-xs">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                            </svg>
+                                                            {{ "game.skills.learn"|trans }}
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <span class="bg-red-600 text-white font-bold py-2 px-4 rounded text-xs opacity-75 cursor-not-allowed">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        {{ "game.skills.learn"|trans }}
+                                                    </span>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} 

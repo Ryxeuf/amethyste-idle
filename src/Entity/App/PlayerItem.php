@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'player_item')]
-#[ORM\Entity(repositoryClass: 'App\Repository\App\PlayerItemRepository')]
+#[ORM\Entity()]
 class PlayerItem
 {
     use TimestampableEntity;
