@@ -1,0 +1,59 @@
+.forest {
+  background: url("./images/map/forest.png"); width: 32px; height: 32px;
+}
+
+/* Ground layer */
+.forest-0-0 { background-position: 0px 0px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-192-256 { background-position: -192px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-192-288 { background-position: -192px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-256-256 { background-position: -256px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-256-288 { background-position: -256px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-288-256 { background-position: -288px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-288-288 { background-position: -288px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-288-352 { background-position: -288px -352px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-64-192 { background-position: -64px -192px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-64-224 { background-position: -64px -224px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-64-320 { background-position: -64px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-64-352 { background-position: -64px -352px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-96-192 { background-position: -96px -192px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-96-224 { background-position: -96px -224px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-96-320 { background-position: -96px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-96-352 { background-position: -96px -352px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-224-96 { background-position: -224px -96px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-256-96 { background-position: -256px -96px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-96-160 { background-position: -96px -160px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-128-224 { background-position: -128px -224px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-128-256 { background-position: -128px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-128-288 { background-position: -128px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-128-320 { background-position: -128px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-160-224 { background-position: -160px -224px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-160-256 { background-position: -160px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-160-288 { background-position: -160px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-256-320 { background-position: -256px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-256-352 { background-position: -256px -352px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-448-64 { background-position: -448px -64px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-448-96 { background-position: -448px -96px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-480-64 { background-position: -480px -64px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-480-96 { background-position: -480px -96px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-160-320 { background-position: -160px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-160-352 { background-position: -160px -352px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-192-224 { background-position: -192px -224px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-128-352 { background-position: -128px -352px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-224-256 { background-position: -224px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-224-288 { background-position: -224px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-224-320 { background-position: -224px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-320-288 { background-position: -320px -288px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-352-256 { background-position: -352px -256px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-352-320 { background-position: -352px -320px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-64-32 { background-position: -64px -32px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+
+/* Object layer */
+.forest-32-160 { background-position: -32px -160px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-320-160 { background-position: -320px -160px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-352-192 { background-position: -352px -192px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-384-32 { background-position: -384px -32px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-416-0 { background-position: -416px 0px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-416-32 { background-position: -416px -32px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-64-448 { background-position: -64px -448px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-288-96 { background-position: -288px -96px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}
+.forest-320-96 { background-position: -320px -96px; background: url("./images/map/forest.png"); width: 32px; height: 32px;}

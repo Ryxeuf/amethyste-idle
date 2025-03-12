@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity(repositoryClass: "App\Repository\Game\SkillRepository")]
+#[ORM\Entity()]
 #[ORM\Table(name: "game_skills")]
 class Skill
 {

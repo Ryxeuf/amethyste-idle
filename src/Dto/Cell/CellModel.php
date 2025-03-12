@@ -6,6 +6,8 @@ use App\Dto\Mob\MobModelLight;
 use App\Dto\Player\PlayerModelLight;
 use App\Dto\Pnj\PnjModelLight;
 use App\Entity\App\Map;
+use App\Entity\App\Area;
+use App\Dto\Area\AreaModel;
 
 class CellModel extends CellModelLight
 {
@@ -17,13 +19,16 @@ class CellModel extends CellModelLight
     /** @var PlayerModelLight[] */
     public array          $players = [];
     public ?MobModelLight $mob     = null;
-    public ?PnjModelLight $pnj     = null;
+    public ?PnjModelLight $pnj     = null;  
+    public ?AreaModel $area     = null;
 
-    public function __construct(array $data, ?Map $map = null)
+    public function __construct(array $data, ?Map $map = null, ?Area $area = null)
     {
-        parent::__construct($data, $map);
+        parent::__construct($data, $map, $area);
 
-        $this->layers = $data['layers'];
-        $this->slug   = $data['slug'];
+        // Vérifier si les clés nécessaires existent
+        $this->slug = $data['slug'] ?? 'unknown';
+        $this->layers = $data['layers'] ?? [];
+        $this->area = $area ? new AreaModel($area) : null;
     }
 }

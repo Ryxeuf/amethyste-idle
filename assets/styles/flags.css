@@ -1,0 +1,48 @@
+.language-selector {
+    display: inline-block;
+    position: relative;
+    margin-left: 10px;
+}
+
+.language-selector .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    padding: 0.5rem 0;
+}
+
+.language-selector .dropdown-toggle:hover {
+    color: #fff;
+}
+
+.language-selector .dropdown-menu {
+    min-width: 10rem;
+    padding: 0.5rem 0;
+}
+
+.language-selector .dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+
+.flag-icon {
+    display: inline-block;
+    width: 24px;
+    height: 16px;
+    background-size: cover;
+    margin-right: 8px;
+}
+
+.flag-icon-fr {
+    background-image: url('/images/flags/fr.svg');
+}
+
+.flag-icon-en {
+    background-image: url('/images/flags/en.svg');
+}
+
+.current-language {
+    margin-left: 5px;
+}

@@ -1,5 +1,8 @@
 import './bootstrap.js';
 import './styles/app.css';
+import './styles/flags.css';
+import './styles/forest.css';
+import './styles/map.css';
 
 import { startStimulusApp } from '@symfony/stimulus-bundle';
 import LiveController from '@symfony/ux-live-component';

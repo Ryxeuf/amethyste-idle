@@ -40,23 +40,57 @@ class MapModelTransformer
         return $model;
     }
 
-    public function transformStaticMapModel(Map $map): MapModel
+    public function transformStaticMapModel(Map $map): MapStaticModel
     {
         $model = new MapStaticModel($map);
 
         foreach ($map->getAreas() as $area) {
+
+            // dd($area->getFullDataArray()['cells'][0]);
+
             $model->areas[] = new AreaModel($area);
             $model->minX    = min($model->minX, $area->getX() * $map->getAreaWidth());
             $model->minY    = min($model->minY, $area->getY() * $map->getAreaHeight());
             $model->maxX    = max($model->maxX, ($area->getX() + 1) * $map->getAreaWidth());
             $model->maxY    = max($model->maxY, ($area->getY() + 1) * $map->getAreaHeight());
 
-            foreach ($area->getFullDataArray()['cells'] as $data) {
-                foreach ($data as $cell) {
-                    $model->cells[] = new CellModel($cell);
+            $areaData = $area->getFullDataArray();
+            
+            // Vérifier si les données de cellules existent
+            if (isset($areaData['cells']) && is_array($areaData['cells'])) {
+                foreach ($areaData['cells'] as $data) {
+                    if (is_array($data)) {
+                        foreach ($data as $cell) {
+                            if (is_array($cell)) {
+                                $model->cells[] = new CellModel($cell, $map, $area);
+                            }
+                        }
+                    }
                 }
             }
         }
+
+        // // Si aucune cellule n'a été trouvée, générer des cellules de test
+        // if (count($model->cells) === 0) {
+        //     // Générer une grille de 20x20 cellules autour du centre (0,0)
+        //     for ($x = -10; $x <= 10; $x++) {
+        //         for ($y = -10; $y <= 10; $y++) {
+        //             $cellData = [
+        //                 'x' => $x,
+        //                 'y' => $y,
+        //                 'slug' => 'test-cell',
+        //                 'mouvement' => 1,
+        //                 'layers' => [
+        //                     [
+        //                         'color' => '#cccccc',
+        //                         'opacity' => 1
+        //                     ]
+        //                 ]
+        //             ];
+        //             $model->cells[] = new CellModel($cellData, $map);
+        //         }
+        //     }
+        // }
 
         return $model;
     }
@@ -92,12 +126,12 @@ class MapModelTransformer
     {
         $model = new MapDynamicModel($map);
 
-        $mapPlayers = $this->entityManager->getRepository(Player::class)->getMapPlayers($map);
+        $mapPlayers = $this->entityManager->getRepository(Player::class)->findBy(['map' => $map]);
         foreach ($mapPlayers as $mapPlayer) {
             $model->players[] = $this->cellModelTransformer->transformCellPlayer($mapPlayer);
         }
 
-        $mapMobs = $this->entityManager->getRepository(Mob::class)->getMapMobs($map);
+        $mapMobs = $this->entityManager->getRepository(Mob::class)->findBy(['map' => $map]);
         foreach ($mapMobs as $mapMob) {
             $model->mobs[] = new MobModelLight($mapMob);
         }

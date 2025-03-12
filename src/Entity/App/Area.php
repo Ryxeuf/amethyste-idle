@@ -65,7 +65,19 @@ class Area
 
     public function getFullDataArray(): array
     {
-        return json_decode($this->fullData, true);
+        $data = json_decode($this->fullData, true);
+        
+        // Vérifier si les données sont correctement décodées
+        if (!is_array($data)) {
+            return ['cells' => []];
+        }
+        
+        // S'assurer que la clé 'cells' existe
+        if (!isset($data['cells'])) {
+            $data['cells'] = [];
+        }
+        
+        return $data;
     }
 
     public function setFullData(string $fullData): void

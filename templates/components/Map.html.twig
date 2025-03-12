@@ -1,0 +1,152 @@
+<div {{ attributes }} class="map-container">
+
+    <div class="map-grid" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
+        {# {% set x = x %} #}
+        {# {% set y = y %} #}
+        
+        {# Utiliser des valeurs fixes pour les limites de la carte #}
+        {# {% set startX = 0 %} #}
+        {# {% set startY = 0 %} #}
+        {# {% set endX = 21 %} #}
+        {# {% set endY = 21 %} #}
+        {# {% set startX = x - 10 %} #}
+        {# {% set startY = y - 10 %} #}
+        {# {% set endX = x + 10 %} #}
+        {# {% set endY = y + 10 %} #}
+
+        
+        {# Afficher une grille de base pour voir si le positionnement fonctionne #}
+        {# {% for y in startY..endY %}
+            {% for x in startX..endX %}
+                {% set isPlayer = (x == x and y == y) %}
+                {% set posX = (x - startX) * cellSize %}
+                {% set posY = (y - startY) * cellSize %}
+                
+                <div class="map-cell-base" 
+                     style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ posX }}px; top: {{ posY }}px; background-color: {% if isPlayer %}#ffcccc{% else %}#eee{% endif %}; border: 1px solid #ddd; display: flex; justify-content: center; align-items: center;">
+                    <span>{{ x }},{{ y }}</span>
+                </div>
+            {% endfor %}
+        {% endfor %} #}
+        
+        {# Compteur de cellules visibles #}
+        {% set visibleCellCount = 0 %}
+
+        {# {% if mapStatic.cells is defined and mapStatic.cells|length > 0 %} #}
+            {# Utilisation de mapStatic pour boucler sur les cellules #}
+            {% for cell in visibleCells %}
+                {# {% if cell.x >= startX and cell.x <= endX and cell.y >= startY and cell.y <= endY %} #}
+                    {% set visibleCellCount = visibleCellCount + 1 %}
+                    {% set isPlayer = (cell.x == x and cell.y == y) %}
+                    {% set posX = (cell.x - startX) * cellSize %}
+                    {% set posY = (cell.y - startY) * cellSize %}
+                    
+                    <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} forest {{ cell.slug }} forest-0-0" 
+                    {# > #}
+                         style="position: absolute; left: {{ posX }}px; top: {{ posY }}px; display: flex; justify-content: center; align-items: center; z-index: 10;">
+                        {# <span>{{ cell.x }},{{ cell.y }}</span> #}
+                        <div class="cell-hover"></div>
+                    </div>
+                {# {% endif %} #}
+            {% endfor %}
+            
+            {# Afficher le nombre de cellules visibles #}
+            <div style="position: absolute; top: -20px; left: 0; background-color: rgba(0,0,0,0.7); color: white; padding: 2px 5px; font-size: 12px;">
+                Cellules visibles: {{ visibleCellCount }} / {{ mapStatic.cells|length }}
+            </div>
+        {# {% endif %} #}
+        
+        {# Afficher le joueur #}
+        <div class="player-marker" 
+             style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (x - startX) * cellSize }}px; top: {{ (y - startY) * cellSize }}px; background-color: red; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 20;">
+            <span style="color: white; font-weight: bold;">P</span>
+        </div>
+        
+        {# Afficher les autres joueurs #}
+        {% for otherPlayer in mapDynamic.players %}
+            {% if otherPlayer.id != player.id %}
+                {% set otherX = otherPlayer.coordinates|split('.')|first %}
+                {% set otherY = otherPlayer.coordinates|split('.')|last %}
+                
+                {% if otherX >= startX and otherX <= endX and otherY >= startY and otherY <= endY %}
+                    <div class="other-player" 
+                         style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (otherX - startX) * cellSize }}px; top: {{ (otherY - startY) * cellSize }}px; background-color: blue; border-radius: 50%; display: flex; justify-content: center; align-items: center;"
+                         title="{{ otherPlayer.name }}">
+                        <span style="color: white; font-weight: bold;">{{ otherPlayer.name|first }}</span>
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+        
+        {# Afficher les monstres #}
+        {% for mob in mapDynamic.mobs %}
+            {% set mobX = mob.coordinates|split('.')|first %}
+            {% set mobY = mob.coordinates|split('.')|last %}
+            
+            {% if mobX >= startX and mobX <= endX and mobY >= startY and mobY <= endY %}
+                <div class="mob-marker" 
+                     style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (mobX - startX) * cellSize }}px; top: {{ (mobY - startY) * cellSize }}px; background-color: #8B0000; border-radius: 15%; display: flex; justify-content: center; align-items: center;"
+                     title="Monstre: {{ mob.slug }}">
+                    <span style="color: white; font-weight: bold;">M</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+        
+        {# Afficher les PNJ #}
+        {% for pnj in mapDynamic.pnjs %}
+            {% set pnjX = pnj.coordinates|split('.')|first %}
+            {% set pnjY = pnj.coordinates|split('.')|last %}
+            
+            {% if pnjX >= startX and pnjX <= endX and pnjY >= startY and pnjY <= endY %}
+                <div class="pnj-marker" 
+                     style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (pnjX - startX) * cellSize }}px; top: {{ (pnjY - startY) * cellSize }}px; background-color: #4B0082; border-radius: 15%; display: flex; justify-content: center; align-items: center;"
+                     title="PNJ: {{ pnj.name }}">
+                    <span style="color: white; font-weight: bold;">{{ pnj.name|first }}</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+        
+        {# Afficher les objets utilisables #}
+        {% for usableObject in mapDynamic.usableObjects %}
+            {% set usableX = usableObject.coordinates|split('.')|first %}
+            {% set usableY = usableObject.coordinates|split('.')|last %}
+            
+            {% if usableX >= startX and usableX <= endX and usableY >= startY and usableY <= endY %}
+                <div class="usable-object-marker" 
+                     style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (usableX - startX) * cellSize }}px; top: {{ (usableY - startY) * cellSize }}px; background-color: #FFD700; border-radius: 0; display: flex; justify-content: center; align-items: center;"
+                     title="Objet utilisable: {{ usableObject.slug }}">
+                    <span style="color: black; font-weight: bold;">U</span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    
+    <style>
+        .map-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+        
+        .map-grid {
+            position: relative;
+            border: 2px solid #333;
+            background-color: #f5f5f5;
+        }
+        
+        .map-cell {
+            box-sizing: border-box;
+        }
+        
+        .player-marker, .other-player, .mob-marker, .pnj-marker, .object-marker, .usable-object-marker {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .player-marker:hover, .other-player:hover, .mob-marker:hover, .pnj-marker:hover, .object-marker:hover, .usable-object-marker:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+    </style>
+</div>
