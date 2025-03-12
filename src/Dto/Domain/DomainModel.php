@@ -7,25 +7,20 @@ use App\Entity\Game\Domain;
 
 class DomainModel
 {
-    /**
-     * @var int
-     */
-    public $id;
-
-    /**
-     * @var string
-     */
-    public $title;
+    public int $id;
+    public string $title;
+    public string $slug;
 
     /**
      * @var SkillModel[]
      */
-    public $skills;
+    public array $skills;
 
     public function __construct(Domain $domain)
     {
         $this->id = $domain->getId();
         $this->title = $domain->getTitle();
+        $this->slug = $domain->getSlug();
     }
 
 }

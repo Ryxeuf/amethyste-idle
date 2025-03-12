@@ -19,6 +19,11 @@ class Domain
         return $this->getTitle();
     }
 
+    public function getSlug(): string
+    {
+        return strtolower(str_replace(' ', '-', $this->getTitle()));
+    }
+
     /**
      * Constructor
      */

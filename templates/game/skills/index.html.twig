@@ -36,7 +36,7 @@
             <div class="p-6">
                 {% for domain in domains %}
                     <div class="mb-8 bg-gray-900 rounded-lg overflow-hidden shadow-md">
-                        <div class="px-6 py-4 bg-purple-900 flex justify-between items-center">
+                        <div class="px-6 py-4 domain-header-{{ domain.slug }} flex justify-between items-center">
                             <h2 class="text-xl font-bold text-white">{{ domain.title }}</h2>
                             <div class="text-right">
                                 <p class="text-sm text-gray-300">{{ "game.domains.experience.available"|trans }} : <span class="font-bold text-white">{{ domain.availableExperience }}</span></p>
@@ -117,6 +117,52 @@
     {{ parent() }}
     <style>
         /* Styles spécifiques pour la page des compétences */
+        .domain-header-pyromancie {
+            background-color: #e02424; /* red-600 */
+        }
+        .domain-header-soldat {
+            background-color: #777777; /* grey-600 */
+        }
+        .domain-header-blacksmith {
+            background-color: #333333; /* black */
+        }
+        .domain-header-necro {
+            background-color: #480040; /* dark purple */
+        }
+        .domain-header-white_wizard {
+            background-color: #ecf6b1; /* yellow */
+        }
+        .domain-header-druid {
+            background-color: #009007; /* green */
+        }
+        .domain-header-herbalist {
+            background-color: #58ae5e; /* green */
+        }
+        .domain-header-skinner {
+            background-color: #bc6500; /* orange */
+        }
+        .domain-header-jeweller {
+            background-color: #ba53a2; /* pink */
+        }
+        .domain-header-alchimist {
+            background-color: #000000; /* black */
+        }
+        .domain-header-leatherworker {
+            background-color: #ffcc00; /* yellow */
+        }
+        .domain-header-miner {
+            background-color: #6b6b6b; /* grey */
+        }
+        .domain-header-fisherman {
+            background-color: #0037ff; /* blue */
+        }
+        .domain-header-healer {
+            background-color: #00ffea; /* cyan */
+        }
+        .domain-header-defender {
+            background-color: #387483; /* blue */
+        }
+        
     </style>
 {% endblock %}
 
