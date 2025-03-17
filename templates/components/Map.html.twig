@@ -1,6 +1,8 @@
 <div {{ attributes }} class="map-container">
 
     <div class="map-grid" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
+        <input type="hidden" id="x" name="x" data-model="x" value="{{ x }}">
+        <input type="hidden" id="y" name="y" data-model="y" value="{{ y }}">
         {# {% set x = x %} #}
         {# {% set y = y %} #}
         
@@ -34,26 +36,37 @@
 
         {# {% if mapStatic.cells is defined and mapStatic.cells|length > 0 %} #}
             {# Utilisation de mapStatic pour boucler sur les cellules #}
-            {% for cell in visibleCells %}
-                {# {% if cell.x >= startX and cell.x <= endX and cell.y >= startY and cell.y <= endY %} #}
-                    {% set visibleCellCount = visibleCellCount + 1 %}
-                    {% set isPlayer = (cell.x == x and cell.y == y) %}
-                    {% set posX = (cell.x - startX) * cellSize %}
+            {% for x,row in visibleCells %}
+                {% for y,cell in row %}
+                    {# {% if cell.x >= startX and cell.x <= endX and cell.y >= startY and cell.y <= endY %} #}
+                        {% set visibleCellCount = visibleCellCount + 1 %}
+                        {% set isPlayer = (cell.x == x and cell.y == y) %}
+                        {% set posX = (cell.x - startX) * cellSize %}
                     {% set posY = (cell.y - startY) * cellSize %}
                     
-                    <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} forest {{ cell.slug }} forest-0-0" 
+                    <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} {{ cell.slug }} forest" 
                     {# > #}
                          style="position: absolute; left: {{ posX }}px; top: {{ posY }}px; display: flex; justify-content: center; align-items: center; z-index: 10;">
                         {# <span>{{ cell.x }},{{ cell.y }}</span> #}
-                        <div class="cell-hover"></div>
+                        {% for layer in cell.layers %}
+                            <div class="{{ layer.class }}" style="position: absolute; left:0; top:0; {{ layer.style }}"></div>
+                        {% endfor %}
+                        {% if cell.movementCost != -1 %}
+                        <button class="cell-hover z-[100] opacity-[0.5]" 
+                                data-action="live#action"
+                                data-live-action-param="updateCoordinates"
+                                data-live-x-param="{{ cell.x }}" 
+                                data-live-y-param="{{ cell.y }}"
+                            ></button>
+                        {% endif %}
                     </div>
-                {# {% endif %} #}
+                {% endfor %}
             {% endfor %}
             
             {# Afficher le nombre de cellules visibles #}
-            <div style="position: absolute; top: -20px; left: 0; background-color: rgba(0,0,0,0.7); color: white; padding: 2px 5px; font-size: 12px;">
-                Cellules visibles: {{ visibleCellCount }} / {{ mapStatic.cells|length }}
-            </div>
+            {# <div style="position: absolute; top: -20px; left: 0; background-color: rgba(0,0,0,0.7); color: white; padding: 2px 5px; font-size: 12px;">
+                Cellules visibles: {{ visibleCellCount }} / {{ 0 }}
+            </div> #}
         {# {% endif %} #}
         
         {# Afficher le joueur #}
@@ -149,4 +162,5 @@
             z-index: 10;
         }
     </style>
+
 </div>

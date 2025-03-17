@@ -1,0 +1,399 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "world-1-map-2-1.tmx",
+    "automapping.whileDrawing": false,
+    "expandedProjectPaths": [
+        "rules",
+        "."
+    ],
+    "exportAsImage.drawTileGrid": true,
+    "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 0.5
+        },
+        "/home/remy/Sites/amethyste-game/assets/images/terrain/BaseChip_pipo.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "/home/remy/Sites/amethyste-game/assets/images/terrain/Collisions.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 1
+        },
+        "/home/remy/Sites/amethyste-game/assets/images/terrain/Terrain.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "/home/remy/Sites/amethyste-game/assets/images/terrain/forest.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1.5
+        },
+        ":/automap-tiles.tsx": {
+            "scaleInDock": 0.75
+        },
+        "assets/images/terrain/BaseChip_pipo.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/images/terrain/Collisions.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/images/terrain/Terrain.tsx": {
+            "scaleInDock": 1
+        },
+        "assets/images/terrain/forest.tsx": {
+            "scaleInDock": 1
+        },
+        "forest.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "map-0-0.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 644,
+                "y": 464.66666666666674
+            }
+        },
+        "map-0-20.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 318,
+                "y": 217
+            }
+        },
+        "map-20-0.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 61.33333333333337,
+                "y": 327.33333333333326
+            }
+        },
+        "map1.tmx": {
+            "scale": 0.125,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 2476,
+                "y": 2140
+            }
+        },
+        "rule1.tmx": {
+            "scale": 1,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 342,
+                "y": 296.5
+            }
+        },
+        "rule2.tmx": {
+            "scale": 1.340390625,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 319.3099026636358,
+                "y": 230.90283849157777
+            }
+        },
+        "rule_ground.tmx": {
+            "scale": 1,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 284,
+                "y": 335.5
+            }
+        },
+        "rule_layer1.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 592,
+                "y": 751
+            }
+        },
+        "rule_layer2.tmx": {
+            "scale": 1.340390625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 316.3256979658449,
+                "y": 316.6987235530687
+            }
+        },
+        "rules/border_ground.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 261,
+                "y": 188.5
+            }
+        },
+        "rules/border_layer1.tmx": {
+            "scale": 0.46238281249999996,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 627.1859423840501,
+                "y": 678.0096308186197
+            }
+        },
+        "rules/borders.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 167.99999999999997,
+                "y": 949.6666666666666
+            }
+        },
+        "rules/collision_ground.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 666.6666666666667,
+                "y": 776.6666666666667
+            }
+        },
+        "rules/collision_layer1.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 506.0606060606061,
+                "y": 686.3636363636364
+            }
+        },
+        "rules/collision_layer2.tmx": {
+            "scale": 0.9247656249999999,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 314.674326265101,
+                "y": 212.48627185942388
+            }
+        },
+        "rules/collisions.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 684,
+                "y": 787
+            }
+        },
+        "rules/post_collisions.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 211.33333333333337,
+                "y": 70.33333333333331
+            }
+        },
+        "rules/teleport_ground.tmx": {
+            "expandedObjectLayers": [
+                10
+            ],
+            "scale": 0.75,
+            "selectedLayer": -1,
+            "viewCenter": {
+                "x": 561.3333333333333,
+                "y": 169.99999999999994
+            }
+        },
+        "rules/teleports.tmx": {
+            "scale": 0.6701953125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 637.1277029783762,
+                "y": 639.3658565017195
+            }
+        },
+        "rules/uncollision_layer1.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 285.99999999999994,
+                "y": 144.99999999999997
+            }
+        },
+        "rules/uncollision_layer2.tmx": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 432,
+                "y": 163.5
+            }
+        },
+        "rules/uncollisions.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 290.66666666666663,
+                "y": 88.99999999999997
+            }
+        },
+        "tileset/BaseChip_pipo.tsx": {
+            "scaleInDock": 1
+        },
+        "tileset/Collisions.tsx": {
+            "scaleInDock": 1
+        },
+        "tileset/Terrain.tsx": {
+            "scaleInDock": 1
+        },
+        "tileset/forest.tsx": {
+            "scaleInDock": 1
+        },
+        "world-1-cave-1.tmx": {
+            "expandedObjectLayers": [
+                14
+            ],
+            "scale": 0.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 952,
+                "y": 477
+            }
+        },
+        "world-1-house-1.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
+            "scale": 1,
+            "selectedLayer": 6,
+            "viewCenter": {
+                "x": 319.5,
+                "y": 320
+            }
+        },
+        "world-1-map-0-0.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 959.0909090909092,
+                "y": 942.4242424242424
+            }
+        },
+        "world-1-map-0-1.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 1492.4242424242425,
+                "y": 1157.5757575757575
+            }
+        },
+        "world-1-map-1-0.tmx": {
+            "expandedObjectLayers": [
+                30
+            ],
+            "scale": 0.33,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 959.0909090909092,
+                "y": 960.6060606060605
+            }
+        },
+        "world-1-map-1-1.tmx": {
+            "expandedObjectLayers": [
+                10
+            ],
+            "scale": 1,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 960.5,
+                "y": 960
+            }
+        },
+        "world-1-map-1-2 (copie).tmx": {
+            "scale": 0.33,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 957.5757575757576,
+                "y": 959.0909090909091
+            }
+        },
+        "world-1-map-1-2 (copie).tmx#Terrain": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "world-1-map-1-2 (copie).tmx#forest": {
+            "scaleInDock": 1
+        },
+        "world-1-map-1-2.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1181.8181818181818,
+                "y": 13.63636363636374
+            }
+        },
+        "world-1-map-1-2.tmx#Terrain": {
+            "scaleInDock": 0.5,
+            "scaleInEditor": 1
+        },
+        "world-1-map-1-2.tmx#forest": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "world-1-map-2-0.tmx": {
+            "scale": 0.125,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": -448,
+                "y": 1540
+            }
+        },
+        "world-1-map-2-1.tmx": {
+            "scale": 0.2548,
+            "selectedLayer": 4,
+            "viewCenter": {
+                "x": 920.3296703296703,
+                "y": 1122.4489795918366
+            }
+        },
+        "world-1-map-2-2.tmx": {
+            "scale": 0.33,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 1495.4545454545455,
+                "y": 1160.6060606060605
+            }
+        }
+    },
+    "frame.defaultDuration": 500,
+    "last.exportedFilePath": "/home/remy/Sites/amethyste-game/terrain",
+    "last.externalTilesetPath": "/home/remy/Sites/amethyste-game/assets/images/terrain",
+    "last.imagePath": "/home/remy/Sites/amethyste-game/assets/images/terrain",
+    "last.worldFilePath": "/home/remy/Sites/amethyste-game/terrain",
+    "loadedWorlds": [
+        "/home/remy/Sites/amethyste-game/terrain/world-1.world"
+    ],
+    "map.fixedSize": true,
+    "map.height": 60,
+    "map.lastUsedExportFilter": "Tous les Fichiers (*)",
+    "map.lastUsedFormat": "tmx",
+    "map.renderOrder": null,
+    "map.width": 60,
+    "openFiles": [
+        "world-1-map-0-0.tmx",
+        "world-1-map-1-0.tmx",
+        "world-1-house-1.tmx",
+        "world-1-map-1-1.tmx",
+        "world-1-map-2-1.tmx"
+    ],
+    "project": "world-1.tiled-project",
+    "property.type": "string",
+    "recentFiles": [
+        "world-1-map-0-0.tmx",
+        "world-1-map-1-0.tmx",
+        "world-1-house-1.tmx",
+        "world-1-map-1-1.tmx",
+        "world-1-map-2-1.tmx",
+        "world-1-map-1-2.tmx",
+        "world-1-cave-1.tmx",
+        "world-1-map-2-2.tmx",
+        "world-1-map-0-1.tmx",
+        "world-1-map-1-2 (copie).tmx",
+        "/home/remy/Sites/amethyste-game/assets/images/terrain/Terrain.tsx",
+        "rules/collisions.tmx"
+    ],
+    "tileset.lastUsedFilter": "Fichiers de jeu de tuiles Tiled (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx"
+}

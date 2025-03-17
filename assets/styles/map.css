@@ -1,3 +1,17 @@
+.terrain{
+  background: url("./images/terrain/terrain.png");
+}
+.forest{
+  background: url("./images/terrain/forest.png");
+}
+.BaseChip_pipo{
+  background: url("./images/terrain/BaseChip_pipo.png");
+}
+.collisions{
+  background: url("./images/terrain/collisions.png");
+}
+
+
 .cell:hover .cell-hover {
     border: 1px solid white;
     width: 100%;

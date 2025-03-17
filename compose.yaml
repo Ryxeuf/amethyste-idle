@@ -59,12 +59,21 @@ services:
       # - ./docker/db/data:/var/lib/postgresql/data:rw
 ###< doctrine/doctrine-bundle ###
 
+  typesense:
+    image: typesense/typesense:28.0 # Utilisez la dernière version stable de Typesense
+    command:
+      - "--data-dir"
+      - "/data"
+      - "--api-key=xyz" # Remplacez `your_api_key` par votre clé API réelle
+      - "--listen-port"
+      - "8109"
+    volumes:
+      - typesense_data:/data
+    ports:
+      - "8109:8109"
+
 volumes:
   caddy_data:
   caddy_config:
-###> symfony/mercure-bundle ###
-###< symfony/mercure-bundle ###
-
-###> doctrine/doctrine-bundle ###
   database_data:
-###< doctrine/doctrine-bundle ###
+  typesense_data:

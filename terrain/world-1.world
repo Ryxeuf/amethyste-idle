@@ -1,0 +1,13 @@
+{
+    "patterns": [
+        {
+            "regexp": "world-1-map-(\\d+)-(\\d+)\\.tmx",
+            "multiplierX": 1920,
+            "multiplierY": 1920,
+            "offsetX": -1920,
+            "offsetY": -1920
+        }
+    ],
+    "onlyShowAdjacentMaps": false,
+    "type": "world"
+}

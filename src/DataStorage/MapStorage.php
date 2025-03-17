@@ -6,6 +6,7 @@ use App\Dto\Map\MapModelLight;
 use App\Entity\App\Map;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MapStorage
 {
@@ -15,6 +16,7 @@ class MapStorage
     private string $dataPath;
 
     public function __construct(
+        #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
     )
     {

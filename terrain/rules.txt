@@ -1,0 +1,5 @@
+rules/borders.tmx
+rules/collisions.tmx
+rules/uncollisions.tmx
+rules/post_collisions.tmx
+rules/teleports.tmx

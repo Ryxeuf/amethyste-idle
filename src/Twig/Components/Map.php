@@ -11,22 +11,28 @@ use App\Transformer\MapModelTransformer;
 use App\Helper\PlayerHelper;
 use App\Dto\Map\MapStaticModel;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
+use App\DataStorage\MapStorage;
+use App\SearchEngine\CellSearchEngine;
+use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\LiveArg;
 
 #[AsLiveComponent]
 class Map
 {
     use DefaultActionTrait;
 
-    public MapModel $map;
+    // public MapModel $map;
     public MapDynamicModel $mapDynamic;
-    public MapStaticModel $mapStatic;
+    // public MapStaticModel $mapStatic;
+    // public array $map;
+    // public array $mapTag;
 
     public Player $player;
     
     // Propriétés pour les coordonnées du joueur
-    #[LiveProp]
+    #[LiveProp(writable: true)]
     public int $x;
-    #[LiveProp]
+    #[LiveProp(writable: true)]
     public int $y;
 
     public int $startX;
@@ -43,13 +49,21 @@ class Map
     
     public function __construct(
         private readonly MapModelTransformer $mapModelTransformer,
-        private readonly PlayerHelper $playerHelper
+        private readonly PlayerHelper $playerHelper,
+        private readonly MapStorage $mapStorage,
+        private readonly CellSearchEngine $cellSearchEngine,
     )
     {
+        // ini_set('memory_limit', '128M');
         $this->player = $this->playerHelper->getPlayer();
-        $this->map = $this->mapModelTransformer->transformPlayerMapModel($this->player);
+        // $this->map = $this->mapModelTransformer->transformPlayerMapModel($this->player);
         $this->mapDynamic = $this->mapModelTransformer->transformDynamicMapModel($this->player->getMap());
-        $this->mapStatic = $this->mapModelTransformer->transformStaticMapModel($this->player->getMap());
+        // $this->mapStatic = $this->mapModelTransformer->transformStaticMapModel($this->player->getMap());
+        // $this->map = $this->mapStorage->getMap($this->player->getMap()->getId());
+        // $this->mapTag = $this->mapStorage->getMapTag($this->player->getMap()->getId());
+
+        // dump($this->mapStatic['areas']);
+        // die;
 
         // Extraire les coordonnées du joueur
         $coordinates = $this->player->getCoordinates();
@@ -74,7 +88,8 @@ class Map
         $this->updateCells();
     }
 
-    public function updateCoordinates(int $x, int $y): void
+    #[LiveAction]
+    public function updateCoordinates(#[LiveArg] int $x, #[LiveArg] int $y): void
     {
         $this->x = $x;
         $this->y = $y;
@@ -82,15 +97,21 @@ class Map
         $this->startY = $y - 10;
         $this->endX = $x + 10;
         $this->endY = $y + 10;
+        $this->updateCells();
     }
 
     public function updateCells(): void
     {
+        $cells = $this->cellSearchEngine->getMapCells($this->x, $this->y, $this->player->getMap()->getId());
         $this->visibleCells = [];
-        foreach ($this->mapStatic->cells as $cell) {
-            if ($cell->x >= $this->startX && $cell->x <= $this->endX && $cell->y >= $this->startY && $cell->y <= $this->endY) {
-                $this->visibleCells[] = $cell;
-            }
+        foreach ($cells as $cell) {
+            $this->visibleCells[$cell->x][$cell->y] = $cell;
         }
+        // $idx = $this->visibleCells[0]['layers'][0]['idxInMap'];
+        // dump($idx);
+        // dump($idx / 16);
+        // dump($idx % 16);
+        // dump((int)floor($idx / 16)*32);
+        // dump((int)floor($idx % 16)*32);
     }
 }
