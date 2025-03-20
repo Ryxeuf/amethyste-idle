@@ -15,6 +15,8 @@ use App\DataStorage\MapStorage;
 use App\SearchEngine\CellSearchEngine;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
+use App\GameEngine\Map\MovementCalculator;
+use Symfony\UX\LiveComponent\Attribute\LiveListener;
 
 #[AsLiveComponent]
 class Map
@@ -44,6 +46,16 @@ class Map
     public int $mapSize = 21;
     public int $cellSize = 32;
 
+    // Propriétés pour l'animation du déplacement
+    #[LiveProp(writable: true)]
+    public array $moveQueue = [];
+    
+    #[LiveProp(writable: true)]
+    public bool $isMoving = false;
+    
+    #[LiveProp(writable: true)]
+    public float $lastMoveTime = 0;
+    
     /** @var CellModel[] */
     public array $visibleCells = [];
     
@@ -52,6 +64,7 @@ class Map
         private readonly PlayerHelper $playerHelper,
         private readonly MapStorage $mapStorage,
         private readonly CellSearchEngine $cellSearchEngine,
+        private readonly MovementCalculator $movementCalculator,
     )
     {
         // ini_set('memory_limit', '128M');
@@ -98,6 +111,59 @@ class Map
         $this->endX = $x + 10;
         $this->endY = $y + 10;
         $this->updateCells();
+    }
+
+    #[LiveAction]
+    public function move(#[LiveArg] int $x, #[LiveArg] int $y): void
+    {
+        // Réinitialiser les valeurs
+        $this->moveQueue = [];
+        $this->isMoving = false;
+        
+        // Calculer le chemin
+        $this->movementCalculator->loadMap(10);
+        $movements = $this->movementCalculator->calculateMovement($this->x, $this->y, $x, $y);
+        
+        // Vérifier que nous avons bien obtenu des mouvements
+        if (!empty($movements)) {
+            $this->moveQueue = $movements;
+            $this->isMoving = true;
+            $this->lastMoveTime = microtime(true);
+            $this->checkAndProcessNextMove();
+        }
+    }
+
+    #[LiveAction]
+    public function processNextMove(): void
+    {
+        // Si la file est vide, on arrête l'animation
+        if (empty($this->moveQueue)) {
+            $this->isMoving = false;
+            $this->updateCoordinates($this->x, $this->y);
+
+            return;
+        }
+        
+        // On récupère le prochain mouvement et on le retire de la file
+        $move = array_shift($this->moveQueue);
+        
+        // On met à jour les coordonnées
+        $this->updateCoordinates((int)$move['x'], (int)$move['y']);
+        
+        // On met à jour le temps du dernier mouvement
+        $this->lastMoveTime = microtime(true);
+    }
+
+    #[LiveAction]
+    public function checkAndProcessNextMove(): void
+    {
+        $currentTime = microtime(true);
+        $timeDiff = $currentTime - $this->lastMoveTime;
+        
+        // Forcer l'exécution du prochain mouvement si on est en déplacement
+        if ($this->isMoving) {
+            $this->processNextMove();
+        }
     }
 
     public function updateCells(): void

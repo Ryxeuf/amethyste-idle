@@ -1,4 +1,4 @@
-<div {{ attributes }} class="map-container">
+<div {{ attributes }} class="map-container" {% if isMoving %}data-poll="delay(200)|processNextMove"{% endif %}>
 
     <div class="map-grid" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
         <input type="hidden" id="x" name="x" data-model="x" value="{{ x }}">
@@ -54,7 +54,7 @@
                         {% if cell.movementCost != -1 %}
                         <button class="cell-hover z-[100] opacity-[0.5]" 
                                 data-action="live#action"
-                                data-live-action-param="updateCoordinates"
+                                data-live-action-param="move"
                                 data-live-x-param="{{ cell.x }}" 
                                 data-live-y-param="{{ cell.y }}"
                             ></button>
@@ -71,7 +71,7 @@
         
         {# Afficher le joueur #}
         <div class="player-marker" 
-             style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (x - startX) * cellSize }}px; top: {{ (y - startY) * cellSize }}px; background-color: red; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 20;">
+             style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (x - startX) * cellSize }}px; top: {{ (y - startY) * cellSize }}px; background-color: red; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 51;">
             <span style="color: white; font-weight: bold;">P</span>
         </div>
         
@@ -83,7 +83,7 @@
                 
                 {% if otherX >= startX and otherX <= endX and otherY >= startY and otherY <= endY %}
                     <div class="other-player" 
-                         style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (otherX - startX) * cellSize }}px; top: {{ (otherY - startY) * cellSize }}px; background-color: blue; border-radius: 50%; display: flex; justify-content: center; align-items: center;"
+                         style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (otherX - startX) * cellSize }}px; top: {{ (otherY - startY) * cellSize }}px; background-color: blue; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 50;"
                          title="{{ otherPlayer.name }}">
                         <span style="color: white; font-weight: bold;">{{ otherPlayer.name|first }}</span>
                     </div>
@@ -160,6 +160,10 @@
         .player-marker:hover, .other-player:hover, .mob-marker:hover, .pnj-marker:hover, .object-marker:hover, .usable-object-marker:hover {
             transform: scale(1.1);
             z-index: 10;
+        }
+        
+        .player-marker {
+            transition: left 0.2s ease, top 0.2s ease;
         }
     </style>
 
