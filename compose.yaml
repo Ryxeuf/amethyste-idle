@@ -40,6 +40,7 @@ services:
 
 ###> doctrine/doctrine-bundle ###
   database:
+    restart: unless-stopped
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
@@ -60,6 +61,7 @@ services:
 ###< doctrine/doctrine-bundle ###
 
   typesense:
+    restart: unless-stopped
     image: typesense/typesense:28.0 # Utilisez la dernière version stable de Typesense
     command:
       - "--data-dir"

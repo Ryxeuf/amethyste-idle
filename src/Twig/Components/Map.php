@@ -17,6 +17,7 @@ use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use App\GameEngine\Map\MovementCalculator;
 use Symfony\UX\LiveComponent\Attribute\LiveListener;
+use App\GameEngine\Player\PlayerMoveUpdater;
 
 #[AsLiveComponent]
 class Map
@@ -65,6 +66,7 @@ class Map
         private readonly MapStorage $mapStorage,
         private readonly CellSearchEngine $cellSearchEngine,
         private readonly MovementCalculator $movementCalculator,
+        private readonly PlayerMoveUpdater $playerMoveUpdater,
     )
     {
         // ini_set('memory_limit', '128M');
@@ -139,6 +141,7 @@ class Map
         // Si la file est vide, on arrête l'animation
         if (empty($this->moveQueue)) {
             $this->isMoving = false;
+            $this->playerMoveUpdater->updatePlayerMove($this->x, $this->y);
             $this->updateCoordinates($this->x, $this->y);
 
             return;

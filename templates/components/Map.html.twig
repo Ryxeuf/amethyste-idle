@@ -1,5 +1,6 @@
 <div {{ attributes }} class="map-container" {% if isMoving %}data-poll="delay(200)|processNextMove"{% endif %}>
 
+        {# {{ dump(visibleCells.0.0.0) }} #}
     <div class="map-grid" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
         <input type="hidden" id="x" name="x" data-model="x" value="{{ x }}">
         <input type="hidden" id="y" name="y" data-model="y" value="{{ y }}">
@@ -34,6 +35,7 @@
         {# Compteur de cellules visibles #}
         {% set visibleCellCount = 0 %}
 
+
         {# {% if mapStatic.cells is defined and mapStatic.cells|length > 0 %} #}
             {# Utilisation de mapStatic pour boucler sur les cellules #}
             {% for x,row in visibleCells %}
@@ -48,11 +50,14 @@
                     {# > #}
                          style="position: absolute; left: {{ posX }}px; top: {{ posY }}px; display: flex; justify-content: center; align-items: center; z-index: 10;">
                         {# <span>{{ cell.x }},{{ cell.y }}</span> #}
+                        {# <div class="debug hidden">
+                            {{ (cell.debug)|json_encode }}
+                        </div> #}
                         {% for layer in cell.layers %}
                             <div class="{{ layer.class }}" style="position: absolute; left:0; top:0; {{ layer.style }}"></div>
                         {% endfor %}
                         {% if cell.movementCost != -1 %}
-                        <button class="cell-hover z-[100] opacity-[0.5]" 
+                        <button class="cell-hover z-[100] opacity-[0.5] w-8 h-8 hover:bg-red-500" 
                                 data-action="live#action"
                                 data-live-action-param="move"
                                 data-live-x-param="{{ cell.x }}" 

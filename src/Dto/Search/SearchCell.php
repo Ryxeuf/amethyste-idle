@@ -20,6 +20,7 @@ class SearchCell
         public string $slug,
         public string $displayClass,
         public array $layers,
+        public array $debug = [],
     )
     {
         $this->id = $this->area['slug'] . '#' . $this->x . '#' . $this->y;
@@ -42,6 +43,7 @@ class SearchCell
             'slug' => $this->slug,
             'displayClass' => $this->displayClass,
             'layers' => $this->layers,
+            'debug' => $this->debug,
         ];
     }
 
@@ -61,6 +63,7 @@ class SearchCell
             slug: $data['slug'],
             displayClass: $data['displayClass'],
             layers: $data['layers'],
+            debug: $data['debug'] ?? [],
         );
     }
 

@@ -61,16 +61,16 @@ class TerrainImportCommand extends Command
     {
         $io       = new SymfonyStyle($input, $output);
         $names    = [
-            'world-1-map-0-0.tmx',
+            // 'world-1-map-0-0.tmx',
             'world-1-map-0-1.tmx',
-            'world-1-map-1-0.tmx',
-            'world-1-map-1-1.tmx',
-            'world-1-map-1-2.tmx',
-            'world-1-map-2-0.tmx',
-            'world-1-map-2-1.tmx',
-            'world-1-map-2-2.tmx',
-            'world-1-cave-1.tmx',
-            'world-1-house-1.tmx',
+            // 'world-1-map-1-0.tmx',
+            // 'world-1-map-1-1.tmx',
+            // 'world-1-map-1-2.tmx',
+            // 'world-1-map-2-0.tmx',
+            // 'world-1-map-2-1.tmx',
+            // 'world-1-map-2-2.tmx',
+            // 'world-1-cave-1.tmx',
+            // 'world-1-house-1.tmx',
         ];
         $filePath = $this->projectDir . '/terrain';
 
@@ -187,12 +187,24 @@ class TerrainImportCommand extends Command
                                 // Find the map index to use
                                 $terrains   = $map['terrains'];
                                 $cellMapIdx = key($terrains);
+                                $tileset = '';
+                                $source = '';
                                 foreach ($terrains as $terrainIdx => $terrainValue) {
-                                    $cellMapIdx = $value - $terrainIdx >= 0 ? $terrainIdx : $cellMapIdx;
+                                    if ($value - $terrainIdx >= 0) {
+                                        $cellMapIdx = $terrainIdx;
+                                        $tileset = $terrainValue['tilesetName'];
+                                        $source = $terrainValue['sanitizePath'] . $terrainValue['tilesetName'];
+                                    } else {
+                                        break;
+                                    }
+                                    // $cellMapIdx = $value - $terrainIdx >= 0 ? $terrainIdx : $cellMapIdx;
                                 }
+                                $tilesetName = str_replace('.tsx', '', $tileset);
                                 $map['cells'][$x][$y]['layers'][$layerIdx] = [
                                     'mapIdx'   => $cellMapIdx,
                                     'idxInMap' => $value - $cellMapIdx,
+                                    'tilesetName'  => $tilesetName,
+                                    'source'   => $source,
                                 ];
                             }
                         } else {

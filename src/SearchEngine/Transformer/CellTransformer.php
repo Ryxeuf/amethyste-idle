@@ -45,6 +45,7 @@ class CellTransformer
             $zIndex++;
 
             $idxInMap = $layer['idxInMap'];
+            $tilesetName = $layer['tilesetName'];
             $terrain = $this->getTerrain($layer);
             $terrainName = str_replace('../../assets/styles/images/terrain/', '', $terrain['image']);
             $terrainName = str_replace('.png', '', $terrainName);
@@ -60,11 +61,12 @@ class CellTransformer
             $xPos = ($idxInMap % $tileColumns) * $tileWidth;
             $yPos = intdiv($idxInMap, $tileColumns) * $tileHeight;
 
-            $style[] = 'width: '.$tileWidth.'px;';
-            $style[] = 'height: '.$tileHeight.'px;';
-            $style[] = 'background-position: -'.$xPos.'px -'.$yPos.'px;';
+            // $style[] = 'width: '.$tileWidth.'px';
+            // $style[] = 'height: '.$tileHeight.'px';
+            // $style[] = 'background-position: -'.$xPos.'px -'.$yPos.'px';
+            // $style[] = 'background-image: url("'.str_replace('../../assets/styles', '.', $terrain['image']).'");';
 
-            $layers[] = ['style' => implode('; ', $style), 'class' => $terrainName];
+            $layers[] = ['style' => implode('; ', $style), 'class' => $terrainName.' cell tileset-'.$tilesetName.'-cell-'.($idxInMap)];
         }
 
         return new SearchCell(
@@ -91,6 +93,10 @@ class CellTransformer
             slug: $slug,
             displayClass: $displayClass,
             layers: $layers,
+            debug: [
+                'layers' => $data['layers'],
+                'terrains' => $this->terrains,
+            ],
         );
     }
     
