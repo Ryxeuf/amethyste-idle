@@ -2,6 +2,8 @@
 
         {# {{ dump(visibleCells.0.0.0) }} #}
     <div class="map-grid" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
+
+        <button id="move-player" data-action="live#action" data-live-action-param="updateCoordinates" data-live-x-param="" data-live-y-param="" style="display: none; visibility: hidden;"></button>
         <input type="hidden" id="x" name="x" data-model="x" value="{{ x }}">
         <input type="hidden" id="y" name="y" data-model="y" value="{{ y }}">
         {# {% set x = x %} #}
@@ -46,7 +48,7 @@
                         {% set posX = (cell.x - startX) * cellSize %}
                     {% set posY = (cell.y - startY) * cellSize %}
                     
-                    <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} {{ cell.slug }} forest" 
+                    <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} {{ cell.slug }} forest w-8 h-8" 
                     {# > #}
                          style="position: absolute; left: {{ posX }}px; top: {{ posY }}px; display: flex; justify-content: center; align-items: center; z-index: 10;">
                         {# <span>{{ cell.x }},{{ cell.y }}</span> #}
@@ -57,7 +59,7 @@
                             <div class="{{ layer.class }}" style="position: absolute; left:0; top:0; {{ layer.style }}"></div>
                         {% endfor %}
                         {% if cell.movementCost != -1 %}
-                        <button class="cell-hover z-[100] opacity-[0.5] w-8 h-8 hover:bg-red-500" 
+                        <button class="cell-hover absolute inset-0 z-[200] w-full h-full" 
                                 data-action="live#action"
                                 data-live-action-param="move"
                                 data-live-x-param="{{ cell.x }}" 

@@ -4,10 +4,11 @@ namespace App\GameEngine\Realtime\Map;
 
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Psr\Log\LoggerInterface;
 
 abstract class MovedHandler
 {
-    public function __construct(private readonly HubInterface $hub)
+    public function __construct(private readonly HubInterface $hub, private readonly LoggerInterface $logger)
     {
     }
 
@@ -21,5 +22,7 @@ abstract class MovedHandler
 
         // The Publisher service is an invokable object
         $this->hub->publish($update);
+
+        $this->logger->info('Mercure published moved {type} {objectId} to {coordinates}', ['type' => $type, 'objectId' => $objectId, 'coordinates' => $coordinates]);
     }
 }

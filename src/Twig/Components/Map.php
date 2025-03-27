@@ -3,21 +3,21 @@
 namespace App\Twig\Components;
 
 use App\Dto\Map\MapDynamicModel;
-use App\Dto\Map\MapModel;
 use App\Entity\App\Player;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 use App\Transformer\MapModelTransformer;
 use App\Helper\PlayerHelper;
-use App\Dto\Map\MapStaticModel;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use App\DataStorage\MapStorage;
 use App\SearchEngine\CellSearchEngine;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use App\GameEngine\Map\MovementCalculator;
-use Symfony\UX\LiveComponent\Attribute\LiveListener;
 use App\GameEngine\Player\PlayerMoveUpdater;
+use Symfony\Component\Messenger\MessageBusInterface;
+use App\GameEngine\Movement\Message\PlayerMoveMessage;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsLiveComponent]
 class Map
@@ -38,9 +38,13 @@ class Map
     #[LiveProp(writable: true)]
     public int $y;
 
+    #[LiveProp(writable: true)]
     public int $startX;
+    #[LiveProp(writable: true)]
     public int $startY;
+    #[LiveProp(writable: true)]
     public int $endX;
+    #[LiveProp(writable: true)]
     public int $endY;
     
     // Taille de la carte
@@ -67,10 +71,12 @@ class Map
         private readonly CellSearchEngine $cellSearchEngine,
         private readonly MovementCalculator $movementCalculator,
         private readonly PlayerMoveUpdater $playerMoveUpdater,
+        private readonly MessageBusInterface $bus,
     )
     {
         // ini_set('memory_limit', '128M');
         $this->player = $this->playerHelper->getPlayer();
+        $this->initXY();
         // $this->map = $this->mapModelTransformer->transformPlayerMapModel($this->player);
         $this->mapDynamic = $this->mapModelTransformer->transformDynamicMapModel($this->player->getMap());
         // $this->mapStatic = $this->mapModelTransformer->transformStaticMapModel($this->player->getMap());
@@ -80,6 +86,26 @@ class Map
         // dump($this->mapStatic['areas']);
         // die;
 
+        // // Extraire les coordonnées du joueur
+        // $coordinates = $this->player->getCoordinates();
+        // if (empty($coordinates) || !str_contains($coordinates, '.')) {
+        //     // Coordonnées par défaut si celles du joueur ne sont pas valides
+        //     $this->x = 0;
+        //     $this->y = 0;
+        // } else {
+        //     [$this->x, $this->y] = array_map('intval', explode('.', $coordinates));
+
+        // }
+        
+        // // Vérifier les coordonnées du joueur et les limites de la carte
+        // dump('Coordonnées du joueur: ' . $this->x . ',' . $this->y);
+        // dump('Limites de la carte: startX=' . ($this->x - 10) . ', startY=' . ($this->y - 10) . 
+        //      ', endX=' . ($this->x + 10) . ', endY=' . ($this->y + 10));
+    }
+
+    public function initXY(): void
+    {
+        $this->player = $this->playerHelper->getPlayer();
         // Extraire les coordonnées du joueur
         $coordinates = $this->player->getCoordinates();
         if (empty($coordinates) || !str_contains($coordinates, '.')) {
@@ -90,15 +116,11 @@ class Map
             [$this->x, $this->y] = array_map('intval', explode('.', $coordinates));
 
         }
-        
-        // // Vérifier les coordonnées du joueur et les limites de la carte
-        // dump('Coordonnées du joueur: ' . $this->x . ',' . $this->y);
-        // dump('Limites de la carte: startX=' . ($this->x - 10) . ', startY=' . ($this->y - 10) . 
-        //      ', endX=' . ($this->x + 10) . ', endY=' . ($this->y + 10));
     }
 
     public function mount()
     {
+        $this->initXY();
         $this->updateCoordinates($this->x, $this->y);
         $this->updateCells();
     }
@@ -119,20 +141,25 @@ class Map
     public function move(#[LiveArg] int $x, #[LiveArg] int $y): void
     {
         // Réinitialiser les valeurs
-        $this->moveQueue = [];
-        $this->isMoving = false;
+        // $this->moveQueue = [];
+        // $this->isMoving = false;
         
         // Calculer le chemin
         $this->movementCalculator->loadMap(10);
         $movements = $this->movementCalculator->calculateMovement($this->x, $this->y, $x, $y);
+
+        $this->bus->dispatch(new PlayerMoveMessage(json_encode(['player' => $this->player->getId(), 'cells' => $movements])));
+        $this->updateCoordinates($this->x, $this->y);
+        // $this->initXY();
+        // dd($movements);
         
-        // Vérifier que nous avons bien obtenu des mouvements
-        if (!empty($movements)) {
-            $this->moveQueue = $movements;
-            $this->isMoving = true;
-            $this->lastMoveTime = microtime(true);
-            $this->checkAndProcessNextMove();
-        }
+        // // Vérifier que nous avons bien obtenu des mouvements
+        // if (!empty($movements)) {
+        //     $this->moveQueue = $movements;
+        //     $this->isMoving = true;
+        //     $this->lastMoveTime = microtime(true);
+        //     $this->checkAndProcessNextMove();
+        // }
     }
 
     #[LiveAction]
