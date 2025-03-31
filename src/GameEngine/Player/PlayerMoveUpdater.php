@@ -7,6 +7,7 @@ use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use App\Event\Map\PlayerMovedEvent;
+use Doctrine\ORM\EntityManager;
 
 class PlayerMoveUpdater
 {
@@ -25,5 +26,13 @@ class PlayerMoveUpdater
         $this->entityManager->flush();
 
         $this->bus->dispatch(new PlayerMovedEvent($player));
+    }
+
+    public function setPlayerMoving(): void
+    {
+        $player = $this->playerHelper->getPlayer();
+        $player->setIsMoving(true);
+        $this->entityManager->flush();
+        $this->entityManager->refresh($player);
     }
 }

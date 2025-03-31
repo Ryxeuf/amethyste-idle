@@ -6,8 +6,9 @@ App\Entity\App\Player:
     energy: 80
     maxEnergy: 100
     map: '@map_1'
-    coordinates: '85.35'
-    lastCoordinates: '85.35'
+    coordinates: '4.7' # '85.35'
+    lastCoordinates: '4.7' # '85.35'
+    isMoving: false
     user: '@user_demo'
     skills: [ '@pyro_materia_1', '@soldier_apprentice' ]
     classType: 'demo'

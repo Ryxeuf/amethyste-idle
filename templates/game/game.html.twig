@@ -73,8 +73,6 @@
         </div>
     </div>
 
-    {% block game_content %}{% endblock %}
-
     <script>
         // Menu mobile pour le jeu
         document.addEventListener('DOMContentLoaded', function() {
@@ -88,4 +86,8 @@
             }
         });
     </script>
+{% endblock %}
+
+{% block body %}
+    {% block game_content %}{% endblock %}
 {% endblock %}

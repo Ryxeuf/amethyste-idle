@@ -84,24 +84,6 @@ class Fight
         $this->players->removeElement($player);
     }
 
-    /**
-     * @return Mob
-     * @deprecated
-     */
-    public function getMob(): Mob
-    {
-        return $this->mobs->first();
-    }
-
-    /**
-     * @param Mob $mob
-     * @deprecated
-     */
-    public function setMob(Mob $mob): void
-    {
-        $this->mobs->add($mob);
-    }
-
     public function addMob(Mob $mob): void
     {
         $this->mobs->add($mob);

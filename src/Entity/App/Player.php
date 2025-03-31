@@ -61,6 +61,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'speed', type: 'integer', options: ['default' => 10])]
     private int $speed = 10;
 
+    #[ORM\Column(name: 'is_moving', type: 'boolean', options: ['default' => false])]
+    private bool $isMoving = false;
+
     #[ORM\Column(name: 'class_type', type: 'string', length: 255)]
     private string $classType;
 
@@ -328,5 +331,15 @@ class Player implements CharacterInterface
     public function setQuests(array|ArrayCollection|PersistentCollection $quests): void
     {
         $this->quests = $quests;
+    }
+
+    public function isMoving(): bool
+    {
+        return $this->isMoving;
+    }
+
+    public function setIsMoving(bool $isMoving): void
+    {
+        $this->isMoving = $isMoving;
     }
 }

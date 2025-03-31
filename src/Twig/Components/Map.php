@@ -148,6 +148,7 @@ class Map
         $this->movementCalculator->loadMap(10);
         $movements = $this->movementCalculator->calculateMovement($this->x, $this->y, $x, $y);
 
+        $this->playerMoveUpdater->setPlayerMoving();
         $this->bus->dispatch(new PlayerMoveMessage(json_encode(['player' => $this->player->getId(), 'cells' => $movements])));
         $this->updateCoordinates($this->x, $this->y);
         // $this->initXY();
