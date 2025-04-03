@@ -66,6 +66,11 @@ class Mob implements CharacterInterface
     #[ORM\Column(name: 'level', type: 'integer')]
     protected int $level;
 
+    public function getName(): string
+    {
+        return $this->getMonster()->getName();
+    }
+
     /**
      * Get id
      *

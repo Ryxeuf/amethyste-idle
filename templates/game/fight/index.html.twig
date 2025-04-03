@@ -1,0 +1,214 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}
+	{{ 'game.map.title'|trans }}
+{% endblock %}
+
+
+{% block site_navbar %}
+	<div class="bg-gray-800 border-b border-purple-900 shadow-md">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex items-center justify-between h-12">
+				<div
+					class="flex items-center">
+					<!-- Titre du jeu -->
+					<div class="flex-shrink-0 mr-4">
+						<a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-xl">{{ 'game.title'|trans }}</a>
+					</div>
+					<div class="hidden md:block">
+						<div class="flex items-baseline space-x-4"></div>
+					</div>
+				</div>
+				<div class="-mr-2 flex md:hidden">
+					<button type="button" class="game-mobile-menu-button bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+						<svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Menu mobile pour le jeu -->
+		<div
+			class="game-mobile-menu hidden md:hidden">
+			<!-- Titre du jeu pour mobile -->
+			<div class="px-2 pt-2 pb-1 border-b border-gray-700">
+				<a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-lg block">{{ 'game.title'|trans }}</a>
+			</div>
+			<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3"></div>
+			<div class="px-2 pt-2 pb-3 border-t border-gray-700">
+				<div
+					class="flex flex-col space-y-2 px-3 py-2"><!-- Les informations de currency et energy ont été supprimées ici -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// Menu mobile pour le jeu
+document.addEventListener('DOMContentLoaded', function () {
+const gameMobileMenuButton = document.querySelector('.game-mobile-menu-button');
+const gameMobileMenu = document.querySelector('.game-mobile-menu');
+
+if (gameMobileMenuButton && gameMobileMenu) {
+gameMobileMenuButton.addEventListener('click', function () {
+gameMobileMenu.classList.toggle('hidden');
+});
+}
+});
+	</script>
+{% endblock %}
+
+
+{% block game_content %}
+	<div
+		class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<!-- Données du combat -->
+		<div id="fight" data-id="{{ fight.id }}" class="hidden">{{ fight|json_encode|raw }}</div>
+
+		<!-- Timeline du combat -->
+		{# <div id="fight-timeline" class="mb-6">
+		        <div class="bg-white rounded-lg shadow">
+		            <div class="px-4 py-5 sm:p-6">
+		                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ "game.fight.timeline"|trans }}</h3>
+		                <div class="fight-timeline-content space-y-2">
+		                    {% for item in fight.timeline %}
+		                        <span class="inline-block px-3 py-1 rounded-md bg-gray-100 text-gray-800 border-l-4 border-purple-500">
+		                            {{ item.name }}
+		                        </span>
+		                    {% endfor %}
+		                </div>
+		            </div>
+		        </div>
+		    </div> #}
+		{{ component('FightTimeline', {fight: fight}) }}
+
+		<div
+			class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<!-- Container du monstre -->
+			<div id="mob-container" class="bg-white rounded-lg shadow p-6">
+				<div id="mob" data-id="{{ mob.id }}"></div>
+				<div class="ibox">
+					<div class="ibox-title">
+						<h2>
+							<div class="pull-left">
+								<div class="monster " data-id="{{ mob.id }}"></div>
+								{# <div class="monster {{ mob|monsterClassCss }}" data-id="{{ mob.id }}"></div> #}
+							</div>
+							<div class="pull-left">
+								<span class="mob-name">{{ mob.name }}</span>
+							</div>
+						</h2>
+					</div>
+					<div class="ibox-content">
+						<div>
+							<span class="fa fa-heart fa-fw life"></span>
+							<span class="mob-life">{{ mob.life }}</span>/<span class="mob-maxlife">{{ mob.maxLife }}</span>
+						</div>
+						<div class="progress progress-mini">
+							<div style="width: {{ mob.life/mob.maxLife*100 }}%;" class="progress-bar progress-bar-danger mob-progress-life"></div>
+						</div>
+
+						<div class="mob-statuses"></div>
+					</div>
+				</div>
+			</div>
+
+			{{ component('FightNotification', {fight: fight}) }}
+
+			<!-- Traitement des actions -->
+			<div id="fight-action-processing" class="hidden">
+				<div class="content"></div>
+				<div class="flex justify-center items-center py-4">
+					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+				</div>
+			</div>
+
+			<!-- Combat terminé -->
+			<div id="fight-terminated" class="{% if not fight.terminated %}hidden{% endif %} bg-white rounded-lg shadow">
+				<div class="px-4 py-5 sm:p-6">
+					<h3 class="text-lg font-medium text-gray-900 mb-4">{{ "game.fight.terminated"|trans }}</h3>
+					<div id="fight-terminated-content">
+						{% if fight.victory %}
+							{% if fight.victory %}
+								<form class="form-horizontal" action="{{ path("fight_loot") }}" role="form" method="post">
+									<input type="hidden" name="fight" value="{{ fight.id }}">
+									<table class="table table-condensed">
+										<thead>
+											<tr>
+												<th colspan="2">{{ "game.fight.loots.loot_list"|trans }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											{% for item in fight.loot %}
+												<tr class="item-line item-line-{{ item.genericItemId }}">
+													<td>
+														<div class="objectlayer objectlayer-list"></div>
+														{# <div class="objectlayer objectlayer-list {{ item|itemClassCss }}"></div> #}
+														<span class="">{{ item.name }}</span>
+													</td>
+													<td class="col-xs-3">
+														<input type="checkbox" class="i-checks" checked name="items[]" value="{{ item.id }}">
+													</td>
+												</tr>
+											{% endfor %}
+										</tbody>
+										<tfoot>
+											<tr>
+												<th></th>
+												<th>
+													<button type="submit" class="btn btn-lg btn-info btn-block btn-outline">{{ "game.fight.loots.loot"|trans }}</button>
+												</th>
+											</tr>
+										</tfoot>
+									</table>
+								</form>
+							{% else %}
+								<i>Vous êtes mort...</i>
+							{% endif %}
+						{% endif %}
+					</div>
+				</div>
+			</div>
+
+			<!-- Actions de combat -->
+			{% if not fight.terminated %}
+				<div id="fight-actions" class="bg-white rounded-lg shadow">
+					<div class="px-4 py-5 sm:p-6">
+						<h3 class="text-lg font-medium text-gray-900 mb-4">{{ "game.fight.choose_action"|trans }}</h3>
+						<div class="space-y-4">
+							<div id="fight-action-container"></div>
+
+							<div class="grid grid-cols-2 gap-4">
+								<button id="action-attack" class="fight-action w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2" data-href="{{ path("app_game_fight_attack") }}" data-content="Attaque en cours...">
+									{{ "game.fight.action.attack"|trans }}
+								</button>
+
+								<button id="fight-spells" class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2" data-href="{{ path("app_game_fight_spell") }}" data-target="#fight-action-container">
+									{{ "game.fight.action.spell"|trans }}
+								</button>
+
+								<button id="fight-objects" class="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2" data-href="{{ path("app_game_fight_item") }}" data-target="#fight-action-container">
+									{{ "game.fight.action.object"|trans }}
+								</button>
+
+								<button id="action-flee" class="fight-action w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2" data-href="{{ path("app_game_fight_flee") }}" data-content="Fuite en cours...">
+									{{ "game.fight.action.flee"|trans }}
+								</button>
+							</div>
+
+							<div id="fight-spells-container" class="hidden">
+								{# {{ include('game/map/fight/spells.html.twig', {'spells': fight.spells}) }} #}
+							</div>
+
+							<div id="fight-items-container" class="hidden">
+								{# {{ include('game/map/fight/items.html.twig', {'items': fight.items}) }} #}
+							</div>
+						</div>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

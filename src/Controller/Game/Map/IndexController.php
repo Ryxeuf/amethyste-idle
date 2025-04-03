@@ -20,7 +20,7 @@ class IndexController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
         if ($player->getFight()) {
-            return $this->redirectToRoute('app_game_map_fight');
+            return $this->redirectToRoute('app_game_fight');
         }
         
         // Vous pouvez ajouter ici la logique pour récupérer les données de la carte

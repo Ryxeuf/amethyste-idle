@@ -136,4 +136,31 @@ class Fight
     {
         $this->inProgress = $inProgress;
     }
+
+    public function isTerminated(): bool
+    {
+        $allPlayersDead = $this->players->filter(function (Player $player) {
+            return $player->isDead();
+        })->count() === $this->players->count();
+
+        $allMobsDead = $this->mobs->filter(function (Mob $mob) {
+            return $mob->isDead();
+        })->count() === $this->mobs->count();
+
+        return $allPlayersDead || $allMobsDead;
+        }
+
+    public function isVictory(): bool
+    {
+        return $this->mobs->filter(function (Mob $mob) {
+            return $mob->isDead();
+        })->count() === $this->mobs->count();
+    }
+
+    public function isDefeat(): bool
+    {
+        return $this->players->filter(function (Player $player) {
+            return $player->isDead();
+        })->count() === $this->players->count();
+    }
 }

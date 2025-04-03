@@ -1,0 +1,7 @@
+<div {{ attributes }} class="space-y-4">
+    {% for notification in notifications %}
+        <div class="rounded-md p-4 {% if notification.type == 'success' %}bg-green-50 text-green-700{% elseif notification.type == 'danger' %}bg-red-50 text-red-700{% else %}bg-blue-50 text-blue-700{% endif %}">
+            {{ notification.content }}
+        </div>
+    {% endfor %}
+</div>
