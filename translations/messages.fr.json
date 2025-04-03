@@ -247,39 +247,19 @@
         "title": "Compte",
         "desc": "Gérez les informations de votre compte",
         "username": "Nom d'utilisateur",
-        "email": "Adresse e-mail",
-        "current_password": "Mot de passe actuel",
-        "new_password": "Nouveau mot de passe",
-        "confirm_password": "Confirmer le mot de passe",
-        "danger_zone": "Zone de danger",
-        "danger_zone_desc": "Les actions ci-dessous sont irréversibles. Soyez prudent.",
-        "delete_account": "Supprimer mon compte"
+        "email": "Adresse e-mail"
       }
     },
-    "skills": {
-      "title": "Compétences",
-      "description": "Développez vos compétences pour devenir plus puissant",
-      "cost": "Coût",
-      "requirements": "Prérequis",
-      "learn": "Apprendre",
-      "learned": "Acquise",
-      "list": "Liste des compétences",
-      "status": "Statut",
-      "no_requirements": "Aucun prérequis"
-    },
-    "domains": {
-      "experience": {
-        "available": "Expérience disponible",
-        "total": "Expérience totale"
-      },
-      "damage": "Dégâts",
-      "hit": "Précision",
-      "critical": "Critique",
-      "details": "Détails du domaine",
-      "statistics": "Statistiques",
-      "progress": "Progression"
-    },
-    "back": "Retour"
+    "fight": {
+      "loot": {
+        "title": "Récapitulatif du combat",
+        "gold": "Or gagné",
+        "experience": "Expérience gagnée",
+        "items": "Objets trouvés",
+        "items_list": "Liste des objets",
+        "collect": "Récupérer les objets sélectionnés"
+      }
+    }
   },
   "common": {
     "cancel": "Annuler",

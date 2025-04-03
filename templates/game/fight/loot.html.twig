@@ -1,0 +1,141 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}
+	{{ 'game.map.title'|trans }}
+{% endblock %}
+
+
+{% block site_navbar %}
+	<div class="bg-gray-800 border-b border-purple-900 shadow-md">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex items-center justify-between h-12">
+				<div
+					class="flex items-center">
+					<!-- Titre du jeu -->
+					<div class="flex-shrink-0 mr-4">
+						<a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-xl">{{ 'game.title'|trans }}</a>
+					</div>
+					<div class="hidden md:block">
+						<div class="flex items-baseline space-x-4"></div>
+					</div>
+				</div>
+				<div class="-mr-2 flex md:hidden">
+					<button type="button" class="game-mobile-menu-button bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+						<svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewbox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+						</svg>
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- Menu mobile pour le jeu -->
+		<div
+			class="game-mobile-menu hidden md:hidden">
+			<!-- Titre du jeu pour mobile -->
+			<div class="px-2 pt-2 pb-1 border-b border-gray-700">
+				<a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-lg block">{{ 'game.title'|trans }}</a>
+			</div>
+			<div class="px-2 pt-2 pb-3 space-y-1 sm:px-3"></div>
+			<div class="px-2 pt-2 pb-3 border-t border-gray-700">
+				<div
+					class="flex flex-col space-y-2 px-3 py-2"><!-- Les informations de currency et energy ont été supprimées ici -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+
+{% block game_content %}
+	<div class="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white py-8">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<!-- En-tête avec les récompenses -->
+			<div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+				<h2 class="text-2xl font-bold text-purple-400 mb-4">{{ 'game.fight.loot.title'|trans }}</h2>
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div class="bg-gray-700 rounded-lg p-4">
+						<h3 class="text-lg font-semibold text-yellow-400">{{ 'game.fight.loot.gold'|trans }}</h3>
+						<p class="text-2xl font-bold">{{ gold|number_format }} <span class="text-yellow-400">💰</span></p>
+					</div>
+					<div class="bg-gray-700 rounded-lg p-4">
+						<h3 class="text-lg font-semibold text-blue-400">{{ 'game.fight.loot.experience'|trans }}</h3>
+						<p class="text-2xl font-bold">{{ experience|number_format }} <span class="text-blue-400">⭐</span></p>
+					</div>
+					<div class="bg-gray-700 rounded-lg p-4">
+						<h3 class="text-lg font-semibold text-green-400">{{ 'game.fight.loot.items'|trans }}</h3>
+						<p class="text-2xl font-bold">{{ items|length }} <span class="text-green-400">🎁</span></p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Liste des objets -->
+			<div class="bg-gray-800 rounded-lg shadow-lg p-6">
+				<h3 class="text-xl font-bold text-purple-400 mb-4">{{ 'game.fight.loot.items_list'|trans }}</h3>
+				<form id="lootForm" method="POST">
+					<input type="hidden" name="fightId" value="{{ fight.id }}">
+					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{% for item in items %}
+							<div class="bg-gray-700 rounded-lg p-4 hover:bg-gray-600 transition-colors">
+								<div class="flex items-center justify-between">
+									<div class="flex items-center space-x-3">
+										<input type="checkbox" name="items[]" value="{{ item.id }}" class="h-5 w-5 text-purple-500 rounded border-gray-600 bg-gray-700 focus:ring-purple-500">
+										<div>
+											<h4 class="text-lg font-semibold">{{ item.name }}</h4>
+											<p class="text-sm text-gray-400">{{ item.description }}</p>
+										</div>
+									</div>
+									<div class="text-right">
+										<p class="text-yellow-400 font-bold">{{ item.value }} 💰</p>
+										<p class="text-sm text-gray-400">{{ item.rarity }}</p>
+									</div>
+								</div>
+							</div>
+						{% endfor %}
+					</div>
+
+					<div class="mt-8 flex justify-end">
+						<button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition-colors">
+							{{ 'game.fight.loot.collect'|trans }}
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.getElementById('lootForm').addEventListener('submit', function(e) {
+			e.preventDefault();
+			
+			const formData = new FormData(this);
+			const items = Array.from(formData.getAll('items[]'));
+			const fightId = formData.get('fightId');
+			
+			fetch('{{ path('app_game_fight_loot_proceed') }}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					fightId: fightId,
+					items: items
+				})
+			})
+			.then(response => response.json())
+			.then(data => {
+				if (data.success) {
+					window.location.href = '{{ path('app_game_map') }}';
+				} else {
+					alert('Une erreur est survenue lors de la récupération des objets.');
+				}
+			})
+			.catch(error => {
+				console.error('Error:', error);
+				alert('Une erreur est survenue lors de la récupération des objets.');
+			});
+		});
+	</script>
+{% endblock %}
+	

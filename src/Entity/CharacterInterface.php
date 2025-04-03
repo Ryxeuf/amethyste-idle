@@ -6,6 +6,8 @@ use DateTime;
 
 interface CharacterInterface
 {
+    public function getId(): int;
+    
     public function setLife(int $life): void;
 
     public function getLife(): int;

@@ -27,6 +27,12 @@ class FightIndexController extends AbstractController
         if (!$player->getFight()) {
             throw $this->createNotFoundException('Fight not found');
         }
+        if ($player->getFight()->isVictory()) {
+            return $this->redirectToRoute('app_game_fight_loot');
+        }
+        if ($player->getFight()->isDefeat()) {
+            return $this->redirectToRoute('app_game_map');
+        }
         
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
