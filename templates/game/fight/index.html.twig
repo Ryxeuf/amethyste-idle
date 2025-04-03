@@ -46,216 +46,369 @@
 	</div>
 
 	<script>
-		// Menu mobile pour le jeu
-document.addEventListener('DOMContentLoaded', function () {
-const gameMobileMenuButton = document.querySelector('.game-mobile-menu-button');
-const gameMobileMenu = document.querySelector('.game-mobile-menu');
+		// Gestion de la modal des détails d'action
+		function closeActionModal() {
+			document.getElementById('action-details-modal').classList.add('hidden');
+		}
 
-if (gameMobileMenuButton && gameMobileMenu) {
-gameMobileMenuButton.addEventListener('click', function () {
-gameMobileMenu.classList.toggle('hidden');
-});
-}
-});
+		document.querySelectorAll('.action-card').forEach(card => {
+			card.addEventListener('click', function() {
+				const details = JSON.parse(this.dataset.details);
+				const modal = document.getElementById('action-details-modal');
+				const content = document.getElementById('action-details-content');
+				
+				let detailsHtml = '';
+				for (const [key, value] of Object.entries(details)) {
+					detailsHtml += `
+						<div class="flex justify-between items-center">
+							<span class="text-gray-400">${key.charAt(0).toUpperCase() + key.slice(1)}</span>
+							<span class="text-white font-medium">${value}</span>
+						</div>
+					`;
+				}
+				
+				content.innerHTML = detailsHtml;
+				modal.classList.remove('hidden');
+			});
+		});
+
+		// Fermer la modal en cliquant sur le fond
+		document.getElementById('action-details-modal').addEventListener('click', function(e) {
+			if (e.target === this) {
+				closeActionModal();
+			}
+		});
+
+		// Fermer la modal avec la touche Escape
+		document.addEventListener('keydown', function(e) {
+			if (e.key === 'Escape') {
+				closeActionModal();
+			}
+		});
+
+		// Menu mobile pour le jeu
+		document.addEventListener('DOMContentLoaded', function () {
+			const gameMobileMenuButton = document.querySelector('.game-mobile-menu-button');
+			const gameMobileMenu = document.querySelector('.game-mobile-menu');
+
+			if (gameMobileMenuButton && gameMobileMenu) {
+				gameMobileMenuButton.addEventListener('click', function () {
+					gameMobileMenu.classList.toggle('hidden');
+				});
+			}
+		});
 	</script>
 {% endblock %}
 
 
 {% block game_content %}
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-		<!-- Données du combat -->
-		<div id="fight" data-id="{{ fight.id }}" class="hidden">{{ fight|json_encode|raw }}</div>
-
-		<!-- Timeline du combat -->
-		{# <div id="fight-timeline" class="mb-6">
-		        <div class="bg-white rounded-lg shadow">
-		            <div class="px-4 py-5 sm:p-6">
-		                <h3 class="text-lg font-medium text-gray-900 mb-4">{{ "game.fight.timeline"|trans }}</h3>
-		                <div class="fight-timeline-content space-y-2">
-		                    {% for item in fight.timeline %}
-		                        <span class="inline-block px-3 py-1 rounded-md bg-gray-100 text-gray-800 border-l-4 border-purple-500">
-		                            {{ item.name }}
-		                        </span>
-		                    {% endfor %}
-		                </div>
-		            </div>
-		        </div>
-		    </div> #}
-		{{ component('FightTimeline', {fight: fight}) }}
-
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-			<!-- Container du joueur -->
-			<div id="player-container" class="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
-				<div class="space-y-4">
+	<div class="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
+		<!-- Barre supérieure avec informations rapides -->
+		{# <div class="bg-gray-800/80 backdrop-blur-sm border-b border-purple-500/20">
+			<div class="max-w-7xl mx-auto px-4 py-2">
+				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-4">
-						<div class="player-avatar w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center">
-							<i class="fas fa-user text-purple-600 text-2xl"></i>
+						<div class="flex items-center space-x-2">
+							<i class="fas fa-coins text-yellow-400"></i>
+							<span class="font-bold">{{ player.gold ?? 0 }}</span>
 						</div>
-						<div>
-							<h2 class="text-2xl font-bold text-gray-800">{{ player.name }}</h2>
-							{# <p class="text-gray-600 text-sm">Niveau {{ player.level }}</p> #}
+						<div class="flex items-center space-x-2">
+							<i class="fas fa-gem text-blue-400"></i>
+							<span class="font-bold">{{ player.gems ?? 0 }}</span>
 						</div>
 					</div>
-					
-					<div class="space-y-2">
-						<div class="flex items-center space-x-2">
-							<span class="text-red-500">
-								<i class="fas fa-heart"></i>
-							</span>
-							<span class="text-gray-700">
-								<span class="player-life font-semibold">{{ player.life }}</span>
-								<span class="text-gray-400">/</span>
-								<span class="player-maxlife">{{ player.maxLife }}</span>
-							</span>
-						</div>
-						
-						<div class="w-full bg-gray-200 rounded-full h-2.5">
-							<div class="bg-red-500 h-2.5 rounded-full transition-all duration-300 player-progress-life" 
-								 style="width: {{ (player.life/player.maxLife)*100 }}%;"></div>
-						</div>
-
-						<div class="flex items-center space-x-2">
-							<span class="text-blue-500">
-								<i class="fas fa-bolt"></i>
-							</span>
-							<span class="text-gray-700">
-								<span class="player-energy font-semibold">{{ player.energy }}</span>
-								<span class="text-gray-400">/</span>
-								<span class="player-maxenergy">{{ player.maxEnergy }}</span>
-							</span>
-						</div>
-						
-						<div class="w-full bg-gray-200 rounded-full h-2.5">
-							<div class="bg-blue-500 h-2.5 rounded-full transition-all duration-300 player-progress-energy" 
-								 style="width: {{ (player.energy/player.maxEnergy)*100 }}%;"></div>
-						</div>
-
-						<div class="player-statuses flex flex-wrap gap-2 mt-2"></div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Container du monstre -->
-			<div id="mob-container" class="bg-white rounded-lg shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
-				<div id="mob" data-id="{{ mob.id }}"></div>
-				<div class="space-y-4">
 					<div class="flex items-center space-x-4">
-						<div class="monster w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center" data-id="{{ mob.id }}"></div>
-						<div>
-							<h2 class="text-2xl font-bold text-gray-800">{{ mob.name }}</h2>
-						</div>
-					</div>
-					
-					<div class="space-y-2">
 						<div class="flex items-center space-x-2">
-							<span class="text-red-500">
-								<i class="fas fa-heart"></i>
-							</span>
-							<span class="text-gray-700">
-								<span class="mob-life font-semibold">{{ mob.life }}</span>
-								<span class="text-gray-400">/</span>
-								<span class="mob-maxlife">{{ mob.maxLife }}</span>
-							</span>
+							<i class="fas fa-trophy text-yellow-500"></i>
+							<span class="font-bold">{{ player.experience ?? 0 }}</span>
 						</div>
-						
-						<div class="w-full bg-gray-200 rounded-full h-2.5">
-							<div class="bg-red-500 h-2.5 rounded-full transition-all duration-300 mob-progress-life" 
-								 style="width: {{ mob.life/mob.maxLife*100 }}%;"></div>
+						<div class="flex items-center space-x-2">
+							<i class="fas fa-crown text-purple-400"></i>
+							<span class="font-bold">Niveau {{ player.level ?? 0 }}</span>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div> #}
 
-						<div class="mob-statuses flex flex-wrap gap-2 mt-2"></div>
+		<div class="max-w-7xl mx-auto px-4 py-8">
+			<!-- Données du combat -->
+			<div id="fight" data-id="{{ fight.id }}" class="hidden">{{ fight|json_encode|raw }}</div>
+
+			<!-- Timeline du combat -->
+			{{ component('FightTimeline', {fight: fight}) }}
+
+			<!-- Modal pour les détails de l'action -->
+			<div id="action-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+				<div class="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4 relative">
+					<button class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200" onclick="closeActionModal()">
+						<i class="fas fa-times text-xl"></i>
+					</button>
+					<div class="flex justify-between items-center mb-4">
+						<h3 class="text-lg font-bold text-white">Détails de l'action</h3>
+					</div>
+					<div id="action-details-content" class="space-y-4">
+						<!-- Les détails seront injectés ici via JavaScript -->
 					</div>
 				</div>
 			</div>
 
-			{{ component('FightNotification', {fight: fight}) }}
-
-			<!-- Traitement des actions -->
-			<div id="fight-action-processing" class="hidden">
-				<div class="content"></div>
-				<div class="flex justify-center items-center py-8">
-					<div class="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent"></div>
-				</div>
-			</div>
-
-			<!-- Combat terminé -->
-			<div id="fight-terminated" class="{% if not fight.terminated %}hidden{% endif %} bg-white rounded-lg shadow-lg p-6">
-				<div class="space-y-6">
-					<h3 class="text-2xl font-bold text-gray-800">{{ "game.fight.terminated"|trans }}</h3>
-					<div id="fight-terminated-content">
-						{% if fight.victory %}
-							<form class="space-y-4" action="{{ path("fight_loot") }}" role="form" method="post">
-								<input type="hidden" name="fight" value="{{ fight.id }}">
-								<div class="bg-gray-50 rounded-lg p-4">
-									<h4 class="text-lg font-semibold mb-4">{{ "game.fight.loots.loot_list"|trans }}</h4>
-									<div class="space-y-3">
-										{% for item in fight.loot %}
-											<div class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm">
-												<div class="flex items-center space-x-3">
-													<div class="objectlayer objectlayer-list w-8 h-8 bg-gray-100 rounded"></div>
-													<span class="text-gray-700">{{ item.name }}</span>
-												</div>
-												<input type="checkbox" class="form-checkbox h-5 w-5 text-purple-600" checked name="items[]" value="{{ item.id }}">
+			<div class="grid grid-cols-1 lg:grid-cols-7 gap-8">
+				<!-- Container des joueurs -->
+				<div class="lg:col-span-2">
+					<div class="grid grid-cols-1 gap-4">
+						<!-- Joueur actuel en premier -->
+						{% for fightPlayer in fight.players %}
+							{% if fightPlayer.id == player.id %}
+								<div class="fightPlayer-container bg-gradient-to-br from-purple-900/80 to-purple-800/80 backdrop-blur-sm rounded-xl border-2 border-purple-500 p-6 transform transition-all duration-300 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/20" data-fightPlayer-id="{{ fightPlayer.id }}">
+									<div class="space-y-4">
+										<div class="flex items-center space-x-4">
+											<div class="fightPlayer-avatar w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg ring-2 ring-purple-400">
+												<i class="fas fa-user text-white text-2xl"></i>
 											</div>
-										{% endfor %}
+											<div>
+												<h2 class="text-xl font-bold text-white">{{ fightPlayer.name }}</h2>
+												<div class="flex items-center space-x-2 mt-1">
+													<div class="w-24 bg-gray-700 rounded-full h-1.5">
+														<div class="bg-purple-400 h-1.5 rounded-full" style="width: {{ ((fightPlayer.experience??0)/(fightPlayer.nextLevelExperience??1))*100 }}%;"></div>
+													</div>
+													<span class="text-xs text-purple-300">Niveau {{ fightPlayer.level ?? 0 }}</span>
+												</div>
+											</div>
+										</div>
+										
+										<div class="space-y-2">
+											<div>
+												<div class="flex items-center justify-between mb-1">
+													<div class="flex items-center space-x-2">
+														<i class="fas fa-heart text-red-400"></i>
+														<span class="text-sm font-medium text-white">Points de vie</span>
+													</div>
+													<span class="text-sm font-bold text-white">{{ fightPlayer.life }}/{{ fightPlayer.maxLife }}</span>
+												</div>
+												<div class="w-full bg-gray-700 rounded-full h-2">
+													<div class="bg-red-500 h-2 rounded-full transition-all duration-300 fightPlayer-progress-life" 
+														 style="width: {{ (fightPlayer.life/fightPlayer.maxLife)*100 }}%;"></div>
+												</div>
+											</div>
+
+											<div>
+												<div class="flex items-center justify-between mb-1">
+													<div class="flex items-center space-x-2">
+														<i class="fas fa-bolt text-blue-400"></i>
+														<span class="text-sm font-medium text-white">Énergie</span>
+													</div>
+													<span class="text-sm font-bold text-white">{{ fightPlayer.energy }}/{{ fightPlayer.maxEnergy }}</span>
+												</div>
+												<div class="w-full bg-gray-700 rounded-full h-2">
+													<div class="bg-blue-500 h-2 rounded-full transition-all duration-300 fightPlayer-progress-energy" 
+														 style="width: {{ (fightPlayer.energy/fightPlayer.maxEnergy)*100 }}%;"></div>
+												</div>
+											</div>
+										</div>
+
+										<div class="fightPlayer-statuses flex flex-wrap gap-2"></div>
 									</div>
 								</div>
-								<button type="submit" class="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-300">
-									{{ "game.fight.loots.loot"|trans }}
-								</button>
-							</form>
-						{% else %}
-							<div class="text-center py-8">
-								<i class="text-gray-600 text-xl">Vous êtes mort...</i>
+							{% endif %}
+						{% endfor %}
+
+						<!-- Autres joueurs -->
+						{% for fightPlayer in fight.players %}
+							{% if fightPlayer.id != player.id %}
+								<div class="fightPlayer-container bg-gray-800/80 backdrop-blur-sm rounded-xl border border-purple-500/20 p-6 transform transition-all duration-300 hover:border-purple-500/40" data-fightPlayer-id="{{ fightPlayer.id }}">
+									<div class="space-y-4">
+										<div class="flex items-center space-x-4">
+											<div class="fightPlayer-avatar w-16 h-16 bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl flex items-center justify-center shadow-lg">
+												<i class="fas fa-user text-white text-2xl"></i>
+											</div>
+											<div>
+												<h2 class="text-xl font-bold text-white">{{ fightPlayer.name }}</h2>
+												<div class="flex items-center space-x-2 mt-1">
+													<div class="w-24 bg-gray-700 rounded-full h-1.5">
+														<div class="bg-purple-500 h-1.5 rounded-full" style="width: {{ ((fightPlayer.experience??0)/(fightPlayer.nextLevelExperience??1))*100 }}%;"></div>
+													</div>
+													<span class="text-xs text-gray-400">Niveau {{ fightPlayer.level ?? 0 }}</span>
+												</div>
+											</div>
+										</div>
+										
+										<div class="space-y-2">
+											<div>
+												<div class="flex items-center justify-between mb-1">
+													<div class="flex items-center space-x-2">
+														<i class="fas fa-heart text-red-400"></i>
+														<span class="text-sm font-medium">Points de vie</span>
+													</div>
+													<span class="text-sm font-bold">{{ fightPlayer.life }}/{{ fightPlayer.maxLife }}</span>
+												</div>
+												<div class="w-full bg-gray-700 rounded-full h-2">
+													<div class="bg-red-500 h-2 rounded-full transition-all duration-300 fightPlayer-progress-life" 
+														 style="width: {{ (fightPlayer.life/fightPlayer.maxLife)*100 }}%;"></div>
+												</div>
+											</div>
+
+											<div>
+												<div class="flex items-center justify-between mb-1">
+													<div class="flex items-center space-x-2">
+														<i class="fas fa-bolt text-blue-400"></i>
+														<span class="text-sm font-medium">Énergie</span>
+													</div>
+													<span class="text-sm font-bold">{{ fightPlayer.energy }}/{{ fightPlayer.maxEnergy }}</span>
+												</div>
+												<div class="w-full bg-gray-700 rounded-full h-2">
+													<div class="bg-blue-500 h-2 rounded-full transition-all duration-300 fightPlayer-progress-energy" 
+														 style="width: {{ (fightPlayer.energy/fightPlayer.maxEnergy)*100 }}%;"></div>
+												</div>
+											</div>
+										</div>
+
+										<div class="fightPlayer-statuses flex flex-wrap gap-2"></div>
+									</div>
+								</div>
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+
+				<!-- Zone centrale de combat -->
+				<div class="lg:col-span-3">
+					<div class="bg-gray-800/80 backdrop-blur-sm rounded-xl border border-purple-500/20 p-6 h-full">
+						<div class="flex flex-col items-center justify-center h-full space-y-8">
+							<!-- Animation de combat ici -->
+							<div class="relative w-64 h-64">
+								<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full animate-pulse"></div>
+								<div class="absolute inset-0 flex items-center justify-center">
+									<div class="w-32 h-32 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center shadow-lg">
+										<i class="fas fa-swords text-white text-4xl"></i>
+									</div>
+								</div>
 							</div>
-						{% endif %}
+
+							<!-- Actions de combat -->
+							{% if not fight.terminated %}
+								<div class="grid grid-cols-2 gap-4 w-full">
+									<button id="action-attack" 
+											class="fight-action w-full px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105"
+											data-href="{{ path("app_game_fight_attack") }}" 
+											data-content="Attaque en cours...">
+										<i class="fas fa-sword mr-2"></i>
+										{{ "game.fight.action.attack"|trans }}
+									</button>
+
+									<button id="fight-spells" 
+											class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105"
+											data-href="{{ path("app_game_fight_spell") }}" 
+											data-target="#fight-action-container">
+										<i class="fas fa-magic mr-2"></i>
+										{{ "game.fight.action.spell"|trans }}
+									</button>
+
+									<button id="fight-objects" 
+											class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105"
+											data-href="{{ path("app_game_fight_item") }}" 
+											data-target="#fight-action-container">
+										<i class="fas fa-bag-shopping mr-2"></i>
+										{{ "game.fight.action.object"|trans }}
+									</button>
+
+									<button id="action-flee" 
+											class="fight-action w-full px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105"
+											data-href="{{ path("app_game_fight_flee") }}" 
+											data-content="Fuite en cours...">
+										<i class="fas fa-running mr-2"></i>
+										{{ "game.fight.action.flee"|trans }}
+									</button>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+
+				<!-- Container des monstres -->
+				<div class="lg:col-span-2">
+					<div class="grid grid-cols-1 gap-4">
+						{% for mob in fight.mobs %}
+							<div class="mob-container bg-gray-800/80 backdrop-blur-sm rounded-xl border border-purple-500/20 p-6 transform transition-all duration-300 hover:border-purple-500/40" data-mob-id="{{ mob.id }}">
+								<div class="space-y-4">
+									<div class="flex items-center space-x-4">
+										<div class="monster w-16 h-16 bg-gradient-to-br from-red-600 to-red-800 rounded-xl flex items-center justify-center shadow-lg" data-id="{{ mob.id }}">
+											<i class="fas fa-skull text-white text-2xl"></i>
+										</div>
+										<div>
+											<h2 class="text-xl font-bold text-white">{{ mob.name }}</h2>
+											<div class="flex items-center space-x-2 mt-1">
+												<span class="text-xs text-gray-400">Niveau {{ mob.level ?? 0 }}</span>
+											</div>
+										</div>
+									</div>
+									
+									<div>
+										<div class="flex items-center justify-between mb-1">
+											<div class="flex items-center space-x-2">
+												<i class="fas fa-heart text-red-400"></i>
+												<span class="text-sm font-medium">Points de vie</span>
+											</div>
+											<span class="text-sm font-bold">{{ mob.life }}/{{ mob.maxLife }}</span>
+										</div>
+										<div class="w-full bg-gray-700 rounded-full h-2">
+											<div class="bg-red-500 h-2 rounded-full transition-all duration-300 mob-progress-life" 
+												 style="width: {{ (mob.life/mob.maxLife)*100 }}%;"></div>
+										</div>
+									</div>
+
+									<div class="mob-statuses flex flex-wrap gap-2"></div>
+								</div>
+							</div>
+						{% endfor %}
 					</div>
 				</div>
 			</div>
 
-			<!-- Actions de combat -->
-			{% if not fight.terminated %}
-				<div id="fight-actions" class="bg-white rounded-lg shadow-lg p-6">
+			<!-- Zone de notification et de butin -->
+			<div class="mt-8">
+				{{ component('FightNotification', {fight: fight}) }}
+
+				<!-- Combat terminé -->
+				<div id="fight-terminated" class="{% if not fight.terminated %}hidden{% endif %} bg-gray-800/80 backdrop-blur-sm rounded-xl border border-purple-500/20 p-6">
 					<div class="space-y-6">
-						<h3 class="text-2xl font-bold text-gray-800">{{ "game.fight.choose_action"|trans }}</h3>
-						
-						<div id="fight-action-container" class="space-y-4"></div>
-
-						<div class="grid grid-cols-2 gap-4">
-							<button id="action-attack" 
-									class="fight-action w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-300"
-									data-href="{{ path("app_game_fight_attack") }}" 
-									data-content="Attaque en cours...">
-								{{ "game.fight.action.attack"|trans }}
-							</button>
-
-							<button id="fight-spells" 
-									class="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-300"
-									data-href="{{ path("app_game_fight_spell") }}" 
-									data-target="#fight-action-container">
-								{{ "game.fight.action.spell"|trans }}
-							</button>
-
-							<button id="fight-objects" 
-									class="w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-300"
-									data-href="{{ path("app_game_fight_item") }}" 
-									data-target="#fight-action-container">
-								{{ "game.fight.action.object"|trans }}
-							</button>
-
-							<button id="action-flee" 
-									class="fight-action w-full px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors duration-300"
-									data-href="{{ path("app_game_fight_flee") }}" 
-									data-content="Fuite en cours...">
-								{{ "game.fight.action.flee"|trans }}
-							</button>
+						<h3 class="text-2xl font-bold text-white text-center">{{ "game.fight.terminated"|trans }}</h3>
+						<div id="fight-terminated-content">
+							{% if fight.victory %}
+								<form class="space-y-4" action="{{ path("fight_loot") }}" role="form" method="post">
+									<input type="hidden" name="fight" value="{{ fight.id }}">
+									<div class="bg-gray-700/50 rounded-xl p-6">
+										<h4 class="text-lg font-semibold text-white mb-4">{{ "game.fight.loots.loot_list"|trans }}</h4>
+										<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+											{% for item in fight.loot %}
+												<div class="flex items-center justify-between p-4 bg-gray-800 rounded-lg border border-purple-500/20">
+													<div class="flex items-center space-x-3">
+														<div class="objectlayer objectlayer-list w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center">
+															<i class="fas fa-cube text-white"></i>
+														</div>
+														<span class="text-white">{{ item.name }}</span>
+													</div>
+													<input type="checkbox" class="form-checkbox h-5 w-5 text-purple-600 rounded border-gray-600" checked name="items[]" value="{{ item.id }}">
+												</div>
+											{% endfor %}
+										</div>
+									</div>
+									<button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105">
+										{{ "game.fight.loots.loot"|trans }}
+									</button>
+								</form>
+							{% else %}
+								<div class="text-center py-8">
+									<div class="inline-block p-4 bg-red-500/20 rounded-lg">
+										<i class="fas fa-skull text-red-500 text-4xl"></i>
+										<p class="text-white mt-2">Vous êtes mort...</p>
+									</div>
+								</div>
+							{% endif %}
 						</div>
-
-						<div id="fight-spells-container" class="hidden"></div>
-						<div id="fight-items-container" class="hidden"></div>
 					</div>
 				</div>
-			{% endif %}
+			</div>
 		</div>
 	</div>
 {% endblock %}
