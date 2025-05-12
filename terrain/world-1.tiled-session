@@ -3,11 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "world-1-map-2-1.tmx",
+    "activeFile": "world-1-map-0-1.tmx",
     "automapping.whileDrawing": false,
     "expandedProjectPaths": [
         "rules",
-        "."
+        ".",
+        "tileset"
     ],
     "exportAsImage.drawTileGrid": true,
     "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
@@ -377,21 +378,22 @@
         "world-1-map-1-0.tmx",
         "world-1-house-1.tmx",
         "world-1-map-1-1.tmx",
-        "world-1-map-2-1.tmx"
+        "world-1-map-2-1.tmx",
+        "world-1-map-0-1.tmx"
     ],
     "project": "world-1.tiled-project",
     "property.type": "string",
     "recentFiles": [
-        "tileset/Terrain.tsx",
         "world-1-map-0-0.tmx",
         "world-1-map-1-0.tmx",
         "world-1-house-1.tmx",
         "world-1-map-1-1.tmx",
         "world-1-map-2-1.tmx",
+        "world-1-map-0-1.tmx",
+        "tileset/Terrain.tsx",
         "world-1-map-1-2.tmx",
         "world-1-cave-1.tmx",
         "world-1-map-2-2.tmx",
-        "world-1-map-0-1.tmx",
         "world-1-map-1-2 (copie).tmx",
         "/home/remy/Sites/amethyste-game/assets/images/terrain/Terrain.tsx"
     ],

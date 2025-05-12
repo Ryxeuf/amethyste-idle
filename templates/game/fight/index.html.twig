@@ -96,7 +96,10 @@
 
 		<div class="max-w-7xl mx-auto px-4 py-8">
 			<!-- Timeline du combat -->
-			{{ component('FightTimeline', {fight: fight}) }}
+			{# {{ component('FightTimeline', {fight: fight}) }} #}
+			<turbo-frame id="timeline">
+				{{ include('game/fight/partials/_timeline.html.twig') }}
+			</turbo-frame>
 
 			<!-- Modal pour les détails de l'action -->
 			<div id="action-details-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
