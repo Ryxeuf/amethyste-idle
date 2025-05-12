@@ -2,12 +2,18 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\ApiResource\FightResource;
+use App\Entity\App\Fight;
 use App\Entity\App\Player;
+use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
+#[AutoconfigureTag]
 interface PlayerActionHandlerInterface
 {
-    public function supports(FightResource $fight, string $context);
+    const ACTION_ATTACK = 'attack';
+    const ACTION_SPELL = 'spell';
+    const ACTION_ITEM = 'item';
 
-    public function applyAction(FightResource $fight, Player $sender): bool;
+    public function supports(Fight $fight, string $context);
+
+    public function applyAction(Fight $fight, Player $sender): bool;
 }

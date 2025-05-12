@@ -2,7 +2,7 @@
 
 namespace App\Helper;
 
-use App\ApiResource\FightResource;
+use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
@@ -17,7 +17,7 @@ class FightHelper
     /**
      * @return object|null|CharacterInterface
      */
-    public function getTarget(FightResource $fight): ?CharacterInterface
+    public function getTarget(Fight $fight): ?CharacterInterface
     {
         if (!$targetClass = $this->getTargetClass($fight)){
             return null;
@@ -26,7 +26,7 @@ class FightHelper
         return $this->entityManager->getRepository($targetClass)->find($fight->target);
     }
 
-    private function getTargetClass(FightResource $fight): ?string
+    private function getTargetClass(Fight $fight): ?string
     {
         $targetClass = match ($fight->targetType) {
             'mob' => Mob::class,

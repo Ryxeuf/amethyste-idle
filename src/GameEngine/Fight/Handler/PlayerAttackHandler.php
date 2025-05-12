@@ -2,7 +2,7 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\ApiResource\FightResource;
+use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\CharacterInterface;
@@ -22,12 +22,12 @@ class PlayerAttackHandler extends AbstractPayerItemHandler
         parent::__construct($entityManager, $fightHelper, $itemUsageResolver);
     }
 
-    public function supports(FightResource $fight, string $context)
+    public function supports(Fight $fight, string $context)
     {
-        return FightResource::ACTION_ATTACK === $context;
+        return PlayerActionHandlerInterface::ACTION_ATTACK === $context;
     }
 
-    protected function getItem(FightResource $fight): PlayerItem
+    protected function getItem(Fight $fight): PlayerItem
     {
         $weapon = $this->gearHelper->getWeaponGear();
         if(!$weapon || !$weapon->getGenericItem() || !$weapon->getGenericItem()->getSpell()) {

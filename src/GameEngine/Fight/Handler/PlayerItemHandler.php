@@ -2,12 +2,12 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\ApiResource\FightResource;
+use App\Entity\App\Fight;
 
 class PlayerItemHandler extends AbstractPayerItemHandler
 {
-    public function supports(FightResource $fight, string $context)
+    public function supports(Fight $fight, string $context)
     {
-        return FightResource::ACTION_ITEM === $context;
+        return PlayerActionHandlerInterface::ACTION_ITEM === $context;
     }
 }

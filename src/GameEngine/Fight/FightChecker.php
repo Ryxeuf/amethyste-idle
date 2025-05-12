@@ -21,7 +21,7 @@ class FightChecker
      * @throws EntityNotFoundException
      * @throws AccessDeniedException
      */
-    public function checkFight(Fight|int $fight): Fight
+    public function checkFight(Fight|int $fight, int $targetId, string $targetType): Fight
     {
         if (is_int($fight)) {
             /** @var Fight $fight */
@@ -34,7 +34,29 @@ class FightChecker
         if($fight !== $player->getFight()) {
             throw new AccessDeniedException();
         }
-
+        if($targetType === 'player'){
+            $playerIds = array_map(fn($player) => $player->getId(), $fight->getPlayers()->toArray());
+            $this->validatePlayerId($targetId, $playerIds);
+        }
+        if($targetType === 'mob'){
+            $mobIds = array_map(fn($mob) => $mob->getId(), $fight->getMobs()->toArray());
+            $this->validateMobId($targetId, $mobIds);
+        }
+        
         return $fight;
+    }
+
+    private function validatePlayerId(int $targetId, array $playerIds): void
+    {
+        if (!in_array($targetId, $playerIds)) {
+            throw new AccessDeniedException("Le joueur n'appartient pas à ce combat");
+        }
+    }
+
+    private function validateMobId(int $targetId, array $mobIds): void
+    {
+        if (!in_array($targetId, $mobIds)) {
+            throw new AccessDeniedException("Le monstre n'appartient pas à ce combat");
+        }
     }
 }

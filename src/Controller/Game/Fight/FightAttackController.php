@@ -13,12 +13,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\CharacterInterface;
+use App\GameEngine\Fight\PlayerActionHandler;
+use App\GameEngine\Fight\Handler\PlayerActionHandlerInterface;
 
 #[Route('/game/fight/attack', name: 'app_game_fight_attack')]
 class FightAttackController extends AbstractController
 {
     public function __construct(
         private readonly PlayerHelper $playerHelper,
+        private readonly PlayerActionHandler $playerActionHandler,
         private readonly EntityManagerInterface $entityManager
     ) {
     }
@@ -50,6 +53,8 @@ class FightAttackController extends AbstractController
             return new JsonResponse(['error' => 'Target not found'], Response::HTTP_NOT_FOUND);
         }
 
+        // $fight = $this->playerActionHandler->doAction($fight, PlayerActionHandlerInterface::ACTION_ATTACK, $data['targetId'], $data['targetType']);
+
         // Effectuer l'attaque
         $damage = $this->calculateDamage($player, $target);
         $target->setLife(max(0, $target->getLife() - $damage));
@@ -68,13 +73,13 @@ class FightAttackController extends AbstractController
         // Retourner les données mises à jour
         return new JsonResponse([
             'success' => true,
-            'damage' => $damage,
-            'target' => [
-                'id' => $target->getId(),
-                'life' => $target->getLife(),
-                'maxLife' => $target->getMaxLife(),
-                'isDead' => $target->isDead()
-            ],
+            // 'damage' => $damage,
+            // 'target' => [
+            //     'id' => $target->getId(),
+            //     'life' => $target->getLife(),
+            //     'maxLife' => $target->getMaxLife(),
+            //     'isDead' => $target->isDead()
+            // ],
             'fight' => [
                 'step' => $fight->getStep(),
                 'terminated' => $fight->isTerminated(),

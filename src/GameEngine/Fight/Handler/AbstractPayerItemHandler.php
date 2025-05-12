@@ -2,7 +2,7 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\ApiResource\FightResource;
+use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\CharacterInterface;
@@ -31,7 +31,7 @@ abstract class AbstractPayerItemHandler implements PlayerActionHandlerInterface
         $this->fightHelper = $fightHelper;
     }
 
-    public function applyAction(FightResource $fight, Player $player): bool
+    public function applyAction(Fight $fight, Player $player): bool
     {
         $item = $this->getItem($fight);
 
@@ -44,7 +44,7 @@ abstract class AbstractPayerItemHandler implements PlayerActionHandlerInterface
         return true;
     }
 
-    protected function getItem(FightResource $fight): PlayerItem
+    protected function getItem(Fight $fight): PlayerItem
     {
         /** @var PlayerItem $item */
         if (!$item = $this->entityManager->getRepository(PlayerItem::class)->find($fight->item)) {

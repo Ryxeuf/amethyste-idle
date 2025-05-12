@@ -35,7 +35,7 @@ class GearHelper
 
     public function getWeaponGear(): ?PlayerItem
     {
-        return $this->getEquippedItem( PlayerItem::GEAR_MAIN_WEAPON);
+        return $this->getEquippedItem(PlayerItem::GEAR_MAIN_WEAPON);
     }
 
     public function getHeadGear(): ?PlayerItem

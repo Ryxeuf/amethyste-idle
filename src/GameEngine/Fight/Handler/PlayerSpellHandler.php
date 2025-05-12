@@ -2,7 +2,7 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\ApiResource\FightResource;
+use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\CharacterInterface;
@@ -21,9 +21,9 @@ class PlayerSpellHandler extends AbstractPayerItemHandler
         parent::__construct($entityManager, $fightHelper, $itemUsageResolver);
     }
 
-    public function supports(FightResource $fight, string $context)
+    public function supports(Fight $fight, string $context)
     {
-        return FightResource::ACTION_SPELL === $context;
+        return PlayerActionHandlerInterface::ACTION_SPELL === $context;
     }
 
     public function resolveItem(PlayerItem $item, Player $player, CharacterInterface $target): bool
