@@ -83,17 +83,30 @@
       "tab": {
         "equipment": "Équipement",
         "items": "Objets",
-        "materials": "Matériaux"
+        "materials": "Matériaux",
+        "bank": "Banque",
+        "materia": "Materia"
       },
       "equipped": "Équipement porté",
       "available_equipment": "Équipement disponible",
       "items": "Objets",
       "materials": "Matériaux",
-      "stats": "Statistiques",
+      "bank": "Banque",
+      "materia": "Materia",
+      "stats": "Statistiques du personnage",
       "slot": {
         "head": "Tête",
+        "shoulder": "Épaules",
+        "neck": "Cou",
         "chest": "Torse",
-        "weapon": "Arme",
+        "hand": "Mains",
+        "main_weapon": "Arme principale",
+        "side_weapon": "Arme secondaire",
+        "belt": "Ceinture",
+        "leg": "Jambes",
+        "foot": "Pieds",
+        "ring_1": "Anneau 1",
+        "ring_2": "Anneau 2",
         "accessory": "Accessoire"
       },
       "actions": {

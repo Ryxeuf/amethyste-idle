@@ -24,6 +24,12 @@
                     <button id="tab-materials-btn" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-gray-400 hover:text-gray-300 hover:border-gray-400 focus:outline-none">
                         {{ 'game.inventory.tab.materials'|trans }}
                     </button>
+                    <button id="tab-bank-btn" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-gray-400 hover:text-gray-300 hover:border-gray-400 focus:outline-none">
+                        {{ 'game.inventory.tab.bank'|trans }}
+                    </button>
+                    <button id="tab-materia-btn" class="tab-btn whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-gray-400 hover:text-gray-300 hover:border-gray-400 focus:outline-none">
+                        {{ 'game.inventory.tab.materia'|trans }}
+                    </button>
                 </nav>
                 
                 <!-- Informations de currency et energy -->
@@ -67,6 +73,28 @@
                     <div class="bg-gray-700 rounded p-3 flex items-center">
                         <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.shoulder'|trans }}</div>
+                            <div class="text-white" id="equipped-shoulder">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.neck'|trans }}</div>
+                            <div class="text-white" id="equipped-neck">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
@@ -78,23 +106,89 @@
                     <div class="bg-gray-700 rounded p-3 flex items-center">
                         <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
                             </svg>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.weapon'|trans }}</div>
-                            <div class="text-white" id="equipped-weapon">-</div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.hand'|trans }}</div>
+                            <div class="text-white" id="equipped-hand">-</div>
                         </div>
                     </div>
                     <div class="bg-gray-700 rounded p-3 flex items-center">
                         <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </div>
                         <div>
-                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.accessory'|trans }}</div>
-                            <div class="text-white" id="equipped-accessory">-</div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.main_weapon'|trans }}</div>
+                            <div class="text-white" id="equipped-main-weapon">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.side_weapon'|trans }}</div>
+                            <div class="text-white" id="equipped-side-weapon">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.belt'|trans }}</div>
+                            <div class="text-white" id="equipped-belt">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.leg'|trans }}</div>
+                            <div class="text-white" id="equipped-leg">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.foot'|trans }}</div>
+                            <div class="text-white" id="equipped-foot">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.ring_1'|trans }}</div>
+                            <div class="text-white" id="equipped-ring-1">-</div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded p-3 flex items-center">
+                        <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm text-gray-400">{{ 'game.inventory.slot.ring_2'|trans }}</div>
+                            <div class="text-white" id="equipped-ring-2">-</div>
                         </div>
                     </div>
                 </div>
@@ -392,6 +486,42 @@
         </div>
     </div>
     
+    <div id="tab-bank" class="tab-content hidden">
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.bank'|trans }}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="bank-list">
+                <!-- Le contenu sera chargé dynamiquement ici -->
+                <div class="animate-pulse">
+                    <div class="h-24 bg-gray-700 rounded"></div>
+                </div>
+                <div class="animate-pulse">
+                    <div class="h-24 bg-gray-700 rounded"></div>
+                </div>
+                <div class="animate-pulse">
+                    <div class="h-24 bg-gray-700 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="tab-materia" class="tab-content hidden">
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.materia'|trans }}</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="materia-list">
+                <!-- Le contenu sera chargé dynamiquement ici -->
+                <div class="animate-pulse">
+                    <div class="h-24 bg-gray-700 rounded"></div>
+                </div>
+                <div class="animate-pulse">
+                    <div class="h-24 bg-gray-700 rounded"></div>
+                </div>
+                <div class="animate-pulse">
+                    <div class="h-24 bg-gray-700 rounded"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Modal pour les détails d'un objet -->
     <div id="item-details-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
@@ -451,6 +581,14 @@
                 // Charger les données de l'onglet si nécessaire
                 if (tabId === 'tab-equipment') {
                     loadEquipmentData();
+                } else if (tabId === 'tab-items') {
+                    loadItemsData('bag');
+                } else if (tabId === 'tab-materials') {
+                    loadMaterialsData();
+                } else if (tabId === 'tab-bank') {
+                    loadItemsData('bank');
+                } else if (tabId === 'tab-materia') {
+                    loadMateriaData();
                 }
             });
         });
@@ -470,49 +608,58 @@
         });
         
         // Ajouter des écouteurs d'événements pour les cartes d'objets
-        itemCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const itemId = card.getAttribute('data-item-id');
-                const itemName = card.querySelector('h3').textContent;
-                const itemDescription = card.querySelector('p:last-child').textContent;
-                const itemType = card.querySelector('p:first-of-type').textContent;
-                const itemQuantity = card.querySelector('.bg-gray-800').textContent;
-                
-                // Mettre à jour le modal avec les détails de l'objet
-                document.getElementById('modal-item-name').textContent = itemName;
-                
-                let detailsHtml = `
-                    <div class="mb-4">
-                        <p class="text-gray-300">${itemDescription}</p>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-gray-400">Type</p>
-                            <p class="text-white">${itemType}</p>
+        function setupItemCardListeners() {
+            document.querySelectorAll('.item-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    const itemId = card.getAttribute('data-item-id');
+                    const itemName = card.querySelector('h3').textContent;
+                    const itemDescription = card.querySelector('p:last-child').textContent;
+                    const itemType = card.querySelector('p:first-of-type').textContent;
+                    const itemQuantity = card.querySelector('.bg-gray-800').textContent;
+                    
+                    // Mettre à jour le modal avec les détails de l'objet
+                    document.getElementById('modal-item-name').textContent = itemName;
+                    
+                    let detailsHtml = `
+                        <div class="mb-4">
+                            <p class="text-gray-300">${itemDescription}</p>
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Quantité</p>
-                            <p class="text-white">${itemQuantity}</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-400">Type</p>
+                                <p class="text-white">${itemType}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Quantité</p>
+                                <p class="text-white">${itemQuantity}</p>
+                            </div>
                         </div>
-                    </div>
-                `;
-                
-                document.getElementById('modal-item-details').innerHTML = detailsHtml;
-                
-                // Définir l'action du bouton en fonction du type d'objet
-                const actionBtn = document.getElementById('modal-action-btn');
-                if (itemType.includes('Consommable')) {
-                    actionBtn.textContent = 'Utiliser';
-                } else if (itemId < 100) { // Objets
-                    actionBtn.textContent = 'Utiliser';
-                } else { // Matériaux
-                    actionBtn.textContent = 'Examiner';
-                }
-                
-                // Afficher le modal
-                modal.classList.remove('hidden');
+                    `;
+                    
+                    document.getElementById('modal-item-details').innerHTML = detailsHtml;
+                    
+                    // Définir l'action du bouton en fonction du type d'objet
+                    const actionBtn = document.getElementById('modal-action-btn');
+                    const isEquipment = card.hasAttribute('data-is-gear') && card.getAttribute('data-is-gear') === 'true';
+                    const isMateria = card.hasAttribute('data-is-materia') && card.getAttribute('data-is-materia') === 'true';
+                    
+                    if (isEquipment) {
+                        actionBtn.textContent = 'Équiper';
+                    } else if (isMateria) {
+                        actionBtn.textContent = 'Serter';
+                    } else if (itemType.includes('Consommable')) {
+                        actionBtn.textContent = 'Utiliser';
+                    } else if (itemId < 100) { // Objets
+                        actionBtn.textContent = 'Utiliser';
+                    } else { // Matériaux
+                        actionBtn.textContent = 'Examiner';
+                    }
+                    
+                    // Afficher le modal
+                    modal.classList.remove('hidden');
+                });
             });
-        });
+        }
         
         // Fonction pour charger les données d'équipement
         function loadEquipmentData() {
@@ -524,6 +671,278 @@
                     updateEquipmentList(data);
                 })
                 .catch(error => console.error('Erreur lors du chargement des équipements:', error));
+        }
+        
+        // Fonction pour mettre à jour la liste des équipements
+        function updateEquipmentList(equipments) {
+            const container = document.getElementById('equipment-list');
+            
+            // Vider le contenu actuel
+            container.innerHTML = '';
+            
+            if (equipments.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">Aucun équipement disponible</div>';
+                return;
+            }
+            
+            // Ajouter chaque équipement à la liste
+            equipments.forEach(item => {
+                const element = document.createElement('div');
+                element.className = 'bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card';
+                element.setAttribute('data-item-id', item.id);
+                element.setAttribute('data-is-gear', 'true');
+                
+                let rarityClass = '';
+                switch (item.rarity) {
+                    case 'common': rarityClass = 'bg-gray-600 text-gray-300'; break;
+                    case 'uncommon': rarityClass = 'bg-green-800 text-green-300'; break;
+                    case 'rare': rarityClass = 'bg-blue-800 text-blue-300'; break;
+                    case 'epic': rarityClass = 'bg-purple-800 text-purple-300'; break;
+                    case 'legendary': rarityClass = 'bg-yellow-700 text-yellow-300'; break;
+                    default: rarityClass = 'bg-gray-600 text-gray-300';
+                }
+                
+                let slotTypeIcon = '';
+                switch (item.slotType) {
+                    case 'head': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />'; break;
+                    case 'neck': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />'; break;
+                    case 'chest': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />'; break;
+                    case 'hand': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />'; break;
+                    case 'main_weapon': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />'; break;
+                    case 'side_weapon': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />'; break;
+                    case 'belt': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />'; break;
+                    case 'leg': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />'; break;
+                    case 'foot': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />'; break;
+                    case 'ring_1':
+                    case 'ring_2': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />'; break;
+                    case 'shoulder': slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />'; break;
+                    default: slotTypeIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+                }
+                
+                element.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 ${rarityClass} rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                ${slotTypeIcon}
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-white font-medium">${item.name}</h3>
+                            <p class="text-xs text-gray-400">${item.slotTypeName || 'Équipement'}</p>
+                        </div>
+                        <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">Niv. ${item.level || 1}</div>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">${item.description || 'Aucune description'}</p>
+                    ${item.stats ? `
+                    <div class="mt-2 pt-2 border-t border-gray-600">
+                        <div class="grid grid-cols-2 gap-2">
+                            ${Object.entries(item.stats).map(([stat, value]) => `
+                            <div class="text-xs">
+                                <span class="text-gray-400">${stat}:</span>
+                                <span class="text-white">${value > 0 ? '+' + value : value}</span>
+                            </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                container.appendChild(element);
+            });
+            
+            // Ajouter les écouteurs d'événements
+            setupItemCardListeners();
+        }
+        
+        // Fonction pour charger les données d'objets (sac ou banque)
+        function loadItemsData(inventoryType) {
+            const endpoint = `/api/game/inventory/${inventoryType === 'bank' ? 'bank' : 'bag'}/items`;
+            
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    // Mettre à jour l'interface avec les données
+                    updateItemsList(data, inventoryType);
+                })
+                .catch(error => console.error(`Erreur lors du chargement des objets (${inventoryType}):`, error));
+        }
+        
+        // Fonction pour mettre à jour la liste des objets
+        function updateItemsList(items, inventoryType) {
+            const containerId = inventoryType === 'bank' ? 'bank-list' : 'items-list';
+            const container = document.getElementById(containerId);
+            
+            // Vider le contenu actuel
+            container.innerHTML = '';
+            
+            if (items.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">Aucun objet disponible</div>';
+                return;
+            }
+            
+            // Ajouter chaque objet à la liste
+            items.forEach(item => {
+                const element = document.createElement('div');
+                element.className = 'bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card';
+                element.setAttribute('data-item-id', item.id);
+                
+                let bgClass = 'bg-purple-900';
+                let textClass = 'text-purple-300';
+                
+                let itemIcon = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />';
+                
+                element.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 ${bgClass} rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ${textClass}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                ${itemIcon}
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-white font-medium">${item.name}</h3>
+                            <p class="text-xs text-gray-400">${item.type || 'Consommable'}</p>
+                        </div>
+                        <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">x${item.quantity || 1}</div>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">${item.description || 'Aucune description'}</p>
+                `;
+                
+                container.appendChild(element);
+            });
+            
+            // Ajouter les écouteurs d'événements
+            setupItemCardListeners();
+        }
+        
+        // Fonction pour charger les données de matériaux
+        function loadMaterialsData() {
+            fetch('/api/game/inventory/materials')
+                .then(response => response.json())
+                .then(data => {
+                    // Mettre à jour l'interface avec les données
+                    updateMaterialsList(data);
+                })
+                .catch(error => console.error('Erreur lors du chargement des matériaux:', error));
+        }
+        
+        // Fonction pour mettre à jour la liste des matériaux
+        function updateMaterialsList(materials) {
+            const container = document.getElementById('materials-list');
+            
+            // Vider le contenu actuel
+            container.innerHTML = '';
+            
+            if (materials.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">Aucun matériau disponible</div>';
+                return;
+            }
+            
+            // Ajouter chaque matériau à la liste
+            materials.forEach(item => {
+                const element = document.createElement('div');
+                element.className = 'bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card';
+                element.setAttribute('data-item-id', item.id);
+                
+                let rarityClass = '';
+                switch (item.rarity) {
+                    case 'common': rarityClass = 'bg-gray-600 text-gray-300'; break;
+                    case 'uncommon': rarityClass = 'bg-green-800 text-green-300'; break;
+                    case 'rare': rarityClass = 'bg-blue-800 text-blue-300'; break;
+                    case 'epic': rarityClass = 'bg-purple-800 text-purple-300'; break;
+                    case 'legendary': rarityClass = 'bg-yellow-700 text-yellow-300'; break;
+                    default: rarityClass = 'bg-gray-600 text-gray-300';
+                }
+                
+                element.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 ${rarityClass} rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-white font-medium">${item.name}</h3>
+                            <p class="text-xs text-gray-400">${item.rarityName || 'Matériau commun'}</p>
+                        </div>
+                        <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">x${item.quantity || 1}</div>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">${item.description || 'Aucune description'}</p>
+                `;
+                
+                container.appendChild(element);
+            });
+            
+            // Ajouter les écouteurs d'événements
+            setupItemCardListeners();
+        }
+        
+        // Fonction pour charger les données de materia
+        function loadMateriaData() {
+            fetch('/api/game/inventory/materia')
+                .then(response => response.json())
+                .then(data => {
+                    // Mettre à jour l'interface avec les données
+                    updateMateriaList(data);
+                })
+                .catch(error => console.error('Erreur lors du chargement des materias:', error));
+        }
+        
+        // Fonction pour mettre à jour la liste des materias
+        function updateMateriaList(materias) {
+            const container = document.getElementById('materia-list');
+            
+            // Vider le contenu actuel
+            container.innerHTML = '';
+            
+            if (materias.length === 0) {
+                container.innerHTML = '<div class="col-span-full text-center text-gray-400 py-8">Aucune materia disponible</div>';
+                return;
+            }
+            
+            // Ajouter chaque materia à la liste
+            materias.forEach(item => {
+                const element = document.createElement('div');
+                element.className = 'bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card';
+                element.setAttribute('data-item-id', item.id);
+                element.setAttribute('data-is-materia', 'true');
+                
+                let rarityClass = '';
+                switch (item.rarity) {
+                    case 'common': rarityClass = 'bg-gray-600 text-gray-300'; break;
+                    case 'uncommon': rarityClass = 'bg-green-800 text-green-300'; break;
+                    case 'rare': rarityClass = 'bg-blue-800 text-blue-300'; break;
+                    case 'epic': rarityClass = 'bg-purple-800 text-purple-300'; break;
+                    case 'legendary': rarityClass = 'bg-yellow-700 text-yellow-300'; break;
+                    default: rarityClass = 'bg-gray-600 text-gray-300';
+                }
+                
+                element.innerHTML = `
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 ${rarityClass} rounded-md flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-white font-medium">${item.name}</h3>
+                            <p class="text-xs text-gray-400">Materia</p>
+                        </div>
+                        <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">Niv. ${item.level || 1}</div>
+                    </div>
+                    <p class="text-sm text-gray-300 mt-1">${item.description || 'Aucune description'}</p>
+                    ${item.effects ? `
+                    <div class="mt-2 pt-2 border-t border-gray-600">
+                        <div class="text-xs text-gray-400">Effets:</div>
+                        <div class="text-sm text-white">${item.effects}</div>
+                    </div>
+                    ` : ''}
+                `;
+                
+                container.appendChild(element);
+            });
+            
+            // Ajouter les écouteurs d'événements
+            setupItemCardListeners();
         }
         
         // Charger les données de l'onglet par défaut
