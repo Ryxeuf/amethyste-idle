@@ -1,0 +1,39 @@
+{% extends 'turbo_stream.html.twig' %}
+
+{% block turbo_stream_content %}
+<turbo-frame id="inventory-content">
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.materials'|trans }}</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {% if materials is empty %}
+                <div class="col-span-full text-center text-gray-400 py-8">Aucun matériau disponible</div>
+            {% else %}
+                {% for item in materials %}
+                    <div class="bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card" data-item-id="{{ item.id }}">
+                        <div class="flex items-center mb-3">
+                            <div class="w-10 h-10 
+                                {% if item.rarity == 'common' %}bg-gray-600 text-gray-300
+                                {% elseif item.rarity == 'uncommon' %}bg-green-800 text-green-300
+                                {% elseif item.rarity == 'rare' %}bg-blue-800 text-blue-300
+                                {% elseif item.rarity == 'epic' %}bg-purple-800 text-purple-300
+                                {% elseif item.rarity == 'legendary' %}bg-yellow-700 text-yellow-300
+                                {% else %}bg-gray-600 text-gray-300
+                                {% endif %} rounded-md flex items-center justify-center mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                </svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-white font-medium">{{ item.name }}</h3>
+                                <p class="text-xs text-gray-400">{{ item.rarityName|default('Matériau commun') }}</p>
+                            </div>
+                            <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">x{{ item.quantity|default(1) }}</div>
+                        </div>
+                        <p class="text-sm text-gray-300 mt-1">{{ item.description|default('Aucune description') }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</turbo-frame>
+{% endblock %} 
