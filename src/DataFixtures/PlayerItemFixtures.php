@@ -88,6 +88,70 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'generic_item' => 'pickaxe',
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 100
+            ],
+            'player_beer_pint' => [
+                'generic_item' => 'beer_pint',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
+            ],
+            'player_life_domain_parchment' => [
+                'generic_item' => 'life_domain_parchment',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
+            ],
+            'player_miner_domain_parchment' => [
+                'generic_item' => 'miner_domain_parchment',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
+            ],
+            'player_herbalist_domain_parchment' => [
+                'generic_item' => 'herbalist_domain_parchment',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
+            ],
+            'player_fishing_rod' => [
+                'generic_item' => 'fishing_rod',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
+            ]
+        ];
+
+        // Création des potions pour le joueur demo
+        $playerPotions = [];
+        for ($i = 1; $i <= 5; $i++) {
+            $playerPotions['player_life_potion_' . $i] = [
+                'generic_item' => 'life_potion',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
+            ];
+        }
+        
+        // Création des équipements pour le joueur demo
+        $playerGearItems = [
+            'player_short_sword' => [
+                'generic_item' => 'short_sword',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1,
+            ],
+            'player_long_sword_2' => [
+                'generic_item' => 'long_sword',
+                'inventory' => 'inventory_bag_2',
+                'nb_usages' => 1,
+            ],
+            'player_leather_boots' => [
+                'generic_item' => 'leather_boots',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1,
+            ],
+            'player_leather_armor' => [
+                'generic_item' => 'leather_armor',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1,
+            ],
+            'player_leather_hat' => [
+                'generic_item' => 'leather_hat',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 1
             ]
         ];
         
@@ -110,6 +174,35 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
             $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
             $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
             $playerItem->setNbUsages($data['nb_usages']);
+            $playerItem->setCreatedAt(new \DateTime());
+            $playerItem->setUpdatedAt(new \DateTime());
+            
+            $manager->persist($playerItem);
+            $this->addReference($key, $playerItem);
+        }
+
+        // Création des potions pour le joueur
+        foreach ($playerPotions as $key => $data) {
+            $playerItem = new PlayerItem();
+            $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
+            $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
+            $playerItem->setNbUsages($data['nb_usages']);
+            $playerItem->setCreatedAt(new \DateTime());
+            $playerItem->setUpdatedAt(new \DateTime());
+            
+            $manager->persist($playerItem);
+            $this->addReference($key, $playerItem);
+        }
+        
+        // Création des équipements pour le joueur
+        foreach ($playerGearItems as $key => $data) {
+            $playerItem = new PlayerItem();
+            $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
+            $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
+            $playerItem->setNbUsages($data['nb_usages']);
+            if (isset($data['gear'])) {
+                $playerItem->setGear($data['gear']);
+            }
             $playerItem->setCreatedAt(new \DateTime());
             $playerItem->setUpdatedAt(new \DateTime());
             

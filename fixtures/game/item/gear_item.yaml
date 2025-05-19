@@ -8,6 +8,7 @@ App\Entity\Game\Item:
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
     requirements: ['@soldier_apprentice']
     domain: '@soldier'
+    nbUsages: 100
   long_sword (extends item):
     name: 'Epée longue'
     description: 'Une épée longue de bonne facture'
@@ -17,21 +18,25 @@ App\Entity\Game\Item:
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
     requirements: ['@soldier_apprentice']
     domain: '@soldier'
+    nbUsages: 100
   leather_boots (extends item):
     name: "Bottes de cuir"
     description: "Ca évite de marcher pieds nus"
     type: "gear"
     slug: 'leather-boots'
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_FOOT )>
+    nbUsages: 100
   leather_armor (extends item):
     name: "Armure de cuir"
     description: "Une armure de cuir de vache simple"
     type: "gear"
     slug: 'leather-armor'
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_CHEST )>
+    nbUsages: 100
   leather_hat (extends item):
     name: "Chapeau de cuir"
     description: "Un chapeau de cuir standard de manufacture classique"
     type: "gear"
     slug: 'leather-hat'
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_HEAD )>
+    nbUsages: 100

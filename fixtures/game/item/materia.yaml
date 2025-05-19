@@ -9,6 +9,7 @@ App\Entity\Game\Item:
     spell: '@life_heal'
     requirements: ['@healer_materia_1']
     domain: '@healer'
+    nbUsages: 10
 
 # FIRE
   materia_fire_ball (extends item):
@@ -20,6 +21,7 @@ App\Entity\Game\Item:
     slug: 'm1-fire'
     requirements: ['@pyro_materia_1']
     domain: '@pyromancy'
+    nbUsages: 20
   materia_flame (extends item):
     name: "Flammèche"
     description: ""
@@ -29,6 +31,7 @@ App\Entity\Game\Item:
     slug: 'm1-fire'
     requirements: ['@pyro_materia_1']
     domain: '@pyromancy'
+    nbUsages: 25
   materia_flamer (extends item):
     name: "Feu"
     description: ""
@@ -39,6 +42,7 @@ App\Entity\Game\Item:
     level: 2
     requirements: ['@pyro_materia_2']
     domain: '@pyromancy'
+    nbUsages: 15
   materia_flame_rain (extends item):
     name: "Pluie de feu"
     description: ""
@@ -49,6 +53,7 @@ App\Entity\Game\Item:
     level: 3
     requirements: ['@pyro_materia_3']
     domain: '@pyromancy'
+    nbUsages: 5
 
 # WIND
   materia_wind_lame (extends item):
@@ -60,6 +65,7 @@ App\Entity\Game\Item:
     element: "wind"
     requirements: ['@white_wizard_materia_1']
     domain: '@white_wizard'
+    nbUsages: 20
 
 # EARTH
   materia_stone_throw (extends item):
@@ -71,6 +77,7 @@ App\Entity\Game\Item:
     element: "earth"
     requirements: ['@defender_materia_1']
     domain: '@defender'
+    nbUsages: 20
 
 # DEATH
   materia_punishment (extends item):
@@ -82,6 +89,7 @@ App\Entity\Game\Item:
     element: "death"
     requirements: ['@necro_materia_1']
     domain: '@necro'
+    nbUsages: 8
 
 # NATURE
   materia_liana_whip (extends item):
@@ -93,6 +101,7 @@ App\Entity\Game\Item:
     element: "nature"
     requirements: ['@druid_materia_1']
     domain: '@druid'
+    nbUsages: 15
 
 # METAL
   materia_sharp_blade (extends item):
@@ -104,3 +113,4 @@ App\Entity\Game\Item:
     element: "metal"
     requirements: ['@soldier_materia_1']
     domain: '@soldier'
+    nbUsages: 25

@@ -262,6 +262,28 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100
             ],
+            'leather_hat' => [
+                'name' => 'Chapeau de cuir',
+                'description' => 'Un chapeau de cuir standard de manufacture classique',
+                'type' => 'gear',
+                'slug' => 'leather-hat',
+                'gear_location' => Item::GEAR_LOCATION_HEAD,
+                'price' => 25,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 100
+            ],
+            'leather_armor' => [
+                'name' => 'Armure de cuir',
+                'description' => 'Une armure de cuir de vache simple',
+                'type' => 'gear',
+                'slug' => 'leather-armor',
+                'gear_location' => Item::GEAR_LOCATION_CHEST,
+                'price' => 40,
+                'space' => 2,
+                'energy_cost' => 0,
+                'nb_usages' => 100
+            ],
             
             // Objets divers
             'life_potion' => [
@@ -414,18 +436,6 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'effect' => '{"action":"restore_energy", "amount":15}',
                 'nb_usages' => 1
             ],
-            'leather_boots' => [
-                'name' => 'Bottes en cuir',
-                'description' => 'Des bottes en cuir confortables et résistantes',
-                'type' => 'gear',
-                'gear_location' => 'feet',
-                'slug' => 'leather-boots',
-                'price' => 80,
-                'space' => 2,
-                'energy_cost' => 0,
-                'nb_usages' => 100,
-                'effect' => '{"action":"stat_boost", "stat":"speed", "amount":5}'
-            ],
             'iron_sword' => [
                 'name' => 'Épée en fer',
                 'description' => 'Une épée en fer bien équilibrée',
@@ -461,42 +471,6 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100,
                 'effect' => '{"action":"defense_boost", "amount":5}'
-            ],
-            'leather_armor' => [
-                'name' => 'Armure en cuir',
-                'description' => 'Une armure en cuir offrant une protection légère',
-                'type' => 'gear',
-                'gear_location' => 'body',
-                'slug' => 'leather-armor',
-                'price' => 150,
-                'space' => 3,
-                'energy_cost' => 0,
-                'nb_usages' => 120,
-                'effect' => '{"action":"defense_boost", "amount":12}'
-            ],
-            'iron_helmet' => [
-                'name' => 'Casque en fer',
-                'description' => 'Un casque en fer offrant une bonne protection',
-                'type' => 'gear',
-                'gear_location' => 'head',
-                'slug' => 'iron-helmet',
-                'price' => 180,
-                'space' => 2,
-                'energy_cost' => 0,
-                'nb_usages' => 200,
-                'effect' => '{"action":"defense_boost", "amount":15}'
-            ],
-            'iron_armor' => [
-                'name' => 'Armure en fer',
-                'description' => 'Une armure en fer offrant une bonne protection',
-                'type' => 'gear',
-                'gear_location' => 'body',
-                'slug' => 'iron-armor',
-                'price' => 300,
-                'space' => 4,
-                'energy_cost' => 0,
-                'nb_usages' => 250,
-                'effect' => '{"action":"defense_boost", "amount":25}'
             ],
             'magic_amulet' => [
                 'name' => 'Amulette magique',

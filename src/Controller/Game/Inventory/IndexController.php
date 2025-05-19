@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Inventory;
 
+use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,19 +12,29 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 #[AsController]
 class IndexController extends AbstractController
 {
+    public function __construct(
+        private readonly PlayerHelper $playerHelper
+    ) {
+    }
+
     #[Route('', name: '_index')]
     public function __invoke(): Response
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
         
-        // L'utilisateur connecté
-        $user = $this->getUser();
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            throw $this->createNotFoundException('Joueur non trouvé');
+        }
+
+        $inventory = $this->playerHelper->getBagInventory();
         
         // Données de base pour l'inventaire
         $inventoryData = [
-            'gold' => 0, //method_exists($user, 'getGold') ? $user->getGold() : 0,
-            // Autres données générales si nécessaires
+            'items' => $inventory->getItems(),
+            'size' => $inventory->getSize(),
+            'type' => $inventory->getType(),
         ];
         
         return $this->render('game/inventory/index.html.twig', [

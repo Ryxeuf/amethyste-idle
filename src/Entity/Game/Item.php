@@ -250,7 +250,7 @@ class Item
      */
     public function getProtection(): int
     {
-        return $this->protection;
+        return $this->protection ?? 0;
     }
 
     /**

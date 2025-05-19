@@ -15,12 +15,14 @@ App\Entity\Game\Item:
     type: 'stuff'
     slug: 'fishing-rod'
     domain: '@fisherman'
+    nbUsages: 50
   beer_pint (extends item):
     id: 3
     name: 'Chope de bière'
     description: 'Une chope de bière pour boire'
     type: 'stuff'
     slug: 'beer-pint'
+    nbUsages: 1
   mushroom (extends item):
     id: 4
     name: 'Champignon'
@@ -33,6 +35,7 @@ App\Entity\Game\Item:
     description: 'Permet de casser des cailloux'
     type: 'stuff'
     slug: 'pickaxe'
+    nbUsages: 100
   wood_log (extends item):
     id: 6
     name: 'Buche de bois'
