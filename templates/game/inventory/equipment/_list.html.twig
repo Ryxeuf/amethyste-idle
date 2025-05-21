@@ -95,7 +95,8 @@
                 {% for item in equipments %}
                     <div class="bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card" 
                          data-item-id="{{ item.id }}" 
-                         data-is-gear="true">
+                         data-is-gear="true"
+                         data-slot-type="{{ item.slotType }}">
                         <div class="flex items-center mb-3">
                             <div class="w-10 h-10 
                                 {% if item.rarity == 'common' %}bg-gray-600 text-gray-300
@@ -153,10 +154,72 @@
                                 </div>
                             </div>
                         {% endif %}
+                        <div class="mt-3 text-center">
+                            <button 
+                                class="bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded-md text-sm equip-item-btn"
+                                data-item-id="{{ item.id }}">
+                                {{ 'game.inventory.equip'|trans|default('Équiper') }}
+                            </button>
+                        </div>
                     </div>
                 {% endfor %}
             {% endif %}
         </div>
     </div>
 </turbo-frame>
+
+<script>
+document.addEventListener('turbo:load', () => {
+    initEquipmentButtons();
+});
+
+document.addEventListener('turbo:render', () => {
+    initEquipmentButtons();
+});
+
+function initEquipmentButtons() {
+    const equipButtons = document.querySelectorAll('.equip-item-btn');
+    
+    equipButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const itemId = this.getAttribute('data-item-id');
+            const url = '/game/inventory/equipment/equip/' + itemId;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json',
+                    'Accept': 'text/vnd.turbo-stream.html'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                Turbo.renderStreamMessage(html);
+            })
+            .catch(error => {
+                console.error('Erreur lors de l\'équipement de l\'item:', error);
+            });
+        });
+    });
+    
+    // Optionnel : permettre de cliquer sur toute la carte
+    const itemCards = document.querySelectorAll('.item-card');
+    
+    itemCards.forEach(card => {
+        card.addEventListener('click', function(e) {
+            // Éviter le déclenchement si on a cliqué sur le bouton directement
+            if (!e.target.closest('.equip-item-btn')) {
+                const equipButton = this.querySelector('.equip-item-btn');
+                if (equipButton) {
+                    equipButton.click();
+                }
+            }
+        });
+    });
+}
+</script>
 {% endblock %} 

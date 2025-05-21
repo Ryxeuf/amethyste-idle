@@ -123,6 +123,9 @@
         const modal = document.getElementById('item-details-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
         const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalActionBtn = document.getElementById('modal-action-btn');
+        let currentItemId = null;
+        let currentItemType = null;
         
         closeModalBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
@@ -130,6 +133,48 @@
         
         modalCancelBtn.addEventListener('click', () => {
             modal.classList.add('hidden');
+        });
+        
+        // Gestion de l'action du bouton (Équiper, Utiliser, etc.)
+        modalActionBtn.addEventListener('click', function() {
+            if (!currentItemId) return;
+            
+            if (modalActionBtn.textContent === 'Équiper') {
+                // Appel AJAX pour équiper l'item
+                const url = '/game/inventory/equipment/equip/' + currentItemId;
+                
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/vnd.turbo-stream.html'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    // Fermer la modal
+                    modal.classList.add('hidden');
+                    
+                    // Mettre à jour le contenu
+                    Turbo.renderStreamMessage(html);
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'équipement de l\'item:', error);
+                });
+            } else if (modalActionBtn.textContent === 'Utiliser') {
+                // Logique pour utiliser un objet
+                console.log('Utilisation de l\'objet', currentItemId);
+                modal.classList.add('hidden');
+            } else if (modalActionBtn.textContent === 'Serter') {
+                // Logique pour sertir une materia
+                console.log('Sertissage de la materia', currentItemId);
+                modal.classList.add('hidden');
+            } else {
+                // Action par défaut
+                console.log('Action par défaut pour', currentItemId);
+                modal.classList.add('hidden');
+            }
         });
         
         // Délégation d'événements pour les cartes d'objets ajoutées dynamiquement
@@ -142,7 +187,18 @@
                 const itemName = itemCard.querySelector('h3').textContent;
                 const itemDescription = itemCard.querySelector('p:last-child').textContent;
                 const itemType = itemCard.querySelector('p:first-of-type').textContent;
-                const itemQuantity = itemCard.querySelector('.bg-gray-800').textContent;
+                const itemSlotType = itemCard.getAttribute('data-slot-type') || '';
+                
+                // Stocker l'ID et le type de l'item courant
+                currentItemId = itemId;
+                currentItemType = itemType;
+                
+                // Récupérer la quantité ou le niveau (cela dépend de la structure HTML)
+                let itemQuantityOrLevel = '';
+                const quantityElement = itemCard.querySelector('.bg-gray-800');
+                if (quantityElement) {
+                    itemQuantityOrLevel = quantityElement.textContent;
+                }
                 
                 // Mettre à jour le modal avec les détails de l'objet
                 document.getElementById('modal-item-name').textContent = itemName;
@@ -156,30 +212,55 @@
                             <p class="text-sm text-gray-400">Type</p>
                             <p class="text-white">${itemType}</p>
                         </div>
+                    `;
+                
+                if (itemSlotType) {
+                    detailsHtml += `
                         <div>
-                            <p class="text-sm text-gray-400">Quantité</p>
-                            <p class="text-white">${itemQuantity}</p>
+                            <p class="text-sm text-gray-400">Emplacement</p>
+                            <p class="text-white">${itemSlotType}</p>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
+                
+                if (quantityElement) {
+                    detailsHtml += `
+                        <div>
+                            <p class="text-sm text-gray-400">Niveau</p>
+                            <p class="text-white">${itemQuantityOrLevel}</p>
+                        </div>
+                    `;
+                }
+                
+                detailsHtml += `</div>`;
+                
+                // Ajouter les statistiques si elles existent
+                const statsContainer = itemCard.querySelector('.grid.grid-cols-2.gap-2');
+                if (statsContainer) {
+                    detailsHtml += `
+                        <div class="mt-4 pt-4 border-t border-gray-600">
+                            <p class="text-sm text-gray-400 mb-2">Statistiques</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                ${statsContainer.innerHTML}
+                            </div>
+                        </div>
+                    `;
+                }
                 
                 document.getElementById('modal-item-details').innerHTML = detailsHtml;
                 
                 // Définir l'action du bouton en fonction du type d'objet
-                const actionBtn = document.getElementById('modal-action-btn');
                 const isEquipment = itemCard.hasAttribute('data-is-gear') && itemCard.getAttribute('data-is-gear') === 'true';
                 const isMateria = itemCard.hasAttribute('data-is-materia') && itemCard.getAttribute('data-is-materia') === 'true';
                 
                 if (isEquipment) {
-                    actionBtn.textContent = 'Équiper';
+                    modalActionBtn.textContent = 'Équiper';
                 } else if (isMateria) {
-                    actionBtn.textContent = 'Serter';
+                    modalActionBtn.textContent = 'Serter';
                 } else if (itemType.includes('Consommable')) {
-                    actionBtn.textContent = 'Utiliser';
-                } else if (parseInt(itemId) < 100) { // Objets
-                    actionBtn.textContent = 'Utiliser';
-                } else { // Matériaux
-                    actionBtn.textContent = 'Examiner';
+                    modalActionBtn.textContent = 'Utiliser';
+                } else {
+                    modalActionBtn.textContent = 'Examiner';
                 }
                 
                 // Afficher le modal
