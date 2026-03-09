@@ -9,8 +9,11 @@ class CellSearchEngine extends SearchEngine
 {
     public function getCollection() : Collection
     {
-        if (!$this->client->collections()[self::CELL_INDEX_NAME]->exists()) {
-            $this->client->collections()->create(self::CELL_INDEX_CONFIGURATION);
+        try {
+            if (!$this->client->collections()[self::CELL_INDEX_NAME]->exists()) {
+                $this->client->collections()->create(self::CELL_INDEX_CONFIGURATION);
+            }
+        } catch (\Typesense\Exceptions\ObjectAlreadyExists $e) {
         }
 
         return $this->client->collections()[self::CELL_INDEX_NAME];

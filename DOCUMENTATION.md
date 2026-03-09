@@ -1,0 +1,702 @@
+# Amethyste-Idle — Documentation Technique
+
+> Jeu de rôle idle/navigateur construit avec Symfony 7.2, FrankenPHP, PostgreSQL, Mercure et Tailwind CSS.
+
+---
+
+## Table des matières
+
+1. [Vue d'ensemble](#1-vue-densemble)
+2. [Stack technique](#2-stack-technique)
+3. [Architecture du projet](#3-architecture-du-projet)
+4. [Infrastructure & Déploiement](#4-infrastructure--déploiement)
+5. [Domaines & Routage Traefik](#5-domaines--routage-traefik)
+6. [Modèle de données](#6-modèle-de-données)
+7. [Moteur de jeu (GameEngine)](#7-moteur-de-jeu-gameengine)
+8. [Système de combat](#8-système-de-combat)
+9. [Système de carte](#9-système-de-carte)
+10. [Système d'inventaire & équipement](#10-système-dinventaire--équipement)
+11. [Système de compétences](#11-système-de-compétences)
+12. [Quêtes & PNJ](#12-quêtes--pnj)
+13. [Temps réel (Mercure & Messenger)](#13-temps-réel-mercure--messenger)
+14. [Moteur de recherche (Typesense)](#14-moteur-de-recherche-typesense)
+15. [Authentification & Sécurité](#15-authentification--sécurité)
+16. [Frontend (Twig, Tailwind, Stimulus)](#16-frontend-twig-tailwind-stimulus)
+17. [Commandes CLI](#17-commandes-cli)
+18. [Fixtures & Données de test](#18-fixtures--données-de-test)
+19. [Internationalisation](#19-internationalisation)
+20. [Terrain & Tiled Map Editor](#20-terrain--tiled-map-editor)
+
+---
+
+## 1. Vue d'ensemble
+
+**Amethyste-Idle** est un jeu de rôle idle (RPG) jouable dans le navigateur. Le joueur explore une carte du monde en 2D isométrique (tiles 32x32), combat des monstres au tour par tour, collecte du butin, développe ses compétences par domaines, équipe du matériel et accomplit des quêtes.
+
+### Fonctionnalités principales
+
+- **Carte du monde** interactive avec pathfinding Dijkstra et déplacements asynchrones
+- **Combat tour par tour** avec système de timeline basé sur la vitesse, sorts élémentaires, critiques
+- **Inventaire complet** : sac, banque, materia, équipement avec slots et bitmask
+- **Arbre de compétences** par domaine avec XP, pré-requis et bonus de stats
+- **Système de quêtes** avec tracking de progression (monstres tués, etc.)
+- **PNJ** avec dialogues à branches et conditions
+- **Récolte et jobs** (mineur, herboriste, pêcheur, etc.)
+- **Temps réel** via Mercure SSE (mouvements, respawn de mobs, récolte)
+- **Bilingue** FR/EN
+
+---
+
+## 2. Stack technique
+
+| Couche | Technologie | Version |
+|--------|------------|---------|
+| **Langage** | PHP | 8.3 |
+| **Framework** | Symfony | 7.2 |
+| **Serveur web** | FrankenPHP (Caddy) | 1.x |
+| **Base de données** | PostgreSQL | 16 (Alpine) |
+| **ORM** | Doctrine | 2.x |
+| **Moteur de recherche** | Typesense | 28.0 |
+| **Temps réel (SSE)** | Mercure | Intégré dans Caddy |
+| **File de messages** | Symfony Messenger | Transport Doctrine |
+| **Frontend** | Twig + Tailwind CSS | 3.4 |
+| **Composants dynamiques** | Symfony UX Live Component + Turbo | |
+| **Asset bundling** | Symfony AssetMapper (importmap) | |
+| **Stimulus** | @symfony/stimulus-bundle | |
+| **Containerisation** | Docker (multi-stage) | |
+| **Reverse proxy** | Traefik | 2.11 |
+| **TLS** | Let's Encrypt (TLS-ALPN-01) | |
+
+---
+
+## 3. Architecture du projet
+
+```
+amethyste-idle/
+├── assets/                  # Frontend (JS, CSS, images tilesets)
+│   ├── app.js               # Point d'entrée Stimulus
+│   ├── controllers/          # Controllers Stimulus (CSRF, hello)
+│   ├── js/map/               # Client Mercure pour la carte
+│   └── styles/               # Tailwind + CSS carte + sprites
+├── config/                  # Configuration Symfony
+│   ├── packages/             # Bundles (doctrine, mercure, security, etc.)
+│   ├── routes/               # Routes YAML
+│   └── services.yaml        # Container DI
+├── fixtures/                # Données de seed (YAML)
+│   └── game/                 # Items, skills, spells, monsters
+├── frankenphp/              # Configuration FrankenPHP/Caddy
+│   ├── Caddyfile             # Config serveur web
+│   ├── worker.Caddyfile      # Mode worker (prod)
+│   └── docker-entrypoint.sh  # Script d'initialisation
+├── public/                  # Document root
+├── scripts/                 # Scripts utilitaires
+├── src/                     # Code source PHP
+│   ├── Command/              # 7 commandes CLI
+│   ├── Controller/           # 27 controllers (home, game, fight, etc.)
+│   ├── DataFixtures/         # Fixtures Doctrine
+│   ├── Entity/               # 28 entités (User, Player, Mob, Item, etc.)
+│   ├── Event/                # 21 événements (combat, carte)
+│   ├── GameEngine/           # Cœur du moteur de jeu (52 fichiers)
+│   ├── Helper/               # 11 services utilitaires
+│   ├── SearchEngine/         # Client Typesense
+│   ├── Security/             # Authenticator
+│   ├── Transformer/          # Transformateurs de données
+│   └── Twig/Components/      # 5 Live Components
+├── templates/               # 84 templates Twig
+├── terrain/                 # Fichiers Tiled (TMX, tilesets)
+├── translations/            # i18n (fr, en)
+├── compose.yaml             # Docker Compose principal
+├── compose.prod.yaml        # Override production
+├── compose.override.yaml    # Override développement
+└── Dockerfile               # Image multi-stage FrankenPHP
+```
+
+### Pattern architectural
+
+L'application suit une **architecture événementielle** (Event-Driven) :
+
+1. Les controllers déclenchent des actions (attaque, déplacement, récolte)
+2. Les actions produisent des **événements** (`PlayerAttackHitEvent`, `MobDeadEvent`, `PlayerMovedEvent`, etc.)
+3. Des **EventSubscribers** réagissent : génération de loot, respawn, XP, mise à jour de quêtes, publications Mercure
+4. Le transport Messenger gère les opérations asynchrones (déplacements case par case)
+
+---
+
+## 4. Infrastructure & Déploiement
+
+### Services Docker
+
+| Service | Image | Rôle | Port interne |
+|---------|-------|------|-------------|
+| `php` | `app-php` (FrankenPHP) | Serveur web + Mercure | 80 |
+| `watcher_async_move_consumer` | `app-php` | Worker Messenger (déplacements) | — |
+| `database` | `postgres:16-alpine` | Base de données | 5432 |
+| `typesense` | `typesense/typesense:28.0` | Moteur de recherche | 8109 |
+
+### Réseaux Docker
+
+- **`traefik-network`** (externe) : Connecte le service `php` au reverse proxy Traefik
+- **`internal`** (bridge) : Communication entre les services internes (php ↔ database ↔ typesense)
+
+### Démarrage production
+
+```bash
+docker compose -f compose.yaml -f compose.prod.yaml build
+docker compose -f compose.yaml -f compose.prod.yaml up -d
+
+# Initialisation
+docker compose exec php php bin/console tailwind:build
+docker compose exec php php bin/console asset-map:compile
+docker compose exec php php bin/console doctrine:schema:update --force
+docker compose exec php php bin/console cache:clear
+```
+
+### Démarrage développement
+
+```bash
+docker compose up --build -d
+# compose.override.yaml est chargé automatiquement (ports locaux, xdebug)
+```
+
+---
+
+## 5. Domaines & Routage Traefik
+
+| Domaine | Router Traefik | Usage |
+|---------|---------------|-------|
+| **`amethyste.best`** | `amethyste-site` | Site public (page d'accueil, inscription, connexion) |
+| **`game.amethyste.best`** | `amethyste-game` | Espace de jeu (mode connecté) |
+| **`api.amethyste.best`** | `amethyste-api` | API |
+| **`amethyste.ryxeuf.fr`** | `amethyste-site` | Alias du site public |
+
+Tous les domaines sont servis par le même service FrankenPHP. Le routage Symfony gère la distinction entre les sections (page d'accueil vs jeu vs API) via les routes PHP.
+
+### Certificats TLS
+
+Chaque router Traefik utilise le resolver `letsencrypt` (challenge TLS-ALPN-01 sur le port 443). Les certificats sont générés automatiquement et stockés dans `acme.json` sur le conteneur Traefik.
+
+---
+
+## 6. Modèle de données
+
+### Diagramme des entités principales
+
+```
+User (1) ──── (N) Player (1) ──── (N) Inventory (1) ──── (N) PlayerItem
+  │                 │                                          │
+  │                 ├──── (N) DomainExperience                 ├── genericItem → Item
+  │                 │           └── domain → Domain             ├── slots (N) → Slot
+  │                 │                   └── skills (N) → Skill  └── gear (bitmask)
+  │                 │
+  │                 ├──── (N→N) Skill
+  │                 ├──── (N) PlayerQuest → Quest
+  │                 ├──── fight → Fight
+  │                 └──── map → Map
+  │
+  │          Fight (1) ──── (N) Player
+  │                └──── (N) Mob
+  │                          ├── monster → Monster
+  │                          │       └── monsterItems (N) → MonsterItem → Item
+  │                          └── items (N) → PlayerItem (loot)
+  │
+  │          Map (1) ──── (N) Area (fullData JSON)
+  │               ├──── (N) ObjectLayer (spots, coffres)
+  │               ├──── (N) Pnj (dialogues JSON)
+  │               └──── world → World
+  │
+  └── Item ──── spell → Spell
+           └── requirements (N→N) → Skill
+           └── domain → Domain
+```
+
+### Entités principales
+
+| Entité | Description | Champs clés |
+|--------|-------------|-------------|
+| **User** | Compte utilisateur | email, username, roles, password |
+| **Player** | Personnage jouable | name, life, maxLife, energy, hit, speed, classType, coordinates, isMoving |
+| **Mob** | Instance de monstre | monster (template), level, coordinates, life |
+| **Fight** | Combat en cours | step, inProgress, players[], mobs[] |
+| **Inventory** | Conteneur d'objets | type (bag=1/materia=2/bank=3), size, gold |
+| **PlayerItem** | Instance d'objet possédé | genericItem, gear (bitmask), nbUsages, slots[] |
+| **Slot** | Emplacement materia | element, item_set (materia), item (équipement) |
+| **Map** | Carte du monde | name, areaWidth, areaHeight, areas[], objectLayers[], mobs[] |
+| **Area** | Zone de la carte | fullData (JSON des cellules), coordinates |
+| **ObjectLayer** | Objet interactif | type (spot/chest/other), items, actions, movement |
+| **Item** | Définition d'objet | name, type (stuff/gear/materia), gearLocation, effect, spell |
+| **Monster** | Template de monstre | name, life, speed, attack (Spell), monsterItems[] |
+| **MonsterItem** | Table de loot | monster, item, probability (float) |
+| **Domain** | Domaine de compétence | title, skills[] |
+| **Skill** | Compétence | title, requiredPoints, damage/heal/hit/critical/life bonuses, requirements[] |
+| **Spell** | Sort | name, damage, heal, hit, critical, element |
+| **Pnj** | Personnage non-joueur | name, dialog (JSON), coordinates |
+| **Quest** | Quête | (entité référencée, détails dans fixtures) |
+| **DomainExperience** | XP par domaine | totalExperience, usedExperience, damage/heal/hit/critical |
+| **QueueRespawnMob** | File de respawn | monster, delay, coordinates, map |
+
+### Traits partagés
+
+- **`CharacterStatsTrait`** : `life` (int), `diedAt` (DateTime), `isDead()` — utilisé par Player et Mob
+- **`CoordinatesTrait`** : `coordinates` (string "x.y"), `getX()`, `getY()` — utilisé par Player, Mob, Area, ObjectLayer, QueueRespawnMob
+- **`TimestampableEntity`** : `createdAt`, `updatedAt` (Stof Doctrine Extensions)
+
+---
+
+## 7. Moteur de jeu (GameEngine)
+
+Le moteur est organisé en sous-domaines dans `src/GameEngine/` :
+
+```
+GameEngine/
+├── Fight/              # Système de combat
+│   └── Handler/        # Handlers d'actions (attaque, sort, objet)
+├── Gear/               # Équipement & materia
+├── Generator/          # Génération d'items
+├── Item/               # Résolution d'effets d'items
+├── Job/                # Récolte et jobs
+├── Map/                # Pathfinding Dijkstra
+├── Mob/                # Génération de mobs
+├── Movement/           # Déplacements asynchrones (Messenger)
+├── Player/             # Actions joueur, respawn, dialogues PNJ
+├── Progression/        # XP et acquisition de compétences
+├── Quest/              # Tracking de quêtes
+└── Realtime/Map/       # Publications Mercure (temps réel)
+```
+
+### Événements du moteur
+
+Le moteur repose sur **21 événements** organisés en deux catégories :
+
+**Combat** : `ActionEvent`, `PlayerAttackHit/MissEvent`, `PlayerSpellHit/MissEvent`, `MobActionHit/MissEvent`, `ItemUsedEvent`, `MobDeadEvent`, `PlayerDeadEvent`, `FightLootedEvent`
+
+**Carte** : `PlayerMovedEvent`, `MobMovedEvent`, `PlayerRespawnedEvent`, `MobRespawnedEvent`, `SpotHarvestEvent`, `SpotAvailableEvent`
+
+---
+
+## 8. Système de combat
+
+### Flux de combat
+
+1. Le joueur rencontre un mob sur la carte → `FightHandler` crée un `Fight`
+2. La **timeline** est calculée par `FightTimelineHelper` : chaque combattant a un nombre de tours proportionnel à sa vitesse
+3. Le joueur choisit une action : **Attaquer**, Sort, Objet, Fuir
+4. `PlayerActionHandler` délègue au handler approprié (`PlayerAttackHandler`, `PlayerSpellHandler`, `PlayerItemHandler`)
+5. `FightCalculator::hasAttackHit()` détermine si l'attaque touche (random vs hit chances)
+6. `SpellApplicator` applique les dégâts/soins avec bonus de domaine, critiques (×1.5)
+7. Si un mob meurt → `MobDeadEvent` → `LootGenerator` (items selon probabilités) + `MobDeathQueuing` (respawn en 10s)
+8. Si le joueur meurt → `PlayerDeadEvent` → `PlayerRespawnHandler` (respawn à 50% HP)
+9. Combat terminé → loot → `FightLootedEvent` → `FightCleaner` nettoie
+
+### Calcul des dégâts
+
+```
+hitChances = spell.hit + domainExperience.hit
+isCritical = random(0-99) < (spell.critical + domainExperience.critical)
+damage = spell.damage + domainExperience.damage
+if critical: damage *= 1.5
+targetLife = clamp(targetLife - damage, 0, maxLife)
+```
+
+### Elements de sorts
+
+`NONE`, `FIRE`, `WATER`, `EARTH`, `AIR`, `LIGHT`, `DARK`
+
+---
+
+## 9. Système de carte
+
+### Architecture
+
+1. **Tiled Map Editor** : les cartes sont éditées dans `.tmx` (60×60 tuiles de 32×32 px)
+2. **Import** : `app:terrain:import` parse les TMX → JSON avec couches, tilesets, collisions
+3. **Indexation** : `app:index:cell` insère les cellules dans Typesense
+4. **Rendu** : le Live Component `Map` charge les cellules visibles (rayon 10) via `CellSearchEngine`
+5. **CSS** : `app:tmx:generate-css` génère les classes CSS pour les sprites (`world-1.css`)
+
+### Pathfinding
+
+L'algorithme de **Dijkstra** calcule le chemin le plus court :
+- Graphe : chaque cellule est un nœud, les arêtes sont les mouvements (N/S/E/W) avec coût
+- Obstacles : murs (`movement = -1`), collisions directionnelles (bitmask N/S/E/W)
+- Abilities : certaines cases nécessitent escalade ou natation (bitmask)
+
+### Déplacement asynchrone
+
+1. Clic sur une cellule → `Map::move()` → calcul Dijkstra → `PlayerMoveMessage`
+2. `PlayerMoveMessageHandler` (worker Messenger) traite case par case avec `usleep(250ms)`
+3. À chaque case : détection de mob → déclenchement de combat si mob présent
+4. Publication Mercure (`map/move`) → mise à jour temps réel du client
+
+### Cartes disponibles (World 1)
+
+| Zone | Fichier TMX | Description |
+|------|-------------|-------------|
+| (0,0) à (2,2) | `world-1-map-X-Y.tmx` | 9 zones de carte ouvertes |
+| Intérieur | `world-1-house-1.tmx` | Maison |
+| Souterrain | `world-1-cave-1.tmx` | Grotte |
+
+---
+
+## 10. Système d'inventaire & équipement
+
+### Types d'inventaire
+
+| Type | Constante | Taille par défaut | Description |
+|------|-----------|-------------------|-------------|
+| Sac | `TYPE_BAG = 1` | 100 | Inventaire principal |
+| Materia | `TYPE_MATERIA = 2` | 50 | Stockage de materias |
+| Banque | `TYPE_BANK = 3` | 1000 | Stockage longue durée |
+
+### Types d'items
+
+| Type | Description | Exemples |
+|------|-------------|---------|
+| `stuff` | Consommable | Potions, champignons, matériaux de craft |
+| `gear` | Équipement | Épées, armures, bottes, chapeaux |
+| `materia` | Materia sertissable | Boule de feu, Soin, Lame d'air |
+
+### Système d'équipement (bitmask)
+
+Chaque emplacement est un bit dans le champ `gear` de `PlayerItem` :
+
+| Emplacement | Constante | Valeur |
+|-------------|-----------|--------|
+| Tête | `GEAR_HEAD` | `0b1` |
+| Cou | `GEAR_NECK` | `0b10` |
+| Torse | `GEAR_CHEST` | `0b100` |
+| Mains | `GEAR_HAND` | `0b1000` |
+| Arme principale | `GEAR_MAIN_WEAPON` | `0b10000` |
+| Arme secondaire | `GEAR_SIDE_WEAPON` | `0b100000` |
+| Ceinture | `GEAR_BELT` | `0b1000000` |
+| Jambes | `GEAR_LEG` | `0b10000000` |
+| Pieds | `GEAR_FOOT` | `0b100000000` |
+| Anneau 1 | `GEAR_RING_1` | `0b1000000000` |
+| Anneau 2 | `GEAR_RING_2` | `0b10000000000` |
+| Épaules | `GEAR_SHOULDER` | `0b100000000000` |
+
+### Materia & Slots
+
+- Chaque équipement peut avoir des **Slots** pour sertir des materias
+- Un `Slot` a un `element` et référence le `PlayerItem` materia serti (`item_set`)
+- Le sertissage est géré par `MateriaGearSetter` (vérification des pré-requis, équipement actif)
+
+---
+
+## 11. Système de compétences
+
+### Domaines disponibles
+
+| Catégorie | Domaines |
+|-----------|---------|
+| **Combat** | Pyromancie, Soldat, Soigneur, Défenseur, Nécromancie, Mage blanc, Druide |
+| **Récolte** | Pêcheur, Mineur, Herboriste, Dépeceur |
+| **Artisanat** | Forgeron, Tanneur, Alchimiste, Joaillier |
+
+### Mécanique d'acquisition
+
+1. Le joueur gagne de l'XP dans un domaine en utilisant des items/sorts/récoltes liés
+2. `DomainExperienceEvolver` (EventSubscriber) incrémente l'XP à chaque `ItemUsedEvent` ou `SpotHarvestEvent`
+3. L'XP disponible = XP totale - XP dépensée
+4. Le joueur choisit un skill à débloquer si : assez d'XP + tous les pré-requis remplis
+5. `SkillAcquiring` applique les bonus de stats : `damage`, `heal`, `hit`, `critical`, `life`
+
+### Arbre de compétences (exemple : Pyromancie)
+
+```
+Apprenti pyromancien (gratuit)
+├── Points faibles (+1% critique, 10 pts)
+│   └── Materia niv 2 (20 pts)
+│       └── Materia niv 3 (30 pts)
+├── Efficacité du feu (+1 dégât, 10 pts)
+└── Chaude précision (+1% toucher, 20 pts)
+```
+
+### Arbre de compétences (exemple : Mineur)
+
+```
+Ruby débutant (gratuit)
+├── Ruby apprenti (10 pts)
+│   ├── Ruby avancé (50 pts)
+│   │   └── Ruby avancé+ (100 pts)
+│   │       └── Ruby expert (200 pts)
+│   └── Fer débutant (10 pts, req: Ruby apprenti)
+│       └── Fer apprenti (50 pts)
+```
+
+---
+
+## 12. Quêtes & PNJ
+
+### Système de quêtes
+
+- `PlayerQuest` : quête en cours avec `tracking` (JSON de compteurs)
+- `PlayerQuestCompleted` : quête terminée
+- `QuestTrackingFormater` : génère la structure de tracking depuis les requirements
+- `QuestMonsterTrackingListener` : EventSubscriber sur `MobDeadEvent` → met à jour les compteurs
+- `PlayerQuestHelper` : calcule la progression (%)
+- `PlayerQuestUpdater` : incrémente le compteur de monstres
+
+### Dialogues PNJ
+
+Les PNJ ont des dialogues à branches (JSON) avec :
+- **Étapes** (`steps`) : texte + réponses possibles
+- **Choix** avec `conditional_next` : conditions `quest` (quête complétée) ou `quest_not` (quête non commencée)
+- **Actions** : `accept_quest`, `decline_quest`, etc.
+
+Exemple (PNJ "Hello World") :
+```
+Salutation → Présentation → Offre de quête "Tuer les zombies"
+                                ├── Oui → Acceptation
+                                └── Non → Refus
+```
+
+---
+
+## 13. Temps réel (Mercure & Messenger)
+
+### Mercure SSE
+
+| Topic | Événement | Données publiées |
+|-------|-----------|-----------------|
+| `map/move` | `PlayerMovedEvent` | type, objectId, coordinates |
+| `map/move` | `MobMovedEvent` | type, objectId, coordinates |
+| `map/respawn` | `MobRespawnedEvent` | type, objectId, coordinates |
+| `map/spot` | `SpotHarvestEvent` | objectLayer (spot récolté) |
+| `map/spot` | `SpotAvailableEvent` | objectLayer (spot disponible) |
+
+Le client JavaScript (`assets/js/map/move-listener.js`) écoute les événements Mercure et déclenche la mise à jour du Live Component.
+
+### Symfony Messenger
+
+- **Transport** : `async_movement` (Doctrine queue `movement`)
+- **Message** : `PlayerMoveMessage` (playerId + cellules du chemin)
+- **Handler** : `PlayerMoveMessageHandler` — traite les cases une par une avec pause de 250ms, détecte les mobs, relance un nouveau message pour les cases restantes
+- **Worker** : `amethyste-watcher-async-move-consumer` (conteneur dédié)
+
+---
+
+## 14. Moteur de recherche (Typesense)
+
+### Collection `cells`
+
+Indexe les cellules de la carte pour recherche rapide par position.
+
+- **Client** : `TypeSenseClient` (configuré via variables d'environnement)
+- **Recherche** : `CellSearchEngine::getMapCells(x, y, mapId)` — rayon de 10 cases, pagination 250
+- **Transformation** : `CellTransformer` — calcule les positions de sprite, coûts de mouvement, couches graphiques
+- **Indexation** : commande `app:index:cell` — parcourt World → Map → Area → cellules
+- **Reset** : commande `app:reset-ts` — vide la collection
+
+---
+
+## 15. Authentification & Sécurité
+
+### Configuration
+
+- **Provider** : entité `User` (login par email)
+- **Authenticator** : `LoginFormAuthenticator` (formulaire avec CSRF)
+- **Remember me** : 1 semaine
+
+### Hiérarchie des rôles
+
+```
+ROLE_USER (base)
+├── ROLE_PLAYER (accès au jeu)
+├── ROLE_ADMIN
+│   └── ROLE_SUPER_ADMIN (+ switch user)
+```
+
+### Contrôle d'accès
+
+| Pattern | Rôle requis |
+|---------|------------|
+| `/game/*` | `ROLE_USER` |
+| `/(profiler\|wdt\|css\|images\|js)/` | Aucun (firewall dev) |
+
+### Comptes de test (fixtures)
+
+| Email | Username | Mot de passe | Rôles |
+|-------|----------|-------------|-------|
+| demo@amethyste.fr | demo | test | ADMIN, SUPER_ADMIN, PLAYER |
+| demo2@amethyste.fr | demo2 | test | ADMIN, SUPER_ADMIN, PLAYER |
+
+---
+
+## 16. Frontend (Twig, Tailwind, Stimulus)
+
+### Layouts
+
+- **`base.html.twig`** : Layout racine — navbar publique, fond `bg-gray-900`, sélecteur de langue
+- **`game/game.html.twig`** : Layout jeu — navbar de jeu avec navigation Dashboard/Inventaire/Quêtes/Carte/Skills/Settings
+
+### Pages principales
+
+| Route | Template | Description |
+|-------|----------|-------------|
+| `/` | `home/index.html.twig` | Page d'accueil |
+| `/login` | `security/login.html.twig` | Connexion |
+| `/register` | `registration/register.html.twig` | Inscription |
+| `/game` | `game/index.html.twig` | Dashboard (récap joueur, mini-carte, stats) |
+| `/game/map` | `game/map/index.html.twig` | Carte du monde (Live Component) |
+| `/game/fight` | `game/fight/index.html.twig` | Combat (joueurs vs mobs, timeline, actions) |
+| `/game/fight/loot` | `game/fight/loot.html.twig` | Écran de butin |
+| `/game/inventory` | `game/inventory/index.html.twig` | Inventaire (onglets Turbo Frame) |
+| `/game/skills` | `game/skills/index.html.twig` | Arbre de compétences |
+| `/game/settings` | `game/settings.html.twig` | Paramètres |
+
+### Live Components (Symfony UX)
+
+| Composant | Description |
+|-----------|-------------|
+| `Map` | Carte interactive : affiche les cellules, gère le clic pour déplacement, poll 200ms pendant mouvement |
+| `FightTimeline` | Timeline de combat : affiche l'ordre des actions |
+| `FightNotification` | Notifications de combat : dégâts infligés/reçus |
+| `DashboardPlayerRecap` | Récapitulatif du joueur : vie, carte, position |
+| `Counter` | Compteur de démo |
+
+### Design
+
+- **Tailwind CSS** avec palette custom `primary` en violet (`#6D28D9`)
+- Fond sombre (`bg-gray-900`), texte blanc
+- Système de raretés colorées : common (gris), uncommon (vert), rare (bleu), epic (violet), legendary (orange)
+- Tilesets RPG : Pipoya (32/40/48px), Shikashi Fantasy Icons
+
+---
+
+## 17. Commandes CLI
+
+| Commande | Description |
+|----------|-------------|
+| `app:terrain:import` | Importe les fichiers TMX → JSON (tilesets, couches, collisions avec bitmask directionnel) |
+| `app:tmx:generate-css` | Génère les classes CSS pour chaque tile (sprites). Options : `--single-file`, `--with-sprites`, `--by-layer`, `--filter` |
+| `app:index:cell` | Parcourt World→Map→Area, indexe les cellules dans Typesense |
+| `app:reset-ts` | Vide la collection Typesense `cells` |
+| `app:map:dump` | Dump JSON d'une map : modèle statique (`-m`) ou tag Dijkstra |
+| `app:debug-move` | Debug de pathfinding : teste Dijkstra avec coordonnées, génère `debug.txt` visuel |
+| `app:debug` | Debug de recherche Typesense : affiche les cellules autour du joueur |
+
+---
+
+## 18. Fixtures & Données de test
+
+### Entités seedées
+
+| Catégorie | Nombre | Détail |
+|-----------|--------|--------|
+| **Utilisateurs** | 2 | demo, demo2 |
+| **Joueurs** | 2 | Player demo (4,7), Player demo 2 (85,36) |
+| **Monde** | 1 | "Demo world" |
+| **Carte** | 1 | 60×60 cases |
+| **Inventaires** | 6 | 3 par joueur (sac, materia, banque) |
+| **Domaines** | 15 | Combat (7) + Récolte (4) + Artisanat (4) |
+| **Skills** | ~20 | Pyramides de compétences avec pré-requis |
+| **Sorts** | 14 | Feu (4), Vie (1), Mort (1), Nature (1), Vent (1), Terre (1), Métal (2), None (3) |
+| **Items** | ~25 | Materias (11), Gear (5), Stuff/Consommables (~10), Minerais (2), Plantes (2) |
+| **Monstres** | 4 | Zombie, Taiju, Ochu, Squelette |
+| **Mobs** | 5 | Instances sur la carte |
+| **PNJ** | 1 | "Hello World" avec dialogue à branches |
+| **Table de loot** | 3 | Zombie → Champignon (75%), Peau (90%), Pioche (10%) |
+
+---
+
+## 19. Internationalisation
+
+Deux langues supportées : **Français** (défaut) et **Anglais**.
+
+### Fichiers de traduction
+
+- `translations/messages.fr.json` (~291 lignes)
+- `translations/messages.en.json` (~298 lignes)
+
+### Catégories de clés
+
+| Préfixe | Contenu |
+|---------|---------|
+| `base.*` | Navigation, titre, langue |
+| `home.*` | Page d'accueil |
+| `registration.*` | Inscription |
+| `security.*` | Connexion |
+| `game.nav.*` | Navigation jeu |
+| `game.inventory.*` | Inventaire, slots, actions |
+| `game.map.*` | Carte, régions, ressources, ennemis |
+| `game.stats.*` | Statistiques (attaque, défense, magie, etc.) |
+| `game.settings.*` | Paramètres (4 onglets) |
+| `game.fight.loot.*` | Butin de combat |
+| `game.skills.*` | Compétences |
+| `game.domains.*` | Domaines d'XP |
+| `common.*` | Actions génériques (Annuler, Confirmer, etc.) |
+
+### Changement de langue
+
+Route `GET /change-locale/{locale}` → `LocaleController` → stocke la locale en session → `LocaleListener` l'applique à chaque requête.
+
+---
+
+## 20. Terrain & Tiled Map Editor
+
+### Workflow de création de cartes
+
+1. **Édition** : Tiled Map Editor (`terrain/*.tmx`, `terrain/*.tiled-project`)
+2. **Import** : `php bin/console app:terrain:import` → parse XML TMX → JSON
+3. **Génération CSS** : `php bin/console app:tmx:generate-css` → classes CSS sprites
+4. **Seed Areas** : `php scripts/concat_area_fixtures.php` → `area_data.json`
+5. **Indexation** : `php bin/console app:index:cell` → Typesense
+
+### Format TMX
+
+- **Orientation** : orthogonale, rendu left-up
+- **Dimensions** : 60×60 tuiles, 32×32 pixels/tuile
+- **Tilesets** : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx`
+- **Couches** : background + collisions/objets
+- **Encodage** : CSV
+
+### Système de collision
+
+Le bitmask de collision gère les directions :
+- Mur complet : `movement = -1`
+- Collision directionnelle : bits pour N, S, E, W
+- Capacités spéciales : escalade, natation (bitmask `abilityMask` dans Dijkstra)
+
+### Fichiers de règles
+
+| Fichier | Rôle |
+|---------|------|
+| `borders.tmx` | Transitions entre biomes |
+| `collisions.tmx` | Zones bloquantes |
+| `uncollisions.tmx` | Zones accessibles (override) |
+| `post_collisions.tmx` | Ajustements post-traitement |
+| `teleports.tmx` | Portails entre zones |
+
+---
+
+## Routes complètes
+
+| Méthode | URL | Nom | Controller |
+|---------|-----|-----|-----------|
+| GET | `/` | `app_home` | `HomeController` |
+| GET | `/change-locale/{locale}` | `app_change_locale` | `LocaleController` |
+| GET | `/demo` | `app_demo` | `DemoController` |
+| GET | `/login` | `app_login` | `LoginController` |
+| GET\|POST | `/register` | `app_register` | `RegistrationController` |
+| GET | `/logout` | `app_logout` | `LogoutController` |
+| GET | `/game` | `app_game` | `Game\IndexController` |
+| GET | `/game/settings` | `app_game_settings` | `Game\SettingsController` |
+| GET | `/game/map` | `app_game_map` | `Game\Map\IndexController` |
+| GET | `/game/skills` | `app_game_skills` | `Game\Skill\IndexController` |
+| GET | `/game/skills/domain/{id}` | `app_game_domain_info` | `Game\Skill\DomainInfoController` |
+| POST | `/game/skills/acquire` | `app_game_skill_acquire` | `Game\Skill\AcquireController` |
+| GET | `/game/inventory` | `app_game_inventory_index` | `Game\Inventory\IndexController` |
+| GET | `/game/inventory/items` | `app_game_inventory_items_list` | `Game\Inventory\ItemsController` |
+| GET | `/game/inventory/materials` | `app_game_inventory_materials_list` | `Game\Inventory\MaterialsController` |
+| GET | `/game/inventory/bank` | `app_game_inventory_bank_list` | `Game\Inventory\BankController` |
+| GET | `/game/inventory/equipment` | `app_game_inventory_equipment_list` | `Game\Inventory\EquipmentController` |
+| POST | `/game/inventory/equipment/equip/{id}` | `app_game_inventory_equipment_equip` | `Game\Inventory\EquipItemController` |
+| GET | `/game/inventory/materia` | `app_game_inventory_materia_list` | `Game\Inventory\MateriaController` |
+| GET | `/game/fight` | `app_game_fight` | `Game\Fight\FightIndexController` |
+| POST | `/game/fight/attack` | `app_game_fight_attack` | `Game\Fight\FightAttackController` |
+| POST | `/game/fight/spell` | `app_game_fight_spell` | `Game\Fight\FightSpellController` |
+| POST | `/game/fight/item` | `app_game_fight_item` | `Game\Fight\FightItemController` |
+| POST | `/game/fight/flee` | `app_game_fight_flee` | `Game\Fight\FightFleeController` |
+| GET | `/game/fight/loot` | `app_game_fight_loot` | `Game\Fight\FightLootIndexController` |
+| POST | `/game/fight/loot/proceed` | `app_game_fight_loot_proceed` | `Game\Fight\FightLootProceedController` |
+| GET | `/game/fight/timeline` | `app_game_fight_timeline` | `Game\Fight\FightTimelineController` |

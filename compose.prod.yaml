@@ -1,10 +1,13 @@
-# Production environment override
 services:
   php:
     build:
       context: .
       target: frankenphp_prod
     environment:
-      APP_SECRET: ${APP_SECRET}
+      APP_SECRET: ${APP_SECRET:-e454dd0213910bb338128f1a8306c1caa01114e1c30748e3882eb72ba4c117e7}
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
+      TYPESENSE_API_KEY: ${TYPESENSE_API_KEY:-xyz}
+      TYPESENSE_HOST: typesense
+      TYPESENSE_PORT: "8109"
+      TYPESENSE_PROTOCOL: http
