@@ -1,20 +1,26 @@
-<div {{ attributes }} class="flex justify-center items-center p-2" {% if isMoving %}data-poll="delay(200)|processNextMove"{% endif %}>
+<div {{ attributes }}
+     class="flex justify-center items-center p-2"
+     {{ stimulus_controller('map_mercure', {
+         mercureUrl: mercure_url|default(''),
+         playerId: player.id,
+         cellSize: cellSize,
+         centerOffset: (mapSize // 2) * cellSize,
+         stepDelay: 200
+     }) }}
+>
 
     <div class="relative bg-black" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
 
-        <button id="move-player" data-action="live#action" data-live-action-param="updateCoordinates" data-live-x-param="" data-live-y-param="" style="display: none; visibility: hidden;"></button>
+        <button {{ stimulus_target('map_mercure', 'updateButton') }}
+                data-action="live#action"
+                data-live-action-param="updateCoordinates"
+                data-live-x-param=""
+                data-live-y-param=""
+                style="display: none; visibility: hidden;"></button>
         <input type="hidden" id="x" name="x" data-model="x" value="{{ x }}">
         <input type="hidden" id="y" name="y" data-model="y" value="{{ y }}">
 
-        {# <div class="relative bg-black bg-opacity-50 w-1/3 h-8 align-center z-[100] hidden">
-            <div class="flex justify-center items-center">
-                <span>
-                    {{ x }},{{ y }}
-                </span>
-            </div>
-        </div> #}
-        
-        {# Afficher les autres joueurs #}
+        {# Autres joueurs #}
         {% for otherPlayer in mapDynamic.players %}
             {% if otherPlayer.id != player.id %}
                 {% set otherX = otherPlayer.coordinates|split('.')|first %}
@@ -30,7 +36,7 @@
             {% endif %}
         {% endfor %}
         
-        {# Afficher les monstres #}
+        {# Monstres #}
         {% for mob in mapDynamic.mobs %}
             {% set mobX = mob.coordinates|split('.')|first %}
             {% set mobY = mob.coordinates|split('.')|last %}
@@ -48,7 +54,7 @@
             {% endif %}
         {% endfor %}
         
-        {# Afficher les PNJ #}
+        {# PNJ #}
         {% for pnj in mapDynamic.pnjs %}
             {% set pnjX = pnj.coordinates|split('.')|first %}
             {% set pnjY = pnj.coordinates|split('.')|last %}
@@ -62,7 +68,7 @@
             {% endif %}
         {% endfor %}
         
-        {# Afficher les objets utilisables #}
+        {# Objets utilisables #}
         {% for usableObject in mapDynamic.usableObjects %}
             {% set usableX = usableObject.coordinates|split('.')|first %}
             {% set usableY = usableObject.coordinates|split('.')|last %}
@@ -75,52 +81,34 @@
                 </div>
             {% endif %}
         {% endfor %}
-        
-        {# Compteur de cellules visibles #}
-        {% set visibleCellCount = 0 %}
 
-
-        {# {% if mapStatic.cells is defined and mapStatic.cells|length > 0 %} #}
-            {# Utilisation de mapStatic pour boucler sur les cellules #}
-            {% for x,row in visibleCells %}
-                {% for y,cell in row %}
-                    {# {% if cell.x >= startX and cell.x <= endX and cell.y >= startY and cell.y <= endY %} #}
-                        {% set visibleCellCount = visibleCellCount + 1 %}
-                        {% set isPlayer = (cell.x == x and cell.y == y) %}
-                        {% set posX = (cell.x - startX) * cellSize %}
-                    {% set posY = (cell.y - startY) * cellSize %}
-                    
-                    <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} {{ cell.slug }} forest w-8 h-8" 
-                    {# > #}
-                         style="position: absolute; left: {{ posX }}px; top: {{ posY }}px; display: flex; justify-content: center; align-items: center; z-index: 10;">
-                        {# <span>{{ cell.x }},{{ cell.y }}</span> #}
-                        {# <div class="debug hidden">
-                            {{ (cell.debug)|json_encode }}
-                        </div> #}
-                        {% for layer in cell.layers %}
-                            <div class="{{ layer.class }}" style="position: absolute; left:0; top:0; {{ layer.style }}"></div>
-                        {% endfor %}
-                        {% if cell.movementCost != -1 %}
-                        <button class="cell-hover absolute inset-0 z-[200] w-full h-full" 
-                                data-action="live#action"
-                                data-live-action-param="move"
-                                data-live-x-param="{{ cell.x }}" 
-                                data-live-y-param="{{ cell.y }}"
-                            ></button>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+        {# Cellules de la carte #}
+        {% for x,row in visibleCells %}
+            {% for y,cell in row %}
+                {% set posX = (cell.x - startX) * cellSize %}
+                {% set posY = (cell.y - startY) * cellSize %}
+                
+                <div class="map-cell cell cell-{{ cell.x }}-{{ cell.y }} {{ cell.slug }} forest w-8 h-8" 
+                     style="position: absolute; left: {{ posX }}px; top: {{ posY }}px; display: flex; justify-content: center; align-items: center; z-index: 10;">
+                    {% for layer in cell.layers %}
+                        <div class="{{ layer.class }}" style="position: absolute; left:0; top:0; {{ layer.style }}"></div>
+                    {% endfor %}
+                    {% if cell.movementCost != -1 %}
+                    <button class="cell-hover absolute inset-0 z-[200] w-full h-full" 
+                            data-action="live#action"
+                            data-live-action-param="move"
+                            data-live-x-param="{{ cell.x }}" 
+                            data-live-y-param="{{ cell.y }}"
+                        ></button>
+                    {% endif %}
+                </div>
             {% endfor %}
-            
-            {# Afficher le nombre de cellules visibles #}
-            {# <div style="position: absolute; top: -20px; left: 0; background-color: rgba(0,0,0,0.7); color: white; padding: 2px 5px; font-size: 12px;">
-                Cellules visibles: {{ visibleCellCount }} / {{ 0 }}
-            </div> #}
-        {# {% endif %} #}
+        {% endfor %}
         
-        {# Afficher le joueur #}
-        <div class="player-marker" 
-             style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: 320px; top: 320px; background-color: red; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 55;">
+        {# Marqueur du joueur #}
+        <div {{ stimulus_target('map_mercure', 'playerMarker') }}
+             class="player-marker" 
+             style="width: {{ cellSize }}px; height: {{ cellSize }}px; position: absolute; left: {{ (mapSize // 2) * cellSize }}px; top: {{ (mapSize // 2) * cellSize }}px; background-color: red; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 55;">
             <span style="color: white; font-weight: bold;">P</span>
         </div>
     </div>
@@ -141,7 +129,7 @@
         }
         
         .player-marker {
-            transition: left 0.2s ease, top 0.2s ease;
+            transition: left 0.15s ease, top 0.15s ease;
         }
     </style>
 

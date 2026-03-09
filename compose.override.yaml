@@ -28,7 +28,3 @@ services:
   database:
     ports:
       - "32768:5432"
-
-  typesense:
-    ports:
-      - "8109:8109"

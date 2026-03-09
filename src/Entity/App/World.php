@@ -2,8 +2,9 @@
 
 namespace App\Entity\App;
 
-use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
@@ -12,13 +13,18 @@ class World
 {
     use TimestampableEntity;
 
+    public function __construct()
+    {
+        $this->maps = new ArrayCollection();
+    }
+
     function __toString()
     {
         return $this->getName();
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(name: "id", type: "integer")]
     private int $id;
 

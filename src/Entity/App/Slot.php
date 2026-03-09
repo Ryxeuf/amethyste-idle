@@ -13,7 +13,7 @@ class Slot
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     #[ORM\Column(name: 'element', type: 'string', length: 25, nullable: true)]

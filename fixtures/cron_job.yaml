@@ -1,7 +1,0 @@
-Cron\CronBundle\Entity\CronJob:
-  move_mob:
-    name: "MobMove"
-    command: "api:mob:move"
-    schedule: "* * * * * *"
-    description: "Make mobs move every minute"
-    enabled: true

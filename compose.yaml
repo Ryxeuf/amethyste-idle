@@ -82,25 +82,10 @@ services:
     networks:
       - internal
 
-  typesense:
-    restart: unless-stopped
-    image: typesense/typesense:28.0
-    command:
-      - "--data-dir"
-      - "/data"
-      - "--api-key=${TYPESENSE_API_KEY:-xyz}"
-      - "--listen-port"
-      - "8109"
-    volumes:
-      - typesense_data:/data
-    networks:
-      - internal
-
 volumes:
   caddy_data:
   caddy_config:
   database_data:
-  typesense_data:
 
 networks:
   traefik-network:

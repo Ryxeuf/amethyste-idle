@@ -13,7 +13,7 @@ class Pnj
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     #[ORM\Column(name: 'name', type: 'string', length: 255)]

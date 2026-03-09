@@ -7,7 +7,6 @@ use App\Helper\PlayerHelper;
 use App\Transformer\CellModelTransformer;
 use App\Transformer\PlayerInfosTransformer;
 use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use App\Entity\App\Player;
 use Psr\Log\LoggerInterface;
 
@@ -30,7 +29,6 @@ class MovedPlayerHandler extends MovedHandler
         $this->move('player', $event->getPlayer()->getId(), $event->getPlayer()->getCoordinates(),
         [
             'player' => $this->playerInfosTransformer->transform($event->getPlayer()),
-//            'actions' => $this->cellModelTransformer->transformCellActions($event->getPlayer()->getCell()),
         ]);
     }
 
@@ -39,6 +37,17 @@ class MovedPlayerHandler extends MovedHandler
         $this->playerHelper->setPlayer($player);
         $this->move('player', $player->getId(), $player->getCoordinates(),
         [
+            'player' => $this->playerInfosTransformer->transform($player),
+        ]);
+    }
+
+    /**
+     * Publishes the complete traversed path so the client can animate movement cell by cell.
+     */
+    public function movePlayerPath(Player $player, array $path): void
+    {
+        $this->playerHelper->setPlayer($player);
+        $this->movePath('player', $player->getId(), $player->getCoordinates(), $path, [
             'player' => $this->playerInfosTransformer->transform($player),
         ]);
     }

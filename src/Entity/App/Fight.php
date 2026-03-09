@@ -3,8 +3,8 @@
 namespace App\Entity\App;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
@@ -20,24 +20,20 @@ class Fight
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "AUTO")]
+    #[ORM\GeneratedValue(strategy: "IDENTITY")]
     #[ORM\Column(name: "id", type: "integer")]
     private int $id;
 
     #[ORM\Column(name: "step", type: "integer", options: ["default" => 0])]
     private int $step = 0;
 
-    /**
-     * @var Player[]|array|ArrayCollection|PersistentCollection
-     */
+    /** @var Collection<int, Player> */
     #[ORM\OneToMany(targetEntity: Player::class, mappedBy: "fight")]
-    private $players;
+    private Collection $players;
 
-    /**
-     * @var Mob[]|array|ArrayCollection|PersistentCollection
-     */
+    /** @var Collection<int, Mob> */
     #[ORM\OneToMany(targetEntity: Mob::class, mappedBy: "fight")]
-    private $mobs;
+    private Collection $mobs;
 
     #[ORM\Column(name: "in_progress", type: "boolean", options: ["default" => 0])]
     private bool $inProgress = false;
@@ -58,18 +54,13 @@ class Fight
         $this->id = $id;
     }
 
-    /**
-     * @return Player[]|ArrayCollection|PersistentCollection
-     */
-    public function getPlayers(): array|ArrayCollection|PersistentCollection
+    /** @return Collection<int, Player> */
+    public function getPlayers(): Collection
     {
         return $this->players;
     }
 
-    /**
-     * @param Player[] $players
-     */
-    public function setPlayers(array|ArrayCollection $players): void
+    public function setPlayers(Collection $players): void
     {
         $this->players = $players;
     }
@@ -89,18 +80,13 @@ class Fight
         $this->mobs->add($mob);
     }
 
-    /**
-     * @return Mob[]|array|ArrayCollection|PersistentCollection
-     */
-    public function getMobs(): ArrayCollection|array|PersistentCollection
+    /** @return Collection<int, Mob> */
+    public function getMobs(): Collection
     {
         return $this->mobs;
     }
 
-    /**
-     * @param Mob[]|array|ArrayCollection|PersistentCollection $mobs
-     */
-    public function setMobs(ArrayCollection|array|PersistentCollection $mobs): void
+    public function setMobs(Collection $mobs): void
     {
         $this->mobs = $mobs;
     }

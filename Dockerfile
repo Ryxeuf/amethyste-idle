@@ -22,17 +22,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 	file \
 	gettext \
 	git \
-	# Installation de Node.js et npm \
-	nodejs \
-	npm \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Installation de la dernière version LTS de Node.js
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g npm@latest
-
-# Installation de l'extension pcntl
 RUN docker-php-ext-install pcntl
 
 RUN set -eux; \

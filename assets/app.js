@@ -8,15 +8,9 @@ import './styles/map/world-1.css';
 // import './styles/map/basechip_pipo.css';
 
 import './bootstrap.js';
-import './js/map/move-listener.js';
 
 import { startStimulusApp } from '@symfony/stimulus-bundle';
 import LiveController from '@symfony/ux-live-component';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
-
 export const app = startStimulusApp();
-app.register('live', LiveController);
-
-// Vous pouvez ajouter d'autres imports ou code JavaScript ici
-// console.log('Le fichier app.js est chargé'); 
+app.register('live', LiveController); 

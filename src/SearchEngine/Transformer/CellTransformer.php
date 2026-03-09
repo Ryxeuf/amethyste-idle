@@ -9,12 +9,17 @@ use App\Entity\App\World;
 
 class CellTransformer
 {
-    private array $terrains;
+    private array $terrains = [];
 
     public function addTerrains(array $terrains): self
     {
-        foreach ($terrains as $terrain) {
-            $this->terrains[$terrain['firstgid']] = $terrain;
+        foreach ($terrains as $key => $terrain) {
+            $gid = $terrain['firstgid'] ?? (int) $key;
+            $this->terrains[$gid] = array_merge([
+                'columns' => 32,
+                'tilewidth' => 32,
+                'tileheight' => 32,
+            ], $terrain);
         }
 
         return $this;
@@ -45,7 +50,7 @@ class CellTransformer
             $zIndex++;
 
             $idxInMap = $layer['idxInMap'];
-            $tilesetName = $layer['tilesetName'];
+            $tilesetName = $layer['tilesetName'] ?? 'default';
             $terrain = $this->getTerrain($layer);
             $terrainName = str_replace('../../assets/styles/images/terrain/', '', $terrain['image']);
             $terrainName = str_replace('.png', '', $terrainName);
@@ -53,9 +58,9 @@ class CellTransformer
             // $style[] = 'background: url("'.str_replace('../../assets/styles', '.', $terrain['image']).'")';
 
             // Supposons que ces valeurs viennent de votre tableau de terrains
-            $tileColumns = (int)$terrain['columns']; // Nombre de tuiles en largeur dans l'image
-            $tileWidth = (int)$terrain['tilewidth']; // La largeur d'une tuile en pixels
-            $tileHeight = (int)$terrain['tileheight']; // La hauteur d'une tuile en pixels
+            $tileColumns = (int)($terrain['columns'] ?? 32);
+            $tileWidth = (int)($terrain['tilewidth'] ?? 32);
+            $tileHeight = (int)($terrain['tileheight'] ?? 32);
     
             // Calcul de la position X et Y en pixels
             $xPos = ($idxInMap % $tileColumns) * $tileWidth;
@@ -102,6 +107,14 @@ class CellTransformer
     
     private function getTerrain(array $layer): array
     {
-        return $this->terrains[$layer['mapIdx']];
+        $mapIdx = $layer['mapIdx'] ?? 0;
+        $default = [
+            'image' => 'terrain.png',
+            'columns' => 32,
+            'tilewidth' => 32,
+            'tileheight' => 32,
+        ];
+
+        return $this->terrains[$mapIdx] ?? $default;
     }
 }

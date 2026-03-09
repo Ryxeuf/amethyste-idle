@@ -13,7 +13,7 @@ class PlayerNotification
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
     #[ORM\Column(name: 'comment', type: 'text')]

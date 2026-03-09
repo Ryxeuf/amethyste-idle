@@ -10,7 +10,6 @@ use App\Entity\Game\Skill;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 use App\Entity\User;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -39,7 +38,7 @@ class Player implements CharacterInterface
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column(name: 'id', type: 'integer')]
     private int $id;
 
@@ -269,18 +268,13 @@ class Player implements CharacterInterface
         return false;
     }
 
-    /**
-     * @return Skill[]|ArrayCollection
-     */
-    public function getSkills(): array|ArrayCollection|PersistentCollection
+    /** @return Collection<int, Skill> */
+    public function getSkills(): Collection
     {
         return $this->skills;
     }
 
-    /**
-     * @param Skill[]|ArrayCollection $skills
-     */
-    public function setSkills(array|ArrayCollection|PersistentCollection $skills): void
+    public function setSkills(Collection $skills): void
     {
         $this->skills = $skills;
     }
@@ -320,15 +314,13 @@ class Player implements CharacterInterface
         $this->classType = $classType;
     }
 
-    /**
-     * @return Quest[]|ArrayCollection|PersistentCollection
-     */
-    public function getQuests(): array|ArrayCollection|PersistentCollection
+    /** @return Collection<int, Quest> */
+    public function getQuests(): Collection
     {
         return $this->quests;
     }
 
-    public function setQuests(array|ArrayCollection|PersistentCollection $quests): void
+    public function setQuests(Collection $quests): void
     {
         $this->quests = $quests;
     }

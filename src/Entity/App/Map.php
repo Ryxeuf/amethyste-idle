@@ -3,8 +3,8 @@
 namespace App\Entity\App;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\PersistentCollection;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'map')]
@@ -13,6 +13,15 @@ class Map
 {
     use TimestampableEntity;
 
+    public function __construct()
+    {
+        $this->objectLayers = new ArrayCollection();
+        $this->areas = new ArrayCollection();
+        $this->players = new ArrayCollection();
+        $this->mobs = new ArrayCollection();
+        $this->pnjs = new ArrayCollection();
+    }
+
     function __toString()
     {
         return $this->getName();
@@ -20,7 +29,7 @@ class Map
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'AUTO')]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
@@ -48,35 +57,25 @@ class Map
     #[ORM\JoinColumn(name: 'world_id', referencedColumnName: 'id')]
     private World $world;
 
-    /**
-     * @var ArrayCollection|ObjectLayer[]|PersistentCollection
-     */
+    /** @var Collection<int, ObjectLayer> */
     #[ORM\OneToMany(targetEntity: ObjectLayer::class, mappedBy: 'map')]
-    private ArrayCollection|array|PersistentCollection $objectLayers;
+    private Collection $objectLayers;
 
-    /**
-     * @var ArrayCollection|Area[]|PersistentCollection
-     */
+    /** @var Collection<int, Area> */
     #[ORM\OneToMany(targetEntity: Area::class, mappedBy: 'map')]
-    private ArrayCollection|array|PersistentCollection $areas;
+    private Collection $areas;
 
-    /**
-     * @var ArrayCollection|Player[]|PersistentCollection
-     */
+    /** @var Collection<int, Player> */
     #[ORM\OneToMany(targetEntity: Player::class, mappedBy: 'map')]
-    private ArrayCollection|array|PersistentCollection $players;
+    private Collection $players;
 
-    /**
-     * @var ArrayCollection|Mob[]|PersistentCollection
-     */
+    /** @var Collection<int, Mob> */
     #[ORM\OneToMany(targetEntity: Mob::class, mappedBy: 'map')]
-    private ArrayCollection|array|PersistentCollection $mobs;
+    private Collection $mobs;
 
-    /**
-     * @var ArrayCollection|Pnj[]|PersistentCollection
-     */
+    /** @var Collection<int, Pnj> */
     #[ORM\OneToMany(targetEntity: Pnj::class, mappedBy: 'map')]
-    private ArrayCollection|array|PersistentCollection $pnjs;
+    private Collection $pnjs;
 
     public function getAreaByCoordinates(int $x, int $y): ?Area
     {
@@ -167,42 +166,32 @@ class Map
         $this->areaHeight = $areaHeight;
     }
 
-    /**
-     * @return ArrayCollection|ObjectLayer[]|PersistentCollection
-     */
-    public function getObjectLayers(): ArrayCollection|array|PersistentCollection
+    /** @return Collection<int, ObjectLayer> */
+    public function getObjectLayers(): Collection
     {
         return $this->objectLayers;
     }
 
-    /**
-     * @return Area[]|ArrayCollection|PersistentCollection
-     */
-    public function getAreas(): ArrayCollection|array|PersistentCollection
+    /** @return Collection<int, Area> */
+    public function getAreas(): Collection
     {
         return $this->areas;
     }
 
-    /**
-     * @return Player[]|ArrayCollection|PersistentCollection
-     */
-    public function getPlayers(): ArrayCollection|array|PersistentCollection
+    /** @return Collection<int, Player> */
+    public function getPlayers(): Collection
     {
         return $this->players;
     }
 
-    /**
-     * @return Mob[]|ArrayCollection|PersistentCollection
-     */
-    public function getMobs(): ArrayCollection|array|PersistentCollection
+    /** @return Collection<int, Mob> */
+    public function getMobs(): Collection
     {
         return $this->mobs;
     }
 
-    /**
-     * @return Pnj[]|ArrayCollection|PersistentCollection
-     */
-    public function getPnjs(): ArrayCollection|array|PersistentCollection
+    /** @return Collection<int, Pnj> */
+    public function getPnjs(): Collection
     {
         return $this->pnjs;
     }
