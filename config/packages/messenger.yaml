@@ -4,16 +4,13 @@ framework:
         # failure_transport: failed
 
         transports:
-            async_movement: 
-                dsn: 'doctrine://default?queue_name=movement'
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
-            # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            async_movement: 'sync://'
+            # Production: uncomment below and comment the sync transport above,
+            # then run a Messenger worker: bin/console messenger:consume async_movement
+            # async_movement:
+            #     dsn: 'doctrine://default?queue_name=movement'
 
         routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
             'App\GameEngine\Movement\Message\PlayerMoveMessage': async_movement
 # when@test:
 #    framework:

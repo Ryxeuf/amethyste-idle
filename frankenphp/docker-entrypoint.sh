@@ -60,6 +60,9 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	setfacl -R -m u:www-data:rwX -m u:"$(whoami)":rwX var
 	setfacl -dR -m u:www-data:rwX -m u:"$(whoami)":rwX var
 
+	# Vider le cache pour prendre en compte les traductions (évite clés brutes après mise à jour)
+	php bin/console cache:clear 2>/dev/null || true
+
 	echo 'PHP app ready!'
 fi
 

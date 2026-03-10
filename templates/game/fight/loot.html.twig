@@ -128,12 +128,12 @@
 				if (data.success) {
 					window.location.href = '{{ path('app_game_map') }}';
 				} else {
-					alert('Une erreur est survenue lors de la récupération des objets.');
+					alert("{{ 'game.fight.loot.error_collect'|trans|e('js') }}");
 				}
 			})
 			.catch(error => {
 				console.error('Error:', error);
-				alert('Une erreur est survenue lors de la récupération des objets.');
+				alert("{{ 'game.fight.loot.error_collect'|trans|e('js') }}");
 			});
 		});
 	</script>

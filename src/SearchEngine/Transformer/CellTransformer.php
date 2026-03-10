@@ -11,6 +11,11 @@ class CellTransformer
 {
     private array $terrains = [];
 
+    public function resetTerrains(): void
+    {
+        $this->terrains = [];
+    }
+
     public function addTerrains(array $terrains): self
     {
         foreach ($terrains as $key => $terrain) {
@@ -49,29 +54,17 @@ class CellTransformer
             $style = ['z-index: '.$zIndex.' !important'];
             $zIndex++;
 
-            $idxInMap = $layer['idxInMap'];
-            $tilesetName = $layer['tilesetName'] ?? 'default';
-            $terrain = $this->getTerrain($layer);
-            $terrainName = str_replace('../../assets/styles/images/terrain/', '', $terrain['image']);
-            $terrainName = str_replace('.png', '', $terrainName);
+            $mapIdx = $layer['mapIdx'] ?? 0;
+            $idxInMap = $layer['idxInMap'] ?? 0;
+            $rawGid = $mapIdx + $idxInMap;
 
-            // $style[] = 'background: url("'.str_replace('../../assets/styles', '.', $terrain['image']).'")';
+            $tileset = $this->findTilesetForGid($rawGid);
+            $tileId = $rawGid - ($tileset['firstgid'] ?? 0);
+            $tilesetName = $layer['tilesetName'] ?? $this->resolveTilesetName($tileset);
 
-            // Supposons que ces valeurs viennent de votre tableau de terrains
-            $tileColumns = (int)($terrain['columns'] ?? 32);
-            $tileWidth = (int)($terrain['tilewidth'] ?? 32);
-            $tileHeight = (int)($terrain['tileheight'] ?? 32);
-    
-            // Calcul de la position X et Y en pixels
-            $xPos = ($idxInMap % $tileColumns) * $tileWidth;
-            $yPos = intdiv($idxInMap, $tileColumns) * $tileHeight;
+            $terrainName = pathinfo($tileset['image'] ?? 'terrain.png', PATHINFO_FILENAME);
 
-            // $style[] = 'width: '.$tileWidth.'px';
-            // $style[] = 'height: '.$tileHeight.'px';
-            // $style[] = 'background-position: -'.$xPos.'px -'.$yPos.'px';
-            // $style[] = 'background-image: url("'.str_replace('../../assets/styles', '.', $terrain['image']).'");';
-
-            $layers[] = ['style' => implode('; ', $style), 'class' => $terrainName.' cell tileset-'.$tilesetName.'-cell-'.($idxInMap)];
+            $layers[] = ['style' => implode('; ', $style), 'class' => $terrainName.' cell tileset-'.$tilesetName.'-cell-'.$tileId];
         }
 
         return new SearchCell(
@@ -98,23 +91,42 @@ class CellTransformer
             slug: $slug,
             displayClass: $displayClass,
             layers: $layers,
-            debug: [
-                'layers' => $data['layers'],
-                'terrains' => $this->terrains,
-            ],
         );
     }
     
-    private function getTerrain(array $layer): array
+    private function findTilesetForGid(int $gid): array
     {
-        $mapIdx = $layer['mapIdx'] ?? 0;
-        $default = [
+        $selected = null;
+        $maxFirstGid = 0;
+
+        foreach ($this->terrains as $firstGid => $terrain) {
+            if ($firstGid <= $gid && $firstGid > $maxFirstGid) {
+                $maxFirstGid = $firstGid;
+                $selected = $terrain;
+            }
+        }
+
+        return $selected ?? [
             'image' => 'terrain.png',
+            'firstgid' => 0,
             'columns' => 32,
             'tilewidth' => 32,
             'tileheight' => 32,
         ];
+    }
 
-        return $this->terrains[$mapIdx] ?? $default;
+    private function resolveTilesetName(array $terrain): string
+    {
+        if (isset($terrain['tilesetName'])) {
+            return str_replace('.tsx', '', $terrain['tilesetName']);
+        }
+
+        $image = pathinfo($terrain['image'] ?? '', PATHINFO_FILENAME);
+
+        return match ($image) {
+            'terrain' => 'Terrain',
+            'collisions' => 'Collisions',
+            default => $image,
+        };
     }
 }

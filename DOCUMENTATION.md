@@ -630,6 +630,12 @@ Deux langues supportées : **Français** (défaut) et **Anglais**.
 
 Route `GET /change-locale/{locale}` → `LocaleController` → stocke la locale en session → `LocaleListener` l'applique à chaque requête.
 
+### Dépannage : les traductions affichent les clés (ex. `game.skills.description`)
+
+1. **Vider le cache** : `php bin/console cache:clear` (ou via Docker : `docker compose exec php php bin/console cache:clear`). Le catalogue de traductions est mis en cache ; après modification des fichiers JSON, il faut vider le cache.
+2. **Conteneur** : en prod, reconstruire l’image après modification des fichiers dans `translations/` pour que le cache soit régénéré avec les bons fichiers.
+3. **Locale** : sans session (première visite), la locale par défaut (`fr`) est bien appliquée grâce au `LocaleListener`. Vérifier que le sélecteur de langue enregistre bien la locale en session (`/change-locale/fr` ou `/change-locale/en`).
+
 ---
 
 ## 20. Terrain & Tiled Map Editor

@@ -57,6 +57,8 @@ class CellSearchEngine
         $areaWidth = $map->getAreaWidth();
         $areaHeight = $map->getAreaHeight();
 
+        $this->cellTransformer->resetTerrains();
+
         $cells = [];
         foreach ($map->getAreas() as $area) {
             $areaX = $area->getX();

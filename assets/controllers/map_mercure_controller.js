@@ -7,7 +7,7 @@ export default class extends Controller {
         playerId: Number,
         cellSize: { type: Number, default: 32 },
         centerOffset: { type: Number, default: 320 },
-        stepDelay: { type: Number, default: 200 },
+        stepDelay: { type: Number, default: 500 },
     };
 
     connect() {
@@ -42,13 +42,17 @@ export default class extends Controller {
 
     _handlePlayerMove(data) {
         const { object: playerId, path, x, y } = data;
+        const finalX = parseInt(x);
+        const finalY = parseInt(y);
 
-        if (playerId !== this.playerIdValue) return;
-
-        if (path && path.length > 0) {
-            this._animatePath(path, parseInt(x), parseInt(y));
+        if (playerId === this.playerIdValue) {
+            if (path && path.length > 0) {
+                requestAnimationFrame(() => this._animatePath(path, finalX, finalY));
+            } else {
+                this._teleportAndRefresh(finalX, finalY);
+            }
         } else {
-            this._teleportAndRefresh(parseInt(x), parseInt(y));
+            this._handleOtherPlayerMove(playerId, path, finalX, finalY);
         }
     }
 
@@ -57,21 +61,48 @@ export default class extends Controller {
         this._animating = true;
 
         const marker = this.hasPlayerMarkerTarget ? this.playerMarkerTarget : null;
+        if (!marker) {
+            this._animating = false;
+            this._teleportAndRefresh(finalX, finalY);
+            return;
+        }
+
+        marker.setAttribute('data-live-ignore', '');
+
+        const currentX = parseInt(this.element.querySelector('input[name="x"]')?.value ?? '0');
+        const currentY = parseInt(this.element.querySelector('input[name="y"]')?.value ?? '0');
+        const viewStartX = currentX - 10;
+        const viewStartY = currentY - 10;
 
         for (let i = 0; i < path.length; i++) {
-            if (marker) {
-                const offsetX = (path[i].x - (finalX - 10)) * this.cellSizeValue;
-                const offsetY = (path[i].y - (finalY - 10)) * this.cellSizeValue;
-                marker.style.left = `${offsetX}px`;
-                marker.style.top = `${offsetY}px`;
-            }
-            if (i < path.length - 1) {
-                await this._wait(this.stepDelayValue);
-            }
+            const stepX = parseInt(path[i].x);
+            const stepY = parseInt(path[i].y);
+            const left = (stepX - viewStartX) * this.cellSizeValue;
+            const top = (stepY - viewStartY) * this.cellSizeValue;
+            marker.style.left = `${left}px`;
+            marker.style.top = `${top}px`;
+            await this._wait(this.stepDelayValue);
         }
 
         this._animating = false;
+        marker.removeAttribute('data-live-ignore');
+
         this._teleportAndRefresh(finalX, finalY);
+    }
+
+    _handleOtherPlayerMove(playerId, path, finalX, finalY) {
+        const otherMarker = this.element.querySelector(`.other-player[data-player-id="${playerId}"]`);
+        if (!otherMarker) return;
+
+        const currentX = parseInt(this.element.querySelector('input[name="x"]')?.value ?? '0');
+        const currentY = parseInt(this.element.querySelector('input[name="y"]')?.value ?? '0');
+        const viewStartX = currentX - 10;
+        const viewStartY = currentY - 10;
+
+        const offsetX = (finalX - viewStartX) * this.cellSizeValue;
+        const offsetY = (finalY - viewStartY) * this.cellSizeValue;
+        otherMarker.style.left = `${offsetX}px`;
+        otherMarker.style.top = `${offsetY}px`;
     }
 
     _teleportAndRefresh(x, y) {

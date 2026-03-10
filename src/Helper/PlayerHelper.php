@@ -8,8 +8,9 @@ use App\Entity\App\PlayerItem;
 use App\Repository\App\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Contracts\Service\ResetInterface;
 
-class PlayerHelper
+class PlayerHelper implements ResetInterface
 {
     private ?Player $player = null;
 
@@ -96,6 +97,11 @@ class PlayerHelper
         $this->entityManager->flush();
 
         return $inventory;
+    }
+
+    public function reset(): void
+    {
+        $this->player = null;
     }
 
     protected function getInventorySizeByType(int $type)

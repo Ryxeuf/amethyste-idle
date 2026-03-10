@@ -22,7 +22,6 @@ class Map
 {
     use DefaultActionTrait;
 
-    public MapDynamicModel $mapDynamic;
     public Player $player;
     
     #[LiveProp(writable: true)]
@@ -44,6 +43,8 @@ class Map
 
     /** @var array<int, array<int, object>> */
     public array $visibleCells = [];
+
+    private ?MapDynamicModel $mapDynamicCache = null;
     
     public function __construct(
         private readonly MapModelTransformer $mapModelTransformer,
@@ -56,7 +57,14 @@ class Map
     {
         $this->player = $this->playerHelper->getPlayer();
         $this->initXY();
-        $this->mapDynamic = $this->mapModelTransformer->transformDynamicMapModel($this->player->getMap());
+    }
+
+    public function getMapDynamic(): MapDynamicModel
+    {
+        if ($this->mapDynamicCache === null) {
+            $this->mapDynamicCache = $this->mapModelTransformer->transformDynamicMapModel($this->player->getMap());
+        }
+        return $this->mapDynamicCache;
     }
 
     public function initXY(): void
@@ -96,12 +104,18 @@ class Map
         $this->movementCalculator->loadMap(10);
         $movements = $this->movementCalculator->calculateMovement($this->x, $this->y, $x, $y);
 
+        if (empty($movements)) {
+            $this->updateCells();
+            return;
+        }
+
         $this->playerMoveUpdater->setPlayerMoving();
         $this->bus->dispatch(new PlayerMoveMessage(json_encode([
             'player' => $this->player->getId(),
             'cells' => $movements,
         ])));
-        $this->updateCoordinates($this->x, $this->y);
+
+        $this->updateCells();
     }
 
     public function updateCells(): void

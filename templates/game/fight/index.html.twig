@@ -87,7 +87,7 @@
 						</div>
 						<div class="flex items-center space-x-2">
 							<i class="fas fa-crown text-purple-400"></i>
-							<span class="font-bold">Niveau {{ player.level ?? 0 }}</span>
+							<span class="font-bold">{{ 'game.statistics.level'|trans }} {{ player.level ?? 0 }}</span>
 						</div>
 					</div>
 				</div>
@@ -135,7 +135,7 @@
 													<div class="w-24 bg-gray-700 rounded-full h-1.5">
 														<div class="bg-purple-400 h-1.5 rounded-full" style="width: {{ ((fightPlayer.experience??0)/(fightPlayer.nextLevelExperience??1))*100 }}%;"></div>
 													</div>
-													<span class="text-xs text-purple-300">Niveau {{ fightPlayer.level ?? 0 }}</span>
+													<span class="text-xs text-purple-300">{{ 'game.statistics.level'|trans }} {{ fightPlayer.level ?? 0 }}</span>
 												</div>
 											</div>
 										</div>
@@ -191,7 +191,7 @@
 													<div class="w-24 bg-gray-700 rounded-full h-1.5">
 														<div class="bg-purple-500 h-1.5 rounded-full" style="width: {{ ((fightPlayer.experience??0)/(fightPlayer.nextLevelExperience??1))*100 }}%;"></div>
 													</div>
-													<span class="text-xs text-gray-400">Niveau {{ fightPlayer.level ?? 0 }}</span>
+													<span class="text-xs text-gray-400">{{ 'game.statistics.level'|trans }} {{ fightPlayer.level ?? 0 }}</span>
 												</div>
 											</div>
 										</div>
@@ -301,7 +301,7 @@
 										<div>
 											<h2 class="text-xl font-bold text-white">{{ mob.name }}</h2>
 											<div class="flex items-center space-x-2 mt-1">
-												<span class="text-xs text-gray-400">Niveau {{ mob.level ?? 0 }}</span>
+												<span class="text-xs text-gray-400">{{ 'game.statistics.level'|trans }} {{ mob.level ?? 0 }}</span>
 											</div>
 										</div>
 									</div>
@@ -436,7 +436,7 @@
 
 					} catch (error) {
 						console.error('Erreur:', error);
-						alert('Une erreur est survenue lors de l\'action');
+						alert("{{ 'game.fight.error_action'|trans|e('js') }}");
 					}
 				});
 			});

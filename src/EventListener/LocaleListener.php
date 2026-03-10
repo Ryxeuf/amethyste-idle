@@ -18,16 +18,12 @@ class LocaleListener implements EventSubscriberInterface
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        
-        if (!$request->hasPreviousSession()) {
-            return;
-        }
 
-        // Essayer de voir si la locale est définie dans la session
-        if ($locale = $request->getSession()->get('_locale')) {
+        // Si une session existe, utiliser la locale enregistrée
+        if ($request->hasPreviousSession() && $locale = $request->getSession()->get('_locale')) {
             $request->setLocale($locale);
         } else {
-            // Si aucune locale n'est définie, utiliser la locale par défaut
+            // Sinon (première visite ou pas de session) : locale par défaut
             $request->setLocale($this->defaultLocale);
         }
     }

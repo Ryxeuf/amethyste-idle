@@ -89,7 +89,10 @@
       },
       "equipped": "Équipement porté",
       "available_equipment": "Équipement disponible",
-      "items": "Objets",
+      "items": {
+        "title": "Objets",
+        "empty": "Aucun objet dans cet onglet"
+      },
       "materials": "Matériaux",
       "bank": "Banque",
       "materia": "Materia",
@@ -114,7 +117,9 @@
         "unequip": "Déséquiper",
         "use": "Utiliser",
         "sell": "Vendre",
-        "details": "Détails"
+        "details": "Détails",
+        "action": "Action",
+        "socket": "Sertir"
       },
       "item_details": {
         "name": "Nom",
@@ -123,12 +128,15 @@
         "level": "Niveau",
         "description": "Description",
         "effects": "Effets",
-        "value": "Valeur"
+        "value": "Valeur",
+        "placeholder": "Nom de l'objet",
+        "slot": "Emplacement"
       },
       "empty": "Aucun élément trouvé"
     },
     "map": {
       "title": "Carte du Monde",
+      "live_map": "Carte en direct",
       "description": "Explorez les différentes régions du monde et découvrez de nouveaux lieux",
       "select_region": "Sélectionnez une région",
       "click_region": "Cliquez sur une région pour voir ses détails",
@@ -207,6 +215,14 @@
       "health": "Santé",
       "mana": "Mana"
     },
+    "dashboard": {
+      "quick_inventory": "Inventaire",
+      "statistics": "Statistiques",
+      "level": "Niveau",
+      "strength": "Force",
+      "agility": "Agilité",
+      "intelligence": "Intelligence"
+    },
     "footer": {
       "back_to_home": "Retour à l'accueil"
     },
@@ -260,9 +276,39 @@
         "title": "Compte",
         "desc": "Gérez les informations de votre compte",
         "username": "Nom d'utilisateur",
-        "email": "Adresse e-mail"
+        "email": "Adresse e-mail",
+        "current_password": "Mot de passe actuel",
+        "new_password": "Nouveau mot de passe",
+        "confirm_password": "Confirmer le mot de passe",
+        "danger_zone": "Zone de danger",
+        "danger_zone_desc": "Les actions ci-dessous sont irréversibles. Soyez prudent.",
+        "delete_account": "Supprimer mon compte"
       }
     },
+    "skills": {
+      "title": "Compétence",
+      "description": "Développez vos compétences pour gagner en puissance. Dépensez les points d'expérience de domaine pour débloquer de nouvelles capacités.",
+      "cost": "Coût",
+      "requirements": "Prérequis",
+      "learn": "Apprendre",
+      "learned": "Acquise",
+      "list": "Liste des compétences",
+      "status": "Statut",
+      "no_requirements": "Aucun prérequis"
+    },
+    "domains": {
+      "experience": {
+        "available": "Expérience disponible",
+        "total": "Expérience totale"
+      },
+      "damage": "Dégâts",
+      "hit": "Précision",
+      "critical": "Critique",
+      "details": "Détails du domaine",
+      "statistics": "Statistiques",
+      "progress": "Progression"
+    },
+    "back": "Retour",
     "fight": {
       "loot": {
         "title": "Récapitulatif du combat",
@@ -270,8 +316,10 @@
         "experience": "Expérience gagnée",
         "items": "Objets trouvés",
         "items_list": "Liste des objets",
-        "collect": "Récupérer les objets sélectionnés"
-      }
+        "collect": "Récupérer les objets sélectionnés",
+        "error_collect": "Une erreur est survenue lors de la récupération des objets."
+      },
+      "error_action": "Une erreur est survenue lors de l'action."
     }
   },
   "common": {
@@ -287,5 +335,15 @@
   },
   "title": {
     "skills": "Compétences"
+  },
+  "app": {
+    "tools": {
+      "map_editor": {
+        "title": "Éditeur de carte"
+      },
+      "icons": {
+        "title": "Éditeur d'icônes"
+      }
+    }
   }
 } 

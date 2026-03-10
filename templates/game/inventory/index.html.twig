@@ -74,7 +74,7 @@
         <div class="bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
             <div class="p-6">
                 <div class="flex justify-between items-start">
-                    <h3 class="text-xl font-bold text-purple-400" id="modal-item-name">Nom de l'objet</h3>
+                    <h3 class="text-xl font-bold text-purple-400" id="modal-item-name">{{ 'game.inventory.item_details.placeholder'|trans }}</h3>
                     <button id="close-modal-btn" class="text-gray-400 hover:text-white">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -86,7 +86,7 @@
                 </div>
                 <div class="mt-6 flex justify-end space-x-3">
                     <button id="modal-action-btn" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
-                        Action
+                        {{ 'game.inventory.actions.action'|trans }}
                     </button>
                     <button id="modal-cancel-btn" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800">
                         {{ 'common.cancel'|trans }}
@@ -101,6 +101,16 @@
 {% block javascripts %}
 {{ parent() }}
 <script>
+    window.i18nInventory = {
+        equip: "{{ 'game.inventory.actions.equip'|trans|e('js') }}",
+        use: "{{ 'game.inventory.actions.use'|trans|e('js') }}",
+        socket: "{{ 'game.inventory.actions.socket'|trans|e('js') }}",
+        details: "{{ 'game.inventory.actions.details'|trans|e('js') }}",
+        type_label: "{{ 'game.inventory.item_details.type'|trans|e('js') }}",
+        slot_label: "{{ 'game.inventory.item_details.slot'|trans|e('js') }}",
+        level_label: "{{ 'game.inventory.item_details.level'|trans|e('js') }}",
+        stats_label: "{{ 'game.inventory.stats'|trans|e('js') }}"
+    };
     document.addEventListener('DOMContentLoaded', function() {
         // Gestion des onglets
         const tabButtons = document.querySelectorAll('.tab-btn');
@@ -138,8 +148,9 @@
         // Gestion de l'action du bouton (Équiper, Utiliser, etc.)
         modalActionBtn.addEventListener('click', function() {
             if (!currentItemId) return;
+            const action = modalActionBtn.getAttribute('data-action');
             
-            if (modalActionBtn.textContent === 'Équiper') {
+            if (action === 'equip') {
                 // Appel AJAX pour équiper l'item
                 const url = '/game/inventory/equipment/equip/' + currentItemId;
                 
@@ -162,11 +173,11 @@
                 .catch(error => {
                     console.error('Erreur lors de l\'équipement de l\'item:', error);
                 });
-            } else if (modalActionBtn.textContent === 'Utiliser') {
+            } else if (action === 'use') {
                 // Logique pour utiliser un objet
                 console.log('Utilisation de l\'objet', currentItemId);
                 modal.classList.add('hidden');
-            } else if (modalActionBtn.textContent === 'Serter') {
+            } else if (action === 'socket') {
                 // Logique pour sertir une materia
                 console.log('Sertissage de la materia', currentItemId);
                 modal.classList.add('hidden');
@@ -203,13 +214,14 @@
                 // Mettre à jour le modal avec les détails de l'objet
                 document.getElementById('modal-item-name').textContent = itemName;
                 
+                const i18n = window.i18nInventory || {};
                 let detailsHtml = `
                     <div class="mb-4">
                         <p class="text-gray-300">${itemDescription}</p>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <p class="text-sm text-gray-400">Type</p>
+                            <p class="text-sm text-gray-400">${i18n.type_label || 'Type'}</p>
                             <p class="text-white">${itemType}</p>
                         </div>
                     `;
@@ -217,7 +229,7 @@
                 if (itemSlotType) {
                     detailsHtml += `
                         <div>
-                            <p class="text-sm text-gray-400">Emplacement</p>
+                            <p class="text-sm text-gray-400">${i18n.slot_label || 'Emplacement'}</p>
                             <p class="text-white">${itemSlotType}</p>
                         </div>
                     `;
@@ -226,7 +238,7 @@
                 if (quantityElement) {
                     detailsHtml += `
                         <div>
-                            <p class="text-sm text-gray-400">Niveau</p>
+                            <p class="text-sm text-gray-400">${i18n.level_label || 'Niveau'}</p>
                             <p class="text-white">${itemQuantityOrLevel}</p>
                         </div>
                     `;
@@ -239,7 +251,7 @@
                 if (statsContainer) {
                     detailsHtml += `
                         <div class="mt-4 pt-4 border-t border-gray-600">
-                            <p class="text-sm text-gray-400 mb-2">Statistiques</p>
+                            <p class="text-sm text-gray-400 mb-2">${i18n.stats_label || 'Statistiques'}</p>
                             <div class="grid grid-cols-2 gap-2">
                                 ${statsContainer.innerHTML}
                             </div>
@@ -254,13 +266,17 @@
                 const isMateria = itemCard.hasAttribute('data-is-materia') && itemCard.getAttribute('data-is-materia') === 'true';
                 
                 if (isEquipment) {
-                    modalActionBtn.textContent = 'Équiper';
+                    modalActionBtn.textContent = i18n.equip || 'Équiper';
+                    modalActionBtn.setAttribute('data-action', 'equip');
                 } else if (isMateria) {
-                    modalActionBtn.textContent = 'Serter';
+                    modalActionBtn.textContent = i18n.socket || 'Sertir';
+                    modalActionBtn.setAttribute('data-action', 'socket');
                 } else if (itemType.includes('Consommable')) {
-                    modalActionBtn.textContent = 'Utiliser';
+                    modalActionBtn.textContent = i18n.use || 'Utiliser';
+                    modalActionBtn.setAttribute('data-action', 'use');
                 } else {
-                    modalActionBtn.textContent = 'Examiner';
+                    modalActionBtn.textContent = i18n.details || 'Examiner';
+                    modalActionBtn.setAttribute('data-action', 'details');
                 }
                 
                 // Afficher le modal

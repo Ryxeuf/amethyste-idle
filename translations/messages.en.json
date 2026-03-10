@@ -83,17 +83,31 @@
       "tab": {
         "equipment": "Equipment",
         "items": "Items",
-        "materials": "Materials"
+        "materials": "Materials",
+        "bank": "Bank",
+        "materia": "Materia"
       },
       "equipped": "Equipped",
       "available_equipment": "Available Equipment",
-      "items": "Items",
+      "items": {
+        "title": "Items",
+        "empty": "No items in this tab"
+      },
       "materials": "Materials",
       "stats": "Stats",
       "slot": {
         "head": "Head",
+        "shoulder": "Shoulders",
+        "neck": "Neck",
         "chest": "Chest",
-        "weapon": "Weapon",
+        "hand": "Hands",
+        "main_weapon": "Main weapon",
+        "side_weapon": "Side weapon",
+        "belt": "Belt",
+        "leg": "Legs",
+        "foot": "Feet",
+        "ring_1": "Ring 1",
+        "ring_2": "Ring 2",
         "accessory": "Accessory"
       },
       "actions": {
@@ -101,7 +115,9 @@
         "unequip": "Unequip",
         "use": "Use",
         "sell": "Sell",
-        "details": "Details"
+        "details": "Details",
+        "action": "Action",
+        "socket": "Socket"
       },
       "item_details": {
         "name": "Name",
@@ -110,12 +126,15 @@
         "level": "Level",
         "description": "Description",
         "effects": "Effects",
-        "value": "Value"
+        "value": "Value",
+        "placeholder": "Item name",
+        "slot": "Slot"
       },
       "empty": "No items found"
     },
     "map": {
       "title": "World Map",
+      "live_map": "Live map",
       "description": "Explore different regions of the world and discover new locations",
       "select_region": "Select a region",
       "click_region": "Click on a region to see its details",
@@ -193,6 +212,14 @@
       "speed": "Speed",
       "health": "Health",
       "mana": "Mana"
+    },
+    "dashboard": {
+      "quick_inventory": "Inventory",
+      "statistics": "Statistics",
+      "level": "Level",
+      "strength": "Strength",
+      "agility": "Agility",
+      "intelligence": "Intelligence"
     },
     "footer": {
       "back_to_home": "Back to home"
@@ -279,7 +306,19 @@
       "statistics": "Statistics",
       "progress": "Progress"
     },
-    "back": "Back"
+    "back": "Back",
+    "fight": {
+      "loot": {
+        "title": "Combat summary",
+        "gold": "Gold earned",
+        "experience": "Experience earned",
+        "items": "Items found",
+        "items_list": "Items list",
+        "collect": "Collect selected items",
+        "error_collect": "An error occurred while collecting the items."
+      },
+      "error_action": "An error occurred while performing the action."
+    }
   },
   "common": {
     "cancel": "Cancel",
@@ -294,5 +333,15 @@
   },
   "title": {
     "skills": "Skills"
+  },
+  "app": {
+    "tools": {
+      "map_editor": {
+        "title": "Map editor"
+      },
+      "icons": {
+        "title": "Icon editor"
+      }
+    }
   }
 } 

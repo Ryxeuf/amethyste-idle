@@ -1,12 +1,11 @@
-<div {{ attributes }}
-     class="flex justify-center items-center p-2"
-     {{ stimulus_controller('map_mercure', {
+<div {{ attributes.defaults(stimulus_controller('map_mercure', {
          mercureUrl: mercure_url|default(''),
          playerId: player.id,
          cellSize: cellSize,
          centerOffset: (mapSize // 2) * cellSize,
-         stepDelay: 200
-     }) }}
+         stepDelay: 500
+     })) }}
+     class="flex justify-center items-center p-2"
 >
 
     <div class="relative bg-black" style="width: {{ mapSize * cellSize }}px; height: {{ mapSize * cellSize }}px;">
@@ -21,7 +20,7 @@
         <input type="hidden" id="y" name="y" data-model="y" value="{{ y }}">
 
         {# Autres joueurs #}
-        {% for otherPlayer in mapDynamic.players %}
+        {% for otherPlayer in this.mapDynamic.players %}
             {% if otherPlayer.id != player.id %}
                 {% set otherX = otherPlayer.coordinates|split('.')|first %}
                 {% set otherY = otherPlayer.coordinates|split('.')|last %}
@@ -37,7 +36,7 @@
         {% endfor %}
         
         {# Monstres #}
-        {% for mob in mapDynamic.mobs %}
+        {% for mob in this.mapDynamic.mobs %}
             {% set mobX = mob.coordinates|split('.')|first %}
             {% set mobY = mob.coordinates|split('.')|last %}
             
@@ -55,7 +54,7 @@
         {% endfor %}
         
         {# PNJ #}
-        {% for pnj in mapDynamic.pnjs %}
+        {% for pnj in this.mapDynamic.pnjs %}
             {% set pnjX = pnj.coordinates|split('.')|first %}
             {% set pnjY = pnj.coordinates|split('.')|last %}
             
@@ -69,7 +68,7 @@
         {% endfor %}
         
         {# Objets utilisables #}
-        {% for usableObject in mapDynamic.usableObjects %}
+        {% for usableObject in this.mapDynamic.usableObjects %}
             {% set usableX = usableObject.coordinates|split('.')|first %}
             {% set usableY = usableObject.coordinates|split('.')|last %}
             

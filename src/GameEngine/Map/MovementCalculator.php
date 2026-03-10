@@ -73,6 +73,9 @@ class MovementCalculator
 
         $dijkstra       = new Dijkstra($this->map, CellHelper::stringifyCoordinates($x, $y), $abilityMask);
         $nodes          = $dijkstra->shortestPathTo(CellHelper::stringifyCoordinates($targetX, $targetY));
+
+        unset($this->map);
+
         $mouvementCells = [];
 
         if (count($nodes) === 0) {
