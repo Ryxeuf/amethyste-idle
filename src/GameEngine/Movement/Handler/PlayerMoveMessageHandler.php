@@ -38,20 +38,28 @@ class PlayerMoveMessageHandler
 
         $cells = $content['cells'];
         $traversedPath = [];
-        $stoppedByMob = false;
+
+        // Une seule requête pour tous les mobs sur les coordonnées du path (évite N findOneBy).
+        $pathCoords = array_map(
+            fn(array $cell) => CellHelper::stringifyCoordinates($cell['x'], $cell['y']),
+            $cells
+        );
+        $mobsByCoords = [];
+        foreach ($this->entityManager->getRepository(Mob::class)->findBy(
+            ['coordinates' => $pathCoords, 'map' => $player->getMap()]
+        ) as $mob) {
+            $mobsByCoords[$mob->getCoordinates()] = $mob;
+        }
 
         foreach ($cells as $cell) {
             $player->setLastCoordinates($player->getCoordinates());
-            $player->setCoordinates(CellHelper::stringifyCoordinates($cell['x'], $cell['y']));
+            $coords = CellHelper::stringifyCoordinates($cell['x'], $cell['y']);
+            $player->setCoordinates($coords);
             $traversedPath[] = $cell;
 
-            $mob = $this->entityManager->getRepository(Mob::class)->findOneBy([
-                'coordinates' => $player->getCoordinates(),
-            ]);
-
+            $mob = $mobsByCoords[$coords] ?? null;
             if ($mob) {
-                $this->logger->info("Mob found at {cell}, stopping movement", ['cell' => $player->getCoordinates()]);
-                $stoppedByMob = true;
+                $this->logger->info("Mob found at {cell}, stopping movement", ['cell' => $coords]);
                 $this->entityManager->flush();
                 $this->movedPlayerHandler->movePlayerPath($player, $traversedPath);
                 $this->fightHandler->startFight($player, $mob);

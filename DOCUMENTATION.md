@@ -151,6 +151,27 @@ docker compose exec php php bin/console doctrine:schema:update --force
 docker compose exec php php bin/console cache:clear
 ```
 
+### Script de déploiement
+
+Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement (transports Messenger, redémarrage du worker) :
+
+```bash
+# Production (compose.yaml + compose.prod.yaml)
+./scripts/deploy.sh --prod
+
+# Développement (compose.yaml seul)
+./scripts/deploy.sh --dev
+```
+
+**Étapes exécutées :**
+
+1. **Construction et démarrage** : `docker compose up -d --build --wait` (attend que les services soient healthy).
+2. **Transports Messenger** : `messenger:setup-transports` pour créer la table `messenger_messages` si besoin.
+3. **Redémarrage du worker** : `watcher_async_move_consumer` pour prendre en compte la config (file Doctrine en prod).
+4. **État des services** : affichage de `docker compose ps`.
+
+**Prérequis :** `.env` configuré, Docker et Docker Compose disponibles. En prod, le fichier `compose.prod.yaml` définit `MESSENGER_ASYNC_MOVEMENT_DSN=doctrine://default?queue_name=movement` pour que les mouvements soient traités en file par le worker.
+
 ### Démarrage développement
 
 ```bash

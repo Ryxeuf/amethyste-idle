@@ -4,11 +4,9 @@ framework:
         # failure_transport: failed
 
         transports:
-            async_movement: 'sync://'
-            # Production: uncomment below and comment the sync transport above,
-            # then run a Messenger worker: bin/console messenger:consume async_movement
-            # async_movement:
-            #     dsn: 'doctrine://default?queue_name=movement'
+            # En prod : doctrine pour ne pas bloquer les workers PHP (requêtes move = pending sinon).
+            # Le worker watcher_async_move_consumer traite la file.
+            async_movement: '%env(MESSENGER_ASYNC_MOVEMENT_DSN)%'
 
         routing:
             'App\GameEngine\Movement\Message\PlayerMoveMessage': async_movement
