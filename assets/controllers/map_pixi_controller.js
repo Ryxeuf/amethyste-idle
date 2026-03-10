@@ -8,12 +8,12 @@ export default class extends Controller {
         mapId: Number,
         playerX: Number,
         playerY: Number,
-        stepDelay: { type: Number, default: 500 },
+        stepDelay: { type: Number, default: 150 },
     };
 
     async connect() {
         this._tileSize = 32;
-        this._viewRadius = 15;
+        this._viewRadius = 25;
         this._viewportTiles = 21;
         this._viewportPx = this._viewportTiles * this._tileSize;
 
@@ -56,8 +56,9 @@ export default class extends Controller {
         await this._app.init({
             width: this._viewportPx,
             height: this._viewportPx,
-            backgroundColor: 0x111111,
+            backgroundColor: 0x2d5a1b,
             antialias: false,
+            roundPixels: true,
             resolution: 1,
         });
 
@@ -95,12 +96,12 @@ export default class extends Controller {
         const config = await resp.json();
         this._tilesets = config.tilesets || [];
         this._tileSize = config.tileSize || 32;
-        this._viewRadius = config.viewRadius || 15;
 
         this._tilesets.sort((a, b) => a.firstGid - b.firstGid);
 
         const loadPromises = this._tilesets.map(async (ts) => {
             const texture = await PIXI.Assets.load(ts.image);
+            texture.source.scaleMode = 'nearest';
             this._tilesetTextures[ts.name] = texture;
         });
 
@@ -127,6 +128,8 @@ export default class extends Controller {
     _renderCell(cell) {
         const key = `${cell.x},${cell.y}`;
         const sprites = [];
+        const px = cell.x * this._tileSize;
+        const py = cell.y * this._tileSize;
 
         for (const gid of cell.l) {
             const ts = this._findTileset(gid);
@@ -154,7 +157,8 @@ export default class extends Controller {
             }
 
             const sprite = new PIXI.Sprite(texture);
-            sprite.position.set(cell.x * this._tileSize, cell.y * this._tileSize);
+            sprite.roundPixels = true;
+            sprite.position.set(px, py);
             this._tileContainer.addChild(sprite);
             sprites.push(sprite);
         }
@@ -163,7 +167,7 @@ export default class extends Controller {
     }
 
     _pruneDistantCells(centerX, centerY) {
-        const maxDist = this._viewRadius * 2;
+        const maxDist = this._viewRadius * 3;
         const keysToRemove = [];
 
         for (const [key, cell] of this._cellCache) {
@@ -307,8 +311,8 @@ export default class extends Controller {
         }
 
         this._worldContainer.position.set(
-            this._viewportPx / 2 - this._cameraX,
-            this._viewportPx / 2 - this._cameraY,
+            Math.round(this._viewportPx / 2 - this._cameraX),
+            Math.round(this._viewportPx / 2 - this._cameraY),
         );
     }
 
@@ -370,11 +374,28 @@ export default class extends Controller {
             const data = await resp.json();
 
             if (data.path && data.path.length > 0) {
+                const finalStep = data.path[data.path.length - 1];
+                this._preloadCells(finalStep.x, finalStep.y);
                 await this._animateAlongPath(data.path);
             }
         } catch (err) {
             console.error('[map_pixi] Move error:', err);
         }
+    }
+
+    _preloadCells(x, y) {
+        fetch(`/api/map/cells?x=${x}&y=${y}&radius=${this._viewRadius}&mapId=${this.mapIdValue}`)
+            .then(r => r.json())
+            .then(data => {
+                for (const cell of data.cells) {
+                    const key = `${cell.x},${cell.y}`;
+                    if (!this._cellCache.has(key)) {
+                        this._cellCache.set(key, cell);
+                        this._renderCell(cell);
+                    }
+                }
+            })
+            .catch(() => {});
     }
 
     // --- Movement Animation ---
@@ -407,10 +428,9 @@ export default class extends Controller {
             const step = (now) => {
                 const elapsed = now - startTime;
                 const t = Math.min(elapsed / durationMs, 1);
-                const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
-                const cx = fromPx.x + (toPx.x - fromPx.x) * eased;
-                const cy = fromPx.y + (toPx.y - fromPx.y) * eased;
+                const cx = Math.round(fromPx.x + (toPx.x - fromPx.x) * t);
+                const cy = Math.round(fromPx.y + (toPx.y - fromPx.y) * t);
 
                 if (this._playerMarker) {
                     this._playerMarker.position.set(cx, cy);
