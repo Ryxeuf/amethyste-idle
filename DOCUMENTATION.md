@@ -1,6 +1,6 @@
 # Amethyste-Idle — Documentation Technique
 
-> Jeu de rôle idle/navigateur construit avec Symfony 7.2, FrankenPHP, PostgreSQL, Mercure et Tailwind CSS.
+> Jeu de rôle idle/navigateur construit avec Symfony 7.4, PHP 8.4, FrankenPHP, PostgreSQL 17, Mercure et Tailwind CSS.
 
 ---
 
@@ -51,11 +51,11 @@
 
 | Couche | Technologie | Version |
 |--------|------------|---------|
-| **Langage** | PHP | 8.3 |
-| **Framework** | Symfony | 7.2 |
+| **Langage** | PHP | 8.4 |
+| **Framework** | Symfony | 7.4 (LTS) |
 | **Serveur web** | FrankenPHP (Caddy) | 1.x |
-| **Base de données** | PostgreSQL | 16 (Alpine) |
-| **ORM** | Doctrine | 2.x |
+| **Base de données** | PostgreSQL | 17 (Alpine) |
+| **ORM** | Doctrine | 3.x |
 | **Moteur de recherche** | Typesense | 28.0 |
 | **Temps réel (SSE)** | Mercure | Intégré dans Caddy |
 | **File de messages** | Symfony Messenger | Transport Doctrine |
@@ -130,7 +130,7 @@ L'application suit une **architecture événementielle** (Event-Driven) :
 |---------|-------|------|-------------|
 | `php` | `app-php` (FrankenPHP) | Serveur web + Mercure | 80 |
 | `watcher_async_move_consumer` | `app-php` | Worker Messenger (déplacements) | — |
-| `database` | `postgres:16-alpine` | Base de données | 5432 |
+| `database` | `postgres:17-alpine` | Base de données | 5432 |
 | `typesense` | `typesense/typesense:28.0` | Moteur de recherche | 8109 |
 
 ### Réseaux Docker
@@ -153,7 +153,7 @@ docker compose exec php php bin/console cache:clear
 
 ### Script de déploiement
 
-Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement (transports Messenger, redémarrage du worker) :
+Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement. **Toutes les commandes applicables sont exécutées dans le conteneur `php`** (Symfony, maintenance, Messenger, cache).
 
 ```bash
 # Production (compose.yaml + compose.prod.yaml)
@@ -161,14 +161,22 @@ Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement
 
 # Développement (compose.yaml seul)
 ./scripts/deploy.sh --dev
+
+# Mettre à jour composer.lock depuis le conteneur avant le build (optionnel)
+./scripts/deploy.sh --prod --composer-update
 ```
 
 **Étapes exécutées :**
 
 1. **Construction et démarrage** : `docker compose up -d --build --wait` (attend que les services soient healthy).
-2. **Transports Messenger** : `messenger:setup-transports` pour créer la table `messenger_messages` si besoin.
-3. **Redémarrage du worker** : `watcher_async_move_consumer` pour prendre en compte la config (file Doctrine en prod).
-4. **État des services** : affichage de `docker compose ps`.
+2. **Page de maintenance** : activation dans le conteneur (`touch var/maintenance.flag`), désactivation automatique en fin de script (ou en cas d’interruption).
+3. **Transports Messenger** (conteneur php) : `messenger:setup-transports` pour créer la table `messenger_messages` si besoin.
+4. **Redémarrage du worker** : `watcher_async_move_consumer` pour prendre en compte la config (file Doctrine en prod).
+5. **Cache Symfony** (conteneur php) : `cache:clear` puis `cache:warmup`.
+6. **État des services** : affichage de `docker compose ps`.
+
+Pour exécuter une commande dans le conteneur php :  
+`docker compose -f compose.yaml -f compose.prod.yaml exec php <commande>` (ex. `php bin/console cache:clear`, `composer update`).
 
 **Prérequis :** `.env` configuré, Docker et Docker Compose disponibles. En prod, le fichier `compose.prod.yaml` définit `MESSENGER_ASYNC_MOVEMENT_DSN=doctrine://default?queue_name=movement` pour que les mouvements soient traités en file par le worker.
 

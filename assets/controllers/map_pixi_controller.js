@@ -472,6 +472,9 @@ export default class extends Controller {
                 console.error('[map_pixi] Mercure parse error:', err);
             }
         };
+        this._eventSource.onerror = () => {
+            console.warn('[map_pixi] Mercure connexion refusée. URL utilisée:', url.toString(), '- Utilisez HTTPS (https://game.amethyste.best) si vous êtes en production.');
+        };
     }
 
     _handleMercureEvent(data) {

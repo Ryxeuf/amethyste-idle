@@ -8,7 +8,7 @@
         <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.map.live_map'|trans }}</h2>
         <div class="bg-gray-700 rounded-lg p-4 flex justify-center items-center"
              {{ stimulus_controller('map_pixi', {
-                 mercureUrl: mercure_url|default(''),
+                 mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
                  playerId: playerId,
                  mapId: mapId,
                  playerX: playerX,

@@ -1,0 +1,26 @@
+-- Rattache les sequences aux colonnes id (necessaire avec Doctrine DBAL 4 / schema:create sur PostgreSQL)
+ALTER TABLE area ALTER COLUMN id SET DEFAULT nextval('area_id_seq');
+ALTER TABLE domain_experience ALTER COLUMN id SET DEFAULT nextval('domain_experience_id_seq');
+ALTER TABLE fight ALTER COLUMN id SET DEFAULT nextval('fight_id_seq');
+ALTER TABLE game_domains ALTER COLUMN id SET DEFAULT nextval('game_domains_id_seq');
+ALTER TABLE game_items ALTER COLUMN id SET DEFAULT nextval('game_items_id_seq');
+ALTER TABLE game_monster_items ALTER COLUMN id SET DEFAULT nextval('game_monster_items_id_seq');
+ALTER TABLE game_monsters ALTER COLUMN id SET DEFAULT nextval('game_monsters_id_seq');
+ALTER TABLE game_quests ALTER COLUMN id SET DEFAULT nextval('game_quests_id_seq');
+ALTER TABLE game_skills ALTER COLUMN id SET DEFAULT nextval('game_skills_id_seq');
+ALTER TABLE game_spells ALTER COLUMN id SET DEFAULT nextval('game_spells_id_seq');
+ALTER TABLE inventory ALTER COLUMN id SET DEFAULT nextval('inventory_id_seq');
+ALTER TABLE map ALTER COLUMN id SET DEFAULT nextval('map_id_seq');
+ALTER TABLE mob ALTER COLUMN id SET DEFAULT nextval('mob_id_seq');
+ALTER TABLE object_layer ALTER COLUMN id SET DEFAULT nextval('object_layer_id_seq');
+ALTER TABLE parameter ALTER COLUMN id SET DEFAULT nextval('parameter_id_seq');
+ALTER TABLE player ALTER COLUMN id SET DEFAULT nextval('player_id_seq');
+ALTER TABLE player_item ALTER COLUMN id SET DEFAULT nextval('player_item_id_seq');
+ALTER TABLE player_notification ALTER COLUMN id SET DEFAULT nextval('player_notification_id_seq');
+ALTER TABLE player_quest_completed ALTER COLUMN id SET DEFAULT nextval('player_quest_completed_id_seq');
+ALTER TABLE player_quest ALTER COLUMN id SET DEFAULT nextval('player_quest_id_seq');
+ALTER TABLE pnj ALTER COLUMN id SET DEFAULT nextval('pnj_id_seq');
+ALTER TABLE queue_respawn_mob ALTER COLUMN id SET DEFAULT nextval('queue_respawn_mob_id_seq');
+ALTER TABLE slot ALTER COLUMN id SET DEFAULT nextval('slot_id_seq');
+ALTER TABLE users ALTER COLUMN id SET DEFAULT nextval('users_id_seq');
+ALTER TABLE world ALTER COLUMN id SET DEFAULT nextval('world_id_seq');
