@@ -28,4 +28,46 @@ return [
     '@hotwired/turbo' => [
         'version' => '7.3.0',
     ],
+    'pixi.js' => [
+        'version' => '8.17.0',
+    ],
+    'eventemitter3' => [
+        'version' => '5.0.4',
+    ],
+    '@pixi/colord' => [
+        'version' => '2.9.6',
+    ],
+    '@pixi/colord/plugins/names' => [
+        'version' => '2.9.6',
+    ],
+    'ismobilejs' => [
+        'version' => '1.1.1',
+    ],
+    'earcut' => [
+        'version' => '3.0.2',
+    ],
+    'parse-svg-path' => [
+        'version' => '0.1.2',
+    ],
+    '@xmldom/xmldom' => [
+        'version' => '0.8.11',
+    ],
+    'tiny-lru' => [
+        'version' => '11.4.7',
+    ],
+    'pixi.js/lib/environment-browser/browserAll.mjs' => [
+        'version' => '8.17.0',
+    ],
+    'pixi.js/lib/environment-webworker/webworkerAll.mjs' => [
+        'version' => '8.17.0',
+    ],
+    'pixi.js/lib/rendering/renderers/gpu/WebGPURenderer.mjs' => [
+        'version' => '8.17.0',
+    ],
+    'pixi.js/lib/rendering/renderers/gl/WebGLRenderer.mjs' => [
+        'version' => '8.17.0',
+    ],
+    'pixi.js/lib/rendering/renderers/canvas/CanvasRenderer.mjs' => [
+        'version' => '8.17.0',
+    ],
 ];

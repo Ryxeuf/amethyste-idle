@@ -16,16 +16,20 @@ class IndexController extends AbstractController
 
     public function __invoke(): Response
     {
-        // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
         if ($player->getFight()) {
             return $this->redirectToRoute('app_game_fight');
         }
+
+        $coordinates = $player->getCoordinates() ?? '0.0';
+        [$x, $y] = array_map('intval', explode('.', $coordinates));
         
-        // Vous pouvez ajouter ici la logique pour récupérer les données de la carte
-        // Par exemple, récupérer les régions, les points d'intérêt, etc.
-        
-        return $this->render('game/map/index.html.twig');
+        return $this->render('game/map/index.html.twig', [
+            'mapId' => $player->getMap()->getId(),
+            'playerX' => $x,
+            'playerY' => $y,
+            'playerId' => $player->getId(),
+        ]);
     }
 } 

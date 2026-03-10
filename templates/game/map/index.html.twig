@@ -6,8 +6,16 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
         <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.map.live_map'|trans }}</h2>
-        <div class="bg-gray-700 rounded-lg p-4 min-h-[400px]">
-            {{ component('Map') }}
+        <div class="bg-gray-700 rounded-lg p-4 flex justify-center items-center"
+             {{ stimulus_controller('map_pixi', {
+                 mercureUrl: mercure_url|default(''),
+                 playerId: playerId,
+                 mapId: mapId,
+                 playerX: playerX,
+                 playerY: playerY,
+                 stepDelay: 300,
+             }) }}
+             style="min-height: 672px; min-width: 672px;">
         </div>
     </div>
 </div>
