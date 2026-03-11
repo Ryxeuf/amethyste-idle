@@ -1,0 +1,24 @@
+---
+description: Conventions pour les cartes Tiled et le système de terrain
+globs: terrain/**,src/Command/Terrain*,src/Command/Tmx*,src/GameEngine/Map/**
+alwaysApply: false
+---
+
+# Cartes & Terrain
+
+## Workflow
+
+Tiled Map Editor → TMX → `app:terrain:import` → JSON → `app:tmx:generate-css` → CSS sprites → fixtures areas
+
+## Conventions TMX
+
+- Orientation orthogonale, 60×60 tuiles, 32×32 px/tuile
+- Tilesets dans `terrain/tileset/` : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx`
+- Règles dans `terrain/rules/` : `collisions.tmx`, `uncollisions.tmx`, `post_collisions.tmx`, `teleports.tmx`, `borders.tmx`
+- Zones nommées `world-1-map-X-Y.tmx` (grille 0–2), intérieurs `world-1-house-*.tmx`, souterrains `world-1-cave-*.tmx`
+
+## Collisions
+
+- Mur complet : `movement = -1`
+- Collision directionnelle : bitmask N/S/E/W
+- Capacités spéciales : escalade, natation (bitmask `abilityMask` Dijkstra)

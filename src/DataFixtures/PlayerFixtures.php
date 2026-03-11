@@ -15,6 +15,25 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
+        // Joueur pour l'admin remy
+        $playerRemy = new Player();
+        $playerRemy->setName('Rémy');
+        $playerRemy->setLife(10);
+        $playerRemy->setMaxLife(10);
+        $playerRemy->setEnergy(80);
+        $playerRemy->setMaxEnergy(100);
+        $playerRemy->setMap($this->getReference('map_1', Map::class));
+        $playerRemy->setCoordinates('85.34');
+        $playerRemy->setLastCoordinates('85.34');
+        $playerRemy->setUser($this->getReference('user_remy', User::class));
+        $playerRemy->setClassType('admin');
+        $playerRemy->setCreatedAt(new \DateTime());
+        $playerRemy->setUpdatedAt(new \DateTime());
+        $playerRemy->addSkill($this->getReference('pyro_materia_1', Skill::class));
+        $playerRemy->addSkill($this->getReference('soldier_apprentice', Skill::class));
+        $manager->persist($playerRemy);
+        $this->addReference('player_remy', $playerRemy);
+
         // Création du joueur demo
         $playerDemo = new Player();
         $playerDemo->setName('Player demo');

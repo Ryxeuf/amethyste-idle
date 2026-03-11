@@ -18,7 +18,10 @@ class IndexController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
-        if ($player->getFight()) {
+        if ($player === null) {
+            return $this->redirectToRoute('app_dashboard');
+        }
+        if ($player->getFight() !== null) {
             return $this->redirectToRoute('app_game_fight');
         }
 

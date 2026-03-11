@@ -1,6 +1,6 @@
 # Amethyste-Idle — Documentation Technique
 
-> Jeu de rôle idle/navigateur construit avec Symfony 7.4, PHP 8.4, FrankenPHP, PostgreSQL 17, Mercure et Tailwind CSS.
+> MMORPG en navigateur web d'inspiration rétro, construit avec Symfony 7.4, PHP 8.4, FrankenPHP, PostgreSQL 17, Mercure et Tailwind CSS.
 
 ---
 
@@ -31,18 +31,29 @@
 
 ## 1. Vue d'ensemble
 
-**Amethyste-Idle** est un jeu de rôle idle (RPG) jouable dans le navigateur. Le joueur explore une carte du monde en 2D isométrique (tiles 32x32), combat des monstres au tour par tour, collecte du butin, développe ses compétences par domaines, équipe du matériel et accomplit des quêtes.
+**Amethyste-Idle** est un **MMORPG en navigateur web** d'inspiration rétro. Le jeu puise ses influences dans les classiques du jeu de rôle et de l'aventure :
+
+- **The Legend of Zelda** (NES, SNES, Game Boy) — exploration, donjons, interactions avec le monde
+- **Final Fantasy** — combats au tour par tour, système de sorts élémentaires, materia
+- **Warcraft** et autres références — univers fantasy, récolte de ressources, artisanat
+
+### Principes fondamentaux
+
+- **Vue isométrique** en 2D avec des tiles 32×32 pixels
+- **Déplacements sur cases carrées** avec pathfinding Dijkstra
+- **Progression par arbres de talent** : pas de niveaux d'expérience propres au joueur ; la progression repose sur l'acquisition de compétences dans des arbres de talent organisés par domaine (combat, récolte, artisanat)
+- **Cartes éditées via Tiled Map Editor** : les cartes sont conçues dans des fichiers TMX, puis importées dans l'application
 
 ### Fonctionnalités principales
 
 - **Carte du monde** interactive avec pathfinding Dijkstra et déplacements asynchrones
 - **Combat tour par tour** avec système de timeline basé sur la vitesse, sorts élémentaires, critiques
 - **Inventaire complet** : sac, banque, materia, équipement avec slots et bitmask
-- **Arbre de compétences** par domaine avec XP, pré-requis et bonus de stats
+- **Arbres de talent** par domaine avec XP de domaine, pré-requis et bonus de stats
 - **Système de quêtes** avec tracking de progression (monstres tués, etc.)
 - **PNJ** avec dialogues à branches et conditions
 - **Récolte et jobs** (mineur, herboriste, pêcheur, etc.)
-- **Temps réel** via Mercure SSE (mouvements, respawn de mobs, récolte)
+- **Multijoueur en temps réel** via Mercure SSE (mouvements des joueurs, respawn de mobs, récolte)
 - **Bilingue** FR/EN
 
 ---
@@ -411,7 +422,9 @@ Chaque emplacement est un bit dans le champ `gear` de `PlayerItem` :
 
 ---
 
-## 11. Système de compétences
+## 11. Système de compétences (Arbres de talent)
+
+> **Philosophie de progression** : Amethyste-Idle n'utilise **pas** de système de niveaux d'expérience propres au joueur (pas de "level up" global). La progression repose entièrement sur des **arbres de talent** organisés par domaine. Le joueur accumule de l'XP spécifique à chaque domaine en pratiquant les activités associées, puis investit cette XP pour débloquer des compétences dans l'arbre de talent correspondant.
 
 ### Domaines disponibles
 
@@ -421,13 +434,14 @@ Chaque emplacement est un bit dans le champ `gear` de `PlayerItem` :
 | **Récolte** | Pêcheur, Mineur, Herboriste, Dépeceur |
 | **Artisanat** | Forgeron, Tanneur, Alchimiste, Joaillier |
 
-### Mécanique d'acquisition
+### Mécanique d'acquisition (arbre de talent)
 
-1. Le joueur gagne de l'XP dans un domaine en utilisant des items/sorts/récoltes liés
+1. Le joueur gagne de l'XP de domaine en utilisant des items/sorts/récoltes liés à ce domaine
 2. `DomainExperienceEvolver` (EventSubscriber) incrémente l'XP à chaque `ItemUsedEvent` ou `SpotHarvestEvent`
-3. L'XP disponible = XP totale - XP dépensée
-4. Le joueur choisit un skill à débloquer si : assez d'XP + tous les pré-requis remplis
+3. L'XP investissable = XP totale du domaine − XP déjà dépensée dans l'arbre
+4. Le joueur choisit un talent à débloquer dans l'arbre si : assez d'XP + tous les pré-requis (talents parents) remplis
 5. `SkillAcquiring` applique les bonus de stats : `damage`, `heal`, `hit`, `critical`, `life`
+6. Il n'existe pas de "niveau du joueur" global : la puissance du personnage est la somme des talents débloqués dans tous ses arbres
 
 ### Arbre de compétences (exemple : Pyromancie)
 

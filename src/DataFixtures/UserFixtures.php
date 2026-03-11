@@ -36,7 +36,8 @@ class UserFixtures extends Fixture
         
         // Persistance de l'utilisateur
         $manager->persist($user);
-        
+        $this->addReference('user_remy', $user);
+
         // Utilisateur demo
         $userDemo = new User();
         $userDemo->setEmail('demo@amethyste.fr');

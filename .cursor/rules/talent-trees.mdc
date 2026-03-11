@@ -1,0 +1,23 @@
+---
+description: Système de progression par arbres de talent (pas de niveaux)
+globs: src/GameEngine/Progression/**,src/Entity/**/Skill.php,src/Entity/**/Domain*.php,templates/**/skills/**
+alwaysApply: false
+---
+
+# Arbres de talent
+
+Le jeu n'a PAS de niveaux d'expérience globaux. La progression repose uniquement sur des arbres de talent.
+
+## Mécanique
+
+1. Le joueur gagne de l'XP **par domaine** (combat, récolte, artisanat) en pratiquant
+2. L'XP de domaine est investie pour débloquer des talents dans l'arbre correspondant
+3. Chaque talent a un coût en points et des pré-requis (talents parents)
+4. Les talents donnent des bonus de stats : `damage`, `heal`, `hit`, `critical`, `life`
+5. Puissance du personnage = somme de tous les talents débloqués
+
+## Domaines
+
+- **Combat** : Pyromancie, Soldat, Soigneur, Défenseur, Nécromancie, Mage blanc, Druide
+- **Récolte** : Pêcheur, Mineur, Herboriste, Dépeceur
+- **Artisanat** : Forgeron, Tanneur, Alchimiste, Joaillier

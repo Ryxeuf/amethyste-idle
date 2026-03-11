@@ -1,0 +1,22 @@
+---
+description: Identité et vision du projet Amethyste-Idle — MMORPG navigateur rétro
+alwaysApply: true
+---
+
+# Amethyste-Idle — Identité du projet
+
+MMORPG en navigateur web d'inspiration rétro.
+
+## Inspirations
+
+- **Zelda** (NES, SNES, Game Boy) : exploration, donjons, interactions monde
+- **Final Fantasy** : combats au tour par tour, sorts élémentaires, materia
+- **Warcraft** : univers fantasy, récolte de ressources, artisanat
+
+## Principes fondamentaux
+
+- **Vue isométrique** 2D, tiles 32×32 px
+- **Déplacements sur cases carrées**, pathfinding Dijkstra
+- **Progression par arbres de talent** par domaine (combat, récolte, artisanat) — PAS de niveaux d'XP globaux du joueur
+- **Cartes** éditées dans **Tiled Map Editor** (fichiers TMX), importées via `app:terrain:import`
+- **Multijoueur temps réel** via Mercure SSE
