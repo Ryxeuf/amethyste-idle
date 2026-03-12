@@ -10,6 +10,7 @@ use App\Entity\App\ObjectLayer;
 use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Movement\Message\PlayerMoveMessage;
 use App\GameEngine\Player\PlayerMoveUpdater;
+use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,14 +19,18 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 
 #[Route('/api/map')]
 class MapApiController extends AbstractController
 {
+    private const PLAYER_MOVE_CACHE_KEY_PREFIX = 'player_move_';
+
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly Packages $packages,
+        private readonly CacheInterface $cache,
     ) {}
 
     #[Route('/config', name: 'api_map_config', methods: ['GET'])]
@@ -127,10 +132,24 @@ class MapApiController extends AbstractController
         $data = json_decode($request->getContent(), true) ?? [];
         $targetX = (int)($data['targetX'] ?? 0);
         $targetY = (int)($data['targetY'] ?? 0);
+        $fromX = isset($data['fromX']) ? (int)$data['fromX'] : null;
+        $fromY = isset($data['fromY']) ? (int)$data['fromY'] : null;
 
         $coords = explode('.', $player->getCoordinates() ?? '0.0');
         $currentX = (int)($coords[0] ?? 0);
         $currentY = (int)($coords[1] ?? 0);
+
+        if ($fromX !== null && $fromY !== null) {
+            $currentX = $fromX;
+            $currentY = $fromY;
+            $player->setCoordinates(CellHelper::stringifyCoordinates($fromX, $fromY));
+            $this->entityManager->flush();
+        }
+
+        $moveId = bin2hex(random_bytes(16));
+        $cacheKey = self::PLAYER_MOVE_CACHE_KEY_PREFIX . $player->getId();
+        $this->cache->delete($cacheKey);
+        $this->cache->get($cacheKey, fn () => $moveId);
 
         try {
             $movementCalculator->loadMap(10);
@@ -147,6 +166,7 @@ class MapApiController extends AbstractController
         $bus->dispatch(new PlayerMoveMessage(json_encode([
             'player' => $player->getId(),
             'cells' => $movements,
+            'moveId' => $moveId,
         ])));
 
         $path = array_map(fn(array $cell) => [

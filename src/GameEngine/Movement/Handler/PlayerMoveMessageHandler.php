@@ -11,20 +11,25 @@ use App\GameEngine\Fight\Handler\FightHandler;
 use App\Helper\CellHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 #[AsMessageHandler]
 class PlayerMoveMessageHandler
 {
+    private const CACHE_KEY_PREFIX = 'player_move_';
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly FightHandler $fightHandler,
+        private readonly CacheInterface $cache,
     ) {}
 
     public function __invoke(PlayerMoveMessage $message): void
     {
         $content = json_decode($message->content, true);
+        $messageMoveId = $content['moveId'] ?? null;
         /** @var Player $player */
         $player = $this->entityManager->getRepository(Player::class)->find($content['player']);
         if (!$player) {
@@ -38,6 +43,7 @@ class PlayerMoveMessageHandler
 
         $cells = $content['cells'];
         $traversedPath = [];
+        $cacheKey = self::CACHE_KEY_PREFIX . $player->getId();
 
         // Une seule requête pour tous les mobs sur les coordonnées du path (évite N findOneBy).
         $pathCoords = array_map(
@@ -52,15 +58,23 @@ class PlayerMoveMessageHandler
         }
 
         foreach ($cells as $cell) {
+            $currentMoveId = $this->cache->get($cacheKey, fn () => $messageMoveId);
+            if ($messageMoveId !== null && $currentMoveId !== $messageMoveId) {
+                $this->logger->info("Player {player} move cancelled", ['player' => $player->getId()]);
+                $this->entityManager->refresh($player);
+                $this->movedPlayerHandler->movePlayerPath($player, $traversedPath);
+                return;
+            }
+
             $player->setLastCoordinates($player->getCoordinates());
             $coords = CellHelper::stringifyCoordinates($cell['x'], $cell['y']);
             $player->setCoordinates($coords);
             $traversedPath[] = $cell;
+            $this->entityManager->flush();
 
             $mob = $mobsByCoords[$coords] ?? null;
             if ($mob) {
                 $this->logger->info("Mob found at {cell}, stopping movement", ['cell' => $coords]);
-                $this->entityManager->flush();
                 $this->movedPlayerHandler->movePlayerPath($player, $traversedPath);
                 $this->fightHandler->startFight($player, $mob);
                 return;

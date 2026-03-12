@@ -20,6 +20,8 @@ export default class extends Controller {
         this._playerX = this.playerXValue;
         this._playerY = this.playerYValue;
         this._animating = false;
+        this._cancelRequested = false;
+        this._pendingNewTarget = null;
 
         this._cellCache = new Map();
         this._tileSprites = new Map();
@@ -343,8 +345,6 @@ export default class extends Controller {
     // --- Click to Move ---
 
     _onPointerDown(e) {
-        if (this._animating) return;
-
         const rect = this._app.canvas.getBoundingClientRect();
         const screenX = e.clientX - rect.left;
         const screenY = e.clientY - rect.top;
@@ -359,19 +359,45 @@ export default class extends Controller {
         const cell = this._cellCache.get(cellKey);
         if (!cell || !cell.w) return;
 
+        if (this._animating) {
+            this._cancelRequested = true;
+            this._pendingNewTarget = { x: tileX, y: tileY };
+            return;
+        }
+
         this._requestMove(tileX, tileY);
     }
 
-    async _requestMove(targetX, targetY) {
-        if (this._animating) return;
+    async _requestMove(targetX, targetY, fromX = null, fromY = null) {
+        if (this._animating && !this._cancelRequested) return;
+
+        const body = { targetX, targetY };
+        if (fromX !== null && fromY !== null) {
+            body.fromX = fromX;
+            body.fromY = fromY;
+        }
 
         try {
             const resp = await fetch('/api/map/move', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ targetX, targetY }),
+                body: JSON.stringify(body),
             });
             const data = await resp.json();
+
+            if (data.error) {
+                if (fromX !== null && fromY !== null) {
+                    this._playerX = fromX;
+                    this._playerY = fromY;
+                    if (this._playerMarker) {
+                        this._playerMarker.position.set(fromX * this._tileSize, fromY * this._tileSize);
+                    }
+                    this._updateCamera(true);
+                    await this._loadCells(fromX, fromY);
+                    await this._loadEntities();
+                }
+                return;
+            }
 
             if (data.path && data.path.length > 0) {
                 const finalStep = data.path[data.path.length - 1];
@@ -403,8 +429,12 @@ export default class extends Controller {
     async _animateAlongPath(path) {
         if (this._animating) return;
         this._animating = true;
+        this._cancelRequested = false;
+        this._pendingNewTarget = null;
 
         for (let i = 0; i < path.length; i++) {
+            if (this._cancelRequested && this._pendingNewTarget) break;
+
             const from = { x: this._playerX, y: this._playerY };
             const to = { x: path[i].x, y: path[i].y };
             await this._tweenTo(from, to, this.stepDelayValue);
@@ -412,8 +442,20 @@ export default class extends Controller {
             this._playerY = to.y;
         }
 
+        const hadCancel = this._cancelRequested && this._pendingNewTarget;
+        const pending = this._pendingNewTarget;
         this._animating = false;
+        this._cancelRequested = false;
+        this._pendingNewTarget = null;
+
         this._updateCamera(true);
+
+        if (hadCancel && pending) {
+            const fromX = Math.floor(this._playerX);
+            const fromY = Math.floor(this._playerY);
+            await this._requestMove(pending.x, pending.y, fromX, fromY);
+            return;
+        }
 
         await this._loadCells(this._playerX, this._playerY);
         await this._loadEntities();
