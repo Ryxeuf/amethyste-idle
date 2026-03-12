@@ -52,19 +52,6 @@ services:
       database:
         condition: service_healthy
 
-  watcher_async_move_consumer:
-    <<: *php_base
-    container_name: amethyste-watcher-async-move-consumer
-    links:
-      - php
-    tty: true
-    ports: []
-    labels: []
-    entrypoint: ['php', '/app/bin/console', 'messenger:consume', 'async_movement', '-vv']
-    depends_on:
-      php:
-        condition: service_healthy
-
   database:
     restart: unless-stopped
     image: postgres:${POSTGRES_VERSION:-17}-alpine

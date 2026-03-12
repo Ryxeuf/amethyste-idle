@@ -8,8 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Pnj;
 use App\Entity\App\ObjectLayer;
 use App\GameEngine\Map\MovementCalculator;
-use App\GameEngine\Movement\Message\PlayerMoveMessage;
-use App\GameEngine\Player\PlayerMoveUpdater;
+use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,20 +16,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Cache\CacheInterface;
 
 #[Route('/api/map')]
 class MapApiController extends AbstractController
 {
-    private const PLAYER_MOVE_CACHE_KEY_PREFIX = 'player_move_';
-
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly Packages $packages,
-        private readonly CacheInterface $cache,
     ) {}
 
     #[Route('/config', name: 'api_map_config', methods: ['GET'])]
@@ -123,8 +117,7 @@ class MapApiController extends AbstractController
     public function move(
         Request $request,
         MovementCalculator $movementCalculator,
-        PlayerMoveUpdater $playerMoveUpdater,
-        MessageBusInterface $bus,
+        PlayerMoveProcessor $playerMoveProcessor,
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
@@ -146,11 +139,6 @@ class MapApiController extends AbstractController
             $this->entityManager->flush();
         }
 
-        $moveId = bin2hex(random_bytes(16));
-        $cacheKey = self::PLAYER_MOVE_CACHE_KEY_PREFIX . $player->getId();
-        $this->cache->delete($cacheKey);
-        $this->cache->get($cacheKey, fn () => $moveId);
-
         try {
             $movementCalculator->loadMap(10);
             $movements = $movementCalculator->calculateMovement($currentX, $currentY, $targetX, $targetY);
@@ -162,17 +150,12 @@ class MapApiController extends AbstractController
             return $this->json(['path' => []]);
         }
 
-        $playerMoveUpdater->setPlayerMoving();
-        $bus->dispatch(new PlayerMoveMessage(json_encode([
-            'player' => $player->getId(),
-            'cells' => $movements,
-            'moveId' => $moveId,
-        ])));
+        $traversedPath = $playerMoveProcessor->processMove($player, $movements);
 
         $path = array_map(fn(array $cell) => [
             'x' => (int)$cell['x'],
             'y' => (int)$cell['y'],
-        ], $movements);
+        ], $traversedPath);
 
         return $this->json(['path' => $path]);
     }

@@ -1,19 +1,4 @@
 framework:
     messenger:
-        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
-        # failure_transport: failed
-
-        transports:
-            # En prod : doctrine pour ne pas bloquer les workers PHP (requêtes move = pending sinon).
-            # Le worker watcher_async_move_consumer traite la file.
-            async_movement: '%env(MESSENGER_ASYNC_MOVEMENT_DSN)%'
-
-        routing:
-            'App\GameEngine\Movement\Message\PlayerMoveMessage': async_movement
-# when@test:
-#    framework:
-#        messenger:
-#            transports:
-#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
-#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
-#                async: 'in-memory://'
+        transports: []
+        routing: {}

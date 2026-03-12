@@ -13,9 +13,7 @@ use App\SearchEngine\CellSearchEngine;
 use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use App\GameEngine\Map\MovementCalculator;
-use App\GameEngine\Player\PlayerMoveUpdater;
-use Symfony\Component\Messenger\MessageBusInterface;
-use App\GameEngine\Movement\Message\PlayerMoveMessage;
+use App\GameEngine\Movement\PlayerMoveProcessor;
 
 #[AsLiveComponent]
 class Map
@@ -51,8 +49,7 @@ class Map
         private readonly PlayerHelper $playerHelper,
         private readonly CellSearchEngine $cellSearchEngine,
         private readonly MovementCalculator $movementCalculator,
-        private readonly PlayerMoveUpdater $playerMoveUpdater,
-        private readonly MessageBusInterface $bus,
+        private readonly PlayerMoveProcessor $playerMoveProcessor,
     )
     {
         $this->player = $this->playerHelper->getPlayer();
@@ -109,12 +106,8 @@ class Map
             return;
         }
 
-        $this->playerMoveUpdater->setPlayerMoving();
-        $this->bus->dispatch(new PlayerMoveMessage(json_encode([
-            'player' => $this->player->getId(),
-            'cells' => $movements,
-        ])));
-
+        $this->playerMoveProcessor->processMove($this->player, $movements);
+        $this->initXY();
         $this->updateCells();
     }
 

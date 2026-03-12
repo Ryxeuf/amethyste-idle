@@ -52,44 +52,35 @@ echo "==> Fichiers Compose: ${COMPOSE_ARGS[*]}"
 echo ""
 
 if [[ "$COMPOSER_UPDATE" -eq 1 ]]; then
-  echo "==> 0/6 Mise a jour du composer.lock (conteneur php, volume monte)..."
+  echo "==> 0/5 Mise a jour du composer.lock (conteneur php, volume monte)..."
   run_php_mounted composer update --no-scripts --no-install
   echo ""
 fi
 
-echo "==> 1/6 Construction et demarrage des services..."
+echo "==> 1/5 Construction et demarrage des services..."
 docker compose "${COMPOSE_ARGS[@]}" up -d --build --wait
 
 echo ""
-echo "==> 2/6 Activation de la page de maintenance (conteneur php)..."
+echo "==> 2/5 Activation de la page de maintenance (conteneur php)..."
 run_php touch /app/var/maintenance.flag
 MAINTENANCE_ON=1
 echo "    (les visiteurs voient la page de maintenance)"
 
 echo ""
-echo "==> 3/6 Configuration des transports Messenger (conteneur php)..."
-run_php php /app/bin/console messenger:setup-transports --no-interaction
-
-echo ""
-echo "==> 4/6 Redemarrage du worker de mouvement..."
-docker compose "${COMPOSE_ARGS[@]}" restart watcher_async_move_consumer
-
-echo ""
-echo "==> 5/6 Compilation des assets (Tailwind + AssetMapper)..."
+echo "==> 3/5 Compilation des assets (Tailwind + AssetMapper)..."
 run_php php /app/bin/console tailwind:build --no-interaction 2>/dev/null || true
 run_php php /app/bin/console asset-map:compile 2>/dev/null || true
 
 echo ""
-echo "==> 6/6 Vidage du cache (conteneur php)..."
+echo "==> 4/5 Vidage du cache (conteneur php)..."
 run_php php /app/bin/console cache:clear --no-warmup 2>/dev/null || true
 run_php php /app/bin/console cache:warmup 2>/dev/null || true
 
 echo ""
-echo "==> Etat des services"
+echo "==> 5/5 Etat des services"
 docker compose "${COMPOSE_ARGS[@]}" ps
 
 echo ""
 echo "Deploiement termine (commandes executees dans les conteneurs)."
-echo "Pour suivre les logs du worker: docker compose ${COMPOSE_ARGS[*]} logs -f watcher_async_move_consumer"
 echo "Pour les logs PHP: docker compose ${COMPOSE_ARGS[*]} logs -f php"
-echo "Pour exécuter une commande dans le conteneur php: docker compose ${COMPOSE_ARGS[*]} exec php <commande>"
+echo "Pour executer une commande dans le conteneur php: docker compose ${COMPOSE_ARGS[*]} exec php <commande>"

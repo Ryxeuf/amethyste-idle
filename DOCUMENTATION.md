@@ -18,7 +18,7 @@
 10. [Système d'inventaire & équipement](#10-système-dinventaire--équipement)
 11. [Système de compétences](#11-système-de-compétences)
 12. [Quêtes & PNJ](#12-quêtes--pnj)
-13. [Temps réel (Mercure & Messenger)](#13-temps-réel-mercure--messenger)
+13. [Temps réel (Mercure)](#13-temps-réel-mercure)
 14. [Moteur de recherche (Typesense)](#14-moteur-de-recherche-typesense)
 15. [Authentification & Sécurité](#15-authentification--sécurité)
 16. [Frontend (Twig, Tailwind, Stimulus)](#16-frontend-twig-tailwind-stimulus)
@@ -46,7 +46,7 @@
 
 ### Fonctionnalités principales
 
-- **Carte du monde** interactive avec pathfinding Dijkstra et déplacements asynchrones
+- **Carte du monde** interactive avec pathfinding Dijkstra et déplacements synchrones
 - **Combat tour par tour** avec système de timeline basé sur la vitesse, sorts élémentaires, critiques
 - **Inventaire complet** : sac, banque, materia, équipement avec slots et bitmask
 - **Arbres de talent** par domaine avec XP de domaine, pré-requis et bonus de stats
@@ -67,10 +67,8 @@
 | **Serveur web** | FrankenPHP (Caddy) | 1.x |
 | **Base de données** | PostgreSQL | 17 (Alpine) |
 | **ORM** | Doctrine | 3.x |
-| **Moteur de recherche** | Typesense | 28.0 |
 | **Temps réel (SSE)** | Mercure | Intégré dans Caddy |
-| **File de messages** | Symfony Messenger | Transport Doctrine |
-| **Frontend** | Twig + Tailwind CSS | 3.4 |
+| **Frontend** | Twig + Tailwind CSS | 4.1 |
 | **Composants dynamiques** | Symfony UX Live Component + Turbo | |
 | **Asset bundling** | Symfony AssetMapper (importmap) | |
 | **Stimulus** | @symfony/stimulus-bundle | |
@@ -129,7 +127,6 @@ L'application suit une **architecture événementielle** (Event-Driven) :
 1. Les controllers déclenchent des actions (attaque, déplacement, récolte)
 2. Les actions produisent des **événements** (`PlayerAttackHitEvent`, `MobDeadEvent`, `PlayerMovedEvent`, etc.)
 3. Des **EventSubscribers** réagissent : génération de loot, respawn, XP, mise à jour de quêtes, publications Mercure
-4. Le transport Messenger gère les opérations asynchrones (déplacements case par case)
 
 ---
 
@@ -140,14 +137,12 @@ L'application suit une **architecture événementielle** (Event-Driven) :
 | Service | Image | Rôle | Port interne |
 |---------|-------|------|-------------|
 | `php` | `app-php` (FrankenPHP) | Serveur web + Mercure | 80 |
-| `watcher_async_move_consumer` | `app-php` | Worker Messenger (déplacements) | — |
 | `database` | `postgres:17-alpine` | Base de données | 5432 |
-| `typesense` | `typesense/typesense:28.0` | Moteur de recherche | 8109 |
 
 ### Réseaux Docker
 
 - **`traefik-network`** (externe) : Connecte le service `php` au reverse proxy Traefik
-- **`internal`** (bridge) : Communication entre les services internes (php ↔ database ↔ typesense)
+- **`internal`** (bridge) : Communication entre les services internes (php ↔ database)
 
 ### Démarrage production
 
@@ -164,7 +159,7 @@ docker compose exec php php bin/console cache:clear
 
 ### Script de déploiement
 
-Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement. **Toutes les commandes applicables sont exécutées dans le conteneur `php`** (Symfony, maintenance, Messenger, cache).
+Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement. **Toutes les commandes applicables sont exécutées dans le conteneur `php`** (Symfony, maintenance, cache).
 
 ```bash
 # Production (compose.yaml + compose.prod.yaml)
@@ -181,15 +176,14 @@ Le script `scripts/deploy.sh` enchaîne les étapes nécessaires au déploiement
 
 1. **Construction et démarrage** : `docker compose up -d --build --wait` (attend que les services soient healthy).
 2. **Page de maintenance** : activation dans le conteneur (`touch var/maintenance.flag`), désactivation automatique en fin de script (ou en cas d’interruption).
-3. **Transports Messenger** (conteneur php) : `messenger:setup-transports` pour créer la table `messenger_messages` si besoin.
-4. **Redémarrage du worker** : `watcher_async_move_consumer` pour prendre en compte la config (file Doctrine en prod).
-5. **Cache Symfony** (conteneur php) : `cache:clear` puis `cache:warmup`.
-6. **État des services** : affichage de `docker compose ps`.
+3. **Compilation des assets** : Tailwind + AssetMapper.
+4. **Cache Symfony** (conteneur php) : `cache:clear` puis `cache:warmup`.
+5. **État des services** : affichage de `docker compose ps`.
 
 Pour exécuter une commande dans le conteneur php :  
 `docker compose -f compose.yaml -f compose.prod.yaml exec php <commande>` (ex. `php bin/console cache:clear`, `composer update`).
 
-**Prérequis :** `.env` configuré, Docker et Docker Compose disponibles. En prod, le fichier `compose.prod.yaml` définit `MESSENGER_ASYNC_MOVEMENT_DSN=doctrine://default?queue_name=movement` pour que les mouvements soient traités en file par le worker.
+**Prérequis :** `.env` configuré, Docker et Docker Compose disponibles.
 
 ### Démarrage développement
 
@@ -200,7 +194,7 @@ docker compose up --build -d
 
 ### Environnement de développement et cache
 
-Pour éviter les problèmes de cache (ancien JS, ancien PHP, annulation de mouvement qui ne répond pas) :
+Pour éviter les problèmes de cache (ancien JS, ancien PHP) :
 
 1. **Forcer l’environnement dev** : dans `.env`, garder `APP_ENV=dev`. En dev, le cache applicatif est moins agressif et les assets sont servis avec des URLs versionnées.
 2. **Vider le cache après modification du code** :
@@ -209,9 +203,7 @@ Pour éviter les problèmes de cache (ancien JS, ancien PHP, annulation de mouve
    # ou dans Docker :
    docker compose exec php php bin/console cache:clear
    ```
-3. **Worker Messenger** : en dev, `MESSENGER_ASYNC_MOVEMENT_DSN=sync://` fait que le déplacement est traité dans la requête. En prod, redémarrer le worker après un déploiement pour charger le nouveau code :  
-   `docker compose restart watcher_async_move_consumer` (ou équivalent).
-4. **Navigateur** : rechargement forcé (Ctrl+F5 / Cmd+Shift+R) ou onglet en navigation privée pour éviter le cache des scripts.
+3. **Navigateur** : rechargement forcé (Ctrl+F5 / Cmd+Shift+R) ou onglet en navigation privée pour éviter le cache des scripts.
 
 ---
 
@@ -311,7 +303,7 @@ GameEngine/
 ├── Job/                # Récolte et jobs
 ├── Map/                # Pathfinding Dijkstra
 ├── Mob/                # Génération de mobs
-├── Movement/           # Déplacements asynchrones (Messenger)
+├── Movement/           # Traitement des déplacements
 ├── Player/             # Actions joueur, respawn, dialogues PNJ
 ├── Progression/        # XP et acquisition de compétences
 ├── Quest/              # Tracking de quêtes
@@ -375,12 +367,13 @@ L'algorithme de **Dijkstra** calcule le chemin le plus court :
 - Obstacles : murs (`movement = -1`), collisions directionnelles (bitmask N/S/E/W)
 - Abilities : certaines cases nécessitent escalade ou natation (bitmask)
 
-### Déplacement asynchrone
+### Déplacement synchrone
 
-1. Clic sur une cellule → `Map::move()` → calcul Dijkstra → `PlayerMoveMessage`
-2. `PlayerMoveMessageHandler` (worker Messenger) traite case par case avec `usleep(250ms)`
-3. À chaque case : détection de mob → déclenchement de combat si mob présent
-4. Publication Mercure (`map/move`) → mise à jour temps réel du client
+1. Clic sur une cellule → `Map::move()` → calcul Dijkstra → `PlayerMoveProcessor::processMove()`
+2. Le processeur charge les mobs du chemin (1 requête), détecte le premier mob, tronque le chemin si nécessaire
+3. Mise à jour de la position finale du joueur en base (1 seul flush)
+4. Si mob détecté : déclenchement de combat
+5. Publication Mercure (`map/move`) du chemin complet → animation côté client
 
 ### Cartes disponibles (World 1)
 
@@ -510,7 +503,7 @@ Salutation → Présentation → Offre de quête "Tuer les zombies"
 
 ---
 
-## 13. Temps réel (Mercure & Messenger)
+## 13. Temps réel (Mercure)
 
 ### Mercure SSE
 
@@ -524,12 +517,7 @@ Salutation → Présentation → Offre de quête "Tuer les zombies"
 
 Le client JavaScript (`assets/js/map/move-listener.js`) écoute les événements Mercure et déclenche la mise à jour du Live Component.
 
-### Symfony Messenger
-
-- **Transport** : `async_movement` (Doctrine queue `movement`)
-- **Message** : `PlayerMoveMessage` (playerId + cellules du chemin)
-- **Handler** : `PlayerMoveMessageHandler` — traite les cases une par une avec pause de 250ms, détecte les mobs, relance un nouveau message pour les cases restantes
-- **Worker** : `amethyste-watcher-async-move-consumer` (conteneur dédié)
+Les déplacements sont traités de manière synchrone par `PlayerMoveProcessor` dans la requête HTTP, puis le chemin complet est publié via Mercure pour les autres clients.
 
 ---
 

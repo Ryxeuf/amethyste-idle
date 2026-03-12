@@ -207,9 +207,8 @@ Clic → Live Component move() → Dispatch PlayerMoveMessage
 
 - `php` (FrankenPHP, zero Node.js)
 - `database` (PostgreSQL 16)
-- `watcher_async_move_consumer` : conserve pour le moment (le handler ne bloque plus, mais le transport Doctrine est toujours utilise)
 
-Le service `typesense` a ete supprime. Le worker Messenger peut etre retire a terme si les deplacements sont geres entierement cote client sans persistence intermediaire.
+Les services `typesense` et `watcher_async_move_consumer` ont ete supprimes. Les deplacements sont traites de facon synchrone par `PlayerMoveProcessor` dans la requete HTTP (1 SELECT mobs + 1 UPDATE joueur).
 
 ---
 
@@ -253,7 +252,7 @@ Le service `typesense` a ete supprime. Le worker Messenger peut etre retire a te
 ## 12. Points d'attention pour la suite
 
 - **Advisories Symfony** : 3 advisories sur `symfony/http-foundation` ignorees en dev (`PKSA-365x-2zjk-pt47`, `PKSA-b35n-565h-rs4q`, `PKSA-t4rz-hp2g-57t1`). A resoudre lors de la migration vers Symfony 7.3 ou 8.0
-- **Worker Messenger** : le service `watcher_async_move_consumer` peut etre supprime si le volume de messages le permet (le handler ne bloque plus)
+- **Worker Messenger** : le service `watcher_async_move_consumer` a ete supprime. Les deplacements sont traites de facon synchrone par `PlayerMoveProcessor`.
 - **Commande `api:mob:move`** : referencee dans le Scheduler mais non trouvee dans le code source. A verifier / creer
 - **Bind mount Docker** : en dev, les fichiers edites sur l'host ne se propagent pas toujours dans le container. Un rebuild de l'image (`docker compose build --no-cache`) resoudra ce probleme
 - **Rebuild necessaire** : le Dockerfile a ete modifie (retrait Node.js). Lancer `docker compose build` pour appliquer

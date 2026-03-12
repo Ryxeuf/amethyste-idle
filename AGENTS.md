@@ -12,7 +12,7 @@
 ## Stack technique
 
 - PHP 8.4, Symfony 7.4, FrankenPHP (Caddy), PostgreSQL 17
-- Doctrine ORM 3.x, Symfony Messenger (transport Doctrine)
+- Doctrine ORM 3.x
 - Mercure SSE pour le temps réel (intégré dans Caddy)
 - Frontend : Twig + Tailwind CSS 4.x + Symfony UX Live Component + Turbo + Stimulus
 - Assets : Symfony AssetMapper (importmap, sans bundler Node.js)
@@ -22,7 +22,7 @@
 ## Conventions de développement
 
 - Architecture événementielle (Event-Driven) : actions → événements → EventSubscribers
-- Les déplacements sont traités de façon asynchrone via Symfony Messenger (worker dédié)
+- Les déplacements sont traités de façon synchrone par `PlayerMoveProcessor` dans la requête HTTP
 - Les entités de jeu sont dans `src/Entity/Game/`, les entités applicatives dans `src/Entity/App/`
 - Le moteur de jeu est dans `src/GameEngine/` organisé par sous-domaine (Fight, Map, Movement, etc.)
 - Les Live Components Symfony UX sont dans `src/Twig/Components/`
