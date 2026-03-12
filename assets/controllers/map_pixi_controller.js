@@ -35,6 +35,9 @@ export default class extends Controller {
         await this._loadEntities();
         this._setupMercure();
         this._updateCamera(true);
+        if (typeof console !== 'undefined' && console.debug) {
+            console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
+        }
     }
 
     disconnect() {
@@ -357,14 +360,18 @@ export default class extends Controller {
 
         const cellKey = `${tileX},${tileY}`;
         const cell = this._cellCache.get(cellKey);
-        if (!cell || !cell.w) return;
+        const isWalkable = cell && cell.w;
 
         if (this._animating) {
             this._cancelRequested = true;
-            this._pendingNewTarget = { x: tileX, y: tileY };
+            this._pendingNewTarget = isWalkable ? { x: tileX, y: tileY } : null;
+            if (typeof console !== 'undefined' && console.debug) {
+                console.debug('[map_pixi] Clic pendant déplacement → annulation', isWalkable ? `nouvelle cible (${tileX},${tileY})` : 'arrêt uniquement');
+            }
             return;
         }
 
+        if (!isWalkable) return;
         this._requestMove(tileX, tileY);
     }
 
@@ -403,9 +410,21 @@ export default class extends Controller {
                 const finalStep = data.path[data.path.length - 1];
                 this._preloadCells(finalStep.x, finalStep.y);
                 await this._animateAlongPath(data.path);
+            } else if (fromX !== null && fromY !== null) {
+                await this._loadCells(fromX, fromY);
+                await this._loadEntities();
             }
         } catch (err) {
             console.error('[map_pixi] Move error:', err);
+            if (fromX !== null && fromY !== null) {
+                this._playerX = fromX;
+                this._playerY = fromY;
+                if (this._playerMarker) {
+                    this._playerMarker.position.set(fromX * this._tileSize, fromY * this._tileSize);
+                }
+                this._updateCamera(true);
+                this._loadCells(fromX, fromY).then(() => this._loadEntities());
+            }
         }
     }
 
@@ -433,7 +452,7 @@ export default class extends Controller {
         this._pendingNewTarget = null;
 
         for (let i = 0; i < path.length; i++) {
-            if (this._cancelRequested && this._pendingNewTarget) break;
+            if (this._cancelRequested) break;
 
             const from = { x: this._playerX, y: this._playerY };
             const to = { x: path[i].x, y: path[i].y };
@@ -442,7 +461,7 @@ export default class extends Controller {
             this._playerY = to.y;
         }
 
-        const hadCancel = this._cancelRequested && this._pendingNewTarget;
+        const hadCancel = this._cancelRequested;
         const pending = this._pendingNewTarget;
         this._animating = false;
         this._cancelRequested = false;
@@ -450,10 +469,14 @@ export default class extends Controller {
 
         this._updateCamera(true);
 
-        if (hadCancel && pending) {
+        if (hadCancel) {
             const fromX = Math.floor(this._playerX);
             const fromY = Math.floor(this._playerY);
-            await this._requestMove(pending.x, pending.y, fromX, fromY);
+            if (pending) {
+                await this._requestMove(pending.x, pending.y, fromX, fromY);
+            } else {
+                await this._requestMove(fromX, fromY, fromX, fromY);
+            }
             return;
         }
 
@@ -468,6 +491,22 @@ export default class extends Controller {
             const toPx = { x: to.x * this._tileSize, y: to.y * this._tileSize };
 
             const step = (now) => {
+                if (this._cancelRequested) {
+                    const curX = from.x + (to.x - from.x) * Math.min((now - startTime) / durationMs, 1);
+                    const curY = from.y + (to.y - from.y) * Math.min((now - startTime) / durationMs, 1);
+                    this._playerX = curX;
+                    this._playerY = curY;
+                    if (this._playerMarker) {
+                        this._playerMarker.position.set(
+                            Math.round(curX * this._tileSize),
+                            Math.round(curY * this._tileSize)
+                        );
+                    }
+                    this._updateCamera(false);
+                    resolve();
+                    return;
+                }
+
                 const elapsed = now - startTime;
                 const t = Math.min(elapsed / durationMs, 1);
 

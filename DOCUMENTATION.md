@@ -198,6 +198,21 @@ docker compose up --build -d
 # compose.override.yaml est chargé automatiquement (ports locaux, xdebug)
 ```
 
+### Environnement de développement et cache
+
+Pour éviter les problèmes de cache (ancien JS, ancien PHP, annulation de mouvement qui ne répond pas) :
+
+1. **Forcer l’environnement dev** : dans `.env`, garder `APP_ENV=dev`. En dev, le cache applicatif est moins agressif et les assets sont servis avec des URLs versionnées.
+2. **Vider le cache après modification du code** :
+   ```bash
+   php bin/console cache:clear
+   # ou dans Docker :
+   docker compose exec php php bin/console cache:clear
+   ```
+3. **Worker Messenger** : en dev, `MESSENGER_ASYNC_MOVEMENT_DSN=sync://` fait que le déplacement est traité dans la requête. En prod, redémarrer le worker après un déploiement pour charger le nouveau code :  
+   `docker compose restart watcher_async_move_consumer` (ou équivalent).
+4. **Navigateur** : rechargement forcé (Ctrl+F5 / Cmd+Shift+R) ou onglet en navigation privée pour éviter le cache des scripts.
+
 ---
 
 ## 5. Domaines & Routage Traefik
