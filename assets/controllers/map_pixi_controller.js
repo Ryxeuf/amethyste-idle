@@ -46,6 +46,10 @@ export default class extends Controller {
     }
 
     disconnect() {
+        if (this._resizeObserver) {
+            this._resizeObserver.disconnect();
+            this._resizeObserver = null;
+        }
         if (this._onKeyDown) {
             document.removeEventListener('keydown', this._onKeyDown);
         }
@@ -72,10 +76,15 @@ export default class extends Controller {
     // --- Initialization ---
 
     async _initPixi() {
+        // Responsive: use container size, clamped to max 672px
+        const containerRect = this.element.getBoundingClientRect();
+        const size = Math.min(Math.floor(containerRect.width), this._viewportPx);
+        this._currentSize = size;
+
         this._app = new PIXI.Application();
         await this._app.init({
-            width: this._viewportPx,
-            height: this._viewportPx,
+            width: size,
+            height: size,
             backgroundColor: 0x2d5a1b,
             antialias: false,
             roundPixels: true,
@@ -85,6 +94,9 @@ export default class extends Controller {
         this.element.innerHTML = '';
         this.element.appendChild(this._app.canvas);
         this._app.canvas.style.cursor = 'pointer';
+        this._app.canvas.style.touchAction = 'none';
+        this._app.canvas.style.width = '100%';
+        this._app.canvas.style.height = '100%';
 
         this._worldContainer = new PIXI.Container();
         this._worldContainer.sortableChildren = true;
@@ -110,6 +122,21 @@ export default class extends Controller {
         document.addEventListener('keydown', this._onKeyDown);
 
         this._app.ticker.add((ticker) => this._tick(ticker));
+
+        // Resize observer for responsive canvas
+        this._resizeObserver = new ResizeObserver(() => this._onResize());
+        this._resizeObserver.observe(this.element);
+    }
+
+    _onResize() {
+        if (!this._app) return;
+        const containerRect = this.element.getBoundingClientRect();
+        const size = Math.min(Math.floor(containerRect.width), this._viewportPx);
+        if (size === this._currentSize || size < 64) return;
+
+        this._currentSize = size;
+        this._app.renderer.resize(size, size);
+        this._updateCamera(true);
     }
 
     async _loadConfig() {
@@ -401,9 +428,10 @@ export default class extends Controller {
             }
         }
 
+        const viewSize = this._currentSize || this._viewportPx;
         this._worldContainer.position.set(
-            Math.round(this._viewportPx / 2 - this._cameraX),
-            Math.round(this._viewportPx / 2 - this._cameraY),
+            Math.round(viewSize / 2 - this._cameraX),
+            Math.round(viewSize / 2 - this._cameraY),
         );
     }
 
@@ -447,9 +475,13 @@ export default class extends Controller {
     // --- Click to Move ---
 
     _onPointerDown(e) {
+        e.preventDefault();
         const rect = this._app.canvas.getBoundingClientRect();
-        const screenX = e.clientX - rect.left;
-        const screenY = e.clientY - rect.top;
+        // Account for CSS scaling: map screen coords to canvas coords
+        const scaleX = this._app.canvas.width / rect.width;
+        const scaleY = this._app.canvas.height / rect.height;
+        const screenX = (e.clientX - rect.left) * scaleX;
+        const screenY = (e.clientY - rect.top) * scaleY;
 
         const worldX = screenX - this._worldContainer.position.x;
         const worldY = screenY - this._worldContainer.position.y;

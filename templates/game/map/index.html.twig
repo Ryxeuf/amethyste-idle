@@ -3,10 +3,10 @@
 {% block title %}{{ 'game.map.title'|trans }}{% endblock %}
 
 {% block game_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
-        <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.map.live_map'|trans }}</h2>
-        <div class="bg-gray-700 rounded-lg p-4 flex justify-center items-center"
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div class="bg-gray-800 rounded-lg shadow-lg p-2 sm:p-6 mb-4 sm:mb-8">
+        <h2 class="text-xl font-semibold text-purple-400 mb-2 sm:mb-4 hidden sm:block">{{ 'game.map.live_map'|trans }}</h2>
+        <div class="bg-gray-700 rounded-lg p-0 sm:p-4 flex justify-center items-center"
              {{ stimulus_controller('map_pixi', {
                  mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
                  playerId: playerId,
@@ -15,7 +15,7 @@
                  playerY: playerY,
                  stepDelay: 120,
              }) }}
-             style="min-height: 672px; min-width: 672px;">
+             style="width: 100%; max-width: 672px; aspect-ratio: 1; touch-action: none;">
         </div>
     </div>
 </div>
