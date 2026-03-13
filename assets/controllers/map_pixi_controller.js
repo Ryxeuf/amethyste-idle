@@ -33,6 +33,9 @@ export default class extends Controller {
         this._spriteTextures = {};
 
         this._playerAnimator = null;
+        this._lastEntityLoadX = this.playerXValue;
+        this._lastEntityLoadY = this.playerYValue;
+        this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
 
         await this._initPixi();
         await this._loadConfig();
@@ -103,6 +106,7 @@ export default class extends Controller {
 
         this._tileContainer = new PIXI.Container();
         this._tileContainer.zIndex = 0;
+        this._tileContainer.cullable = true;
 
         this._entityContainer = new PIXI.Container();
         this._entityContainer.zIndex = 10;
@@ -634,8 +638,19 @@ export default class extends Controller {
         }
 
         await this._loadCells(this._playerX, this._playerY);
-        await this._loadEntities();
+        await this._refreshEntitiesIfNeeded();
         this._checkPnjInteraction();
+    }
+
+    async _refreshEntitiesIfNeeded(force = false) {
+        const dx = Math.abs(this._playerX - this._lastEntityLoadX);
+        const dy = Math.abs(this._playerY - this._lastEntityLoadY);
+        if (!force && dx < this._entityLoadThreshold && dy < this._entityLoadThreshold) {
+            return;
+        }
+        this._lastEntityLoadX = this._playerX;
+        this._lastEntityLoadY = this._playerY;
+        await this._loadEntities();
     }
 
     _checkPnjInteraction() {
