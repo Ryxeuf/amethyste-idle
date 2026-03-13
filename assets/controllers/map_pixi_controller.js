@@ -456,7 +456,7 @@ export default class extends Controller {
     // --- Keyboard Movement ---
 
     _handleKeyDown(e) {
-        if (this._animating) return;
+        if (this._animating || this._dialogOpen) return;
         const px = Math.floor(this._playerX);
         const py = Math.floor(this._playerY);
         let targetX = px, targetY = py;
@@ -492,6 +492,8 @@ export default class extends Controller {
         const cellKey = `${tileX},${tileY}`;
         const cell = this._cellCache.get(cellKey);
         const isWalkable = cell && cell.w;
+
+        if (this._dialogOpen) return;
 
         if (this._animating) {
             this._cancelRequested = true;
@@ -633,6 +635,39 @@ export default class extends Controller {
 
         await this._loadCells(this._playerX, this._playerY);
         await this._loadEntities();
+        this._checkPnjInteraction();
+    }
+
+    _checkPnjInteraction() {
+        const px = Math.floor(this._playerX);
+        const py = Math.floor(this._playerY);
+
+        for (const [key, entity] of Object.entries(this._entitySprites)) {
+            if (!key.startsWith('pnj_')) continue;
+            const dist = Math.abs(entity.x - px) + Math.abs(entity.y - py);
+            if (dist <= 1) {
+                const pnjId = parseInt(key.replace('pnj_', ''));
+                this._openPnjDialog(pnjId);
+                return;
+            }
+        }
+    }
+
+    async _openPnjDialog(pnjId) {
+        try {
+            const resp = await fetch(`/api/map/pnj/${pnjId}/dialog`);
+            const data = await resp.json();
+            if (data.sentences && data.sentences.length > 0) {
+                this._dialogOpen = true;
+                this.dispatch('pnjDialog', { detail: { sentences: data.sentences, pnjName: data.pnjName } });
+            }
+        } catch (err) {
+            console.error('[map_pixi] Dialog fetch error:', err);
+        }
+    }
+
+    onDialogClosed() {
+        this._dialogOpen = false;
     }
 
     _tweenTo(from, to, durationMs) {

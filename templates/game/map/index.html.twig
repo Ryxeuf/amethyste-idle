@@ -6,16 +6,48 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
     <div class="bg-gray-800 rounded-lg shadow-lg p-2 sm:p-6 mb-4 sm:mb-8">
         <h2 class="text-xl font-semibold text-purple-400 mb-2 sm:mb-4 hidden sm:block">{{ 'game.map.live_map'|trans }}</h2>
-        <div class="bg-gray-700 rounded-lg p-0 sm:p-4 flex justify-center items-center"
-             {{ stimulus_controller('map_pixi', {
-                 mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
-                 playerId: playerId,
-                 mapId: mapId,
-                 playerX: playerX,
-                 playerY: playerY,
-                 stepDelay: 120,
-             }) }}
-             style="width: 100%; max-width: 672px; aspect-ratio: 1; touch-action: none;">
+        <div class="relative flex justify-center items-center">
+            {# Map canvas container #}
+            <div class="bg-gray-700 rounded-lg p-0 sm:p-4 flex justify-center items-center"
+                 {{ stimulus_controller('map_pixi', {
+                     mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
+                     playerId: playerId,
+                     mapId: mapId,
+                     playerX: playerX,
+                     playerY: playerY,
+                     stepDelay: 120,
+                 }) }}
+                 data-action="dialog:closed->map_pixi#onDialogClosed"
+                 style="width: 100%; max-width: 672px; aspect-ratio: 1; touch-action: none;">
+            </div>
+
+            {# Dialog overlay #}
+            <div {{ stimulus_controller('dialog') }}
+                 data-action="map_pixi:pnjDialog->dialog#open"
+                 class="absolute inset-0 pointer-events-none flex items-end justify-center p-2 sm:p-4">
+                <div data-dialog-target="box"
+                     class="hidden pointer-events-auto w-full max-w-lg bg-gray-900/95 border border-purple-500 rounded-lg shadow-2xl p-4">
+                    {# PNJ name #}
+                    <div class="flex items-center justify-between mb-2">
+                        <span data-dialog-target="name"
+                              class="text-purple-400 font-bold text-sm"></span>
+                        <button data-action="click->dialog#close"
+                                class="text-gray-500 hover:text-white text-xs px-2 py-1">&#x2715;</button>
+                    </div>
+                    {# Dialog text #}
+                    <p data-dialog-target="text"
+                       class="text-gray-200 text-sm leading-relaxed mb-3 min-h-[3rem]"></p>
+                    {# Choices #}
+                    <div data-dialog-target="choices"
+                         class="hidden flex flex-wrap gap-2 mb-2"></div>
+                    {# Next button #}
+                    <button data-dialog-target="nextBtn"
+                            data-action="click->dialog#next"
+                            class="w-full text-center text-purple-400 hover:text-purple-300 text-xs py-1 transition-colors">
+                        ▼ {{ 'game.map.dialog_next'|trans({}, 'messages')|default('Continuer') }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

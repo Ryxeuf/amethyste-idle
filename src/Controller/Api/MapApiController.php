@@ -9,6 +9,7 @@ use App\Entity\App\Pnj;
 use App\Entity\App\ObjectLayer;
 use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Movement\PlayerMoveProcessor;
+use App\GameEngine\Player\PnjDialogParser;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -162,6 +163,29 @@ class MapApiController extends AbstractController
         ], $traversedPath);
 
         return $this->json(['path' => $path]);
+    }
+
+    #[Route('/pnj/{id}/dialog', name: 'api_map_pnj_dialog', methods: ['GET'])]
+    public function pnjDialog(int $id, PnjDialogParser $dialogParser): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        if (!$pnj) {
+            return $this->json(['error' => 'PNJ not found'], 404);
+        }
+
+        $dialog = $pnj->getDialog();
+        if (empty($dialog)) {
+            return $this->json(['sentences' => [], 'pnjName' => $pnj->getName()]);
+        }
+
+        $parsedDialog = $dialogParser->parseDialog($dialog);
+
+        return $this->json([
+            'sentences' => $parsedDialog,
+            'pnjName' => $pnj->getName(),
+        ]);
     }
 
     private function getSpriteConfig(): array
