@@ -2,6 +2,12 @@
 
 namespace App\Command;
 
+use App\Entity\App\Map;
+use App\Entity\App\Mob;
+use App\Entity\App\ObjectLayer;
+use App\Entity\App\Pnj;
+use App\Entity\Game\Monster;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -45,9 +51,9 @@ class TerrainImportCommand extends Command
 
     public function __construct(
         #[Autowire('%kernel.project_dir%')]
-        private readonly string $projectDir
-        )
-    {
+        private readonly string $projectDir,
+        private readonly EntityManagerInterface $entityManager,
+    ) {
         parent::__construct();
     }
 
@@ -56,13 +62,15 @@ class TerrainImportCommand extends Command
         $this
             ->addArgument('name', InputArgument::OPTIONAL, 'Terrain file name')
             ->addOption('validate', null, InputOption::VALUE_NONE, 'Validate maps without importing')
-            ->addOption('all', null, InputOption::VALUE_NONE, 'Import all TMX files in terrain/');
+            ->addOption('all', null, InputOption::VALUE_NONE, 'Import all TMX files in terrain/')
+            ->addOption('sync-entities', null, InputOption::VALUE_NONE, 'Create/update database entities from object layers (mobs, portals, spots)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io       = new SymfonyStyle($input, $output);
         $validateOnly = $input->getOption('validate');
+        $syncEntities = $input->getOption('sync-entities');
 
         if ($input->getOption('all')) {
             $names = ['*.tmx'];
@@ -331,21 +339,33 @@ class TerrainImportCommand extends Command
                 continue;
             }
 
-            $exportFile = $this->projectDir . '/data/export/map/' . $fileName . '.json';
             $fileSystem = new Filesystem();
             $fileSystem->mkdir($this->projectDir . '/data/export/map');
-            $fileSystem->touch($exportFile);
+            $fileSystem->mkdir($this->projectDir . '/data/map');
+
+            // Export main map data
+            $exportFile = $this->projectDir . '/data/export/map/' . $fileName . '.json';
             file_put_contents($exportFile, json_encode($map));
 
             $mapFile = $this->projectDir . '/data/map/' . $fileName . '.json';
-            $fileSystem->mkdir($this->projectDir . '/data/map');
-            $fileSystem->touch($mapFile);
             file_put_contents($mapFile, json_encode($map));
 
+            // Export slugs
             $exportFileSlugs = $this->projectDir . '/data/export/map/' . $fileName . '-slugs.json';
-            $fileSystem->mkdir($this->projectDir . '/data/export/map');
-            $fileSystem->touch($exportFileSlugs);
             file_put_contents($exportFileSlugs, json_encode($slugs));
+
+            // Export objects separately for easy access
+            if (!empty($map['objects'])) {
+                $objectsFile = $this->projectDir . '/data/export/map/' . $fileName . '-objects.json';
+                file_put_contents($objectsFile, json_encode($map['objects'], JSON_PRETTY_PRINT));
+                $io->info(sprintf('  Exported %d objects to %s', count($map['objects']), $fileName . '-objects.json'));
+            }
+
+            // Sync entities from object layers
+            if ($syncEntities && !empty($map['objects'])) {
+                $synced = $this->syncEntitiesFromObjects($map['objects'], $io);
+                $io->info(sprintf('  Synced %d entities to database', $synced));
+            }
 
             $io->success($fileName . ' imported');
         }
@@ -394,6 +414,189 @@ class TerrainImportCommand extends Command
             }
         }
 
+        // Validate object layers
+        foreach ($map['objects'] ?? [] as $obj) {
+            $x = $obj['x'];
+            $y = $obj['y'];
+            $type = $obj['type'] ?? '';
+
+            // Check spawns are on walkable cells
+            if (in_array($type, ['mob_spawn', 'npc_spawn', 'harvest_spot'])) {
+                $cell = $map['cells'][$x][$y] ?? null;
+                if ($cell !== null && ($cell['mouvement'] ?? 0) === -1) {
+                    $errors[] = sprintf(
+                        '%s "%s" at (%d,%d) is on a non-walkable cell',
+                        $type, $obj['name'] ?? '', $x, $y
+                    );
+                }
+            }
+
+            // Check portals have required properties
+            if ($type === 'portal') {
+                $props = $obj['properties'] ?? [];
+                if (empty($props['target_map'])) {
+                    $errors[] = sprintf(
+                        'Portal "%s" at (%d,%d) missing "target_map" property',
+                        $obj['name'] ?? '', $x, $y
+                    );
+                }
+                if (empty($props['target_x']) || empty($props['target_y'])) {
+                    $errors[] = sprintf(
+                        'Portal "%s" at (%d,%d) missing "target_x" or "target_y" property',
+                        $obj['name'] ?? '', $x, $y
+                    );
+                }
+            }
+
+            // Check mob_spawn has monster reference
+            if ($type === 'mob_spawn') {
+                $props = $obj['properties'] ?? [];
+                if (empty($props['monster_slug'])) {
+                    $errors[] = sprintf(
+                        'mob_spawn "%s" at (%d,%d) missing "monster_slug" property',
+                        $obj['name'] ?? '', $x, $y
+                    );
+                }
+            }
+        }
+
         return $errors;
+    }
+
+    private function syncEntitiesFromObjects(array $objects, SymfonyStyle $io): int
+    {
+        $synced = 0;
+
+        // Find the default map (map_id = 10 based on fixtures)
+        $map = $this->entityManager->getRepository(Map::class)->find(10);
+        if (!$map) {
+            $io->warning('No map found with ID 10 — skipping entity sync');
+            return 0;
+        }
+
+        foreach ($objects as $obj) {
+            $type = $obj['type'] ?? '';
+            $x = $obj['x'];
+            $y = $obj['y'];
+            $coords = $x . '.' . $y;
+            $props = $obj['properties'] ?? [];
+
+            switch ($type) {
+                case 'portal':
+                    $objectLayer = new ObjectLayer();
+                    $objectLayer->setName($obj['name'] ?: 'Portal ' . $coords);
+                    $objectLayer->setSlug('portal-' . $x . '-' . $y);
+                    $objectLayer->setType(ObjectLayer::TYPE_PORTAL);
+                    $objectLayer->setCoordinates($coords);
+                    $objectLayer->setMovement(0);
+                    $objectLayer->setMap($map);
+                    $objectLayer->setUsable(true);
+                    $objectLayer->setItems(null);
+                    $objectLayer->setActions(null);
+                    $objectLayer->setCreatedAt(new \DateTime());
+                    $objectLayer->setUpdatedAt(new \DateTime());
+
+                    if (!empty($props['target_map_id'])) {
+                        $objectLayer->setDestinationMapId((int)$props['target_map_id']);
+                    }
+                    if (!empty($props['target_x']) && !empty($props['target_y'])) {
+                        $objectLayer->setDestinationCoordinates($props['target_x'] . '.' . $props['target_y']);
+                    }
+
+                    $this->entityManager->persist($objectLayer);
+                    $synced++;
+                    $io->info(sprintf('  + Portal "%s" at %s → map %s at %s',
+                        $objectLayer->getName(),
+                        $coords,
+                        $props['target_map_id'] ?? '?',
+                        $objectLayer->getDestinationCoordinates() ?? '?'
+                    ));
+                    break;
+
+                case 'mob_spawn':
+                    $monsterSlug = $props['monster_slug'] ?? '';
+                    if (empty($monsterSlug)) {
+                        $io->warning(sprintf('  mob_spawn at %s has no monster_slug — skipped', $coords));
+                        break;
+                    }
+                    $monster = $this->entityManager->getRepository(Monster::class)->findOneBy(['slug' => $monsterSlug]);
+                    if (!$monster) {
+                        $io->warning(sprintf('  Monster "%s" not found — skipped mob_spawn at %s', $monsterSlug, $coords));
+                        break;
+                    }
+
+                    $mob = new Mob();
+                    $mob->setMap($map);
+                    $mob->setCoordinates($coords);
+                    $mob->setMonster($monster);
+                    $mob->setLife($monster->getLife());
+                    $mob->setLevel($monster->getLevel());
+                    $mob->setCreatedAt(new \DateTime());
+                    $mob->setUpdatedAt(new \DateTime());
+
+                    $this->entityManager->persist($mob);
+                    $synced++;
+                    $io->info(sprintf('  + Mob "%s" (level %d) at %s', $monster->getName(), $monster->getLevel(), $coords));
+                    break;
+
+                case 'harvest_spot':
+                case 'spot':
+                    $objectLayer = new ObjectLayer();
+                    $objectLayer->setName($obj['name'] ?: 'Spot ' . $coords);
+                    $objectLayer->setSlug($props['slug'] ?? ('spot-' . $x . '-' . $y));
+                    $objectLayer->setType(ObjectLayer::TYPE_SPOT);
+                    $objectLayer->setCoordinates($coords);
+                    $objectLayer->setMovement(-1);
+                    $objectLayer->setMap($map);
+                    $objectLayer->setUsable(true);
+                    $objectLayer->setCreatedAt(new \DateTime());
+                    $objectLayer->setUpdatedAt(new \DateTime());
+
+                    $objectLayer->setActions([['action' => 'harvest', 'distance' => 1]]);
+                    if (!empty($props['item_slug'])) {
+                        $objectLayer->setItems([[
+                            'slug' => $props['item_slug'],
+                            'min' => (int)($props['item_min'] ?? 1),
+                            'max' => (int)($props['item_max'] ?? 1),
+                        ]]);
+                    } else {
+                        $objectLayer->setItems(null);
+                    }
+
+                    $this->entityManager->persist($objectLayer);
+                    $synced++;
+                    $io->info(sprintf('  + Harvest spot "%s" at %s', $objectLayer->getName(), $coords));
+                    break;
+
+                case 'chest':
+                    $objectLayer = new ObjectLayer();
+                    $objectLayer->setName($obj['name'] ?: 'Chest ' . $coords);
+                    $objectLayer->setSlug('chest-' . $x . '-' . $y);
+                    $objectLayer->setType(ObjectLayer::TYPE_CHEST);
+                    $objectLayer->setCoordinates($coords);
+                    $objectLayer->setMovement(-1);
+                    $objectLayer->setMap($map);
+                    $objectLayer->setUsable(true);
+                    $objectLayer->setCreatedAt(new \DateTime());
+                    $objectLayer->setUpdatedAt(new \DateTime());
+
+                    if (!empty($props['item_slug'])) {
+                        $objectLayer->setItems([[
+                            'slug' => $props['item_slug'],
+                            'min' => (int)($props['item_min'] ?? 1),
+                            'max' => (int)($props['item_max'] ?? 1),
+                        ]]);
+                    }
+                    $objectLayer->setActions(null);
+
+                    $this->entityManager->persist($objectLayer);
+                    $synced++;
+                    $io->info(sprintf('  + Chest "%s" at %s', $objectLayer->getName(), $coords));
+                    break;
+            }
+        }
+
+        $this->entityManager->flush();
+        return $synced;
     }
 }

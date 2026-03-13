@@ -3,8 +3,10 @@
 namespace App\GameEngine\Movement;
 
 use App\Entity\App\Mob;
+use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\Map\PortalDetector;
 use App\GameEngine\Realtime\Map\MovedPlayerHandler;
 use App\Helper\CellHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,11 +14,14 @@ use Psr\Log\LoggerInterface;
 
 class PlayerMoveProcessor
 {
+    private ?ObjectLayer $triggeredPortal = null;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly FightHandler $fightHandler,
+        private readonly PortalDetector $portalDetector,
     ) {}
 
     /**
@@ -25,6 +30,8 @@ class PlayerMoveProcessor
      */
     public function processMove(Player $player, array $cells): array
     {
+        $this->triggeredPortal = null;
+
         if ($player->getFight()) {
             $this->logger->info('Player {player} is in a fight, move ignored', ['player' => $player->getId()]);
             return [];
@@ -73,12 +80,28 @@ class PlayerMoveProcessor
             $this->logger->info('Mob found at {cell}, starting fight', ['cell' => $encounterMob->getCoordinates()]);
             $this->fightHandler->startFight($player, $encounterMob);
         } else {
-            $this->logger->info('Player {player} completed path of {count} cells', [
-                'player' => $player->getId(),
-                'count' => count($traversedPath),
-            ]);
+            // Check for portal at final position
+            $finalCoords = CellHelper::stringifyCoordinates($lastCell['x'], $lastCell['y']);
+            $portal = $this->portalDetector->detectPortal($player, $finalCoords);
+            if ($portal) {
+                $this->triggeredPortal = $portal;
+                $this->logger->info('Portal found at {cell}, destination map {mapId}', [
+                    'cell' => $finalCoords,
+                    'mapId' => $portal->getDestinationMapId(),
+                ]);
+            } else {
+                $this->logger->info('Player {player} completed path of {count} cells', [
+                    'player' => $player->getId(),
+                    'count' => count($traversedPath),
+                ]);
+            }
         }
 
         return $traversedPath;
+    }
+
+    public function getTriggeredPortal(): ?ObjectLayer
+    {
+        return $this->triggeredPortal;
     }
 }

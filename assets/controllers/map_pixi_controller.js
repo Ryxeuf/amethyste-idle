@@ -37,6 +37,7 @@ export default class extends Controller {
         this._lastEntityLoadX = this.playerXValue;
         this._lastEntityLoadY = this.playerYValue;
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
+        this._pendingPortal = null; // Portal data from move response
 
         await this._initPixi();
         await this._loadConfig();
@@ -289,7 +290,7 @@ export default class extends Controller {
     // --- Entity Rendering ---
 
     async _loadEntities() {
-        const resp = await fetch('/api/map/entities');
+        const resp = await fetch(`/api/map/entities?radius=${this._viewRadius}`);
         const data = await resp.json();
 
         this._clearEntities();
@@ -305,6 +306,10 @@ export default class extends Controller {
 
         for (const pnj of data.pnjs) {
             this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N');
+        }
+
+        for (const portal of (data.portals || [])) {
+            this._createPortalMarker(portal);
         }
 
         this._createPlayerMarker();
@@ -391,6 +396,41 @@ export default class extends Controller {
         this._playerMarker.position.set(px, py);
 
         this._playerContainer.addChild(this._playerMarker);
+    }
+
+    _createPortalMarker(portal) {
+        const s = this._tileSize;
+        const canvas = document.createElement('canvas');
+        canvas.width = s;
+        canvas.height = s;
+        const ctx = canvas.getContext('2d');
+
+        // Glowing purple portal indicator
+        ctx.fillStyle = 'rgba(109, 40, 217, 0.4)';
+        ctx.beginPath();
+        ctx.arc(s / 2, s / 2, s / 2 - 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#a855f7';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(s / 2, s / 2, s / 2 - 4, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Inner glow
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.6)';
+        ctx.beginPath();
+        ctx.arc(s / 2, s / 2, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        const texture = PIXI.Texture.from(canvas);
+        const sprite = new PIXI.Sprite(texture);
+        sprite.position.set(portal.x * s, portal.y * s);
+        sprite.zIndex = portal.y * s - 1;
+        this._entityContainer.addChild(sprite);
+
+        const key = `portal_${portal.id}`;
+        this._entitySprites[key] = { container: sprite, x: portal.x, y: portal.y, type: 'portal', animator: null };
     }
 
     _clearEntities() {
@@ -545,6 +585,11 @@ export default class extends Controller {
                 return;
             }
 
+            // Store portal info if present
+            if (data.portal) {
+                this._pendingPortal = data.portal;
+            }
+
             if (data.path && data.path.length > 0) {
                 const finalStep = data.path[data.path.length - 1];
                 this._preloadCells(finalStep.x, finalStep.y);
@@ -601,6 +646,11 @@ export default class extends Controller {
             const from = { x: this._playerX, y: this._playerY };
             const to = { x: path[i].x, y: path[i].y };
 
+            // Preload cells mid-path every 10 steps
+            if (i > 0 && i % 10 === 0) {
+                this._preloadCells(to.x, to.y);
+            }
+
             // Set direction based on movement delta
             const dx = to.x - from.x;
             const dy = to.y - from.y;
@@ -640,9 +690,105 @@ export default class extends Controller {
             return;
         }
 
+        // Check for portal transition
+        if (this._pendingPortal) {
+            await this._handlePortalTransition(this._pendingPortal);
+            this._pendingPortal = null;
+            return;
+        }
+
         await this._loadCells(this._playerX, this._playerY);
         await this._refreshEntitiesIfNeeded();
         this._checkPnjInteraction();
+    }
+
+    async _handlePortalTransition(portal) {
+        console.debug('[map_pixi] Portal triggered → map', portal.destinationMapId, 'at', portal.destinationCoordinates);
+
+        // Fade out effect
+        await this._fadeTransition(true);
+
+        try {
+            const resp = await fetch('/api/map/teleport', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    mapId: portal.destinationMapId,
+                    coordinates: portal.destinationCoordinates,
+                }),
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                // Update local state
+                this.mapIdValue = data.mapId;
+                this._playerX = data.x;
+                this._playerY = data.y;
+
+                // Clear all cached data for old map
+                this._clearEntities();
+                for (const [key, sprites] of this._tileSprites) {
+                    for (const s of sprites) {
+                        this._tileContainer.removeChild(s);
+                        s.destroy();
+                    }
+                }
+                this._tileSprites.clear();
+                this._cellCache.clear();
+
+                // Reload config, cells, and entities for the new map
+                await this._loadConfig();
+                await this._loadCells(this._playerX, this._playerY);
+                await this._loadEntities();
+                this._updateCamera(true);
+                this._lastEntityLoadX = this._playerX;
+                this._lastEntityLoadY = this._playerY;
+            } else {
+                console.error('[map_pixi] Teleport failed:', data.error);
+            }
+        } catch (err) {
+            console.error('[map_pixi] Teleport error:', err);
+        }
+
+        // Fade in
+        await this._fadeTransition(false);
+    }
+
+    _fadeTransition(fadeOut) {
+        return new Promise((resolve) => {
+            // Create a full-screen overlay for fade effect
+            if (!this._fadeOverlay) {
+                this._fadeOverlay = new PIXI.Graphics();
+                this._app.stage.addChild(this._fadeOverlay);
+            }
+
+            const viewSize = this._currentSize || this._viewportPx;
+            this._fadeOverlay.clear();
+            this._fadeOverlay.rect(0, 0, viewSize, viewSize);
+            this._fadeOverlay.fill({ color: 0x000000 });
+            this._fadeOverlay.zIndex = 1000;
+
+            const duration = 300; // ms
+            const startTime = performance.now();
+            const startAlpha = fadeOut ? 0 : 1;
+            const endAlpha = fadeOut ? 1 : 0;
+
+            const step = (now) => {
+                const t = Math.min((now - startTime) / duration, 1);
+                this._fadeOverlay.alpha = startAlpha + (endAlpha - startAlpha) * t;
+
+                if (t < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    if (!fadeOut) {
+                        this._fadeOverlay.alpha = 0;
+                    }
+                    resolve();
+                }
+            };
+
+            requestAnimationFrame(step);
+        });
     }
 
     async _refreshEntitiesIfNeeded(force = false) {

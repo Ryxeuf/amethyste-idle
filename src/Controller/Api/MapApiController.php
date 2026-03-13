@@ -4,10 +4,11 @@ namespace App\Controller\Api;
 
 use App\Entity\App\Map;
 use App\Entity\App\Mob;
+use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
-use App\Entity\App\ObjectLayer;
 use App\GameEngine\Map\MovementCalculator;
+use App\GameEngine\Map\SpriteConfigProvider;
 use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\GameEngine\Player\PnjDialogParser;
 use App\Helper\CellHelper;
@@ -26,6 +27,7 @@ class MapApiController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly Packages $packages,
+        private readonly SpriteConfigProvider $spriteConfigProvider,
     ) {}
 
     #[Route('/config', name: 'api_map_config', methods: ['GET'])]
@@ -42,7 +44,7 @@ class MapApiController extends AbstractController
             'viewRadius' => 15,
             'mapId' => $map->getId(),
             'tilesets' => $tilesets,
-            'sprites' => $this->getSpriteConfig(),
+            'sprites' => $this->spriteConfigProvider->getFullConfig(),
         ]);
     }
 
@@ -68,20 +70,30 @@ class MapApiController extends AbstractController
     }
 
     #[Route('/entities', name: 'api_map_entities', methods: ['GET'])]
-    public function entities(): JsonResponse
+    public function entities(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
         $map = $player->getMap();
+        $radius = $request->query->getInt('radius', 0);
+
+        $pCoords = explode('.', $player->getCoordinates() ?? '0.0');
+        $px = (int)($pCoords[0] ?? 0);
+        $py = (int)($pCoords[1] ?? 0);
 
         $players = [];
         foreach ($this->entityManager->getRepository(Player::class)->findBy(['map' => $map]) as $p) {
             $coords = explode('.', $p->getCoordinates() ?? '0.0');
+            $ex = (int)($coords[0] ?? 0);
+            $ey = (int)($coords[1] ?? 0);
+            if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
+                continue;
+            }
             $players[] = [
                 'id' => $p->getId(),
                 'name' => $p->getName(),
-                'x' => (int)($coords[0] ?? 0),
-                'y' => (int)($coords[1] ?? 0),
+                'x' => $ex,
+                'y' => $ey,
                 'self' => $p->getId() === $player->getId(),
                 'spriteKey' => 'player_default',
             ];
@@ -90,11 +102,16 @@ class MapApiController extends AbstractController
         $mobs = [];
         foreach ($this->entityManager->getRepository(Mob::class)->findBy(['map' => $map]) as $mob) {
             $coords = explode('.', $mob->getCoordinates() ?? '0.0');
+            $ex = (int)($coords[0] ?? 0);
+            $ey = (int)($coords[1] ?? 0);
+            if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
+                continue;
+            }
             $mobs[] = [
                 'id' => $mob->getId(),
                 'slug' => $mob->getMonster()->getSlug(),
-                'x' => (int)($coords[0] ?? 0),
-                'y' => (int)($coords[1] ?? 0),
+                'x' => $ex,
+                'y' => $ey,
                 'spriteKey' => 'mob_' . $mob->getMonster()->getSlug(),
             ];
         }
@@ -102,12 +119,43 @@ class MapApiController extends AbstractController
         $pnjs = [];
         foreach ($this->entityManager->getRepository(Pnj::class)->findBy(['map' => $map]) as $pnj) {
             $coords = explode('.', $pnj->getCoordinates() ?? '0.0');
+            $ex = (int)($coords[0] ?? 0);
+            $ey = (int)($coords[1] ?? 0);
+            if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
+                continue;
+            }
+            $spriteKey = 'pnj_' . $pnj->getClassType();
+            // Fallback to default if sprite key doesn't exist in config
+            $allSprites = $this->spriteConfigProvider->getFullConfig();
+            if (!isset($allSprites[$spriteKey])) {
+                $spriteKey = 'pnj_default';
+            }
+
             $pnjs[] = [
                 'id' => $pnj->getId(),
                 'name' => $pnj->getName(),
-                'x' => (int)($coords[0] ?? 0),
-                'y' => (int)($coords[1] ?? 0),
-                'spriteKey' => 'pnj_default',
+                'x' => $ex,
+                'y' => $ey,
+                'spriteKey' => $spriteKey,
+            ];
+        }
+
+        $portals = [];
+        foreach ($this->entityManager->getRepository(ObjectLayer::class)->findBy([
+            'map' => $map,
+            'type' => ObjectLayer::TYPE_PORTAL,
+        ]) as $portal) {
+            $coords = explode('.', $portal->getCoordinates() ?? '0.0');
+            $ex = (int)($coords[0] ?? 0);
+            $ey = (int)($coords[1] ?? 0);
+            if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
+                continue;
+            }
+            $portals[] = [
+                'id' => $portal->getId(),
+                'name' => $portal->getName(),
+                'x' => $ex,
+                'y' => $ey,
             ];
         }
 
@@ -115,6 +163,7 @@ class MapApiController extends AbstractController
             'players' => $players,
             'mobs' => $mobs,
             'pnjs' => $pnjs,
+            'portals' => $portals,
         ]);
     }
 
@@ -162,7 +211,66 @@ class MapApiController extends AbstractController
             'y' => (int)$cell['y'],
         ], $traversedPath);
 
-        return $this->json(['path' => $path]);
+        $response = ['path' => $path];
+
+        // Include portal info if triggered
+        $portal = $playerMoveProcessor->getTriggeredPortal();
+        if ($portal) {
+            $response['portal'] = [
+                'destinationMapId' => $portal->getDestinationMapId(),
+                'destinationCoordinates' => $portal->getDestinationCoordinates(),
+            ];
+        }
+
+        return $this->json($response);
+    }
+
+    #[Route('/teleport', name: 'api_map_teleport', methods: ['POST'])]
+    public function teleport(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $data = json_decode($request->getContent(), true) ?? [];
+        $destinationMapId = (int)($data['mapId'] ?? 0);
+        $destinationCoordinates = $data['coordinates'] ?? null;
+
+        if (!$destinationMapId || !$destinationCoordinates) {
+            return $this->json(['error' => 'Missing mapId or coordinates'], 400);
+        }
+
+        $destinationMap = $this->entityManager->getRepository(Map::class)->find($destinationMapId);
+        if (!$destinationMap) {
+            return $this->json(['error' => 'Destination map not found'], 404);
+        }
+
+        // Verify the player is on a portal
+        $portal = $this->entityManager->getRepository(ObjectLayer::class)->findOneBy([
+            'coordinates' => $player->getCoordinates(),
+            'map' => $player->getMap(),
+            'type' => ObjectLayer::TYPE_PORTAL,
+        ]);
+
+        if (!$portal) {
+            return $this->json(['error' => 'No portal at current position'], 403);
+        }
+
+        // Teleport the player
+        $player->setLastCoordinates($player->getCoordinates());
+        $player->setMap($destinationMap);
+        $player->setCoordinates($destinationCoordinates);
+        $player->setIsMoving(false);
+
+        $this->entityManager->flush();
+
+        $coords = explode('.', $destinationCoordinates);
+
+        return $this->json([
+            'success' => true,
+            'mapId' => $destinationMap->getId(),
+            'x' => (int)($coords[0] ?? 0),
+            'y' => (int)($coords[1] ?? 0),
+        ]);
     }
 
     #[Route('/pnj/{id}/dialog', name: 'api_map_pnj_dialog', methods: ['GET'])]
@@ -186,40 +294,6 @@ class MapApiController extends AbstractController
             'sentences' => $parsedDialog,
             'pnjName' => $pnj->getName(),
         ]);
-    }
-
-    private function getSpriteConfig(): array
-    {
-        return [
-            'player_default' => [
-                'sheet' => $this->packages->getUrl('styles/images/character/Male/Male 01-2.png'),
-                'type' => 'single',
-            ],
-            'mob_zombie' => [
-                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
-                'type' => 'multi',
-                'charIndex' => 0,
-            ],
-            'mob_taiju' => [
-                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
-                'type' => 'multi',
-                'charIndex' => 1,
-            ],
-            'mob_ochu' => [
-                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
-                'type' => 'multi',
-                'charIndex' => 2,
-            ],
-            'mob_skeleton' => [
-                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
-                'type' => 'multi',
-                'charIndex' => 3,
-            ],
-            'pnj_default' => [
-                'sheet' => $this->packages->getUrl('styles/images/character/Male/Male 03-1.png'),
-                'type' => 'single',
-            ],
-        ];
     }
 
     private const TILESET_COLUMNS = [

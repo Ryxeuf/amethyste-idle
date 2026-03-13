@@ -17,6 +17,10 @@ class ObjectLayer
     const TYPE_OTHER = 'other';
     const TYPE_CHEST = 'chest';
     const TYPE_SPOT = 'spot';
+    const TYPE_PORTAL = 'portal';
+    const TYPE_MOB_SPAWN = 'mob_spawn';
+    const TYPE_NPC_SPAWN = 'npc_spawn';
+    const TYPE_HARVEST_SPOT = 'harvest_spot';
 
     function __toString(): string
     {
@@ -86,6 +90,12 @@ class ObjectLayer
     #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'objectLayers', fetch: 'EXTRA_LAZY')]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
     private ?Map $map;
+
+    #[ORM\Column(name: 'destination_map_id', type: 'integer', nullable: true)]
+    private ?int $destinationMapId = null;
+
+    #[ORM\Column(name: 'destination_coordinates', type: 'string', nullable: true)]
+    private ?string $destinationCoordinates = null;
 
     /**
      * @return int
@@ -239,5 +249,30 @@ class ObjectLayer
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getDestinationMapId(): ?int
+    {
+        return $this->destinationMapId;
+    }
+
+    public function setDestinationMapId(?int $destinationMapId): void
+    {
+        $this->destinationMapId = $destinationMapId;
+    }
+
+    public function getDestinationCoordinates(): ?string
+    {
+        return $this->destinationCoordinates;
+    }
+
+    public function setDestinationCoordinates(?string $destinationCoordinates): void
+    {
+        $this->destinationCoordinates = $destinationCoordinates;
+    }
+
+    public function isPortal(): bool
+    {
+        return $this->type === self::TYPE_PORTAL;
     }
 }
