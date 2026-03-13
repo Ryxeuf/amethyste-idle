@@ -1,140 +1,145 @@
-# CLAUDE.md — Guide de développement Amethyste-Idle
+# CLAUDE.md — Amethyste-Idle
 
-## Qu'est-ce que ce projet ?
+MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, tiles 32x32, sprites RPG Maker VX.
 
-MMORPG navigateur web rétro-style. Inspirations : Zelda (exploration), Final Fantasy 7/8/9 (combat, materia, univers medieval-fantastique-futuriste), stein.world (MMO navigateur isométrique). Vue 2D top-down avec tiles 32x32. Sprites personnage 24x32 (format RPG Maker VX).
+## Regles absolues
+
+1. **Docker obligatoire** : TOUTES les commandes PHP/Symfony/Composer s'executent dans le conteneur Docker :
+   ```bash
+   docker compose exec php php bin/console <commande>
+   docker compose exec php composer <commande>
+   ```
+   Ne JAMAIS executer `php`, `composer`, `symfony` directement sur la machine hote.
+
+2. **Pas de Node.js** : le projet utilise Symfony AssetMapper (importmap). Pour ajouter un package JS :
+   ```bash
+   docker compose exec php php bin/console importmap:require <package>
+   ```
+   Ne JAMAIS utiliser npm, yarn, webpack, vite.
+
+3. **Commits atomiques** : un seul commit par changement fonctionnel testable.
+
+4. **Tester avant de continuer** : verifier chaque modification avant de passer a la suivante.
+
+5. **Langue** : communiquer en francais avec l'utilisateur.
+
+6. **Pas de niveau global** : la progression est par arbres de talent/domaine uniquement. Ne jamais introduire un systeme de "level up" global.
+
+7. **Coordonnees** : toujours au format string `"x.y"` en base. Utiliser `getX()`/`getY()` pour extraire les composantes entieres.
 
 ## Stack technique
 
-- **Backend** : PHP 8.4 + Symfony 7.4 + Doctrine ORM 3.x + PostgreSQL 17
-- **Serveur** : FrankenPHP (Caddy) avec Mercure SSE intégré
-- **Frontend** : Twig + Tailwind CSS 4.1 + Stimulus.js + Symfony UX Live Components + Turbo
-- **Rendu carte** : PixiJS (WebGL/Canvas 2D) via `map_pixi_controller.js`
-- **Assets** : Symfony AssetMapper (importmap) — PAS de Node.js, PAS de webpack/vite
-- **Conteneurs** : Docker multi-stage + Traefik reverse proxy
-- **Temps réel** : Mercure SSE (topics: `map/move`, `map/respawn`)
+| Couche | Technologie |
+|--------|------------|
+| Backend | PHP 8.4 + Symfony 7.4 + Doctrine ORM 3.x |
+| BDD | PostgreSQL 17 (port dev: `localhost:32768`) |
+| Serveur | FrankenPHP (Caddy) + Mercure SSE integre |
+| Frontend | Twig + Tailwind CSS 4.1 + Stimulus.js + Turbo |
+| Rendu carte | PixiJS v8 (bundle dans `assets/vendor/pixi-bundle.js`) |
+| Assets | Symfony AssetMapper (importmap, SANS bundler) |
+| Conteneurs | Docker multi-stage + Traefik reverse proxy |
+| Temps reel | Mercure SSE (topics: `map/move`, `map/respawn`) |
 
-## Structure des dossiers clés
+## Commandes courantes
+
+```bash
+# Cache
+docker compose exec php php bin/console cache:clear
+
+# Assets
+docker compose exec php php bin/console tailwind:build
+docker compose exec php php bin/console asset-map:compile
+
+# Base de donnees
+docker compose exec php php bin/console doctrine:migrations:migrate
+docker compose exec php php bin/console doctrine:schema:update --force
+
+# Terrain (cartes Tiled)
+docker compose exec php php bin/console app:terrain:import
+docker compose exec php php bin/console app:tmx:generate-css
+
+# Fixtures
+docker compose exec php php bin/console doctrine:fixtures:load
+
+# Debug
+docker compose exec php php bin/console app:map:dump
+docker compose exec php php bin/console app:debug-move
+
+# PostgreSQL direct
+docker compose exec database psql -U app -d amethyste
+```
+
+## Scripts
+
+```bash
+./scripts/deploy.sh --prod          # Deploiement production
+./scripts/deploy.sh --dev           # Deploiement developpement
+./scripts/reload-fixtures.sh --dev  # Reset DB + fixtures (DESTRUCTIF)
+```
+
+## Architecture
 
 ```
 src/
   Controller/           # HTTP controllers (Game/, Api/, Security/)
-  Entity/
-    App/                # Entités applicatives (Player, Map, Area, Mob, Fight, Inventory, Pnj...)
-    Game/               # Entités de définition (Item, Monster, Spell, Skill, Domain, Quest)
-  GameEngine/           # Logique métier du jeu, organisée par domaine :
-    Fight/              # Combat tour par tour (handlers, SpellApplicator, LootGenerator)
-    Map/                # Pathfinding Dijkstra, MovementCalculator
-    Movement/           # PlayerMoveProcessor
-    Player/             # Actions joueur (dialogue, respawn)
-    Mob/                # Spawn et comportement mobs
-    Progression/        # XP et acquisition de compétences
-    Quest/              # Suivi des quêtes
-    Gear/               # Équipement et materia
-    Item/               # Résolution d'effets d'items
-    Job/                # Récolte (mining, fishing, herbalism)
-    Generator/          # Génération d'items
-    Realtime/Map/       # Publishers Mercure
-  Event/                # 21 événements de domaine
+  Entity/App/           # Entites applicatives (Player, Map, Mob, Fight, Pnj...)
+  Entity/Game/          # Definitions (Item, Monster, Spell, Skill, Domain)
+  GameEngine/           # Logique metier par domaine :
+    Fight/              #   Combat tour par tour
+    Map/                #   Pathfinding Dijkstra
+    Movement/           #   PlayerMoveProcessor
+    Progression/        #   XP et talents
+    Realtime/Map/       #   Publishers Mercure
+  Event/                # 21 evenements domaine
   EventListener/        # Subscribers
-  Twig/Components/      # 5 Live Components (Map, FightTimeline, FightNotification, DashboardPlayerRecap, Counter)
-
 assets/
   controllers/          # Stimulus controllers JS
-    map_pixi_controller.js    # Rendu PixiJS de la carte (~670 lignes)
-    map_mercure_controller.js # Sync temps réel Mercure
-  lib/                  # Modules JS réutilisables (SpriteAnimator)
-  styles/
-    images/             # Tilesets et sprites (terrain/, character/, demons.png...)
-    map/                # CSS sprites générés (world-1.css)
-
-terrain/                # Fichiers Tiled Map Editor (.tmx, .tsx, .world)
-data/                   # JSON exportés des maps
-fixtures/               # Données de seed (items, skills, spells, monsters en YAML)
-templates/              # 84 templates Twig
-translations/           # i18n (messages.fr.json, messages.en.json)
+  lib/                  # Modules JS (SpriteAnimator)
+  vendor/               # PixiJS bundle
+  styles/images/        # Sprites et tilesets
+terrain/                # Fichiers Tiled (.tmx, .tsx, .world)
+scripts/                # Scripts deploy, fixtures, etc.
 ```
-
-## Commandes CLI importantes
-
-```bash
-# Import des cartes Tiled (.tmx → JSON → DB)
-php bin/console app:terrain:import
-
-# Génération des classes CSS sprites depuis les tilesets
-php bin/console app:tmx:generate-css
-
-# Fixtures (seed de données de jeu)
-php bin/console doctrine:fixtures:load
-
-# Migrations
-php bin/console doctrine:migrations:migrate
-
-# Debug API map data
-php bin/console app:api:map:dump
-php bin/console app:debug:move
-```
-
-## Pipeline des assets terrain
-
-```
-1. Tiled Map Editor → .tmx (terrain/)
-2. app:terrain:import → JSON (data/map/)
-3. app:tmx:generate-css → CSS sprites (assets/styles/map/world-1.css)
-4. Fixtures → Areas en DB avec fullData JSON
-5. API /api/map/cells → Client PixiJS
-```
-
-## Architecture événementielle
-
-Le jeu utilise un pattern Event-Driven :
-- Les controllers appellent les processors du GameEngine
-- Les processors émettent des Events (21 types : PlayerMovedEvent, MobDeadEvent, etc.)
-- Les EventSubscribers réagissent (mise à jour état, publication Mercure, logs)
 
 ## Conventions de code
 
-- **PHP** : PSR-12, attributs PHP 8 pour les routes (`#[Route(...)]`)
-- **JS** : ESM (import/export), classes Stimulus avec `static values` et `static targets`
-- **Entités** : traits partagés (`CharacterStatsTrait`, `CoordinatesTrait`, `TimestampableEntity`)
-- **Coordonnées** : format string `"x.y"` (ex: `"10.5"`)
-- **Nommage** : PascalCase entités, camelCase méthodes, snake_case routes Symfony
+- **PHP** : PSR-12, attributs PHP 8 (`#[Route(...)]`), readonly constructor promotion
+- **JS** : ESM (import/export), Stimulus controllers avec `static values`/`static targets`
+- **Entites** : traits partages (`CharacterStatsTrait`, `CoordinatesTrait`, `TimestampableEntity`)
+- **Evenements** : architecture Event-Driven (actions -> Events -> EventSubscribers)
+- **Collisions** : bitmask directionnel N/S/E/W, -1 = mur impassable
+- **Nommage** : PascalCase entites, camelCase methodes, snake_case routes
 
-## Points d'attention
+## Pieges courants
 
-- **Pas de Node.js** : utiliser `importmap:require` pour ajouter des dépendances JS
-- **Pixi.js** : bundlé manuellement dans `assets/vendor/pixi-bundle.js`
-- **Mercure** : intégré dans Caddy/FrankenPHP, pas de serveur séparé
-- **Coordonnées** : toujours au format string `"x.y"`, utiliser `getX()`/`getY()` pour extraire
-- **Collision** : bitmask directionnel (N/S/E/W), -1 = mur impassable
-- **Progression** : PAS de niveau global joueur, XP par domaine uniquement
-- **Sprites** : format RPG Maker VX (3 colonnes × 4 lignes, 24x32px par frame)
+- `public/assets/` compile ecrase l'AssetMapper dev -> `rm -rf public/assets/` si comportement JS inattendu
+- Mercure integre dans Caddy, pas de serveur separe a demarrer
+- Les sprites sont au format RPG Maker VX (3 col x 4 lignes), le `SpriteAnimator` detecte la taille automatiquement depuis la texture
+- En dev, le volume Docker monte `.:/app` -> les fichiers sont partages entre hote et conteneur
+- `tailwind:build` doit tourner avant `asset-map:compile` ou `debug:asset`
+
+## Documentation approfondie
+
+- [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (20 sections, modele de donnees, combat, carte, inventaire, quetes, etc.)
+- [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
+- [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 
 ## Routes principales
 
-```
-/game                → Dashboard (IndexController)
-/game/map            → Carte PixiJS (Map/IndexController)
-/game/inventory      → Inventaire (tabs: items, equipment, materia, materials, bank)
-/game/skills         → Arbres de talent par domaine
-/game/fight          → Combat tour par tour
-/game/settings       → Paramètres
-/api/map/config      → Config tilesets + viewport
-/api/map/cells       → Données des tuiles (x, y, radius, mapId)
-/api/map/entities    → Positions joueurs/mobs/PNJ
-/api/map/move        → POST mouvement joueur
-```
+| Route | Description |
+|-------|------------|
+| `/game/map` | Carte PixiJS |
+| `/game/fight` | Combat tour par tour |
+| `/game/inventory` | Inventaire (items, equipement, materia, banque) |
+| `/game/skills` | Arbres de talent |
+| `/api/map/config` | Config tilesets + sprites |
+| `/api/map/cells` | Donnees tuiles (x, y, radius, mapId) |
+| `/api/map/entities` | Positions joueurs/mobs/PNJ |
+| `/api/map/move` | POST mouvement joueur |
+| `/api/map/pnj/{id}/dialog` | Dialogue PNJ |
 
-## Domaines
+## Domaines web
 
-- amethyste.best / amethyste.ryxeuf.fr → Site public
-- game.amethyste.best → Jeu (mode connecté)
-- api.amethyste.best → API
-
-## Tests
-
-```bash
-# Pas de framework de test configuré actuellement
-# Tester manuellement via le navigateur sur /game/map
-# Vérifier les FPS : ouvrir la console JS → app.ticker.FPS
-```
+- `amethyste.best` / `amethyste.ryxeuf.fr` -> Site public
+- `game.amethyste.best` -> Jeu (mode connecte)
+- `api.amethyste.best` -> API
