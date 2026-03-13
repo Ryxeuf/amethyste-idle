@@ -33,6 +33,7 @@ export default class extends Controller {
         this._spriteTextures = {};
 
         this._playerAnimator = null;
+        this._playerDirection = 'down';
         this._lastEntityLoadX = this.playerXValue;
         this._lastEntityLoadY = this.playerYValue;
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
@@ -373,6 +374,7 @@ export default class extends Controller {
 
         if (animator) {
             this._playerAnimator = animator;
+            this._playerAnimator.setDirection(this._playerDirection);
             const sprite = animator.sprite;
             sprite.anchor.set(0.5, 1);
             sprite.position.set(this._tileSize / 2, this._tileSize);
@@ -600,11 +602,12 @@ export default class extends Controller {
             const to = { x: path[i].x, y: path[i].y };
 
             // Set direction based on movement delta
-            if (this._playerAnimator) {
-                const dx = to.x - from.x;
-                const dy = to.y - from.y;
-                if (dx !== 0 || dy !== 0) {
-                    this._playerAnimator.setDirection(directionFromDelta(dx, dy));
+            const dx = to.x - from.x;
+            const dy = to.y - from.y;
+            if (dx !== 0 || dy !== 0) {
+                this._playerDirection = directionFromDelta(dx, dy);
+                if (this._playerAnimator) {
+                    this._playerAnimator.setDirection(this._playerDirection);
                 }
             }
 
