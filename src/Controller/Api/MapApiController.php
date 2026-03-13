@@ -41,6 +41,7 @@ class MapApiController extends AbstractController
             'viewRadius' => 15,
             'mapId' => $map->getId(),
             'tilesets' => $tilesets,
+            'sprites' => $this->getSpriteConfig(),
         ]);
     }
 
@@ -81,6 +82,7 @@ class MapApiController extends AbstractController
                 'x' => (int)($coords[0] ?? 0),
                 'y' => (int)($coords[1] ?? 0),
                 'self' => $p->getId() === $player->getId(),
+                'spriteKey' => 'player_default',
             ];
         }
 
@@ -92,6 +94,7 @@ class MapApiController extends AbstractController
                 'slug' => $mob->getMonster()->getSlug(),
                 'x' => (int)($coords[0] ?? 0),
                 'y' => (int)($coords[1] ?? 0),
+                'spriteKey' => 'mob_' . $mob->getMonster()->getSlug(),
             ];
         }
 
@@ -103,6 +106,7 @@ class MapApiController extends AbstractController
                 'name' => $pnj->getName(),
                 'x' => (int)($coords[0] ?? 0),
                 'y' => (int)($coords[1] ?? 0),
+                'spriteKey' => 'pnj_default',
             ];
         }
 
@@ -158,6 +162,40 @@ class MapApiController extends AbstractController
         ], $traversedPath);
 
         return $this->json(['path' => $path]);
+    }
+
+    private function getSpriteConfig(): array
+    {
+        return [
+            'player_default' => [
+                'sheet' => $this->packages->getUrl('styles/images/character/Male/Male 01-2.png'),
+                'type' => 'single',
+            ],
+            'mob_zombie' => [
+                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
+                'type' => 'multi',
+                'charIndex' => 0,
+            ],
+            'mob_taiju' => [
+                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
+                'type' => 'multi',
+                'charIndex' => 1,
+            ],
+            'mob_ochu' => [
+                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
+                'type' => 'multi',
+                'charIndex' => 2,
+            ],
+            'mob_skeleton' => [
+                'sheet' => $this->packages->getUrl('styles/images/demons.png'),
+                'type' => 'multi',
+                'charIndex' => 3,
+            ],
+            'pnj_default' => [
+                'sheet' => $this->packages->getUrl('styles/images/character/Male/Male 03-1.png'),
+                'type' => 'single',
+            ],
+        ];
     }
 
     private const TILESET_COLUMNS = [

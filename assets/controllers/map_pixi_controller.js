@@ -1,5 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import * as PIXI from 'pixi.js';
+import SpriteAnimator, { directionFromDelta } from '../lib/SpriteAnimator.js';
 
 export default class extends Controller {
     static values = {
@@ -28,6 +29,10 @@ export default class extends Controller {
         this._tilesets = [];
         this._tilesetTextures = {};
         this._entitySprites = {};
+        this._spriteConfig = {};
+        this._spriteTextures = {};
+
+        this._playerAnimator = null;
 
         await this._initPixi();
         await this._loadConfig();
@@ -47,6 +52,16 @@ export default class extends Controller {
         if (this._eventSource) {
             this._eventSource.close();
             this._eventSource = null;
+        }
+        if (this._playerAnimator) {
+            this._playerAnimator.destroy();
+            this._playerAnimator = null;
+        }
+        for (const key of Object.keys(this._entitySprites)) {
+            const entity = this._entitySprites[key];
+            if (entity.animator) {
+                entity.animator.destroy();
+            }
         }
         if (this._app) {
             this._app.destroy(true);
@@ -79,6 +94,7 @@ export default class extends Controller {
 
         this._entityContainer = new PIXI.Container();
         this._entityContainer.zIndex = 10;
+        this._entityContainer.sortableChildren = true;
 
         this._playerContainer = new PIXI.Container();
         this._playerContainer.zIndex = 20;
@@ -93,7 +109,7 @@ export default class extends Controller {
         this._onKeyDown = (e) => this._handleKeyDown(e);
         document.addEventListener('keydown', this._onKeyDown);
 
-        this._app.ticker.add(() => this._tick());
+        this._app.ticker.add((ticker) => this._tick(ticker));
     }
 
     async _loadConfig() {
@@ -101,14 +117,30 @@ export default class extends Controller {
         const config = await resp.json();
         this._tilesets = config.tilesets || [];
         this._tileSize = config.tileSize || 32;
+        this._spriteConfig = config.sprites || {};
 
         this._tilesets.sort((a, b) => a.firstGid - b.firstGid);
 
+        // Load tileset textures
         const loadPromises = this._tilesets.map(async (ts) => {
             const texture = await PIXI.Assets.load(ts.image);
             texture.source.scaleMode = 'nearest';
             this._tilesetTextures[ts.name] = texture;
         });
+
+        // Preload all sprite sheet textures
+        const spriteSheets = new Set();
+        for (const cfg of Object.values(this._spriteConfig)) {
+            spriteSheets.add(cfg.sheet);
+        }
+        for (const sheet of spriteSheets) {
+            loadPromises.push(
+                PIXI.Assets.load(sheet).then((texture) => {
+                    texture.source.scaleMode = 'nearest';
+                    this._spriteTextures[sheet] = texture;
+                })
+            );
+        }
 
         await Promise.all(loadPromises);
     }
@@ -206,6 +238,22 @@ export default class extends Controller {
         return selected;
     }
 
+    // --- Sprite Animator Factory ---
+
+    _createAnimator(spriteKey) {
+        const cfg = this._spriteConfig[spriteKey];
+        if (!cfg) return null;
+
+        const texture = this._spriteTextures[cfg.sheet];
+        if (!texture) return null;
+
+        return new SpriteAnimator({
+            texture,
+            type: cfg.type || 'single',
+            charIndex: cfg.charIndex || 0,
+        });
+    }
+
     // --- Entity Rendering ---
 
     async _loadEntities() {
@@ -216,40 +264,50 @@ export default class extends Controller {
 
         for (const p of data.players) {
             if (p.self) continue;
-            this._createEntitySprite('player', p.id, p.x, p.y, 0x3333ff, p.name);
+            this._createEntitySprite('player', p.id, p.x, p.y, p.spriteKey, p.name);
         }
 
         for (const mob of data.mobs) {
-            this._createEntitySprite('mob', mob.id, mob.x, mob.y, 0x8B0000, 'M');
+            this._createEntitySprite('mob', mob.id, mob.x, mob.y, mob.spriteKey, 'M');
         }
 
         for (const pnj of data.pnjs) {
-            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, 0x4B0082, pnj.name?.[0] ?? 'N');
+            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N');
         }
 
         this._createPlayerMarker();
     }
 
-    _createEntitySprite(type, id, x, y, color, label) {
-        const colorMap = {
-            'mob': '#8B0000',
-            'player': '#3333ff',
-            'pnj': '#4B0082',
-        };
-        const hex = typeof color === 'number'
-            ? '#' + color.toString(16).padStart(6, '0')
-            : (colorMap[type] || '#888888');
-        const shape = type === 'mob' ? 'rect' : 'circle';
-        const texture = this._createMarkerTexture(hex, '#000000', shape);
-        const sprite = new PIXI.Sprite(texture);
-
-        const container = new PIXI.Container();
-        container.addChild(sprite);
-        container.position.set(x * this._tileSize, y * this._tileSize);
-        this._entityContainer.addChild(container);
-
+    _createEntitySprite(type, id, x, y, spriteKey, label) {
         const key = `${type}_${id}`;
-        this._entitySprites[key] = { container, x, y, type };
+        const animator = this._createAnimator(spriteKey);
+
+        if (animator) {
+            const container = new PIXI.Container();
+            const sprite = animator.sprite;
+            // Center sprite horizontally on tile, align bottom to tile bottom
+            sprite.anchor.set(0.5, 1);
+            sprite.position.set(this._tileSize / 2, this._tileSize);
+            container.addChild(sprite);
+            container.position.set(x * this._tileSize, y * this._tileSize);
+            container.zIndex = y * this._tileSize;
+            this._entityContainer.addChild(container);
+            this._entitySprites[key] = { container, x, y, type, animator };
+        } else {
+            // Fallback: colored marker
+            const colorMap = { 'mob': '#8B0000', 'player': '#3333ff', 'pnj': '#4B0082' };
+            const hex = colorMap[type] || '#888888';
+            const shape = type === 'mob' ? 'rect' : 'circle';
+            const texture = this._createMarkerTexture(hex, '#000000', shape);
+            const markerSprite = new PIXI.Sprite(texture);
+
+            const container = new PIXI.Container();
+            container.addChild(markerSprite);
+            container.position.set(x * this._tileSize, y * this._tileSize);
+            container.zIndex = y * this._tileSize;
+            this._entityContainer.addChild(container);
+            this._entitySprites[key] = { container, x, y, type, animator: null };
+        }
     }
 
     _createMarkerTexture(color, strokeColor, shape) {
@@ -278,11 +336,22 @@ export default class extends Controller {
     }
 
     _createPlayerMarker() {
-        const texture = this._createMarkerTexture('#ff0000', '#ffffff', 'circle');
-        const sprite = new PIXI.Sprite(texture);
+        const animator = this._createAnimator('player_default');
 
         this._playerMarker = new PIXI.Container();
-        this._playerMarker.addChild(sprite);
+
+        if (animator) {
+            this._playerAnimator = animator;
+            const sprite = animator.sprite;
+            sprite.anchor.set(0.5, 1);
+            sprite.position.set(this._tileSize / 2, this._tileSize);
+            this._playerMarker.addChild(sprite);
+        } else {
+            // Fallback: red circle
+            const texture = this._createMarkerTexture('#ff0000', '#ffffff', 'circle');
+            const sprite = new PIXI.Sprite(texture);
+            this._playerMarker.addChild(sprite);
+        }
 
         const px = Math.floor(this._playerX) * this._tileSize;
         const py = Math.floor(this._playerY) * this._tileSize;
@@ -292,9 +361,19 @@ export default class extends Controller {
     }
 
     _clearEntities() {
+        for (const key of Object.keys(this._entitySprites)) {
+            const entity = this._entitySprites[key];
+            if (entity.animator) {
+                entity.animator.destroy();
+            }
+        }
         this._entityContainer.removeChildren();
         this._playerContainer.removeChildren();
         this._entitySprites = {};
+        if (this._playerAnimator) {
+            this._playerAnimator.destroy();
+            this._playerAnimator = null;
+        }
         this._playerMarker = null;
     }
 
@@ -311,8 +390,15 @@ export default class extends Controller {
             this._cameraX = targetX;
             this._cameraY = targetY;
         } else {
-            this._cameraX += (targetX - this._cameraX) * 0.15;
-            this._cameraY += (targetY - this._cameraY) * 0.15;
+            const dx = targetX - this._cameraX;
+            const dy = targetY - this._cameraY;
+            if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+                this._cameraX = targetX;
+                this._cameraY = targetY;
+            } else {
+                this._cameraX += dx * 0.15;
+                this._cameraY += dy * 0.15;
+            }
         }
 
         this._worldContainer.position.set(
@@ -321,9 +407,22 @@ export default class extends Controller {
         );
     }
 
-    _tick() {
-        if (!this._animating) return;
+    _tick(ticker) {
+        const dt = ticker.deltaMS;
+
         this._updateCamera(false);
+
+        // Update player animation
+        if (this._playerAnimator) {
+            this._playerAnimator.update(dt);
+        }
+
+        // Update entity animations
+        for (const entity of Object.values(this._entitySprites)) {
+            if (entity.animator) {
+                entity.animator.update(dt);
+            }
+        }
     }
 
     // --- Keyboard Movement ---
@@ -451,14 +550,34 @@ export default class extends Controller {
         this._cancelRequested = false;
         this._pendingNewTarget = null;
 
+        // Start walk animation
+        if (this._playerAnimator) {
+            this._playerAnimator.play();
+        }
+
         for (let i = 0; i < path.length; i++) {
             if (this._cancelRequested) break;
 
             const from = { x: this._playerX, y: this._playerY };
             const to = { x: path[i].x, y: path[i].y };
+
+            // Set direction based on movement delta
+            if (this._playerAnimator) {
+                const dx = to.x - from.x;
+                const dy = to.y - from.y;
+                if (dx !== 0 || dy !== 0) {
+                    this._playerAnimator.setDirection(directionFromDelta(dx, dy));
+                }
+            }
+
             await this._tweenTo(from, to, this.stepDelayValue);
             this._playerX = to.x;
             this._playerY = to.y;
+        }
+
+        // Stop walk animation
+        if (this._playerAnimator) {
+            this._playerAnimator.stop();
         }
 
         const hadCancel = this._cancelRequested;
@@ -492,8 +611,9 @@ export default class extends Controller {
 
             const step = (now) => {
                 if (this._cancelRequested) {
-                    const curX = from.x + (to.x - from.x) * Math.min((now - startTime) / durationMs, 1);
-                    const curY = from.y + (to.y - from.y) * Math.min((now - startTime) / durationMs, 1);
+                    const t = Math.min((now - startTime) / durationMs, 1);
+                    const curX = from.x + (to.x - from.x) * t;
+                    const curY = from.y + (to.y - from.y) * t;
                     this._playerX = curX;
                     this._playerY = curY;
                     if (this._playerMarker) {
@@ -519,7 +639,6 @@ export default class extends Controller {
 
                 this._playerX = from.x + (to.x - from.x) * t;
                 this._playerY = from.y + (to.y - from.y) * t;
-                this._updateCamera(false);
 
                 if (t < 1) {
                     requestAnimationFrame(step);
@@ -588,6 +707,7 @@ export default class extends Controller {
             this._animateEntity(key, data.path, finalX, finalY);
         } else if (entity) {
             entity.container.position.set(finalX * this._tileSize, finalY * this._tileSize);
+            entity.container.zIndex = finalY * this._tileSize;
             entity.x = finalX;
             entity.y = finalY;
         }
@@ -602,6 +722,7 @@ export default class extends Controller {
 
         if (entity) {
             entity.container.position.set(finalX * this._tileSize, finalY * this._tileSize);
+            entity.container.zIndex = finalY * this._tileSize;
             entity.x = finalX;
             entity.y = finalY;
         }
@@ -611,13 +732,40 @@ export default class extends Controller {
         const entity = this._entitySprites[key];
         if (!entity) return;
 
+        if (entity.animator) {
+            entity.animator.play();
+        }
+
+        let prevX = entity.x;
+        let prevY = entity.y;
+
         for (const step of path) {
-            const targetPx = { x: parseInt(step.x) * this._tileSize, y: parseInt(step.y) * this._tileSize };
+            const sx = parseInt(step.x);
+            const sy = parseInt(step.y);
+
+            // Set direction for animated entities
+            if (entity.animator) {
+                const dx = sx - prevX;
+                const dy = sy - prevY;
+                if (dx !== 0 || dy !== 0) {
+                    entity.animator.setDirection(directionFromDelta(dx, dy));
+                }
+            }
+
+            const targetPx = { x: sx * this._tileSize, y: sy * this._tileSize };
             entity.container.position.set(targetPx.x, targetPx.y);
+            entity.container.zIndex = sy * this._tileSize;
+            prevX = sx;
+            prevY = sy;
             await this._wait(this.stepDelayValue);
         }
 
+        if (entity.animator) {
+            entity.animator.stop();
+        }
+
         entity.container.position.set(finalX * this._tileSize, finalY * this._tileSize);
+        entity.container.zIndex = finalY * this._tileSize;
         entity.x = finalX;
         entity.y = finalY;
     }
