@@ -1,0 +1,44 @@
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+    {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for field in form %}
+                {% if field.vars.name != '_token' %}
+                    <div>
+                        {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+                        {{ form_widget(field, {'attr': {'class': (field.vars.attr.class ?? '') ~ ' w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500'}}) }}
+                        {{ form_errors(field, {'attr': {'class': 'text-red-400 text-xs mt-1'}}) }}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if monster is defined and monster.monsterItems|length > 0 %}
+            <div class="pt-4 border-t border-gray-800">
+                <h3 class="text-sm font-medium text-gray-400 mb-3">Table de loot</h3>
+                <div class="bg-gray-800 rounded-lg overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-700 text-gray-500">
+                                <th class="text-left px-3 py-2 font-medium">Item</th>
+                                <th class="text-left px-3 py-2 font-medium">Probabilite</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-700">
+                            {% for mi in monster.monsterItems %}
+                                <tr>
+                                    <td class="px-3 py-2 text-gray-300">{{ mi.item.name }}</td>
+                                    <td class="px-3 py-2 text-gray-400">{{ (mi.probability * 100)|number_format(1) }}%</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="flex items-center gap-4 pt-4 border-t border-gray-800">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">Enregistrer</button>
+            <a href="{{ path('admin_monster_index') }}" class="text-gray-400 hover:text-gray-300 text-sm">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>

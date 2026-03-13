@@ -1,0 +1,8 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier "{{ quest.name }}" - Admin{% endblock %}
+{% block page_title %}Modifier : {{ quest.name }}{% endblock %}
+
+{% block body %}
+    {% include 'admin/quest/_form.html.twig' %}
+{% endblock %}

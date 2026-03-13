@@ -16,6 +16,18 @@ class Item
     public const TYPE_STUFF      = 'stuff';
     public const TYPE_GEAR_PIECE = 'gear';
     public const TYPE_MATERIA    = 'materia';
+    public const TYPE_RESOURCE   = 'resource';
+    public const TYPE_TOOL       = 'tool';
+
+    public const TOOL_TYPE_PICKAXE        = 'pickaxe';
+    public const TOOL_TYPE_SICKLE         = 'sickle';
+    public const TOOL_TYPE_FISHING_ROD    = 'fishing_rod';
+    public const TOOL_TYPE_SKINNING_KNIFE = 'skinning_knife';
+
+    public const TOOL_TIER_BRONZE  = 1;
+    public const TOOL_TIER_IRON    = 2;
+    public const TOOL_TIER_STEEL   = 3;
+    public const TOOL_TIER_MITHRIL = 4;
 
     public const GEAR_LOCATION_HEAD        = 'head';
     public const GEAR_LOCATION_NECK        = 'neck';
@@ -82,6 +94,16 @@ class Item
         return $this->getType() === self::TYPE_GEAR_PIECE;
     }
 
+    public function isResource(): bool
+    {
+        return $this->getType() === self::TYPE_RESOURCE;
+    }
+
+    public function isTool(): bool
+    {
+        return $this->getType() === self::TYPE_TOOL;
+    }
+
     /**
      * Constructor
      */
@@ -146,6 +168,15 @@ class Item
     #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: "items")]
     #[ORM\JoinColumn(name: "domain_id", referencedColumnName: "id")]
     private $domain;
+
+    #[ORM\Column(name: "tool_type", type: "string", length: 50, nullable: true)]
+    private ?string $toolType = null;
+
+    #[ORM\Column(name: "tool_tier", type: "integer", nullable: true)]
+    private ?int $toolTier = null;
+
+    #[ORM\Column(name: "durability", type: "integer", nullable: true)]
+    private ?int $durability = null;
 
     /**
      * Get id
@@ -499,5 +530,35 @@ class Item
     public function setEffect(string $effect): void
     {
         $this->effect = $effect;
+    }
+
+    public function getToolType(): ?string
+    {
+        return $this->toolType;
+    }
+
+    public function setToolType(?string $toolType): void
+    {
+        $this->toolType = $toolType;
+    }
+
+    public function getToolTier(): ?int
+    {
+        return $this->toolTier;
+    }
+
+    public function setToolTier(?int $toolTier): void
+    {
+        $this->toolTier = $toolTier;
+    }
+
+    public function getDurability(): ?int
+    {
+        return $this->durability;
+    }
+
+    public function setDurability(?int $durability): void
+    {
+        $this->durability = $durability;
     }
 }

@@ -4,6 +4,9 @@ namespace App\GameEngine\Progression;
 
 use App\Entity\Game\Domain;
 use App\Event\Fight\ItemUsedEvent;
+use App\Event\Game\CraftEvent;
+use App\Event\Map\ButcheringEvent;
+use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
 use App\Helper\PlayerDomainHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +23,9 @@ class DomainExperienceEvolver implements EventSubscriberInterface
         return [
             ItemUsedEvent::NAME => "experienceFromItemUsed",
             SpotHarvestEvent::NAME => "experienceFromHarvesting",
+            FishingEvent::NAME => "experienceFromFishing",
+            ButcheringEvent::NAME => "experienceFromButchering",
+            CraftEvent::NAME => "experienceFromCrafting",
         ];
     }
 
@@ -43,10 +49,42 @@ class DomainExperienceEvolver implements EventSubscriberInterface
 
     }
 
-    private function increaseDomainExperience(Domain $domain): void
+    public function experienceFromFishing(FishingEvent $event): void
+    {
+        if (!$event->isSuccess()) {
+            return;
+        }
+
+        $slug = $event->getObjectLayer()->getSlug();
+        if ($domain = $this->playerDomainHelper->getDomainBySkillAction('harvest', ['spot' => $slug])) {
+            $this->increaseDomainExperience($domain);
+        }
+    }
+
+    public function experienceFromButchering(ButcheringEvent $event): void
+    {
+        if (empty($event->getHarvestedItems())) {
+            return;
+        }
+
+        // Chercher un domaine lié au butchering via les skills du joueur
+        if ($domain = $this->playerDomainHelper->getDomainBySkillAction('butcher')) {
+            $this->increaseDomainExperience($domain);
+        }
+    }
+
+    public function experienceFromCrafting(CraftEvent $event): void
+    {
+        $profession = $event->getRecipe()->getProfession();
+        if ($domain = $this->playerDomainHelper->getDomainBySkillAction('craft', ['profession' => $profession])) {
+            $this->increaseDomainExperience($domain, $event->getExperienceGained());
+        }
+    }
+
+    private function increaseDomainExperience(Domain $domain, int $amount = 1): void
     {
         if ($domainExperience = $this->playerDomainHelper->getDomainExperience($domain)) {
-            $newExperience = $domainExperience->getTotalExperience()+1;
+            $newExperience = $domainExperience->getTotalExperience() + $amount;
             $domainExperience->setTotalExperience($newExperience);
             $this->entityManager->persist($domainExperience);
             $this->entityManager->flush();

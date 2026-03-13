@@ -1,0 +1,27 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard - Admin{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {% for metric in metrics %}
+            <{% if metric.route %}a href="{{ path(metric.route) }}"{% else %}div{% endif %} class="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-{{ metric.color }}-700 transition-colors">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">{{ metric.label }}</p>
+                        <p class="text-3xl font-bold text-gray-100 mt-1">{{ metric.count }}</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-{{ metric.color }}-900 flex items-center justify-center">
+                        <span class="text-{{ metric.color }}-400 text-xl font-bold">{{ metric.label|first }}</span>
+                    </div>
+                </div>
+            </{% if metric.route %}a{% else %}div{% endif %}>
+        {% endfor %}
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Bienvenue dans le panneau d'administration</h2>
+        <p class="text-gray-400">Utilisez le menu lateral pour gerer le contenu du jeu : items, monstres, sorts, talents, domaines, quetes, PNJs et joueurs.</p>
+    </div>
+{% endblock %}

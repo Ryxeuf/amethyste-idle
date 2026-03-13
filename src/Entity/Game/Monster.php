@@ -57,6 +57,18 @@ class Monster
     #[ORM\Column(name: "level", type: "integer", options: ["default" => 1])]
     private $level = 1;
 
+    #[ORM\Column(name: "ai_pattern", type: "json", nullable: true)]
+    private ?array $aiPattern = null;
+
+    #[ORM\Column(name: "elemental_resistances", type: "json", nullable: true)]
+    private ?array $elementalResistances = null;
+
+    #[ORM\Column(name: "is_boss", type: "boolean", options: ["default" => false])]
+    private bool $isBoss = false;
+
+    #[ORM\Column(name: "boss_phases", type: "json", nullable: true)]
+    private ?array $bossPhases = null;
+
     /**
      * @return int
      */
@@ -243,5 +255,71 @@ class Monster
     public function setLevel(int $level): void
     {
         $this->level = $level;
+    }
+
+    public function getAiPattern(): ?array
+    {
+        return $this->aiPattern;
+    }
+
+    public function setAiPattern(?array $aiPattern): void
+    {
+        $this->aiPattern = $aiPattern;
+    }
+
+    public function getElementalResistances(): ?array
+    {
+        return $this->elementalResistances;
+    }
+
+    public function setElementalResistances(?array $elementalResistances): void
+    {
+        $this->elementalResistances = $elementalResistances;
+    }
+
+    public function getElementalResistance(string $element): float
+    {
+        if ($this->elementalResistances === null) {
+            return 0.0;
+        }
+
+        return $this->elementalResistances[$element] ?? 0.0;
+    }
+
+    public function isBoss(): bool
+    {
+        return $this->isBoss;
+    }
+
+    public function setIsBoss(bool $isBoss): void
+    {
+        $this->isBoss = $isBoss;
+    }
+
+    public function getBossPhases(): ?array
+    {
+        return $this->bossPhases;
+    }
+
+    public function setBossPhases(?array $bossPhases): void
+    {
+        $this->bossPhases = $bossPhases;
+    }
+
+    public function getCurrentBossPhase(int $currentHpPercent): ?array
+    {
+        if ($this->bossPhases === null) {
+            return null;
+        }
+
+        $activePhase = null;
+        foreach ($this->bossPhases as $phase) {
+            $threshold = $phase['hpThreshold'] ?? 100;
+            if ($currentHpPercent <= $threshold) {
+                $activePhase = $phase;
+            }
+        }
+
+        return $activePhase;
     }
 }

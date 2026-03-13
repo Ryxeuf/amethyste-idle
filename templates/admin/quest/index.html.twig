@@ -1,0 +1,53 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Quetes - Admin{% endblock %}
+{% block page_title %}Quetes{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-6">
+        <form method="get" class="flex items-center gap-2">
+            <input type="text" name="q" value="{{ search }}" placeholder="Rechercher une quete..."
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-64">
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
+            {% if search %}
+                <a href="{{ path('admin_quest_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
+            {% endif %}
+        </form>
+        <a href="{{ path('admin_quest_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">+ Nouvelle quete</a>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-800 text-gray-400">
+                    <th class="text-left px-4 py-3 font-medium">ID</th>
+                    <th class="text-left px-4 py-3 font-medium">Nom</th>
+                    <th class="text-left px-4 py-3 font-medium">Description</th>
+                    <th class="text-right px-4 py-3 font-medium">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for quest in quests %}
+                    <tr class="hover:bg-gray-800 transition-colors">
+                        <td class="px-4 py-3 text-gray-500">{{ quest.id }}</td>
+                        <td class="px-4 py-3 text-gray-200 font-medium">{{ quest.name }}</td>
+                        <td class="px-4 py-3 text-gray-400 truncate max-w-xs">{{ quest.description|u.truncate(80, '...') }}</td>
+                        <td class="px-4 py-3 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="{{ path('admin_quest_edit', {id: quest.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
+                                <form method="post" action="{{ path('admin_quest_delete', {id: quest.id}) }}" onsubmit="return confirm('Supprimer cette quete ?');" class="inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ quest.id) }}">
+                                    <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="px-4 py-8 text-center text-gray-500">Aucune quete trouvee.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
