@@ -3,21 +3,23 @@
 ## Identité du jeu
 
 - **Type** : MMORPG en navigateur web
-- **Inspirations principales** : The Legend of Zelda (NES, SNES, Game Boy), Final Fantasy (combats au tour par tour, materia), Warcraft (univers fantasy, ressources)
-- **Vue** : isométrique 2D
-- **Déplacements** : sur des cases carrées (tiles 32×32 px), pathfinding Dijkstra
-- **Progression** : arbres de talent par domaine, PAS de système de niveaux d'expérience propres au joueur
-- **Cartes** : fichiers TMX créés avec Tiled Map Editor, importés via la commande `app:terrain:import`
+- **Inspirations principales** : The Legend of Zelda (exploration), Final Fantasy 7/8/9 (combat tour par tour, materia, univers medieval-fantastique-futuriste), stein.world (MMO navigateur), Warcraft (ressources, crafting)
+- **Vue** : 2D top-down avec tiles 32×32 px
+- **Sprites personnage** : format RPG Maker VX, 24×32 px par frame (3 colonnes × 4 lignes)
+- **Déplacements** : pathfinding Dijkstra, animation de marche avec sprites directionnels
+- **Progression** : arbres de talent par domaine, PAS de niveaux globaux
+- **Cartes** : fichiers TMX créés avec Tiled Map Editor, importés via `app:terrain:import`
+- **Univers** : medieval-fantastique-futuriste (comme Final Fantasy 7/8/9)
 
 ## Stack technique
 
 - PHP 8.4, Symfony 7.4, FrankenPHP (Caddy), PostgreSQL 17
 - Doctrine ORM 3.x
 - Mercure SSE pour le temps réel (intégré dans Caddy)
-- Frontend : Twig + Tailwind CSS 4.x + Symfony UX Live Component + Turbo + Stimulus
+- Frontend : Twig + Tailwind CSS 4.1 + Symfony UX Live Component + Turbo + Stimulus
 - Assets : Symfony AssetMapper (importmap, sans bundler Node.js)
-- Pixi.js pour le rendu canvas de la carte (optionnel)
-- Containerisation Docker multi-stage
+- PixiJS pour le rendu canvas de la carte (WebGL avec fallback Canvas 2D)
+- Containerisation Docker multi-stage + Traefik reverse proxy
 
 ## Conventions de développement
 
@@ -28,6 +30,8 @@
 - Les Live Components Symfony UX sont dans `src/Twig/Components/`
 - Les traductions sont en FR (défaut) et EN dans `translations/messages.{fr,en}.json`
 - La documentation technique principale est dans `DOCUMENTATION.md`
+- Commits atomiques : un commit par changement fonctionnel testable
+- Tester après chaque modification avant de passer à la suivante
 
 ## Conventions de carte / terrain
 
@@ -35,6 +39,24 @@
 - Tilesets : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx` dans `terrain/tileset/`
 - Les règles (collisions, téléportations, bordures) sont dans `terrain/rules/`
 - Le workflow complet : Tiled → TMX → `app:terrain:import` → JSON → `app:tmx:generate-css` → CSS sprites → fixtures areas
+- Collisions : bitmask directionnel (N/S/E/W), -1 = mur impassable
+
+## Conventions de rendu (PixiJS)
+
+- Rendu carte via `assets/controllers/map_pixi_controller.js` (Stimulus controller)
+- Containers PixiJS : _tileContainer (z:0), _entityContainer (z:10), _playerContainer (z:20)
+- Données tuiles API : `{ x, y, l: [gid1, gid2...], w: boolean }` (l = layers, w = walkable)
+- Caméra : interpolation fluide 15%/frame, centrée sur le joueur
+- Modules JS réutilisables dans `assets/lib/` (ex: SpriteAnimator)
+- Sync temps réel via Mercure SSE (topics: `map/move`, `map/respawn`)
+
+## Conventions d'interface
+
+- Seuls les déplacements et dialogues PNJ restent sur l'écran de la carte
+- Inventaire, combat, compétences, trading : vues séparées (routes `/game/*`)
+- Mobile : tap-to-move uniquement (pas de D-pad virtuel)
+- Thème sombre : bg-gray-900, couleur primaire purple (#6D28D9)
+- Raretés : common (gray), uncommon (green), rare (blue), epic (purple), legendary (orange)
 
 ## Système de progression (arbres de talent)
 
