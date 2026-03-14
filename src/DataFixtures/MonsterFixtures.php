@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
@@ -12,7 +13,6 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Création des monstres
         $monsters = [
             'zombie' => [
                 'name' => 'Zombie',
@@ -20,7 +20,10 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 80,
                 'speed' => 2,
                 'attack' => 'none_attack_1',
-                'level' => 1
+                'level' => 1,
+                'aiPattern' => [
+                    'spell_chance' => 10,
+                ],
             ],
             'skeleton' => [
                 'name' => 'Squelette',
@@ -28,7 +31,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 80,
                 'speed' => 5,
                 'attack' => 'punishment',
-                'level' => 1
+                'level' => 1,
+                'spells' => ['shadow_bolt'],
+                'aiPattern' => [
+                    'spell_chance' => 25,
+                ],
             ],
             'ochu' => [
                 'name' => 'Ochu',
@@ -36,7 +43,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 80,
                 'speed' => 15,
                 'attack' => 'liana_whip',
-                'level' => 2
+                'level' => 2,
+                'spells' => ['poison_cloud', 'entangling_roots'],
+                'aiPattern' => [
+                    'spell_chance' => 40,
+                    'low_hp_heal' => ['threshold' => 30, 'action' => 'heal'],
+                ],
+                'elementalResistances' => ['nature' => 0.5, 'fire' => -0.5],
             ],
             'taiju' => [
                 'name' => 'Taiju',
@@ -44,16 +57,21 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 60,
                 'speed' => 12,
                 'attack' => 'liana_whip',
-                'level' => 3
+                'level' => 3,
+                'spells' => ['natural_healing', 'thorn_burst'],
+                'aiPattern' => [
+                    'spell_chance' => 35,
+                    'low_hp_heal' => ['threshold' => 40, 'action' => 'heal'],
+                    'role' => 'healer',
+                ],
             ],
-            // Nouveaux monstres médiévaux fantastiques
             'goblin' => [
                 'name' => 'Gobelin',
                 'life' => 8,
                 'hit' => 75,
                 'speed' => 8,
                 'attack' => 'none_attack_1',
-                'level' => 1
+                'level' => 1,
             ],
             'troll' => [
                 'name' => 'Troll',
@@ -61,15 +79,65 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 70,
                 'speed' => 3,
                 'attack' => 'stone_throw',
-                'level' => 3
+                'level' => 3,
+                'spells' => ['boulder_throw', 'earthquake'],
+                'aiPattern' => [
+                    'spell_chance' => 30,
+                    'low_hp_heal' => ['threshold' => 30, 'action' => 'attack'],
+                    'sequence' => ['attack', 'attack', 'spell'],
+                    'danger_alert' => [
+                        'threshold' => 30,
+                        'message' => 'Le Troll entre en rage !',
+                        'spell' => 'earthquake',
+                    ],
+                ],
+                'elementalResistances' => ['earth' => 0.3, 'fire' => -0.3],
             ],
             'dragon' => [
-                'name' => 'Dragon',
-                'life' => 50,
-                'hit' => 85,
-                'speed' => 10,
+                'name' => 'Dragon ancestral',
+                'life' => 80,
+                'hit' => 90,
+                'speed' => 12,
                 'attack' => 'fire_ball',
-                'level' => 5
+                'level' => 5,
+                'isBoss' => true,
+                'spells' => ['dragon_breath', 'fire_nova', 'meteor_strike', 'volcanic_eruption'],
+                'aiPattern' => [
+                    'spell_chance' => 60,
+                    'preferred_element' => 'fire',
+                    'danger_alert' => [
+                        'threshold' => 50,
+                        'message' => 'Le Dragon prend une grande inspiration...',
+                        'spell' => 'dragon-breath',
+                    ],
+                ],
+                'elementalResistances' => [
+                    'fire' => 0.75,
+                    'water' => -0.50,
+                    'earth' => 0.25,
+                    'nature' => -0.25,
+                ],
+                'bossPhases' => [
+                    [
+                        'hpThreshold' => 100,
+                        'name' => 'Phase 1 — Attaque',
+                        'action' => 'spell',
+                    ],
+                    [
+                        'hpThreshold' => 60,
+                        'name' => 'Phase 2 — Souffle de feu',
+                        'action' => 'spell',
+                        'preferred_spell' => 'dragon-breath',
+                        'danger_message' => 'Le Dragon se dresse de toute sa hauteur !',
+                    ],
+                    [
+                        'hpThreshold' => 30,
+                        'name' => 'Phase 3 — Rage',
+                        'action' => 'spell',
+                        'preferred_spell' => 'volcanic-eruption',
+                        'danger_message' => 'Le Dragon rugit de rage — son corps tremble de fureur !',
+                    ],
+                ],
             ],
             'werewolf' => [
                 'name' => 'Loup-garou',
@@ -77,7 +145,16 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 80,
                 'speed' => 12,
                 'attack' => 'sharp_blade',
-                'level' => 3
+                'level' => 3,
+                'spells' => ['venomous_bite'],
+                'aiPattern' => [
+                    'spell_chance' => 30,
+                    'sequence' => ['attack', 'attack', 'spell'],
+                    'danger_alert' => [
+                        'threshold' => 25,
+                        'message' => 'Le Loup-garou gronde de rage !',
+                    ],
+                ],
             ],
             'banshee' => [
                 'name' => 'Banshee',
@@ -85,7 +162,12 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 90,
                 'speed' => 7,
                 'attack' => 'punishment',
-                'level' => 2
+                'level' => 2,
+                'spells' => ['shadow_bolt', 'death_grip'],
+                'aiPattern' => [
+                    'spell_chance' => 50,
+                ],
+                'elementalResistances' => ['death' => 0.5, 'life' => -0.5],
             ],
             'griffin' => [
                 'name' => 'Griffon',
@@ -93,7 +175,13 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 85,
                 'speed' => 15,
                 'attack' => 'wind_lame',
-                'level' => 4
+                'level' => 4,
+                'spells' => ['cyclone', 'air_slash', 'wind_blast'],
+                'aiPattern' => [
+                    'spell_chance' => 45,
+                    'preferred_element' => 'wind',
+                ],
+                'elementalResistances' => ['wind' => 0.4, 'earth' => -0.3],
             ],
             'minotaur' => [
                 'name' => 'Minotaure',
@@ -101,7 +189,16 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 75,
                 'speed' => 6,
                 'attack' => 'sword_10',
-                'level' => 4
+                'level' => 4,
+                'spells' => ['iron_fist', 'blade_dance'],
+                'aiPattern' => [
+                    'spell_chance' => 35,
+                    'sequence' => ['attack', 'spell', 'attack', 'attack'],
+                    'danger_alert' => [
+                        'threshold' => 25,
+                        'message' => 'Le Minotaure baisse ses cornes !',
+                    ],
+                ],
             ],
             'gargoyle' => [
                 'name' => 'Gargouille',
@@ -109,10 +206,15 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'hit' => 80,
                 'speed' => 9,
                 'attack' => 'stone_throw',
-                'level' => 3
-            ]
+                'level' => 3,
+                'spells' => ['earth_spike', 'stone_spikes'],
+                'aiPattern' => [
+                    'spell_chance' => 35,
+                ],
+                'elementalResistances' => ['earth' => 0.4, 'wind' => -0.3],
+            ],
         ];
-        
+
         foreach ($monsters as $key => $data) {
             $monster = new Monster();
             $monster->setName($data['name']);
@@ -121,25 +223,54 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             $monster->setHit($data['hit']);
             $monster->setSpeed($data['speed']);
             $monster->setLevel($data['level']);
-            
-            // Récupération du sort d'attaque
+
+            // Sort d'attaque de base
             $attackSpell = $this->getReference($data['attack'], Spell::class);
             $monster->setAttack($attackSpell);
-            
+
+            // Sorts additionnels
+            if (isset($data['spells'])) {
+                $spells = new ArrayCollection();
+                foreach ($data['spells'] as $spellRef) {
+                    $spells->add($this->getReference($spellRef, Spell::class));
+                }
+                $monster->setSpells($spells);
+            }
+
+            // AI pattern
+            if (isset($data['aiPattern'])) {
+                $monster->setAiPattern($data['aiPattern']);
+            }
+
+            // Resistances elementaires
+            if (isset($data['elementalResistances'])) {
+                $monster->setElementalResistances($data['elementalResistances']);
+            }
+
+            // Boss
+            if (isset($data['isBoss']) && $data['isBoss']) {
+                $monster->setIsBoss(true);
+            }
+
+            // Boss phases
+            if (isset($data['bossPhases'])) {
+                $monster->setBossPhases($data['bossPhases']);
+            }
+
             $monster->setCreatedAt(new \DateTime());
             $monster->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($monster);
             $this->addReference($key, $monster);
         }
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
             SpellFixtures::class,
         ];
     }
-} 
+}

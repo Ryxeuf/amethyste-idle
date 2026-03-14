@@ -108,6 +108,14 @@
 		</style>
 
 		<div class="max-w-7xl mx-auto px-4 py-8">
+			<!-- Alerte de danger -->
+			{% if dangerAlert is defined and dangerAlert %}
+				<div class="mb-4 p-4 bg-red-900/60 border border-red-500 rounded-xl text-center animate-pulse">
+					<i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+					<span class="text-red-200 font-bold">{{ dangerAlert }}</span>
+				</div>
+			{% endif %}
+
 			<!-- Timeline du combat -->
 			<turbo-frame id="timeline">
 				{{ include('game/fight/partials/_timeline.html.twig') }}
@@ -376,6 +384,16 @@
 											</h2>
 											<div class="flex items-center space-x-2 mt-1">
 												<span class="text-xs text-gray-400">{{ 'game.statistics.level'|trans }} {{ mob.level ?? 0 }}</span>
+												{# Difficulty indicator (stars) #}
+												<span class="text-xs">
+													{% for i in 1..5 %}
+														{% if i <= (mob.monster.level ?? 1) %}
+															<i class="fas fa-star text-yellow-400"></i>
+														{% else %}
+															<i class="fas fa-star text-gray-600"></i>
+														{% endif %}
+													{% endfor %}
+												</span>
 											</div>
 										</div>
 									</div>

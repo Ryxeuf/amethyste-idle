@@ -58,6 +58,42 @@
 - Thème sombre : bg-gray-900, couleur primaire purple (#6D28D9)
 - Raretés : common (gray), uncommon (green), rare (blue), epic (purple), legendary (orange)
 
+## Système de combat
+
+### Effets de statut
+- 8 types : `poison`, `paralysis`, `burn`, `freeze`, `silence`, `regeneration`, `shield`, `berserk`
+- `StatusEffectManager` gère les DOT/HOT par tour, les vérifications de statut et l'application
+- `FightStatusEffect` : entité qui stocke les effets actifs par combat (cible, type, tours restants, puissance)
+- Les sorts peuvent appliquer des effets de statut via `SpellApplicator`
+
+### Résistances élémentaires
+- Les monstres peuvent avoir des résistances élémentaires (ex : dragon résiste au feu)
+- `SpellApplicator` applique le coefficient de résistance aux dégâts
+- `ElementalSynergyCalculator` : 4 combos (Fire+Water=Steam, Earth+Air=Tornado, Light+Dark=Eclipse, Fire+Earth=Magma)
+
+### IA des monstres (`MobActionHandler`)
+- Pattern IA configurable via `Monster::aiPattern` (JSON)
+- Clés : `sequence` (actions en boucle), `spell_chance` (probabilité de sort), `low_hp_heal` (soin automatique bas HP)
+- Boss : phases basées sur le % de vie, `danger_alert` + `danger_message` pour alertes UI
+- `resolveSpell()` : sélection aléatoire dans le pool de sorts du monstre
+
+### Mécanique de boss
+- Respawn 1h (vs 10s pour les mobs normaux) — géré par `MobDeathQueuing`
+- Impossible de fuir un boss (+ berserk empêche aussi la fuite)
+- Indicateur de difficulté (étoiles ★) dans le template de combat
+- Bannière d'alerte danger dans l'UI de combat
+- XP materia ×5 à la mort d'un boss
+
+### Compétences de combat actives
+- 7 archétypes : Pyromancien, Soldat, Soigneur, Défenseur, Nécromancien, Druide, Mage blanc
+- Chaque archétype a 3-4 compétences formant une chaîne de progression
+- Liaison compétence → sort via `actions.combat.spell_slug` dans `SkillFixtures`
+- `CombatSkillResolver` résout les sorts disponibles selon les compétences débloquées
+
+### Materia
+- `MateriaXpGranter` : XP materia = 10 × niveau monstre (boss ×5)
+- `MateriaFusionManager` : fusion de deux materias en une materia supérieure
+
 ## Système de progression (arbres de talent)
 
 - Pas de "niveau du joueur" global

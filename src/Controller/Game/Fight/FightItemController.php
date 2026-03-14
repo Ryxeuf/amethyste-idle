@@ -62,8 +62,9 @@ class FightItemController extends AbstractController
                 }
             }
 
-            $this->spellApplicator->apply($spell, $player, $target);
+            $spellMessages = $this->spellApplicator->apply($spell, $player, $target, ['fight' => $fight]);
             $messages[] = sprintf('Vous utilisez %s !', $item->getName());
+            $messages = array_merge($messages, $spellMessages);
 
             if ($spell->getHeal() > 0) {
                 $messages[] = sprintf('Vous récupérez %d PV.', $spell->getHeal());

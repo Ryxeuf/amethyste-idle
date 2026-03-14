@@ -85,7 +85,7 @@ src/
   Entity/App/           # Entites applicatives (Player, Map, Mob, Fight, Pnj...)
   Entity/Game/          # Definitions (Item, Monster, Spell, Skill, Domain)
   GameEngine/           # Logique metier par domaine :
-    Fight/              #   Combat tour par tour
+    Fight/              #   Combat tour par tour (SpellApplicator, MobActionHandler, StatusEffectManager, CombatSkillResolver, ElementalSynergyCalculator, MateriaXpGranter)
     Map/                #   Pathfinding Dijkstra
     Movement/           #   PlayerMoveProcessor
     Progression/        #   XP et talents
@@ -153,6 +153,11 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 |-------|------------|
 | `/game/map` | Carte PixiJS |
 | `/game/fight` | Combat tour par tour |
+| `/game/fight/spell` | POST lancer un sort de combat |
+| `/game/fight/attack` | POST attaque basique |
+| `/game/fight/item` | POST utiliser un objet |
+| `/game/fight/flee` | POST fuir le combat |
+| `/game/fight/loot` | Ecran de butin apres victoire |
 | `/game/inventory` | Inventaire (items, equipement, materia, banque) |
 | `/game/skills` | Arbres de talent |
 | `/api/map/config` | Config tilesets + sprites |

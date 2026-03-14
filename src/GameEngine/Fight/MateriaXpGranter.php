@@ -1,0 +1,75 @@
+<?php
+
+namespace App\GameEngine\Fight;
+
+use App\Entity\App\Inventory;
+use App\Event\Fight\MobDeadEvent;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class MateriaXpGranter implements EventSubscriberInterface
+{
+    private const BASE_XP_PER_KILL = 10;
+    private const BOSS_XP_MULTIPLIER = 5;
+
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LoggerInterface $logger,
+    ) {
+    }
+
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            MobDeadEvent::NAME => 'onMobDead',
+        ];
+    }
+
+    public function onMobDead(MobDeadEvent $event): void
+    {
+        $mob = $event->getMob();
+        $fight = $mob->getFight();
+        if (!$fight) {
+            return;
+        }
+
+        $monster = $mob->getMonster();
+        $monsterLevel = $monster->getLevel() ?? 1;
+        $xpGain = self::BASE_XP_PER_KILL * $monsterLevel;
+
+        if ($monster->isBoss()) {
+            $xpGain *= self::BOSS_XP_MULTIPLIER;
+        }
+
+        foreach ($fight->getPlayers() as $player) {
+            if ($player->isDead()) {
+                continue;
+            }
+
+            // Find all socketed materia across all inventories
+            foreach ($player->getInventories() as $inventory) {
+                foreach ($inventory->getItems() as $playerItem) {
+                    // Check each slot on equipment items for socketed materia
+                    foreach ($playerItem->getSlots() as $slot) {
+                        $materia = $slot->getItemSet();
+                        if ($materia !== null && $materia->isMateria()) {
+                            $materia->addExperience($xpGain);
+                            $this->entityManager->persist($materia);
+
+                            $this->logger->debug(sprintf(
+                                '[MateriaXpGranter] Materia %s gained %d XP (now %d, level %d)',
+                                $materia->getGenericItem()->getName(),
+                                $xpGain,
+                                $materia->getExperience(),
+                                $materia->getMateriaLevel(),
+                            ));
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+}

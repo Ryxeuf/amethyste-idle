@@ -114,6 +114,7 @@ class FightSpellController extends AbstractController
             'damage' => $bonuses['damage'],
             'heal' => $bonuses['heal'],
             'critical' => $bonuses['critical'],
+            'fight' => $fight,
         ];
 
         // Apply synergy damage multiplier

@@ -22,12 +22,18 @@ class MobDeathQueuing implements EventSubscriberInterface
         ];
     }
 
-    public function mobDied(MobDeadEvent $event)
+    public function mobDied(MobDeadEvent $event): void
     {
+        $mob = $event->getMob();
+        $monster = $mob->getMonster();
+
+        // Boss mobs have a longer respawn delay (1 hour)
+        $delay = $monster->isBoss() ? 3600 : 10;
+
         $respawn = new QueueRespawnMob();
-        $respawn->setDelay(10);
-        $respawn->setLastCell($event->getMob()->getCell());
-        $respawn->setMonster($event->getMob()->getMonster());
+        $respawn->setDelay($delay);
+        $respawn->setLastCell($mob->getCell());
+        $respawn->setMonster($monster);
 
         $this->entityManager->persist($respawn);
         $this->entityManager->flush();

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,6 +16,7 @@ class FightFleeController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly StatusEffectManager $statusEffectManager,
     ) {
     }
 
@@ -33,6 +35,17 @@ class FightFleeController extends AbstractController
         $mob = $fight->getMobs()->first();
         if ($mob && $mob->getMonster()->isBoss()) {
             return new JsonResponse(['error' => 'Impossible de fuir un boss !', 'success' => false]);
+        }
+
+        // Cannot flee while berserk
+        if ($this->statusEffectManager->isCharacterBerserk($fight, $player)) {
+            return new JsonResponse(['error' => 'Impossible de fuir en etat de rage !', 'success' => false]);
+        }
+
+        // Cannot flee while paralyzed/frozen
+        if ($this->statusEffectManager->isCharacterParalyzed($fight, $player)
+            || $this->statusEffectManager->isCharacterFrozen($fight, $player)) {
+            return new JsonResponse(['error' => 'Vous ne pouvez pas bouger !', 'success' => false]);
         }
 
         // Flee chance based on player speed vs mob speed (50-90%)

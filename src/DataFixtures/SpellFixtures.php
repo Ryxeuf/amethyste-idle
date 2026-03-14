@@ -22,9 +22,14 @@ class SpellFixtures extends Fixture
             $spell->setName($data['name']);
             $spell->setDescription($data['description']);
             $spell->setHit($data['hit'] ?? 90);
+            $spell->setCritical($data['critical'] ?? 5);
+            $spell->setEnergyCost($data['energyCost'] ?? 0);
+            $spell->setCooldown($data['cooldown'] ?? null);
+            $spell->setStatusEffectSlug($data['statusEffectSlug'] ?? null);
+            $spell->setAoeTargets($data['aoeTargets'] ?? 1);
             $spell->setCreatedAt(new \DateTime());
             $spell->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($spell);
             $this->addReference($key, $spell);
         }
@@ -48,7 +53,10 @@ class SpellFixtures extends Fixture
                 'heal' => null,
                 'name' => 'Boule de feu',
                 'description' => 'Une boule de feu pour tout cramer',
-                'hit' => 90
+                'hit' => 90,
+                'energyCost' => 5,
+                'statusEffectSlug' => 'burn',
+                'critical' => 8,
             ],
             'flame' => [
                 'slug' => 'flame',
@@ -73,9 +81,14 @@ class SpellFixtures extends Fixture
                 'damage' => 5,
                 'element' => 'fire',
                 'heal' => null,
-                'name' => 'Pluie de feu',
-                'description' => 'Un sort de pluie de feu',
-                'hit' => 90
+                'name' => 'Pluie de flammes',
+                'description' => 'Une pluie de flammes qui carbonise tout sur une large zone',
+                'hit' => 85,
+                'energyCost' => 12,
+                'cooldown' => 2,
+                'statusEffectSlug' => 'burn',
+                'critical' => 10,
+                'aoeTargets' => 0,
             ],
             'inferno' => [
                 'slug' => 'inferno',
@@ -84,7 +97,12 @@ class SpellFixtures extends Fixture
                 'heal' => null,
                 'name' => 'Inferno',
                 'description' => 'Un brasier dévastateur qui consume tout sur son passage',
-                'hit' => 85
+                'hit' => 85,
+                'energyCost' => 20,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'burn',
+                'critical' => 12,
+                'aoeTargets' => 0,
             ],
             'fire_wall' => [
                 'slug' => 'fire-wall',
@@ -146,17 +164,25 @@ class SpellFixtures extends Fixture
                 'element' => 'fire',
                 'heal' => null,
                 'name' => 'Souffle du dragon',
-                'description' => 'Un souffle de feu dévastateur',
-                'hit' => 85
+                'description' => 'Un souffle de feu devastateur',
+                'hit' => 85,
+                'statusEffectSlug' => 'burn',
+                'aoeTargets' => 0,
+                'critical' => 10,
             ],
             'volcanic_eruption' => [
                 'slug' => 'volcanic-eruption',
                 'damage' => 10,
                 'element' => 'fire',
                 'heal' => null,
-                'name' => 'Éruption volcanique',
-                'description' => 'Déchaîne la puissance d\'un volcan sur les ennemis',
-                'hit' => 70
+                'name' => 'Eruption volcanique',
+                'description' => 'Dechaine la puissance d\'un volcan sur les ennemis',
+                'hit' => 70,
+                'energyCost' => 30,
+                'cooldown' => 5,
+                'statusEffectSlug' => 'burn',
+                'critical' => 15,
+                'aoeTargets' => 0,
             ],
             'ember_shield' => [
                 'slug' => 'ember-shield',
@@ -194,25 +220,31 @@ class SpellFixtures extends Fixture
                 'heal' => 5,
                 'name' => 'Soin mineur',
                 'description' => 'Un soin mineur qui fait du bien',
-                'hit' => 100
+                'hit' => 100,
+                'energyCost' => 5,
             ],
             'rejuvenation' => [
                 'slug' => 'rejuvenation',
                 'damage' => null,
                 'element' => 'life',
                 'heal' => 8,
-                'name' => 'Régénération',
-                'description' => 'Un sort de régénération qui restaure progressivement la santé',
-                'hit' => 100
+                'name' => 'Regeneration',
+                'description' => 'Un sort de regeneration qui restaure progressivement la sante',
+                'hit' => 100,
+                'energyCost' => 10,
+                'statusEffectSlug' => 'regeneration',
             ],
             'divine_blessing' => [
                 'slug' => 'divine-blessing',
                 'damage' => null,
                 'element' => 'life',
                 'heal' => 12,
-                'name' => 'Bénédiction divine',
-                'description' => 'Une puissante bénédiction qui soigne les blessures graves',
-                'hit' => 100
+                'name' => 'Benediction divine',
+                'description' => 'Une puissante benediction qui soigne les blessures graves',
+                'hit' => 100,
+                'energyCost' => 18,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'regeneration-strong',
             ],
             'healing_wave' => [
                 'slug' => 'healing-wave',
@@ -237,9 +269,10 @@ class SpellFixtures extends Fixture
                 'damage' => 3,
                 'element' => 'life',
                 'heal' => 3,
-                'name' => 'Lumière sacrée',
-                'description' => 'Une lumière divine qui soigne les alliés et blesse les ennemis',
-                'hit' => 95
+                'name' => 'Lumiere',
+                'description' => 'Une lumiere divine qui soigne les allies et blesse les ennemis',
+                'hit' => 95,
+                'energyCost' => 6,
             ],
             'vitality_surge' => [
                 'slug' => 'vitality-surge',
@@ -274,8 +307,9 @@ class SpellFixtures extends Fixture
                 'element' => 'life',
                 'heal' => 5,
                 'name' => 'Purification',
-                'description' => 'Purifie le corps et l\'esprit, éliminant les afflictions',
-                'hit' => 100
+                'description' => 'Purifie le corps et l\'esprit, eliminant les afflictions',
+                'hit' => 100,
+                'energyCost' => 10,
             ],
             'celestial_blessing' => [
                 'slug' => 'celestial-blessing',
@@ -300,9 +334,12 @@ class SpellFixtures extends Fixture
                 'damage' => 5,
                 'element' => 'life',
                 'heal' => 5,
-                'name' => 'Intervention divine',
-                'description' => 'Une intervention des dieux qui soigne et protège',
-                'hit' => 90
+                'name' => 'Jugement sacre',
+                'description' => 'Un jugement divin qui soigne les allies et punit les ennemis',
+                'hit' => 90,
+                'energyCost' => 22,
+                'cooldown' => 4,
+                'critical' => 15,
             ],
             'healing_touch' => [
                 'slug' => 'healing-touch',
@@ -347,9 +384,10 @@ class SpellFixtures extends Fixture
                 'damage' => 3,
                 'element' => 'death',
                 'heal' => 1,
-                'name' => 'Drain d\'âme',
-                'description' => 'Aspire l\'énergie vitale de la cible pour se soigner',
-                'hit' => 85
+                'name' => 'Drain de vie',
+                'description' => 'Aspire l\'energie vitale de la cible pour se soigner',
+                'hit' => 85,
+                'energyCost' => 6,
             ],
             'death_touch' => [
                 'slug' => 'death-touch',
@@ -411,8 +449,12 @@ class SpellFixtures extends Fixture
                 'element' => 'death',
                 'heal' => 3,
                 'name' => 'Moisson sombre',
-                'description' => 'Récolte l\'énergie vitale des ennemis affaiblis',
-                'hit' => 75
+                'description' => 'Recolte l\'energie vitale des ennemis affaiblis',
+                'hit' => 75,
+                'energyCost' => 18,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'poison-strong',
+                'critical' => 12,
             ],
             'soul_rip' => [
                 'slug' => 'soul-rip',
@@ -446,9 +488,11 @@ class SpellFixtures extends Fixture
                 'damage' => 3,
                 'element' => 'death',
                 'heal' => null,
-                'name' => 'Frappe pestilentielle',
-                'description' => 'Infecte la cible avec une maladie débilitante',
-                'hit' => 90
+                'name' => 'Malediction',
+                'description' => 'Maudit la cible, empoisonnant son corps et son ame',
+                'hit' => 90,
+                'energyCost' => 10,
+                'statusEffectSlug' => 'poison',
             ],
             'death_coil' => [
                 'slug' => 'death-coil',
@@ -502,9 +546,11 @@ class SpellFixtures extends Fixture
                 'damage' => 0,
                 'element' => 'earth',
                 'heal' => 3,
-                'name' => 'Armure de roche',
-                'description' => 'Crée une protection rocheuse qui absorbe les dégâts',
-                'hit' => 100
+                'name' => 'Parade',
+                'description' => 'Une parade rocheuse qui absorbe les degats',
+                'hit' => 100,
+                'energyCost' => 5,
+                'statusEffectSlug' => 'shield',
             ],
             'boulder_throw' => [
                 'slug' => 'boulder-throw',
@@ -547,9 +593,11 @@ class SpellFixtures extends Fixture
                 'damage' => 0,
                 'element' => 'earth',
                 'heal' => 5,
-                'name' => 'Peau de pierre',
-                'description' => 'Transforme la peau en pierre, offrant une protection accrue',
-                'hit' => 100
+                'name' => 'Bouclier magique',
+                'description' => 'Un bouclier de pierre magique offrant une protection accrue',
+                'hit' => 100,
+                'energyCost' => 10,
+                'statusEffectSlug' => 'shield-strong',
             ],
             'earth_shield' => [
                 'slug' => 'earth-shield',
@@ -583,9 +631,12 @@ class SpellFixtures extends Fixture
                 'damage' => 0,
                 'element' => 'earth',
                 'heal' => 6,
-                'name' => 'Mur de pierre',
-                'description' => 'Érige un mur de pierre infranchissable',
-                'hit' => 100
+                'name' => 'Mur de fer',
+                'description' => 'Erige un mur de fer infranchissable',
+                'hit' => 100,
+                'energyCost' => 20,
+                'cooldown' => 4,
+                'statusEffectSlug' => 'shield-strong',
             ],
             'earth_blessing' => [
                 'slug' => 'earth-blessing',
@@ -648,9 +699,11 @@ class SpellFixtures extends Fixture
                 'damage' => 1,
                 'element' => 'metal',
                 'heal' => null,
-                'name' => 'Lame tranchante',
-                'description' => 'Un sort de lame tranchante',
-                'hit' => 90
+                'name' => 'Frappe puissante',
+                'description' => 'Une frappe puissante avec une lame tranchante',
+                'hit' => 95,
+                'energyCost' => 4,
+                'critical' => 10,
             ],
             'metal_storm' => [
                 'slug' => 'metal-storm',
@@ -666,18 +719,24 @@ class SpellFixtures extends Fixture
                 'damage' => 3,
                 'element' => 'metal',
                 'heal' => null,
-                'name' => 'Poing de fer',
-                'description' => 'Un coup puissant avec un poing métallique',
-                'hit' => 95
+                'name' => 'Charge',
+                'description' => 'Une charge brutale avec un poing de fer',
+                'hit' => 90,
+                'energyCost' => 8,
+                'critical' => 12,
             ],
             'blade_dance' => [
                 'slug' => 'blade-dance',
                 'damage' => 6,
                 'element' => 'metal',
                 'heal' => null,
-                'name' => 'Danse des lames',
-                'description' => 'Une série de coups rapides avec des lames flottantes',
-                'hit' => 85
+                'name' => 'Tourbillon d\'epee',
+                'description' => 'Un tourbillon devastateur de lames qui frappe tous les ennemis',
+                'hit' => 85,
+                'energyCost' => 15,
+                'cooldown' => 2,
+                'critical' => 15,
+                'aoeTargets' => 0,
             ],
             'steel_shield' => [
                 'slug' => 'steel-shield',
@@ -785,9 +844,10 @@ class SpellFixtures extends Fixture
                 'damage' => 1,
                 'element' => 'nature',
                 'heal' => null,
-                'name' => 'Fouet de liane',
-                'description' => 'Un sort de fouet de liane',
-                'hit' => 90
+                'name' => 'Liane',
+                'description' => 'Des lianes fouettent l\'ennemi',
+                'hit' => 90,
+                'energyCost' => 4,
             ],
             'thorn_burst' => [
                 'slug' => 'thorn-burst',
@@ -812,27 +872,34 @@ class SpellFixtures extends Fixture
                 'damage' => 4,
                 'element' => 'nature',
                 'heal' => null,
-                'name' => 'Nuage empoisonné',
+                'name' => 'Empoisonnement',
                 'description' => 'Un nuage de spores toxiques qui empoisonne l\'ennemi',
-                'hit' => 85
+                'hit' => 85,
+                'energyCost' => 10,
+                'statusEffectSlug' => 'poison',
             ],
             'entangling_roots' => [
                 'slug' => 'entangling-roots',
                 'damage' => 2,
                 'element' => 'nature',
                 'heal' => null,
-                'name' => 'Racines enchevêtrées',
+                'name' => 'Racines enchevetrees',
                 'description' => 'Des racines surgissent du sol et immobilisent l\'ennemi',
-                'hit' => 95
+                'hit' => 95,
+                'statusEffectSlug' => 'paralysis',
             ],
             'nature_wrath' => [
                 'slug' => 'nature-wrath',
                 'damage' => 6,
                 'element' => 'nature',
                 'heal' => null,
-                'name' => 'Courroux de la nature',
-                'description' => 'Déchaîne la fureur de la nature sur l\'ennemi',
-                'hit' => 80
+                'name' => 'Appel de la foret',
+                'description' => 'Dechaine la fureur de la nature sur l\'ennemi',
+                'hit' => 80,
+                'energyCost' => 20,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'poison-strong',
+                'aoeTargets' => 0,
             ],
             'leaf_blade' => [
                 'slug' => 'leaf-blade',
