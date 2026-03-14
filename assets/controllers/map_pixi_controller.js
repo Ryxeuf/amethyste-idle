@@ -32,6 +32,15 @@ export default class extends Controller {
         this._spriteConfig = {};
         this._spriteTextures = {};
 
+        // Performance: texture cache per GID to avoid recreating PIXI.Texture
+        this._tileTextureCache = new Map();
+        // Performance: sprite object pool for reuse
+        this._spritePool = [];
+        // Performance: cached marker textures
+        this._markerTextureCache = new Map();
+        // Performance: track animated entities separately
+        this._animatedEntities = [];
+
         this._playerAnimator = null;
         this._playerDirection = 'down';
         this._lastEntityLoadX = this.playerXValue;
@@ -72,6 +81,15 @@ export default class extends Controller {
                 entity.animator.destroy();
             }
         }
+        // Release pooled sprites
+        for (const s of this._spritePool) {
+            s.destroy();
+        }
+        this._spritePool = [];
+        this._tileTextureCache.clear();
+        this._markerTextureCache.clear();
+        this._animatedEntities = [];
+
         if (this._app) {
             this._app.destroy(true);
             this._app = null;
@@ -208,32 +226,52 @@ export default class extends Controller {
             const baseTexture = this._tilesetTextures[ts.name];
             if (!baseTexture) continue;
 
-            const localId = gid - ts.firstGid;
-            const col = localId % ts.columns;
-            const row = Math.floor(localId / ts.columns);
-
-            const frame = new PIXI.Rectangle(
-                col * ts.tileWidth,
-                row * ts.tileHeight,
-                ts.tileWidth,
-                ts.tileHeight,
-            );
-
-            let texture;
-            try {
-                texture = new PIXI.Texture({ source: baseTexture.source, frame });
-            } catch {
-                continue;
+            // Cache texture per GID to avoid recreating PIXI.Texture each cell
+            let texture = this._tileTextureCache.get(gid);
+            if (!texture) {
+                const localId = gid - ts.firstGid;
+                const col = localId % ts.columns;
+                const row = Math.floor(localId / ts.columns);
+                const frame = new PIXI.Rectangle(
+                    col * ts.tileWidth,
+                    row * ts.tileHeight,
+                    ts.tileWidth,
+                    ts.tileHeight,
+                );
+                try {
+                    texture = new PIXI.Texture({ source: baseTexture.source, frame });
+                } catch {
+                    continue;
+                }
+                this._tileTextureCache.set(gid, texture);
             }
 
-            const sprite = new PIXI.Sprite(texture);
-            sprite.roundPixels = true;
+            // Reuse pooled sprite or create new one
+            const sprite = this._acquireSprite(texture);
             sprite.position.set(px, py);
             this._tileContainer.addChild(sprite);
             sprites.push(sprite);
         }
 
         this._tileSprites.set(key, sprites);
+    }
+
+    _acquireSprite(texture) {
+        if (this._spritePool.length > 0) {
+            const sprite = this._spritePool.pop();
+            sprite.texture = texture;
+            sprite.visible = true;
+            return sprite;
+        }
+        const sprite = new PIXI.Sprite(texture);
+        sprite.roundPixels = true;
+        return sprite;
+    }
+
+    _releaseSprite(sprite) {
+        sprite.visible = false;
+        this._tileContainer.removeChild(sprite);
+        this._spritePool.push(sprite);
     }
 
     _pruneDistantCells(centerX, centerY) {
@@ -251,8 +289,7 @@ export default class extends Controller {
             const sprites = this._tileSprites.get(key);
             if (sprites) {
                 for (const s of sprites) {
-                    this._tileContainer.removeChild(s);
-                    s.destroy();
+                    this._releaseSprite(s);
                 }
                 this._tileSprites.delete(key);
             }
@@ -260,12 +297,16 @@ export default class extends Controller {
     }
 
     _findTileset(gid) {
+        const tilesets = this._tilesets;
+        let lo = 0, hi = tilesets.length - 1;
         let selected = null;
-        for (const ts of this._tilesets) {
-            if (ts.firstGid <= gid) {
-                selected = ts;
+        while (lo <= hi) {
+            const mid = (lo + hi) >> 1;
+            if (tilesets[mid].firstGid <= gid) {
+                selected = tilesets[mid];
+                lo = mid + 1;
             } else {
-                break;
+                hi = mid - 1;
             }
         }
         return selected;
@@ -322,7 +363,6 @@ export default class extends Controller {
         if (animator) {
             const container = new PIXI.Container();
             const sprite = animator.sprite;
-            // Center sprite horizontally on tile, align bottom to tile bottom
             sprite.anchor.set(0.5, 1);
             sprite.position.set(this._tileSize / 2, this._tileSize);
             container.addChild(sprite);
@@ -330,12 +370,13 @@ export default class extends Controller {
             container.zIndex = y * this._tileSize;
             this._entityContainer.addChild(container);
             this._entitySprites[key] = { container, x, y, type, animator };
+            this._animatedEntities.push(animator);
         } else {
-            // Fallback: colored marker
+            // Fallback: cached colored marker
             const colorMap = { 'mob': '#8B0000', 'player': '#3333ff', 'pnj': '#4B0082' };
             const hex = colorMap[type] || '#888888';
             const shape = type === 'mob' ? 'rect' : 'circle';
-            const texture = this._createMarkerTexture(hex, '#000000', shape);
+            const texture = this._getCachedMarkerTexture(hex, '#000000', shape);
             const markerSprite = new PIXI.Sprite(texture);
 
             const container = new PIXI.Container();
@@ -345,6 +386,16 @@ export default class extends Controller {
             this._entityContainer.addChild(container);
             this._entitySprites[key] = { container, x, y, type, animator: null };
         }
+    }
+
+    _getCachedMarkerTexture(color, strokeColor, shape) {
+        const cacheKey = `${color}_${strokeColor}_${shape}`;
+        if (this._markerTextureCache.has(cacheKey)) {
+            return this._markerTextureCache.get(cacheKey);
+        }
+        const texture = this._createMarkerTexture(color, strokeColor, shape);
+        this._markerTextureCache.set(cacheKey, texture);
+        return texture;
     }
 
     _createMarkerTexture(color, strokeColor, shape) {
@@ -386,7 +437,7 @@ export default class extends Controller {
             this._playerMarker.addChild(sprite);
         } else {
             // Fallback: red circle
-            const texture = this._createMarkerTexture('#ff0000', '#ffffff', 'circle');
+            const texture = this._getCachedMarkerTexture('#ff0000', '#ffffff', 'circle');
             const sprite = new PIXI.Sprite(texture);
             this._playerMarker.addChild(sprite);
         }
@@ -399,13 +450,24 @@ export default class extends Controller {
     }
 
     _createPortalMarker(portal) {
+        const texture = this._getPortalTexture();
+        const sprite = new PIXI.Sprite(texture);
+        sprite.position.set(portal.x * s, portal.y * s);
+        sprite.zIndex = portal.y * s - 1;
+        this._entityContainer.addChild(sprite);
+
+        const key = `portal_${portal.id}`;
+        this._entitySprites[key] = { container: sprite, x: portal.x, y: portal.y, type: 'portal', animator: null };
+    }
+
+    _getPortalTexture() {
+        if (this._portalTexture) return this._portalTexture;
         const s = this._tileSize;
         const canvas = document.createElement('canvas');
         canvas.width = s;
         canvas.height = s;
         const ctx = canvas.getContext('2d');
 
-        // Glowing purple portal indicator
         ctx.fillStyle = 'rgba(109, 40, 217, 0.4)';
         ctx.beginPath();
         ctx.arc(s / 2, s / 2, s / 2 - 2, 0, Math.PI * 2);
@@ -417,20 +479,13 @@ export default class extends Controller {
         ctx.arc(s / 2, s / 2, s / 2 - 4, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Inner glow
         ctx.fillStyle = 'rgba(168, 85, 247, 0.6)';
         ctx.beginPath();
         ctx.arc(s / 2, s / 2, 4, 0, Math.PI * 2);
         ctx.fill();
 
-        const texture = PIXI.Texture.from(canvas);
-        const sprite = new PIXI.Sprite(texture);
-        sprite.position.set(portal.x * s, portal.y * s);
-        sprite.zIndex = portal.y * s - 1;
-        this._entityContainer.addChild(sprite);
-
-        const key = `portal_${portal.id}`;
-        this._entitySprites[key] = { container: sprite, x: portal.x, y: portal.y, type: 'portal', animator: null };
+        this._portalTexture = PIXI.Texture.from(canvas);
+        return this._portalTexture;
     }
 
     _clearEntities() {
@@ -443,6 +498,7 @@ export default class extends Controller {
         this._entityContainer.removeChildren();
         this._playerContainer.removeChildren();
         this._entitySprites = {};
+        this._animatedEntities = [];
         if (this._playerAnimator) {
             this._playerAnimator.destroy();
             this._playerAnimator = null;
@@ -491,11 +547,9 @@ export default class extends Controller {
             this._playerAnimator.update(dt);
         }
 
-        // Update entity animations
-        for (const entity of Object.values(this._entitySprites)) {
-            if (entity.animator) {
-                entity.animator.update(dt);
-            }
+        // Update only animated entities (skip static markers)
+        for (const animator of this._animatedEntities) {
+            animator.update(dt);
         }
     }
 
@@ -729,12 +783,12 @@ export default class extends Controller {
                 this._clearEntities();
                 for (const [key, sprites] of this._tileSprites) {
                     for (const s of sprites) {
-                        this._tileContainer.removeChild(s);
-                        s.destroy();
+                        this._releaseSprite(s);
                     }
                 }
                 this._tileSprites.clear();
                 this._cellCache.clear();
+                this._tileTextureCache.clear();
 
                 // Reload config, cells, and entities for the new map
                 await this._loadConfig();
