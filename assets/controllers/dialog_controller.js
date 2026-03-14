@@ -80,7 +80,7 @@ export default class extends Controller {
         }
 
         if (choice.action === 'quest_offer' && choice.datas?.quest) {
-            this.dispatch('questOffer', { detail: { questId: choice.datas.quest } });
+            this._acceptQuest(choice.datas.quest);
             this.close();
             return;
         }
@@ -147,6 +147,18 @@ export default class extends Controller {
         if (this._typewriterTimer) {
             clearInterval(this._typewriterTimer);
             this._typewriterTimer = null;
+        }
+    }
+
+    async _acceptQuest(questId) {
+        try {
+            const resp = await fetch(`/game/quests/accept/${questId}`, { method: 'POST' });
+            const data = await resp.json();
+            if (data.success) {
+                console.debug('[dialog] Quest accepted:', data.message);
+            }
+        } catch (err) {
+            console.error('[dialog] Quest accept error:', err);
         }
     }
 
