@@ -1,0 +1,39 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Maintenance - Admin{% endblock %}
+{% block page_title %}Mode maintenance{% endblock %}
+
+{% block body %}
+    <div class="max-w-xl">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <div class="mb-6">
+                {% if isActive %}
+                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-900 text-red-300 text-sm font-medium">
+                        <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+                        Maintenance active
+                    </span>
+                    <p class="text-gray-400 text-sm mt-3">Le site est actuellement inaccessible aux joueurs. Toutes les requetes renvoient une erreur 503.</p>
+                {% else %}
+                    <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-900 text-green-300 text-sm font-medium">
+                        <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                        En ligne
+                    </span>
+                    <p class="text-gray-400 text-sm mt-3">Le site fonctionne normalement. Activer la maintenance rendra le site inaccessible a tous les joueurs.</p>
+                {% endif %}
+            </div>
+
+            <form method="post" action="{{ path('admin_maintenance_toggle') }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('maintenance_toggle') }}">
+                {% if isActive %}
+                    <button type="submit" class="bg-green-700 hover:bg-green-600 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Desactiver la maintenance et remettre le site en ligne ?');">
+                        Desactiver la maintenance
+                    </button>
+                {% else %}
+                    <button type="submit" class="bg-red-700 hover:bg-red-600 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Activer la maintenance ? Le site sera inaccessible aux joueurs.');">
+                        Activer la maintenance
+                    </button>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

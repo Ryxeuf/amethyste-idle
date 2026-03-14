@@ -36,8 +36,18 @@ class MapController extends AbstractController
         $qb->orderBy('m.name', 'ASC');
         $maps = $qb->getQuery()->getResult();
 
+        $mapStats = [];
+        foreach ($maps as $map) {
+            $mapStats[$map->getId()] = [
+                'players' => $this->em->getRepository(Player::class)->count(['map' => $map]),
+                'mobs' => $this->em->getRepository(Mob::class)->count(['map' => $map]),
+                'pnjs' => $this->em->getRepository(Pnj::class)->count(['map' => $map]),
+            ];
+        }
+
         return $this->render('admin/map/index.html.twig', [
             'maps' => $maps,
+            'mapStats' => $mapStats,
             'search' => $search,
         ]);
     }

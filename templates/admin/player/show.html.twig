@@ -30,6 +30,14 @@
                     <dd class="text-gray-200 text-sm">{{ player.user.email }}</dd>
                 </div>
                 <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Role</dt>
+                    <dd class="text-gray-200 text-sm">{{ player.user.roles|join(', ') }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Gils</dt>
+                    <dd class="text-yellow-400 text-sm font-medium">{{ player.gils|number_format(0, ',', ' ') }}</dd>
+                </div>
+                <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Statut</dt>
                     <dd>
                         {% if player.user.isBanned %}
@@ -71,51 +79,184 @@
                     <dd class="text-gray-200 text-sm">{{ player.coordinates }}</dd>
                 </div>
                 <div class="flex justify-between">
-                    <dt class="text-gray-500 text-sm">En mouvement</dt>
-                    <dd class="text-gray-200 text-sm">{{ player.isMoving ? 'Oui' : 'Non' }}</dd>
+                    <dt class="text-gray-500 text-sm">En combat</dt>
+                    <dd class="text-gray-200 text-sm">{{ player.fight ? 'Oui (combat #' ~ player.fight.id ~ ')' : 'Non' }}</dd>
                 </div>
             </dl>
         </div>
 
-        {# Inventory summary + Quests #}
-        <div class="space-y-6">
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-gray-200 mb-4">Inventaire</h2>
-                <p class="text-gray-400 text-sm">{{ player.inventories|length }} objet(s) en inventaire</p>
-            </div>
-
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-                <h2 class="text-lg font-semibold text-gray-200 mb-4">Talents</h2>
-                <p class="text-gray-400 text-sm">{{ player.skills|length }} talent(s) acquis</p>
-            </div>
+        {# Domain XP #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Progression par domaine</h2>
+            {% if domainXp|length > 0 %}
+                <div class="space-y-3">
+                    {% for dxp in domainXp %}
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-300">{{ dxp.domain.title }}</span>
+                                <span class="text-gray-500">{{ dxp.totalExperience }} XP</span>
+                            </div>
+                            <div class="w-full bg-gray-800 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: {{ min(100, dxp.totalExperience / 10) }}%"></div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-sm">Aucune progression.</p>
+            {% endif %}
         </div>
+    </div>
+
+    {# Inventory #}
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Inventaire</h2>
+        {% if inventories|length > 0 %}
+            {% for inv in inventories %}
+                <div class="mb-4">
+                    <h3 class="text-sm font-medium text-gray-400 mb-2">
+                        {% if inv.type == 1 %}Sac{% elseif inv.type == 2 %}Materia{% elseif inv.type == 3 %}Banque{% else %}Type {{ inv.type }}{% endif %}
+                        ({{ inv.items|length }}/{{ inv.size }})
+                    </h3>
+                    {% if inv.items|length > 0 %}
+                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                            {% for pi in inv.items %}
+                                <div class="bg-gray-800 rounded-lg p-2 text-xs">
+                                    <p class="text-gray-200 font-medium truncate">{{ pi.genericItem.name }}</p>
+                                    <p class="text-gray-500">{{ pi.genericItem.type }}{% if pi.gear > 0 %} (equipe){% endif %}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600 text-sm">Vide</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500 text-sm">Aucun inventaire.</p>
+        {% endif %}
+    </div>
+
+    {# Quests #}
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Quetes actives ({{ activeQuests|length }})</h2>
+            {% if activeQuests|length > 0 %}
+                <div class="space-y-2">
+                    {% for pq in activeQuests %}
+                        <div class="flex justify-between items-center text-sm bg-gray-800 rounded-lg px-3 py-2">
+                            <span class="text-gray-200">{{ pq.quest.name }}</span>
+                            <span class="text-yellow-400 text-xs">En cours</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-sm">Aucune quete active.</p>
+            {% endif %}
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Quetes terminees ({{ completedQuests|length }})</h2>
+            {% if completedQuests|length > 0 %}
+                <div class="space-y-2">
+                    {% for pq in completedQuests %}
+                        <div class="flex justify-between items-center text-sm bg-gray-800 rounded-lg px-3 py-2">
+                            <span class="text-gray-200">{{ pq.quest.name }}</span>
+                            <span class="text-green-400 text-xs">Terminee</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-sm">Aucune quete terminee.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Talents #}
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Talents ({{ player.skills|length }})</h2>
+        {% if player.skills|length > 0 %}
+            <div class="flex flex-wrap gap-2">
+                {% for skill in player.skills %}
+                    <span class="inline-flex px-3 py-1 rounded-full bg-purple-900 text-purple-300 text-xs font-medium">{{ skill.title }}</span>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-sm">Aucun talent acquis.</p>
+        {% endif %}
     </div>
 
     {# Admin actions #}
     <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-4">Actions administrateur</h2>
-        <div class="flex items-center gap-4">
-            <form method="post" action="{{ path('admin_player_ban', {id: player.id}) }}" class="inline">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {# Ban/Unban #}
+            <form method="post" action="{{ path('admin_player_ban', {id: player.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('ban' ~ player.id) }}">
                 {% if player.user.isBanned %}
-                    <button type="submit" class="bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Debannir ce joueur ?');">
+                    <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Debannir ce joueur ?');">
                         Debannir
                     </button>
                 {% else %}
-                    <button type="submit" class="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Bannir ce joueur ?');">
+                    <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Bannir ce joueur ?');">
                         Bannir
                     </button>
                 {% endif %}
             </form>
 
-            <form method="post" action="{{ path('admin_player_reset_position', {id: player.id}) }}" class="inline">
+            {# Reset position #}
+            <form method="post" action="{{ path('admin_player_reset_position', {id: player.id}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('reset' ~ player.id) }}">
-                <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Reinitialiser la position de ce joueur ?');">
+                <button type="submit" class="w-full bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Reinitialiser la position ?');">
                     Reinitialiser la position
                 </button>
             </form>
 
-            <a href="{{ path('admin_player_index') }}" class="text-gray-400 hover:text-gray-300 text-sm ml-auto">Retour a la liste</a>
+            {# Change role #}
+            <form method="post" action="{{ path('admin_player_change_role', {id: player.id}) }}" class="flex gap-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('role' ~ player.id) }}">
+                <select name="role" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                    <option value="ROLE_USER" {% if 'ROLE_USER' in player.user.roles and 'ROLE_ADMIN' not in player.user.roles and 'ROLE_PLAYER' not in player.user.roles %}selected{% endif %}>User</option>
+                    <option value="ROLE_PLAYER" {% if 'ROLE_PLAYER' in player.user.roles %}selected{% endif %}>Player</option>
+                    <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in player.user.roles %}selected{% endif %}>Admin</option>
+                </select>
+                <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Changer le role ?');">
+                    Changer
+                </button>
+            </form>
         </div>
+
+        {# Give item #}
+        <div class="mt-4 pt-4 border-t border-gray-800">
+            <h3 class="text-sm font-medium text-gray-400 mb-3">Donner un item</h3>
+            <form method="post" action="{{ path('admin_player_give_item', {id: player.id}) }}" class="flex gap-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('give_item' ~ player.id) }}">
+                <select name="item_id" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                    {% for item in items %}
+                        <option value="{{ item.id }}">{{ item.name }} ({{ item.type }})</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="quantity" value="1" min="1" max="99" class="w-20 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                <button type="submit" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Donner
+                </button>
+            </form>
+        </div>
+
+        {# Give gils #}
+        <div class="mt-4 pt-4 border-t border-gray-800">
+            <h3 class="text-sm font-medium text-gray-400 mb-3">Donner des gils</h3>
+            <form method="post" action="{{ path('admin_player_give_gils', {id: player.id}) }}" class="flex gap-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('give_gils' ~ player.id) }}">
+                <input type="number" name="amount" value="100" min="1" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200" placeholder="Montant en gils">
+                <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    Donner des gils
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('admin_player_index') }}" class="text-gray-400 hover:text-gray-300 text-sm">Retour a la liste</a>
     </div>
 {% endblock %}

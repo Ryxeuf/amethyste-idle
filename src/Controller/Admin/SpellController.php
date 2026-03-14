@@ -4,17 +4,21 @@ namespace App\Controller\Admin;
 
 use App\Entity\Game\Spell;
 use App\Form\Admin\SpellType;
+use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/spells', name: 'admin_spell_')]
+#[IsGranted('ROLE_ADMIN')]
 class SpellController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
+        private readonly AdminLogger $adminLogger,
     ) {
     }
 
@@ -30,11 +34,21 @@ class SpellController extends AbstractController
         }
 
         $qb->orderBy('s.name', 'ASC');
-        $spells = $qb->getQuery()->getResult();
+
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 25;
+        $total = (int) (clone $qb)->select('COUNT(s.id)')->getQuery()->getSingleScalarResult();
+        $spells = $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('admin/spell/index.html.twig', [
             'spells' => $spells,
             'search' => $search,
+            'currentPage' => $page,
+            'totalPages' => max(1, (int) ceil($total / $limit)),
+            'total' => $total,
         ]);
     }
 
@@ -48,6 +62,7 @@ class SpellController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->persist($spell);
             $this->em->flush();
+            $this->adminLogger->log('create', 'Spell', $spell->getId(), $spell->getName());
             $this->addFlash('success', 'Sort "' . $spell->getName() . '" cree avec succes.');
 
             return $this->redirectToRoute('admin_spell_index');
@@ -66,6 +81,7 @@ class SpellController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
+            $this->adminLogger->log('update', 'Spell', $spell->getId(), $spell->getName());
             $this->addFlash('success', 'Sort "' . $spell->getName() . '" modifie avec succes.');
 
             return $this->redirectToRoute('admin_spell_index');
@@ -81,8 +97,10 @@ class SpellController extends AbstractController
     public function delete(Request $request, Spell $spell): Response
     {
         if ($this->isCsrfTokenValid('delete' . $spell->getId(), $request->request->get('_token'))) {
+            $name = $spell->getName();
             $this->em->remove($spell);
             $this->em->flush();
+            $this->adminLogger->log('delete', 'Spell', null, $name);
             $this->addFlash('success', 'Sort supprime avec succes.');
         }
 

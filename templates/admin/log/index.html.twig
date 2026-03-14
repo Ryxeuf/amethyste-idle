@@ -1,0 +1,61 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Logs d'administration - Admin{% endblock %}
+{% block page_title %}Logs d'administration ({{ total }}){% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-6">
+        <form method="get" class="flex items-center gap-2">
+            <input type="text" name="q" value="{{ search }}" placeholder="Rechercher (action, type, label)..."
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-80">
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
+            {% if search %}
+                <a href="{{ path('admin_log_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-gray-800 text-gray-400">
+                    <th class="text-left px-4 py-3 font-medium">Date</th>
+                    <th class="text-left px-4 py-3 font-medium">Admin</th>
+                    <th class="text-left px-4 py-3 font-medium">Action</th>
+                    <th class="text-left px-4 py-3 font-medium">Type</th>
+                    <th class="text-left px-4 py-3 font-medium">Cible</th>
+                    <th class="text-left px-4 py-3 font-medium">IP</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for log in logs %}
+                    <tr class="hover:bg-gray-800 transition-colors">
+                        <td class="px-4 py-3 text-gray-400 whitespace-nowrap">{{ log.createdAt|date('d/m/Y H:i:s') }}</td>
+                        <td class="px-4 py-3 text-gray-300">{{ log.adminUser.username ?? log.adminUser.email }}</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium
+                                {% if log.action == 'create' %}bg-green-900 text-green-300
+                                {% elseif log.action == 'update' %}bg-blue-900 text-blue-300
+                                {% elseif log.action == 'delete' %}bg-red-900 text-red-300
+                                {% elseif log.action starts with 'maintenance' %}bg-yellow-900 text-yellow-300
+                                {% else %}bg-gray-700 text-gray-300{% endif %}">
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 text-gray-400">{{ log.entityType }}</td>
+                        <td class="px-4 py-3 text-gray-300">{{ log.entityLabel ?? '-' }}</td>
+                        <td class="px-4 py-3 text-gray-500 font-mono text-xs">{{ log.ipAddress ?? '-' }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="px-4 py-8 text-center text-gray-500">Aucun log trouve.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if totalPages > 1 %}
+        {% include 'admin/_pagination.html.twig' %}
+    {% endif %}
+{% endblock %}

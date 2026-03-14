@@ -1,0 +1,46 @@
+<div class="flex items-center justify-between mt-6">
+    <p class="text-sm text-gray-500">
+        Page {{ currentPage }} sur {{ totalPages }}
+    </p>
+    <div class="flex items-center gap-1">
+        {% if currentPage > 1 %}
+            <a href="?page={{ currentPage - 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">
+                Precedent
+            </a>
+        {% endif %}
+
+        {% set startPage = max(1, currentPage - 2) %}
+        {% set endPage = min(totalPages, currentPage + 2) %}
+
+        {% if startPage > 1 %}
+            <a href="?page=1{% if search is defined and search %}&q={{ search }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">1</a>
+            {% if startPage > 2 %}
+                <span class="px-2 text-gray-600">...</span>
+            {% endif %}
+        {% endif %}
+
+        {% for p in startPage..endPage %}
+            <a href="?page={{ p }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg text-sm {% if p == currentPage %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %} transition-colors">
+                {{ p }}
+            </a>
+        {% endfor %}
+
+        {% if endPage < totalPages %}
+            {% if endPage < totalPages - 1 %}
+                <span class="px-2 text-gray-600">...</span>
+            {% endif %}
+            <a href="?page={{ totalPages }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">{{ totalPages }}</a>
+        {% endif %}
+
+        {% if currentPage < totalPages %}
+            <a href="?page={{ currentPage + 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}"
+               class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">
+                Suivant
+            </a>
+        {% endif %}
+    </div>
+</div>

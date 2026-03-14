@@ -1,7 +1,7 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block title %}Joueurs - Admin{% endblock %}
-{% block page_title %}Joueurs{% endblock %}
+{% block title %}Joueurs ({{ total }}) - Admin{% endblock %}
+{% block page_title %}Joueurs ({{ total }}){% endblock %}
 
 {% block body %}
     <div class="flex items-center justify-between mb-6">
@@ -24,6 +24,7 @@
                     <th class="text-left px-4 py-3 font-medium">Utilisateur</th>
                     <th class="text-left px-4 py-3 font-medium">Carte</th>
                     <th class="text-left px-4 py-3 font-medium">Vie</th>
+                    <th class="text-left px-4 py-3 font-medium">Gils</th>
                     <th class="text-left px-4 py-3 font-medium">Statut</th>
                     <th class="text-right px-4 py-3 font-medium">Actions</th>
                 </tr>
@@ -36,6 +37,7 @@
                         <td class="px-4 py-3 text-gray-400">{{ player.user.username ?? player.user.email }}</td>
                         <td class="px-4 py-3 text-gray-400">{{ player.map ? player.map.name : '-' }}</td>
                         <td class="px-4 py-3 text-gray-400">{{ player.life }}/{{ player.maxLife }}</td>
+                        <td class="px-4 py-3 text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }}</td>
                         <td class="px-4 py-3">
                             {% if player.user.isBanned %}
                                 <span class="inline-flex px-2 py-1 text-xs rounded-full bg-red-900 text-red-300">Banni</span>
@@ -49,10 +51,14 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucun joueur trouve.</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">Aucun joueur trouve.</td>
                     </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    {% if totalPages > 1 %}
+        {% include 'admin/_pagination.html.twig' %}
+    {% endif %}
 {% endblock %}

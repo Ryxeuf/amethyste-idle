@@ -54,4 +54,8 @@
             </tbody>
         </table>
     </div>
+
+    {% if totalPages is defined and totalPages > 1 %}
+        {% include 'admin/_pagination.html.twig' %}
+    {% endif %}
 {% endblock %}

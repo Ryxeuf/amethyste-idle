@@ -1,0 +1,49 @@
+<div class="space-y-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+            {{ form_row(form.name, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.slug, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+    </div>
+    <div>
+        {{ form_row(form.description, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+            {{ form_row(form.profession, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.resultItemSlug, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.resultQuantity, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+    </div>
+    <div>
+        {{ form_row(form.ingredientsJson, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full font-mono focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div>
+            {{ form_row(form.requiredSkillSlug, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.requiredLevel, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.craftTime, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.experienceGain, {'attr': {'class': 'bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 w-full focus:outline-none focus:border-purple-500'}, 'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
+        </div>
+    </div>
+    <div class="flex gap-6">
+        <div>
+            {{ form_row(form.isDiscoverable, {'label_attr': {'class': 'text-sm text-gray-400'}}) }}
+        </div>
+        <div>
+            {{ form_row(form.isDiscovered, {'label_attr': {'class': 'text-sm text-gray-400'}}) }}
+        </div>
+    </div>
+</div>

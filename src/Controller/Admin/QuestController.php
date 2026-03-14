@@ -4,17 +4,21 @@ namespace App\Controller\Admin;
 
 use App\Entity\Game\Quest;
 use App\Form\Admin\QuestType;
+use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/quests', name: 'admin_quest_')]
+#[IsGranted('ROLE_ADMIN')]
 class QuestController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
+        private readonly AdminLogger $adminLogger,
     ) {
     }
 
@@ -30,11 +34,21 @@ class QuestController extends AbstractController
         }
 
         $qb->orderBy('q.name', 'ASC');
-        $quests = $qb->getQuery()->getResult();
+
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 25;
+        $total = (int) (clone $qb)->select('COUNT(q.id)')->getQuery()->getSingleScalarResult();
+        $quests = $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('admin/quest/index.html.twig', [
             'quests' => $quests,
             'search' => $search,
+            'currentPage' => $page,
+            'totalPages' => max(1, (int) ceil($total / $limit)),
+            'total' => $total,
         ]);
     }
 
@@ -54,6 +68,7 @@ class QuestController extends AbstractController
 
             $this->em->persist($quest);
             $this->em->flush();
+            $this->adminLogger->log('create', 'Quest', $quest->getId(), $quest->getName());
             $this->addFlash('success', 'Quete "' . $quest->getName() . '" creee avec succes.');
 
             return $this->redirectToRoute('admin_quest_index');
@@ -86,6 +101,7 @@ class QuestController extends AbstractController
             $quest->setRewards($rewardsJson ? json_decode($rewardsJson, true) ?? [] : []);
 
             $this->em->flush();
+            $this->adminLogger->log('update', 'Quest', $quest->getId(), $quest->getName());
             $this->addFlash('success', 'Quete "' . $quest->getName() . '" modifiee avec succes.');
 
             return $this->redirectToRoute('admin_quest_index');
@@ -101,8 +117,10 @@ class QuestController extends AbstractController
     public function delete(Request $request, Quest $quest): Response
     {
         if ($this->isCsrfTokenValid('delete' . $quest->getId(), $request->request->get('_token'))) {
+            $name = $quest->getName();
             $this->em->remove($quest);
             $this->em->flush();
+            $this->adminLogger->log('delete', 'Quest', null, $name);
             $this->addFlash('success', 'Quete supprimee avec succes.');
         }
 
