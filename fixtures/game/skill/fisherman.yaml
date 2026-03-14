@@ -1,0 +1,32 @@
+App\Entity\Game\Skill:
+  fisherman_trout (extends skill):
+    slug: fisherman-trout-xs
+    title: "Pêche de la truite"
+    description: 'Permet de pêcher la truite dans les eaux calmes'
+    requiredPoints: 0
+    actions: [{action: 'harvest', spots: ['spot-fishing-xs']}]
+    domain: '@fisherman'
+  fisherman_salmon (extends skill):
+    slug: fisherman-salmon-xs
+    title: "Pêche du saumon"
+    description: 'Permet de pêcher le saumon dans les lacs'
+    requiredPoints: 10
+    actions: [{action: 'harvest', spots: ['spot-fishing-s']}]
+    domain: '@fisherman'
+    requirements: [ '@fisherman_trout' ]
+  fisherman_carp (extends skill):
+    slug: fisherman-carp-xs
+    title: "Pêche de la carpe"
+    description: 'Permet de pêcher la carpe dans les eaux profondes'
+    requiredPoints: 30
+    actions: [{action: 'harvest', spots: ['spot-fishing-m']}]
+    domain: '@fisherman'
+    requirements: [ '@fisherman_salmon' ]
+  fisherman_rare (extends skill):
+    slug: fisherman-rare-xs
+    title: "Pêche des raretés"
+    description: 'Permet de pêcher des poissons rares et mystérieux'
+    requiredPoints: 80
+    actions: [{action: 'harvest', spots: ['spot-fishing-rare']}]
+    domain: '@fisherman'
+    requirements: [ '@fisherman_carp' ]

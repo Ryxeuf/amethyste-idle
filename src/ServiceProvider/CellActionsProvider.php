@@ -61,7 +61,7 @@ class CellActionsProvider
         $actions = [];
         $objectLayers = $this->entityManager->getRepository(ObjectLayer::class)->findBy(['coordinates' => $coordinates]);
         foreach ($objectLayers as $objectLayer) {
-            if ($objectLayer->getUsedAt() === null && $objectLayer->getActions()) {
+            if ($objectLayer->isAvailable() && $objectLayer->getActions()) {
                 foreach ($objectLayer->getActions() as $action) {
                     $inDistance = !isset($action['distance']) || $action['distance'] <= $distance;
                     if ($inDistance && $this->playerActionHelper->canDoAction($action['action'])) {
@@ -76,24 +76,6 @@ class CellActionsProvider
             }
         }
 
-
-
         return $actions;
-
-        if ($cell->getObjectLayer() && $cell->getObjectLayer()->getUsedAt() === null && $cell->getObjectLayer()->getActions()) {
-            foreach ($cell->getObjectLayer()->getActions() as $action) {
-                $inDistance = !isset($action['distance']) || (isset($action['distance']) && $action['distance'] <= $distance);
-                if ($inDistance && $this->playerActionHelper->canDoAction($action['action'])) {
-                    $cellAction = new CellAction();
-                    $cellAction->action = $action['action'];
-                    $cellAction->data = $action['data'] ?? [];
-                    $cellAction->data['objectLayer'] = $cell->getObjectLayer()->getId();
-                    $cellAction->spot = $cell->getObjectLayer()->getSlug();
-                    $actions[] = $cellAction;
-                }
-            }
-        }
     }
-
-
 }

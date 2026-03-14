@@ -1,0 +1,49 @@
+App\Entity\Game\Item:
+  fish_trout (extends item):
+    id: 30
+    name: 'Truite'
+    description: 'Une truite fraîchement pêchée'
+    type: 'resource'
+    slug: 'fish-trout'
+    price: 5
+    domain: '@fisherman'
+  fish_salmon (extends item):
+    id: 31
+    name: 'Saumon'
+    description: 'Un beau saumon argenté'
+    type: 'resource'
+    slug: 'fish-salmon'
+    price: 10
+    domain: '@fisherman'
+  fish_carp (extends item):
+    id: 32
+    name: 'Carpe'
+    description: 'Une grosse carpe dorée'
+    type: 'resource'
+    slug: 'fish-carp'
+    price: 8
+    domain: '@fisherman'
+  fish_moonfish (extends item):
+    id: 33
+    name: 'Poisson-lune'
+    description: 'Un poisson rare aux écailles irisées'
+    type: 'resource'
+    slug: 'fish-moonfish'
+    price: 40
+    domain: '@fisherman'
+  fish_electric_eel (extends item):
+    id: 34
+    name: 'Anguille électrique'
+    description: 'Une anguille parcourue d''arcs électriques'
+    type: 'resource'
+    slug: 'fish-electric-eel'
+    price: 60
+    domain: '@fisherman'
+  fish_baby_kraken (extends item):
+    id: 35
+    name: 'Kraken juvénile'
+    description: 'Un minuscule kraken frétillant de tentacules'
+    type: 'resource'
+    slug: 'fish-baby-kraken'
+    price: 150
+    domain: '@fisherman'

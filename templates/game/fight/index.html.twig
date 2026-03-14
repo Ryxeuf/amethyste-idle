@@ -474,6 +474,19 @@
 										{{ "game.fight.loots.loot"|trans }}
 									</button>
 								</form>
+
+								{# Bouton Dépecer #}
+								{% for mob in fight.mobs %}
+								<div id="butcher-section-{{ mob.id }}" class="mt-4">
+									<button type="button"
+										class="butcher-btn w-full px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-gray-800 transition-all duration-300 transform hover:scale-105"
+										data-mob-id="{{ mob.id }}"
+										onclick="butcherMob({{ mob.id }}, this)">
+										<i class="fas fa-cut mr-2"></i>Dépecer {{ mob.monster.name }}
+									</button>
+									<div id="butcher-result-{{ mob.id }}" class="mt-2"></div>
+								</div>
+								{% endfor %}
 							{% else %}
 								<div class="text-center py-8">
 									<div class="inline-block p-4 bg-red-500/20 rounded-lg">
@@ -564,5 +577,46 @@
 				});
 			});
 		});
+
+		async function butcherMob(mobId, btn) {
+			btn.disabled = true;
+			btn.textContent = 'Dépeçage en cours...';
+			const resultDiv = document.getElementById('butcher-result-' + mobId);
+
+			try {
+				const resp = await fetch('/game/harvest/butcher/' + mobId, { method: 'POST' });
+				const data = await resp.json();
+
+				if (data.error) {
+					resultDiv.innerHTML = '<p class="text-red-400 text-sm">' + data.error + '</p>';
+					btn.disabled = false;
+					btn.innerHTML = '<i class="fas fa-cut mr-2"></i>Réessayer';
+					return;
+				}
+
+				btn.style.display = 'none';
+
+				if (data.items && data.items.length > 0) {
+					let html = '<div class="bg-amber-900/30 border border-amber-500/30 rounded-lg p-3">';
+					html += '<p class="text-amber-400 text-sm font-bold mb-2">Matériaux obtenus :</p>';
+					for (const item of data.items) {
+						html += '<p class="text-yellow-300 text-xs">+ ' + item.name + '</p>';
+					}
+					html += '</div>';
+					resultDiv.innerHTML = html;
+				} else {
+					resultDiv.innerHTML = '<p class="text-gray-400 text-sm">Aucun matériau obtenu.</p>';
+				}
+
+				if (data.message && data.message.includes('brisé')) {
+					resultDiv.innerHTML += '<p class="text-red-400 text-xs mt-1 font-bold">Votre couteau est brisé !</p>';
+				}
+			} catch (err) {
+				console.error('[butcher] Error:', err);
+				resultDiv.innerHTML = '<p class="text-red-400 text-sm">Erreur de connexion.</p>';
+				btn.disabled = false;
+				btn.innerHTML = '<i class="fas fa-cut mr-2"></i>Réessayer';
+			}
+		}
 	</script>
 {% endblock %}

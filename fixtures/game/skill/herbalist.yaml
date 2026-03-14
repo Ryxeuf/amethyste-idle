@@ -21,3 +21,35 @@ App\Entity\Game\Skill:
     actions: [{action: 'harvest', spots: ['spot-sage-xs']}]
     domain: '@herbalist'
     requirements: [ '@herbalist_mint' ]
+  herbalist_lavender (extends skill):
+    slug: herbalist-lavender-xs
+    title: "Récolte de lavande"
+    description: 'Permet de récolter la lavande'
+    requiredPoints: 10
+    actions: [{action: 'harvest', spots: ['spot-lavender-xs']}]
+    domain: '@herbalist'
+    requirements: [ '@herbalist_dandelion' ]
+  herbalist_thyme (extends skill):
+    slug: herbalist-thyme-xs
+    title: "Récolte de thym"
+    description: 'Permet de récolter le thym sauvage'
+    requiredPoints: 20
+    actions: [{action: 'harvest', spots: ['spot-thyme-xs']}]
+    domain: '@herbalist'
+    requirements: [ '@herbalist_sage' ]
+  herbalist_rosemary (extends skill):
+    slug: herbalist-rosemary-xs
+    title: "Récolte de romarin"
+    description: 'Permet de récolter le romarin'
+    requiredPoints: 30
+    actions: [{action: 'harvest', spots: ['spot-rosemary-xs']}]
+    domain: '@herbalist'
+    requirements: [ '@herbalist_thyme' ]
+  herbalist_mandrake (extends skill):
+    slug: herbalist-mandrake-xs
+    title: "Récolte de mandragore"
+    description: 'Permet de récolter la rare mandragore'
+    requiredPoints: 80
+    actions: [{action: 'harvest', spots: ['spot-mandrake-xs']}]
+    domain: '@herbalist'
+    requirements: [ '@herbalist_rosemary' ]

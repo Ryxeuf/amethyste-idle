@@ -22,21 +22,41 @@ class SpotHarvestHandler implements EventSubscriberInterface
         ];
     }
 
-    public function removeSpot(SpotHarvestEvent $event)
+    public function removeSpot(SpotHarvestEvent $event): void
     {
+        $objectLayer = $event->getObjectLayer();
         $update = new Update(
             'map/spot',
-            json_encode(['topic' => 'map/spot', 'type' => 'remove', 'object' => ['id' => $event->getObjectLayer()->getId()], 'cell' => ['id' => $event->getObjectLayer()->getCell()->getId()]], JSON_THROW_ON_ERROR)
+            json_encode([
+                'topic' => 'map/spot',
+                'type' => 'remove',
+                'object' => [
+                    'id' => $objectLayer->getId(),
+                    'slug' => $objectLayer->getSlug(),
+                ],
+                'coordinates' => $objectLayer->getCoordinates(),
+            ], JSON_THROW_ON_ERROR)
         );
 
         $this->hub->publish($update);
     }
 
-    public function addSpot(SpotAvailableEvent $event)
+    public function addSpot(SpotAvailableEvent $event): void
     {
+        $objectLayer = $event->getObjectLayer();
         $update = new Update(
             'map/spot',
-            json_encode(['topic' => 'map/spot', 'type' => 'add', 'object' => ['id' => $event->getObjectLayer()->getId()], 'cell' => ['id' => $event->getObjectLayer()->getCell()->getId()]], JSON_THROW_ON_ERROR)
+            json_encode([
+                'topic' => 'map/spot',
+                'type' => 'add',
+                'object' => [
+                    'id' => $objectLayer->getId(),
+                    'slug' => $objectLayer->getSlug(),
+                    'name' => $objectLayer->getName(),
+                    'toolType' => $objectLayer->getRequiredToolType(),
+                ],
+                'coordinates' => $objectLayer->getCoordinates(),
+            ], JSON_THROW_ON_ERROR)
         );
 
         $this->hub->publish($update);

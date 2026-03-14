@@ -159,11 +159,36 @@ class MapApiController extends AbstractController
             ];
         }
 
+        $harvestSpots = [];
+        foreach ($this->entityManager->getRepository(ObjectLayer::class)->findBy([
+            'map' => $map,
+            'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+        ]) as $spot) {
+            $coords = explode('.', $spot->getCoordinates() ?? '0.0');
+            $ex = (int)($coords[0] ?? 0);
+            $ey = (int)($coords[1] ?? 0);
+            if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
+                continue;
+            }
+            $harvestSpots[] = [
+                'id' => $spot->getId(),
+                'name' => $spot->getName(),
+                'slug' => $spot->getSlug(),
+                'x' => $ex,
+                'y' => $ey,
+                'available' => $spot->isAvailable(),
+                'toolType' => $spot->getRequiredToolType(),
+                'respawnDelay' => $spot->getRespawnDelay(),
+                'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
+            ];
+        }
+
         return $this->json([
             'players' => $players,
             'mobs' => $mobs,
             'pnjs' => $pnjs,
             'portals' => $portals,
+            'harvestSpots' => $harvestSpots,
         ]);
     }
 

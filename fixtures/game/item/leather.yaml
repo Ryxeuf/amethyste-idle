@@ -1,0 +1,49 @@
+App\Entity\Game\Item:
+  leather_raw (extends item):
+    id: 36
+    name: 'Cuir brut'
+    description: 'Une peau de cuir brute, à tanner'
+    type: 'resource'
+    slug: 'leather-raw'
+    price: 4
+    domain: '@skinner'
+  leather_thick (extends item):
+    id: 37
+    name: 'Cuir épais'
+    description: 'Une peau épaisse de bête robuste'
+    type: 'resource'
+    slug: 'leather-thick'
+    price: 10
+    domain: '@skinner'
+  leather_dragon_scale (extends item):
+    id: 38
+    name: 'Écaille de dragon'
+    description: 'Une écaille résistante de dragon'
+    type: 'resource'
+    slug: 'leather-dragon-scale'
+    price: 200
+    domain: '@skinner'
+  leather_werewolf_fur (extends item):
+    id: 39
+    name: 'Fourrure de loup-garou'
+    description: 'Une fourrure dense de loup-garou'
+    type: 'resource'
+    slug: 'leather-werewolf-fur'
+    price: 150
+    domain: '@skinner'
+  leather_bone (extends item):
+    id: 40
+    name: 'Os de monstre'
+    description: 'Un os solide récupéré sur un monstre'
+    type: 'resource'
+    slug: 'leather-bone'
+    price: 6
+    domain: '@skinner'
+  leather_fang (extends item):
+    id: 41
+    name: 'Croc de bête'
+    description: 'Un croc acéré de créature sauvage'
+    type: 'resource'
+    slug: 'leather-fang'
+    price: 8
+    domain: '@skinner'
