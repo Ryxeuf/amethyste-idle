@@ -12,3 +12,16 @@
 /assets/vendor/
 ###< symfony/asset-mapper ###
 node_modules
+
+###> phpunit/phpunit ###
+.phpunit.cache
+.phpunit.result.cache
+###< phpunit/phpunit ###
+
+###> friendsofphp/php-cs-fixer ###
+.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
+
+###> phpstan/phpstan ###
+phpstan.cache
+###< phpstan/phpstan ###

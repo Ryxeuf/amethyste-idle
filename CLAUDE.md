@@ -118,11 +118,34 @@ scripts/                # Scripts deploy, fixtures, etc.
 - En dev, le volume Docker monte `.:/app` -> les fichiers sont partages entre hote et conteneur
 - `tailwind:build` doit tourner avant `asset-map:compile` ou `debug:asset`
 
+## Qualite de code
+
+```bash
+# Lint (PHP-CS-Fixer)
+docker compose exec php vendor/bin/php-cs-fixer fix --dry-run --diff
+docker compose exec php vendor/bin/php-cs-fixer fix  # correction auto
+
+# Analyse statique (PHPStan niveau 5)
+docker compose exec php vendor/bin/phpstan analyse
+
+# Tests (PHPUnit)
+docker compose exec php vendor/bin/phpunit
+docker compose exec php vendor/bin/phpunit --testsuite Unit
+docker compose exec php vendor/bin/phpunit --filter NomDuTest
+```
+
+## CI/CD
+
+- **CI** : GitHub Actions sur chaque push/PR — lint, PHPStan, PHPUnit, build Docker
+- **CD** : Deploiement automatique sur le serveur quand un push arrive sur `main`
+- Voir [docs/CICD.md](docs/CICD.md) pour la documentation complete
+
 ## Documentation approfondie
 
 - [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (20 sections, modele de donnees, combat, carte, inventaire, quetes, etc.)
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
+- [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)
 
 ## Routes principales
 
