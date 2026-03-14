@@ -1,0 +1,24 @@
+App\Entity\Game\Skill:
+  skinner_basic (extends skill):
+    slug: skinner-basic
+    title: "Dépeçage basique"
+    description: 'Permet de dépecer les monstres communs'
+    requiredPoints: 0
+    actions: [{action: 'butcher', spots: []}]
+    domain: '@skinner'
+  skinner_advanced (extends skill):
+    slug: skinner-advanced
+    title: "Dépeçage avancé"
+    description: 'Améliore les chances de récupérer des matériaux rares'
+    requiredPoints: 20
+    actions: [{action: 'butcher', spots: []}]
+    domain: '@skinner'
+    requirements: [ '@skinner_basic' ]
+  skinner_expert (extends skill):
+    slug: skinner-expert
+    title: "Dépeçage expert"
+    description: 'Permet de dépecer les boss et créatures légendaires'
+    requiredPoints: 60
+    actions: [{action: 'butcher', spots: []}]
+    domain: '@skinner'
+    requirements: [ '@skinner_advanced' ]

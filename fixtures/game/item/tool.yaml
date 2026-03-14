@@ -1,0 +1,184 @@
+App\Entity\Game\Item:
+  # --- Pioches (Minage) ---
+  pickaxe_bronze (extends item):
+    id: 50
+    name: 'Pioche en bronze'
+    description: 'Une pioche basique en bronze'
+    type: 'tool'
+    slug: 'pickaxe-bronze'
+    price: 50
+    domain: '@miner'
+    toolType: 'pickaxe'
+    toolTier: 1
+    durability: 100
+  pickaxe_iron (extends item):
+    id: 51
+    name: 'Pioche en fer'
+    description: 'Une pioche solide en fer'
+    type: 'tool'
+    slug: 'pickaxe-iron'
+    price: 150
+    domain: '@miner'
+    toolType: 'pickaxe'
+    toolTier: 2
+    durability: 200
+  pickaxe_steel (extends item):
+    id: 52
+    name: 'Pioche en acier'
+    description: 'Une pioche renforcée en acier'
+    type: 'tool'
+    slug: 'pickaxe-steel'
+    price: 400
+    domain: '@miner'
+    toolType: 'pickaxe'
+    toolTier: 3
+    durability: 350
+  pickaxe_mithril (extends item):
+    id: 53
+    name: 'Pioche en mithril'
+    description: 'Une pioche légendaire en mithril, presque indestructible'
+    type: 'tool'
+    slug: 'pickaxe-mithril'
+    price: 1000
+    domain: '@miner'
+    toolType: 'pickaxe'
+    toolTier: 4
+    durability: 500
+
+  # --- Faucilles (Herboristerie) ---
+  sickle_bronze (extends item):
+    id: 54
+    name: 'Faucille en bronze'
+    description: 'Une faucille basique en bronze'
+    type: 'tool'
+    slug: 'sickle-bronze'
+    price: 50
+    domain: '@herbalist'
+    toolType: 'sickle'
+    toolTier: 1
+    durability: 100
+  sickle_iron (extends item):
+    id: 55
+    name: 'Faucille en fer'
+    description: 'Une faucille solide en fer'
+    type: 'tool'
+    slug: 'sickle-iron'
+    price: 150
+    domain: '@herbalist'
+    toolType: 'sickle'
+    toolTier: 2
+    durability: 200
+  sickle_steel (extends item):
+    id: 56
+    name: 'Faucille en acier'
+    description: 'Une faucille renforcée en acier'
+    type: 'tool'
+    slug: 'sickle-steel'
+    price: 400
+    domain: '@herbalist'
+    toolType: 'sickle'
+    toolTier: 3
+    durability: 350
+  sickle_mithril (extends item):
+    id: 57
+    name: 'Faucille en mithril'
+    description: 'Une faucille légendaire en mithril'
+    type: 'tool'
+    slug: 'sickle-mithril'
+    price: 1000
+    domain: '@herbalist'
+    toolType: 'sickle'
+    toolTier: 4
+    durability: 500
+
+  # --- Cannes à pêche (Pêche) ---
+  fishing_rod_bronze (extends item):
+    id: 58
+    name: 'Canne à pêche en bronze'
+    description: 'Une canne à pêche basique avec hameçon en bronze'
+    type: 'tool'
+    slug: 'fishing-rod-bronze'
+    price: 50
+    domain: '@fisherman'
+    toolType: 'fishing_rod'
+    toolTier: 1
+    durability: 80
+  fishing_rod_iron (extends item):
+    id: 59
+    name: 'Canne à pêche en fer'
+    description: 'Une canne à pêche robuste avec hameçon en fer'
+    type: 'tool'
+    slug: 'fishing-rod-iron'
+    price: 150
+    domain: '@fisherman'
+    toolType: 'fishing_rod'
+    toolTier: 2
+    durability: 150
+  fishing_rod_steel (extends item):
+    id: 60
+    name: 'Canne à pêche en acier'
+    description: 'Une canne à pêche professionnelle en acier'
+    type: 'tool'
+    slug: 'fishing-rod-steel'
+    price: 400
+    domain: '@fisherman'
+    toolType: 'fishing_rod'
+    toolTier: 3
+    durability: 250
+  fishing_rod_mithril (extends item):
+    id: 61
+    name: 'Canne à pêche en mithril'
+    description: 'Une canne à pêche légendaire en mithril'
+    type: 'tool'
+    slug: 'fishing-rod-mithril'
+    price: 1000
+    domain: '@fisherman'
+    toolType: 'fishing_rod'
+    toolTier: 4
+    durability: 400
+
+  # --- Couteaux de dépeçage (Dépeçage) ---
+  skinning_knife_bronze (extends item):
+    id: 62
+    name: 'Couteau de dépeçage en bronze'
+    description: 'Un couteau basique en bronze pour le dépeçage'
+    type: 'tool'
+    slug: 'skinning-knife-bronze'
+    price: 50
+    domain: '@skinner'
+    toolType: 'skinning_knife'
+    toolTier: 1
+    durability: 100
+  skinning_knife_iron (extends item):
+    id: 63
+    name: 'Couteau de dépeçage en fer'
+    description: 'Un couteau solide en fer pour le dépeçage'
+    type: 'tool'
+    slug: 'skinning-knife-iron'
+    price: 150
+    domain: '@skinner'
+    toolType: 'skinning_knife'
+    toolTier: 2
+    durability: 200
+  skinning_knife_steel (extends item):
+    id: 64
+    name: 'Couteau de dépeçage en acier'
+    description: 'Un couteau aiguisé en acier pour le dépeçage'
+    type: 'tool'
+    slug: 'skinning-knife-steel'
+    price: 400
+    domain: '@skinner'
+    toolType: 'skinning_knife'
+    toolTier: 3
+    durability: 350
+  skinning_knife_mithril (extends item):
+    id: 65
+    name: 'Couteau de dépeçage en mithril'
+    description: 'Un couteau légendaire en mithril pour le dépeçage'
+    type: 'tool'
+    slug: 'skinning-knife-mithril'
+    price: 1000
+    domain: '@skinner'
+    toolType: 'skinning_knife'
+    toolTier: 4
+    durability: 500

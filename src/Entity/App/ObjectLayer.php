@@ -339,6 +339,25 @@ class ObjectLayer
         return new DateTime() >= $respawnAt;
     }
 
+    /**
+     * Retourne le nombre de secondes restantes avant le respawn, ou 0 si disponible.
+     */
+    public function getRemainingRespawnSeconds(): int
+    {
+        if ($this->isAvailable()) {
+            return 0;
+        }
+
+        if ($this->usedAt === null || $this->respawnDelay === null) {
+            return 0;
+        }
+
+        $respawnAt = (clone $this->usedAt)->modify("+{$this->respawnDelay} seconds");
+        $diff = (new DateTime())->getTimestamp() - $respawnAt->getTimestamp();
+
+        return max(0, -$diff);
+    }
+
     public function getRespawnDelay(): ?int
     {
         return $this->respawnDelay;

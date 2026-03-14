@@ -1,13 +1,57 @@
 App\Entity\Game\Item:
   ore_ruby (extends item):
     id: 11
-    name: 'Ruby'
-    description: 'Minerai de ruby'
-    type: 'ore'
+    name: 'Rubis brut'
+    description: 'Un minerai de rubis scintillant'
+    type: 'resource'
     slug: 'ore-ruby'
+    price: 15
+    domain: '@miner'
   ore_iron (extends item):
     id: 12
-    name: 'Fer'
-    description: 'Minerai de fer'
-    type: 'ore'
+    name: 'Minerai de fer'
+    description: 'Un morceau de minerai de fer'
+    type: 'resource'
     slug: 'ore-iron'
+    price: 8
+    domain: '@miner'
+  ore_copper (extends item):
+    id: 20
+    name: 'Minerai de cuivre'
+    description: 'Un morceau de minerai de cuivre rougeâtre'
+    type: 'resource'
+    slug: 'ore-copper'
+    price: 5
+    domain: '@miner'
+  ore_silver (extends item):
+    id: 21
+    name: 'Minerai d''argent'
+    description: 'Un minerai d''argent luisant'
+    type: 'resource'
+    slug: 'ore-silver'
+    price: 25
+    domain: '@miner'
+  ore_gold (extends item):
+    id: 22
+    name: 'Minerai d''or'
+    description: 'Un précieux minerai d''or'
+    type: 'resource'
+    slug: 'ore-gold'
+    price: 50
+    domain: '@miner'
+  ore_mithril (extends item):
+    id: 23
+    name: 'Minerai de mithril'
+    description: 'Un minerai légendaire d''un bleu étincelant'
+    type: 'resource'
+    slug: 'ore-mithril'
+    price: 100
+    domain: '@miner'
+  ore_amethyst_crystal (extends item):
+    id: 24
+    name: 'Cristal d''améthyste'
+    description: 'Un cristal violet aux reflets magiques'
+    type: 'resource'
+    slug: 'ore-amethyst-crystal'
+    price: 200
+    domain: '@miner'

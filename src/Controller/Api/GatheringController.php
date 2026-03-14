@@ -9,6 +9,8 @@ use App\GameEngine\Gathering\GatheringManager;
 use App\GameEngine\Gathering\ToolDurabilityManager;
 use App\GameEngine\Job\ButcheringManager;
 use App\GameEngine\Job\FishingManager;
+use App\GameEngine\Job\HarvestManager;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,7 +28,61 @@ class GatheringController extends AbstractController
         private readonly ToolDurabilityManager $toolDurabilityManager,
         private readonly FishingManager $fishingManager,
         private readonly ButcheringManager $butcheringManager,
+        private readonly HarvestManager $harvestManager,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
+    }
+
+    /**
+     * Harvest a resource spot (mining, herbalism).
+     */
+    #[Route('/harvest/{spotId}', name: 'api_gathering_harvest', methods: ['POST'])]
+    public function harvest(int $spotId): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        if (!$player) {
+            return $this->json(['error' => 'Player not found'], 404);
+        }
+
+        $spot = $this->entityManager->getRepository(ObjectLayer::class)->find($spotId);
+        if (!$spot) {
+            return $this->json(['error' => 'Spot non trouvé.'], 404);
+        }
+
+        if (!$spot->isHarvestSpot()) {
+            return $this->json(['error' => 'Ce n\'est pas un spot de récolte.'], 400);
+        }
+
+        if (!$spot->isAvailable()) {
+            return $this->json([
+                'error' => 'Spot indisponible.',
+                'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
+            ], 400);
+        }
+
+        if (!$this->playerActionHelper->canHarvest($spot->getSlug())) {
+            return $this->json(['error' => 'Compétence insuffisante.'], 403);
+        }
+
+        try {
+            $this->harvestManager->checkToolRequirement($player, $spot);
+        } catch (\Exception $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+
+        $result = $this->harvestManager->harvestResources($spot, $player);
+
+        return $this->json([
+            'success' => count($result['items']) > 0,
+            'items' => array_map(fn($pi) => [
+                'name' => $pi->getGenericItem()->getName(),
+                'slug' => $pi->getGenericItem()->getSlug(),
+            ], $result['items']),
+            'respawnDelay' => $spot->getRespawnDelay(),
+            'toolBroken' => $result['toolBroken'],
+        ]);
     }
 
     /**

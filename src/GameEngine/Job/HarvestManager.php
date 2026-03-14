@@ -75,20 +75,22 @@ class HarvestManager
     }
 
     /**
+     * @return array{objectLayer: ObjectLayer, items: PlayerItem[], toolBroken: bool}
+     *
      * @throws EntityNotFoundException
      */
-    public function harvestResources(ObjectLayer $objectLayer, ?Player $player = null, bool $flush = true): ObjectLayer
+    public function harvestResources(ObjectLayer $objectLayer, ?Player $player = null, bool $flush = true): array
     {
         $objectLayer = $this->entityManager->getRepository(ObjectLayer::class)->find($objectLayer->getId());
         $items = $this->harvestItemGenerator->generateHarvestItems($objectLayer);
         $objectLayer->setUsedAt(new \DateTime());
 
         // Vérifier et réduire la durabilité de l'outil si nécessaire
-        $tool = null;
+        $toolBroken = false;
         if ($player !== null) {
             $tool = $this->findPlayerTool($player, $objectLayer->getRequiredToolType());
             if ($tool !== null) {
-                $tool->reduceDurability(1);
+                $toolBroken = $tool->reduceDurability(1);
                 $this->entityManager->persist($tool);
             }
         }
@@ -103,7 +105,11 @@ class HarvestManager
 
         $this->eventDispatcher->dispatch(new SpotHarvestEvent($objectLayer), SpotHarvestEvent::NAME);
 
-        return $objectLayer;
+        return [
+            'objectLayer' => $objectLayer,
+            'items' => $items,
+            'toolBroken' => $toolBroken,
+        ];
     }
 
     /**

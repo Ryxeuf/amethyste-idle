@@ -389,6 +389,10 @@ export default class extends Controller {
             this._createPortalMarker(portal);
         }
 
+        for (const spot of (data.harvestSpots || [])) {
+            this._createHarvestSpotMarker(spot);
+        }
+
         this._createPlayerMarker();
     }
 
@@ -528,6 +532,71 @@ export default class extends Controller {
 
         this._portalTexture = PIXI.Texture.from(canvas);
         return this._portalTexture;
+    }
+
+    _createHarvestSpotMarker(spot) {
+        const s = this._tileSize;
+        const texture = this._getHarvestSpotTexture(spot.toolType, spot.available);
+        const sprite = new PIXI.Sprite(texture);
+        sprite.position.set(spot.x * s, spot.y * s);
+        sprite.zIndex = spot.y * s - 1;
+        sprite.alpha = spot.available ? 1.0 : 0.3;
+        this._entityContainer.addChild(sprite);
+
+        const key = `harvest_${spot.id}`;
+        this._entitySprites[key] = {
+            container: sprite, x: spot.x, y: spot.y,
+            type: 'harvest', animator: null, spotData: spot,
+        };
+        this._addToSpatialHash(key, spot.x, spot.y);
+    }
+
+    _getHarvestSpotTexture(toolType, available) {
+        const cacheKey = `harvest_${toolType}_${available}`;
+        if (this._markerTextureCache.has(cacheKey)) {
+            return this._markerTextureCache.get(cacheKey);
+        }
+
+        const s = this._tileSize;
+        const canvas = document.createElement('canvas');
+        canvas.width = s;
+        canvas.height = s;
+        const ctx = canvas.getContext('2d');
+        const half = s / 2;
+
+        // Couleur par type d'outil
+        const colors = {
+            pickaxe: { fill: 'rgba(139, 90, 43, 0.7)', stroke: '#b8860b' },     // brun/or (minerai)
+            sickle: { fill: 'rgba(34, 139, 34, 0.7)', stroke: '#32cd32' },       // vert (plante)
+            fishing_rod: { fill: 'rgba(30, 144, 255, 0.7)', stroke: '#00bfff' }, // bleu (eau)
+            skinning_knife: { fill: 'rgba(178, 34, 34, 0.7)', stroke: '#ff4500' }, // rouge
+        };
+        const c = colors[toolType] || { fill: 'rgba(200, 200, 200, 0.7)', stroke: '#ccc' };
+
+        // Diamant pour spots de récolte
+        ctx.fillStyle = c.fill;
+        ctx.strokeStyle = c.stroke;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(half, 3);
+        ctx.lineTo(s - 3, half);
+        ctx.lineTo(half, s - 3);
+        ctx.lineTo(3, half);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        // Point central lumineux
+        if (available) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(half, half, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        const texture = PIXI.Texture.from(canvas);
+        this._markerTextureCache.set(cacheKey, texture);
+        return texture;
     }
 
     _clearEntities() {
@@ -1033,6 +1102,7 @@ export default class extends Controller {
         await this._loadCells(this._playerX, this._playerY);
         await this._refreshEntitiesIfNeeded();
         this._checkPnjInteraction();
+        this._checkHarvestSpotInteraction();
     }
 
     async _handlePortalTransition(portal) {
@@ -1159,6 +1229,28 @@ export default class extends Controller {
                 const pnjId = parseInt(key.replace('pnj_', ''));
                 this._openPnjDialog(pnjId);
                 return;
+            }
+        }
+    }
+
+    _checkHarvestSpotInteraction() {
+        const px = Math.floor(this._playerX);
+        const py = Math.floor(this._playerY);
+
+        const neighbors = [
+            [px, py], [px - 1, py], [px + 1, py], [px, py - 1], [px, py + 1],
+        ];
+        for (const [nx, ny] of neighbors) {
+            const entities = this._getEntitiesAt(nx, ny);
+            for (const key of entities) {
+                if (!key.startsWith('harvest_')) continue;
+                const entry = this._entitySprites[key];
+                if (!entry || !entry.spotData) continue;
+                const spot = entry.spotData;
+                if (spot.available) {
+                    this.dispatch('harvestSpot', { detail: spot });
+                    return;
+                }
             }
         }
     }

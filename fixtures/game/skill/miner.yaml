@@ -1,39 +1,39 @@
 App\Entity\Game\Skill:
   miner_ruby_xs (extends skill):
     slug: miner-ruby-xs
-    title: "Minage du ruby débutant"
-    description: 'Permet de miner le ruby'
+    title: "Minage du rubis débutant"
+    description: 'Permet de miner le rubis'
     actions: [{action: 'harvest', spots: ['spot-ruby-xs']}]
     requiredPoints: 0
     domain: '@miner'
   miner_ruby_s (extends skill):
     slug: miner-ruby-s
-    title: "Minage du ruby apprenti"
-    description: 'Permet de miner le ruby'
+    title: "Minage du rubis apprenti"
+    description: 'Permet de miner les filons de rubis'
     actions: [{action: 'harvest', spots: ['spot-ruby-s']}]
     requiredPoints: 10
     domain: '@miner'
     requirements: [ '@miner_ruby_xs' ]
   miner_ruby_m (extends skill):
     slug: miner-ruby-m
-    title: "Minage du ruby avancé"
-    description: 'Permet de miner le ruby'
+    title: "Minage du rubis avancé"
+    description: 'Permet de miner les filons de rubis riches'
     actions: [{action: 'harvest', spots: ['spot-ruby-m']}]
     requiredPoints: 50
     domain: '@miner'
     requirements: [ '@miner_ruby_s' ]
   miner_ruby_l (extends skill):
     slug: miner-ruby-l
-    title: "Minage du ruby avancé"
-    description: 'Permet de miner le ruby'
+    title: "Minage du rubis expert"
+    description: 'Permet de miner les gros filons de rubis'
     actions: [{action: 'harvest', spots: ['spot-ruby-l']}]
     requiredPoints: 100
     domain: '@miner'
     requirements: [ '@miner_ruby_m' ]
   miner_ruby_xl (extends skill):
     slug: miner-ruby-xl
-    title: "Minage du ruby expert"
-    description: 'Permet de miner le ruby'
+    title: "Minage du rubis maître"
+    description: 'Permet de miner les filons de rubis légendaires'
     actions: [{action: 'harvest', spots: ['spot-ruby-xl']}]
     requiredPoints: 200
     domain: '@miner'
@@ -49,8 +49,31 @@ App\Entity\Game\Skill:
   miner_iron_s (extends skill):
     slug: miner-iron-s
     title: "Minage du fer apprenti"
-    description: "Permet de miner le fer"
+    description: "Permet de miner les filons de fer"
     actions: [{action: 'harvest', spots: ['spot-iron-s']}]
     requiredPoints: 50
     domain: '@miner'
     requirements: [ '@miner_iron_xs' ]
+  miner_copper_xs (extends skill):
+    slug: miner-copper-xs
+    title: "Minage du cuivre"
+    description: "Permet de miner le cuivre"
+    actions: [{action: 'harvest', spots: ['spot-copper-xs']}]
+    requiredPoints: 0
+    domain: '@miner'
+  miner_silver_xs (extends skill):
+    slug: miner-silver-xs
+    title: "Minage de l'argent"
+    description: "Permet de miner l'argent"
+    actions: [{action: 'harvest', spots: ['spot-silver-xs']}]
+    requiredPoints: 100
+    domain: '@miner'
+    requirements: [ '@miner_iron_s' ]
+  miner_gold_xs (extends skill):
+    slug: miner-gold-xs
+    title: "Minage de l'or"
+    description: "Permet de miner l'or"
+    actions: [{action: 'harvest', spots: ['spot-gold-xs']}]
+    requiredPoints: 150
+    domain: '@miner'
+    requirements: [ '@miner_silver_xs' ]
