@@ -355,10 +355,33 @@ targetLife = clamp(targetLife - damage, 0, maxLife)
 ### Architecture
 
 1. **Tiled Map Editor** : les cartes sont éditées dans `.tmx` (60×60 tuiles de 32×32 px)
-2. **Import** : `app:terrain:import` parse les TMX → JSON avec couches, tilesets, collisions
+2. **Import** : `app:terrain:import` parse les TMX → JSON avec couches, tilesets, collisions, object layers. Options : `--validate`, `--sync-entities`, `--dry-run`, `--stats`
 3. **Indexation** : `app:index:cell` insère les cellules dans Typesense
-4. **Rendu** : le Live Component `Map` charge les cellules visibles (rayon 10) via `CellSearchEngine`
+4. **Rendu PixiJS** : `map_pixi_controller.js` charge les cellules visibles (rayon 25) via `/api/map/cells` avec rendu GPU
 5. **CSS** : `app:tmx:generate-css` génère les classes CSS pour les sprites (`world-1.css`)
+
+### Rendu PixiJS (map_pixi_controller.js)
+
+Le rendu de la carte utilise PixiJS v8 avec les optimisations suivantes :
+- **Tile sprite pool** : réutilisation des sprites via `_acquireSprite()` / `_releaseSprite()`
+- **Entity container pool** : réutilisation des conteneurs d'entités
+- **Texture cache** : cache par GID, par marker, par sprite sheet
+- **Spatial hash** : lookup O(1) des entités par position (interactions PNJ)
+- **Lazy loading** : chargement incrémental des cellules et entités
+- **Pruning** : suppression automatique des cellules distantes (3× radius)
+- **Camera lerp** : suivi fluide du joueur avec facteur 0.15
+- **Camera shake** : tremblement paramétrable (portails, combats)
+- **Cycle jour/nuit** : overlay ambiant selon l'heure réelle (jour/aube/crépuscule/nuit)
+- **Particules** : effets visuels pour les portails et interactions
+
+### Système de sprites (SpriteAnimator)
+
+- **Format** : RPG Maker VX (3 colonnes × 4 lignes par personnage)
+- **Multi-sheet** : support 12×8 avec `charIndex` (0-7) pour 8 personnages par sheet
+- **Idle breathing** : oscillation subtile en Y quand le personnage est immobile
+- **Émotes** : bulles au-dessus des sprites (!, ?, ♥, ✦, ~, ♪, …, ★)
+- **États** : idle, walk, interact avec vitesse adaptative
+- **Registre** : `SpriteConfigProvider` centralise 30+ sprites avec métadonnées (catégorie, animations, taille)
 
 ### Pathfinding
 
@@ -491,14 +514,22 @@ Ruby débutant (gratuit)
 
 Les PNJ ont des dialogues à branches (JSON) avec :
 - **Étapes** (`steps`) : texte + réponses possibles
-- **Choix** avec `conditional_next` : conditions `quest` (quête complétée) ou `quest_not` (quête non commencée)
-- **Actions** : `accept_quest`, `decline_quest`, etc.
+- **Choix** avec `conditional_next` : conditions `quest`, `quest_not`, `quest_active`, `has_item`, `domain_xp_min`
+- **Actions** : `close`, `quest_offer`, `open_shop`, `next` (branching)
+- **Variables** : `{{player_name}}` et `{{pnj_name}}` substitués dynamiquement
+- **Parser** : `PnjDialogParser` résout les conditions côté serveur avant envoi au client
+
+**Frontend (dialog_controller.js) :**
+- Typewriter intelligent avec pauses sur ponctuation (×6 pour `.!?`, ×3 pour `,`)
+- Navigation clavier : Espace/Entrée pour avancer, Échap pour fermer
+- Animations : slide-up ouverture, slide-down fermeture, choix avec fade-in échelonné
+- Accessibilité : ARIA `role="dialog"`, `aria-live="polite"`, backdrop-blur
 
 Exemple (PNJ "Hello World") :
 ```
 Salutation → Présentation → Offre de quête "Tuer les zombies"
-                                ├── Oui → Acceptation
-                                └── Non → Refus
+                                ├── Oui → Acceptation (quest_offer)
+                                └── Non → Refus (close)
 ```
 
 ---
@@ -613,7 +644,7 @@ ROLE_USER (base)
 
 | Commande | Description |
 |----------|-------------|
-| `app:terrain:import` | Importe les fichiers TMX → JSON (tilesets, couches, collisions avec bitmask directionnel) |
+| `app:terrain:import` | Importe les fichiers TMX → JSON. Options : `--all`, `--validate`, `--sync-entities`, `--dry-run`, `--stats` |
 | `app:tmx:generate-css` | Génère les classes CSS pour chaque tile (sprites). Options : `--single-file`, `--with-sprites`, `--by-layer`, `--filter` |
 | `app:index:cell` | Parcourt World→Map→Area, indexe les cellules dans Typesense |
 | `app:reset-ts` | Vide la collection Typesense `cells` |
@@ -689,18 +720,24 @@ Route `GET /change-locale/{locale}` → `LocaleController` → stocke la locale 
 ### Workflow de création de cartes
 
 1. **Édition** : Tiled Map Editor (`terrain/*.tmx`, `terrain/*.tiled-project`)
-2. **Import** : `php bin/console app:terrain:import` → parse XML TMX → JSON
-3. **Génération CSS** : `php bin/console app:tmx:generate-css` → classes CSS sprites
+2. **Import** : `app:terrain:import` → parse XML TMX → JSON avec object layers
+   - `--all` : importer tous les fichiers TMX
+   - `--validate` : vérifier la cohérence sans importer
+   - `--sync-entities` : créer/mettre à jour les entités en base (Mob, ObjectLayer)
+   - `--dry-run` : analyse complète sans écriture de fichiers
+   - `--stats` : afficher les statistiques détaillées (cells, layers, tilesets)
+3. **Génération CSS** : `app:tmx:generate-css` → classes CSS sprites
 4. **Seed Areas** : `php scripts/concat_area_fixtures.php` → `area_data.json`
-5. **Indexation** : `php bin/console app:index:cell` → Typesense
+5. **Indexation** : `app:index:cell` → Typesense
 
 ### Format TMX
 
 - **Orientation** : orthogonale, rendu left-up
 - **Dimensions** : 60×60 tuiles, 32×32 pixels/tuile
 - **Tilesets** : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx`
-- **Couches** : background + collisions/objets
+- **Couches** : tile layers (background, objects) + object layers (mob_spawn, portal, harvest_spot, chest)
 - **Encodage** : CSV
+- **Object Layers** : types supportés — `portal`, `mob_spawn`, `harvest_spot`/`spot`, `chest`
 
 ### Système de collision
 

@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 #[AsCommand(
     name: 'app:terrain:import',
-    description: 'Add a short description for your command',
+    description: 'Import Tiled Map Editor (.tmx) terrain files into game data and optionally sync entities to database',
 )]
 class TerrainImportCommand extends Command
 {
@@ -60,10 +60,12 @@ class TerrainImportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addArgument('name', InputArgument::OPTIONAL, 'Terrain file name')
+            ->addArgument('name', InputArgument::OPTIONAL, 'Terrain file name (e.g. world-1-map-0-1.tmx)')
             ->addOption('validate', null, InputOption::VALUE_NONE, 'Validate maps without importing')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Import all TMX files in terrain/')
-            ->addOption('sync-entities', null, InputOption::VALUE_NONE, 'Create/update database entities from object layers (mobs, portals, spots)');
+            ->addOption('sync-entities', null, InputOption::VALUE_NONE, 'Create/update database entities from object layers (mobs, portals, spots)')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Parse and report statistics without writing any files or database changes')
+            ->addOption('stats', null, InputOption::VALUE_NONE, 'Show detailed statistics after import (cell counts, layer info, tileset usage)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -71,6 +73,8 @@ class TerrainImportCommand extends Command
         $io       = new SymfonyStyle($input, $output);
         $validateOnly = $input->getOption('validate');
         $syncEntities = $input->getOption('sync-entities');
+        $dryRun = $input->getOption('dry-run');
+        $showStats = $input->getOption('stats') || $dryRun;
 
         if ($input->getOption('all')) {
             $names = ['*.tmx'];
@@ -323,6 +327,62 @@ class TerrainImportCommand extends Command
                 foreach ($typeCounts as $type => $count) {
                     $io->info(sprintf('    - %s: %d', $type, $count));
                 }
+            }
+
+            // --- Statistics ---
+            if ($showStats) {
+                $totalCells = 0;
+                $walkableCells = 0;
+                $wallCells = 0;
+                $layerCount = $layerIdx;
+                $tilesetCount = count($map['terrains']);
+                $objectCount = count($map['objects'] ?? []);
+
+                foreach ($map['cells'] as $col) {
+                    foreach ($col as $cell) {
+                        $totalCells++;
+                        $movement = $cell['mouvement'] ?? 0;
+                        if ($movement === -1) {
+                            $wallCells++;
+                        } else {
+                            $walkableCells++;
+                        }
+                    }
+                }
+
+                $io->section('Statistiques — ' . $fileName);
+                $io->table(
+                    ['Propriété', 'Valeur'],
+                    [
+                        ['Dimensions', $mapWidth . ' × ' . $mapHeight . ' tiles'],
+                        ['Tile size', $map['tileWidth'] . ' × ' . $map['tileHeight'] . ' px'],
+                        ['Total cells', number_format($totalCells)],
+                        ['Walkable cells', number_format($walkableCells) . ' (' . ($totalCells > 0 ? round($walkableCells / $totalCells * 100, 1) : 0) . '%)'],
+                        ['Wall cells', number_format($wallCells) . ' (' . ($totalCells > 0 ? round($wallCells / $totalCells * 100, 1) : 0) . '%)'],
+                        ['Layers', (string) $layerCount],
+                        ['Tilesets', (string) $tilesetCount],
+                        ['Objects', (string) $objectCount],
+                    ]
+                );
+
+                if (!empty($map['terrains'])) {
+                    $tilesetRows = [];
+                    foreach ($map['terrains'] as $firstGid => $terrain) {
+                        $tilesetRows[] = [
+                            $terrain['tilesetName'],
+                            (string) $firstGid,
+                            $terrain['columns'] . ' col × ' . $terrain['tilecount'] . ' tiles',
+                            $terrain['tilewidth'] . '×' . $terrain['tileheight'] . ' px',
+                        ];
+                    }
+                    $io->table(['Tileset', 'First GID', 'Grid', 'Tile size'], $tilesetRows);
+                }
+            }
+
+            // Dry-run: skip file writing
+            if ($dryRun) {
+                $io->note($fileName . ' dry-run complete (no files written)');
+                continue;
             }
 
             // --- Validation ---

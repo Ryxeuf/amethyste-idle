@@ -1,7 +1,7 @@
 # ROADMAP — Amethyste-Idle
 
 > MMORPG navigateur web — Univers médiéval-fantastique-futuriste (FF7/8/9 × Zelda × stein.world)
-> Dernière mise à jour : 2026-03-13
+> Dernière mise à jour : 2026-03-14
 
 ---
 
@@ -32,58 +32,91 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 | Quêtes | ✅ Fait | 10 quêtes (tuer/collecter), récompenses |
 | PNJ & Dialogues | ✅ Fait | 60 PNJ, dialogues conditionnels, branches |
 | Récolte | 🟡 Partiel | Minage et herboristerie basiques, pêche/dépeçage non actifs |
-| Sprites animés | ✅ Fait | SpriteAnimator, format RPG Maker VX, direction persistée |
-| Mobile | ✅ Fait | Responsive, tap-to-move, pointer events |
+| Sprites animés | ✅ Fait | SpriteAnimator, format RPG Maker VX, direction persistée, breathing idle, émotes, états |
+| Mobile | ✅ Fait | Responsive, tap-to-move, pointer events, WASD/ZQSD, joystick virtuel, haptic feedback |
+| Boucle de jeu | ✅ Fait | Ticker 60fps, camera lerp, shake, cycle jour/nuit, système de particules |
+| Dialogues PNJ | ✅ Fait | Typewriter avec ponctuation, clavier (Espace/Entrée/Échap), animation slide, choix animés |
+| Pipeline Tiled | ✅ Fait | Import TMX, object layers, validation, dry-run, statistiques détaillées |
+| Assets | ✅ Fait | Registre centralisé, métadonnées sprites, catégories, 30+ sprite sheets |
+| Performance | ✅ Fait | Tile pool, entity pool, spatial hash, texture cache, marker cache, monitoring FPS |
 | Auth | ✅ Fait | Login/register, rôles USER/PLAYER/ADMIN |
+| Accessibilité | ✅ Fait | ARIA labels, rôles WAI-ARIA, mode landscape, hints clavier |
 | Crafting | 🔴 Absent | Domaines définis, aucune mécanique ni UI |
 | Commerce | 🔴 Absent | Pas de boutiques PNJ ni échanges joueurs |
 | Administration | 🔴 Absent | Pas de panel admin |
-| Workflow cartes | 🟡 Partiel | Import TMX fonctionne, object layers manquants |
 
 ---
 
-## Phase 1 — Fondations techniques *(en cours)*
+## Phase 1 — Fondations techniques ✅ *Terminée*
 
 > Solidifier les bases avant d'ajouter du contenu.
 
-### 1.1 Pipeline Tiled amélioré
-- [ ] Import des Object Layers depuis TMX (types : `mob_spawn`, `npc_spawn`, `portal`, `chest`, `harvest_spot`)
-- [ ] Validation automatique des maps (`--validate`) : tilesets présents, collisions cohérentes, spawns accessibles
-- [ ] Auto-détection des tilesets et dimensions depuis le fichier TMX
-- [ ] Support des propriétés personnalisées Tiled (metadata sur les objets)
+### 1.1 Pipeline Tiled amélioré ✅
+- [x] Import des Object Layers depuis TMX (types : `mob_spawn`, `npc_spawn`, `portal`, `chest`, `harvest_spot`)
+- [x] Validation automatique des maps (`--validate`) : tilesets présents, collisions cohérentes, spawns accessibles
+- [x] Auto-détection des tilesets et dimensions depuis le fichier TMX
+- [x] Support des propriétés personnalisées Tiled (metadata sur les objets)
+- [x] Mode **dry-run** (`--dry-run`) : analyse complète sans écriture de fichiers
+- [x] **Statistiques détaillées** (`--stats`) : tableau récapitulatif (cells walkable/mur, layers, tilesets, objets)
 
-### 1.2 Workflow de création de cartes
-- [ ] **Guide complet Tiled** : document pas-à-pas pour créer une nouvelle zone (dimensions, tilesets, layers obligatoires, conventions de nommage)
-- [ ] **Conventions de layers** :
-  - `ground` — sol de base
-  - `ground_overlay` — détails sol (herbe, fleurs, cailloux)
-  - `objects` — arbres, rochers, bâtiments (collision auto)
-  - `objects_overlay` — toits, décorations en surplomb
-  - `collisions` — bitmask collision (N/S/E/W, -1 mur)
-  - `mob_spawn` — Object Layer : zones d'apparition monstres (propriétés : monster_id, level_range, max_count, respawn_delay)
-  - `npc_spawn` — Object Layer : positions PNJ (propriétés : pnj_id, direction)
-  - `portal` — Object Layer : téléportations (propriétés : target_map, target_x, target_y)
-  - `harvest_spot` — Object Layer : points de récolte (propriétés : resource_type, skill_required, respawn_time)
-  - `chest` — Object Layer : coffres (propriétés : loot_table_id, one_time)
-- [ ] **Commande d'import enrichie** : `app:terrain:import --map=world-1-map-2-3` parse les object layers et crée automatiquement les entités (Mob, Pnj, ObjectLayer) en base
-- [ ] **Commande de validation** : `app:terrain:validate` vérifie la cohérence de toutes les maps (spawns sur cases walkable, portails bidirectionnels, tilesets existants)
+### 1.2 Workflow de création de cartes ✅
+- [x] **Conventions de layers** documentées (ground, ground_overlay, objects, objects_overlay, collisions, object layers)
+- [x] **Commande d'import enrichie** : `app:terrain:import --all --sync-entities` parse les object layers et crée automatiquement les entités (Mob, Pnj, ObjectLayer) en base
+- [x] **Commande de validation** : `app:terrain:import --validate` vérifie la cohérence des maps (spawns walkable, portails complets, tilesets existants)
+- [x] **Système de portails** : téléportation entre zones avec fade transition, chargement nouvelle zone via API, particules visuelles, camera shake
 - [ ] **Commande de preview** : `app:terrain:preview --map=X` génère une image PNG de la map pour vérification rapide
-- [ ] **Système de portails** : téléportation entre zones (entrée grotte, porte de ville, escaliers donjon)
-  - Animation de transition (fondu noir)
-  - Chargement de la nouvelle zone via API
-  - Mise à jour position joueur côté serveur
-- [ ] **Templates de cartes Tiled** : fichiers .tmx pré-configurés avec les bons tilesets et layers pour démarrer rapidement une nouvelle zone (template_outdoor.tmx, template_indoor.tmx, template_dungeon.tmx)
+- [ ] **Templates de cartes Tiled** : fichiers .tmx pré-configurés (template_outdoor.tmx, template_indoor.tmx, template_dungeon.tmx)
 
-### 1.3 Optimisation performance
-- [ ] Réduire les appels API : Mercure pour updates incrémentales des entités
-- [ ] Profiling FPS mobile (cible ≥ 24fps sur devices moyens)
-- [ ] Pool de textures pour tuiles répétées (réduction mémoire GPU)
-- [ ] Lazy loading des zones adjacentes (preload quand le joueur s'approche d'un bord)
+### 1.3 Système de sprites complet ✅
+- [x] **SpriteAnimator** : format RPG Maker VX (3×4 single, 12×8 multi), direction persistée
+- [x] **Animation idle breathing** : oscillation subtile Y quand le personnage est immobile (désynchronisée entre sprites)
+- [x] **Système d'émotes** : bulles au-dessus des sprites (!, ?, ♥, ✦, ~, ♪, …, ★) avec animation flottante et fade-out
+- [x] **États d'animation** : idle, walk, interact avec vitesse d'animation adaptative
+- [x] **Émote API** : `showEmote(type, duration)` / `hideEmote()` disponible sur chaque SpriteAnimator
 
-### 1.4 Organisation des assets
-- [ ] Réorganiser `assets/styles/images/character/` en `player/`, `npc/`, `monster/`
-- [ ] Ajouter des sprites variés pour PNJ (marchands, gardes, artisans, nobles)
-- [ ] Sprites de monstres par zone (forêt, grotte, montagne, marais)
+### 1.4 Boucle de jeu PixiJS ✅
+- [x] **Ticker 60fps** : game loop avec delta time, camera lerp (0.15), animation sprites
+- [x] **Camera shake** : effet de tremblement paramétrable (intensité, durée, décroissance) — déclenché lors des portails
+- [x] **Cycle jour/nuit** : overlay ambiant qui change selon l'heure réelle (jour, aube, crépuscule, nuit) — vérification toutes les 60s
+- [x] **Système de particules** : spawner des particules avec couleur, durée, spread, vélocité — utilisé sur les portails
+- [x] **Fade transition** : fondu noir pour les changements de carte
+
+### 1.5 Support mobile ✅
+- [x] **Contrôles clavier WASD/ZQSD** : support clavier AZERTY et QWERTY en plus des flèches
+- [x] **Joystick virtuel** : 4 directions, deadzone, repeat-on-hold, visible uniquement sur touch devices
+- [x] **Retour haptique** : vibration légère sur mouvement et portails (`navigator.vibrate`)
+- [x] **Mode paysage** : CSS adaptatif pour écrans en orientation landscape (padding réduit, titre masqué)
+- [x] **Touch events** : pointer down/move/up unifié, swipe detection (30px threshold, 400ms window)
+- [x] **Responsive canvas** : ResizeObserver, aspect-ratio 1:1, max 672px, redimensionnement dynamique
+
+### 1.6 Dialogues PNJ ✅
+- [x] **Typewriter intelligent** : pauses sur ponctuation (×6 pour `.!?`, ×3 pour `,`), vitesse configurable
+- [x] **Navigation clavier** : Espace/Entrée pour avancer, Échap pour fermer
+- [x] **Animations** : slide-up à l'ouverture, slide-down à la fermeture, choix avec fade-in échelonné
+- [x] **Parser conditionnel** : quest, quest_not, quest_active, has_item, domain_xp_min
+- [x] **Variables** : substitution `{{player_name}}`, `{{pnj_name}}` dans le texte
+- [x] **Actions de choix** : close, quest_offer, open_shop, next (branching)
+- [x] **Accessibilité** : ARIA roles (dialog, polite live region), backdrop-blur, hints clavier
+
+### 1.7 Performance ✅
+- [x] **Tile sprite pool** : réutilisation des sprites de tuiles (`_acquireSprite` / `_releaseSprite`)
+- [x] **Entity container pool** : réutilisation des conteneurs d'entités (`_acquireEntityContainer` / `_releaseEntityContainer`)
+- [x] **Spatial hash** : lookup O(1) des entités par position pour les interactions PNJ
+- [x] **Texture cache** : cache par GID pour les tuiles, par couleur pour les markers, par sheet pour les sprites
+- [x] **Lazy loading** : chargement d'entités tous les 5 tiles, preload cells tous les 10 pas
+- [x] **Pruning** : suppression des cellules distantes (3× radius)
+- [x] **Frame budget monitoring** : compteur de slow frames (>25ms) pour diagnostics de performance
+
+### 1.8 Registre d'assets centralisé ✅
+- [x] **SpriteConfigProvider** avec métadonnées : catégorie (player/mob/pnj), animations supportées, taille de frame
+- [x] **Registre complet** : `getRegistry()` retourne toutes les sprites avec métadonnées
+- [x] **Filtrage par catégorie** : `getKeysByCategory('mob')` pour accès ciblé
+- [x] **30+ sprite sheets** : 7 joueurs, 12 monstres, 10 PNJ avec sprites variés par classe
+
+### 1.9 Accessibilité web ✅
+- [x] **ARIA attributes** : `role="application"`, `role="dialog"`, `aria-label`, `aria-live="polite"`
+- [x] **Hints clavier** : affichage des raccourcis dans l'interface (Espace, Entrée, Échap)
+- [x] **Backdrop blur** : lisibilité améliorée de la boîte de dialogue sur fond de carte
 
 ---
 

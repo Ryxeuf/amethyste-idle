@@ -6,8 +6,10 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
     <div class="bg-gray-800 rounded-lg shadow-lg p-2 sm:p-6 mb-4 sm:mb-8">
         <h2 class="text-xl font-semibold text-purple-400 mb-2 sm:mb-4 hidden sm:block">{{ 'game.map.live_map'|trans }}</h2>
-        <div class="relative flex justify-center items-center">
-            {# Map canvas container #}
+        <div class="relative flex justify-center items-center"
+             role="application"
+             aria-label="{{ 'game.map.aria_label'|trans({}, 'messages')|default('Carte du monde interactive') }}">
+            {# Map canvas container — landscape-aware aspect ratio #}
             <div class="bg-gray-700 rounded-lg p-0 sm:p-4 flex justify-center items-center"
                  {{ stimulus_controller('map_pixi', {
                      mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
@@ -24,37 +26,57 @@
             {# Virtual joystick (mobile only) #}
             <div {{ stimulus_controller('joystick') }}
                  data-action="joystick:move->map_pixi#onJoystickMove"
-                 class="absolute inset-0 pointer-events-none sm:hidden">
+                 class="absolute inset-0 pointer-events-none sm:hidden"
+                 aria-hidden="true">
             </div>
 
             {# Dialog overlay #}
             <div {{ stimulus_controller('dialog') }}
                  data-action="map_pixi:pnjDialog->dialog#open"
-                 class="absolute inset-0 pointer-events-none flex items-end justify-center p-2 sm:p-4">
+                 class="absolute inset-0 pointer-events-none flex items-end justify-center p-2 sm:p-4"
+                 role="dialog"
+                 aria-label="{{ 'game.map.dialog_aria'|trans({}, 'messages')|default('Dialogue PNJ') }}">
                 <div data-dialog-target="box"
-                     class="hidden pointer-events-auto w-full max-w-lg bg-gray-900/95 border border-purple-500 rounded-lg shadow-2xl p-4">
+                     class="hidden pointer-events-auto w-full max-w-lg bg-gray-900/95 border border-purple-500 rounded-lg shadow-2xl p-4 backdrop-blur-sm">
                     {# PNJ name #}
                     <div class="flex items-center justify-between mb-2">
                         <span data-dialog-target="name"
                               class="text-purple-400 font-bold text-sm"></span>
                         <button data-action="click->dialog#close"
-                                class="text-gray-500 hover:text-white text-xs px-2 py-1">&#x2715;</button>
+                                class="text-gray-500 hover:text-white text-xs px-2 py-1"
+                                aria-label="{{ 'game.map.close_dialog'|trans({}, 'messages')|default('Fermer le dialogue') }}">&#x2715;</button>
                     </div>
                     {# Dialog text #}
                     <p data-dialog-target="text"
-                       class="text-gray-200 text-sm leading-relaxed mb-3 min-h-[3rem]"></p>
+                       class="text-gray-200 text-sm leading-relaxed mb-3 min-h-[3rem]"
+                       aria-live="polite"></p>
                     {# Choices #}
                     <div data-dialog-target="choices"
-                         class="hidden flex flex-wrap gap-2 mb-2"></div>
+                         class="hidden flex flex-wrap gap-2 mb-2"
+                         role="group"
+                         aria-label="{{ 'game.map.dialog_choices'|trans({}, 'messages')|default('Choix de dialogue') }}"></div>
                     {# Next button #}
                     <button data-dialog-target="nextBtn"
                             data-action="click->dialog#next"
                             class="w-full text-center text-purple-400 hover:text-purple-300 text-xs py-1 transition-colors">
                         ▼ {{ 'game.map.dialog_next'|trans({}, 'messages')|default('Continuer') }}
                     </button>
+                    {# Keyboard hint (desktop) #}
+                    <p class="hidden sm:block text-gray-600 text-[10px] text-center mt-1">
+                        Espace/Entrée: suivant · Échap: fermer
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{# Landscape orientation hint for mobile #}
+<style>
+@media (max-height: 500px) and (orientation: landscape) {
+    .max-w-7xl { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+    .bg-gray-800 { padding: 0.25rem !important; margin-bottom: 0.25rem !important; }
+    h2.hidden { display: none !important; }
+}
+</style>
 {% endblock %}

@@ -1,6 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import * as PIXI from 'pixi.js';
-import SpriteAnimator, { directionFromDelta } from '../lib/SpriteAnimator.js';
+import SpriteAnimator, { directionFromDelta, EMOTE_TYPES } from '../lib/SpriteAnimator.js';
 
 export default class extends Controller {
     static values = {
@@ -36,10 +36,18 @@ export default class extends Controller {
         this._tileTextureCache = new Map();
         // Performance: sprite object pool for reuse
         this._spritePool = [];
+        // Performance: entity container pool for reuse
+        this._entityPool = [];
         // Performance: cached marker textures
         this._markerTextureCache = new Map();
         // Performance: track animated entities separately
         this._animatedEntities = [];
+        // Performance: spatial hash for entity lookup
+        this._entitySpatialHash = new Map();
+        // Performance: frame budget monitoring
+        this._frameBudgetMs = 16.67; // 60fps target
+        this._slowFrameCount = 0;
+        this._frameCount = 0;
 
         this._playerAnimator = null;
         this._playerDirection = 'down';
@@ -48,11 +56,26 @@ export default class extends Controller {
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
         this._pendingPortal = null; // Portal data from move response
 
+        // Camera shake system
+        this._shakeIntensity = 0;
+        this._shakeDuration = 0;
+        this._shakeElapsed = 0;
+
+        // Day/night ambient overlay
+        this._dayNightEnabled = true;
+        this._ambientOverlay = null;
+        this._timeOfDay = this._computeTimeOfDay();
+
+        // Particle system for environmental effects
+        this._particles = [];
+        this._particleContainer = null;
+
         await this._initPixi();
         await this._loadConfig();
         await this._loadCells(this._playerX, this._playerY);
         await this._loadEntities();
         this._setupMercure();
+        this._initDayNight();
         this._updateCamera(true);
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
@@ -86,9 +109,16 @@ export default class extends Controller {
             s.destroy();
         }
         this._spritePool = [];
+        // Release pooled entity containers
+        for (const c of this._entityPool) {
+            c.destroy({ children: true });
+        }
+        this._entityPool = [];
         this._tileTextureCache.clear();
         this._markerTextureCache.clear();
+        this._entitySpatialHash.clear();
         this._animatedEntities = [];
+        this._particles = [];
 
         if (this._app) {
             this._app.destroy(true);
@@ -366,11 +396,13 @@ export default class extends Controller {
         const key = `${type}_${id}`;
         const animator = this._createAnimator(spriteKey);
 
+        const container = this._acquireEntityContainer();
+
         if (animator) {
-            const container = new PIXI.Container();
             const sprite = animator.sprite;
             sprite.anchor.set(0.5, 1);
             sprite.position.set(this._tileSize / 2, this._tileSize);
+            animator.setBaseY(this._tileSize);
             container.addChild(sprite);
             container.position.set(x * this._tileSize, y * this._tileSize);
             container.zIndex = y * this._tileSize;
@@ -385,13 +417,15 @@ export default class extends Controller {
             const texture = this._getCachedMarkerTexture(hex, '#000000', shape);
             const markerSprite = new PIXI.Sprite(texture);
 
-            const container = new PIXI.Container();
             container.addChild(markerSprite);
             container.position.set(x * this._tileSize, y * this._tileSize);
             container.zIndex = y * this._tileSize;
             this._entityContainer.addChild(container);
             this._entitySprites[key] = { container, x, y, type, animator: null };
         }
+
+        // Spatial hash registration
+        this._addToSpatialHash(key, x, y);
     }
 
     _getCachedMarkerTexture(color, strokeColor, shape) {
@@ -437,6 +471,7 @@ export default class extends Controller {
         if (animator) {
             this._playerAnimator = animator;
             this._playerAnimator.setDirection(this._playerDirection);
+            this._playerAnimator.setBaseY(this._tileSize);
             const sprite = animator.sprite;
             sprite.anchor.set(0.5, 1);
             sprite.position.set(this._tileSize / 2, this._tileSize);
@@ -501,11 +536,14 @@ export default class extends Controller {
             if (entity.animator) {
                 entity.animator.destroy();
             }
+            this._removeFromSpatialHash(key, entity.x, entity.y);
+            this._releaseEntityContainer(entity.container);
         }
         this._entityContainer.removeChildren();
         this._playerContainer.removeChildren();
         this._entitySprites = {};
         this._animatedEntities = [];
+        this._entitySpatialHash.clear();
         if (this._playerAnimator) {
             this._playerAnimator.destroy();
             this._playerAnimator = null;
@@ -547,7 +585,28 @@ export default class extends Controller {
     _tick(ticker) {
         const dt = ticker.deltaMS;
 
+        // Performance monitoring
+        this._frameCount++;
+        if (dt > this._frameBudgetMs * 1.5) {
+            this._slowFrameCount++;
+        }
+
         this._updateCamera(false);
+
+        // Camera shake
+        if (this._shakeDuration > 0) {
+            this._shakeElapsed += dt;
+            if (this._shakeElapsed < this._shakeDuration) {
+                const decay = 1 - this._shakeElapsed / this._shakeDuration;
+                const offsetX = (Math.random() - 0.5) * 2 * this._shakeIntensity * decay;
+                const offsetY = (Math.random() - 0.5) * 2 * this._shakeIntensity * decay;
+                this._worldContainer.position.x += Math.round(offsetX);
+                this._worldContainer.position.y += Math.round(offsetY);
+            } else {
+                this._shakeDuration = 0;
+                this._shakeElapsed = 0;
+            }
+        }
 
         // Update player animation
         if (this._playerAnimator) {
@@ -558,13 +617,188 @@ export default class extends Controller {
         for (const animator of this._animatedEntities) {
             animator.update(dt);
         }
+
+        // Update day/night cycle (check every 60s)
+        if (this._dayNightEnabled && this._ambientOverlay) {
+            this._updateDayNight(dt);
+        }
+
+        // Update particles
+        this._updateParticles(dt);
+    }
+
+    // --- Camera Shake ---
+
+    /**
+     * Trigger a camera shake effect (e.g. on hit, portal, explosion).
+     * @param {number} intensity - Max pixel offset
+     * @param {number} durationMs - Total shake duration
+     */
+    shakeCamera(intensity = 4, durationMs = 300) {
+        this._shakeIntensity = intensity;
+        this._shakeDuration = durationMs;
+        this._shakeElapsed = 0;
+    }
+
+    // --- Day/Night Cycle ---
+
+    _computeTimeOfDay() {
+        const hour = new Date().getHours();
+        // 0-5: night, 6-7: dawn, 8-17: day, 18-19: dusk, 20-23: night
+        if (hour >= 8 && hour < 18) return 'day';
+        if (hour >= 6 && hour < 8) return 'dawn';
+        if (hour >= 18 && hour < 20) return 'dusk';
+        return 'night';
+    }
+
+    _initDayNight() {
+        if (!this._dayNightEnabled || !this._app) return;
+
+        this._ambientOverlay = new PIXI.Graphics();
+        this._ambientOverlay.zIndex = 500;
+        this._app.stage.addChild(this._ambientOverlay);
+        this._dayNightCheckTimer = 0;
+        this._applyTimeOfDay(this._timeOfDay);
+    }
+
+    _updateDayNight(dt) {
+        this._dayNightCheckTimer = (this._dayNightCheckTimer || 0) + dt;
+        if (this._dayNightCheckTimer < 60000) return; // Check every 60s
+        this._dayNightCheckTimer = 0;
+
+        const newTime = this._computeTimeOfDay();
+        if (newTime !== this._timeOfDay) {
+            this._timeOfDay = newTime;
+            this._applyTimeOfDay(newTime);
+        }
+    }
+
+    _applyTimeOfDay(time) {
+        if (!this._ambientOverlay) return;
+        const viewSize = this._currentSize || this._viewportPx;
+
+        this._ambientOverlay.clear();
+        this._ambientOverlay.rect(0, 0, viewSize, viewSize);
+
+        const colors = {
+            day:   { color: 0x000000, alpha: 0 },
+            dawn:  { color: 0xff8c42, alpha: 0.12 },
+            dusk:  { color: 0x1a0533, alpha: 0.2 },
+            night: { color: 0x0a0a2e, alpha: 0.35 },
+        };
+        const c = colors[time] || colors.day;
+        this._ambientOverlay.fill({ color: c.color, alpha: c.alpha });
+    }
+
+    // --- Particle System ---
+
+    _updateParticles(dt) {
+        for (let i = this._particles.length - 1; i >= 0; i--) {
+            const p = this._particles[i];
+            p.life -= dt;
+            if (p.life <= 0) {
+                if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+                p.sprite.destroy();
+                this._particles.splice(i, 1);
+                continue;
+            }
+            p.sprite.position.x += p.vx * dt;
+            p.sprite.position.y += p.vy * dt;
+            p.sprite.alpha = Math.max(0, p.life / p.maxLife);
+        }
+    }
+
+    /**
+     * Spawn environmental particles (portal sparkle, etc.)
+     * @param {number} worldX - World position X
+     * @param {number} worldY - World position Y
+     * @param {object} [opts] - Particle options
+     */
+    spawnParticles(worldX, worldY, { count = 6, color = 0xa855f7, life = 800, spread = 16 } = {}) {
+        for (let i = 0; i < count; i++) {
+            const g = new PIXI.Graphics();
+            g.circle(0, 0, 1.5 + Math.random() * 1.5);
+            g.fill({ color, alpha: 0.8 });
+            g.position.set(
+                worldX + (Math.random() - 0.5) * spread,
+                worldY + (Math.random() - 0.5) * spread,
+            );
+            this._worldContainer.addChild(g);
+            this._particles.push({
+                sprite: g,
+                vx: (Math.random() - 0.5) * 0.02,
+                vy: -0.02 - Math.random() * 0.03,
+                life,
+                maxLife: life,
+            });
+        }
+    }
+
+    // --- Spatial Hash for Entity Lookup ---
+
+    _spatialHashKey(x, y) {
+        return `${x},${y}`;
+    }
+
+    _addToSpatialHash(key, x, y) {
+        const hk = this._spatialHashKey(x, y);
+        if (!this._entitySpatialHash.has(hk)) {
+            this._entitySpatialHash.set(hk, new Set());
+        }
+        this._entitySpatialHash.get(hk).add(key);
+    }
+
+    _removeFromSpatialHash(key, x, y) {
+        const hk = this._spatialHashKey(x, y);
+        const set = this._entitySpatialHash.get(hk);
+        if (set) {
+            set.delete(key);
+            if (set.size === 0) this._entitySpatialHash.delete(hk);
+        }
+    }
+
+    _getEntitiesAt(x, y) {
+        return this._entitySpatialHash.get(this._spatialHashKey(x, y)) || new Set();
+    }
+
+    // --- Entity Container Pooling ---
+
+    _acquireEntityContainer() {
+        if (this._entityPool.length > 0) {
+            const container = this._entityPool.pop();
+            container.visible = true;
+            container.alpha = 1;
+            container.removeChildren();
+            return container;
+        }
+        return new PIXI.Container();
+    }
+
+    _releaseEntityContainer(container) {
+        container.visible = false;
+        if (container.parent) container.parent.removeChild(container);
+        this._entityPool.push(container);
+    }
+
+    // --- Haptic Feedback (mobile) ---
+
+    _vibrate(pattern = 15) {
+        if (navigator.vibrate) {
+            navigator.vibrate(pattern);
+        }
     }
 
     // --- Keyboard Movement ---
 
     _handleKeyDown(e) {
         if (this._animating || this._dialogOpen) return;
-        const dir = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key];
+        const dir = {
+            ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
+            w: 'up', W: 'up', z: 'up', Z: 'up', // WASD + ZQSD (FR layout)
+            s: 'down', S: 'down',
+            a: 'left', A: 'left', q: 'left', Q: 'left',
+            d: 'right', D: 'right',
+        }[e.key];
         if (!dir) return;
         e.preventDefault();
         this._moveInDirection(dir);
@@ -582,6 +816,7 @@ export default class extends Controller {
         const py = Math.floor(this._playerY);
         const offsets = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
         const [dx, dy] = offsets[dir];
+        this._vibrate(10);
         this._requestMove(px + dx, py + dy);
     }
 
@@ -803,6 +1038,15 @@ export default class extends Controller {
     async _handlePortalTransition(portal) {
         console.debug('[map_pixi] Portal triggered → map', portal.destinationMapId, 'at', portal.destinationCoordinates);
 
+        // Sparkle effect + camera shake on portal
+        this.spawnParticles(
+            this._playerX * this._tileSize + this._tileSize / 2,
+            this._playerY * this._tileSize + this._tileSize / 2,
+            { count: 12, color: 0xa855f7, life: 600 }
+        );
+        this.shakeCamera(3, 200);
+        this._vibrate([20, 50, 20]);
+
         // Fade out effect
         await this._fadeTransition(true);
 
@@ -904,10 +1148,14 @@ export default class extends Controller {
         const px = Math.floor(this._playerX);
         const py = Math.floor(this._playerY);
 
-        for (const [key, entity] of Object.entries(this._entitySprites)) {
-            if (!key.startsWith('pnj_')) continue;
-            const dist = Math.abs(entity.x - px) + Math.abs(entity.y - py);
-            if (dist <= 1) {
+        // Use spatial hash for O(1) nearby entity lookup
+        const neighbors = [
+            [px, py], [px - 1, py], [px + 1, py], [px, py - 1], [px, py + 1],
+        ];
+        for (const [nx, ny] of neighbors) {
+            const entities = this._getEntitiesAt(nx, ny);
+            for (const key of entities) {
+                if (!key.startsWith('pnj_')) continue;
                 const pnjId = parseInt(key.replace('pnj_', ''));
                 this._openPnjDialog(pnjId);
                 return;
