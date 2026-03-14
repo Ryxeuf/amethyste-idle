@@ -458,6 +458,7 @@ export default class extends Controller {
     _createPortalMarker(portal) {
         const texture = this._getPortalTexture();
         const sprite = new PIXI.Sprite(texture);
+        const s = this._tileSize;
         sprite.position.set(portal.x * s, portal.y * s);
         sprite.zIndex = portal.y * s - 1;
         this._entityContainer.addChild(sprite);
