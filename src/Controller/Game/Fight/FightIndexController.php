@@ -60,13 +60,37 @@ class FightIndexController extends AbstractController
             $playerCooldowns[$spell->getSlug()] = $fight->getSpellCooldown($entityKey, $spell->getSlug());
         }
 
+        // Danger alert check from mob AI
+        $dangerAlert = null;
+        $mob = $fight->getMobs()->first();
+        if ($mob && !$mob->isDead()) {
+            $monster = $mob->getMonster();
+            $aiPattern = $monster->getAiPattern();
+            $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+
+            if ($monster->isBoss() && $monster->getBossPhases()) {
+                $phase = $monster->getCurrentBossPhase((int) $hpPercent);
+                if ($phase && isset($phase['danger_message'])) {
+                    $dangerAlert = $phase['danger_message'];
+                }
+            }
+
+            if ($dangerAlert === null && $aiPattern !== null && isset($aiPattern['danger_alert'])) {
+                $alertThreshold = $aiPattern['danger_alert']['threshold'] ?? 30;
+                if ($hpPercent <= $alertThreshold) {
+                    $dangerAlert = $aiPattern['danger_alert']['message'] ?? null;
+                }
+            }
+        }
+
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
             'fight' => $fight,
-            'mob' => $fight->getMobs()->first(),
+            'mob' => $mob,
             'statusEffects' => $statusEffects,
             'unlockedSpells' => $unlockedSpells,
             'playerCooldowns' => $playerCooldowns,
+            'dangerAlert' => $dangerAlert,
         ]);
     }
 } 
