@@ -1,0 +1,146 @@
+# =============================================================================
+# CD Pipeline — Déploiement automatique sur le serveur de production
+# =============================================================================
+#
+# Déclenchée automatiquement quand un push arrive sur `main`.
+#
+# Prérequis (GitHub Secrets à configurer) :
+#   - DEPLOY_HOST        : IP ou hostname du serveur (ex: amethyste.best)
+#   - DEPLOY_USER        : Utilisateur SSH (ex: deploy)
+#   - DEPLOY_SSH_KEY     : Clé privée SSH (ed25519 recommandée)
+#   - DEPLOY_PATH        : Chemin du projet sur le serveur (ex: /opt/amethyste-idle)
+#   - DEPLOY_SSH_PORT    : Port SSH (optionnel, défaut 22)
+#
+# Fonctionnement :
+#   1. La CI complète doit passer (tests, lint, phpstan, build Docker)
+#   2. Connexion SSH au serveur de production
+#   3. Pull des dernières modifications
+#   4. Exécution du script deploy.sh --prod
+#
+# =============================================================================
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false  # Ne JAMAIS annuler un déploiement en cours
+
+env:
+  DEPLOY_TIMEOUT: 600  # 10 minutes max pour le déploiement
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. CI — On réutilise le workflow CI complet
+  # ---------------------------------------------------------------------------
+  ci:
+    name: "CI"
+    uses: ./.github/workflows/ci.yml
+
+  # ---------------------------------------------------------------------------
+  # 2. Déploiement sur le serveur de production
+  # ---------------------------------------------------------------------------
+  deploy:
+    name: "Deploy to production"
+    runs-on: ubuntu-latest
+    needs: [ci]
+    environment:
+      name: production
+      url: https://amethyste.best
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p ${{ secrets.DEPLOY_SSH_PORT || 22 }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Deploy to server
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p $SSH_PORT ${SSH_USER}@${SSH_HOST} << 'DEPLOY_SCRIPT'
+            set -euo pipefail
+
+            echo "========================================="
+            echo " Deploiement Amethyste-Idle"
+            echo " Date: $(date '+%Y-%m-%d %H:%M:%S')"
+            echo " Commit: ${{ github.sha }}"
+            echo "========================================="
+
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            # Sauvegarder le commit actuel pour rollback éventuel
+            PREVIOUS_COMMIT=$(git rev-parse HEAD)
+            echo "Commit precedent: ${PREVIOUS_COMMIT}"
+
+            # Pull des modifications
+            echo ""
+            echo "==> Pull des modifications..."
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Exécuter le script de déploiement
+            echo ""
+            echo "==> Lancement du deploiement..."
+            ./scripts/deploy.sh --prod
+
+            echo ""
+            echo "========================================="
+            echo " Deploiement termine avec succes!"
+            echo " Nouveau commit: $(git rev-parse HEAD)"
+            echo "========================================="
+          DEPLOY_SCRIPT
+
+      - name: Verify deployment
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+        run: |
+          ssh -i ~/.ssh/deploy_key -p $SSH_PORT ${SSH_USER}@${SSH_HOST} << 'VERIFY_SCRIPT'
+            set -euo pipefail
+
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            echo "==> Verification des conteneurs..."
+            docker compose -f compose.yaml -f compose.prod.yaml ps
+
+            echo ""
+            echo "==> Health check..."
+            # Attendre que le conteneur PHP soit prêt
+            for i in $(seq 1 30); do
+              if docker compose -f compose.yaml -f compose.prod.yaml exec -T php curl -sf http://localhost:2019/metrics > /dev/null 2>&1; then
+                echo "Health check OK!"
+                exit 0
+              fi
+              echo "  Tentative ${i}/30..."
+              sleep 2
+            done
+
+            echo "ERREUR: Health check echoue apres 60 secondes"
+            exit 1
+          VERIFY_SCRIPT
+
+      - name: Cleanup SSH
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "::error::Le deploiement a echoue! Verifiez les logs ci-dessus."
+          echo "Pour un rollback manuel, connectez-vous au serveur et executez:"
+          echo "  cd ${{ secrets.DEPLOY_PATH }}"
+          echo "  git reset --hard <commit-precedent>"
+          echo "  ./scripts/deploy.sh --prod"
