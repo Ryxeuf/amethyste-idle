@@ -35,6 +35,9 @@ class Pnj
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
     private ?Map $map;
 
+    #[ORM\Column(name: 'shop_items', type: 'json', nullable: true)]
+    private ?array $shopItems = null;
+
     /**
      * Coordonnées du player sur la carte
      */
@@ -186,5 +189,20 @@ class Pnj
     public function setCoordinates(string $coordinates): void
     {
         $this->coordinates = $coordinates;
+    }
+
+    public function getShopItems(): ?array
+    {
+        return $this->shopItems;
+    }
+
+    public function setShopItems(?array $shopItems): void
+    {
+        $this->shopItems = $shopItems;
+    }
+
+    public function isMerchant(): bool
+    {
+        return $this->shopItems !== null && count($this->shopItems) > 0;
     }
 }
