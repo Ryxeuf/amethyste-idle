@@ -141,9 +141,15 @@ export default class extends Controller {
         this._app.stage.addChild(this._worldContainer);
 
         this._app.canvas.addEventListener('pointerdown', (e) => this._onPointerDown(e));
+        this._app.canvas.addEventListener('pointermove', (e) => this._onPointerMove(e));
+        this._app.canvas.addEventListener('pointerup', (e) => this._onPointerUp(e));
 
         this._onKeyDown = (e) => this._handleKeyDown(e);
         document.addEventListener('keydown', this._onKeyDown);
+
+        // Swipe tracking
+        this._swipeStart = null;
+        this._swipeThreshold = 30;
 
         this._app.ticker.add((ticker) => this._tick(ticker));
 
@@ -557,27 +563,67 @@ export default class extends Controller {
 
     _handleKeyDown(e) {
         if (this._animating || this._dialogOpen) return;
+        const dir = { ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right' }[e.key];
+        if (!dir) return;
+        e.preventDefault();
+        this._moveInDirection(dir);
+    }
+
+    // --- Joystick & Directional Movement ---
+
+    onJoystickMove(event) {
+        if (this._animating || this._dialogOpen) return;
+        this._moveInDirection(event.detail.direction);
+    }
+
+    _moveInDirection(dir) {
         const px = Math.floor(this._playerX);
         const py = Math.floor(this._playerY);
-        let targetX = px, targetY = py;
-
-        switch (e.key) {
-            case 'ArrowUp':    targetY = py - 1; break;
-            case 'ArrowDown':  targetY = py + 1; break;
-            case 'ArrowLeft':  targetX = px - 1; break;
-            case 'ArrowRight': targetX = px + 1; break;
-            default: return;
-        }
-        e.preventDefault();
-        this._requestMove(targetX, targetY);
+        const offsets = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
+        const [dx, dy] = offsets[dir];
+        this._requestMove(px + dx, py + dy);
     }
 
     // --- Click to Move ---
 
     _onPointerDown(e) {
         e.preventDefault();
+        // Track swipe start for touch gestures
+        this._swipeStart = { x: e.clientX, y: e.clientY, time: performance.now() };
+    }
+
+    _onPointerMove(e) {
+        // No-op for now; swipe is detected on pointer up
+    }
+
+    _onPointerUp(e) {
+        if (!this._swipeStart) return;
+
+        const dx = e.clientX - this._swipeStart.x;
+        const dy = e.clientY - this._swipeStart.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const elapsed = performance.now() - this._swipeStart.time;
+        this._swipeStart = null;
+
+        // Swipe detected: fast short gesture → directional move
+        if (dist > this._swipeThreshold && elapsed < 400) {
+            if (this._dialogOpen) return;
+            let dir;
+            if (Math.abs(dx) > Math.abs(dy)) {
+                dir = dx > 0 ? 'right' : 'left';
+            } else {
+                dir = dy > 0 ? 'down' : 'up';
+            }
+            this._moveInDirection(dir);
+            return;
+        }
+
+        // Otherwise treat as click-to-move (tap)
+        this._handleTap(e);
+    }
+
+    _handleTap(e) {
         const rect = this._app.canvas.getBoundingClientRect();
-        // Account for CSS scaling: map screen coords to canvas coords
         const scaleX = this._app.canvas.width / rect.width;
         const scaleY = this._app.canvas.height / rect.height;
         const screenX = (e.clientX - rect.left) * scaleX;
@@ -598,9 +644,6 @@ export default class extends Controller {
         if (this._animating) {
             this._cancelRequested = true;
             this._pendingNewTarget = isWalkable ? { x: tileX, y: tileY } : null;
-            if (typeof console !== 'undefined' && console.debug) {
-                console.debug('[map_pixi] Clic pendant déplacement → annulation', isWalkable ? `nouvelle cible (${tileX},${tileY})` : 'arrêt uniquement');
-            }
             return;
         }
 
