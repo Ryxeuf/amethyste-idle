@@ -4,36 +4,39 @@
 {% block page_title %}Cartes{% endblock %}
 
 {% block body %}
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Cartes</h1>
-</div>
+    <div class="flex items-center justify-between mb-6">
+        <form method="get" class="flex items-center gap-2">
+            <input type="text" name="q" value="{{ search }}" placeholder="Rechercher une carte..."
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-64">
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
+            {% if search %}
+                <a href="{{ path('admin_map_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
+            {% endif %}
+        </form>
+    </div>
 
-<form method="get" class="mb-4">
-    <input type="text" name="q" value="{{ search }}" placeholder="Rechercher par nom..." class="bg-gray-700 text-white px-4 py-2 rounded w-64 border border-gray-600 focus:border-purple-500 focus:outline-none">
-</form>
-
-<table class="w-full text-left">
-    <thead class="border-b border-gray-600">
-        <tr>
-            <th class="px-4 py-3 text-gray-400 text-sm">ID</th>
-            <th class="px-4 py-3 text-gray-400 text-sm">Nom</th>
-            <th class="px-4 py-3 text-gray-400 text-sm">Coordonnees</th>
-            <th class="px-4 py-3 text-gray-400 text-sm">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for map in maps %}
-        <tr class="border-b border-gray-700 hover:bg-gray-800">
-            <td class="px-4 py-3 text-gray-400">{{ map.id }}</td>
-            <td class="px-4 py-3">{{ map.name }}</td>
-            <td class="px-4 py-3 text-gray-400">{{ map.coordinates ?? '-' }}</td>
-            <td class="px-4 py-3">
-                <a href="{{ path('admin_map_show', {id: map.id}) }}" class="text-purple-400 hover:text-purple-300">Voir</a>
-            </td>
-        </tr>
+            {% set stats = mapStats[map.id] %}
+            <a href="{{ path('admin_map_show', {id: map.id}) }}" class="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-purple-700 transition-colors block">
+                <h3 class="text-gray-200 font-semibold mb-3">{{ map.name }}</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Joueurs</p>
+                        <p class="text-lg font-bold text-purple-400">{{ stats.players }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">Mobs</p>
+                        <p class="text-lg font-bold text-red-400">{{ stats.mobs }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase">PNJ</p>
+                        <p class="text-lg font-bold text-green-400">{{ stats.pnjs }}</p>
+                    </div>
+                </div>
+            </a>
         {% else %}
-        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Aucune carte.</td></tr>
+            <div class="col-span-3 text-center text-gray-500 py-8">Aucune carte trouvee.</div>
         {% endfor %}
-    </tbody>
-</table>
+    </div>
 {% endblock %}

@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -16,6 +17,7 @@ class MaintenanceSubscriber implements EventSubscriberInterface
     public function __construct(
         private readonly KernelInterface $kernel,
         private readonly Environment $twig,
+        private readonly Security $security,
     ) {
     }
 
@@ -27,6 +29,16 @@ class MaintenanceSubscriber implements EventSubscriberInterface
 
         $flagPath = $this->kernel->getProjectDir() . '/' . self::FLAG_FILE;
         if (!is_file($flagPath)) {
+            return;
+        }
+
+        // Allow admins to access the site during maintenance
+        $path = $event->getRequest()->getPathInfo();
+        if (str_starts_with($path, '/admin') || str_starts_with($path, '/login')) {
+            return;
+        }
+
+        if ($this->security->isGranted('ROLE_ADMIN')) {
             return;
         }
 

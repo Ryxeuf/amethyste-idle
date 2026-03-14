@@ -4,17 +4,21 @@ namespace App\Controller\Admin;
 
 use App\Entity\Game\Skill;
 use App\Form\Admin\SkillType;
+use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/skills', name: 'admin_skill_')]
+#[IsGranted('ROLE_ADMIN')]
 class SkillController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
+        private readonly AdminLogger $adminLogger,
     ) {
     }
 
@@ -30,11 +34,21 @@ class SkillController extends AbstractController
         }
 
         $qb->orderBy('s.title', 'ASC');
-        $skills = $qb->getQuery()->getResult();
+
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 25;
+        $total = (int) (clone $qb)->select('COUNT(s.id)')->getQuery()->getSingleScalarResult();
+        $skills = $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
 
         return $this->render('admin/skill/index.html.twig', [
             'skills' => $skills,
             'search' => $search,
+            'currentPage' => $page,
+            'totalPages' => max(1, (int) ceil($total / $limit)),
+            'total' => $total,
         ]);
     }
 
@@ -48,6 +62,7 @@ class SkillController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->persist($skill);
             $this->em->flush();
+            $this->adminLogger->log('create', 'Skill', $skill->getId(), $skill->getTitle());
             $this->addFlash('success', 'Talent "' . $skill->getTitle() . '" cree avec succes.');
 
             return $this->redirectToRoute('admin_skill_index');
@@ -66,6 +81,7 @@ class SkillController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->em->flush();
+            $this->adminLogger->log('update', 'Skill', $skill->getId(), $skill->getTitle());
             $this->addFlash('success', 'Talent "' . $skill->getTitle() . '" modifie avec succes.');
 
             return $this->redirectToRoute('admin_skill_index');
@@ -81,8 +97,10 @@ class SkillController extends AbstractController
     public function delete(Request $request, Skill $skill): Response
     {
         if ($this->isCsrfTokenValid('delete' . $skill->getId(), $request->request->get('_token'))) {
+            $title = $skill->getTitle();
             $this->em->remove($skill);
             $this->em->flush();
+            $this->adminLogger->log('delete', 'Skill', null, $title);
             $this->addFlash('success', 'Talent supprime avec succes.');
         }
 

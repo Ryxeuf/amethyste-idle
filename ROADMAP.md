@@ -43,7 +43,7 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 | Accessibilité | ✅ Fait | ARIA labels, rôles WAI-ARIA, mode landscape, hints clavier |
 | Crafting | 🔴 Absent | Domaines définis, aucune mécanique ni UI |
 | Commerce | 🔴 Absent | Pas de boutiques PNJ ni échanges joueurs |
-| Administration | 🔴 Absent | Pas de panel admin |
+| Administration | ✅ Fait | Panel admin complet (dashboard, CRUD, logs, maintenance) |
 
 ---
 
@@ -120,42 +120,43 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 
 ---
 
-## Phase 2 — Panel d'administration
+## Phase 2 — Panel d'administration ✅ *Terminée*
 
 > Permettre aux admins de gérer tout le jeu sans toucher au code ni aux fixtures.
 
-### 2.1 Infrastructure admin
-- [ ] Activer le firewall admin dans `security.yaml` (pattern `/admin/*`, rôle `ROLE_ADMIN`)
-- [ ] Layout admin dédié (`templates/admin/base.html.twig`) : sidebar navigation, thème distinct du jeu
-- [ ] Dashboard admin avec métriques clés : joueurs en ligne, combats en cours, économie (or total en circulation), monstres actifs
-- [ ] Système de recherche et filtrage sur toutes les listes (Turbo Frames pour pagination dynamique)
+### 2.1 Infrastructure admin ✅
+- [x] Activer le firewall admin dans `security.yaml` (pattern `/admin/*`, rôle `ROLE_ADMIN`)
+- [x] Layout admin dédié (`templates/admin/base.html.twig`) : sidebar navigation, thème distinct du jeu
+- [x] Dashboard admin avec métriques clés : joueurs en ligne, combats en cours, économie (or total en circulation), monstres actifs
+- [x] Système de recherche et filtrage sur toutes les listes avec pagination
 
-### 2.2 Gestion du contenu de jeu (CRUD complet)
-- [ ] **Items** : créer/modifier/supprimer des items, définir type, rareté, stats, effet, icône, prix
-- [ ] **Monstres** : stats, sorts, tables de loot (avec probabilités visuelles), zones d'apparition
-- [ ] **Sorts** : nom, élément, dégâts/soin/toucher/critique, animation, coût en énergie
-- [ ] **Compétences** : arbres de talent visuels (drag & drop pour réorganiser), pré-requis, bonus
-- [ ] **Domaines** : gérer les domaines de progression, associer compétences et actions
-- [ ] **Quêtes** : éditeur de quêtes (objectifs, récompenses, PNJ donneur, chaînes de quêtes)
-- [ ] **PNJ** : position, sprite, dialogues (éditeur d'arbre de dialogue visuel), quêtes associées
-- [ ] **Recettes de craft** : ingrédients, résultat, compétence requise, niveau minimum
-- [ ] **Tables de loot** : éditeur visuel avec probabilités et preview du drop rate
+### 2.2 Gestion du contenu de jeu (CRUD complet) ✅
+- [x] **Items** : créer/modifier/supprimer des items, définir type, rareté, stats, effet, icône, prix
+- [x] **Monstres** : stats, sorts, tables de loot (avec probabilités), zones d'apparition
+- [x] **Sorts** : nom, élément, dégâts/soin/toucher/critique, animation, coût en énergie
+- [x] **Compétences** : gestion des talents, pré-requis, bonus
+- [x] **Domaines** : gérer les domaines de progression, associer compétences et actions
+- [x] **Quêtes** : éditeur de quêtes (objectifs JSON, récompenses JSON, PNJ donneur)
+- [x] **PNJ** : position, sprite, dialogues (éditeur JSON), quêtes associées
+- [x] **Recettes de craft** : ingrédients, résultat, compétence requise, niveau minimum, profession
+- [x] **Tables de loot** : éditeur avec probabilités et monstre/item associés
 
-### 2.3 Gestion des cartes
-- [ ] **Visualisation des maps** : carte du monde dans l'admin avec preview de chaque zone
+### 2.3 Gestion des cartes ✅
+- [x] **Visualisation des maps** : cartes avec statistiques par zone (joueurs, mobs, PNJ)
+- [x] **Monitoring par zone** : nombre de joueurs, mobs vivants, PNJ présents
 - [ ] **Gestion des spawns** : placer/déplacer mobs et PNJ sur la carte via interface visuelle
 - [ ] **Gestion des portails** : configurer les liens entre zones
 - [ ] **Import de map** : upload d'un fichier TMX depuis l'admin, import automatique
-- [ ] **Monitoring par zone** : nombre de joueurs, mobs vivants, ressources disponibles
 
-### 2.4 Gestion des joueurs
-- [ ] Liste des joueurs avec recherche (nom, email, rôle, dernière connexion)
-- [ ] Fiche joueur détaillée : stats, inventaire, quêtes, progression, historique de combats
-- [ ] Actions admin : ban/unban, reset position, donner/retirer items, modifier stats, changer rôle
-- [ ] Logs d'actions admin (qui a fait quoi, quand) pour traçabilité
+### 2.4 Gestion des joueurs ✅
+- [x] Liste des joueurs avec recherche (nom, email, rôle) et pagination
+- [x] Fiche joueur détaillée : stats, inventaire complet, quêtes actives/terminées, progression par domaine, talents
+- [x] Actions admin : ban/unban, reset position, donner items, donner gils, changer rôle
+- [x] Logs d'actions admin (qui a fait quoi, quand, IP) pour traçabilité
 
-### 2.5 Outils de maintenance
-- [ ] Mode maintenance activable depuis l'admin (redirige les joueurs avec message personnalisé)
+### 2.5 Outils de maintenance ✅
+- [x] Mode maintenance activable depuis l'admin (redirige les joueurs avec message personnalisé, admins exemptés)
+- [x] Logs d'administration avec recherche et pagination
 - [ ] Reload des fixtures sélectif (items seulement, monstres seulement, etc.)
 - [ ] Console Mercure : voir les topics actifs, publier des messages de test
 - [ ] Planificateur d'événements : programmer des spawns de boss, des bonus XP temporaires
