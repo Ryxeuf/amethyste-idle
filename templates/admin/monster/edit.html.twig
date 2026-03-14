@@ -1,0 +1,8 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier "{{ monster.name }}" - Admin{% endblock %}
+{% block page_title %}Modifier : {{ monster.name }}{% endblock %}
+
+{% block body %}
+    {% include 'admin/monster/_form.html.twig' %}
+{% endblock %}

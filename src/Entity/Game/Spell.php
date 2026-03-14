@@ -66,6 +66,18 @@ class Spell
     #[ORM\Column(name: "element", type: "string", length: 25)]
     private $element = self::ELEMENT_NONE;
 
+    #[ORM\Column(name: "cooldown", type: "integer", nullable: true)]
+    private ?int $cooldown = null;
+
+    #[ORM\Column(name: "energy_cost", type: "integer", options: ["default" => 0])]
+    private int $energyCost = 0;
+
+    #[ORM\Column(name: "status_effect_slug", type: "string", length: 255, nullable: true)]
+    private ?string $statusEffectSlug = null;
+
+    #[ORM\Column(name: "aoe_targets", type: "integer", options: ["default" => 1])]
+    private int $aoeTargets = 1;
+
     /**
      * Get id
      *
@@ -262,5 +274,50 @@ class Spell
     public function setSlug(string $slug): void
     {
         $this->slug = $slug;
+    }
+
+    public function getCooldown(): ?int
+    {
+        return $this->cooldown;
+    }
+
+    public function setCooldown(?int $cooldown): void
+    {
+        $this->cooldown = $cooldown;
+    }
+
+    public function getEnergyCost(): int
+    {
+        return $this->energyCost;
+    }
+
+    public function setEnergyCost(int $energyCost): void
+    {
+        $this->energyCost = $energyCost;
+    }
+
+    public function getStatusEffectSlug(): ?string
+    {
+        return $this->statusEffectSlug;
+    }
+
+    public function setStatusEffectSlug(?string $statusEffectSlug): void
+    {
+        $this->statusEffectSlug = $statusEffectSlug;
+    }
+
+    public function getAoeTargets(): int
+    {
+        return $this->aoeTargets;
+    }
+
+    public function setAoeTargets(int $aoeTargets): void
+    {
+        $this->aoeTargets = $aoeTargets;
+    }
+
+    public function isAoe(): bool
+    {
+        return $this->aoeTargets === 0 || $this->aoeTargets > 1;
     }
 }

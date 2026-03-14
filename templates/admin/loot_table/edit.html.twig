@@ -1,0 +1,25 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier entree de loot - Admin{% endblock %}
+{% block page_title %}Modifier entree de loot{% endblock %}
+
+{% block body %}
+<h1 class="text-2xl font-bold mb-6">Modifier entree de loot</h1>
+{{ form_start(form) }}
+<div class="space-y-4 max-w-2xl">
+    {% for field in form %}
+        {% if field.vars.name != '_token' %}
+        <div>
+            {{ form_label(field, null, {'attr': {'class': 'block text-sm text-gray-300 mb-1'}}) }}
+            {{ form_widget(field, {'attr': {'class': 'w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600 focus:border-purple-500 focus:outline-none'}}) }}
+            {{ form_errors(field) }}
+        </div>
+        {% endif %}
+    {% endfor %}
+</div>
+<div class="mt-6">
+    <button type="submit" class="bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded text-white">Enregistrer</button>
+    <a href="{{ path('admin_loot_table_index') }}" class="ml-4 text-gray-400 hover:text-white">Annuler</a>
+</div>
+{{ form_end(form) }}
+{% endblock %}

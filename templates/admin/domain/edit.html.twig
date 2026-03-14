@@ -1,0 +1,8 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier "{{ domain.title }}" - Admin{% endblock %}
+{% block page_title %}Modifier : {{ domain.title }}{% endblock %}
+
+{% block body %}
+    {% include 'admin/domain/_form.html.twig' %}
+{% endblock %}

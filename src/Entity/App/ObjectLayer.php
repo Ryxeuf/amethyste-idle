@@ -21,6 +21,10 @@ class ObjectLayer
     const TYPE_MOB_SPAWN = 'mob_spawn';
     const TYPE_NPC_SPAWN = 'npc_spawn';
     const TYPE_HARVEST_SPOT = 'harvest_spot';
+    const TYPE_FORGE = 'forge';
+    const TYPE_TANNERY = 'tannery';
+    const TYPE_ALCHEMY_LAB = 'alchemy_lab';
+    const TYPE_JEWELER_BENCH = 'jeweler_bench';
 
     function __toString(): string
     {
@@ -96,6 +100,18 @@ class ObjectLayer
 
     #[ORM\Column(name: 'destination_coordinates', type: 'string', nullable: true)]
     private ?string $destinationCoordinates = null;
+
+    /**
+     * Délai de réapparition en secondes après récolte (null = pas de respawn)
+     */
+    #[ORM\Column(name: 'respawn_delay', type: 'integer', nullable: true)]
+    private ?int $respawnDelay = null;
+
+    /**
+     * Type d'outil requis pour récolter ce spot (pickaxe, sickle, fishing_rod, skinning_knife)
+     */
+    #[ORM\Column(name: 'required_tool_type', type: 'string', length: 50, nullable: true)]
+    private ?string $requiredToolType = null;
 
     /**
      * @return int
@@ -274,5 +290,72 @@ class ObjectLayer
     public function isPortal(): bool
     {
         return $this->type === self::TYPE_PORTAL;
+    }
+
+    public function isHarvestSpot(): bool
+    {
+        return $this->type === self::TYPE_HARVEST_SPOT;
+    }
+
+    public function isCraftStation(): bool
+    {
+        return in_array($this->type, [
+            self::TYPE_FORGE,
+            self::TYPE_TANNERY,
+            self::TYPE_ALCHEMY_LAB,
+            self::TYPE_JEWELER_BENCH,
+        ], true);
+    }
+
+    /**
+     * Retourne la profession associée au type de station d'artisanat.
+     */
+    public function getCraftProfession(): ?string
+    {
+        return match ($this->type) {
+            self::TYPE_FORGE => 'blacksmith',
+            self::TYPE_TANNERY => 'tanner',
+            self::TYPE_ALCHEMY_LAB => 'alchemist',
+            self::TYPE_JEWELER_BENCH => 'jeweler',
+            default => null,
+        };
+    }
+
+    /**
+     * Vérifie si le spot est disponible (pas en cooldown de respawn).
+     */
+    public function isAvailable(): bool
+    {
+        if ($this->usedAt === null) {
+            return true;
+        }
+
+        if ($this->respawnDelay === null) {
+            return false;
+        }
+
+        $respawnAt = (clone $this->usedAt)->modify("+{$this->respawnDelay} seconds");
+
+        return new DateTime() >= $respawnAt;
+    }
+
+    public function getRespawnDelay(): ?int
+    {
+        return $this->respawnDelay;
+    }
+
+    public function setRespawnDelay(?int $respawnDelay): void
+    {
+        $this->respawnDelay = $respawnDelay;
+    }
+
+    public function getRequiredToolType(): ?string
+    {
+        return $this->requiredToolType;
+    }
+
+    public function setRequiredToolType(?string $requiredToolType): void
+    {
+        $this->requiredToolType = $requiredToolType;
     }
 }

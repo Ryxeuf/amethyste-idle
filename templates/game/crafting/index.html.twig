@@ -1,0 +1,111 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Artisanat{% endblock %}
+
+{% block game_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-purple-400 mb-2">Artisanat</h1>
+        <p class="text-gray-300">Fabriquez des objets a partir de materiaux recoltes.</p>
+    </div>
+
+    {# Messages flash #}
+    {% include 'game/crafting/_craft_result.html.twig' %}
+
+    {# Onglets des professions d'artisanat #}
+    <div class="mb-6">
+        <div class="border-b border-gray-700">
+            <nav class="flex flex-wrap space-x-4 md:space-x-8" id="craft-tabs">
+                {% set craftLabels = {
+                    'alchemy': 'Alchimie',
+                    'blacksmithing': 'Forge',
+                    'cooking': 'Cuisine',
+                    'enchanting': 'Enchantement'
+                } %}
+
+                {% for craft in crafts %}
+                    <button type="button"
+                            data-craft-tab="{{ craft }}"
+                            class="craft-tab-btn whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm focus:outline-none
+                                {% if loop.first %}
+                                    border-purple-500 text-purple-400
+                                {% else %}
+                                    border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-400
+                                {% endif %}">
+                        {{ craftLabels[craft] ?? craft|capitalize }}
+                        <span class="ml-1 text-xs bg-gray-700 text-gray-300 px-2 py-0.5 rounded-full">
+                            Niv. {{ craftLevels[craft] ?? 1 }}
+                        </span>
+                    </button>
+                {% endfor %}
+            </nav>
+        </div>
+    </div>
+
+    {# Contenu des onglets #}
+    {% for craft in crafts %}
+        <div id="craft-panel-{{ craft }}"
+             class="craft-panel {% if not loop.first %}hidden{% endif %}">
+
+            {% if recipesByCraft[craft] is defined and recipesByCraft[craft]|length > 0 %}
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {% for recipe in recipesByCraft[craft] %}
+                        {% set craftCheck = canCraftByCraft[craft][recipe.id] ?? {possible: false, missing: []} %}
+                        {% include 'game/crafting/_recipe_card.html.twig' with {
+                            recipe: recipe,
+                            craftCheck: craftCheck
+                        } %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center text-gray-400 py-12">
+                    <p class="text-lg">Aucune recette disponible pour cette profession.</p>
+                    <p class="text-sm mt-2">Progressez dans le jeu pour debloquer de nouvelles recettes.</p>
+                </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    {# Section Experimentation #}
+    <div class="mt-8 border-t border-gray-700 pt-6">
+        <h2 class="text-xl font-semibold text-purple-300 mb-4">Experimentation</h2>
+        {% include 'game/crafting/_experiment.html.twig' with {
+            playerItems: playerItems
+        } %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabButtons = document.querySelectorAll('.craft-tab-btn');
+        const panels = document.querySelectorAll('.craft-panel');
+
+        tabButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                const craft = button.getAttribute('data-craft-tab');
+
+                // Reset tous les onglets
+                tabButtons.forEach(function(btn) {
+                    btn.classList.remove('border-purple-500', 'text-purple-400');
+                    btn.classList.add('border-transparent', 'text-gray-400');
+                });
+
+                // Cacher tous les panneaux
+                panels.forEach(function(panel) {
+                    panel.classList.add('hidden');
+                });
+
+                // Activer l'onglet clique
+                button.classList.remove('border-transparent', 'text-gray-400');
+                button.classList.add('border-purple-500', 'text-purple-400');
+
+                // Afficher le panneau correspondant
+                var panel = document.getElementById('craft-panel-' + craft);
+                if (panel) {
+                    panel.classList.remove('hidden');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

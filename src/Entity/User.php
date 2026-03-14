@@ -43,6 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $lastName = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isBanned = false;
+
     /**
      * @var Player[]|ArrayCollection
      */
@@ -180,5 +183,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPlayer(): ?Player
     {
         return $this->getPlayers()->first() ?: null;
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->isBanned;
+    }
+
+    public function setIsBanned(bool $isBanned): static
+    {
+        $this->isBanned = $isBanned;
+
+        return $this;
     }
 } 

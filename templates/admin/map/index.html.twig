@@ -1,0 +1,39 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Cartes - Admin{% endblock %}
+{% block page_title %}Cartes{% endblock %}
+
+{% block body %}
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Cartes</h1>
+</div>
+
+<form method="get" class="mb-4">
+    <input type="text" name="q" value="{{ search }}" placeholder="Rechercher par nom..." class="bg-gray-700 text-white px-4 py-2 rounded w-64 border border-gray-600 focus:border-purple-500 focus:outline-none">
+</form>
+
+<table class="w-full text-left">
+    <thead class="border-b border-gray-600">
+        <tr>
+            <th class="px-4 py-3 text-gray-400 text-sm">ID</th>
+            <th class="px-4 py-3 text-gray-400 text-sm">Nom</th>
+            <th class="px-4 py-3 text-gray-400 text-sm">Coordonnees</th>
+            <th class="px-4 py-3 text-gray-400 text-sm">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for map in maps %}
+        <tr class="border-b border-gray-700 hover:bg-gray-800">
+            <td class="px-4 py-3 text-gray-400">{{ map.id }}</td>
+            <td class="px-4 py-3">{{ map.name }}</td>
+            <td class="px-4 py-3 text-gray-400">{{ map.coordinates ?? '-' }}</td>
+            <td class="px-4 py-3">
+                <a href="{{ path('admin_map_show', {id: map.id}) }}" class="text-purple-400 hover:text-purple-300">Voir</a>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Aucune carte.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

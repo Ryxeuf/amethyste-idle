@@ -94,6 +94,9 @@ class Player implements CharacterInterface
     #[ORM\JoinTable(name: 'player_skill')]
     private $skills;
 
+    #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
+    private ?array $discoveredRecipes = [];
+
     public function getSpeed(): int
     {
         return $this->speed;
@@ -333,5 +336,15 @@ class Player implements CharacterInterface
     public function setIsMoving(bool $isMoving): void
     {
         $this->isMoving = $isMoving;
+    }
+
+    public function getDiscoveredRecipes(): array
+    {
+        return $this->discoveredRecipes ?? [];
+    }
+
+    public function setDiscoveredRecipes(array $discoveredRecipes): void
+    {
+        $this->discoveredRecipes = $discoveredRecipes;
     }
 }

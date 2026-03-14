@@ -2,6 +2,8 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,8 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/game/fight', name: 'app_game_fight')]
 class FightIndexController extends AbstractController
 {
-    public function __construct(private readonly PlayerHelper $playerHelper)
-    {
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly StatusEffectManager $statusEffectManager,
+        private readonly CombatSkillResolver $combatSkillResolver,
+    ) {
     }
 
     public function __invoke(): Response
@@ -33,11 +38,35 @@ class FightIndexController extends AbstractController
         if ($player->getFight()->isDefeat()) {
             return $this->redirectToRoute('app_game_map');
         }
-        
+
+        $fight = $player->getFight();
+
+        // Gather status effects for all participants
+        $statusEffects = [];
+        foreach ($fight->getPlayers() as $fightPlayer) {
+            $statusEffects['player_' . $fightPlayer->getId()] = $this->statusEffectManager->getActiveEffects($fight, $fightPlayer);
+        }
+        foreach ($fight->getMobs() as $mob) {
+            $statusEffects['mob_' . $mob->getId()] = $this->statusEffectManager->getActiveEffects($fight, $mob);
+        }
+
+        // Get unlocked combat spells for the player
+        $unlockedSpells = $this->combatSkillResolver->getUnlockedSpells($player);
+
+        // Get cooldowns for the player
+        $playerCooldowns = [];
+        $entityKey = 'player_' . $player->getId();
+        foreach ($unlockedSpells as $spell) {
+            $playerCooldowns[$spell->getSlug()] = $fight->getSpellCooldown($entityKey, $spell->getSlug());
+        }
+
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
-            'fight' => $player->getFight(),
-            'mob' => $player->getFight()->getMobs()->first(),
+            'fight' => $fight,
+            'mob' => $fight->getMobs()->first(),
+            'statusEffects' => $statusEffects,
+            'unlockedSpells' => $unlockedSpells,
+            'playerCooldowns' => $playerCooldowns,
         ]);
     }
 } 

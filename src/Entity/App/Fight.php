@@ -38,6 +38,12 @@ class Fight
     #[ORM\Column(name: "in_progress", type: "boolean", options: ["default" => 0])]
     private bool $inProgress = false;
 
+    #[ORM\Column(name: "last_element_used", type: "string", length: 25, nullable: true)]
+    private ?string $lastElementUsed = null;
+
+    #[ORM\Column(name: "cooldowns", type: "json", nullable: true)]
+    private ?array $cooldowns = null;
+
     /**
      * @return int
      */
@@ -148,5 +154,57 @@ class Fight
         return $this->players->filter(function (Player $player) {
             return $player->isDead();
         })->count() === $this->players->count();
+    }
+
+    public function getLastElementUsed(): ?string
+    {
+        return $this->lastElementUsed;
+    }
+
+    public function setLastElementUsed(?string $lastElementUsed): void
+    {
+        $this->lastElementUsed = $lastElementUsed;
+    }
+
+    public function getCooldowns(): ?array
+    {
+        return $this->cooldowns;
+    }
+
+    public function setCooldowns(?array $cooldowns): void
+    {
+        $this->cooldowns = $cooldowns;
+    }
+
+    public function getSpellCooldown(string $entityKey, string $spellSlug): int
+    {
+        return $this->cooldowns[$entityKey][$spellSlug] ?? 0;
+    }
+
+    public function setSpellCooldown(string $entityKey, string $spellSlug, int $turns): void
+    {
+        $cooldowns = $this->cooldowns ?? [];
+        $cooldowns[$entityKey][$spellSlug] = $turns;
+        $this->cooldowns = $cooldowns;
+    }
+
+    public function isSpellOnCooldown(string $entityKey, string $spellSlug): bool
+    {
+        return $this->getSpellCooldown($entityKey, $spellSlug) > 0;
+    }
+
+    public function decrementAllCooldowns(): void
+    {
+        if ($this->cooldowns === null) {
+            return;
+        }
+
+        $cooldowns = $this->cooldowns;
+        foreach ($cooldowns as $entityKey => $spells) {
+            foreach ($spells as $spellSlug => $turns) {
+                $cooldowns[$entityKey][$spellSlug] = max(0, $turns - 1);
+            }
+        }
+        $this->cooldowns = $cooldowns;
     }
 }

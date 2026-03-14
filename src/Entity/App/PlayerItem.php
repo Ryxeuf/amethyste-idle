@@ -91,6 +91,15 @@ class PlayerItem
     #[ORM\Column(name: 'nb_usages', type: 'integer', options: ['default' => -1])]
     private int $nbUsages = -1;
 
+    /**
+     * Durabilité restante de l'outil (null si ce n'est pas un outil)
+     */
+    #[ORM\Column(name: 'current_durability', type: 'integer', nullable: true)]
+    private ?int $currentDurability = null;
+
+    #[ORM\Column(name: 'experience', type: 'integer', options: ['default' => 0])]
+    private int $experience = 0;
+
     public function __construct()
     {
         $this->slots = new ArrayCollection();
@@ -235,5 +244,73 @@ class PlayerItem
     public function removeGear(): void
     {
         $this->gear = 0;
+    }
+
+    public function getCurrentDurability(): ?int
+    {
+        return $this->currentDurability;
+    }
+
+    public function setCurrentDurability(?int $currentDurability): void
+    {
+        $this->currentDurability = $currentDurability;
+    }
+
+    public function isTool(): bool
+    {
+        return $this->getGenericItem()->isTool();
+    }
+
+    public function isResource(): bool
+    {
+        return $this->getGenericItem()->isResource();
+    }
+
+    /**
+     * Réduit la durabilité de l'outil de $amount points.
+     * Retourne true si l'outil est cassé (durabilité <= 0).
+     */
+    public function reduceDurability(int $amount = 1): bool
+    {
+        if ($this->currentDurability === null) {
+            return false;
+        }
+
+        $this->currentDurability = max(0, $this->currentDurability - $amount);
+
+        return $this->currentDurability <= 0;
+    }
+
+    public function getExperience(): int
+    {
+        return $this->experience;
+    }
+
+    public function setExperience(int $experience): void
+    {
+        $this->experience = $experience;
+    }
+
+    public function addExperience(int $amount): void
+    {
+        $this->experience += $amount;
+    }
+
+    public function getMateriaLevel(): int
+    {
+        if ($this->experience < 100) {
+            return 1;
+        }
+        if ($this->experience < 300) {
+            return 2;
+        }
+        if ($this->experience < 600) {
+            return 3;
+        }
+        if ($this->experience < 1000) {
+            return 4;
+        }
+
+        return 5;
     }
 }
