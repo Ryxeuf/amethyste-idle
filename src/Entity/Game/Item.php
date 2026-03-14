@@ -2,54 +2,54 @@
 
 namespace App\Entity\Game;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: "game_items")]
+#[ORM\Table(name: 'game_items')]
 class Item
 {
     use TimestampableEntity;
 
-    public const TYPE_STUFF      = 'stuff';
+    public const TYPE_STUFF = 'stuff';
     public const TYPE_GEAR_PIECE = 'gear';
-    public const TYPE_MATERIA    = 'materia';
-    public const TYPE_RESOURCE   = 'resource';
-    public const TYPE_TOOL       = 'tool';
+    public const TYPE_MATERIA = 'materia';
+    public const TYPE_RESOURCE = 'resource';
+    public const TYPE_TOOL = 'tool';
 
-    public const TOOL_TYPE_PICKAXE        = 'pickaxe';
-    public const TOOL_TYPE_SICKLE         = 'sickle';
-    public const TOOL_TYPE_FISHING_ROD    = 'fishing_rod';
+    public const TOOL_TYPE_PICKAXE = 'pickaxe';
+    public const TOOL_TYPE_SICKLE = 'sickle';
+    public const TOOL_TYPE_FISHING_ROD = 'fishing_rod';
     public const TOOL_TYPE_SKINNING_KNIFE = 'skinning_knife';
 
-    public const TOOL_TIER_BRONZE  = 1;
-    public const TOOL_TIER_IRON    = 2;
-    public const TOOL_TIER_STEEL   = 3;
+    public const TOOL_TIER_BRONZE = 1;
+    public const TOOL_TIER_IRON = 2;
+    public const TOOL_TIER_STEEL = 3;
     public const TOOL_TIER_MITHRIL = 4;
 
-    public const GEAR_LOCATION_HEAD        = 'head';
-    public const GEAR_LOCATION_NECK        = 'neck';
-    public const GEAR_LOCATION_CHEST       = 'chest';
-    public const GEAR_LOCATION_HAND        = 'hand';
-    public const GEAR_LOCATION_FINGER      = 'finger';
-    public const GEAR_LOCATION_LEGS        = 'legs';
-    public const GEAR_LOCATION_FEET        = 'feet';
-    public const GEAR_LOCATION_MAIN_HAND   = 'main_hand';
-    public const GEAR_LOCATION_OFF_HAND    = 'off_hand';
-    public const GEAR_LOCATION_TWO_HAND    = 'two_hand';
-    public const GEAR_LOCATION_RANGED      = 'ranged';
-    public const GEAR_LOCATION_AMMO        = 'ammo';
-    
+    public const GEAR_LOCATION_HEAD = 'head';
+    public const GEAR_LOCATION_NECK = 'neck';
+    public const GEAR_LOCATION_CHEST = 'chest';
+    public const GEAR_LOCATION_HAND = 'hand';
+    public const GEAR_LOCATION_FINGER = 'finger';
+    public const GEAR_LOCATION_LEGS = 'legs';
+    public const GEAR_LOCATION_FEET = 'feet';
+    public const GEAR_LOCATION_MAIN_HAND = 'main_hand';
+    public const GEAR_LOCATION_OFF_HAND = 'off_hand';
+    public const GEAR_LOCATION_TWO_HAND = 'two_hand';
+    public const GEAR_LOCATION_RANGED = 'ranged';
+    public const GEAR_LOCATION_AMMO = 'ammo';
+
     public const GEAR_LOCATION_MAIN_WEAPON = 'main_weapon';
     public const GEAR_LOCATION_SIDE_WEAPON = 'side_weapon';
-    public const GEAR_LOCATION_BELT        = 'belt';
-    public const GEAR_LOCATION_LEG         = 'leg';
-    public const GEAR_LOCATION_FOOT        = 'foot';
-    public const GEAR_LOCATION_RING_1      = 'ring_1';
-    public const GEAR_LOCATION_RING_2      = 'ring_2';
-    public const GEAR_LOCATION_SHOULDER    = 'shoulder';
+    public const GEAR_LOCATION_BELT = 'belt';
+    public const GEAR_LOCATION_LEG = 'leg';
+    public const GEAR_LOCATION_FOOT = 'foot';
+    public const GEAR_LOCATION_RING_1 = 'ring_1';
+    public const GEAR_LOCATION_RING_2 = 'ring_2';
+    public const GEAR_LOCATION_SHOULDER = 'shoulder';
 
     public const ELEMENT_NONE = 'none';
     public const ELEMENT_FIRE = 'fire';
@@ -71,7 +71,7 @@ class Item
         self::GEAR_LOCATION_FOOT,
         self::GEAR_LOCATION_RING_1,
         self::GEAR_LOCATION_RING_2,
-        self::GEAR_LOCATION_SHOULDER
+        self::GEAR_LOCATION_SHOULDER,
     ];
 
     public function __toString(): string
@@ -105,7 +105,7 @@ class Item
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -113,75 +113,78 @@ class Item
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
-    #[ORM\Column(name: "price", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'price', type: 'integer', nullable: true)]
     private $price;
 
-    #[ORM\Column(name: "description", type: "text")]
+    #[ORM\Column(name: 'description', type: 'text')]
     private $description;
 
-    #[ORM\Column(name: "protection", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'protection', type: 'integer', nullable: true)]
     private $protection;
 
-    #[ORM\Column(name: "energy_cost", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'energy_cost', type: 'integer', nullable: true)]
     private $energyCost;
 
-    #[ORM\Column(name: "type", type: "string", length: 50, options: ["default" => "stuff"])]
+    #[ORM\Column(name: 'type', type: 'string', length: 50, options: ['default' => 'stuff'])]
     private $type = self::TYPE_STUFF;
 
-    #[ORM\Column(name: "space", type: "integer")]
+    #[ORM\Column(name: 'space', type: 'integer')]
     private $space = 1;
 
-    #[ORM\Column(name: "element", type: "string", length: 25)]
+    #[ORM\Column(name: 'element', type: 'string', length: 25)]
     private $element = self::ELEMENT_NONE;
 
-    #[ORM\Column(name: "gear_location", type: "string", nullable: true)]
+    #[ORM\Column(name: 'gear_location', type: 'string', nullable: true)]
     private $gearLocation;
 
-    #[ORM\Column(name: "slug", type: "string", length: 255)]
+    #[ORM\Column(name: 'slug', type: 'string', length: 255)]
     private $slug;
 
-    #[ORM\Column(name: "effect", type: "text", nullable: true)]
+    #[ORM\Column(name: 'effect', type: 'text', nullable: true)]
     private $effect;
 
     #[ORM\ManyToOne(targetEntity: Spell::class)]
-    #[ORM\JoinColumn(name: "spell_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: 'spell_id', referencedColumnName: 'id')]
     private $spell;
 
-    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: "items")]
-    #[ORM\JoinTable(name: "item_skill_requirement")]
-    /**  */
+    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'items')]
+    #[ORM\JoinTable(name: 'item_skill_requirement')]
     private $requirements;
 
-    #[ORM\Column(name: "level", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'level', type: 'integer', nullable: true)]
     private $level;
 
-    #[ORM\Column(name: "nb_usages", type: "integer", options: ["default" => -1])]
+    #[ORM\Column(name: 'nb_usages', type: 'integer', options: ['default' => -1])]
     private $nbUsages = -1;
 
-    #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: "items")]
-    #[ORM\JoinColumn(name: "domain_id", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(name: 'domain_id', referencedColumnName: 'id')]
     private $domain;
 
-    #[ORM\Column(name: "tool_type", type: "string", length: 50, nullable: true)]
+    #[ORM\Column(name: 'tool_type', type: 'string', length: 50, nullable: true)]
     private ?string $toolType = null;
 
-    #[ORM\Column(name: "tool_tier", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'tool_tier', type: 'integer', nullable: true)]
     private ?int $toolTier = null;
 
-    #[ORM\Column(name: "durability", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'durability', type: 'integer', nullable: true)]
     private ?int $durability = null;
 
+    #[ORM\Column(name: 'value', type: 'integer', nullable: true)]
+    private ?int $value = null;
+
+    #[ORM\Column(name: 'rarity', type: 'string', length: 50, nullable: true)]
+    private ?string $rarity = null;
+
     /**
-     * Get id
-     *
-     * @return int
+     * Get id.
      */
     public function getId(): int
     {
@@ -189,11 +192,9 @@ class Item
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
-     *
-     * @return Item
      */
     public function setName($name): Item
     {
@@ -203,9 +204,7 @@ class Item
     }
 
     /**
-     * Get name
-     *
-     * @return string
+     * Get name.
      */
     public function getName(): string
     {
@@ -213,11 +212,9 @@ class Item
     }
 
     /**
-     * Set type
+     * Set type.
      *
-     * @param integer $type
-     *
-     * @return Item
+     * @param int $type
      */
     public function setType($type): Item
     {
@@ -227,9 +224,7 @@ class Item
     }
 
     /**
-     * Get type
-     *
-     * @return string
+     * Get type.
      */
     public function getType(): string
     {
@@ -237,11 +232,9 @@ class Item
     }
 
     /**
-     * Set space
+     * Set space.
      *
-     * @param integer $space
-     *
-     * @return Item
+     * @param int $space
      */
     public function setSpace($space): Item
     {
@@ -251,9 +244,7 @@ class Item
     }
 
     /**
-     * Get space
-     *
-     * @return integer
+     * Get space.
      */
     public function getSpace(): int
     {
@@ -261,11 +252,9 @@ class Item
     }
 
     /**
-     * Set protection
+     * Set protection.
      *
-     * @param integer $protection
-     *
-     * @return Item
+     * @param int $protection
      */
     public function setProtection($protection): Item
     {
@@ -275,9 +264,7 @@ class Item
     }
 
     /**
-     * Get protection
-     *
-     * @return integer
+     * Get protection.
      */
     public function getProtection(): int
     {
@@ -285,11 +272,9 @@ class Item
     }
 
     /**
-     * Set energyCost
+     * Set energyCost.
      *
-     * @param integer $energyCost
-     *
-     * @return Item
+     * @param int $energyCost
      */
     public function setEnergyCost($energyCost): Item
     {
@@ -299,9 +284,7 @@ class Item
     }
 
     /**
-     * Get energyCost
-     *
-     * @return integer
+     * Get energyCost.
      */
     public function getEnergyCost(): int
     {
@@ -309,11 +292,7 @@ class Item
     }
 
     /**
-     * Set element
-     *
-     * @param string $element
-     *
-     * @return Item
+     * Set element.
      */
     public function setElement(string $element): Item
     {
@@ -323,7 +302,7 @@ class Item
     }
 
     /**
-     * Get element
+     * Get element.
      */
     public function getElement(): string
     {
@@ -331,11 +310,9 @@ class Item
     }
 
     /**
-     * Set gearLocation
+     * Set gearLocation.
      *
      * @param string|null $gearLocation
-     *
-     * @return Item
      */
     public function setGearLocation($gearLocation): Item
     {
@@ -345,7 +322,7 @@ class Item
     }
 
     /**
-     * Get gearLocation
+     * Get gearLocation.
      */
     public function getGearLocation(): ?string
     {
@@ -353,13 +330,9 @@ class Item
     }
 
     /**
-     * Set spell
-     *
-     * @param Spell $spell
-     *
-     * @return Item
+     * Set spell.
      */
-    public function setSpell(Spell $spell = null): Item
+    public function setSpell(?Spell $spell = null): Item
     {
         $this->spell = $spell;
 
@@ -367,9 +340,7 @@ class Item
     }
 
     /**
-     * Get spell
-     *
-     * @return Spell
+     * Get spell.
      */
     public function getSpell(): ?Spell
     {
@@ -377,11 +348,9 @@ class Item
     }
 
     /**
-     * Set price
+     * Set price.
      *
-     * @param integer $price
-     *
-     * @return Item
+     * @param int $price
      */
     public function setPrice($price): Item
     {
@@ -391,9 +360,7 @@ class Item
     }
 
     /**
-     * Get price
-     *
-     * @return integer
+     * Get price.
      */
     public function getPrice(): int
     {
@@ -401,11 +368,7 @@ class Item
     }
 
     /**
-     * Add requirement
-     *
-     * @param Skill $requirement
-     *
-     * @return Item
+     * Add requirement.
      */
     public function addRequirement(Skill $requirement): Item
     {
@@ -415,9 +378,7 @@ class Item
     }
 
     /**
-     * Remove requirement
-     *
-     * @param Skill $requirement
+     * Remove requirement.
      */
     public function removeRequirement(Skill $requirement): void
     {
@@ -425,7 +386,7 @@ class Item
     }
 
     /**
-     * Get requirements
+     * Get requirements.
      *
      * @return Collection<Skill>
      */
@@ -442,9 +403,6 @@ class Item
         $this->requirements = new ArrayCollection($requirements);
     }
 
-    /**
-     * @return string
-     */
     public function getDescription(): string
     {
         return $this->description;
@@ -458,65 +416,41 @@ class Item
         $this->description = $description;
     }
 
-    /**
-     * @return string
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     */
     public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * @return int
-     */
     public function getLevel(): int
     {
         return $this->level;
     }
 
-    /**
-     * @param int $level
-     */
     public function setLevel(int $level): void
     {
         $this->level = $level;
     }
 
-    /**
-     * @return Domain
-     */
     public function getDomain(): ?Domain
     {
         return $this->domain;
     }
 
-    /**
-     * @param Domain $domain
-     */
     public function setDomain(?Domain $domain = null): void
     {
         $this->domain = $domain;
     }
 
-    /**
-     * @return int
-     */
     public function getNbUsages(): int
     {
         return $this->nbUsages;
     }
 
-    /**
-     * @param int $nbUsages
-     */
     public function setNbUsages(int $nbUsages): void
     {
         $this->nbUsages = $nbUsages;
@@ -560,5 +494,25 @@ class Item
     public function setDurability(?int $durability): void
     {
         $this->durability = $durability;
+    }
+
+    public function getValue(): ?int
+    {
+        return $this->value;
+    }
+
+    public function setValue(?int $value): void
+    {
+        $this->value = $value;
+    }
+
+    public function getRarity(): ?string
+    {
+        return $this->rarity;
+    }
+
+    public function setRarity(?string $rarity): void
+    {
+        $this->rarity = $rarity;
     }
 }

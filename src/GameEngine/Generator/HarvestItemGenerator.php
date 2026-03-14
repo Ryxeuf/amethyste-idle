@@ -35,7 +35,7 @@ class HarvestItemGenerator
                 $count = 1;
             }
 
-            for ($i = 0; $i < $count; $i++) {
+            for ($i = 0; $i < $count; ++$i) {
                 if (isset($itemData['id'])) {
                     $items[] = $this->playerItemGenerator->generateFromItemId($itemData['id']);
                 } elseif (isset($itemData['slug'])) {

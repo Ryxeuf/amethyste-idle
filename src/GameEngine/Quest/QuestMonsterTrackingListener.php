@@ -14,7 +14,7 @@ class QuestMonsterTrackingListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            MobDeadEvent::NAME => "updateMonsterPlayerQuest"
+            MobDeadEvent::NAME => 'updateMonsterPlayerQuest',
         ];
     }
 

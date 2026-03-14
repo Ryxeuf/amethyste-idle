@@ -127,6 +127,7 @@ class QuestController extends AbstractController
         // Check if quest is completed
         if (!$this->playerQuestHelper->isPlayerQuestCompleted($playerQuest)) {
             $progress = $this->playerQuestHelper->getPlayerQuestProgress($playerQuest);
+
             return new JsonResponse([
                 'error' => sprintf('Quête non terminée (%d%%)', $progress),
             ], Response::HTTP_BAD_REQUEST);

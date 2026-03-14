@@ -57,5 +57,4 @@ class Materia
             $this->spell = new ItemSpell($item->getGenericItem()->getSpell());
         }
     }
-
 }

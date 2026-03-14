@@ -2,7 +2,6 @@
 
 namespace App\GameEngine\Fight;
 
-use App\Entity\App\Inventory;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use Doctrine\ORM\EntityManagerInterface;
@@ -79,6 +78,7 @@ class MateriaFusionManager
             }
 
             $resultSlug = $this->getSameElementResultSlug($element1, $newLevel);
+
             return $resultSlug !== null && $this->findItemBySlug($resultSlug) !== null;
         }
 
@@ -89,6 +89,7 @@ class MateriaFusionManager
         }
 
         $resultSlug = self::CROSS_ELEMENT_FUSIONS[$comboKey];
+
         return $this->findItemBySlug($resultSlug) !== null;
     }
 

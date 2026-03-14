@@ -2,12 +2,12 @@
 
 namespace App\Command;
 
-use Symfony\Component\Console\Command\Command;
+use App\SearchEngine\CellSearchEngine;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use App\SearchEngine\CellSearchEngine;
 
 #[AsCommand(name: 'app:debug')]
 class DebugCommand extends Command

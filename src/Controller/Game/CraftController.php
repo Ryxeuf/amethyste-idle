@@ -43,7 +43,7 @@ class CraftController extends AbstractController
                 'label' => $label,
                 'recipes' => $recipes,
                 'canCraft' => array_map(
-                    fn(CraftRecipe $r) => $this->craftManager->canCraft($player, $r),
+                    fn (CraftRecipe $r) => $this->craftManager->canCraft($player, $r),
                     $recipes
                 ),
             ];

@@ -9,7 +9,6 @@ use App\Exception\ItemNotMateriaException;
 use App\Exception\ItemRequirementsException;
 use App\Helper\GearHelper;
 use App\Helper\PlayerItemHelper;
-use App\Helper\PlayerSkillHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class MateriaGearSetter
@@ -19,7 +18,6 @@ class MateriaGearSetter
     }
 
     /**
-     *
      * @throws ItemNotEquippedException
      * @throws ItemNotMateriaException
      * @throws ItemRequirementsException

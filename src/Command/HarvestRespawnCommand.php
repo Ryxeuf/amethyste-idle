@@ -82,7 +82,7 @@ class HarvestRespawnCommand extends Command
                     SpotAvailableEvent::NAME
                 );
             }
-            $respawned++;
+            ++$respawned;
         }
 
         if ($respawned > 0) {

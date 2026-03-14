@@ -5,8 +5,8 @@ namespace App\GameEngine\Quest;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Helper\PlayerHelper;
-use App\Repository\Game\QuestRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 class PlayerQuestHelper
 {
@@ -20,7 +20,7 @@ class PlayerQuestHelper
      */
     public function getCurrentQuests(): array
     {
-        /** @var QuestRepository $questRepository */
+        /** @var EntityRepository $questRepository */
         $questRepository = $this->entityManager->getRepository(PlayerQuest::class);
 
         $queryBuilder = $questRepository->createQueryBuilder('qp')
@@ -34,7 +34,7 @@ class PlayerQuestHelper
 
     public function getQuest(int $id): ?PlayerQuest
     {
-        /** @var QuestRepository $questRepository */
+        /** @var EntityRepository $questRepository */
         $questRepository = $this->entityManager->getRepository(PlayerQuest::class);
 
         $queryBuilder = $questRepository->createQueryBuilder('qp')
@@ -50,7 +50,7 @@ class PlayerQuestHelper
 
     public function getCompletedQuest(int $id): ?PlayerQuestCompleted
     {
-        /** @var QuestRepository $questRepository */
+        /** @var EntityRepository $questRepository */
         $questRepository = $this->entityManager->getRepository(PlayerQuestCompleted::class);
 
         $queryBuilder = $questRepository->createQueryBuilder('qp')
@@ -92,8 +92,8 @@ class PlayerQuestHelper
         $tracking = $playerQuest->getTracking();
         foreach ($tracking as $requirements) {
             foreach ($requirements as $requirement) {
-                $count += $requirement["count"];
-                $necessary += $requirement["necessary"];
+                $count += $requirement['count'];
+                $necessary += $requirement['necessary'];
             }
         }
 
@@ -101,6 +101,6 @@ class PlayerQuestHelper
             return 100;
         }
 
-        return round($count / $necessary * 100);
+        return (int) round($count / $necessary * 100);
     }
 }

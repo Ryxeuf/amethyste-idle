@@ -20,16 +20,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class ApiMapDumpCommand extends Command
 {
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly MapModelTransformer    $mapModelTransformer,
-        private readonly MapStorage             $mapStorage,
-    )
-    {
+        private readonly MapModelTransformer $mapModelTransformer,
+        private readonly MapStorage $mapStorage,
+    ) {
         parent::__construct();
     }
-
 
     protected function configure(): void
     {
@@ -52,14 +49,14 @@ class ApiMapDumpCommand extends Command
         }
 
         foreach ($maps as $map) {
-            if ($input->getOption("model")) {
+            if ($input->getOption('model')) {
                 $jsonContent = json_encode($this->mapModelTransformer->transformStaticMapModel($map));
                 $filePath = $this->mapStorage->storeMapInfos($map, $jsonContent);
-                $io->info("Written " . $filePath . ' static map file');
+                $io->info('Written ' . $filePath . ' static map file');
             } else {
                 $jsonContent = json_encode($this->mapModelTransformer->generateDijkstraTagMap($map));
                 $filePath = $this->mapStorage->storeMapTag($map, $jsonContent);
-                $io->info("Written " . $filePath . ' tag map file');
+                $io->info('Written ' . $filePath . ' tag map file');
             }
         }
 

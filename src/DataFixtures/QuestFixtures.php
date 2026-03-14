@@ -20,9 +20,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Zombie',
                             'slug' => 'zombie',
-                            'count' => 2
-                        ]
-                    ]
+                            'count' => 2,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'gold' => 1,
@@ -31,16 +31,16 @@ class QuestFixtures extends Fixture
                             'item' => 3,
                             'type' => 'stuff',
                             'count' => 1,
-                            'genericItemSlug' => 'beer-pint'
+                            'genericItemSlug' => 'beer-pint',
                         ],
                         [
                             'item' => 10,
                             'type' => 'stuff',
                             'count' => 1,
-                            'genericItemSlug' => 'miner-domain-parchment'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'miner-domain-parchment',
+                        ],
+                    ],
+                ],
             ],
             'quest_skeleton_1' => [
                 'name' => 'Sus aux squelettes',
@@ -50,9 +50,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Squelette',
                             'slug' => 'skeleton',
-                            'count' => 2
-                        ]
-                    ]
+                            'count' => 2,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'gold' => 1,
@@ -60,10 +60,10 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'stuff',
                             'count' => 1,
-                            'genericItemSlug' => 'beer-pint'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'beer-pint',
+                        ],
+                    ],
+                ],
             ],
             'quest_taiju_1' => [
                 'name' => 'Le Taiju menaçant',
@@ -73,9 +73,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Taiju',
                             'slug' => 'taiju',
-                            'count' => 1
-                        ]
-                    ]
+                            'count' => 1,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 100,
@@ -84,26 +84,26 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'stuff',
                             'count' => 1,
-                            'genericItemSlug' => 'liana-whip'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'liana-whip',
+                        ],
+                    ],
+                ],
             ],
             'quest_mushroom_1' => [
                 'name' => 'Cueillette de champignons',
                 'description' => 'Récoltez 5 champignons pour l\'apothicaire du village.',
                 'requirements' => [
                     'collect' => [
-                        'mushroom' => 5
-                    ]
+                        'mushroom' => 5,
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 50,
                     'gold' => 30,
                     'items' => [
-                        'materia_soin' => 1
-                    ]
-                ]
+                        'materia_soin' => 1,
+                    ],
+                ],
             ],
             'quest_goblin_1' => [
                 'name' => 'Menace gobeline',
@@ -113,9 +113,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Gobelin',
                             'slug' => 'goblin',
-                            'count' => 3
-                        ]
-                    ]
+                            'count' => 3,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 75,
@@ -124,10 +124,10 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'stuff',
                             'count' => 1,
-                            'genericItemSlug' => 'leather-boots'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'leather-boots',
+                        ],
+                    ],
+                ],
             ],
             'quest_troll_1' => [
                 'name' => 'Le troll du pont',
@@ -137,9 +137,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Troll',
                             'slug' => 'troll',
-                            'count' => 1
-                        ]
-                    ]
+                            'count' => 1,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 120,
@@ -148,10 +148,10 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'gear',
                             'count' => 1,
-                            'genericItemSlug' => 'wooden-shield'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'wooden-shield',
+                        ],
+                    ],
+                ],
             ],
             'quest_werewolf_1' => [
                 'name' => 'Hurlements nocturnes',
@@ -161,9 +161,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Loup-garou',
                             'slug' => 'werewolf',
-                            'count' => 1
-                        ]
-                    ]
+                            'count' => 1,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 150,
@@ -172,10 +172,10 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'gear',
                             'count' => 1,
-                            'genericItemSlug' => 'leather-armor'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'leather-armor',
+                        ],
+                    ],
+                ],
             ],
             'quest_banshee_griffin_1' => [
                 'name' => 'Créatures de la nuit',
@@ -185,14 +185,14 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Banshee',
                             'slug' => 'banshee',
-                            'count' => 1
+                            'count' => 1,
                         ],
                         [
                             'name' => 'Griffon',
                             'slug' => 'griffin',
-                            'count' => 1
-                        ]
-                    ]
+                            'count' => 1,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 200,
@@ -201,18 +201,18 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'gear',
                             'count' => 1,
-                            'genericItemSlug' => 'magic-amulet'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'magic-amulet',
+                        ],
+                    ],
+                ],
             ],
             'quest_wood_collection' => [
                 'name' => 'Bûcheron en herbe',
                 'description' => 'Le menuisier du village a besoin de bois pour ses créations. Récoltez des bûches pour l\'aider.',
                 'requirements' => [
                     'collect' => [
-                        'wood_log' => 8
-                    ]
+                        'wood_log' => 8,
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 60,
@@ -221,10 +221,10 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'stuff',
                             'count' => 2,
-                            'genericItemSlug' => 'life-potion'
-                        ]
-                    ]
-                ]
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
             ],
             'quest_dragon_1' => [
                 'name' => 'Le dragon de la montagne',
@@ -234,9 +234,9 @@ class QuestFixtures extends Fixture
                         [
                             'name' => 'Dragon',
                             'slug' => 'dragon',
-                            'count' => 1
-                        ]
-                    ]
+                            'count' => 1,
+                        ],
+                    ],
                 ],
                 'rewards' => [
                     'xp' => 500,
@@ -245,18 +245,18 @@ class QuestFixtures extends Fixture
                         [
                             'type' => 'gear',
                             'count' => 1,
-                            'genericItemSlug' => 'iron-sword'
+                            'genericItemSlug' => 'iron-sword',
                         ],
                         [
                             'type' => 'gear',
                             'count' => 1,
-                            'genericItemSlug' => 'iron-armor'
-                        ]
-                    ]
-                ]
-            ]
+                            'genericItemSlug' => 'iron-armor',
+                        ],
+                    ],
+                ],
+            ],
         ];
-        
+
         foreach ($quests as $key => $data) {
             $quest = new Quest();
             $quest->setName($data['name']);
@@ -265,11 +265,11 @@ class QuestFixtures extends Fixture
             $quest->setRewards($data['rewards']);
             $quest->setCreatedAt(new \DateTime());
             $quest->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($quest);
             $this->addReference($key, $quest);
         }
-        
+
         $manager->flush();
     }
-} 
+}

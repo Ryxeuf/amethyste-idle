@@ -6,36 +6,35 @@ use App\Entity\App\Traits\CoordinatesTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-
 #[ORM\Entity()]
-#[ORM\Table(name: "area")]
-#[ORM\Index(name: "area_coordinates_idx", columns: ["coordinates"])]
+#[ORM\Table(name: 'area')]
+#[ORM\Index(name: 'area_coordinates_idx', columns: ['coordinates'])]
 class Area
 {
     use CoordinatesTrait;
     use TimestampableEntity;
 
-    function __toString()
+    public function __toString()
     {
         return $this->getName();
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private int $id;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\Column(name: "slug", type: "string", length: 255)]
+    #[ORM\Column(name: 'slug', type: 'string', length: 255)]
     private string $slug;
 
-    #[ORM\Column(name: "fullData", type: "json")]
+    #[ORM\Column(name: 'fullData', type: 'json')]
     private string $fullData;
 
-    #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: "areas")]
-    #[ORM\JoinColumn(name: "map_id", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'areas')]
+    #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
     private Map $map;
 
     public function getId(): int
@@ -66,17 +65,17 @@ class Area
     public function getFullDataArray(): array
     {
         $data = json_decode($this->fullData, true);
-        
+
         // Vérifier si les données sont correctement décodées
         if (!is_array($data)) {
             return ['cells' => []];
         }
-        
+
         // S'assurer que la clé 'cells' existe
         if (!isset($data['cells'])) {
             $data['cells'] = [];
         }
-        
+
         return $data;
     }
 

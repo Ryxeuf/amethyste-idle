@@ -16,7 +16,7 @@ class FightCleaner implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            FightLootedEvent::NAME => "removeFight",
+            FightLootedEvent::NAME => 'removeFight',
         ];
     }
 

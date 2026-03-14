@@ -19,7 +19,7 @@ class RegistrationFormType extends AbstractType
     {
         $builder
             ->add('email', EmailType::class, [
-                'label' => 'Email'
+                'label' => 'Email',
             ])
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
@@ -28,7 +28,7 @@ class RegistrationFormType extends AbstractType
                         'message' => 'Vous devez accepter nos conditions.',
                     ]),
                 ],
-                'label' => 'J\'accepte les conditions d\'utilisation'
+                'label' => 'J\'accepte les conditions d\'utilisation',
             ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
@@ -46,7 +46,7 @@ class RegistrationFormType extends AbstractType
                         'max' => 4096,
                     ]),
                 ],
-                'label' => 'Mot de passe'
+                'label' => 'Mot de passe',
             ])
         ;
     }
@@ -57,4 +57,4 @@ class RegistrationFormType extends AbstractType
             'data_class' => User::class,
         ]);
     }
-} 
+}

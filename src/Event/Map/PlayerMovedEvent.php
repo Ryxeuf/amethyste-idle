@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class PlayerMovedEvent extends Event
 {
-    final public const NAME = "event.map.player.moved";
+    final public const NAME = 'event.map.player.moved';
 
     /**
      * PlayerMovedEvent constructor.

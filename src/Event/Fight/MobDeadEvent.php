@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class MobDeadEvent extends Event
 {
-    final public const NAME = "event.mob.dead";
+    final public const NAME = 'event.mob.dead';
 
     /**
      * @var Mob

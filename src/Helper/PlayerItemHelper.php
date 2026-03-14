@@ -11,7 +11,7 @@ class PlayerItemHelper
     }
 
     /**
-     * Return if a player can equip an item he has
+     * Return if a player can equip an item he has.
      */
     public function canBeEquipped(PlayerItem $item): bool
     {
@@ -24,5 +24,4 @@ class PlayerItemHelper
 
         return $this->inventoryHelper->hasItem($item) && $playerMeetRequirements;
     }
-
 }

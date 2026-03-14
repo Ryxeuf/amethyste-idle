@@ -35,4 +35,4 @@ class LocaleListener implements EventSubscriberInterface
             KernelEvents::REQUEST => [['onKernelRequest', 20]],
         ];
     }
-} 
+}

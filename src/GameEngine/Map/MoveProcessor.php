@@ -9,8 +9,7 @@ class MoveProcessor
 {
     public function __construct(
         private readonly MovementCalculator $movementCalculator,
-    )
-    {
+    ) {
     }
 
     /**

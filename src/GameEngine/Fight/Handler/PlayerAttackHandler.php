@@ -30,8 +30,8 @@ class PlayerAttackHandler extends AbstractPayerItemHandler
     protected function getItem(Fight $fight): PlayerItem
     {
         $weapon = $this->gearHelper->getWeaponGear();
-        if(!$weapon || !$weapon->getGenericItem() || !$weapon->getGenericItem()->getSpell()) {
-            throw new EntityNotFoundException("Player attack impossible");
+        if (!$weapon || !$weapon->getGenericItem() || !$weapon->getGenericItem()->getSpell()) {
+            throw new EntityNotFoundException('Player attack impossible');
         }
 
         return $weapon;

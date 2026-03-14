@@ -2,9 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\App\Pnj;
 use App\Entity\App\Map;
-use App\Entity\Game\Quest;
+use App\Entity\App\Pnj;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -24,9 +23,9 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'quest_werewolf_1',
             'quest_banshee_griffin_1',
             'quest_wood_collection',
-            'quest_dragon_1'
+            'quest_dragon_1',
         ];
-        
+
         // Noms de PNJ français
         $pnjNames = [
             'Gérard le Forgeron', 'Élise la Guérisseuse', 'Martin le Bûcheron', 'Jeanne la Tisserande',
@@ -43,20 +42,20 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'Damien le Bourrelier', 'Caroline la Fleuriste', 'Ludovic le Cordier', 'Delphine la Vannière',
             'Jérôme le Maraîcher', 'Isabelle la Lavandière', 'Fabien le Charron', 'Laure la Fromagère',
             'Patrice le Vigneron', 'Sylvie la Sage-femme', 'Didier le Berger', 'Véronique la Fileuse',
-            'Arnaud le Peintre', 'Hélène la Conteuse'
+            'Arnaud le Peintre', 'Hélène la Conteuse',
         ];
-        
+
         // Types de classe pour les PNJ
         $classTypes = ['villager', 'merchant', 'guard', 'noble', 'warrior', 'mage', 'healer', 'blacksmith', 'farmer', 'hunter'];
-        
+
         // Coordonnées possibles (simplifiées pour l'exemple)
         $coordinates = [
             '1.5', '2.3', '3.7', '4.2', '5.8', '6.1', '7.4', '8.9', '9.3', '10.6',
-            '11.2', '12.7', '13.4', '14.8', '15.3', '16.9', '17.5', '18.2', '19.7', '20.1'
+            '11.2', '12.7', '13.4', '14.8', '15.3', '16.9', '17.5', '18.2', '19.7', '20.1',
         ];
-        
+
         // Création de 60 PNJ
-        for ($i = 0; $i < 60; $i++) {
+        for ($i = 0; $i < 60; ++$i) {
             $pnj = new Pnj();
             $pnj->setName($pnjNames[$i] ?? 'PNJ #' . ($i + 1));
             $pnj->setLife(10);
@@ -64,26 +63,27 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             $pnj->setMap($this->getReference('map_1', Map::class));
             $pnj->setCoordinates($coordinates[$i % count($coordinates)]);
             $pnj->setClassType($classTypes[$i % count($classTypes)]);
-            
+
             // Création d'un dialogue unique pour chaque PNJ
             $dialog = $this->createDialog($i, $i < count($questReferences) ? $i + 1 : null);
             $pnj->setDialog($dialog);
-            
+
             $pnj->setCreatedAt(new \DateTime());
             $pnj->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($pnj);
             $this->addReference('pnj_' . $i, $pnj);
         }
-        
+
         $manager->flush();
     }
-    
+
     /**
-     * Crée un dialogue unique pour un PNJ
-     * 
-     * @param int $pnjIndex L'index du PNJ
-     * @param int|null $questId L'ID de la quête à proposer (null si pas de quête)
+     * Crée un dialogue unique pour un PNJ.
+     *
+     * @param int      $pnjIndex L'index du PNJ
+     * @param int|null $questId  L'ID de la quête à proposer (null si pas de quête)
+     *
      * @return array Le dialogue formaté
      */
     private function createDialog(int $pnjIndex, ?int $questId): array
@@ -99,9 +99,9 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'Bienvenue, étranger. Vous cherchez quelque chose en particulier ?',
             'Salut à toi, brave voyageur !',
             'Bonjour ! Vous tombez bien, j\'ai justement besoin d\'aide.',
-            'Ah, enfin quelqu\'un ! J\'attendais de l\'aide.'
+            'Ah, enfin quelqu\'un ! J\'attendais de l\'aide.',
         ];
-        
+
         // Phrases de dialogue générales
         $generalDialogs = [
             'Le temps est magnifique aujourd\'hui, n\'est-ce pas ?',
@@ -123,9 +123,9 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'Notre village existe depuis des générations, nous sommes fiers de notre histoire.',
             'Les enfants adorent écouter les histoires des aventuriers comme vous.',
             'Prenez garde aux bandits sur les routes, ils sont de plus en plus nombreux.',
-            'Avez-vous besoin d\'un endroit où vous reposer ? L\'auberge est confortable.'
+            'Avez-vous besoin d\'un endroit où vous reposer ? L\'auberge est confortable.',
         ];
-        
+
         // Descriptions de quêtes variées
         $questDescriptions = [
             'J\'ai un problème avec des créatures qui menacent notre village. Pourriez-vous nous aider ?',
@@ -137,53 +137,53 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'J\'ai besoin de votre aide pour une affaire délicate. Êtes-vous intéressé ?',
             'Une menace plane sur nous, et vous pourriez être notre sauveur.',
             'J\'ai une proposition qui pourrait vous rapporter gros, si vous êtes à la hauteur.',
-            'Notre village a besoin d\'un héros, et vous semblez être la personne idéale.'
+            'Notre village a besoin d\'un héros, et vous semblez être la personne idéale.',
         ];
-        
+
         // Dialogue de base pour tous les PNJ
         $dialog = [
             [
                 'next' => 1,
-                'text' => $greetings[$pnjIndex % count($greetings)]
+                'text' => $greetings[$pnjIndex % count($greetings)],
             ],
             [
-                'text' => $generalDialogs[$pnjIndex % count($generalDialogs)]
-            ]
+                'text' => $generalDialogs[$pnjIndex % count($generalDialogs)],
+            ],
         ];
-        
+
         // Ajouter une quête uniquement aux 10 premiers PNJ (ou selon le nombre de quêtes disponibles)
         if ($questId !== null) {
             // Modifier le dialogue pour inclure une proposition de quête
             $dialog = [
                 [
                     'next' => 1,
-                    'text' => $greetings[$pnjIndex % count($greetings)]
+                    'text' => $greetings[$pnjIndex % count($greetings)],
                 ],
                 [
                     'conditional_next' => [
                         [
                             'next' => 4,
                             'next_condition' => [
-                                'quest_not' => [$questId]
-                            ]
+                                'quest_not' => [$questId],
+                            ],
                         ],
                         [
                             'next' => 2,
                             'next_condition' => [
-                                'quest' => [$questId]
-                            ]
+                                'quest' => [$questId],
+                            ],
                         ],
                         [
-                            'next' => 3
-                        ]
+                            'next' => 3,
+                        ],
                     ],
-                    'text' => $generalDialogs[$pnjIndex % count($generalDialogs)]
+                    'text' => $generalDialogs[$pnjIndex % count($generalDialogs)],
                 ],
                 [
-                    'text' => 'Merci d\'avoir accepté de m\'aider. Revenez me voir quand vous aurez terminé.'
+                    'text' => 'Merci d\'avoir accepté de m\'aider. Revenez me voir quand vous aurez terminé.',
                 ],
                 [
-                    'text' => 'Avez-vous terminé la mission que je vous ai confiée ?'
+                    'text' => 'Avez-vous terminé la mission que je vous ai confiée ?',
                 ],
                 [
                     'text' => $questDescriptions[$pnjIndex % count($questDescriptions)],
@@ -191,22 +191,22 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                         [
                             'text' => 'Oui, je vais vous aider',
                             'data' => [
-                                'quest' => $questId
+                                'quest' => $questId,
                             ],
-                            'action' => 'quest_offer'
+                            'action' => 'quest_offer',
                         ],
                         [
                             'text' => 'Non, pas maintenant',
-                            'action' => 'close'
-                        ]
-                    ]
-                ]
+                            'action' => 'close',
+                        ],
+                    ],
+                ],
             ];
         }
-        
+
         return $dialog;
     }
-    
+
     public function getDependencies(): array
     {
         return [
@@ -214,4 +214,4 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             QuestFixtures::class,
         ];
     }
-} 
+}

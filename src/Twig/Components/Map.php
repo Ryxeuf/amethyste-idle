@@ -4,16 +4,16 @@ namespace App\Twig\Components;
 
 use App\Dto\Map\MapDynamicModel;
 use App\Entity\App\Player;
-use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
-use Symfony\UX\LiveComponent\DefaultActionTrait;
-use App\Transformer\MapModelTransformer;
-use App\Helper\PlayerHelper;
-use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use App\SearchEngine\CellSearchEngine;
-use Symfony\UX\LiveComponent\Attribute\LiveAction;
-use Symfony\UX\LiveComponent\Attribute\LiveArg;
 use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Movement\PlayerMoveProcessor;
+use App\Helper\PlayerHelper;
+use App\SearchEngine\CellSearchEngine;
+use App\Transformer\MapModelTransformer;
+use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
+use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\LiveArg;
+use Symfony\UX\LiveComponent\Attribute\LiveProp;
+use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 #[AsLiveComponent]
 class Map
@@ -21,7 +21,7 @@ class Map
     use DefaultActionTrait;
 
     public Player $player;
-    
+
     #[LiveProp(writable: true)]
     public int $x;
     #[LiveProp(writable: true)]
@@ -35,7 +35,7 @@ class Map
     public int $endX;
     #[LiveProp(writable: true)]
     public int $endY;
-    
+
     public int $mapSize = 21;
     public int $cellSize = 32;
 
@@ -43,15 +43,14 @@ class Map
     public array $visibleCells = [];
 
     private ?MapDynamicModel $mapDynamicCache = null;
-    
+
     public function __construct(
         private readonly MapModelTransformer $mapModelTransformer,
         private readonly PlayerHelper $playerHelper,
         private readonly CellSearchEngine $cellSearchEngine,
         private readonly MovementCalculator $movementCalculator,
         private readonly PlayerMoveProcessor $playerMoveProcessor,
-    )
-    {
+    ) {
         $this->player = $this->playerHelper->getPlayer();
         $this->initXY();
     }
@@ -61,6 +60,7 @@ class Map
         if ($this->mapDynamicCache === null) {
             $this->mapDynamicCache = $this->mapModelTransformer->transformDynamicMapModel($this->player->getMap());
         }
+
         return $this->mapDynamicCache;
     }
 
@@ -103,6 +103,7 @@ class Map
 
         if (empty($movements)) {
             $this->updateCells();
+
             return;
         }
 

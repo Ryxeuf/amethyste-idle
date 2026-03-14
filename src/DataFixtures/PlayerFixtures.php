@@ -2,14 +2,14 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\App\Player;
+use App\DataFixtures\Game\SkillFixtures;
 use App\Entity\App\Map;
+use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use App\DataFixtures\Game\SkillFixtures;
 
 class PlayerFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -48,14 +48,14 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo->setClassType('demo');
         $playerDemo->setCreatedAt(new \DateTime());
         $playerDemo->setUpdatedAt(new \DateTime());
-        
+
         // Ajout des compétences
         $playerDemo->addSkill($this->getReference('pyro_materia_1', Skill::class));
         $playerDemo->addSkill($this->getReference('soldier_apprentice', Skill::class));
-        
+
         $manager->persist($playerDemo);
         $this->addReference('player_demo', $playerDemo);
-        
+
         // Création du joueur demo 2
         $playerDemo2 = new Player();
         $playerDemo2->setName('Player demo 2');
@@ -70,17 +70,17 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo2->setClassType('demo-2');
         $playerDemo2->setCreatedAt(new \DateTime());
         $playerDemo2->setUpdatedAt(new \DateTime());
-        
+
         // Ajout des compétences
         $playerDemo2->addSkill($this->getReference('pyro_materia_1', Skill::class));
         $playerDemo2->addSkill($this->getReference('soldier_apprentice', Skill::class));
-        
+
         $manager->persist($playerDemo2);
         $this->addReference('player_demo_2', $playerDemo2);
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
@@ -89,4 +89,4 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
             SkillFixtures::class,
         ];
     }
-} 
+}

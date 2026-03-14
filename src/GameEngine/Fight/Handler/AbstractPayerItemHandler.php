@@ -36,7 +36,7 @@ abstract class AbstractPayerItemHandler implements PlayerActionHandlerInterface
         $item = $this->getItem($fight);
 
         // Récupère la cible de l'action
-        if(!$target = $this->fightHelper->getTarget($fight)) {
+        if (!$target = $this->fightHelper->getTarget($fight)) {
             return false;
         }
         $this->resolveItem($item, $player, $target);
@@ -48,7 +48,7 @@ abstract class AbstractPayerItemHandler implements PlayerActionHandlerInterface
     {
         /** @var PlayerItem $item */
         if (!$item = $this->entityManager->getRepository(PlayerItem::class)->find($fight->item)) {
-            throw new EntityNotFoundException("Objet inconnu");
+            throw new EntityNotFoundException('Objet inconnu');
         }
 
         return $item;

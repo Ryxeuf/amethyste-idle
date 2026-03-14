@@ -20,30 +20,30 @@ class PlayerQuestFixtures extends Fixture implements DependentFixtureInterface
                 'quest' => 'quest_zombie_1',
                 'tracking' => [
                     'kill' => [
-                        'zombie' => 2 // Le joueur a déjà tué 2 zombies sur 5
-                    ]
-                ]
+                        'zombie' => 2, // Le joueur a déjà tué 2 zombies sur 5
+                    ],
+                ],
             ],
             [
                 'player' => 'player_demo',
                 'quest' => 'quest_mushroom_1',
                 'tracking' => [
                     'collect' => [
-                        'mushroom' => 3 // Le joueur a déjà collecté 3 champignons sur 5
-                    ]
-                ]
+                        'mushroom' => 3, // Le joueur a déjà collecté 3 champignons sur 5
+                    ],
+                ],
             ],
             [
                 'player' => 'player_demo_2',
                 'quest' => 'quest_taiju_1',
                 'tracking' => [
                     'kill' => [
-                        'taiju' => 0 // Le joueur n'a pas encore commencé cette quête
-                    ]
-                ]
-            ]
+                        'taiju' => 0, // Le joueur n'a pas encore commencé cette quête
+                    ],
+                ],
+            ],
         ];
-        
+
         foreach ($playerQuests as $data) {
             $playerQuest = new PlayerQuest();
             $playerQuest->setPlayer($this->getReference($data['player'], Player::class));
@@ -51,18 +51,18 @@ class PlayerQuestFixtures extends Fixture implements DependentFixtureInterface
             $playerQuest->setTracking($data['tracking']);
             $playerQuest->setCreatedAt(new \DateTime());
             $playerQuest->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($playerQuest);
         }
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
             PlayerFixtures::class,
-            QuestFixtures::class
+            QuestFixtures::class,
         ];
     }
-} 
+}

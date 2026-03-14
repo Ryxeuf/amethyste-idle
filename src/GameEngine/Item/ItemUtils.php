@@ -27,6 +27,6 @@ class ItemUtils
 
     public static function getCriticalModified(int $value): int
     {
-        return round($value * self::CRITICAL_MODIFIER);
+        return (int) round($value * self::CRITICAL_MODIFIER);
     }
 }

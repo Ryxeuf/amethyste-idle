@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: "fight")]
+#[ORM\Table(name: 'fight')]
 class Fight
 {
     use TimestampableEntity;
@@ -20,41 +20,35 @@ class Fight
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private int $id;
 
-    #[ORM\Column(name: "step", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'step', type: 'integer', options: ['default' => 0])]
     private int $step = 0;
 
     /** @var Collection<int, Player> */
-    #[ORM\OneToMany(targetEntity: Player::class, mappedBy: "fight")]
+    #[ORM\OneToMany(targetEntity: Player::class, mappedBy: 'fight')]
     private Collection $players;
 
     /** @var Collection<int, Mob> */
-    #[ORM\OneToMany(targetEntity: Mob::class, mappedBy: "fight")]
+    #[ORM\OneToMany(targetEntity: Mob::class, mappedBy: 'fight')]
     private Collection $mobs;
 
-    #[ORM\Column(name: "in_progress", type: "boolean", options: ["default" => 0])]
+    #[ORM\Column(name: 'in_progress', type: 'boolean', options: ['default' => 0])]
     private bool $inProgress = false;
 
-    #[ORM\Column(name: "last_element_used", type: "string", length: 25, nullable: true)]
+    #[ORM\Column(name: 'last_element_used', type: 'string', length: 25, nullable: true)]
     private ?string $lastElementUsed = null;
 
-    #[ORM\Column(name: "cooldowns", type: "json", nullable: true)]
+    #[ORM\Column(name: 'cooldowns', type: 'json', nullable: true)]
     private ?array $cooldowns = null;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId(int $id): void
     {
         $this->id = $id;
@@ -98,32 +92,28 @@ class Fight
     }
 
     /**
-     * @return int
+     * Get the first mob in the fight (convenience for single-mob fights).
      */
+    public function getMob(): ?Mob
+    {
+        return $this->mobs->first() ?: null;
+    }
+
     public function getStep(): int
     {
         return $this->step;
     }
 
-    /**
-     * @param int $step
-     */
     public function setStep(int $step): void
     {
         $this->step = $step;
     }
 
-    /**
-     * @return bool
-     */
     public function isInProgress(): bool
     {
         return $this->inProgress;
     }
 
-    /**
-     * @param bool $inProgress
-     */
     public function setInProgress(bool $inProgress): void
     {
         $this->inProgress = $inProgress;
@@ -140,7 +130,7 @@ class Fight
         })->count() === $this->mobs->count();
 
         return $allPlayersDead || $allMobsDead;
-        }
+    }
 
     public function isVictory(): bool
     {

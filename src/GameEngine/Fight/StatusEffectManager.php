@@ -37,6 +37,7 @@ class StatusEffectManager
             $existing->setAppliedAt(new \DateTime());
             $this->entityManager->persist($existing);
             $this->entityManager->flush();
+
             return;
         }
 

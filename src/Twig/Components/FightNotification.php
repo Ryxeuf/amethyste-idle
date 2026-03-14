@@ -2,10 +2,10 @@
 
 namespace App\Twig\Components;
 
-use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
-use Symfony\UX\LiveComponent\DefaultActionTrait;
 use App\Entity\App\Fight;
 use App\GameEngine\Fight\FightNotificationHandler;
+use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
+use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 #[AsLiveComponent]
 class FightNotification
@@ -24,5 +24,4 @@ class FightNotification
     {
         $this->fight = $fight;
     }
-
 }

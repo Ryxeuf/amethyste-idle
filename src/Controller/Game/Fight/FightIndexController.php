@@ -93,4 +93,4 @@ class FightIndexController extends AbstractController
             'dangerAlert' => $dangerAlert,
         ]);
     }
-} 
+}

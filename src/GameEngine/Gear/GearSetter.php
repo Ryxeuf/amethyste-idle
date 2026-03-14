@@ -3,7 +3,6 @@
 namespace App\GameEngine\Gear;
 
 use App\Entity\App\PlayerItem;
-use App\Exception\GearLocationException;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\ItemNotGearException;
 use App\Helper\GearHelper;
@@ -16,7 +15,6 @@ class GearSetter
     }
 
     /**
-     *
      * @throws ItemNotGearException
      * @throws ItemNotEquippedException
      */
@@ -38,7 +36,6 @@ class GearSetter
     }
 
     /**
-     *
      * @throws ItemNotEquippedException
      */
     public function unsetGear(PlayerItem $gear, bool $flush = true): void

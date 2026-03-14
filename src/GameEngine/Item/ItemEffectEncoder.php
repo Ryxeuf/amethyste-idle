@@ -25,22 +25,16 @@ class ItemEffectEncoder
 
     private function configureOptions(OptionsResolver $resolver): void
     {
-        $defaults = [
-            self::KEY_ACTION => null,
-            self::KEY_ID => null,
-            self::KEY_COMPONENTS => null,
-        ];
+        $resolver->setRequired([self::KEY_ACTION, self::KEY_ID]);
 
-        $resolver->setDefined(array_keys($defaults));
+        $resolver->setDefined(self::KEY_COMPONENTS);
 
-        $resolver->setDefaults($defaults);
+        $resolver->setDefault(self::KEY_COMPONENTS, null);
 
         $resolver->addAllowedTypes(self::KEY_ACTION, ['string']);
         $resolver->addAllowedTypes(self::KEY_ID, ['integer']);
-        $resolver->addAllowedTypes(self::KEY_COMPONENTS, ['array']);
+        $resolver->addAllowedTypes(self::KEY_COMPONENTS, ['null', 'array']);
 
         $resolver->setAllowedValues(self::KEY_ACTION, [self::ACTION_USE_SPELL, self::ACTION_LEARN_SKILL, self::ACTION_BUILD_ITEM]);
-
-        $resolver->setRequired([self::KEY_ACTION, self::KEY_ID]);
     }
 }

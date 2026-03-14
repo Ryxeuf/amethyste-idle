@@ -2,7 +2,6 @@
 
 namespace App\GameEngine\Fight;
 
-use App\Entity\App\Inventory;
 use App\Event\Fight\MobDeadEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;

@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\App\Mob;
 
 #[Route('/game/fight/spell', name: 'app_game_fight_spell')]
 class FightSpellController extends AbstractController
@@ -82,6 +81,7 @@ class FightSpellController extends AbstractController
         $entityKey = 'player_' . $player->getId();
         if ($fight->isSpellOnCooldown($entityKey, $spellSlug)) {
             $remaining = $fight->getSpellCooldown($entityKey, $spellSlug);
+
             return new JsonResponse(['error' => "Sort en recharge ($remaining tours restants)", 'success' => false]);
         }
 

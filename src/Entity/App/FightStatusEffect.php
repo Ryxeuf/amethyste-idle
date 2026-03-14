@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: "fight_status_effect")]
+#[ORM\Table(name: 'fight_status_effect')]
 class FightStatusEffect
 {
     use TimestampableEntity;
@@ -16,28 +16,28 @@ class FightStatusEffect
     public const TARGET_TYPE_MOB = 'mob';
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private int $id;
 
     #[ORM\ManyToOne(targetEntity: Fight::class)]
-    #[ORM\JoinColumn(name: "fight_id", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name: 'fight_id', referencedColumnName: 'id', nullable: false)]
     private Fight $fight;
 
-    #[ORM\Column(name: "target_type", type: "string", length: 20)]
+    #[ORM\Column(name: 'target_type', type: 'string', length: 20)]
     private string $targetType;
 
-    #[ORM\Column(name: "target_id", type: "integer")]
+    #[ORM\Column(name: 'target_id', type: 'integer')]
     private int $targetId;
 
     #[ORM\ManyToOne(targetEntity: StatusEffect::class)]
-    #[ORM\JoinColumn(name: "status_effect_id", referencedColumnName: "id", nullable: false)]
+    #[ORM\JoinColumn(name: 'status_effect_id', referencedColumnName: 'id', nullable: false)]
     private StatusEffect $statusEffect;
 
-    #[ORM\Column(name: "remaining_turns", type: "integer")]
+    #[ORM\Column(name: 'remaining_turns', type: 'integer')]
     private int $remainingTurns;
 
-    #[ORM\Column(name: "applied_at", type: "datetime")]
+    #[ORM\Column(name: 'applied_at', type: 'datetime')]
     private \DateTime $appliedAt;
 
     public function __construct()
@@ -122,6 +122,6 @@ class FightStatusEffect
 
     public function decrementTurn(): void
     {
-        $this->remainingTurns--;
+        --$this->remainingTurns;
     }
 }

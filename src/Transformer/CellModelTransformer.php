@@ -22,8 +22,7 @@ class CellModelTransformer
         private readonly PlayerHelper $playerHelper,
         private readonly CellActionsProvider $actionsProvider,
         private readonly EntityManagerInterface $entityManager,
-    )
-    {
+    ) {
     }
 
     // public function transformCell(Cell $cell, bool $withMap = true): CellModel
@@ -109,5 +108,4 @@ class CellModelTransformer
 
         return null;
     }
-
 }

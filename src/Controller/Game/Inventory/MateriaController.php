@@ -18,13 +18,13 @@ class MateriaController extends AbstractController
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
-        
+
         // Récupérer l'inventaire de materia du joueur
         $materiaInventory = $this->playerHelper->getMateriaInventory();
-        
+
         // Récupérer les objets materia de l'inventaire
         $playerItems = $materiaInventory->getItems();
-        
+
         // Transformer les objets PlayerItem en tableau pour la vue
         $materias = [];
         foreach ($playerItems as $item) {
@@ -36,13 +36,13 @@ class MateriaController extends AbstractController
                     'level' => $genericItem->getLevel() ?? 1,
                     'rarity' => $genericItem->getElement(), // Utiliser l'élément comme rareté
                     'description' => $genericItem->getDescription(),
-                    'effects' => $genericItem->getEffect() ?? ''
+                    'effects' => $genericItem->getEffect() ?? '',
                 ];
             }
         }
-        
+
         return $this->render('game/inventory/materia/_list.html.twig', [
-            'materias' => $materias
+            'materias' => $materias,
         ]);
     }
-} 
+}

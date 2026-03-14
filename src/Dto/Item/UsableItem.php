@@ -60,5 +60,4 @@ class UsableItem
             $this->spell = new ItemSpell($item->getGenericItem()->getSpell());
         }
     }
-
 }

@@ -9,12 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "game_domains")]
+#[ORM\Table(name: 'game_domains')]
 class Domain
 {
     use TimestampableEntity;
 
-    function __toString()
+    public function __toString()
     {
         return $this->getTitle();
     }
@@ -25,7 +25,7 @@ class Domain
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -33,30 +33,30 @@ class Domain
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "title", type: "string", length: 255)]
+    #[ORM\Column(name: 'title', type: 'string', length: 255)]
     private $title;
 
-    #[ORM\OneToMany(targetEntity: Skill::class, mappedBy: "domain")]
+    #[ORM\OneToMany(targetEntity: Skill::class, mappedBy: 'domain')]
     private $skills;
 
-    #[ORM\Column(name: "random_seed", type: "integer")]
+    #[ORM\Column(name: 'random_seed', type: 'integer')]
     private $randomSeed;
 
-    #[ORM\Column(name: "graph_height", type: "integer")]
+    #[ORM\Column(name: 'graph_height', type: 'integer')]
     private $graphHeight;
 
-    #[ORM\OneToMany(targetEntity: DomainExperience::class, mappedBy: "domain")]
+    #[ORM\OneToMany(targetEntity: DomainExperience::class, mappedBy: 'domain')]
     private $playerExperiences;
 
-    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: "domain")]
+    #[ORM\OneToMany(targetEntity: Item::class, mappedBy: 'domain')]
     private $items;
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -66,7 +66,7 @@ class Domain
     }
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title
      *
@@ -80,7 +80,7 @@ class Domain
     }
 
     /**
-     * Get title
+     * Get title.
      *
      * @return string
      */
@@ -90,9 +90,7 @@ class Domain
     }
 
     /**
-     * Add skill
-     *
-     * @param Skill $skill
+     * Add skill.
      *
      * @return Domain
      */
@@ -104,9 +102,7 @@ class Domain
     }
 
     /**
-     * Remove skill
-     *
-     * @param Skill $skill
+     * Remove skill.
      */
     public function removeSkill(Skill $skill)
     {
@@ -114,7 +110,7 @@ class Domain
     }
 
     /**
-     * Get skills
+     * Get skills.
      *
      * @return Collection
      */
@@ -124,7 +120,7 @@ class Domain
     }
 
     /**
-     * Set randomSeed
+     * Set randomSeed.
      *
      * @param string $randomSeed
      *
@@ -138,7 +134,7 @@ class Domain
     }
 
     /**
-     * Get randomSeed
+     * Get randomSeed.
      *
      * @return string
      */
@@ -148,9 +144,9 @@ class Domain
     }
 
     /**
-     * Set graphHeight
+     * Set graphHeight.
      *
-     * @param integer $graphHeight
+     * @param int $graphHeight
      *
      * @return Domain
      */
@@ -162,9 +158,9 @@ class Domain
     }
 
     /**
-     * Get graphHeight
+     * Get graphHeight.
      *
-     * @return integer
+     * @return int
      */
     public function getGraphHeight()
     {
@@ -188,9 +184,7 @@ class Domain
     }
 
     /**
-     * Add playerExperience
-     *
-     * @param DomainExperience $playerExperience
+     * Add playerExperience.
      *
      * @return Domain
      */
@@ -202,9 +196,7 @@ class Domain
     }
 
     /**
-     * Remove playerExperience
-     *
-     * @param DomainExperience $playerExperience
+     * Remove playerExperience.
      */
     public function removePlayerExperience(DomainExperience $playerExperience)
     {

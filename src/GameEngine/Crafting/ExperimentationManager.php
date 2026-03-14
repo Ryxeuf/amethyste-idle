@@ -26,6 +26,7 @@ class ExperimentationManager
      * Sinon, certains materiaux sont consommes avec une chance de decouvrir un indice.
      *
      * @param string[] $itemSlugs
+     *
      * @return array{success: bool, recipe: ?Recipe, item: ?Item, message: string}
      */
     public function experiment(Player $player, array $itemSlugs): array
@@ -72,7 +73,7 @@ class ExperimentationManager
 
         foreach ($allRecipes as $recipe) {
             $recipeSlugs = array_map(
-                fn(array $ingredient) => $ingredient['slug'],
+                fn (array $ingredient) => $ingredient['slug'],
                 $recipe->getIngredients()
             );
 
@@ -80,7 +81,7 @@ class ExperimentationManager
             $expandedRecipeSlugs = [];
             foreach ($recipe->getIngredients() as $ingredient) {
                 $qty = $ingredient['quantity'] ?? 1;
-                for ($i = 0; $i < $qty; $i++) {
+                for ($i = 0; $i < $qty; ++$i) {
                     $expandedRecipeSlugs[] = $ingredient['slug'];
                 }
             }
@@ -187,7 +188,7 @@ class ExperimentationManager
     {
         foreach ($allRecipes as $recipe) {
             $recipeSlugs = array_map(
-                fn(array $ingredient) => $ingredient['slug'],
+                fn (array $ingredient) => $ingredient['slug'],
                 $recipe->getIngredients()
             );
 

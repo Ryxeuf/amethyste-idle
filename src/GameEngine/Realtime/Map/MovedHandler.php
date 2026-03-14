@@ -2,9 +2,9 @@
 
 namespace App\GameEngine\Realtime\Map;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
-use Psr\Log\LoggerInterface;
 
 abstract class MovedHandler
 {
@@ -52,7 +52,7 @@ abstract class MovedHandler
                 'x' => $x,
                 'y' => $y,
                 'coordinates' => $finalCoordinates,
-                'path' => array_map(fn(array $cell) => ['x' => $cell['x'], 'y' => $cell['y']], $path),
+                'path' => array_map(fn (array $cell) => ['x' => $cell['x'], 'y' => $cell['y']], $path),
                 'data' => $data,
             ], JSON_THROW_ON_ERROR)
         );

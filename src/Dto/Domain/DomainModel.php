@@ -22,5 +22,4 @@ class DomainModel
         $this->title = $domain->getTitle();
         $this->slug = $domain->getSlug();
     }
-
 }

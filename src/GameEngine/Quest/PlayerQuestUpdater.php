@@ -3,7 +3,6 @@
 namespace App\GameEngine\Quest;
 
 use App\Entity\App\Mob;
-use App\Entity\App\PlayerQuest;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerQuestUpdater
@@ -23,7 +22,7 @@ class PlayerQuestUpdater
             if (isset($tracking['monsters'])) {
                 foreach ($tracking['monsters'] as $idx => $monster) {
                     if ($monster['slug'] === $mob->getMonster()->getSlug()) {
-                        $tracking['monsters'][$idx]['count'] += 1;
+                        ++$tracking['monsters'][$idx]['count'];
                     }
                 }
             }

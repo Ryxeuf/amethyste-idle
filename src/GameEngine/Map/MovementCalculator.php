@@ -7,37 +7,34 @@ use App\Entity\App\ObjectLayer;
 use App\Exception\PathCoordinatesNotFoundException;
 use App\Exception\PathNotFoundException;
 use App\Helper\CellHelper;
-use BlackScorp\Astar\Astar;
-use BlackScorp\Astar\Grid;
-use BlackScorp\Astar\Heuristic\Euclidean;
 use Doctrine\ORM\EntityManagerInterface;
-use Exception;
 
 class MovementCalculator
 {
-    private int   $mapId;
+    private int $mapId;
     private array $map;
 
     public function __construct(
         private readonly MapStorage $mapStorage,
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     public function loadMap(int $mapId): void
     {
         $this->mapId = $mapId;
-        $this->map   = $this->mapStorage->getMapTag($mapId);
+        $this->map = $this->mapStorage->getMapTag($mapId);
     }
 
     /**
      * @throws PathCoordinatesNotFoundException
      * @throws PathNotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
     public function calculateMovement(int $x, int $y, int $targetX, int $targetY, int $abilityMask = 0b1): array
     {
         if (!isset($this->mapId)) {
-            throw new Exception("loadMap must be called before calculating movement");
+            throw new \Exception('loadMap must be called before calculating movement');
         }
 
         if (!isset($this->map[CellHelper::stringifyCoordinates($x, $y)]) || !isset($this->map[CellHelper::stringifyCoordinates($targetX, $targetY)])) {
@@ -71,8 +68,8 @@ class MovementCalculator
             }
         }
 
-        $dijkstra       = new Dijkstra($this->map, CellHelper::stringifyCoordinates($x, $y), $abilityMask);
-        $nodes          = $dijkstra->shortestPathTo(CellHelper::stringifyCoordinates($targetX, $targetY));
+        $dijkstra = new Dijkstra($this->map, CellHelper::stringifyCoordinates($x, $y), $abilityMask);
+        $nodes = $dijkstra->shortestPathTo(CellHelper::stringifyCoordinates($targetX, $targetY));
 
         unset($this->map);
 
@@ -80,17 +77,16 @@ class MovementCalculator
 
         if (count($nodes) === 0) {
             throw new PathNotFoundException();
-        } else {
-            foreach ($nodes as $node) {
-                [$x, $y] = explode('.', $node['node_identifier']);
-                $mouvementCells[] = [
-                    'map'        => $this->mapId,
-                    'x'          => $x,
-                    'y'          => $y,
-                    'cost'       => $node['weight'],
-                    'totalScore' => $node['accumulated_weight'],
-                ];
-            }
+        }
+        foreach ($nodes as $node) {
+            [$x, $y] = explode('.', $node['node_identifier']);
+            $mouvementCells[] = [
+                'map' => $this->mapId,
+                'x' => $x,
+                'y' => $y,
+                'cost' => $node['weight'],
+                'totalScore' => $node['accumulated_weight'],
+            ];
         }
 
         return $mouvementCells;

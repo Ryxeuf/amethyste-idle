@@ -2,9 +2,9 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\Entity\App\Player;
-use App\Entity\App\Mob;
 use App\Entity\App\Fight;
+use App\Entity\App\Mob;
+use App\Entity\App\Player;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -13,11 +13,12 @@ class FightHandler
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function startFight(Player $player, Mob $mob): Fight
     {
-        $this->logger->info("Starting fight between {player} and {mob}", ['player' => $player->getId(), 'mob' => $mob->getId()]);
+        $this->logger->info('Starting fight between {player} and {mob}', ['player' => $player->getId(), 'mob' => $mob->getId()]);
         $fight = new Fight();
         $fight->addPlayer($player);
         $fight->addMob($mob);

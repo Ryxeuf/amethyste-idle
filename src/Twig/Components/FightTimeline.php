@@ -2,9 +2,9 @@
 
 namespace App\Twig\Components;
 
-use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use App\Entity\App\Fight;
 use App\Helper\FightTimelineHelper;
+use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
 
 #[AsLiveComponent]
@@ -24,5 +24,4 @@ class FightTimeline
     {
         $this->fight = $fight;
     }
-
 }

@@ -14,7 +14,7 @@ class FightTimelineController extends AbstractController
     {
         $response = $this->render('game/fight/timeline.html.twig', [], new TurboStreamResponse());
         $response->headers->set('Content-Type', 'text/vnd.turbo-stream.html');
-        
+
         return $response;
     }
 }

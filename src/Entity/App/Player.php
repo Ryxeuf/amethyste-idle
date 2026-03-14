@@ -7,10 +7,10 @@ use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Quest;
 use App\Entity\Game\Skill;
+use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\User;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'player')]
@@ -21,13 +21,13 @@ class Player implements CharacterInterface
     use CoordinatesTrait;
     use TimestampableEntity;
 
-    function __toString()
+    public function __toString()
     {
         return $this->getName();
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -127,33 +127,21 @@ class Player implements CharacterInterface
         return $this->name;
     }
 
-    /**
-     * @return null|Map
-     */
     public function getMap(): ?Map
     {
         return $this->map;
     }
 
-    /**
-     * @param null|Map $map
-     */
     public function setMap(?Map $map): void
     {
         $this->map = $map;
     }
 
-    /**
-     * @return string
-     */
     public function getLastCoordinates(): string
     {
         return $this->lastCoordinates;
     }
 
-    /**
-     * @param string $lastCoordinates
-     */
     public function setLastCoordinates(string $lastCoordinates): void
     {
         $this->lastCoordinates = $lastCoordinates;
@@ -171,7 +159,7 @@ class Player implements CharacterInterface
         return $this->energy;
     }
 
-    public function setUser(User $user = null): self
+    public function setUser(?User $user = null): self
     {
         $this->user = $user;
 
@@ -220,7 +208,7 @@ class Player implements CharacterInterface
     }
 
     /**
-     * Get inventories
+     * Get inventories.
      *
      * @return Collection|Inventory[]
      */
@@ -230,9 +218,7 @@ class Player implements CharacterInterface
     }
 
     /**
-     * Add domainExperience
-     *
-     * @param DomainExperience $domainExperience
+     * Add domainExperience.
      *
      * @return Player
      */
@@ -244,9 +230,7 @@ class Player implements CharacterInterface
     }
 
     /**
-     * Remove domainExperience
-     *
-     * @param DomainExperience $domainExperience
+     * Remove domainExperience.
      */
     public function removeDomainExperience(DomainExperience $domainExperience)
     {
@@ -254,7 +238,7 @@ class Player implements CharacterInterface
     }
 
     /**
-     * Get domainExperiences
+     * Get domainExperiences.
      *
      * @return Collection|DomainExperience[]
      */
@@ -372,6 +356,7 @@ class Player implements CharacterInterface
             return false;
         }
         $this->gils -= $amount;
+
         return true;
     }
 }

@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: "game_status_effects")]
+#[ORM\Table(name: 'game_status_effects')]
 class StatusEffect
 {
     use TimestampableEntity;
@@ -37,38 +37,38 @@ class StatusEffect
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private int $id;
 
-    #[ORM\Column(name: "slug", type: "string", length: 255, unique: true)]
+    #[ORM\Column(name: 'slug', type: 'string', length: 255, unique: true)]
     private string $slug;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
-    #[ORM\Column(name: "type", type: "string", length: 50)]
+    #[ORM\Column(name: 'type', type: 'string', length: 50)]
     private string $type;
 
-    #[ORM\Column(name: "duration", type: "integer")]
+    #[ORM\Column(name: 'duration', type: 'integer')]
     private int $duration;
 
-    #[ORM\Column(name: "damage_per_turn", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'damage_per_turn', type: 'integer', nullable: true)]
     private ?int $damagePerTurn = null;
 
-    #[ORM\Column(name: "heal_per_turn", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'heal_per_turn', type: 'integer', nullable: true)]
     private ?int $healPerTurn = null;
 
-    #[ORM\Column(name: "stat_modifier", type: "json", nullable: true)]
+    #[ORM\Column(name: 'stat_modifier', type: 'json', nullable: true)]
     private ?array $statModifier = null;
 
-    #[ORM\Column(name: "chance", type: "integer", options: ["default" => 100])]
+    #[ORM\Column(name: 'chance', type: 'integer', options: ['default' => 100])]
     private int $chance = 100;
 
-    #[ORM\Column(name: "element", type: "string", length: 25, options: ["default" => "none"])]
+    #[ORM\Column(name: 'element', type: 'string', length: 25, options: ['default' => 'none'])]
     private string $element = Spell::ELEMENT_NONE;
 
-    #[ORM\Column(name: "icon", type: "string", length: 100, nullable: true)]
+    #[ORM\Column(name: 'icon', type: 'string', length: 100, nullable: true)]
     private ?string $icon = null;
 
     public function getId(): int

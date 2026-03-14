@@ -15,11 +15,11 @@ class FightHelper
     }
 
     /**
-     * @return object|null|CharacterInterface
+     * @return object|CharacterInterface|null
      */
     public function getTarget(Fight $fight): ?CharacterInterface
     {
-        if (!$targetClass = $this->getTargetClass($fight)){
+        if (!$targetClass = $this->getTargetClass($fight)) {
             return null;
         }
 

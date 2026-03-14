@@ -4,10 +4,10 @@ namespace App\EventListener;
 
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
 class MaintenanceSubscriber implements EventSubscriberInterface

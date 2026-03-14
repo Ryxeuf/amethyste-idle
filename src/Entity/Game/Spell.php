@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "game_spells")]
+#[ORM\Table(name: 'game_spells')]
 class Spell
 {
     use TimestampableEntity;
@@ -26,7 +26,7 @@ class Spell
         self::ELEMENT_EARTH,
         self::ELEMENT_AIR,
         self::ELEMENT_LIGHT,
-        self::ELEMENT_DARK
+        self::ELEMENT_DARK,
     ];
 
     public function __toString(): string
@@ -35,73 +35,64 @@ class Spell
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "slug", type: "string", length: 255, unique: true)]
+    #[ORM\Column(name: 'slug', type: 'string', length: 255, unique: true)]
     private $slug;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
-    #[ORM\Column(name: "description", type: "text")]
+    #[ORM\Column(name: 'description', type: 'text')]
     private $description;
 
-    #[ORM\Column(name: "damage", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'damage', type: 'integer', nullable: true)]
     private $damage;
 
-    #[ORM\Column(name: "heal", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'heal', type: 'integer', nullable: true)]
     private $heal;
 
-    #[ORM\Column(name: "hit", type: "integer", options: ["default" => 75])]
+    #[ORM\Column(name: 'hit', type: 'integer', options: ['default' => 75])]
     private $hit = 75;
 
-    #[ORM\Column(name: "critical", type: "integer", options: ["default" => 5])]
+    #[ORM\Column(name: 'critical', type: 'integer', options: ['default' => 5])]
     private $critical = 5;
 
-    #[ORM\Column(name: "spell_range", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'spell_range', type: 'integer', nullable: true)]
     private $spellRange;
 
-    #[ORM\Column(name: "element", type: "string", length: 25)]
+    #[ORM\Column(name: 'element', type: 'string', length: 25)]
     private $element = self::ELEMENT_NONE;
 
-    #[ORM\Column(name: "cooldown", type: "integer", nullable: true)]
+    #[ORM\Column(name: 'cooldown', type: 'integer', nullable: true)]
     private ?int $cooldown = null;
 
-    #[ORM\Column(name: "energy_cost", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'energy_cost', type: 'integer', options: ['default' => 0])]
     private int $energyCost = 0;
 
-    #[ORM\Column(name: "status_effect_slug", type: "string", length: 255, nullable: true)]
+    #[ORM\Column(name: 'status_effect_slug', type: 'string', length: 255, nullable: true)]
     private ?string $statusEffectSlug = null;
 
-    #[ORM\Column(name: "aoe_targets", type: "integer", options: ["default" => 1])]
+    #[ORM\Column(name: 'aoe_targets', type: 'integer', options: ['default' => 1])]
     private int $aoeTargets = 1;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Spell
+     * Set name.
      */
     public function setName(string $name): Spell
     {
@@ -111,9 +102,7 @@ class Spell
     }
 
     /**
-     * Get name
-     *
-     * @return string
+     * Get name.
      */
     public function getName(): string
     {
@@ -121,11 +110,7 @@ class Spell
     }
 
     /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Spell
+     * Set description.
      */
     public function setDescription(string $description): Spell
     {
@@ -135,9 +120,7 @@ class Spell
     }
 
     /**
-     * Get description
-     *
-     * @return string
+     * Get description.
      */
     public function getDescription(): string
     {
@@ -145,11 +128,7 @@ class Spell
     }
 
     /**
-     * Set damage
-     *
-     * @param integer|null $damage
-     *
-     * @return Spell
+     * Set damage.
      */
     public function setDamage(?int $damage): Spell
     {
@@ -159,7 +138,7 @@ class Spell
     }
 
     /**
-     * Get damage
+     * Get damage.
      */
     public function getDamage(): ?int
     {
@@ -167,11 +146,7 @@ class Spell
     }
 
     /**
-     * Set heal
-     *
-     * @param integer|null $heal
-     *
-     * @return Spell
+     * Set heal.
      */
     public function setHeal(?int $heal): Spell
     {
@@ -186,11 +161,7 @@ class Spell
     }
 
     /**
-     * Set spellRange
-     *
-     * @param integer|null $spellRange
-     *
-     * @return Spell
+     * Set spellRange.
      */
     public function setSpellRange(?int $spellRange): Spell
     {
@@ -205,11 +176,7 @@ class Spell
     }
 
     /**
-     * Set element
-     *
-     * @param string $element
-     *
-     * @return Spell
+     * Set element.
      */
     public function setElement(string $element): Spell
     {
@@ -219,58 +186,38 @@ class Spell
     }
 
     /**
-     * Get element
-     *
-     * @return string
+     * Get element.
      */
     public function getElement(): string
     {
         return $this->element;
     }
 
-    /**
-     * @return int
-     */
     public function getHit(): int
     {
         return $this->hit;
     }
 
-    /**
-     * @param int $hit
-     */
     public function setHit(int $hit): void
     {
         $this->hit = $hit;
     }
 
-    /**
-     * @return int
-     */
     public function getCritical(): int
     {
         return $this->critical;
     }
 
-    /**
-     * @param int $critical
-     */
     public function setCritical(int $critical): void
     {
         $this->critical = $critical;
     }
 
-    /**
-     * @return string
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     */
     public function setSlug(string $slug): void
     {
         $this->slug = $slug;

@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class SpotAvailableEvent extends Event
 {
-    final public const NAME = "event.map.spot.available";
+    final public const NAME = 'event.map.spot.available';
 
     public function __construct(private readonly ObjectLayer $objectLayer)
     {

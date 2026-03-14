@@ -18,20 +18,20 @@ class PlayerRespawnHandler implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerDeadEvent::NAME => 'respawn'
+            PlayerDeadEvent::NAME => 'respawn',
         ];
     }
 
-    public function respawn(PlayerDeadEvent $event)
+    public function respawn(PlayerDeadEvent $event): void
     {
         $player = $event->getPlayer();
-        $cell = $player->getLastCell();
-        if ($respawnCell = $this->mapHelper->getRespawnCell($player->getCell()->getMap())) {
-            $cell = $respawnCell;
+        $coordinates = $player->getLastCoordinates();
+        if ($player->getMap() !== null && $respawnCoordinates = $this->mapHelper->getRespawnCoordinates($player->getMap())) {
+            $coordinates = $respawnCoordinates;
         }
 
-        $player->setLife(round($player->getMaxLife()/2));
-        $player->setCell($cell);
+        $player->setLife((int) round($player->getMaxLife() / 2));
+        $player->setCoordinates($coordinates);
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 

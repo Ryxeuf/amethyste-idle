@@ -10,7 +10,7 @@ class FightCalculatorTest extends TestCase
     public function testHasAttackHitWith100PercentAlwaysReturnsTrue(): void
     {
         // random_int(0,99) < 100 => toujours vrai
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; ++$i) {
             $this->assertTrue(
                 FightCalculator::hasAttackHit(100),
                 'Un taux de toucher de 100 devrait toujours toucher'
@@ -21,7 +21,7 @@ class FightCalculatorTest extends TestCase
     public function testHasAttackHitWith0PercentAlwaysReturnsFalse(): void
     {
         // random_int(0,99) < 0 => toujours faux
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; ++$i) {
             $this->assertFalse(
                 FightCalculator::hasAttackHit(0),
                 'Un taux de toucher de 0 ne devrait jamais toucher'
@@ -43,11 +43,11 @@ class FightCalculatorTest extends TestCase
         $misses = 0;
         $iterations = 200;
 
-        for ($i = 0; $i < $iterations; $i++) {
+        for ($i = 0; $i < $iterations; ++$i) {
             if (FightCalculator::hasAttackHit(50)) {
-                $hits++;
+                ++$hits;
             } else {
-                $misses++;
+                ++$misses;
             }
         }
 
@@ -60,7 +60,7 @@ class FightCalculatorTest extends TestCase
         // random_int(0,99) < 1 => seulement quand random_int retourne 0
         // Sur 1000 essais, on devrait avoir au moins un hit
         $hasHit = false;
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 1000; ++$i) {
             if (FightCalculator::hasAttackHit(1)) {
                 $hasHit = true;
                 break;
@@ -74,7 +74,7 @@ class FightCalculatorTest extends TestCase
     {
         // random_int(0,99) < 99 => miss seulement quand random_int retourne 99
         $hasMissed = false;
-        for ($i = 0; $i < 1000; $i++) {
+        for ($i = 0; $i < 1000; ++$i) {
             if (!FightCalculator::hasAttackHit(99)) {
                 $hasMissed = true;
                 break;

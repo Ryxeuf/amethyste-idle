@@ -51,8 +51,8 @@ class CellTransformer
             if ($layer === null) {
                 continue;
             }
-            $style = ['z-index: '.$zIndex.' !important'];
-            $zIndex++;
+            $style = ['z-index: ' . $zIndex . ' !important'];
+            ++$zIndex;
 
             $mapIdx = $layer['mapIdx'] ?? 0;
             $idxInMap = $layer['idxInMap'] ?? 0;
@@ -64,17 +64,17 @@ class CellTransformer
 
             $terrainName = pathinfo($tileset['image'] ?? 'terrain.png', PATHINFO_FILENAME);
 
-            $layers[] = ['style' => implode('; ', $style), 'class' => $terrainName.' cell tileset-'.$tilesetName.'-cell-'.$tileId];
+            $layers[] = ['style' => implode('; ', $style), 'class' => $terrainName . ' cell tileset-' . $tilesetName . '-cell-' . $tileId];
         }
 
         return new SearchCell(
             x: $data['x'],
             y: $data['y'],
-            movementCost: (int)$movementCost,
-            upCost: (int)$upCost,
-            downCost: (int)$downCost,
-            leftCost: (int)$leftCost,
-            rightCost: (int)$rightCost,
+            movementCost: (int) $movementCost,
+            upCost: (int) $upCost,
+            downCost: (int) $downCost,
+            leftCost: (int) $leftCost,
+            rightCost: (int) $rightCost,
             world: $worldName,
             map: [
                 'id' => $map->getId(),
@@ -93,7 +93,7 @@ class CellTransformer
             layers: $layers,
         );
     }
-    
+
     private function findTilesetForGid(int $gid): array
     {
         $selected = null;

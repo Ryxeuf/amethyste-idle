@@ -4,8 +4,8 @@ namespace App\Dto\Fight;
 
 class TimelineItem
 {
-    final const TYPE_PLAYER = 'player';
-    final const TYPE_MOB = 'mob';
+    final public const TYPE_PLAYER = 'player';
+    final public const TYPE_MOB = 'mob';
 
     /**
      * @var string

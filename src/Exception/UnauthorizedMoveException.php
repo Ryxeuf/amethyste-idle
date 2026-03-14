@@ -2,9 +2,7 @@
 
 namespace App\Exception;
 
-use Exception;
-
-class UnauthorizedMoveException extends Exception
+class UnauthorizedMoveException extends \Exception
 {
-    protected $message = "Mouvement impossible";
+    protected $message = 'Mouvement impossible';
 }

@@ -2,92 +2,92 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use App\Entity\Game\Domain;
 
 class ItemFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
         $itemsData = $this->getItemsData();
-        
+
         foreach ($itemsData as $key => $data) {
             $item = new Item();
-            
+
             if (isset($data['name'])) {
                 $item->setName($data['name']);
             }
-            
+
             if (isset($data['slug'])) {
                 $item->setSlug($data['slug']);
             } else {
                 $item->setSlug($key);
             }
-            
+
             if (isset($data['description'])) {
                 $item->setDescription($data['description']);
             }
-            
+
             if (isset($data['type'])) {
                 $item->setType($data['type']);
             }
-            
+
             if (isset($data['element'])) {
                 $item->setElement($data['element']);
             }
-            
+
             if (isset($data['price'])) {
                 $item->setPrice($data['price']);
             }
-            
+
             if (isset($data['level'])) {
                 $item->setLevel($data['level']);
             } else {
                 $item->setLevel(1);
             }
-            
+
             if (isset($data['domain'])) {
                 $item->setDomain($this->getReference($data['domain'], Domain::class));
             }
-            
+
             if (isset($data['space'])) {
                 $item->setSpace($data['space']);
             }
-            
+
             if (isset($data['energy_cost'])) {
                 $item->setEnergyCost($data['energy_cost']);
             }
-            
+
             if (isset($data['nb_usages'])) {
                 $item->setNbUsages($data['nb_usages']);
             }
-            
+
             if (isset($data['gear_location'])) {
                 $item->setGearLocation($data['gear_location']);
             }
-            
+
             if (isset($data['spell'])) {
                 $item->setSpell($this->getReference($data['spell'], Spell::class));
             }
-            
+
             if (isset($data['effect'])) {
                 $item->setEffect($data['effect']);
             }
-            
+
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($item);
             $this->addReference($key, $item);
         }
-        
+
         $manager->flush();
     }
-    
+
     private function getItemsData(): array
     {
         return [
@@ -103,7 +103,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 10,
-                'nb_usages' => 10
+                'nb_usages' => 10,
             ],
             'materia_fire_ball' => [
                 'name' => 'Boule de feu',
@@ -116,7 +116,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 10,
-                'nb_usages' => 10
+                'nb_usages' => 10,
             ],
             'materia_flame' => [
                 'name' => 'Flamme',
@@ -129,7 +129,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 8,
-                'nb_usages' => 25
+                'nb_usages' => 25,
             ],
             'materia_flamer' => [
                 'name' => 'Feu',
@@ -142,7 +142,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 150,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 15
+                'nb_usages' => 15,
             ],
             'materia_flame_rain' => [
                 'name' => 'Pluie de feu',
@@ -155,7 +155,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 200,
                 'space' => 1,
                 'energy_cost' => 25,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
             'materia_stone_throw' => [
                 'name' => 'Jet de cailloux',
@@ -168,7 +168,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 50,
                 'space' => 1,
                 'energy_cost' => 5,
-                'nb_usages' => 20
+                'nb_usages' => 20,
             ],
             'materia_punishment' => [
                 'name' => 'Châtiment',
@@ -181,7 +181,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 150,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
             'materia_wind_lame' => [
                 'name' => "Lame d'air",
@@ -194,7 +194,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 130,
                 'space' => 1,
                 'energy_cost' => 10,
-                'nb_usages' => 20
+                'nb_usages' => 20,
             ],
             'materia_sharp_blade' => [
                 'name' => 'Lame tranchante',
@@ -207,7 +207,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 8,
-                'nb_usages' => 25
+                'nb_usages' => 25,
             ],
             'materia_liana_whip' => [
                 'name' => 'Fouet de liane',
@@ -220,9 +220,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 120,
                 'space' => 1,
                 'energy_cost' => 12,
-                'nb_usages' => 15
+                'nb_usages' => 15,
             ],
-            
+
             // Équipements
             'short_sword' => [
                 'name' => 'Epée courte',
@@ -235,7 +235,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 50,
                 'space' => 2,
                 'energy_cost' => 0,
-                'nb_usages' => 100
+                'nb_usages' => 100,
             ],
             'long_sword' => [
                 'name' => 'Epée longue',
@@ -248,7 +248,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 3,
                 'energy_cost' => 0,
-                'nb_usages' => 100
+                'nb_usages' => 100,
             ],
             'leather_boots' => [
                 'name' => 'Bottes en cuir',
@@ -260,7 +260,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 30,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 100
+                'nb_usages' => 100,
             ],
             'leather_hat' => [
                 'name' => 'Chapeau de cuir',
@@ -271,7 +271,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 25,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 100
+                'nb_usages' => 100,
             ],
             'leather_armor' => [
                 'name' => 'Armure de cuir',
@@ -282,9 +282,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 40,
                 'space' => 2,
                 'energy_cost' => 0,
-                'nb_usages' => 100
+                'nb_usages' => 100,
             ],
-            
+
             // Objets divers
             'life_potion' => [
                 'name' => 'Potion de soin',
@@ -296,7 +296,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 20,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'fishing_rod' => [
                 'name' => 'Canne à pèche',
@@ -307,7 +307,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 40,
                 'space' => 2,
                 'energy_cost' => 0,
-                'nb_usages' => 50
+                'nb_usages' => 50,
             ],
             'beer_pint' => [
                 'name' => 'Chope de bière',
@@ -317,7 +317,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 5,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'mushroom' => [
                 'name' => 'Champignon',
@@ -327,7 +327,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 5,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'pickaxe' => [
                 'name' => 'Pioche',
@@ -338,7 +338,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 50,
                 'space' => 2,
                 'energy_cost' => 0,
-                'nb_usages' => 100
+                'nb_usages' => 100,
             ],
             'wood_log' => [
                 'name' => 'Buche de bois',
@@ -348,7 +348,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 8,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'leather_skin_1' => [
                 'name' => 'Peau de cuir',
@@ -358,7 +358,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 10,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'leather_skin_2' => [
                 'name' => 'Peau de cuir',
@@ -368,7 +368,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 10,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'life_domain_parchment' => [
                 'name' => 'Apprentissage des soins',
@@ -379,7 +379,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'miner_domain_parchment' => [
                 'name' => 'Découverte du minage',
@@ -390,7 +390,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'ancient_scroll' => [
                 'name' => 'Parchemin ancien',
@@ -401,7 +401,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"random_spell_knowledge", "chance":0.5}'
+                'effect' => '{"action":"random_spell_knowledge", "chance":0.5}',
             ],
             'healing_potion_small' => [
                 'name' => 'Potion de soin mineure',
@@ -412,7 +412,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'effect' => '{"action":"heal", "amount":20}',
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'healing_potion_medium' => [
                 'name' => 'Potion de soin',
@@ -423,7 +423,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'effect' => '{"action":"heal", "amount":50}',
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'energy_potion_small' => [
                 'name' => "Potion d'énergie mineure",
@@ -434,7 +434,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'effect' => '{"action":"restore_energy", "amount":15}',
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'iron_sword' => [
                 'name' => 'Épée en fer',
@@ -446,7 +446,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 3,
                 'energy_cost' => 5,
                 'nb_usages' => 200,
-                'effect' => '{"action":"damage", "amount":15}'
+                'effect' => '{"action":"damage", "amount":15}',
             ],
             'wooden_shield' => [
                 'name' => 'Bouclier en bois',
@@ -458,7 +458,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 3,
                 'energy_cost' => 0,
                 'nb_usages' => 150,
-                'effect' => '{"action":"defense_boost", "amount":10}'
+                'effect' => '{"action":"defense_boost", "amount":10}',
             ],
             'leather_helmet' => [
                 'name' => 'Casque en cuir',
@@ -470,7 +470,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
-                'effect' => '{"action":"defense_boost", "amount":5}'
+                'effect' => '{"action":"defense_boost", "amount":5}',
             ],
             'magic_amulet' => [
                 'name' => 'Amulette magique',
@@ -482,7 +482,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
-                'effect' => '{"action":"magic_boost", "amount":15}'
+                'effect' => '{"action":"magic_boost", "amount":15}',
             ],
             'magic_ring' => [
                 'name' => 'Anneau magique',
@@ -494,7 +494,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
-                'effect' => '{"action":"magic_boost", "amount":10}'
+                'effect' => '{"action":"magic_boost", "amount":10}',
             ],
             'bow' => [
                 'name' => 'Arc',
@@ -506,7 +506,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 3,
                 'energy_cost' => 8,
                 'nb_usages' => 150,
-                'effect' => '{"action":"ranged_damage", "amount":12}'
+                'effect' => '{"action":"ranged_damage", "amount":12}',
             ],
             'staff' => [
                 'name' => 'Bâton',
@@ -518,7 +518,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 3,
                 'energy_cost' => 5,
                 'nb_usages' => 200,
-                'effect' => '{"action":"magic_boost", "amount":20}'
+                'effect' => '{"action":"magic_boost", "amount":20}',
             ],
             'dagger' => [
                 'name' => 'Dague',
@@ -530,7 +530,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 3,
                 'nb_usages' => 150,
-                'effect' => '{"action":"damage", "amount":8, "speed":2}'
+                'effect' => '{"action":"damage", "amount":8, "speed":2}',
             ],
             'herb_mint' => [
                 'name' => 'Menthe sauvage',
@@ -540,7 +540,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 15,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'herb_lavender' => [
                 'name' => 'Lavande',
@@ -550,7 +550,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 20,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'magic_crystal' => [
                 'name' => 'Cristal magique',
@@ -561,7 +561,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 5,
-                'effect' => '{"action":"random_element_boost", "amount":10}'
+                'effect' => '{"action":"random_element_boost", "amount":10}',
             ],
             'herbalist_domain_parchment' => [
                 'name' => "Découverte de l'herborisme",
@@ -572,9 +572,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 100,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
-            
+
             // Minerais
             'ore_ruby' => [
                 'name' => 'Ruby',
@@ -584,7 +584,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 15,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'ore_iron' => [
                 'name' => 'Fer',
@@ -594,7 +594,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 12,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'ore_gold' => [
                 'name' => 'Or',
@@ -604,7 +604,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 30,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'ore_diamond' => [
                 'name' => 'Diamant',
@@ -614,7 +614,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 50,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'ore_emerald' => [
                 'name' => 'Émeraude',
@@ -624,7 +624,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 45,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'crafted_iron_ingot' => [
                 'name' => 'Lingot de fer',
@@ -634,7 +634,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 25,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'crafted_gold_ingot' => [
                 'name' => 'Lingot d\'or',
@@ -644,7 +644,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 60,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'crafted_leather_strip' => [
                 'name' => 'Lanière de cuir',
@@ -654,7 +654,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 20,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'crafted_cloth' => [
                 'name' => 'Tissu',
@@ -664,7 +664,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 15,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'crafted_potion_base' => [
                 'name' => 'Base de potion',
@@ -674,9 +674,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 30,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
-            
+
             // Plantes
             'plant_lavender' => [
                 'name' => 'Lavande',
@@ -687,7 +687,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["calming_potion", "sleep_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["calming_potion", "sleep_potion"]}',
             ],
             'plant_mint' => [
                 'name' => 'Menthe',
@@ -698,7 +698,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["energy_potion", "healing_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["energy_potion", "healing_potion"]}',
             ],
             'plant_sage' => [
                 'name' => 'Sauge',
@@ -709,7 +709,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["purification_potion", "antidote"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["purification_potion", "antidote"]}',
             ],
             'plant_thyme' => [
                 'name' => 'Thym',
@@ -720,7 +720,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["healing_potion", "protection_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["healing_potion", "protection_potion"]}',
             ],
             'plant_rosemary' => [
                 'name' => 'Romarin',
@@ -731,7 +731,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["memory_potion", "focus_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["memory_potion", "focus_potion"]}',
             ],
             'plant_chamomile' => [
                 'name' => 'Camomille',
@@ -742,7 +742,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["calming_potion", "sleep_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["calming_potion", "sleep_potion"]}',
             ],
             'plant_nettle' => [
                 'name' => 'Ortie',
@@ -753,7 +753,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["strength_potion", "vitality_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["strength_potion", "vitality_potion"]}',
             ],
             'plant_dandelion' => [
                 'name' => 'Pissenlit',
@@ -764,7 +764,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["detox_potion", "purification_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["detox_potion", "purification_potion"]}',
             ],
             'plant_valerian' => [
                 'name' => 'Valériane',
@@ -775,7 +775,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["sleep_potion", "tranquility_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["sleep_potion", "tranquility_potion"]}',
             ],
             'plant_mandrake' => [
                 'name' => 'Mandragore',
@@ -786,7 +786,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["invisibility_potion", "transformation_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["invisibility_potion", "transformation_potion"]}',
             ],
             'plant_nightshade' => [
                 'name' => 'Belladone',
@@ -797,7 +797,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["poison", "paralysis_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["poison", "paralysis_potion"]}',
             ],
             'plant_wolfsbane' => [
                 'name' => 'Aconit',
@@ -808,7 +808,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["lycanthropy_cure", "protection_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["lycanthropy_cure", "protection_potion"]}',
             ],
             'plant_aloe_vera' => [
                 'name' => 'Aloe Vera',
@@ -819,7 +819,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["healing_potion", "burn_remedy"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["healing_potion", "burn_remedy"]}',
             ],
             'plant_ginseng' => [
                 'name' => 'Ginseng',
@@ -830,7 +830,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["energy_potion", "vitality_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["energy_potion", "vitality_potion"]}',
             ],
             'plant_echinacea' => [
                 'name' => 'Échinacée',
@@ -841,7 +841,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["immunity_potion", "resistance_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["immunity_potion", "resistance_potion"]}',
             ],
             // Plantes magiques et exotiques
             'plant_moonflower' => [
@@ -853,7 +853,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["night_vision_potion", "lunar_blessing_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["night_vision_potion", "lunar_blessing_potion"]}',
             ],
             'plant_sunblossom' => [
                 'name' => 'Fleur Solaire',
@@ -864,7 +864,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["fire_resistance_potion", "solar_energy_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["fire_resistance_potion", "solar_energy_potion"]}',
             ],
             'plant_dragonleaf' => [
                 'name' => 'Feuille de Dragon',
@@ -875,7 +875,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["fire_breath_potion", "dragon_scale_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["fire_breath_potion", "dragon_scale_potion"]}',
             ],
             'plant_frostcap' => [
                 'name' => 'Chapeau de Givre',
@@ -886,7 +886,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["frost_resistance_potion", "ice_breath_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["frost_resistance_potion", "ice_breath_potion"]}',
             ],
             'plant_ghostshroom' => [
                 'name' => 'Champignon Fantôme',
@@ -897,7 +897,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["invisibility_potion", "spirit_vision_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["invisibility_potion", "spirit_vision_potion"]}',
             ],
             'plant_thunderroot' => [
                 'name' => 'Racine Tonnerre',
@@ -908,7 +908,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["lightning_resistance_potion", "shock_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["lightning_resistance_potion", "shock_potion"]}',
             ],
             'plant_whisperweed' => [
                 'name' => 'Herbe Murmurante',
@@ -919,7 +919,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["telepathy_potion", "animal_speech_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["telepathy_potion", "animal_speech_potion"]}',
             ],
             'plant_dreamlily' => [
                 'name' => 'Lys des Rêves',
@@ -930,7 +930,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["dream_walking_potion", "prophetic_vision_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["dream_walking_potion", "prophetic_vision_potion"]}',
             ],
             'plant_voidfruit' => [
                 'name' => 'Fruit du Néant',
@@ -941,7 +941,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["void_protection_potion", "shadow_form_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["void_protection_potion", "shadow_form_potion"]}',
             ],
             'plant_phoenixflower' => [
                 'name' => 'Fleur de Phénix',
@@ -952,7 +952,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
-                'effect' => '{"action":"crafting_ingredient", "potions":["resurrection_potion", "eternal_flame_potion"]}'
+                'effect' => '{"action":"crafting_ingredient", "potions":["resurrection_potion", "eternal_flame_potion"]}',
             ],
             'food_bread' => [
                 'name' => 'Pain',
@@ -963,7 +963,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'effect' => '{"action":"restore_energy", "amount":10}',
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'food_cheese' => [
                 'name' => 'Fromage',
@@ -974,7 +974,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'effect' => '{"action":"restore_energy", "amount":15}',
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'food_apple' => [
                 'name' => 'Pomme',
@@ -985,7 +985,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'effect' => '{"action":"restore_energy", "amount":5}',
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'quest_item_ancient_key' => [
                 'name' => 'Clé ancienne',
@@ -995,7 +995,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 0,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
             'quest_item_magic_gem' => [
                 'name' => 'Gemme magique',
@@ -1005,9 +1005,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 0,
                 'space' => 1,
                 'energy_cost' => 0,
-                'nb_usages' => 1
+                'nb_usages' => 1,
             ],
-            
+
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',
@@ -1020,7 +1020,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 250,
                 'space' => 1,
                 'energy_cost' => 25,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
             'materia_fire_wall' => [
                 'name' => 'Mur de feu',
@@ -1033,7 +1033,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 180,
                 'space' => 1,
                 'energy_cost' => 18,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
             'materia_fire_nova' => [
                 'name' => 'Nova de feu',
@@ -1046,7 +1046,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 220,
                 'space' => 1,
                 'energy_cost' => 22,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
             'materia_phoenix_flame' => [
                 'name' => 'Flamme du phénix',
@@ -1059,7 +1059,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 300,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 7
+                'nb_usages' => 7,
             ],
             'materia_meteor_strike' => [
                 'name' => 'Frappe météorique',
@@ -1072,9 +1072,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 350,
                 'space' => 1,
                 'energy_cost' => 30,
-                'nb_usages' => 3
+                'nb_usages' => 3,
             ],
-            
+
             // Nouvelles Matérias - Vie
             'materia_rejuvenation' => [
                 'name' => 'Régénération',
@@ -1087,7 +1087,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 180,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
             'materia_divine_blessing' => [
                 'name' => 'Bénédiction divine',
@@ -1100,7 +1100,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 250,
                 'space' => 1,
                 'energy_cost' => 25,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
             'materia_healing_wave' => [
                 'name' => 'Vague de guérison',
@@ -1113,7 +1113,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 160,
                 'space' => 1,
                 'energy_cost' => 18,
-                'nb_usages' => 7
+                'nb_usages' => 7,
             ],
             'materia_life_transfer' => [
                 'name' => 'Transfert de vie',
@@ -1126,7 +1126,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 200,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
             'materia_holy_light' => [
                 'name' => 'Lumière sacrée',
@@ -1139,9 +1139,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 220,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
-            
+
             // Nouvelles Matérias - Mort
             'materia_soul_drain' => [
                 'name' => 'Drain d\'âme',
@@ -1154,7 +1154,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 180,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
             'materia_death_touch' => [
                 'name' => 'Toucher mortel',
@@ -1167,7 +1167,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 200,
                 'space' => 1,
                 'energy_cost' => 18,
-                'nb_usages' => 7
+                'nb_usages' => 7,
             ],
             'materia_shadow_bolt' => [
                 'name' => 'Éclair d\'ombre',
@@ -1180,7 +1180,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 220,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
             'materia_life_leech' => [
                 'name' => 'Sangsue vitale',
@@ -1193,7 +1193,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 210,
                 'space' => 1,
                 'energy_cost' => 18,
-                'nb_usages' => 7
+                'nb_usages' => 7,
             ],
             'materia_shadow_wave' => [
                 'name' => 'Vague d\'ombre',
@@ -1206,9 +1206,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 250,
                 'space' => 1,
                 'energy_cost' => 22,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
-            
+
             // Nouvelles Matérias - Terre
             'materia_earthquake' => [
                 'name' => 'Tremblement de terre',
@@ -1221,7 +1221,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 200,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
             'materia_rock_armor' => [
                 'name' => 'Armure de roche',
@@ -1234,9 +1234,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 180,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
-            
+
             // Nouvelles Matérias - Vent
             'materia_wind_lame' => [
                 'name' => 'Lame d\'air',
@@ -1249,7 +1249,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 130,
                 'space' => 1,
                 'energy_cost' => 10,
-                'nb_usages' => 10
+                'nb_usages' => 10,
             ],
             'materia_gust' => [
                 'name' => 'Bourrasque',
@@ -1262,7 +1262,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 160,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
+                'nb_usages' => 8,
             ],
             'materia_cyclone' => [
                 'name' => 'Cyclone',
@@ -1275,9 +1275,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 220,
                 'space' => 1,
                 'energy_cost' => 22,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
-            
+
             // Matérias avancées - Feu
             'materia_dragon_breath' => [
                 'name' => 'Souffle du dragon',
@@ -1290,7 +1290,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 320,
                 'space' => 1,
                 'energy_cost' => 25,
-                'nb_usages' => 4
+                'nb_usages' => 4,
             ],
             'materia_volcanic_eruption' => [
                 'name' => 'Éruption volcanique',
@@ -1303,7 +1303,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 400,
                 'space' => 1,
                 'energy_cost' => 35,
-                'nb_usages' => 2
+                'nb_usages' => 2,
             ],
             'materia_ember_shield' => [
                 'name' => 'Bouclier d\'étincelles',
@@ -1316,9 +1316,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 280,
                 'space' => 1,
                 'energy_cost' => 18,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
-            
+
             // Matérias avancées - Vie
             'materia_vitality_surge' => [
                 'name' => 'Afflux de vitalité',
@@ -1331,7 +1331,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 280,
                 'space' => 1,
                 'energy_cost' => 22,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
             'materia_life_shield' => [
                 'name' => 'Bouclier de vie',
@@ -1344,7 +1344,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 250,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
             'materia_celestial_blessing' => [
                 'name' => 'Bénédiction céleste',
@@ -1357,7 +1357,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 350,
                 'space' => 1,
                 'energy_cost' => 30,
-                'nb_usages' => 3
+                'nb_usages' => 3,
             ],
             'materia_divine_intervention' => [
                 'name' => 'Intervention divine',
@@ -1370,9 +1370,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 380,
                 'space' => 1,
                 'energy_cost' => 28,
-                'nb_usages' => 3
+                'nb_usages' => 3,
             ],
-            
+
             // Matérias avancées - Mort
             'materia_dark_harvest' => [
                 'name' => 'Moisson sombre',
@@ -1385,7 +1385,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 320,
                 'space' => 1,
                 'energy_cost' => 25,
-                'nb_usages' => 4
+                'nb_usages' => 4,
             ],
             'materia_soul_rip' => [
                 'name' => 'Déchirure d\'âme',
@@ -1398,7 +1398,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 350,
                 'space' => 1,
                 'energy_cost' => 30,
-                'nb_usages' => 3
+                'nb_usages' => 3,
             ],
             'materia_death_nova' => [
                 'name' => 'Nova de mort',
@@ -1411,7 +1411,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 280,
                 'space' => 1,
                 'energy_cost' => 22,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
             'materia_shadow_mend' => [
                 'name' => 'Guérison des ombres',
@@ -1424,9 +1424,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 300,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
-            
+
             // Matérias avancées - Terre
             'materia_boulder_throw' => [
                 'name' => 'Lancer de rocher',
@@ -1439,7 +1439,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 250,
                 'space' => 1,
                 'energy_cost' => 22,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
             'materia_stone_spikes' => [
                 'name' => 'Pics de pierre',
@@ -1452,7 +1452,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 280,
                 'space' => 1,
                 'energy_cost' => 25,
-                'nb_usages' => 4
+                'nb_usages' => 4,
             ],
             'materia_mountain_strength' => [
                 'name' => 'Force de la montagne',
@@ -1465,9 +1465,9 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 300,
                 'space' => 1,
                 'energy_cost' => 20,
-                'nb_usages' => 5
+                'nb_usages' => 5,
             ],
-            
+
             // Matérias avancées - Vent
             'materia_tornado' => [
                 'name' => 'Tornade',
@@ -1480,7 +1480,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 350,
                 'space' => 1,
                 'energy_cost' => 30,
-                'nb_usages' => 3
+                'nb_usages' => 3,
             ],
             'materia_wind_shield' => [
                 'name' => 'Bouclier de vent',
@@ -1493,7 +1493,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 280,
                 'space' => 1,
                 'energy_cost' => 18,
-                'nb_usages' => 6
+                'nb_usages' => 6,
             ],
             'materia_air_dash' => [
                 'name' => 'Ruée d\'air',
@@ -1506,11 +1506,11 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'price' => 200,
                 'space' => 1,
                 'energy_cost' => 15,
-                'nb_usages' => 8
-            ]
+                'nb_usages' => 8,
+            ],
         ];
     }
-    
+
     public function getDependencies(): array
     {
         return [
@@ -1518,4 +1518,4 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             SpellFixtures::class,
         ];
     }
-} 
+}

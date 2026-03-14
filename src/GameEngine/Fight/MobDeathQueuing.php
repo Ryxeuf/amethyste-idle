@@ -2,8 +2,6 @@
 
 namespace App\GameEngine\Fight;
 
-use App\Entity\App\Mob;
-use App\Entity\App\PlayerItem;
 use App\Entity\App\QueueRespawnMob;
 use App\Event\Fight\MobDeadEvent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,7 +16,7 @@ class MobDeathQueuing implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            MobDeadEvent::NAME => "mobDied"
+            MobDeadEvent::NAME => 'mobDied',
         ];
     }
 
@@ -32,7 +30,8 @@ class MobDeathQueuing implements EventSubscriberInterface
 
         $respawn = new QueueRespawnMob();
         $respawn->setDelay($delay);
-        $respawn->setLastCell($mob->getCell());
+        $respawn->setCoordinates($mob->getCoordinates());
+        $respawn->setMap($mob->getMap());
         $respawn->setMonster($monster);
 
         $this->entityManager->persist($respawn);

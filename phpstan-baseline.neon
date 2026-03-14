@@ -1,0 +1,319 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 1
+			path: src/Command/DebugMoveCommand.php
+
+		-
+			message: '#^While loop condition is always true\.$#'
+			identifier: while.alwaysTrue
+			count: 1
+			path: src/Command/HarvestRespawnCommand.php
+
+		-
+			message: '#^Offset ''mouvement'' on array\{x\: int, y\: int, mouvement\: \-1\|0\|1\|2, cellIdx\: int, layers\: array\<0\|1, array\{mapIdx\: string\|null, idxInMap\: mixed, tilesetName\: string, source\: string\}\|null\>, slug\?\: non\-falsy\-string\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Command/TerrainImportCommand.php
+
+		-
+			message: '#^Offset ''objects'' on array\{width\: int, height\: int, tileHeight\: int, tileWidth\: int, cells\: array\<int, non\-empty\-array\<int, array\{x\: int, y\: int, mouvement\: \-1\|0\|1\|2, cellIdx\: int, layers\: array\<0\|1, array\{mapIdx\: string\|null, idxInMap\: mixed, tilesetName\: string, source\: string\}\|null\>, slug\?\: non\-falsy\-string\}\>\>, terrains\: array\<string, array\{fullPath\: non\-falsy\-string, sanitizePath\: string, image\: string\|null, tilesetName\: string, tilewidth\: string\|null, tileheight\: string\|null, tilecount\: string\|null, columns\: string\|null, \.\.\.\}\>, objects\: list\<array\{group\: string, type\: string, name\: string, x\: int, y\: int, width\: int, height\: int, properties\: array\<string, string\>\}\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: src/Command/TerrainImportCommand.php
+
+		-
+			message: '#^Property App\\Command\\TerrainImportCommand\:\:\$collisions is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Command/TerrainImportCommand.php
+
+		-
+			message: '#^Property App\\Controller\\Api\\GatheringController\:\:\$gatheringManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Controller/Api/GatheringController.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 8
+			path: src/Controller/Api/MapApiController.php
+
+		-
+			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 9
+			path: src/Controller/Api/MapApiController.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Controller/Game/CraftController.php
+
+		-
+			message: '#^Property App\\Controller\\Game\\Fight\\FightAttackController\:\:\$playerActionHandler is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Controller/Game/Fight/FightAttackController.php
+
+		-
+			message: '#^Property App\\Controller\\Game\\Fight\\FightLootIndexController\:\:\$entityManager is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Controller/Game/Fight/FightLootIndexController.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/Controller/Game/Fight/FightLootProceedController.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/Controller/Game/Inventory/EquipmentController.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/Controller/Game/Map/IndexController.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Controller/Game/Skill/IndexController.php
+
+		-
+			message: '#^Attribute class ApiPlatform\\Metadata\\ApiProperty does not exist\.$#'
+			identifier: attribute.notFound
+			count: 1
+			path: src/Dto/Item/SlotModel.php
+
+		-
+			message: '#^Attribute class Symfony\\Component\\Serializer\\Annotation\\Groups does not exist\.$#'
+			identifier: attribute.notFound
+			count: 2
+			path: src/Dto/Item/SlotModel.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Dto/Item/SlotModel.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$players is never written, only read\.$#'
+			identifier: property.onlyRead
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\GameEngine\\Craft\\CraftManager\:\:\$playerDomainHelper is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Craft/CraftManager.php
+
+		-
+			message: '#^Property App\\GameEngine\\Craft\\CraftManager\:\:\$playerHelper is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Craft/CraftManager.php
+
+		-
+			message: '#^Property App\\GameEngine\\Crafting\\CraftingManager\:\:\$playerHelper is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Crafting/CraftingManager.php
+
+		-
+			message: '#^Property App\\GameEngine\\Crafting\\ExperimentationManager\:\:\$inventoryHelper is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Crafting/ExperimentationManager.php
+
+		-
+			message: '#^Property App\\GameEngine\\Crafting\\ExperimentationManager\:\:\$playerItemGenerator is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Crafting/ExperimentationManager.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between App\\Entity\\App\\Fight and null will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: src/GameEngine/Fight/FightChecker.php
+
+		-
+			message: '#^Variable \$fight in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/GameEngine/Fight/FightCleaner.php
+
+		-
+			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$item\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
+
+		-
+			message: '#^Variable \$item in PHPDoc tag @var does not exist\.$#'
+			identifier: varTag.variableNotFound
+			count: 1
+			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
+
+		-
+			message: '#^Constructor of class App\\GameEngine\\Fight\\Handler\\PlayerSpellHandler has an unused parameter \$gearHelper\.$#'
+			identifier: constructor.unusedParameter
+			count: 1
+			path: src/GameEngine/Fight/Handler/PlayerSpellHandler.php
+
+		-
+			message: '#^Comparison operation "\>" between int\<min, 5\> and 5 is always false\.$#'
+			identifier: greater.alwaysFalse
+			count: 1
+			path: src/GameEngine/Fight/MateriaFusionManager.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/GameEngine/Fight/MateriaXpGranter.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between App\\Entity\\App\\PlayerItem and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: src/GameEngine/Fight/MateriaXpGranter.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: src/GameEngine/Gathering/GatheringManager.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: src/GameEngine/Gathering/GatheringManager.php
+
+		-
+			message: '#^Parameter \#2 \$character of method App\\Helper\\PlayerDomainHelper\:\:getDomainExperience\(\) expects App\\Entity\\App\\Player\|null, App\\Entity\\CharacterInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/GameEngine/Item/ItemHitResolver.php
+
+		-
+			message: '#^Property App\\GameEngine\\Job\\FishingManager\:\:\$playerHelper is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Job/FishingManager.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:getPosition\(\) is unused\.$#'
+			identifier: method.unused
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Access to an undefined property App\\GameEngine\\Quest\\PlayerQuestHelper\:\:\$entityManager\.$#'
+			identifier: property.notFound
+			count: 5
+			path: src/GameEngine/Quest/PlayerQuestHelper.php
+
+		-
+			message: '#^Property App\\GameEngine\\Realtime\\Map\\MovedPlayerHandler\:\:\$cellModelTransformer is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Realtime/Map/MovedPlayerHandler.php
+
+		-
+			message: '#^Property App\\GameEngine\\Realtime\\Map\\MovedPlayerHandler\:\:\$logger is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/GameEngine/Realtime/Map/MovedPlayerHandler.php
+
+		-
+			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$target\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Helper/FightHelper.php
+
+		-
+			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$targetType\.$#'
+			identifier: property.notFound
+			count: 1
+			path: src/Helper/FightHelper.php
+
+		-
+			message: '#^PHPDoc tag @return with type object\|null is not subtype of native type App\\Entity\\CharacterInterface\|null\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Helper/FightHelper.php
+
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 2
+			path: src/Helper/ItemHelper.php
+
+		-
+			message: '#^Parameter \#2 \$character of method App\\Helper\\PlayerDomainHelper\:\:getDomainExperience\(\) expects App\\Entity\\App\\Player\|null, App\\Entity\\CharacterInterface\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Helper/ItemHelper.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: src/ServiceProvider/PlayerActionsProvider.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 2
+			path: src/Transformer/AbstractSkillTransformer.php
+
+		-
+			message: '#^Left side of && is always true\.$#'
+			identifier: booleanAnd.leftAlwaysTrue
+			count: 1
+			path: src/Transformer/FightModelTransformer.php
+
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: src/Transformer/PlayerSkillTransformer.php
+
+		-
+			message: '#^Property App\\Twig\\Components\\FightNotification\:\:\$fightNotificationHandler is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Twig/Components/FightNotification.php
+
+		-
+			message: '#^Property App\\Twig\\Components\\FightTimeline\:\:\$timeLineHelper is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Twig/Components/FightTimeline.php

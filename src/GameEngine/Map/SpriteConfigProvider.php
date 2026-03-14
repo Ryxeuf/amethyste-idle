@@ -24,7 +24,8 @@ class SpriteConfigProvider
 
     public function __construct(
         private readonly Packages $packages,
-    ) {}
+    ) {
+    }
 
     public function getFullConfig(): array
     {
@@ -37,6 +38,7 @@ class SpriteConfigProvider
 
     /**
      * Returns sprite registry with metadata for the asset management system.
+     *
      * @return array<string, array{sheet: string, type: string, category: string, animations: string[], frameSize: int[]}>
      */
     public function getRegistry(): array
@@ -61,7 +63,7 @@ class SpriteConfigProvider
     {
         return array_keys(array_filter(
             $this->getFullConfig(),
-            fn(array $sprite) => ($sprite['category'] ?? '') === $category
+            fn (array $sprite) => ($sprite['category'] ?? '') === $category
         ));
     }
 

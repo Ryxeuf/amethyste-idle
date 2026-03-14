@@ -23,7 +23,8 @@ class MapModelTransformer
     public function __construct(
         private readonly CellModelTransformer $cellModelTransformer,
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     public function transformMapModel(Map $map): MapModel
     {
@@ -31,10 +32,10 @@ class MapModelTransformer
 
         foreach ($map->getAreas() as $area) {
             $model->areas[] = new AreaModel($area);
-            $model->minX    = min($model->minX, $area->getX() * $map->getAreaWidth());
-            $model->minY    = min($model->minY, $area->getY() * $map->getAreaHeight());
-            $model->maxX    = max($model->maxX, ($area->getX() + 1) * $map->getAreaWidth());
-            $model->maxY    = max($model->maxY, ($area->getY() + 1) * $map->getAreaHeight());
+            $model->minX = min($model->minX, $area->getX() * $map->getAreaWidth());
+            $model->minY = min($model->minY, $area->getY() * $map->getAreaHeight());
+            $model->maxX = max($model->maxX, ($area->getX() + 1) * $map->getAreaWidth());
+            $model->maxY = max($model->maxY, ($area->getY() + 1) * $map->getAreaHeight());
         }
 
         return $model;
@@ -49,13 +50,13 @@ class MapModelTransformer
             // dd($area->getFullDataArray()['cells'][0]);
 
             $model->areas[] = new AreaModel($area);
-            $model->minX    = min($model->minX, $area->getX() * $map->getAreaWidth());
-            $model->minY    = min($model->minY, $area->getY() * $map->getAreaHeight());
-            $model->maxX    = max($model->maxX, ($area->getX() + 1) * $map->getAreaWidth());
-            $model->maxY    = max($model->maxY, ($area->getY() + 1) * $map->getAreaHeight());
+            $model->minX = min($model->minX, $area->getX() * $map->getAreaWidth());
+            $model->minY = min($model->minY, $area->getY() * $map->getAreaHeight());
+            $model->maxX = max($model->maxX, ($area->getX() + 1) * $map->getAreaWidth());
+            $model->maxY = max($model->maxY, ($area->getY() + 1) * $map->getAreaHeight());
 
             $areaData = $area->getFullDataArray();
-            
+
             // Vérifier si les données de cellules existent
             if (isset($areaData['cells']) && is_array($areaData['cells'])) {
                 foreach ($areaData['cells'] as $data) {
@@ -102,10 +103,10 @@ class MapModelTransformer
 
         $model = new MapModel($map);
         //        $model->minX = $player->getCell()->getX() - ($player->getCell()->getX()%20);
-        $model->minX = $x - 11;
+        $model->minX = (int) $x - 11;
         $model->maxX = $model->minX + 22;
         //        $model->minY = $player->getCell()->getY() - ($player->getCell()->getY()%20);
-        $model->minY = $y - 11;
+        $model->minY = (int) $y - 11;
         $model->maxY = $model->minY + 22;
 
         //        foreach ($map->getCells() as $cell) {
@@ -155,18 +156,18 @@ class MapModelTransformer
 
     public function generateDijkstraTagMap(Map $map): array
     {
-        $mapModel    = $this->transformMapModel($map);
+        $mapModel = $this->transformMapModel($map);
         $dijkstraMap = [];
 
-//        /** @var bool[] $objectLayers */
-//        $objectLayers = [];
-//        foreach ($map->getObjectLayers() as $objectLayer) {
-//            $objectLayers[$objectLayer->getCoordinates()] = $objectLayer->getMovement() !== CellHelper::MOVE_UNREACHABLE;
-//        }
+        //        /** @var bool[] $objectLayers */
+        //        $objectLayers = [];
+        //        foreach ($map->getObjectLayers() as $objectLayer) {
+        //            $objectLayers[$objectLayer->getCoordinates()] = $objectLayer->getMovement() !== CellHelper::MOVE_UNREACHABLE;
+        //        }
         // && ($objectLayers[$cellInfos['coordinates']] ?? CellHelper::MOVE_DEFAULT) !== CellHelper::MOVE_UNREACHABLE
 
         $baseMovements = [];
-        $cells         = [];
+        $cells = [];
         foreach ($map->getAreas() as $area) {
             $data = $area->getFullDataArray();
             foreach ($data['cells'] as $datum) {
@@ -174,8 +175,8 @@ class MapModelTransformer
                     $cellInfos = CellHelper::getCalculatedDataFromSlug($cell['slug'], $area);
 
                     // If cell movement is -1, the cell is unreachable, so no need to keep it in movement base
-                    if ((int)$cellInfos['movement'] !== CellHelper::MOVE_UNREACHABLE) {
-                        $baseMovements[$cellInfos['coordinates']] = (int)$cellInfos['movement'] === CellHelper::MOVE_DEFAULT ? 1 : (int)$cellInfos['movement'];
+                    if ((int) $cellInfos['movement'] !== CellHelper::MOVE_UNREACHABLE) {
+                        $baseMovements[$cellInfos['coordinates']] = (int) $cellInfos['movement'] === CellHelper::MOVE_DEFAULT ? 1 : (int) $cellInfos['movement'];
                     }
                     $cells[$cellInfos['coordinates']] = $cellInfos;
                 }
@@ -183,7 +184,7 @@ class MapModelTransformer
         }
 
         foreach ($cells as $cell) {
-            if ((int)$cell['movement'] !== CellHelper::MOVE_UNREACHABLE) {
+            if ((int) $cell['movement'] !== CellHelper::MOVE_UNREACHABLE) {
                 $coordinates = $cell['coordinates'];
 
                 $x = $cell['x'];
@@ -192,20 +193,20 @@ class MapModelTransformer
                 $dijkstraMap[$coordinates] = [];
 
                 $northCoordinates = $x . '.' . ($y - 1);
-                if ((int)$cell['north'] === 0 && $y - 1 >= $mapModel->minY && isset($baseMovements[$northCoordinates])) {
-                    $dijkstraMap[$coordinates][$northCoordinates] = (int)$baseMovements[$northCoordinates];
+                if ((int) $cell['north'] === 0 && $y - 1 >= $mapModel->minY && isset($baseMovements[$northCoordinates])) {
+                    $dijkstraMap[$coordinates][$northCoordinates] = (int) $baseMovements[$northCoordinates];
                 }
                 $southCoordinates = $x . '.' . ($y + 1);
-                if ((int)$cell['south'] === 0 && $y + 1 < $mapModel->maxY && isset($baseMovements[$southCoordinates])) {
-                    $dijkstraMap[$coordinates][$southCoordinates] = (int)$baseMovements[$southCoordinates];
+                if ((int) $cell['south'] === 0 && $y + 1 < $mapModel->maxY && isset($baseMovements[$southCoordinates])) {
+                    $dijkstraMap[$coordinates][$southCoordinates] = (int) $baseMovements[$southCoordinates];
                 }
                 $eastCoordinates = ($x + 1) . '.' . $y;
-                if ((int)$cell['east'] === 0 && $x + 1 < $mapModel->maxX && isset($baseMovements[$eastCoordinates])) {
-                    $dijkstraMap[$coordinates][$eastCoordinates] = (int)$baseMovements[$eastCoordinates];
+                if ((int) $cell['east'] === 0 && $x + 1 < $mapModel->maxX && isset($baseMovements[$eastCoordinates])) {
+                    $dijkstraMap[$coordinates][$eastCoordinates] = (int) $baseMovements[$eastCoordinates];
                 }
                 $westCoordinates = ($x - 1) . '.' . $y;
-                if ((int)$cell['west'] === 0 && $x - 1 >= $mapModel->minX && isset($baseMovements[$westCoordinates])) {
-                    $dijkstraMap[$coordinates][$westCoordinates] = (int)$baseMovements[$westCoordinates];
+                if ((int) $cell['west'] === 0 && $x - 1 >= $mapModel->minX && isset($baseMovements[$westCoordinates])) {
+                    $dijkstraMap[$coordinates][$westCoordinates] = (int) $baseMovements[$westCoordinates];
                 }
             }
         }

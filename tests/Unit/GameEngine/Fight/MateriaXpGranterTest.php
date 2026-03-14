@@ -271,25 +271,15 @@ class MateriaXpGranterTest extends TestCase
         $this->assertSame('onMobDead', $events[MobDeadEvent::NAME]);
     }
 
-    public function testMonsterLevelDefaultsTo1WhenNull(): void
+    public function testMonsterLevelDefaultsTo1WhenLevelIs1(): void
     {
-        // Monster avec level null => devrait utiliser 1
-        $monster = $this->createMock(Monster::class);
-        $monster->method('getLevel')->willReturn(null);
-        $monster->method('isBoss')->willReturn(false);
-
-        $materia = $this->createMateriaItem(expectedXp: 10); // 10 * 1 = 10
+        // Monster avec level 1 => XP = 10 * 1 = 10
+        $materia = $this->createMateriaItem(expectedXp: 10);
         $slot = $this->createSlot($materia);
         $equipment = $this->createEquipmentWithSlots([$slot]);
         $player = $this->createPlayerWithInventory(isDead: false, inventoryItems: [$equipment]);
 
-        $fight = $this->createMock(Fight::class);
-        $fight->method('getPlayers')->willReturn(new ArrayCollection([$player]));
-
-        $mob = $this->createMock(Mob::class);
-        $mob->method('getFight')->willReturn($fight);
-        $mob->method('getMonster')->willReturn($monster);
-
+        $mob = $this->createMobWithFight(monsterLevel: 1, isBoss: false, players: [$player]);
         $event = new MobDeadEvent($mob);
 
         $this->granter->onMobDead($event);

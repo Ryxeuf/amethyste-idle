@@ -4,25 +4,23 @@ namespace App\DataStorage;
 
 use App\Dto\Map\MapModelLight;
 use App\Entity\App\Map;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MapStorage
 {
-    private const MAP_INFOS_PATTERN = "map_%s_%s";
-    private const MAP_TAG_PATTERN = "tag_%s_%s";
+    private const MAP_INFOS_PATTERN = 'map_%s_%s';
+    private const MAP_TAG_PATTERN = 'tag_%s_%s';
 
     private string $dataPath;
 
     public function __construct(
         #[Autowire('%kernel.project_dir%')]
         private readonly string $projectDir,
-    )
-    {
+    ) {
         $this->dataPath = $this->projectDir . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'map' . DIRECTORY_SEPARATOR;
     }
-
 
     public function storeMapInfos(Map $map, string $content): string
     {
@@ -70,7 +68,7 @@ class MapStorage
     {
         $finder = new Finder();
         $finder->files()->in($this->dataPath);
-        $matchingPattern = '/'.sprintf($pattern, $mapId, '\d{14}').'$/';
+        $matchingPattern = '/' . sprintf($pattern, $mapId, '\d{14}') . '$/';
 
         if ($finder->hasResults()) {
             foreach ($finder as $file) {

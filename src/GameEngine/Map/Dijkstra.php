@@ -2,7 +2,6 @@
 
 namespace App\GameEngine\Map;
 
-
 use App\Exception\PathNotFoundException;
 
 /**
@@ -20,7 +19,6 @@ use App\Exception\PathNotFoundException;
  */
 class Dijkstra
 {
-
     // The graph, although it is a reference to the original one
     protected array $graph;
 
@@ -46,37 +44,36 @@ class Dijkstra
     protected bool $isDirected;
 
     // Define infinite value
-    const INT_MAX = 0x7FFFFFFF;
+    public const INT_MAX = 0x7FFFFFFF;
 
     /**
      * Create a new Dijkstra object with graph and source node.
      * Graph is a reference to the outside graph as we only need to read its information.
-     * If we pass an undirected graph we have room for optimization.  ;-)
+     * If we pass an undirected graph we have room for optimization.  ;-).
      */
     public function __construct(array &$graph, string $source, int $abilityMask = 0b1, $isDirected = false)
     {
-        $this->graph       = $graph;
-        $this->source      = $source;
-        $this->queue       = new PriorityQueue();
-        $this->isDirected  = $isDirected;
+        $this->graph = $graph;
+        $this->source = $source;
+        $this->queue = new PriorityQueue();
+        $this->isDirected = $isDirected;
         $this->abilityMask = $abilityMask;
 
-        /**
+        /*
          * Initialize the 'distances' and 'previous' arrays, and the priority queue.
          */
         $this->queue->push($source, 0);
         foreach ($graph as $origin => $vertices) {
             $this->distances[$origin] = self::INT_MAX;
-            $this->previous[$origin]  = null;
+            $this->previous[$origin] = null;
             if ($origin != $source) {
                 $this->queue->push($origin, self::INT_MAX);
             }
         }
         $this->distances[$source] = 0;
 
-
         /**
-         * And here starts the algorithm!  :-)
+         * And here starts the algorithm!  :-).
          */
         $start = microtime(true);
         while (!$this->queue->isEmpty()) {
@@ -88,7 +85,7 @@ class Dijkstra
                 $alt = $this->distances[$current] + $distance;      // $distance = length($current, $neighbour)
                 if ($alt < $this->distances[$neighbour]) {
                     $this->distances[$neighbour] = $alt;
-                    $this->previous[$neighbour]  = $current;
+                    $this->previous[$neighbour] = $current;
                     $this->queue->change_priority($neighbour, $alt);
                 }
             }
@@ -109,7 +106,7 @@ class Dijkstra
         }
 
         // If a graph is undirected, then we can eliminate the previously eliminated nodes.
-        $allNeighbors   = $this->graph[$origin];
+        $allNeighbors = $this->graph[$origin];
         $validNeighbors = [];
 
         // Get only non-visited neighbors.
@@ -129,7 +126,7 @@ class Dijkstra
      * [1] => [node 1, cost]
      * [2] => [node 2, accumulated cost]
      * ...
-     * [n] => [destination, total cost]
+     * [n] => [destination, total cost].
      */
     public function shortestPathTo(string $destination): array
     {
@@ -137,8 +134,8 @@ class Dijkstra
 
         // Introduce destination into the shortest path array.
         $shortest_path[] = [
-            'node_identifier'    => $destination,
-            'weight'             => 0,
+            'node_identifier' => $destination,
+            'weight' => 0,
             'accumulated_weight' => $this->distances[$destination],
         ];
 
@@ -151,8 +148,8 @@ class Dijkstra
 
             // Not the source?  Push into the array, but in place [0]
             array_unshift($shortest_path, [
-                'node_identifier'    => $previous_node,
-                'weight'             => 0,
+                'node_identifier' => $previous_node,
+                'weight' => 0,
                 'accumulated_weight' => $this->distances[$previous_node],
             ]);
             // Set node-to-node weight
@@ -163,18 +160,17 @@ class Dijkstra
 
         // Source is found.  Introduce into position [0] of the result array.
         array_unshift($shortest_path, [
-            'node_identifier'    => $this->source,
-            'weight'             => 0,
+            'node_identifier' => $this->source,
+            'weight' => 0,
             'accumulated_weight' => 0,
         ]);
         $shortest_path[1]['weight'] = $shortest_path[1]['accumulated_weight'] - $shortest_path[0]['accumulated_weight'];
-
 
         return $shortest_path;
     }
 
     /**
-     * Return the time spent to run the algorithm (only the loop, without the initialization)
+     * Return the time spent to run the algorithm (only the loop, without the initialization).
      */
     public function getAlgorithmTime(): float
     {

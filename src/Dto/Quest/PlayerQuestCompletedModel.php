@@ -3,15 +3,14 @@
 namespace App\Dto\Quest;
 
 use App\Entity\App\PlayerQuestCompleted;
-use DateTime;
 
 class PlayerQuestCompletedModel
 {
-    /** @var string */
+    /** @var int */
     public $id;
     /** @var string */
     public $name;
-    /** @var DateTime */
+    /** @var \DateTime|null */
     public $completedAt;
 
     public function __construct(PlayerQuestCompleted $playerQuestCompleted)

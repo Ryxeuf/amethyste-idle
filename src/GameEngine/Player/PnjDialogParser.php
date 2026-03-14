@@ -3,10 +3,10 @@
 namespace App\GameEngine\Player;
 
 use App\Entity\App\DomainExperience;
-use App\Entity\App\Pnj;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
+use App\Entity\App\Pnj;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 

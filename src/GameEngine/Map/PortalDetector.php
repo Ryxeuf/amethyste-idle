@@ -10,7 +10,8 @@ class PortalDetector
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-    ) {}
+    ) {
+    }
 
     /**
      * Check if a portal exists at the given coordinates on the player's current map.

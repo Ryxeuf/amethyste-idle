@@ -21,7 +21,7 @@ class ItemUsageResolver implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ItemUsedEvent::NAME => "removeExpiredUsableItem",
+            ItemUsedEvent::NAME => 'removeExpiredUsableItem',
         ];
     }
 
@@ -29,7 +29,7 @@ class ItemUsageResolver implements EventSubscriberInterface
     {
         $item = $playerItem->getGenericItem();
         $hit = $this->itemHitResolver->hasItemHit($item, $sender, $target);
-        if(!$hit) {
+        if (!$hit) {
             return false;
         }
 

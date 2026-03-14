@@ -4,7 +4,7 @@ namespace App\Dto\Search;
 
 class SearchCell
 {
-    readonly public string $id;
+    public readonly string $id;
 
     public function __construct(
         public int $x,
@@ -21,8 +21,7 @@ class SearchCell
         public string $displayClass,
         public array $layers,
         public array $debug = [],
-    )
-    {
+    ) {
         $this->id = $this->area['slug'] . '#' . $this->x . '#' . $this->y;
     }
 

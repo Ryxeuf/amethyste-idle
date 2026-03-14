@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\Entity\App\Mob;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,7 +10,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\App\Mob;
 
 #[Route('/game/fight/loot', name: 'app_game_fight_loot', methods: ['GET'])]
 class FightLootIndexController extends AbstractController
@@ -47,14 +47,14 @@ class FightLootIndexController extends AbstractController
         foreach ($fight->getMobs() as $mob) {
             // $gold += $mob->getMonster()->getGold();
             // $experience += $mob->getMonster()->getExperience();
-            
+
             foreach ($mob->getItems() as $item) {
                 $items[] = [
                     'id' => $item->getId(),
                     'name' => $item->getGenericItem()->getName(),
                     'description' => $item->getGenericItem()->getDescription(),
                     'value' => $item->getGenericItem()->getValue(),
-                    'rarity' => $item->getGenericItem()->getRarity()
+                    'rarity' => $item->getGenericItem()->getRarity(),
                 ];
             }
         }
@@ -64,7 +64,7 @@ class FightLootIndexController extends AbstractController
             'fight' => $fight,
             'gold' => $gold,
             'experience' => $experience,
-            'items' => $items
+            'items' => $items,
         ]);
     }
 }

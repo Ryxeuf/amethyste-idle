@@ -375,7 +375,7 @@ class MobActionHandlerTest extends TestCase
         $attackSpell->method('getName')->willReturn('Coup de griffe');
 
         $attackHandler = $this->createMock(MobActionHandlerInterface::class);
-        $attackHandler->method('supports')->willReturnCallback(fn(string $action) => $action === 'attack');
+        $attackHandler->method('supports')->willReturnCallback(fn (string $action) => $action === 'attack');
         $attackHandler->method('getSpell')->willReturn($attackSpell);
 
         $mob = $this->createMobMock(aiPattern: null, hit: 100);

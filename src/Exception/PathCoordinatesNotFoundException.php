@@ -4,5 +4,5 @@ namespace App\Exception;
 
 class PathCoordinatesNotFoundException extends NotFoundException
 {
-    protected $message = "Coordonnées de chemin introuvables";
+    protected $message = 'Coordonnées de chemin introuvables';
 }

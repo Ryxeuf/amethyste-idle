@@ -3,6 +3,8 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
+use App\Entity\App\Mob;
+use App\Entity\App\Player;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -10,8 +12,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\App\Mob;
-use App\Entity\App\Player;
 
 #[Route('/game/fight/loot/proceed', name: 'app_game_fight_loot_proceed', methods: ['POST'])]
 class FightLootProceedController extends AbstractController
@@ -46,11 +46,11 @@ class FightLootProceedController extends AbstractController
         $player->setFight(null);
         $this->entityManager->persist($player);
         foreach ($fight->getMobs() as $mob) {
-            /** @var Mob $mob */
+            /* @var Mob $mob */
             $this->entityManager->remove($mob);
         }
         foreach ($fight->getPlayers() as $player) {
-            /** @var Player $player */
+            /* @var Player $player */
             $player->setFight(null);
             $this->entityManager->persist($player);
         }

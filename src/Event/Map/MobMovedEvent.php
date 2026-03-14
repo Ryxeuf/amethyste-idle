@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class MobMovedEvent extends Event
 {
-    final public const NAME = "event.map.mob.moved";
+    final public const NAME = 'event.map.mob.moved';
 
     public function __construct(private readonly Mob $mob)
     {

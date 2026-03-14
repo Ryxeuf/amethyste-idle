@@ -20,22 +20,21 @@ class Slot
     private $element;
 
     /**
-     * Objet équipé dans le slot
+     * Objet équipé dans le slot.
      */
     #[ORM\OneToOne(targetEntity: PlayerItem::class, inversedBy: 'slotSet')]
     #[ORM\JoinColumn(name: 'item_set_id', referencedColumnName: 'id')]
     private $item_set;
 
     /**
-     * Equipement sur lequel est placé le slot
+     * Equipement sur lequel est placé le slot.
      */
     #[ORM\ManyToOne(targetEntity: PlayerItem::class, inversedBy: 'slots')]
     #[ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     private $item;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -45,11 +44,9 @@ class Slot
     }
 
     /**
-     * Set element
+     * Set element.
      *
      * @param string $element
-     *
-     * @return Slot
      */
     public function setElement($element): self
     {
@@ -59,9 +56,7 @@ class Slot
     }
 
     /**
-     * Get element
-     *
-     * @return string
+     * Get element.
      */
     public function getElement(): string
     {
@@ -69,13 +64,9 @@ class Slot
     }
 
     /**
-     * Set itemSet
-     *
-     * @param PlayerItem $itemSet
-     *
-     * @return Slot
+     * Set itemSet.
      */
-    public function setItemSet(PlayerItem $itemSet = null): self
+    public function setItemSet(?PlayerItem $itemSet = null): self
     {
         $this->item_set = $itemSet;
 
@@ -83,7 +74,7 @@ class Slot
     }
 
     /**
-     * Get itemSet
+     * Get itemSet.
      *
      * @return PlayerItem
      */
@@ -93,13 +84,9 @@ class Slot
     }
 
     /**
-     * Set item
-     *
-     * @param PlayerItem $item
-     *
-     * @return Slot
+     * Set item.
      */
-    public function setItem(PlayerItem $item = null): self
+    public function setItem(?PlayerItem $item = null): self
     {
         $this->item = $item;
 
@@ -107,9 +94,7 @@ class Slot
     }
 
     /**
-     * Get item
-     *
-     * @return PlayerItem
+     * Get item.
      */
     public function getItem(): PlayerItem
     {

@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class ItemUsedEvent extends Event
 {
-    final public const NAME = "event.fight.item.used";
+    final public const NAME = 'event.fight.item.used';
 
     public function __construct(private readonly PlayerItem $item, private readonly bool $success = true)
     {

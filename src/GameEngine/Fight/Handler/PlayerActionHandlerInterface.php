@@ -9,9 +9,9 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag]
 interface PlayerActionHandlerInterface
 {
-    const ACTION_ATTACK = 'attack';
-    const ACTION_SPELL = 'spell';
-    const ACTION_ITEM = 'item';
+    public const ACTION_ATTACK = 'attack';
+    public const ACTION_SPELL = 'spell';
+    public const ACTION_ITEM = 'item';
 
     public function supports(Fight $fight, string $context);
 

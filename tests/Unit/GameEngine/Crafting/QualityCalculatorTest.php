@@ -42,7 +42,7 @@ class QualityCalculatorTest extends TestCase
 
     public function testCalculateQualityReturnsValidTier(): void
     {
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; ++$i) {
             $result = $this->calculator->calculateQuality('normal', random_int(1, 100));
             $this->assertContains($result, QualityCalculator::QUALITY_TIERS);
         }
@@ -58,7 +58,7 @@ class QualityCalculatorTest extends TestCase
     public function testCalculateQualityNeverDowngrades(): void
     {
         // Même avec un skill de 0, la qualité ne devrait pas descendre en dessous de la base
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 20; ++$i) {
             $result = $this->calculator->calculateQuality('rare', 0);
             $index = array_search($result, QualityCalculator::QUALITY_TIERS, true);
             $this->assertGreaterThanOrEqual(
@@ -70,7 +70,7 @@ class QualityCalculatorTest extends TestCase
 
     public function testCalculateQualityCannotExceedLegendary(): void
     {
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 20; ++$i) {
             $result = $this->calculator->calculateQuality('legendary', 100);
             $this->assertSame('legendary', $result);
         }

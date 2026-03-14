@@ -11,11 +11,11 @@ abstract class RespawnedHandler
     {
     }
 
-    public function respawn(string $type, array $object, int $cellId, array $data = []): void
+    public function respawn(string $type, array $object, string $coordinates, array $data = []): void
     {
         $update = new Update(
             'map/respawn',
-            json_encode(['topic' => 'map/respawn', 'type' => $type, 'object' => $object, 'cell' => $cellId, 'data' => $data], JSON_THROW_ON_ERROR)
+            json_encode(['topic' => 'map/respawn', 'type' => $type, 'object' => $object, 'coordinates' => $coordinates, 'data' => $data], JSON_THROW_ON_ERROR)
         );
 
         $this->hub->publish($update);

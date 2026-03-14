@@ -12,22 +12,22 @@ use Symfony\Component\Routing\Annotation\Route;
 class DomainInfoController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
-    
+
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
-    
+
     public function __invoke(int $id): Response
     {
         $domain = $this->entityManager->getRepository(Domain::class)->find($id);
-        
+
         if (!$domain) {
             throw $this->createNotFoundException('Domaine non trouvé');
         }
-        
+
         return $this->render('game/skills/domain_info.html.twig', [
             'domain' => $domain,
         ]);
     }
-} 
+}

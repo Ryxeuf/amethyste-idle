@@ -11,7 +11,6 @@ class FightResource
     final public const ACTION_ITEM = 'fight_item';
     final public const TARGET_TYPES = ['player', 'mob'];
 
-
     public int $id;
 
     public int $fight;

@@ -94,7 +94,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'pyro_materia_1' => [
                 'title' => 'Apprenti pyromancien',
                 'slug' => 'pyro-materia-1',
-                'description' => "Debloque le sort Boule de feu",
+                'description' => 'Debloque le sort Boule de feu',
                 'requiredPoints' => 0,
                 'domain' => 'pyromancy',
                 'actions' => ['combat' => ['spell_slug' => 'fire-ball']],
@@ -120,7 +120,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'pyro_materia_2' => [
                 'title' => 'Pluie de flammes',
                 'slug' => 'pyro-materia-2',
-                'description' => "Debloque le sort Pluie de flammes (AoE)",
+                'description' => 'Debloque le sort Pluie de flammes (AoE)',
                 'requiredPoints' => 20,
                 'domain' => 'pyromancy',
                 'actions' => ['combat' => ['spell_slug' => 'flame-rain']],
@@ -129,7 +129,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'pyro_materia_3' => [
                 'title' => 'Inferno',
                 'slug' => 'pyro-materia-3',
-                'description' => "Debloque le sort Inferno — devastation totale",
+                'description' => 'Debloque le sort Inferno — devastation totale',
                 'requiredPoints' => 30,
                 'domain' => 'pyromancy',
                 'actions' => ['combat' => ['spell_slug' => 'inferno']],
@@ -138,7 +138,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'pyro_hit_1' => [
                 'title' => 'Chaude precision',
                 'slug' => 'pyro-hit-1',
-                'description' => "Augmente les chances de toucher",
+                'description' => 'Augmente les chances de toucher',
                 'requiredPoints' => 20,
                 'hit' => 1,
                 'domain' => 'pyromancy',
@@ -168,7 +168,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'soldier_materia_1' => [
                 'title' => 'Charge',
                 'slug' => 'soldier-materia-1',
-                'description' => "Debloque le sort Charge",
+                'description' => 'Debloque le sort Charge',
                 'requiredPoints' => 10,
                 'domain' => 'soldier',
                 'actions' => ['combat' => ['spell_slug' => 'iron-fist']],
@@ -190,7 +190,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'healer_materia_1' => [
                 'title' => 'Apprenti soigneur',
                 'slug' => 'healer-materia-1',
-                'description' => "Debloque le sort Soin mineur",
+                'description' => 'Debloque le sort Soin mineur',
                 'requiredPoints' => 0,
                 'domain' => 'healer',
                 'actions' => ['combat' => ['spell_slug' => 'life-heal']],
@@ -207,7 +207,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'healer_materia_2' => [
                 'title' => 'Regeneration',
                 'slug' => 'healer-materia-2',
-                'description' => "Debloque le sort Regeneration (HoT)",
+                'description' => 'Debloque le sort Regeneration (HoT)',
                 'requiredPoints' => 20,
                 'domain' => 'healer',
                 'actions' => ['combat' => ['spell_slug' => 'rejuvenation']],
@@ -216,7 +216,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'healer_materia_3' => [
                 'title' => 'Benediction divine',
                 'slug' => 'healer-materia-3',
-                'description' => "Debloque la Benediction divine — soin puissant",
+                'description' => 'Debloque la Benediction divine — soin puissant',
                 'requiredPoints' => 30,
                 'domain' => 'healer',
                 'actions' => ['combat' => ['spell_slug' => 'divine-blessing']],
@@ -229,7 +229,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'defender_materia_1' => [
                 'title' => 'Apprenti defenseur',
                 'slug' => 'defender-materia-1',
-                'description' => "Debloque le sort Parade",
+                'description' => 'Debloque le sort Parade',
                 'requiredPoints' => 0,
                 'domain' => 'defender',
                 'actions' => ['combat' => ['spell_slug' => 'rock-armor']],
@@ -246,7 +246,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'defender_materia_2' => [
                 'title' => 'Bouclier magique',
                 'slug' => 'defender-materia-2',
-                'description' => "Debloque le Bouclier magique — protection renforcee",
+                'description' => 'Debloque le Bouclier magique — protection renforcee',
                 'requiredPoints' => 20,
                 'domain' => 'defender',
                 'actions' => ['combat' => ['spell_slug' => 'stone-skin']],
@@ -255,7 +255,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'defender_materia_3' => [
                 'title' => 'Mur de fer',
                 'slug' => 'defender-materia-3',
-                'description' => "Debloque le Mur de fer — defense ultime",
+                'description' => 'Debloque le Mur de fer — defense ultime',
                 'requiredPoints' => 30,
                 'domain' => 'defender',
                 'actions' => ['combat' => ['spell_slug' => 'stone-wall']],
@@ -268,7 +268,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'necro_materia_1' => [
                 'title' => 'Apprenti necro',
                 'slug' => 'necro-materia-1',
-                'description' => "Debloque le sort Drain de vie",
+                'description' => 'Debloque le sort Drain de vie',
                 'requiredPoints' => 0,
                 'domain' => 'necro',
                 'actions' => ['combat' => ['spell_slug' => 'soul-drain']],
@@ -285,7 +285,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'necro_materia_2' => [
                 'title' => 'Malediction',
                 'slug' => 'necro-materia-2',
-                'description' => "Debloque le sort Malediction (poison)",
+                'description' => 'Debloque le sort Malediction (poison)',
                 'requiredPoints' => 20,
                 'domain' => 'necro',
                 'actions' => ['combat' => ['spell_slug' => 'plague-strike']],
@@ -294,7 +294,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'necro_materia_3' => [
                 'title' => 'Moisson sombre',
                 'slug' => 'necro-materia-3',
-                'description' => "Debloque la Moisson sombre — drain massif",
+                'description' => 'Debloque la Moisson sombre — drain massif',
                 'requiredPoints' => 30,
                 'domain' => 'necro',
                 'actions' => ['combat' => ['spell_slug' => 'dark-harvest']],
@@ -307,7 +307,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'druid_materia_1' => [
                 'title' => 'Apprenti druide',
                 'slug' => 'druid-materia-1',
-                'description' => "Debloque le sort Liane",
+                'description' => 'Debloque le sort Liane',
                 'requiredPoints' => 0,
                 'domain' => 'druid',
                 'actions' => ['combat' => ['spell_slug' => 'liana-whip']],
@@ -346,7 +346,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'white_wizard_materia_1' => [
                 'title' => 'Apprenti mage blanc',
                 'slug' => 'white-wizard-materia-1',
-                'description' => "Debloque le sort Lumiere",
+                'description' => 'Debloque le sort Lumiere',
                 'requiredPoints' => 0,
                 'domain' => 'white_wizard',
                 'actions' => ['combat' => ['spell_slug' => 'holy-light']],
@@ -363,7 +363,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'white_wizard_materia_2' => [
                 'title' => 'Purification',
                 'slug' => 'white-wizard-materia-2',
-                'description' => "Debloque le sort Purification",
+                'description' => 'Debloque le sort Purification',
                 'requiredPoints' => 20,
                 'domain' => 'white_wizard',
                 'actions' => ['combat' => ['spell_slug' => 'purification']],
@@ -372,7 +372,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'white_wizard_materia_3' => [
                 'title' => 'Jugement sacre',
                 'slug' => 'white-wizard-materia-3',
-                'description' => "Debloque le Jugement sacre — sort ultime",
+                'description' => 'Debloque le Jugement sacre — sort ultime',
                 'requiredPoints' => 30,
                 'domain' => 'white_wizard',
                 'actions' => ['combat' => ['spell_slug' => 'divine-intervention']],
@@ -384,7 +384,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             // =====================================================
             'miner_ruby_xs' => [
                 'slug' => 'miner-ruby-xs',
-                'title' => "Minage du ruby debutant",
+                'title' => 'Minage du ruby debutant',
                 'description' => 'Permet de miner le ruby',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xs']]],
                 'requiredPoints' => 0,
@@ -392,7 +392,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_ruby_s' => [
                 'slug' => 'miner-ruby-s',
-                'title' => "Minage du ruby apprenti",
+                'title' => 'Minage du ruby apprenti',
                 'description' => 'Permet de miner le ruby',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-s']]],
                 'requiredPoints' => 10,
@@ -401,7 +401,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_ruby_m' => [
                 'slug' => 'miner-ruby-m',
-                'title' => "Minage du ruby avance",
+                'title' => 'Minage du ruby avance',
                 'description' => 'Permet de miner le ruby',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-m']]],
                 'requiredPoints' => 50,
@@ -410,7 +410,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_ruby_l' => [
                 'slug' => 'miner-ruby-l',
-                'title' => "Minage du ruby avance",
+                'title' => 'Minage du ruby avance',
                 'description' => 'Permet de miner le ruby',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-l']]],
                 'requiredPoints' => 100,
@@ -419,7 +419,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_ruby_xl' => [
                 'slug' => 'miner-ruby-xl',
-                'title' => "Minage du ruby expert",
+                'title' => 'Minage du ruby expert',
                 'description' => 'Permet de miner le ruby',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xl']]],
                 'requiredPoints' => 200,
@@ -428,8 +428,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_iron_xs' => [
                 'slug' => 'miner-iron-xs',
-                'title' => "Minage du fer debutant",
-                'description' => "Permet de miner le fer",
+                'title' => 'Minage du fer debutant',
+                'description' => 'Permet de miner le fer',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-xs']]],
                 'requiredPoints' => 10,
                 'domain' => 'miner',
@@ -437,8 +437,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_iron_s' => [
                 'slug' => 'miner-iron-s',
-                'title' => "Minage du fer apprenti",
-                'description' => "Permet de miner le fer",
+                'title' => 'Minage du fer apprenti',
+                'description' => 'Permet de miner le fer',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-s']]],
                 'requiredPoints' => 50,
                 'domain' => 'miner',
@@ -450,7 +450,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             // =====================================================
             'herbalist_dandelion' => [
                 'slug' => 'herbalist-dandelion-xs',
-                'title' => "Recolte de pissenlit",
+                'title' => 'Recolte de pissenlit',
                 'description' => 'Permet de recolter les pissenlits',
                 'requiredPoints' => 0,
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-dandelion-xs']]],
@@ -458,7 +458,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'herbalist_mint' => [
                 'slug' => 'herbalist-mint-xs',
-                'title' => "Recolte de menthe",
+                'title' => 'Recolte de menthe',
                 'description' => 'Permet de recolter la menthe',
                 'requiredPoints' => 0,
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-mint-xs']]],
@@ -466,7 +466,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             ],
             'herbalist_sage' => [
                 'slug' => 'herbalist-sage-xs',
-                'title' => "Recolte de sauge",
+                'title' => 'Recolte de sauge',
                 'description' => 'Permet de recolter la sauge',
                 'requiredPoints' => 10,
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-sage-xs']]],

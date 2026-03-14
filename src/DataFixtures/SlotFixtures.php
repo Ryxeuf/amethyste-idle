@@ -15,10 +15,10 @@ class SlotFixtures extends Fixture
         $slot->setElement('Fire');
         $slot->setCreatedAt(new \DateTime());
         $slot->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($slot);
         $this->addReference('slot_1', $slot);
-        
+
         $manager->flush();
     }
-} 
+}

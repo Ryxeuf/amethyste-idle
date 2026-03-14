@@ -9,7 +9,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class ButcheringEvent extends Event
 {
-    final public const NAME = "event.map.butchering";
+    final public const NAME = 'event.map.butchering';
 
     /**
      * @param PlayerItem[] $harvestedItems

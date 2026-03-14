@@ -39,16 +39,15 @@ class Pnj
     private ?array $shopItems = null;
 
     /**
-     * Coordonnées du player sur la carte
+     * Coordonnées du player sur la carte.
      */
     #[ORM\Column(name: 'coordinates', type: 'string')]
     protected string $coordinates;
 
-
     /**
-     * Get id
+     * Get id.
      *
-     * @return integer
+     * @return int
      */
     public function getId()
     {
@@ -56,7 +55,7 @@ class Pnj
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -70,7 +69,7 @@ class Pnj
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -80,9 +79,9 @@ class Pnj
     }
 
     /**
-     * Set life
+     * Set life.
      *
-     * @param integer $life
+     * @param int $life
      *
      * @return Pnj
      */
@@ -94,9 +93,9 @@ class Pnj
     }
 
     /**
-     * Get life
+     * Get life.
      *
-     * @return integer
+     * @return int
      */
     public function getLife()
     {
@@ -104,9 +103,9 @@ class Pnj
     }
 
     /**
-     * Set maxLife
+     * Set maxLife.
      *
-     * @param integer $maxLife
+     * @param int $maxLife
      *
      * @return Pnj
      */
@@ -118,74 +117,50 @@ class Pnj
     }
 
     /**
-     * Get maxLife
+     * Get maxLife.
      *
-     * @return integer
+     * @return int
      */
     public function getMaxLife()
     {
         return $this->maxLife;
     }
 
-    /**
-     * @return string
-     */
     public function getClassType(): string
     {
         return $this->class_type;
     }
 
-    /**
-     * @param string $class_type
-     */
     public function setClassType(string $class_type): void
     {
         $this->class_type = $class_type;
     }
 
-    /**
-     * @return array
-     */
     public function getDialog(): array
     {
         return $this->dialog;
     }
 
-    /**
-     * @param array $dialog
-     */
     public function setDialog(array $dialog = []): void
     {
         $this->dialog = $dialog;
     }
 
-    /**
-     * @return null|Map
-     */
     public function getMap(): ?Map
     {
         return $this->map;
     }
 
-    /**
-     * @param null|Map $map
-     */
     public function setMap(?Map $map): void
     {
         $this->map = $map;
     }
 
-    /**
-     * @return string
-     */
     public function getCoordinates(): string
     {
         return $this->coordinates;
     }
 
-    /**
-     * @param string $coordinates
-     */
     public function setCoordinates(string $coordinates): void
     {
         $this->coordinates = $coordinates;

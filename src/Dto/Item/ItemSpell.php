@@ -51,5 +51,4 @@ class ItemSpell
         $this->name = $spell->getName();
         $this->description = $spell->getDescription();
     }
-
 }

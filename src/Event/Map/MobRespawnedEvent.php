@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class MobRespawnedEvent extends Event
 {
-    final public const NAME = "event.map.mob.respawned";
+    final public const NAME = 'event.map.mob.respawned';
 
     /**
      * MobMovedEvent constructor.

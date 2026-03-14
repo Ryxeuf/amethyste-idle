@@ -21,10 +21,10 @@ class DomainExperienceFixtures extends Fixture implements DependentFixtureInterf
         $demoPyrotechny->setUsedExperience(0);
         $demoPyrotechny->setCreatedAt(new \DateTime());
         $demoPyrotechny->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($demoPyrotechny);
         $this->addReference('demo_pyrotechny', $demoPyrotechny);
-        
+
         // Expérience de domaine pour le joueur demo (soldat)
         $demoSoldier = new DomainExperience();
         $demoSoldier->setPlayer($this->getReference('player_demo', Player::class));
@@ -33,13 +33,13 @@ class DomainExperienceFixtures extends Fixture implements DependentFixtureInterf
         $demoSoldier->setUsedExperience(0);
         $demoSoldier->setCreatedAt(new \DateTime());
         $demoSoldier->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($demoSoldier);
         $this->addReference('demo_soldier', $demoSoldier);
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
@@ -47,4 +47,4 @@ class DomainExperienceFixtures extends Fixture implements DependentFixtureInterf
             DomainFixtures::class,
         ];
     }
-} 
+}

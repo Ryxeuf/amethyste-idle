@@ -50,6 +50,7 @@ class HarvestController extends AbstractController
 
         if (!$spot->isAvailable()) {
             $remainingSeconds = $spot->getRemainingRespawnSeconds();
+
             return $this->json([
                 'error' => 'Ce spot n\'est pas encore disponible.',
                 'remainingSeconds' => $remainingSeconds,
@@ -75,7 +76,7 @@ class HarvestController extends AbstractController
         $result = $this->harvestManager->harvestResources($spot, $player);
 
         $itemNames = array_map(
-            fn($pi) => $pi->getGenericItem()->getName(),
+            fn ($pi) => $pi->getGenericItem()->getName(),
             $result['items']
         );
 
@@ -89,7 +90,7 @@ class HarvestController extends AbstractController
 
         return $this->json([
             'success' => count($result['items']) > 0,
-            'items' => array_map(fn($pi) => [
+            'items' => array_map(fn ($pi) => [
                 'name' => $pi->getGenericItem()->getName(),
                 'slug' => $pi->getGenericItem()->getSlug(),
             ], $result['items']),
@@ -102,7 +103,7 @@ class HarvestController extends AbstractController
     /**
      * Démarre ou termine une session de pêche.
      * POST avec action=start : démarre la pêche
-     * POST avec action=complete + tension : termine la pêche
+     * POST avec action=complete + tension : termine la pêche.
      */
     #[Route('/game/harvest/fish', name: 'app_game_harvest_fish', methods: ['POST'])]
     public function fish(Request $request): JsonResponse

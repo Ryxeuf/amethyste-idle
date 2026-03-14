@@ -14,9 +14,10 @@ class LocaleController extends AbstractController
     {
         // Stocker la locale dans la session
         $request->getSession()->set('_locale', $locale);
-        
+
         // Rediriger vers la page précédente
         $referer = $request->headers->get('referer');
+
         return $this->redirect($referer ?: $this->generateUrl('app_home'));
     }
-} 
+}

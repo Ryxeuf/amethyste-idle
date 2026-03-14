@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\GameEngine\Player;
 
 use App\Helper\PlayerHelper;
@@ -47,7 +46,7 @@ class PlayerActionHelper
         foreach ($player->getSkills() as $skill) {
             if ($skill->getActions()) {
                 foreach ($skill->getActions() as $action) {
-                    if(!isset($this->actions[$action['action']])) {
+                    if (!isset($this->actions[$action['action']])) {
                         $this->actions[$action['action']] = [];
                     }
                     $this->actions[$action['action']] = array_merge($this->actions[$action['action']], $action['spots']);

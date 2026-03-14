@@ -85,8 +85,8 @@ class CellSearchEngine
                 $this->cellTransformer->addTerrains($terrains);
             }
 
-            for ($localX = $localMinX; $localX <= $localMaxX; $localX++) {
-                for ($localY = $localMinY; $localY <= $localMaxY; $localY++) {
+            for ($localX = $localMinX; $localX <= $localMaxX; ++$localX) {
+                for ($localY = $localMinY; $localY <= $localMaxY; ++$localY) {
                     $cellData = $cellsData[$localX][$localY] ?? null;
                     if ($cellData === null) {
                         continue;
