@@ -241,6 +241,7 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
   │                 └──── map → Map
   │
   │          Fight (1) ──── (N) Player
+  │                ├──── (N) FightStatusEffect (effets actifs)
   │                └──── (N) Mob
   │                          ├── monster → Monster
   │                          │       └── monsterItems (N) → MonsterItem → Item
@@ -263,7 +264,8 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 | **User** | Compte utilisateur | email, username, roles, password |
 | **Player** | Personnage jouable | name, life, maxLife, energy, hit, speed, classType, coordinates, isMoving |
 | **Mob** | Instance de monstre | monster (template), level, coordinates, life |
-| **Fight** | Combat en cours | step, inProgress, players[], mobs[] |
+| **Fight** | Combat en cours | step, inProgress, players[], mobs[], statusEffects[] |
+| **FightStatusEffect** | Effet de statut actif | fight, targetType, targetId, type, remainingTurns, power |
 | **Inventory** | Conteneur d'objets | type (bag=1/materia=2/bank=3), size, gold |
 | **PlayerItem** | Instance d'objet possédé | genericItem, gear (bitmask), nbUsages, slots[] |
 | **Slot** | Emplacement materia | element, item_set (materia), item (équipement) |
@@ -296,7 +298,14 @@ Le moteur est organisé en sous-domaines dans `src/GameEngine/` :
 ```
 GameEngine/
 ├── Fight/              # Système de combat
-│   └── Handler/        # Handlers d'actions (attaque, sort, objet)
+│   ├── Handler/        # Handlers d'actions (attaque, sort, objet)
+│   ├── MobActionHandler     # IA des monstres (patterns, phases de boss)
+│   ├── SpellApplicator      # Application sorts (résistances, statuts, berserk)
+│   ├── StatusEffectManager  # Gestion effets de statut (DOT/HOT)
+│   ├── CombatSkillResolver  # Résolution sorts disponibles par compétences
+│   ├── ElementalSynergyCalculator  # Synergies élémentaires
+│   ├── MateriaXpGranter    # XP materia à la mort d'un monstre
+│   └── MateriaFusionManager # Fusion de materias
 ├── Gear/               # Équipement & materia
 ├── Generator/          # Génération d'items
 ├── Item/               # Résolution d'effets d'items
@@ -329,8 +338,8 @@ Le moteur repose sur **21 événements** organisés en deux catégories :
 3. Le joueur choisit une action : **Attaquer**, Sort, Objet, Fuir
 4. `PlayerActionHandler` délègue au handler approprié (`PlayerAttackHandler`, `PlayerSpellHandler`, `PlayerItemHandler`)
 5. `FightCalculator::hasAttackHit()` détermine si l'attaque touche (random vs hit chances)
-6. `SpellApplicator` applique les dégâts/soins avec bonus de domaine, critiques (×1.5)
-7. Si un mob meurt → `MobDeadEvent` → `LootGenerator` (items selon probabilités) + `MobDeathQueuing` (respawn en 10s)
+6. `SpellApplicator` applique les dégâts/soins avec bonus de domaine, critiques (×1.5), résistances élémentaires et effets de statut
+7. Si un mob meurt → `MobDeadEvent` → `LootGenerator` (items selon probabilités) + `MobDeathQueuing` (respawn en 10s, boss 1h) + `MateriaXpGranter` (XP materia)
 8. Si le joueur meurt → `PlayerDeadEvent` → `PlayerRespawnHandler` (respawn à 50% HP)
 9. Combat terminé → loot → `FightLootedEvent` → `FightCleaner` nettoie
 
@@ -341,12 +350,126 @@ hitChances = spell.hit + domainExperience.hit
 isCritical = random(0-99) < (spell.critical + domainExperience.critical)
 damage = spell.damage + domainExperience.damage
 if critical: damage *= 1.5
+if elementalResistance: damage *= (1 - resistance)  # ex: 0.5 = 50% résistance
+if berserk: damage *= 1.5  # bonus dégâts sous berserk
+if shield: damage *= 0.5   # réduction dégâts sous bouclier
 targetLife = clamp(targetLife - damage, 0, maxLife)
 ```
 
-### Elements de sorts
+### Éléments de sorts
 
 `NONE`, `FIRE`, `WATER`, `EARTH`, `AIR`, `LIGHT`, `DARK`
+
+### Synergies élémentaires
+
+`ElementalSynergyCalculator` calcule des bonus de dégâts quand certaines combinaisons d'éléments sont présentes :
+
+| Combo | Éléments | Nom | Effet |
+|-------|----------|-----|-------|
+| Feu + Eau | `FIRE` + `WATER` | Steam (Vapeur) | Bonus de dégâts |
+| Terre + Air | `EARTH` + `AIR` | Tornado (Tornade) | Bonus de dégâts |
+| Lumière + Ténèbres | `LIGHT` + `DARK` | Eclipse | Bonus de dégâts |
+| Feu + Terre | `FIRE` + `EARTH` | Magma | Bonus de dégâts |
+
+### Effets de statut
+
+`StatusEffectManager` gère 8 types d'effets de statut appliqués pendant le combat. L'entité `FightStatusEffect` stocke les effets actifs par combat.
+
+| Type | Catégorie | Effet |
+|------|-----------|-------|
+| `poison` | DOT | Dégâts sur la durée à chaque tour |
+| `burn` | DOT | Dégâts de brûlure à chaque tour |
+| `regeneration` | HOT | Soin sur la durée à chaque tour |
+| `paralysis` | Contrôle | Empêche d'agir, empêche de fuir |
+| `freeze` | Contrôle | Gèle la cible |
+| `silence` | Contrôle | Empêche le lancement de sorts |
+| `shield` | Défensif | Réduit les dégâts reçus (×0.5) |
+| `berserk` | Offensif | Augmente les dégâts (×1.5), empêche de fuir |
+
+Les fixtures (`StatusEffectFixtures`) définissent 11 effets incluant des variantes fortes (ex : poison fort, brûlure forte).
+
+### Compétences de combat actives
+
+`CombatSkillResolver` détermine les sorts de combat disponibles pour un joueur en fonction de ses compétences débloquées. Les compétences sont liées aux sorts via le champ `actions.combat.spell_slug` dans `SkillFixtures`.
+
+**7 archétypes de combat** avec 3-4 compétences chacun formant une chaîne de progression :
+
+| Archétype | Domaine | Description |
+|-----------|---------|-------------|
+| Pyromancien | Combat | Sorts de feu offensifs |
+| Soldat | Combat | Attaques physiques puissantes |
+| Soigneur | Combat | Sorts de soin |
+| Défenseur | Combat | Capacités défensives et bouclier |
+| Nécromancien | Combat | Sorts d'ombre et drain de vie |
+| Druide | Combat | Sorts de nature et régénération |
+| Mage blanc | Combat | Sorts de lumière et purification |
+
+### Materia — XP et Fusion
+
+- **`MateriaXpGranter`** : accorde de l'XP aux materias serties quand un monstre meurt (base 10 XP × niveau du monstre, boss ×5)
+- **`MateriaFusionManager`** : système de fusion pour combiner deux materias en une materia supérieure
+
+### Intelligence artificielle des monstres
+
+`MobActionHandler` gère les actions des monstres avec un système d'IA configurable via des patterns JSON stockés dans `Monster::aiPattern`.
+
+#### Format du pattern IA (`aiPattern`)
+
+```json
+{
+  "sequence": ["attack", "spell", "attack"],
+  "spell_chance": 0.3,
+  "low_hp_heal": true,
+  "danger_alert": true,
+  "danger_message": "Le dragon prépare son souffle de feu !"
+}
+```
+
+| Clé | Type | Description |
+|-----|------|-------------|
+| `sequence` | `string[]` | Séquence d'actions répétée en boucle |
+| `spell_chance` | `float` | Probabilité (0-1) de lancer un sort plutôt qu'une attaque de base |
+| `low_hp_heal` | `bool` | Si `true`, le monstre se soigne quand ses PV sont bas |
+| `danger_alert` | `bool` | Si `true`, affiche une alerte de danger dans l'UI |
+| `danger_message` | `string` | Message d'alerte affiché au joueur (boss uniquement) |
+
+#### Sélection de sort
+
+`MobActionHandler::resolveSpell()` choisit un sort parmi le pool de sorts du monstre (`Monster::spells`). Les boss utilisent une sélection basée sur les phases.
+
+### Mécanique de boss
+
+Les boss sont des monstres spéciaux avec des mécaniques avancées :
+
+| Propriété | Boss | Monstre normal |
+|-----------|------|----------------|
+| Respawn | 1 heure (`MobDeathQueuing`) | 10 secondes |
+| Fuite | Impossible | Possible |
+| Phases | Oui (changement de pattern selon HP) | Non |
+| Alerte danger | Oui (bannière dans l'UI) | Non |
+| Indicateur difficulté | Étoiles (★) dans le template | Non |
+| XP materia | ×5 | ×1 |
+
+#### Boss : Dragon (exemple)
+
+- **HP** : 80
+- **Phases** : 3 (changement de comportement selon le % de vie restant)
+- **Sorts** : 4 sorts de feu
+- **Résistances élémentaires** : résistance au feu
+- **Pattern** : séquences d'attaques variables par phase, alerte de danger
+
+### Services de combat (Phase 3)
+
+| Service | Rôle |
+|---------|------|
+| `SpellApplicator` | Application des dégâts/soins avec résistances élémentaires, berserk, burn, shield, effets de statut |
+| `StatusEffectManager` | Gestion DOT/HOT, vérification de statut, application des effets |
+| `CombatSkillResolver` | Résolution des sorts disponibles selon les compétences du joueur |
+| `ElementalSynergyCalculator` | Calcul des bonus de synergies élémentaires (4 combos) |
+| `MateriaXpGranter` | Attribution d'XP aux materias serties à la mort d'un monstre |
+| `MateriaFusionManager` | Fusion de materias |
+| `MobActionHandler` | IA des monstres : patterns séquentiels, soin bas HP, phases de boss |
+| `MobDeathQueuing` | File de respawn avec délai spécial boss (1h) |
 
 ---
 
@@ -667,9 +790,10 @@ ROLE_USER (base)
 | **Inventaires** | 6 | 3 par joueur (sac, materia, banque) |
 | **Domaines** | 15 | Combat (7) + Récolte (4) + Artisanat (4) |
 | **Skills** | ~20 | Pyramides de compétences avec pré-requis |
-| **Sorts** | 14 | Feu (4), Vie (1), Mort (1), Nature (1), Vent (1), Terre (1), Métal (2), None (3) |
+| **Sorts** | 14+ | Feu (4+), Vie (1), Mort (1), Nature (1), Vent (1), Terre (1), Métal (2), None (3) — avec coûts en énergie, cooldowns et effets de statut |
+| **Effets de statut** | 11 | poison, paralysie, brûlure, gel, silence, régénération, bouclier, berserk + variantes fortes |
 | **Items** | ~25 | Materias (11), Gear (5), Stuff/Consommables (~10), Minerais (2), Plantes (2) |
-| **Monstres** | 4 | Zombie, Taiju, Ochu, Squelette |
+| **Monstres** | 5 | Zombie, Taiju, Ochu, Squelette, Dragon (boss avec 3 phases, résistances élémentaires, pattern IA) |
 | **Mobs** | 5 | Instances sur la carte |
 | **PNJ** | 1 | "Hello World" avec dialogue à branches |
 | **Table de loot** | 3 | Zombie → Champignon (75%), Peau (90%), Pioche (10%) |
