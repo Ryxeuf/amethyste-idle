@@ -288,6 +288,7 @@ class MapApiController extends AbstractController
             return $this->json(['sentences' => [], 'pnjName' => $pnj->getName()]);
         }
 
+        $dialogParser->setPnj($pnj);
         $parsedDialog = $dialogParser->parseDialog($dialog);
 
         return $this->json([

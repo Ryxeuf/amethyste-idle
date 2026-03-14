@@ -94,6 +94,9 @@ class Player implements CharacterInterface
     #[ORM\JoinTable(name: 'player_skill')]
     private $skills;
 
+    #[ORM\Column(name: 'gils', type: 'integer', options: ['default' => 0])]
+    private int $gils = 0;
+
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
 
@@ -346,5 +349,29 @@ class Player implements CharacterInterface
     public function setDiscoveredRecipes(array $discoveredRecipes): void
     {
         $this->discoveredRecipes = $discoveredRecipes;
+    }
+
+    public function getGils(): int
+    {
+        return $this->gils;
+    }
+
+    public function setGils(int $gils): void
+    {
+        $this->gils = max(0, $gils);
+    }
+
+    public function addGils(int $amount): void
+    {
+        $this->gils += $amount;
+    }
+
+    public function removeGils(int $amount): bool
+    {
+        if ($this->gils < $amount) {
+            return false;
+        }
+        $this->gils -= $amount;
+        return true;
     }
 }

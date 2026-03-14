@@ -79,13 +79,23 @@ export default class extends Controller {
             return;
         }
 
-        if (choice.action === 'quest_offer' && choice.data?.quest) {
-            this.dispatch('questOffer', { detail: { questId: choice.data.quest } });
+        if (choice.action === 'quest_offer' && choice.datas?.quest) {
+            this._acceptQuest(choice.datas.quest);
             this.close();
             return;
         }
 
-        // Default: close dialog
+        if (choice.action === 'open_shop' && choice.datas?.pnj_id) {
+            window.location.href = `/game/shop/${choice.datas.pnj_id}`;
+            return;
+        }
+
+        // If choice has a next index, navigate there
+        if (choice.next !== undefined && choice.next !== null) {
+            this._showSentence(choice.next);
+            return;
+        }
+
         this.close();
     }
 
@@ -137,6 +147,18 @@ export default class extends Controller {
         if (this._typewriterTimer) {
             clearInterval(this._typewriterTimer);
             this._typewriterTimer = null;
+        }
+    }
+
+    async _acceptQuest(questId) {
+        try {
+            const resp = await fetch(`/game/quests/accept/${questId}`, { method: 'POST' });
+            const data = await resp.json();
+            if (data.success) {
+                console.debug('[dialog] Quest accepted:', data.message);
+            }
+        } catch (err) {
+            console.error('[dialog] Quest accept error:', err);
         }
     }
 

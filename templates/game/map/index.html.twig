@@ -21,6 +21,12 @@
                  style="width: 100%; max-width: 672px; aspect-ratio: 1; touch-action: none;">
             </div>
 
+            {# Virtual joystick (mobile only) #}
+            <div {{ stimulus_controller('joystick') }}
+                 data-action="joystick:move->map_pixi#onJoystickMove"
+                 class="absolute inset-0 pointer-events-none sm:hidden">
+            </div>
+
             {# Dialog overlay #}
             <div {{ stimulus_controller('dialog') }}
                  data-action="map_pixi:pnjDialog->dialog#open"
