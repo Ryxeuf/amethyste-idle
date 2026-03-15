@@ -179,6 +179,21 @@ html, body {
   }
 }
 
+/* Map canvas container: fill available height on mobile, square on desktop */
+.map-canvas-container {
+  width: 100%;
+  max-width: 672px;
+  touch-action: none;
+  height: calc(100dvh - 2.75rem - var(--bottom-nav-height) - var(--safe-top) - var(--safe-bottom));
+}
+
+@media (min-width: 640px) {
+  .map-canvas-container {
+    aspect-ratio: 1;
+    height: auto;
+  }
+}
+
 /* Full-screen map mobile */
 .map-fullscreen-mobile {
   padding: 0;
