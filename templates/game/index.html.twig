@@ -3,161 +3,131 @@
 {% block title %}{{ 'game.title'|trans }}{% endblock %}
 
 {% block game_content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Panneau latéral du joueur -->
-        <div class="lg:col-span-1">
+<div class="game-page">
+    {# ===== PLAYER RECAP (compact on mobile, sidebar on desktop) ===== #}
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div class="lg:col-span-1 space-y-3 sm:space-y-4">
+            {# Player card #}
             {{ component('DashboardPlayerRecap') }}
-            
-            <!-- Inventaire rapide -->
-            <div class="mt-6 bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-purple-800">
-                <div class="bg-gradient-to-r from-purple-900 to-purple-700 px-4 py-3">
-                    <h2 class="text-lg font-bold text-white">{{ 'game.dashboard.quick_inventory'|trans }}</h2>
+
+            {# Quick inventory #}
+            <div class="game-card">
+                <div class="game-card-header">
+                    <h2 class="text-sm sm:text-base font-bold text-white">{{ 'game.dashboard.quick_inventory'|trans }}</h2>
                 </div>
-                <div class="p-4">
-                    <div class="grid grid-cols-4 gap-2">
+                <div class="game-card-body">
+                    <div class="grid grid-cols-4 gap-1.5 sm:gap-2">
                         {% for i in 1..8 %}
-                            <div class="bg-gray-700 rounded-md h-12 w-12 flex items-center justify-center border border-gray-600 hover:border-purple-500 cursor-pointer transition-all">
-                                <!-- Emplacement d'item vide -->
-                            </div>
+                            <div class="bg-gray-700 rounded-md h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center border border-gray-600 hover:border-purple-500 cursor-pointer transition-colors"></div>
                         {% endfor %}
                     </div>
                 </div>
             </div>
-            
-            <!-- Statistiques du joueur -->
-            <div class="mt-6 bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-purple-800">
-                <div class="bg-gradient-to-r from-purple-900 to-purple-700 px-4 py-3">
-                    <h2 class="text-lg font-bold text-white">{{ 'game.dashboard.statistics'|trans }}</h2>
+
+            {# Player stats #}
+            <div class="game-card">
+                <div class="game-card-header">
+                    <h2 class="text-sm sm:text-base font-bold text-white">{{ 'game.dashboard.statistics'|trans }}</h2>
                 </div>
-                <div class="p-4 space-y-3">
+                <div class="game-card-body space-y-2.5">
                     <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>{{ 'game.dashboard.level'|trans }}</span>
-                            <span class="font-medium">1</span>
-                        </div>
-                        <div class="w-full bg-gray-700 rounded-full h-2">
-                            <div class="bg-blue-500 h-2 rounded-full" style="width: 25%"></div>
+                        <div class="flex justify-between text-xs sm:text-sm mb-1">
+                            <span class="text-gray-400">{{ 'game.dashboard.strength'|trans }}</span>
+                            <span class="font-medium text-white">5</span>
                         </div>
                     </div>
                     <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>{{ 'game.dashboard.strength'|trans }}</span>
-                            <span class="font-medium">5</span>
+                        <div class="flex justify-between text-xs sm:text-sm mb-1">
+                            <span class="text-gray-400">{{ 'game.dashboard.agility'|trans }}</span>
+                            <span class="font-medium text-white">7</span>
                         </div>
                     </div>
                     <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>{{ 'game.dashboard.agility'|trans }}</span>
-                            <span class="font-medium">7</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span>{{ 'game.dashboard.intelligence'|trans }}</span>
-                            <span class="font-medium">6</span>
+                        <div class="flex justify-between text-xs sm:text-sm mb-1">
+                            <span class="text-gray-400">{{ 'game.dashboard.intelligence'|trans }}</span>
+                            <span class="font-medium text-white">6</span>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Zone principale de jeu -->
-        <div class="lg:col-span-3">
-            <!-- Panneau de bienvenue -->
-            <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-purple-800">
-                <div class="bg-gradient-to-r from-purple-900 to-purple-700 px-6 py-4">
-                    <h1 class="text-xl font-bold text-white">{{ 'game.welcome_message'|trans({'%email%': app.user.email}) }}</h1>
+
+        {# ===== MAIN CONTENT ===== #}
+        <div class="lg:col-span-3 space-y-4 sm:space-y-6">
+            {# Welcome panel #}
+            <div class="game-card">
+                <div class="game-card-header">
+                    <h1 class="text-base sm:text-lg font-bold text-white">{{ 'game.welcome_message'|trans({'%email%': app.user.email}) }}</h1>
                 </div>
-                <div class="p-6">
-                    <div class="bg-indigo-900 bg-opacity-50 p-4 rounded-lg mb-6 border border-indigo-700">
-                        <p class="text-indigo-200">{{ 'game.access_info'|trans }}</p>
+                <div class="game-card-body">
+                    <div class="bg-indigo-900/50 p-3 rounded-lg border border-indigo-700/50 mb-4">
+                        <p class="text-indigo-200 text-sm">{{ 'game.access_info'|trans }}</p>
                     </div>
-                    
-                    <!-- Zone de jeu -->
-                    <div class="bg-gray-900 rounded-lg p-6 border border-gray-700">
-                        <h2 class="text-xl font-bold text-purple-400 mb-4">{{ 'game.game_section.heading'|trans }}</h2>
-                        <p class="text-gray-300 mb-6">{{ 'game.game_section.description'|trans }}</p>
-                        
-                        <!-- Carte du jeu (exemple) -->
-                        <div class="w-full h-64 bg-gray-800 rounded-lg mb-6 relative overflow-hidden border border-gray-700">
-                            <!-- Grille de la carte -->
+
+                    {# Game zone #}
+                    <div class="bg-gray-900 rounded-lg p-4 sm:p-6 border border-gray-700">
+                        <h2 class="text-lg font-bold text-purple-400 mb-3">{{ 'game.game_section.heading'|trans }}</h2>
+                        <p class="text-gray-300 text-sm mb-4">{{ 'game.game_section.description'|trans }}</p>
+
+                        {# Mini map preview #}
+                        <div class="w-full h-40 sm:h-64 bg-gray-800 rounded-lg mb-4 relative overflow-hidden border border-gray-700">
                             <div class="absolute inset-0 grid grid-cols-12 grid-rows-8">
                                 {% for i in 1..96 %}
-                                    <div class="border border-gray-700 flex items-center justify-center">
+                                    <div class="border border-gray-700/50 flex items-center justify-center">
                                         {% if i == 42 %}
-                                            <div class="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                                            <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 bg-purple-500 rounded-full animate-pulse"></div>
                                         {% endif %}
                                     </div>
                                 {% endfor %}
                             </div>
                         </div>
-                        
-                        <!-- Contrôles du jeu -->
-                        <div class="flex flex-wrap gap-3 mb-6">
-                            <button class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition-colors shadow-md">{{ 'game.controls.start'|trans }}</button>
-                            <button class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-md transition-colors shadow-md">{{ 'game.controls.pause'|trans }}</button>
-                            <button class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors shadow-md">{{ 'game.controls.stop'|trans }}</button>
+
+                        {# Quick actions #}
+                        <div class="flex flex-wrap gap-2 sm:gap-3 mb-4">
+                            <a href="{{ path('app_game_map') }}" class="flex-1 min-w-[120px] px-3 py-2.5 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-lg transition-colors text-sm font-medium text-center touch-target">
+                                {{ 'game.controls.start'|trans }}
+                            </a>
                         </div>
-                        
-                        <!-- Statistiques de jeu -->
-                        <div>
-                            <h3 class="text-lg font-semibold text-purple-300 mb-3">{{ 'game.statistics.heading'|trans }}</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-400">{{ 'game.statistics.score'|trans }}</span>
-                                        <span class="text-xl font-bold text-purple-400">0</span>
-                                    </div>
-                                </div>
-                                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-400">{{ 'game.statistics.level'|trans }}</span>
-                                        <span class="text-xl font-bold text-purple-400">1</span>
-                                    </div>
-                                </div>
-                                <div class="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-gray-400">{{ 'game.statistics.game_time'|trans }}</span>
-                                        <span class="text-xl font-bold text-purple-400 game-timer">00:00</span>
-                                    </div>
-                                </div>
+
+                        {# Stats grid #}
+                        <div class="grid grid-cols-3 gap-2 sm:gap-4">
+                            <div class="bg-gray-800 p-3 rounded-lg border border-gray-700">
+                                <span class="text-xs text-gray-400 block">{{ 'game.statistics.score'|trans }}</span>
+                                <span class="text-lg sm:text-xl font-bold text-purple-400">0</span>
+                            </div>
+                            <div class="bg-gray-800 p-3 rounded-lg border border-gray-700">
+                                <span class="text-xs text-gray-400 block">{{ 'game.statistics.level'|trans }}</span>
+                                <span class="text-lg sm:text-xl font-bold text-purple-400">1</span>
+                            </div>
+                            <div class="bg-gray-800 p-3 rounded-lg border border-gray-700">
+                                <span class="text-xs text-gray-400 block">{{ 'game.statistics.game_time'|trans }}</span>
+                                <span class="text-lg sm:text-xl font-bold text-purple-400 game-timer">00:00</span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-900 px-6 py-4 border-t border-gray-700">
-                    <a href="{{ path('app_home') }}" class="inline-flex items-center px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors shadow-md">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
-                        {{ 'game.footer.back_to_home'|trans }}
-                    </a>
-                </div>
             </div>
-            
-            <!-- Quêtes actives -->
-            <div class="mt-6 bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-purple-800">
-                <div class="bg-gradient-to-r from-purple-900 to-purple-700 px-6 py-4">
-                    <h2 class="text-lg font-bold text-white">Quêtes actives</h2>
+
+            {# Active quests #}
+            <div class="game-card">
+                <div class="game-card-header">
+                    <h2 class="text-sm sm:text-base font-bold text-white">Quetes actives</h2>
                 </div>
-                <div class="p-6">
-                    <div class="bg-gray-900 rounded-lg p-4 border border-gray-700 mb-4">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="text-lg font-semibold text-purple-300">Sus aux zombies</h3>
-                                <p class="text-gray-400 mt-1">Les zombies deviennent gênants dans la region, pourrais-tu m'en débarrasser ?</p>
-                                <div class="mt-3">
-                                    <div class="flex items-center text-sm text-gray-400">
-                                        <span>Progression:</span>
-                                        <div class="ml-2 w-32 bg-gray-700 rounded-full h-2">
-                                            <div class="bg-purple-500 h-2 rounded-full" style="width: 50%"></div>
-                                        </div>
-                                        <span class="ml-2">1/2</span>
+                <div class="game-card-body">
+                    <div class="bg-gray-900 rounded-lg p-3 sm:p-4 border border-gray-700">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <h3 class="text-sm sm:text-base font-semibold text-purple-300">Sus aux zombies</h3>
+                                <p class="text-gray-400 text-xs sm:text-sm mt-1">Les zombies deviennent genants dans la region, pourrais-tu m'en debarrasser ?</p>
+                                <div class="mt-2 flex items-center gap-2 text-xs text-gray-400">
+                                    <span>Progression:</span>
+                                    <div class="w-24 sm:w-32 progress-bar">
+                                        <div class="progress-bar-fill bg-purple-500" style="width: 50%"></div>
                                     </div>
+                                    <span>1/2</span>
                                 </div>
                             </div>
-                            <div class="bg-purple-900 px-3 py-1 rounded-full text-xs text-purple-200">En cours</div>
+                            <span class="bg-purple-900/80 px-2 py-1 rounded-full text-[10px] sm:text-xs text-purple-200 flex-shrink-0">En cours</span>
                         </div>
                     </div>
                 </div>
@@ -166,24 +136,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script>
-//     // Vous pouvez ajouter votre code JavaScript pour le jeu ici
-//     document.addEventListener('DOMContentLoaded', function() {
-//         console.log('Page de jeu chargée');
-        
-//         // Exemple de minuteur simple
-//         let seconds = 0;
-//         const timerElement = document.querySelector('.game-timer');
-        
-//         setInterval(function() {
-//             seconds++;
-//             const minutes = Math.floor(seconds / 60);
-//             const remainingSeconds = seconds % 60;
-//             timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
-//         }, 1000);
-//     });
-</script>
-{% endblock %} 
