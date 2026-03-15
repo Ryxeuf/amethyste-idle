@@ -108,12 +108,18 @@ class MapApiController extends AbstractController
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
+            $spriteKey = 'mob_' . $mob->getMonster()->getSlug();
+            $allSprites = $this->spriteConfigProvider->getFullConfig();
+            if (!isset($allSprites[$spriteKey])) {
+                $spriteKey = 'mob_zombie';
+            }
+
             $mobs[] = [
                 'id' => $mob->getId(),
                 'slug' => $mob->getMonster()->getSlug(),
                 'x' => $ex,
                 'y' => $ey,
-                'spriteKey' => 'mob_' . $mob->getMonster()->getSlug(),
+                'spriteKey' => $spriteKey,
             ];
         }
 
@@ -238,6 +244,14 @@ class MapApiController extends AbstractController
         ], $traversedPath);
 
         $response = ['path' => $path];
+
+        // Include fight info if triggered
+        $fight = $playerMoveProcessor->getTriggeredFight();
+        if ($fight) {
+            $response['fight'] = [
+                'id' => $fight->getId(),
+            ];
+        }
 
         // Include portal info if triggered
         $portal = $playerMoveProcessor->getTriggeredPortal();

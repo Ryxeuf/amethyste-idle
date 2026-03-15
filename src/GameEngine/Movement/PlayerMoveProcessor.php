@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Movement;
 
+use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
@@ -15,6 +16,7 @@ use Psr\Log\LoggerInterface;
 class PlayerMoveProcessor
 {
     private ?ObjectLayer $triggeredPortal = null;
+    private ?Fight $triggeredFight = null;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -33,6 +35,7 @@ class PlayerMoveProcessor
     public function processMove(Player $player, array $cells): array
     {
         $this->triggeredPortal = null;
+        $this->triggeredFight = null;
 
         if ($player->getFight()) {
             $this->logger->info('Player {player} is in a fight, move ignored', ['player' => $player->getId()]);
@@ -81,7 +84,7 @@ class PlayerMoveProcessor
 
         if ($encounterMob) {
             $this->logger->info('Mob found at {cell}, starting fight', ['cell' => $encounterMob->getCoordinates()]);
-            $this->fightHandler->startFight($player, $encounterMob);
+            $this->triggeredFight = $this->fightHandler->startFight($player, $encounterMob);
         } else {
             // Check for portal at final position
             $finalCoords = CellHelper::stringifyCoordinates($lastCell['x'], $lastCell['y']);
@@ -106,5 +109,10 @@ class PlayerMoveProcessor
     public function getTriggeredPortal(): ?ObjectLayer
     {
         return $this->triggeredPortal;
+    }
+
+    public function getTriggeredFight(): ?Fight
+    {
+        return $this->triggeredFight;
     }
 }

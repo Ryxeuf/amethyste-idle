@@ -993,6 +993,11 @@ export default class extends Controller {
                 return;
             }
 
+            // Store fight info if present
+            if (data.fight) {
+                this._pendingFight = data.fight;
+            }
+
             // Store portal info if present
             if (data.portal) {
                 this._pendingPortal = data.portal;
@@ -1095,6 +1100,13 @@ export default class extends Controller {
             } else {
                 await this._requestMove(fromX, fromY, fromX, fromY);
             }
+            return;
+        }
+
+        // Check for fight transition
+        if (this._pendingFight) {
+            this._pendingFight = null;
+            window.location.href = '/game/fight';
             return;
         }
 
