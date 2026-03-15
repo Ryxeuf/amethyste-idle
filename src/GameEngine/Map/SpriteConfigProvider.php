@@ -88,15 +88,23 @@ class SpriteConfigProvider
             'mob_taiju' => $this->multi('demons.png', 1, 'mob'),
             'mob_ochu' => $this->multi('demons.png', 2, 'mob'),
             'mob_skeleton' => $this->multi('demons.png', 3, 'mob'),
-            // Sprites single-sheet pour les nouveaux monstres
+            // Sprites single-sheet pour les monstres
             'mob_goblin' => $this->single('monster/Enemy 01-1.png', 'mob'),
-            'mob_troll' => $this->single('monster/Enemy 03-1.png', 'mob'),
-            'mob_dragon' => $this->single('monster/Enemy 05-1.png', 'mob'),
-            'mob_werewolf' => $this->single('monster/Enemy 07-1.png', 'mob'),
-            'mob_banshee' => $this->single('monster/Enemy 09-1.png', 'mob'),
-            'mob_griffin' => $this->single('monster/Enemy 11-1.png', 'mob'),
-            'mob_minotaur' => $this->single('monster/Enemy 13-1.png', 'mob'),
             'mob_gargoyle' => $this->single('monster/Enemy 02-1.png', 'mob'),
+            'mob_troll' => $this->single('monster/Enemy 03-1.png', 'mob'),
+            'mob_slime' => $this->single('monster/Enemy 04-1.png', 'mob'),
+            'mob_dragon' => $this->single('monster/Enemy 05-1.png', 'mob'),
+            'mob_giant_rat' => $this->single('monster/Enemy 06-1.png', 'mob'),
+            'mob_werewolf' => $this->single('monster/Enemy 07-1.png', 'mob'),
+            'mob_bat' => $this->single('monster/Enemy 08-1.png', 'mob'),
+            'mob_banshee' => $this->single('monster/Enemy 09-1.png', 'mob'),
+            'mob_spider' => $this->single('monster/Enemy 10-1.png', 'mob'),
+            'mob_griffin' => $this->single('monster/Enemy 11-1.png', 'mob'),
+            'mob_venom_snake' => $this->single('monster/Enemy 12-1.png', 'mob'),
+            'mob_minotaur' => $this->single('monster/Enemy 13-1.png', 'mob'),
+            'mob_specter' => $this->single('monster/Enemy 14-1.png', 'mob'),
+            'mob_fire_elemental' => $this->single('monster/Enemy 15-1.png', 'mob'),
+            'mob_stone_golem' => $this->single('monster/Enemy 16-1.png', 'mob'),
         ];
     }
 
