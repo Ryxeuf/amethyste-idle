@@ -1,95 +1,99 @@
 {% extends 'base.html.twig' %}
 
-
 {% block site_navbar %}
-    <div class="bg-gray-800 border-b border-purple-900 shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    {# ===== TOP NAV BAR (desktop only) ===== #}
+    <nav class="hidden md:block bg-gray-800/95 backdrop-blur-sm border-b border-purple-900/50 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 lg:px-8">
             <div class="flex items-center justify-between h-12">
                 <div class="flex items-center">
-                    <!-- Titre du jeu -->
-                    <div class="flex-shrink-0 mr-4">
-                        <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-xl">{{ 'game.title'|trans }}</a>
-                    </div>
-                    <div class="hidden md:block">
-                        <div class="flex items-baseline space-x-4">
-                            <a href="{{ path('app_game') }}" class="{% if app.request.get('_route') == 'app_game' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">{{ 'game.nav.dashboard'|trans }}</a>
-                            <a href="{{ path('app_game_inventory_index') }}" class="{% if app.request.get('_route') == 'app_game_inventory_index' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">{{ 'game.nav.inventory'|trans }}</a>
-                            <a href="{{ path('app_game_quests') }}" class="{% if app.request.get('_route') == 'app_game_quests' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">{{ 'game.nav.quests'|trans }}</a>
-                            <a href="{{ path('app_game_map') }}" class="{% if app.request.get('_route') == 'app_game_map' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">{{ 'game.nav.map'|trans }}</a>
-                            <a href="{{ path('app_game') ~ '?section=shop' }}" class="{% if app.request.query.get('section') == 'shop' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">{{ 'game.nav.shop'|trans }}</a>
-                            <a href="{{ path('app_game_skills') }}" class="{% if app.request.get('_route') == 'app_game_skills' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">{{ 'game.nav.skills'|trans }}</a>
-                            <a href="{{ path('app_game_craft') }}" class="{% if app.request.get('_route') starts with 'app_game_craft' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} px-3 py-2 rounded-md text-sm font-medium">Artisanat</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-4 flex items-center">
-                        <div class="flex items-center space-x-2">
-                            <!-- Icône d'engrenage pour les paramètres -->
-                            <a href="{{ path('app_game_settings') }}" class="ml-2 text-gray-300 hover:text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
+                    <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-lg mr-6">{{ 'game.title'|trans }}</a>
+                    <div class="flex items-baseline space-x-1">
+                        {% set nav_items = [
+                            { route: 'app_game', label: 'game.nav.dashboard'|trans, match: 'app_game' },
+                            { route: 'app_game_inventory_index', label: 'game.nav.inventory'|trans, match: 'app_game_inventory_index' },
+                            { route: 'app_game_quests', label: 'game.nav.quests'|trans, match: 'app_game_quests' },
+                            { route: 'app_game_map', label: 'game.nav.map'|trans, match: 'app_game_map' },
+                            { route: 'app_game_skills', label: 'game.nav.skills'|trans, match: 'app_game_skills' },
+                            { route: 'app_game_craft', label: 'game.nav.craft'|trans, match: 'app_game_craft' },
+                        ] %}
+                        {% for item in nav_items %}
+                            <a href="{{ path(item.route) }}"
+                               class="px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                      {% if app.request.get('_route') == item.match %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                                {{ item.label }}
                             </a>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
-                <div class="-mr-2 flex md:hidden">
-                    <button type="button" class="game-mobile-menu-button bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Menu mobile pour le jeu -->
-        <div class="game-mobile-menu hidden md:hidden">
-            <!-- Titre du jeu pour mobile -->
-            <div class="px-2 pt-2 pb-1 border-b border-gray-700">
-                <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-lg block">{{ 'game.title'|trans }}</a>
-            </div>
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="{{ path('app_game') }}" class="{% if app.request.get('_route') == 'app_game' and not app.request.query.get('section') %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">{{ 'game.nav.dashboard'|trans }}</a>
-                <a href="{{ path('app_game_inventory_index') }}" class="{% if app.request.get('_route') == 'app_game_inventory_index' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">{{ 'game.nav.inventory'|trans }}</a>
-                <a href="{{ path('app_game_quests') }}" class="{% if app.request.get('_route') == 'app_game_quests' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">{{ 'game.nav.quests'|trans }}</a>
-                <a href="{{ path('app_game') ~ '?section=map' }}" class="{% if app.request.query.get('section') == 'map' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">{{ 'game.nav.map'|trans }}</a>
-                <a href="{{ path('app_game') ~ '?section=shop' }}" class="{% if app.request.query.get('section') == 'shop' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">{{ 'game.nav.shop'|trans }}</a>
-                <a href="{{ path('app_game_skills') }}" class="{% if app.request.get('_route') == 'app_game_skills' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">{{ 'game.nav.skills'|trans }}</a>
-                <a href="{{ path('app_game_craft') }}" class="{% if app.request.get('_route') starts with 'app_game_craft' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">Artisanat</a>
-                <a href="{{ path('app_game') ~ '?section=settings' }}" class="{% if app.request.query.get('section') == 'settings' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %} block px-3 py-2 rounded-md text-base font-medium">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ path('app_game_settings') }}" class="text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    {{ 'game.nav.settings'|trans }}
                 </a>
             </div>
-            <div class="px-2 pt-2 pb-3 border-t border-gray-700">
-                <div class="flex flex-col space-y-2 px-3 py-2">
-                    <!-- Les informations de currency et energy ont été supprimées ici -->
-                </div>
+        </div>
+    </nav>
+
+    {# ===== MOBILE HEADER (slim, shows page title) ===== #}
+    <header class="md:hidden bg-gray-800/95 backdrop-blur-sm border-b border-purple-900/30 sticky top-0 z-40">
+        <div class="flex items-center justify-between h-11 px-4" style="padding-top: var(--safe-top)">
+            <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-base">{{ 'game.title'|trans }}</a>
+            <div class="flex items-center gap-2">
+                <a href="{{ path('app_game_settings') }}" class="text-gray-400 hover:text-white p-1.5 touch-target flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </a>
             </div>
         </div>
-    </div>
+    </header>
 
-    <script>
-        // Menu mobile pour le jeu
-        document.addEventListener('DOMContentLoaded', function() {
-            const gameMobileMenuButton = document.querySelector('.game-mobile-menu-button');
-            const gameMobileMenu = document.querySelector('.game-mobile-menu');
-            
-            if (gameMobileMenuButton && gameMobileMenu) {
-                gameMobileMenuButton.addEventListener('click', function() {
-                    gameMobileMenu.classList.toggle('hidden');
-                });
-            }
-        });
-    </script>
+    {# ===== BOTTOM TAB BAR (mobile only) ===== #}
+    <nav class="game-bottom-nav md:hidden" aria-label="Navigation du jeu">
+        <div class="game-bottom-nav-inner">
+            {# Dashboard #}
+            <a href="{{ path('app_game') }}" class="{% if app.request.get('_route') == 'app_game' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span>{{ 'game.nav.dashboard'|trans }}</span>
+            </a>
+            {# Map #}
+            <a href="{{ path('app_game_map') }}" class="{% if app.request.get('_route') == 'app_game_map' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                </svg>
+                <span>{{ 'game.nav.map'|trans }}</span>
+            </a>
+            {# Inventory #}
+            <a href="{{ path('app_game_inventory_index') }}" class="{% if app.request.get('_route') starts with 'app_game_inventory' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                <span>{{ 'game.nav.inventory'|trans }}</span>
+            </a>
+            {# Quests #}
+            <a href="{{ path('app_game_quests') }}" class="{% if app.request.get('_route') == 'app_game_quests' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                <span>{{ 'game.nav.quests'|trans }}</span>
+            </a>
+            {# Skills #}
+            <a href="{{ path('app_game_skills') }}" class="{% if app.request.get('_route') == 'app_game_skills' %}active{% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span>{{ 'game.nav.skills'|trans }}</span>
+            </a>
+        </div>
+    </nav>
 {% endblock %}
 
 {% block body %}
-    {% block game_content %}{% endblock %}
+    <div class="game-shell game-page-enter">
+        {% block game_content %}{% endblock %}
+    </div>
 {% endblock %}

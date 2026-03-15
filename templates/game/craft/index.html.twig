@@ -1,18 +1,18 @@
 {% extends 'game/game.html.twig' %}
 
 {% block game_content %}
-<div class="max-w-7xl mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold text-purple-400 mb-6">Artisanat</h1>
+<div class="game-page">
+    <h1 class="text-xl sm:text-2xl font-bold text-purple-400 mb-4 sm:mb-6">Artisanat</h1>
 
-    {# Onglets professions #}
-    <div class="flex flex-wrap gap-2 mb-6 border-b border-gray-700 pb-4">
+    {# Onglets professions — scrollable on mobile #}
+    <div class="scroll-tabs gap-2 mb-4 sm:mb-6 border-b border-gray-700 pb-3 -mx-3 px-3 sm:mx-0 sm:px-0">
         <a href="{{ path('app_game_craft') }}"
-           class="px-4 py-2 rounded-md text-sm font-medium {% if activeProfession is not defined or activeProfession is null %}bg-purple-700 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white{% endif %}">
+           class="px-3 py-2 rounded-md text-sm font-medium touch-target whitespace-nowrap {% if activeProfession is not defined or activeProfession is null %}bg-purple-700 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white{% endif %}">
             Toutes
         </a>
         {% for key, label in professions %}
             <a href="{{ path('app_game_craft_profession', {profession: key}) }}"
-               class="px-4 py-2 rounded-md text-sm font-medium {% if activeProfession is defined and activeProfession == key %}bg-purple-700 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white{% endif %}">
+               class="px-3 py-2 rounded-md text-sm font-medium touch-target whitespace-nowrap {% if activeProfession is defined and activeProfession == key %}bg-purple-700 text-white{% else %}bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white{% endif %}">
                 {{ label }}
             </a>
         {% endfor %}
