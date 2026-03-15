@@ -10,7 +10,7 @@
              role="application"
              aria-label="{{ 'game.map.aria_label'|trans({}, 'messages')|default('Carte du monde interactive') }}">
             {# Map canvas — takes full width on mobile, capped on desktop #}
-            <div class="bg-gray-700 sm:rounded-lg flex justify-center items-center"
+            <div class="bg-gray-700 sm:rounded-lg flex justify-center items-center map-canvas-container"
                  {{ stimulus_controller('map_pixi', {
                      mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
                      playerId: playerId,
@@ -19,15 +19,7 @@
                      playerY: playerY,
                      stepDelay: 120,
                  }) }}
-                 data-action="dialog:closed->map_pixi#onDialogClosed"
-                 style="width: 100%; max-width: 672px; aspect-ratio: 1; touch-action: none;">
-            </div>
-
-            {# Virtual joystick (mobile only) #}
-            <div {{ stimulus_controller('joystick') }}
-                 data-action="joystick:move->map_pixi#onJoystickMove"
-                 class="absolute inset-0 pointer-events-none sm:hidden"
-                 aria-hidden="true">
+                 data-action="dialog:closed->map_pixi#onDialogClosed">
             </div>
 
             {# Harvest overlay #}

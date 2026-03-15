@@ -131,13 +131,15 @@ export default class extends Controller {
     async _initPixi() {
         // Responsive: use container size, clamped to max 672px
         const containerRect = this.element.getBoundingClientRect();
-        const size = Math.min(Math.floor(containerRect.width), this._viewportPx);
-        this._currentSize = size;
+        const w = Math.min(Math.floor(containerRect.width), this._viewportPx);
+        const h = Math.min(Math.floor(containerRect.height || containerRect.width), this._viewportPx * 2);
+        this._currentWidth = w;
+        this._currentHeight = h;
 
         this._app = new PIXI.Application();
         await this._app.init({
-            width: size,
-            height: size,
+            width: w,
+            height: h,
             backgroundColor: 0x2d5a1b,
             antialias: false,
             roundPixels: true,
@@ -191,11 +193,13 @@ export default class extends Controller {
     _onResize() {
         if (!this._app) return;
         const containerRect = this.element.getBoundingClientRect();
-        const size = Math.min(Math.floor(containerRect.width), this._viewportPx);
-        if (size === this._currentSize || size < 64) return;
+        const w = Math.min(Math.floor(containerRect.width), this._viewportPx);
+        const h = Math.min(Math.floor(containerRect.height || containerRect.width), this._viewportPx * 2);
+        if ((w === this._currentWidth && h === this._currentHeight) || w < 64 || h < 64) return;
 
-        this._currentSize = size;
-        this._app.renderer.resize(size, size);
+        this._currentWidth = w;
+        this._currentHeight = h;
+        this._app.renderer.resize(w, h);
         this._updateCamera(true);
     }
 
@@ -644,10 +648,11 @@ export default class extends Controller {
             }
         }
 
-        const viewSize = this._currentSize || this._viewportPx;
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
         this._worldContainer.position.set(
-            Math.round(viewSize / 2 - this._cameraX),
-            Math.round(viewSize / 2 - this._cameraY),
+            Math.round(viewW / 2 - this._cameraX),
+            Math.round(viewH / 2 - this._cameraY),
         );
     }
 
@@ -744,10 +749,11 @@ export default class extends Controller {
 
     _applyTimeOfDay(time) {
         if (!this._ambientOverlay) return;
-        const viewSize = this._currentSize || this._viewportPx;
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
 
         this._ambientOverlay.clear();
-        this._ambientOverlay.rect(0, 0, viewSize, viewSize);
+        this._ambientOverlay.rect(0, 0, viewW, viewH);
 
         const colors = {
             day:   { color: 0x000000, alpha: 0 },
@@ -1174,9 +1180,10 @@ export default class extends Controller {
                 this._app.stage.addChild(this._fadeOverlay);
             }
 
-            const viewSize = this._currentSize || this._viewportPx;
+            const viewW = this._currentWidth || this._viewportPx;
+            const viewH = this._currentHeight || this._viewportPx;
             this._fadeOverlay.clear();
-            this._fadeOverlay.rect(0, 0, viewSize, viewSize);
+            this._fadeOverlay.rect(0, 0, viewW, viewH);
             this._fadeOverlay.fill({ color: 0x000000 });
             this._fadeOverlay.zIndex = 1000;
 
