@@ -72,6 +72,99 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '8.20',
                 'monster' => 'gargoyle',
             ],
+            // === Mobs proches du spawn joueur (85.34) — zone de départ ===
+            // Niveau 1 — très proches (2-5 cases)
+            'slime_1' => [
+                'coordinates' => '83.34',
+                'monster' => 'slime',
+            ],
+            'slime_2' => [
+                'coordinates' => '87.35',
+                'monster' => 'slime',
+            ],
+            'slime_3' => [
+                'coordinates' => '85.31',
+                'monster' => 'slime',
+            ],
+            'giant_rat_1' => [
+                'coordinates' => '82.33',
+                'monster' => 'giant_rat',
+            ],
+            'giant_rat_2' => [
+                'coordinates' => '88.36',
+                'monster' => 'giant_rat',
+            ],
+            'bat_1' => [
+                'coordinates' => '84.37',
+                'monster' => 'bat',
+            ],
+            'bat_2' => [
+                'coordinates' => '86.31',
+                'monster' => 'bat',
+            ],
+            // Niveau 2 — distance moyenne (8-12 cases)
+            'spider_1' => [
+                'coordinates' => '78.30',
+                'monster' => 'spider',
+            ],
+            'spider_2' => [
+                'coordinates' => '92.38',
+                'monster' => 'spider',
+            ],
+            'venom_snake_1' => [
+                'coordinates' => '76.34',
+                'monster' => 'venom_snake',
+            ],
+            'venom_snake_2' => [
+                'coordinates' => '90.28',
+                'monster' => 'venom_snake',
+            ],
+            'specter_1' => [
+                'coordinates' => '80.40',
+                'monster' => 'specter',
+            ],
+            'banshee_2' => [
+                'coordinates' => '93.32',
+                'monster' => 'banshee',
+            ],
+            // Niveau 3 — distance éloignée (15-20 cases)
+            'fire_elemental_1' => [
+                'coordinates' => '70.28',
+                'monster' => 'fire_elemental',
+            ],
+            'fire_elemental_2' => [
+                'coordinates' => '100.40',
+                'monster' => 'fire_elemental',
+            ],
+            'werewolf_2' => [
+                'coordinates' => '72.42',
+                'monster' => 'werewolf',
+            ],
+            'troll_2' => [
+                'coordinates' => '98.25',
+                'monster' => 'troll',
+            ],
+            'gargoyle_2' => [
+                'coordinates' => '68.34',
+                'monster' => 'gargoyle',
+            ],
+            // Niveau 4-5 — loin du spawn (20-30 cases)
+            'stone_golem_1' => [
+                'coordinates' => '60.30',
+                'monster' => 'stone_golem',
+            ],
+            'griffin_2' => [
+                'coordinates' => '110.34',
+                'monster' => 'griffin',
+            ],
+            'minotaur_2' => [
+                'coordinates' => '65.45',
+                'monster' => 'minotaur',
+            ],
+            'dragon_2' => [
+                'coordinates' => '55.34',
+                'monster' => 'dragon',
+            ],
         ];
 
         foreach ($mobs as $key => $data) {
