@@ -6,7 +6,6 @@ use App\Entity\App\Fight;
 use App\Entity\App\FightStatusEffect;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
-use App\Entity\CharacterInterface;
 use App\Entity\Game\StatusEffect;
 use App\GameEngine\Fight\StatusEffectManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -69,11 +68,15 @@ class StatusEffectManagerTest extends TestCase
         $player->method('getId')->willReturn($id);
         $player->method('getMaxLife')->willReturn($maxLife);
         $player->method('getName')->willReturn($name);
-        $player->method('getLife')->willReturnCallback(fn() => $currentLife);
+        $player->method('getLife')->willReturnCallback(function () use (&$currentLife) {
+            return $currentLife;
+        });
         $player->method('setLife')->willReturnCallback(function (int $l) use (&$currentLife) {
             $currentLife = $l;
         });
-        $player->method('isDead')->willReturnCallback(fn() => $currentLife <= 0);
+        $player->method('isDead')->willReturnCallback(function () use (&$currentLife) {
+            return $currentLife <= 0;
+        });
         $player->method('setDiedAt');
 
         return $player;
@@ -87,11 +90,15 @@ class StatusEffectManagerTest extends TestCase
         $mob->method('getId')->willReturn($id);
         $mob->method('getMaxLife')->willReturn($maxLife);
         $mob->method('getName')->willReturn($name);
-        $mob->method('getLife')->willReturnCallback(fn() => $currentLife);
+        $mob->method('getLife')->willReturnCallback(function () use (&$currentLife) {
+            return $currentLife;
+        });
         $mob->method('setLife')->willReturnCallback(function (int $l) use (&$currentLife) {
             $currentLife = $l;
         });
-        $mob->method('isDead')->willReturnCallback(fn() => $currentLife <= 0);
+        $mob->method('isDead')->willReturnCallback(function () use (&$currentLife) {
+            return $currentLife <= 0;
+        });
         $mob->method('setDiedAt');
 
         return $mob;
@@ -165,6 +172,7 @@ class StatusEffectManagerTest extends TestCase
                 if (isset($criteria['targetType'])) {
                     return [$fightStatusEffect];
                 }
+
                 // cleanExpiredEffects appelle findBy avec juste fight
                 return [$fightStatusEffect];
             });
@@ -199,6 +207,7 @@ class StatusEffectManagerTest extends TestCase
                 if (isset($criteria['targetType'])) {
                     return [$fightStatusEffect];
                 }
+
                 return [$fightStatusEffect];
             });
 
@@ -232,6 +241,7 @@ class StatusEffectManagerTest extends TestCase
                 if (isset($criteria['targetType'])) {
                     return [$fightStatusEffect];
                 }
+
                 return [$fightStatusEffect];
             });
 
@@ -261,6 +271,7 @@ class StatusEffectManagerTest extends TestCase
                 if (isset($criteria['targetType'])) {
                     return [$fightStatusEffect];
                 }
+
                 return [$fightStatusEffect];
             });
 

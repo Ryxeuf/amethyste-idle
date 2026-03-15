@@ -7,11 +7,11 @@ use App\Entity\App\Map as MapEntity;
 
 class MapModel extends MapModelLight
 {
-    public int $minX       = 0;
-    public int $maxX       = 0;
-    public int $minY       = 0;
-    public int $maxY       = 0;
-    public int $areaWidth  = 0;
+    public int $minX = 0;
+    public int $maxX = 0;
+    public int $minY = 0;
+    public int $maxY = 0;
+    public int $areaWidth = 0;
     public int $areaHeight = 0;
 
     /** @var AreaModel[] */
@@ -21,8 +21,7 @@ class MapModel extends MapModelLight
     {
         parent::__construct($map);
 
-        $this->areaWidth  = $map->getAreaWidth();
+        $this->areaWidth = $map->getAreaWidth();
         $this->areaHeight = $map->getAreaHeight();
     }
-
 }

@@ -21,17 +21,17 @@ class DomainExperienceEvolver implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ItemUsedEvent::NAME => "experienceFromItemUsed",
-            SpotHarvestEvent::NAME => "experienceFromHarvesting",
-            FishingEvent::NAME => "experienceFromFishing",
-            ButcheringEvent::NAME => "experienceFromButchering",
-            CraftEvent::NAME => "experienceFromCrafting",
+            ItemUsedEvent::NAME => 'experienceFromItemUsed',
+            SpotHarvestEvent::NAME => 'experienceFromHarvesting',
+            FishingEvent::NAME => 'experienceFromFishing',
+            ButcheringEvent::NAME => 'experienceFromButchering',
+            CraftEvent::NAME => 'experienceFromCrafting',
         ];
     }
 
     public function experienceFromItemUsed(ItemUsedEvent $event): void
     {
-        if (!$event->isSuccess()){
+        if (!$event->isSuccess()) {
             return;
         }
 
@@ -90,5 +90,4 @@ class DomainExperienceEvolver implements EventSubscriberInterface
             $this->entityManager->flush();
         }
     }
-
 }

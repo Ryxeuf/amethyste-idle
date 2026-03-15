@@ -2,7 +2,6 @@
 
 namespace App\ServiceProvider;
 
-use App\Dto\Cell\CellModel;
 use App\Dto\CellAction\CellAction;
 use App\Entity\App\Area;
 use App\Entity\App\ObjectLayer;
@@ -48,7 +47,7 @@ class CellActionsProvider
                 'pnj' => [
                     'id' => $pnj->getId(),
                     'name' => $pnj->getName(),
-                ]
+                ],
             ];
             $actions[] = $action;
         }

@@ -13,7 +13,7 @@ class MaterialsController extends AbstractController
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
-        
+
         // Simuler la récupération des matériaux
         // Dans un vrai cas d'usage, vous récupéreriez ces données depuis la base de données
         $materials = [
@@ -23,7 +23,7 @@ class MaterialsController extends AbstractController
                 'rarity' => 'common',
                 'rarityName' => 'Matériau commun',
                 'quantity' => 24,
-                'description' => 'Utilisé pour forger des armes et armures basiques.'
+                'description' => 'Utilisé pour forger des armes et armures basiques.',
             ],
             [
                 'id' => 102,
@@ -31,7 +31,7 @@ class MaterialsController extends AbstractController
                 'rarity' => 'rare',
                 'rarityName' => 'Matériau rare',
                 'quantity' => 8,
-                'description' => 'Utilisé pour les enchantements et objets de valeur.'
+                'description' => 'Utilisé pour les enchantements et objets de valeur.',
             ],
             [
                 'id' => 103,
@@ -39,7 +39,7 @@ class MaterialsController extends AbstractController
                 'rarity' => 'rare',
                 'rarityName' => 'Matériau magique',
                 'quantity' => 5,
-                'description' => 'Amplifie les propriétés magiques des objets.'
+                'description' => 'Amplifie les propriétés magiques des objets.',
             ],
             [
                 'id' => 104,
@@ -47,7 +47,7 @@ class MaterialsController extends AbstractController
                 'rarity' => 'common',
                 'rarityName' => 'Matériau commun',
                 'quantity' => 17,
-                'description' => 'Utilisée pour créer des potions de soin.'
+                'description' => 'Utilisée pour créer des potions de soin.',
             ],
             [
                 'id' => 105,
@@ -55,7 +55,7 @@ class MaterialsController extends AbstractController
                 'rarity' => 'rare',
                 'rarityName' => 'Matériau rare',
                 'quantity' => 3,
-                'description' => 'Utilisée pour les potions de mana avancées.'
+                'description' => 'Utilisée pour les potions de mana avancées.',
             ],
             [
                 'id' => 106,
@@ -63,12 +63,12 @@ class MaterialsController extends AbstractController
                 'rarity' => 'legendary',
                 'rarityName' => 'Matériau légendaire',
                 'quantity' => 1,
-                'description' => 'Composant essentiel pour les équipements légendaires.'
-            ]
+                'description' => 'Composant essentiel pour les équipements légendaires.',
+            ],
         ];
-        
+
         return $this->render('game/inventory/materials/_list.html.twig', [
-            'materials' => $materials
+            'materials' => $materials,
         ]);
     }
-} 
+}

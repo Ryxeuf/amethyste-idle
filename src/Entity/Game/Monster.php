@@ -2,13 +2,13 @@
 
 namespace App\Entity\Game;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity]
-#[ORM\Table(name: "game_monsters")]
+#[ORM\Table(name: 'game_monsters')]
 class Monster
 {
     use TimestampableEntity;
@@ -24,69 +24,63 @@ class Monster
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
-    #[ORM\Column(name: "slug", type: "string", length: 255)]
+    #[ORM\Column(name: 'slug', type: 'string', length: 255)]
     private $slug;
 
-    #[ORM\Column(name: "life", type: "integer")]
+    #[ORM\Column(name: 'life', type: 'integer')]
     private $life;
 
-    #[ORM\OneToMany(targetEntity: MonsterItem::class, mappedBy: "monster")]
+    #[ORM\OneToMany(targetEntity: MonsterItem::class, mappedBy: 'monster')]
     private $monsterItems;
 
     #[ORM\ManyToOne(targetEntity: Spell::class)]
-    #[ORM\JoinColumn(name: "attack_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: 'attack_id', referencedColumnName: 'id')]
     private $attack;
 
     #[ORM\ManyToMany(targetEntity: Spell::class)]
-    #[ORM\JoinTable(name: "monster_spells")]
+    #[ORM\JoinTable(name: 'monster_spells')]
     private $spells;
 
-    #[ORM\Column(name: "speed", type: "integer", options: ["default" => 10])]
+    #[ORM\Column(name: 'speed', type: 'integer', options: ['default' => 10])]
     private $speed = 10;
 
-    #[ORM\Column(name: "hit", type: "integer", options: ["default" => 20])]
+    #[ORM\Column(name: 'hit', type: 'integer', options: ['default' => 20])]
     private $hit = 20;
 
-    #[ORM\Column(name: "level", type: "integer", options: ["default" => 1])]
+    #[ORM\Column(name: 'level', type: 'integer', options: ['default' => 1])]
     private $level = 1;
 
-    #[ORM\Column(name: "ai_pattern", type: "json", nullable: true)]
+    #[ORM\Column(name: 'ai_pattern', type: 'json', nullable: true)]
     private ?array $aiPattern = null;
 
-    #[ORM\Column(name: "elemental_resistances", type: "json", nullable: true)]
+    #[ORM\Column(name: 'elemental_resistances', type: 'json', nullable: true)]
     private ?array $elementalResistances = null;
 
-    #[ORM\Column(name: "is_boss", type: "boolean", options: ["default" => false])]
+    #[ORM\Column(name: 'is_boss', type: 'boolean', options: ['default' => false])]
     private bool $isBoss = false;
 
-    #[ORM\Column(name: "boss_phases", type: "json", nullable: true)]
+    #[ORM\Column(name: 'boss_phases', type: 'json', nullable: true)]
     private ?array $bossPhases = null;
 
-    /**
-     * @return int
-     */
     public function getSpeed(): int
     {
         return $this->speed;
     }
 
-    /**
-     * @param int $speed
-     */
     public function setSpeed(int $speed): void
     {
         $this->speed = $speed;
     }
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -95,24 +89,18 @@ class Monster
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     */
     public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
     /**
-     * Set name
+     * Set name.
      *
      * @param string $name
      *
@@ -126,7 +114,7 @@ class Monster
     }
 
     /**
-     * Get name
+     * Get name.
      *
      * @return string
      */
@@ -136,9 +124,9 @@ class Monster
     }
 
     /**
-     * Set life
+     * Set life.
      *
-     * @param integer $life
+     * @param int $life
      *
      * @return Monster
      */
@@ -150,7 +138,7 @@ class Monster
     }
 
     /**
-     * Get life
+     * Get life.
      *
      * @return int
      */
@@ -160,9 +148,7 @@ class Monster
     }
 
     /**
-     * Add monsterItem
-     *
-     * @param MonsterItem $monsterItem
+     * Add monsterItem.
      *
      * @return Monster
      */
@@ -174,9 +160,7 @@ class Monster
     }
 
     /**
-     * Remove monsterItem
-     *
-     * @param MonsterItem $monsterItem
+     * Remove monsterItem.
      */
     public function removeMonsterItem(MonsterItem $monsterItem)
     {
@@ -184,7 +168,7 @@ class Monster
     }
 
     /**
-     * Get monsterItems
+     * Get monsterItems.
      *
      * @return Collection|MonsterItem[]
      */
@@ -193,17 +177,11 @@ class Monster
         return $this->monsterItems;
     }
 
-    /**
-     * @return Spell
-     */
     public function getAttack(): Spell
     {
         return $this->attack;
     }
 
-    /**
-     * @param Spell $attack
-     */
     public function setAttack(Spell $attack): void
     {
         $this->attack = $attack;
@@ -225,33 +203,21 @@ class Monster
         $this->spells = $spells;
     }
 
-    /**
-     * @return int
-     */
     public function getHit(): int
     {
         return $this->hit;
     }
 
-    /**
-     * @param int $hit
-     */
     public function setHit(int $hit): void
     {
         $this->hit = $hit;
     }
 
-    /**
-     * @return int
-     */
     public function getLevel(): int
     {
         return $this->level;
     }
 
-    /**
-     * @param int $level
-     */
     public function setLevel(int $level): void
     {
         $this->level = $level;

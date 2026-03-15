@@ -2,13 +2,13 @@
 
 namespace App\Entity\Game;
 
-use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "game_skills")]
+#[ORM\Table(name: 'game_skills')]
 class Skill
 {
     use TimestampableEntity;
@@ -19,7 +19,7 @@ class Skill
     }
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -30,80 +30,73 @@ class Skill
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "slug", type: "string", length: 255, unique: true)]
+    #[ORM\Column(name: 'slug', type: 'string', length: 255, unique: true)]
     private $slug;
 
-    #[ORM\Column(type: "string", length: 128)]
+    #[ORM\Column(type: 'string', length: 128)]
     private $title;
 
-    #[ORM\Column(type: "text")]
+    #[ORM\Column(type: 'text')]
     private $description;
 
-    #[ORM\Column(name: "actions", type: "json", nullable: true)]
+    #[ORM\Column(name: 'actions', type: 'json', nullable: true)]
     private $actions;
 
-    #[ORM\Column(name: "required_points", type: "integer")]
+    #[ORM\Column(name: 'required_points', type: 'integer')]
     private $requiredPoints;
 
-    #[ORM\Column(name: "damage", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'damage', type: 'integer', options: ['default' => 0])]
     private $damage = 0;
 
-    #[ORM\Column(name: "heal", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'heal', type: 'integer', options: ['default' => 0])]
     private $heal = 0;
 
-    #[ORM\Column(name: "hit", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'hit', type: 'integer', options: ['default' => 0])]
     private $hit = 0;
 
-    #[ORM\Column(name: "critical", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'critical', type: 'integer', options: ['default' => 0])]
     private $critical = 0;
 
-    #[ORM\Column(name: "life", type: "integer", options: ["default" => 0])]
+    #[ORM\Column(name: 'life', type: 'integer', options: ['default' => 0])]
     private $life = 0;
 
-    #[ORM\ManyToMany(targetEntity: Skill::class, mappedBy: "requirements")]
+    #[ORM\ManyToMany(targetEntity: Skill::class, mappedBy: 'requirements')]
     private $achievements;
 
-    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: "achievements")]
-    #[ORM\JoinTable(name: "skill_requirement",
-        joinColumns: [new ORM\JoinColumn(name: "requirement_id", referencedColumnName: "id")],
-        inverseJoinColumns: [new ORM\JoinColumn(name: "achievement_id", referencedColumnName: "id")]
+    #[ORM\ManyToMany(targetEntity: Skill::class, inversedBy: 'achievements')]
+    #[ORM\JoinTable(name: 'skill_requirement',
+        joinColumns: [new ORM\JoinColumn(name: 'requirement_id', referencedColumnName: 'id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'achievement_id', referencedColumnName: 'id')]
     )]
     private $requirements;
 
-    #[ORM\ManyToMany(targetEntity: Item::class, mappedBy: "requirements")]
+    #[ORM\ManyToMany(targetEntity: Item::class, mappedBy: 'requirements')]
     private $items;
 
-    #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: "skills")]
-    #[ORM\JoinColumn(name: "domain_id", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'skills')]
+    #[ORM\JoinColumn(name: 'domain_id', referencedColumnName: 'id')]
     private $domain;
 
     /**
-     * Get id
-     *
-     * @return int
+     * Get id.
      */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param mixed $id
-     */
     public function setId($id): void
     {
         $this->id = $id;
     }
 
     /**
-     * Set title
+     * Set title.
      *
      * @param string $title
-     *
-     * @return Skill
      */
     public function setTitle($title): self
     {
@@ -113,9 +106,7 @@ class Skill
     }
 
     /**
-     * Get title
-     *
-     * @return string
+     * Get title.
      */
     public function getTitle(): string
     {
@@ -123,11 +114,7 @@ class Skill
     }
 
     /**
-     * Add requirement
-     *
-     * @param Skill $requirement
-     *
-     * @return Skill
+     * Add requirement.
      */
     public function addRequirement(Skill $requirement): self
     {
@@ -137,9 +124,7 @@ class Skill
     }
 
     /**
-     * Remove requirement
-     *
-     * @param Skill $requirement
+     * Remove requirement.
      */
     public function removeRequirement(Skill $requirement): void
     {
@@ -147,7 +132,7 @@ class Skill
     }
 
     /**
-     * Get requirements
+     * Get requirements.
      *
      * @return Collection|Skill[]
      */
@@ -157,11 +142,7 @@ class Skill
     }
 
     /**
-     * Add achievement
-     *
-     * @param Skill $achievement
-     *
-     * @return Skill
+     * Add achievement.
      */
     public function addAchievement(Skill $achievement): self
     {
@@ -171,9 +152,7 @@ class Skill
     }
 
     /**
-     * Remove achievement
-     *
-     * @param Skill $achievement
+     * Remove achievement.
      */
     public function removeAchievement(Skill $achievement): void
     {
@@ -181,7 +160,7 @@ class Skill
     }
 
     /**
-     * Get achievements
+     * Get achievements.
      *
      * @return Collection|Skill[]
      */
@@ -191,13 +170,9 @@ class Skill
     }
 
     /**
-     * Set domain
-     *
-     * @param Domain $domain
-     *
-     * @return Skill
+     * Set domain.
      */
-    public function setDomain(Domain $domain = null): self
+    public function setDomain(?Domain $domain = null): self
     {
         $this->domain = $domain;
 
@@ -205,9 +180,7 @@ class Skill
     }
 
     /**
-     * Get domain
-     *
-     * @return Domain
+     * Get domain.
      */
     public function getDomain(): Domain
     {
@@ -215,11 +188,7 @@ class Skill
     }
 
     /**
-     * Add item
-     *
-     * @param Item $item
-     *
-     * @return Skill
+     * Add item.
      */
     public function addItem(Item $item): self
     {
@@ -229,9 +198,7 @@ class Skill
     }
 
     /**
-     * Remove item
-     *
-     * @param Item $item
+     * Remove item.
      */
     public function removeItem(Item $item): void
     {
@@ -239,7 +206,7 @@ class Skill
     }
 
     /**
-     * Get items
+     * Get items.
      *
      * @return Collection|Item[]
      */
@@ -249,11 +216,9 @@ class Skill
     }
 
     /**
-     * Set requiredPoints
+     * Set requiredPoints.
      *
-     * @param integer $requiredPoints
-     *
-     * @return Skill
+     * @param int $requiredPoints
      */
     public function setRequiredPoints($requiredPoints): self
     {
@@ -263,9 +228,7 @@ class Skill
     }
 
     /**
-     * Get requiredPoints
-     *
-     * @return int
+     * Get requiredPoints.
      */
     public function getRequiredPoints(): int
     {
@@ -273,11 +236,9 @@ class Skill
     }
 
     /**
-     * Set description
+     * Set description.
      *
      * @param string $description
-     *
-     * @return Skill
      */
     public function setDescription($description): self
     {
@@ -287,122 +248,78 @@ class Skill
     }
 
     /**
-     * Get description
-     *
-     * @return string
+     * Get description.
      */
     public function getDescription(): string
     {
         return $this->description;
     }
 
-    /**
-     * @return int
-     */
     public function getDamage(): int
     {
         return $this->damage;
     }
 
-    /**
-     * @param int $damage
-     */
     public function setDamage(int $damage): void
     {
         $this->damage = $damage;
     }
 
-    /**
-     * @return int
-     */
     public function getHit(): int
     {
         return $this->hit;
     }
 
-    /**
-     * @param int $hit
-     */
     public function setHit(int $hit): void
     {
         $this->hit = $hit;
     }
 
-    /**
-     * @return int
-     */
     public function getCritical(): int
     {
         return $this->critical;
     }
 
-    /**
-     * @param int $critical
-     */
     public function setCritical(int $critical): void
     {
         $this->critical = $critical;
     }
 
-    /**
-     * @return int
-     */
     public function getLife(): int
     {
         return $this->life;
     }
 
-    /**
-     * @param int $life
-     */
     public function setLife(int $life): void
     {
         $this->life = $life;
     }
 
-    /**
-     * @return int
-     */
     public function getHeal(): int
     {
         return $this->heal;
     }
 
-    /**
-     * @param int $heal
-     */
     public function setHeal(int $heal): void
     {
         $this->heal = $heal;
     }
 
-    /**
-     * @return string
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     */
     public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * @return array|null
-     */
     public function getActions(): ?array
     {
         return $this->actions;
     }
 
-    /**
-     * @param array|null $actions
-     */
     public function setActions(?array $actions): void
     {
         $this->actions = $actions;

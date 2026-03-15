@@ -20,7 +20,7 @@ class Mob implements CharacterInterface
     use TimestampableEntity;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -35,9 +35,6 @@ class Mob implements CharacterInterface
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
-    /**
-     * @var Monster
-     */
     #[ORM\ManyToOne(targetEntity: Monster::class)]
     #[ORM\JoinColumn(name: 'monster_id', referencedColumnName: 'id')]
     private Monster $monster;
@@ -47,21 +44,22 @@ class Mob implements CharacterInterface
     private ?Map $map;
 
     /**
-     * Combat dans lequel le monstre est engagé
+     * Combat dans lequel le monstre est engagé.
      */
     #[ORM\ManyToOne(targetEntity: Fight::class, inversedBy: 'mobs')]
     #[ORM\JoinColumn(name: 'fight_id', referencedColumnName: 'id')]
     private ?Fight $fight;
 
     /**
-     * Items générés à la mort du mob
+     * Items générés à la mort du mob.
+     *
      * @var PlayerItem[]|ArrayCollection
      */
     #[ORM\OneToMany(targetEntity: PlayerItem::class, mappedBy: 'mob')]
     private $items;
 
     /**
-     * Niveau du mob
+     * Niveau du mob.
      */
     #[ORM\Column(name: 'level', type: 'integer')]
     protected int $level;
@@ -72,9 +70,7 @@ class Mob implements CharacterInterface
     }
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): int
     {
@@ -91,49 +87,31 @@ class Mob implements CharacterInterface
         $this->map = $map;
     }
 
-    /**
-     * @return Monster
-     */
     public function getMonster(): Monster
     {
         return $this->monster;
     }
 
-    /**
-     * @param Monster $monster
-     */
     public function setMonster(Monster $monster): void
     {
         $this->monster = $monster;
     }
 
-    /**
-     * @return Fight|null
-     */
     public function getFight(): ?Fight
     {
         return $this->fight;
     }
 
-    /**
-     * @param Fight|null $fight
-     */
     public function setFight(?Fight $fight): void
     {
         $this->fight = $fight;
     }
 
-    /**
-     * @return int
-     */
     public function getMaxLife(): int
     {
         return $this->getMonster()->getLife();
     }
 
-    /**
-     * @return Spell
-     */
     public function getAttack(): Spell
     {
         return $this->getMonster()->getAttack();
@@ -147,9 +125,6 @@ class Mob implements CharacterInterface
         return $this->getMonster()->getSpells();
     }
 
-    /**
-     * @return int
-     */
     public function getSpeed(): int
     {
         return $this->getMonster()->getSpeed();
@@ -171,9 +146,6 @@ class Mob implements CharacterInterface
         $this->items = $items;
     }
 
-    /**
-     * @param PlayerItem $item
-     */
     public function addItem(PlayerItem $item): void
     {
         $this->items->add($item);
@@ -184,17 +156,11 @@ class Mob implements CharacterInterface
         $this->items->removeElement($item);
     }
 
-    /**
-     * @return int
-     */
     public function getLevel(): int
     {
         return $this->level;
     }
 
-    /**
-     * @param int $level
-     */
     public function setLevel(int $level): void
     {
         $this->level = $level;

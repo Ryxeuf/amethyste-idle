@@ -7,7 +7,7 @@ use App\Entity\App\Area;
 class CellHelper
 {
     public const MOVE_UNREACHABLE = -1;
-    public const MOVE_DEFAULT     = 0;
+    public const MOVE_DEFAULT = 0;
 
     public static function getDataFromSlug(string $slug): array
     {
@@ -17,24 +17,24 @@ class CellHelper
 
         return [
             'coordinates' => $coordinates,
-            'movement'    => (int)$movement,
-            'x'           => (int)$x,
-            'y'           => (int)$y,
-            'north'       => (int)$north,
-            'east'        => (int)$east,
-            'south'       => (int)$south,
-            'west'        => (int)$west,
+            'movement' => (int) $movement,
+            'x' => (int) $x,
+            'y' => (int) $y,
+            'north' => (int) $north,
+            'east' => (int) $east,
+            'south' => (int) $south,
+            'west' => (int) $west,
         ];
     }
 
     public static function getCalculatedDataFromSlug(string $slug, Area $area): array
     {
-        $data    = self::getDataFromSlug($slug);
+        $data = self::getDataFromSlug($slug);
         $offsetX = $area->getX() * $area->getMap()->getAreaWidth();
         $offsetY = $area->getY() * $area->getMap()->getAreaHeight();
 
-        $data['x']           += $offsetX;
-        $data['y']           += $offsetY;
+        $data['x'] += $offsetX;
+        $data['y'] += $offsetY;
         $data['coordinates'] = self::stringifyCoordinates($data['x'], $data['y']);
 
         return $data;
@@ -49,10 +49,10 @@ class CellHelper
 
     public static function getCellsInfos(Area $area, int $x, int $y, int $distance): array
     {
-        $cells    = [];
+        $cells = [];
         $areaData = $area->getFullDataArray();
-        for ($fromX = $x - $distance; $fromX <= $x + $distance; $fromX++) {
-            for ($fromY = $y - $distance; $fromY <= $y + $distance; $fromY++) {
+        for ($fromX = $x - $distance; $fromX <= $x + $distance; ++$fromX) {
+            for ($fromY = $y - $distance; $fromY <= $y + $distance; ++$fromY) {
                 if (null !==
                     $cell = $areaData['cells'][$fromX % $area->getMap()->getAreaWidth()][$fromY % $area->getMap()->getAreaHeight()] ?? null) {
                     $cells[] = $cell;
@@ -67,5 +67,4 @@ class CellHelper
     {
         return $x . '.' . $y;
     }
-
 }

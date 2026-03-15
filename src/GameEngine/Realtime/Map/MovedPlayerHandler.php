@@ -2,13 +2,13 @@
 
 namespace App\GameEngine\Realtime\Map;
 
+use App\Entity\App\Player;
 use App\Event\Map\PlayerMovedEvent;
 use App\Helper\PlayerHelper;
 use App\Transformer\CellModelTransformer;
 use App\Transformer\PlayerInfosTransformer;
-use Symfony\Component\Mercure\HubInterface;
-use App\Entity\App\Player;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Mercure\HubInterface;
 
 class MovedPlayerHandler extends MovedHandler
 {
@@ -18,8 +18,7 @@ class MovedPlayerHandler extends MovedHandler
         private readonly CellModelTransformer $cellModelTransformer,
         private readonly PlayerHelper $playerHelper,
         private readonly LoggerInterface $logger,
-    )
-    {
+    ) {
         parent::__construct($publisher, $logger);
     }
 
@@ -27,18 +26,18 @@ class MovedPlayerHandler extends MovedHandler
     {
         $this->playerHelper->setPlayer($event->getPlayer());
         $this->move('player', $event->getPlayer()->getId(), $event->getPlayer()->getCoordinates(),
-        [
-            'player' => $this->playerInfosTransformer->transform($event->getPlayer()),
-        ]);
+            [
+                'player' => $this->playerInfosTransformer->transform($event->getPlayer()),
+            ]);
     }
 
     public function movePlayer(Player $player): void
     {
         $this->playerHelper->setPlayer($player);
         $this->move('player', $player->getId(), $player->getCoordinates(),
-        [
-            'player' => $this->playerInfosTransformer->transform($player),
-        ]);
+            [
+                'player' => $this->playerInfosTransformer->transform($player),
+            ]);
     }
 
     /**

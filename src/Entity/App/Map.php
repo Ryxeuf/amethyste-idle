@@ -22,7 +22,7 @@ class Map
         $this->pnjs = new ArrayCollection();
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->getName();
     }
@@ -36,19 +36,19 @@ class Map
     private string $name;
 
     /**
-     * Coordonnées de la carte au sein du monde
+     * Coordonnées de la carte au sein du monde.
      */
     #[ORM\Column(name: 'coordinates', type: 'string', nullable: true)]
     protected ?string $coordinates = null;
 
     /**
-     * Largeur de la zone
+     * Largeur de la zone.
      */
     #[ORM\Column(name: 'areaWidth', type: 'integer')]
     protected int $areaWidth;
 
     /**
-     * Hauteur de la zone
+     * Hauteur de la zone.
      */
     #[ORM\Column(name: 'areaHeight', type: 'integer')]
     protected int $areaHeight;
@@ -108,17 +108,11 @@ class Map
         $this->name = $name;
     }
 
-    /**
-     * @return null|string
-     */
     public function getCoordinates(): ?string
     {
         return $this->coordinates;
     }
 
-    /**
-     * @param null|string $coordinates
-     */
     public function setCoordinates(?string $coordinates): void
     {
         $this->coordinates = $coordinates;
@@ -134,33 +128,21 @@ class Map
         $this->world = $world;
     }
 
-    /**
-     * @return int
-     */
     public function getAreaWidth(): int
     {
         return $this->areaWidth;
     }
 
-    /**
-     * @param int $areaWidth
-     */
     public function setAreaWidth(int $areaWidth): void
     {
         $this->areaWidth = $areaWidth;
     }
 
-    /**
-     * @return int
-     */
     public function getAreaHeight(): int
     {
         return $this->areaHeight;
     }
 
-    /**
-     * @param int $areaHeight
-     */
     public function setAreaHeight(int $areaHeight): void
     {
         $this->areaHeight = $areaHeight;

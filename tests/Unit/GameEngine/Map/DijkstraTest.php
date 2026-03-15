@@ -2,14 +2,13 @@
 
 namespace App\Tests\Unit\GameEngine\Map;
 
-use App\Exception\PathNotFoundException;
 use App\GameEngine\Map\Dijkstra;
 use PHPUnit\Framework\TestCase;
 
 class DijkstraTest extends TestCase
 {
     /**
-     * Graphe simple : A --1--> B --1--> C
+     * Graphe simple : A --1--> B --1--> C.
      */
     public function testShortestPathLinear(): void
     {
@@ -30,7 +29,7 @@ class DijkstraTest extends TestCase
     }
 
     /**
-     * Graphe en losange avec chemin court par le haut
+     * Graphe en losange avec chemin court par le haut.
      *
      *       1.0
      *      / 1  \ 1
@@ -83,14 +82,14 @@ class DijkstraTest extends TestCase
     }
 
     /**
-     * Teste un graphe de type grille 3x3 (simulant une carte de jeu)
+     * Teste un graphe de type grille 3x3 (simulant une carte de jeu).
      */
     public function testGridGraph(): void
     {
         // Grille 3x3
         $graph = [];
-        for ($x = 0; $x < 3; $x++) {
-            for ($y = 0; $y < 3; $y++) {
+        for ($x = 0; $x < 3; ++$x) {
+            for ($y = 0; $y < 3; ++$y) {
                 $node = "$x.$y";
                 $graph[$node] = [];
                 // Voisin droite

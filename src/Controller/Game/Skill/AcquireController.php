@@ -17,7 +17,7 @@ class AcquireController extends AbstractController
     public function __construct(private readonly EntityManagerInterface $entityManager, private readonly SkillAcquiring $skillAcquiring)
     {
     }
-    
+
     public function __invoke(Request $request): Response
     {
         $skillId = $request->request->get('skill_id');
@@ -25,16 +25,17 @@ class AcquireController extends AbstractController
 
         $skill = $this->entityManager->getRepository(Skill::class)->find($skillId);
         $domain = $this->entityManager->getRepository(Domain::class)->find($domainId);
-        
+
         if (!$skill || !$domain) {
             $this->addFlash('error', 'Compétence ou domaine non trouvé');
+
             return $this->redirectToRoute('app_game_skills');
         }
-        
+
         $this->skillAcquiring->acquireSkill($skill);
-        
+
         $this->addFlash('success', 'Compétence acquise avec succès !');
-        
+
         return $this->redirectToRoute('app_game_skills');
     }
-} 
+}

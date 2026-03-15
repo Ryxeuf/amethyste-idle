@@ -8,55 +8,46 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "game_quests")]
+#[ORM\Table(name: 'game_quests')]
 class Quest
 {
     use TimestampableEntity;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
-    #[ORM\Column(name: "description", type: "text")]
+    #[ORM\Column(name: 'description', type: 'text')]
     private $description;
 
-    #[ORM\Column(name: "requirements", type: "json", nullable: true)]
+    #[ORM\Column(name: 'requirements', type: 'json', nullable: true)]
     private $requirements;
 
-    #[ORM\Column(name: "rewards", type: "json", nullable: true)]
+    #[ORM\Column(name: 'rewards', type: 'json', nullable: true)]
     private $rewards;
 
-    #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: "quest")]
+    #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'quest')]
     private $players;
 
     /**
-     * Get id
-     *
-     * @return integer
+     * Get id.
      */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Quest
+     * Set name.
      */
     public function setName(string $name): Quest
     {
@@ -66,9 +57,7 @@ class Quest
     }
 
     /**
-     * Get name
-     *
-     * @return string
+     * Get name.
      */
     public function getName(): string
     {
@@ -76,11 +65,7 @@ class Quest
     }
 
     /**
-     * Set description
-     *
-     * @param string $description
-     *
-     * @return Quest
+     * Set description.
      */
     public function setDescription(string $description): Quest
     {
@@ -90,9 +75,7 @@ class Quest
     }
 
     /**
-     * Get description
-     *
-     * @return string
+     * Get description.
      */
     public function getDescription(): string
     {
@@ -104,10 +87,6 @@ class Quest
         return $this->requirements;
     }
 
-    /**
-     * @param array $requirements
-     * @return Quest
-     */
     public function setRequirements(array $requirements): Quest
     {
         $this->requirements = $requirements;
@@ -115,18 +94,11 @@ class Quest
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getRewards(): array
     {
         return $this->rewards;
     }
 
-    /**
-     * @param array $rewards
-     * @return Quest
-     */
     public function setRewards(array $rewards): Quest
     {
         $this->rewards = $rewards;

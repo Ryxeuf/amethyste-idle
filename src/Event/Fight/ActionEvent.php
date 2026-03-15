@@ -6,7 +6,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class ActionEvent extends Event
 {
-    final public const NAME = "event.fight.action";
+    final public const NAME = 'event.fight.action';
 
     /**
      * @var int

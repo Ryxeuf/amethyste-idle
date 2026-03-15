@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "world")]
+#[ORM\Table(name: 'world')]
 class World
 {
     use TimestampableEntity;
@@ -18,17 +18,17 @@ class World
         $this->maps = new ArrayCollection();
     }
 
-    function __toString()
+    public function __toString()
     {
         return $this->getName();
     }
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private int $id;
 
-    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
     #[ORM\OneToMany(targetEntity: Map::class, mappedBy: 'world')]

@@ -2,9 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\Game\Monster;
-use App\Entity\App\Map;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -73,10 +73,10 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'monster' => 'gargoyle',
             ],
         ];
-        
+
         foreach ($mobs as $key => $data) {
             $monster = $this->getReference($data['monster'], Monster::class);
-            
+
             $mob = new Mob();
             $mob->setMap($this->getReference('map_1', Map::class));
             $mob->setCoordinates($data['coordinates']);
@@ -85,14 +85,14 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             $mob->setLevel($monster->getLevel());
             $mob->setCreatedAt(new \DateTime());
             $mob->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($mob);
             $this->addReference($key, $mob);
         }
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
@@ -100,4 +100,4 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             MonsterFixtures::class,
         ];
     }
-} 
+}

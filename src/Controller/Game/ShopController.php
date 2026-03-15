@@ -2,8 +2,8 @@
 
 namespace App\Controller\Game;
 
-use App\Entity\App\Pnj;
 use App\Entity\App\PlayerItem;
+use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -85,7 +85,7 @@ class ShopController extends AbstractController
 
         // Add item to player bag inventory
         $bag = $this->playerHelper->getBagInventory();
-        for ($i = 0; $i < $quantity; $i++) {
+        for ($i = 0; $i < $quantity; ++$i) {
             $playerItem = new PlayerItem();
             $playerItem->setGenericItem($item);
             $playerItem->setInventory($bag);

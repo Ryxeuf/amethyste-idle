@@ -26,8 +26,7 @@ class GatheringManager
     /**
      * Attempt to gather a resource (fishing or skinning).
      *
-     * @param Player $player
-     * @param string $type 'fishing' or 'skinning'
+     * @param string $type    'fishing' or 'skinning'
      * @param array  $context Extra context (e.g., mob drops for skinning)
      *
      * @return array{success: bool, item: ?Item, quantity: int, message: string}
@@ -69,7 +68,7 @@ class GatheringManager
 
         // 6. Add item to player inventory
         $quantity = random_int(1, 1 + intdiv($skillLevel, 3));
-        for ($i = 0; $i < $quantity; $i++) {
+        for ($i = 0; $i < $quantity; ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($gathered->getId());
             $this->inventoryHelper->addItem($playerItem, false);
         }
@@ -168,6 +167,7 @@ class GatheringManager
         // Filter to items that have a domain related to fishing
         $fishItems = array_values(array_filter($fishItems, function (Item $item) {
             $domain = $item->getDomain();
+
             return $domain && str_contains(strtolower($domain->getTitle()), 'fishing');
         }));
 

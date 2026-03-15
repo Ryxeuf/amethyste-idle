@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\App\ObjectLayer;
 use App\Entity\App\Map;
+use App\Entity\App\ObjectLayer;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;

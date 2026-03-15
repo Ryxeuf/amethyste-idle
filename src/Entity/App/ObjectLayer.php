@@ -3,7 +3,6 @@
 namespace App\Entity\App;
 
 use App\Entity\App\Traits\CoordinatesTrait;
-use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -14,19 +13,19 @@ class ObjectLayer
     use TimestampableEntity;
     use CoordinatesTrait;
 
-    const TYPE_OTHER = 'other';
-    const TYPE_CHEST = 'chest';
-    const TYPE_SPOT = 'spot';
-    const TYPE_PORTAL = 'portal';
-    const TYPE_MOB_SPAWN = 'mob_spawn';
-    const TYPE_NPC_SPAWN = 'npc_spawn';
-    const TYPE_HARVEST_SPOT = 'harvest_spot';
-    const TYPE_FORGE = 'forge';
-    const TYPE_TANNERY = 'tannery';
-    const TYPE_ALCHEMY_LAB = 'alchemy_lab';
-    const TYPE_JEWELER_BENCH = 'jeweler_bench';
+    public const TYPE_OTHER = 'other';
+    public const TYPE_CHEST = 'chest';
+    public const TYPE_SPOT = 'spot';
+    public const TYPE_PORTAL = 'portal';
+    public const TYPE_MOB_SPAWN = 'mob_spawn';
+    public const TYPE_NPC_SPAWN = 'npc_spawn';
+    public const TYPE_HARVEST_SPOT = 'harvest_spot';
+    public const TYPE_FORGE = 'forge';
+    public const TYPE_TANNERY = 'tannery';
+    public const TYPE_ALCHEMY_LAB = 'alchemy_lab';
+    public const TYPE_JEWELER_BENCH = 'jeweler_bench';
 
-    function __toString(): string
+    public function __toString(): string
     {
         return $this->getName();
     }
@@ -36,55 +35,39 @@ class ObjectLayer
         return $this->isUsable();
     }
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private int $id;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'slug', type: 'string', length: 255)]
     private string $slug;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'type', type: 'string', length: 255)]
     private string $type = self::TYPE_OTHER;
 
     /**
-     * Date d'utilisation
+     * Date d'utilisation.
      */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?DateTime $usedAt;
+    private ?\DateTime $usedAt;
 
     /**
-     * Liste des items que l'objet peut contenir
+     * Liste des items que l'objet peut contenir.
      */
     #[ORM\Column(name: 'items', type: 'json', nullable: true)]
     private ?array $items;
 
     /**
      * Modificateur de mouvement
-     * Si la valeur est -1, la case devient impénétrable
-     * @var int
+     * Si la valeur est -1, la case devient impénétrable.
      */
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     private int $movement = 0;
 
-    /**
-     * @var array|null
-     */
     #[ORM\Column(name: 'actions', type: 'json', nullable: true)]
     private ?array $actions;
 
@@ -102,140 +85,92 @@ class ObjectLayer
     private ?string $destinationCoordinates = null;
 
     /**
-     * Délai de réapparition en secondes après récolte (null = pas de respawn)
+     * Délai de réapparition en secondes après récolte (null = pas de respawn).
      */
     #[ORM\Column(name: 'respawn_delay', type: 'integer', nullable: true)]
     private ?int $respawnDelay = null;
 
     /**
-     * Type d'outil requis pour récolter ce spot (pickaxe, sickle, fishing_rod, skinning_knife)
+     * Type d'outil requis pour récolter ce spot (pickaxe, sickle, fishing_rod, skinning_knife).
      */
     #[ORM\Column(name: 'required_tool_type', type: 'string', length: 50, nullable: true)]
     private ?string $requiredToolType = null;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
     public function setId(int $id): void
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string
-     */
     public function getName(): string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
     public function getSlug(): string
     {
         return $this->slug;
     }
 
-    /**
-     * @param string $slug
-     */
     public function setSlug(string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     */
     public function setType(string $type): void
     {
         $this->type = $type;
     }
 
-    /**
-     * @return DateTime
-     */
-    public function getUsedAt(): ?DateTime
+    public function getUsedAt(): ?\DateTime
     {
         return $this->usedAt;
     }
 
-    /**
-     * @param DateTime|null $usedAt
-     */
-    public function setUsedAt(?DateTime $usedAt): void
+    public function setUsedAt(?\DateTime $usedAt): void
     {
         $this->usedAt = $usedAt;
     }
 
-    /**
-     * @return array|null
-     */
     public function getItems(): ?array
     {
         return $this->items;
     }
 
-    /**
-     * @param array|null $items
-     */
     public function setItems(?array $items): void
     {
         $this->items = $items;
     }
 
-    /**
-     * @return int
-     */
     public function getMovement(): int
     {
         return $this->movement;
     }
 
-    /**
-     * @param int $movement
-     */
     public function setMovement(int $movement): void
     {
         $this->movement = $movement;
     }
 
-    /**
-     * @return array|null
-     */
     public function getActions(): ?array
     {
         return $this->actions;
     }
 
-    /**
-     * @param array|null $actions
-     */
     public function setActions(?array $actions): void
     {
         $this->actions = $actions;
@@ -251,17 +186,11 @@ class ObjectLayer
         $this->usable = $usable;
     }
 
-    /**
-     * @return null|Map
-     */
     public function getMap(): ?Map
     {
         return $this->map;
     }
 
-    /**
-     * @param null|Map $map
-     */
     public function setMap(?Map $map): void
     {
         $this->map = $map;
@@ -336,7 +265,7 @@ class ObjectLayer
 
         $respawnAt = (clone $this->usedAt)->modify("+{$this->respawnDelay} seconds");
 
-        return new DateTime() >= $respawnAt;
+        return new \DateTime() >= $respawnAt;
     }
 
     /**
@@ -353,7 +282,7 @@ class ObjectLayer
         }
 
         $respawnAt = (clone $this->usedAt)->modify("+{$this->respawnDelay} seconds");
-        $diff = (new DateTime())->getTimestamp() - $respawnAt->getTimestamp();
+        $diff = (new \DateTime())->getTimestamp() - $respawnAt->getTimestamp();
 
         return max(0, -$diff);
     }

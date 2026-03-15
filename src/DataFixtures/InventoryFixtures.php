@@ -20,10 +20,10 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $inventoryBag->setSize(100);
         $inventoryBag->setCreatedAt(new \DateTime());
         $inventoryBag->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($inventoryBag);
         $this->addReference('inventory_bag', $inventoryBag);
-        
+
         // Inventaire materia du joueur demo
         $inventoryMateria = new Inventory();
         $inventoryMateria->setPlayer($this->getReference('player_demo', Player::class));
@@ -31,10 +31,10 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $inventoryMateria->setSize(100);
         $inventoryMateria->setCreatedAt(new \DateTime());
         $inventoryMateria->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($inventoryMateria);
         $this->addReference('inventory_materia', $inventoryMateria);
-        
+
         // Inventaire banque du joueur demo
         $inventoryBank = new Inventory();
         $inventoryBank->setPlayer($this->getReference('player_demo', Player::class));
@@ -42,10 +42,10 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $inventoryBank->setSize(500);
         $inventoryBank->setCreatedAt(new \DateTime());
         $inventoryBank->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($inventoryBank);
         $this->addReference('inventory_bank', $inventoryBank);
-        
+
         // Inventaire sac du joueur demo 2
         $inventoryBag2 = new Inventory();
         $inventoryBag2->setPlayer($this->getReference('player_demo_2', Player::class));
@@ -54,10 +54,10 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $inventoryBag2->setSize(100);
         $inventoryBag2->setCreatedAt(new \DateTime());
         $inventoryBag2->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($inventoryBag2);
         $this->addReference('inventory_bag_2', $inventoryBag2);
-        
+
         // Inventaire materia du joueur demo 2
         $inventoryMateria2 = new Inventory();
         $inventoryMateria2->setPlayer($this->getReference('player_demo_2', Player::class));
@@ -65,10 +65,10 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $inventoryMateria2->setSize(100);
         $inventoryMateria2->setCreatedAt(new \DateTime());
         $inventoryMateria2->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($inventoryMateria2);
         $this->addReference('inventory_materia_2', $inventoryMateria2);
-        
+
         // Inventaire banque du joueur demo 2
         $inventoryBank2 = new Inventory();
         $inventoryBank2->setPlayer($this->getReference('player_demo_2', Player::class));
@@ -76,17 +76,17 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $inventoryBank2->setSize(500);
         $inventoryBank2->setCreatedAt(new \DateTime());
         $inventoryBank2->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($inventoryBank2);
         $this->addReference('inventory_bank_2', $inventoryBank2);
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
             PlayerFixtures::class,
         ];
     }
-} 
+}

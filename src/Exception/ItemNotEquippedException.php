@@ -2,9 +2,7 @@
 
 namespace App\Exception;
 
-use Exception;
-
-class ItemNotEquippedException extends Exception
+class ItemNotEquippedException extends \Exception
 {
-    protected $message = "Objet non équipé";
+    protected $message = 'Objet non équipé';
 }

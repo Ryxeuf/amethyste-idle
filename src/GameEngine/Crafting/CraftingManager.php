@@ -3,7 +3,6 @@
 namespace App\GameEngine\Crafting;
 
 use App\Entity\App\Player;
-use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\GameEngine\Generator\PlayerItemGenerator;
@@ -81,7 +80,7 @@ class CraftingManager
 
         if (!$check['possible']) {
             $missingNames = array_map(
-                fn(array $m) => sprintf('%s (%d/%d)', $m['slug'], $m['have'], $m['need']),
+                fn (array $m) => sprintf('%s (%d/%d)', $m['slug'], $m['have'], $m['need']),
                 $check['missing']
             );
 
@@ -105,7 +104,7 @@ class CraftingManager
         $resultItem = $recipe->getResult();
         $lastPlayerItem = null;
 
-        for ($i = 0; $i < $recipe->getResultQuantity(); $i++) {
+        for ($i = 0; $i < $recipe->getResultQuantity(); ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($resultItem->getId());
             $this->inventoryHelper->addItem($playerItem, false);
             $lastPlayerItem = $playerItem;
@@ -201,7 +200,7 @@ class CraftingManager
                     $inventory->removeItem($playerItem);
                     $playerItem->setInventory(null);
                     $this->entityManager->remove($playerItem);
-                    $remainingToRemove--;
+                    --$remainingToRemove;
                 }
             }
         }

@@ -7,7 +7,7 @@ use App\Entity\Game\Quest;
 class QuestModel
 {
     /**
-     * @var string
+     * @var int
      */
     public $id;
     /**
@@ -35,6 +35,4 @@ class QuestModel
         $this->requirements = $quest->getRequirements();
         $this->rewards = $quest->getRewards();
     }
-
-
 }

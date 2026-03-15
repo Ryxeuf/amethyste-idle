@@ -16,5 +16,4 @@ class Requirement extends SkillModelLight
 
         $this->domain = new DomainModel($skill->getDomain());
     }
-
 }

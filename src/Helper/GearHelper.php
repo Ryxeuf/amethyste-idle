@@ -13,7 +13,7 @@ class GearHelper
 
     public function isEquipped(PlayerItem $item): bool
     {
-        return 
+        return
                $item->getGear() & PlayerItem::GEAR_HEAD
             || $item->getGear() & PlayerItem::GEAR_NECK
             || $item->getGear() & PlayerItem::GEAR_CHEST
@@ -53,7 +53,7 @@ class GearHelper
         return $this->getEquippedItem(PlayerItem::GEAR_FOOT);
     }
 
-    public function getPlayerItemGearByLocation(string $location): ?string
+    public function getPlayerItemGearByLocation(string $location): ?int
     {
         return match ($location) {
             Item::GEAR_LOCATION_HEAD => PlayerItem::GEAR_HEAD,

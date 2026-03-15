@@ -18,13 +18,13 @@ class ItemsController extends AbstractController
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
-        
+
         // Récupérer l'inventaire sac du joueur
         $bagInventory = $this->playerHelper->getBagInventory();
-        
+
         // Récupérer les objets consommables de l'inventaire
         $playerItems = $bagInventory->getItems();
-        
+
         // Transformer les objets PlayerItem en tableau pour la vue
         $items = [];
         foreach ($playerItems as $item) {
@@ -35,13 +35,13 @@ class ItemsController extends AbstractController
                     'name' => $genericItem->getName(),
                     'type' => 'Consommable',
                     'quantity' => 1, // Si vous avez un champ pour la quantité dans PlayerItem, utilisez-le ici
-                    'description' => $genericItem->getDescription()
+                    'description' => $genericItem->getDescription(),
                 ];
             }
         }
-        
+
         return $this->render('game/inventory/items/_list.html.twig', [
-            'items' => $items
+            'items' => $items,
         ]);
     }
-} 
+}

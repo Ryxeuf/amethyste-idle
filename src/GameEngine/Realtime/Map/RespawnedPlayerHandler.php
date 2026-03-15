@@ -2,7 +2,6 @@
 
 namespace App\GameEngine\Realtime\Map;
 
-use App\Event\Map\MobRespawnedEvent;
 use App\Event\Map\PlayerRespawnedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -11,7 +10,7 @@ class RespawnedPlayerHandler extends RespawnedHandler implements EventSubscriber
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerRespawnedEvent::NAME => 'respawnPlayer'
+            PlayerRespawnedEvent::NAME => 'respawnPlayer',
         ];
     }
 

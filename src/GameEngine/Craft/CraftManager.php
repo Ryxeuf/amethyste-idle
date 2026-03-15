@@ -3,7 +3,6 @@
 namespace App\GameEngine\Craft;
 
 use App\Entity\App\Player;
-use App\Entity\App\PlayerItem;
 use App\Entity\Game\CraftRecipe;
 use App\Entity\Game\Item;
 use App\Event\Game\CraftEvent;
@@ -37,7 +36,7 @@ class CraftManager
             'profession' => $profession,
         ]);
 
-        return array_filter($recipes, function (CraftRecipe $recipe) use ($player) {
+        return array_filter($recipes, function (CraftRecipe $recipe) {
             // Recettes non découvrables sont toujours visibles
             if (!$recipe->isDiscoverable()) {
                 return true;
@@ -106,7 +105,7 @@ class CraftManager
         }
 
         $lastPlayerItem = null;
-        for ($i = 0; $i < $recipe->getResultQuantity(); $i++) {
+        for ($i = 0; $i < $recipe->getResultQuantity(); ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($resultItem->getId());
             $this->inventoryHelper->addItem($playerItem, false);
             $lastPlayerItem = $playerItem;
@@ -145,7 +144,7 @@ class CraftManager
 
         foreach ($discoverableRecipes as $recipe) {
             $recipeSlugs = array_map(
-                fn(array $ingredient) => $ingredient['item_slug'],
+                fn (array $ingredient) => $ingredient['item_slug'],
                 $recipe->getIngredients()
             );
             sort($recipeSlugs);
@@ -215,7 +214,7 @@ class CraftManager
                     $inventory->removeItem($playerItem);
                     $playerItem->setInventory(null);
                     $this->entityManager->remove($playerItem);
-                    $remainingToRemove--;
+                    --$remainingToRemove;
                 }
             }
         }

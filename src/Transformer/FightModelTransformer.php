@@ -15,8 +15,6 @@ use App\Helper\FightTimelineHelper;
 use App\Helper\GearHelper;
 use App\Helper\ItemHelper;
 use App\Helper\PlayerHelper;
-use Doctrine\ORM\EntityManagerInterface;
-use Generator;
 
 class FightModelTransformer
 {
@@ -26,8 +24,7 @@ class FightModelTransformer
         private readonly GearHelper $gearHelper,
         private readonly FightNotificationHandler $notificationHandler,
         private readonly ItemHelper $itemHelper
-    )
-    {
+    ) {
     }
 
     public function transform(FightEntity $fight): FightModel
@@ -75,24 +72,24 @@ class FightModelTransformer
         }
     }
 
-    protected function getSpells(): ?Generator
+    protected function getSpells(): ?\Generator
     {
-        if ($this->gearHelper->getFootGear()){
+        if ($this->gearHelper->getFootGear()) {
             foreach ($this->getGearMaterias($this->gearHelper->getFootGear()) as $item) {
                 yield $item;
             }
         }
-        if ($this->gearHelper->getChestGear()){
+        if ($this->gearHelper->getChestGear()) {
             foreach ($this->getGearMaterias($this->gearHelper->getChestGear()) as $item) {
                 yield $item;
             }
         }
-        if ($this->gearHelper->getHeadGear()){
+        if ($this->gearHelper->getHeadGear()) {
             foreach ($this->getGearMaterias($this->gearHelper->getHeadGear()) as $item) {
                 yield $item;
             }
         }
-        if ($this->gearHelper->getWeaponGear()){
+        if ($this->gearHelper->getWeaponGear()) {
             foreach ($this->getGearMaterias($this->gearHelper->getWeaponGear()) as $item) {
                 yield $item;
             }
@@ -102,7 +99,7 @@ class FightModelTransformer
     private function getGearMaterias(PlayerItem $item)
     {
         foreach ($item->getSlots() as $slot) {
-            if ($slot->getItemSet() && $this->itemHelper->getItemSpell($slot->getItemSet()->getGenericItem())){
+            if ($slot->getItemSet() && $this->itemHelper->getItemSpell($slot->getItemSet()->getGenericItem())) {
                 yield new Materia($slot->getItemSet());
             }
         }

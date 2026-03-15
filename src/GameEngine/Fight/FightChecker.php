@@ -27,22 +27,22 @@ class FightChecker
             /** @var Fight $fight */
             $fight = $this->entityManager->getRepository(Fight::class)->find($fight);
         }
-        if($fight === null){
+        if ($fight === null) {
             throw new EntityNotFoundException();
         }
         $player = $this->playerHelper->getPlayer();
-        if($fight !== $player->getFight()) {
+        if ($fight !== $player->getFight()) {
             throw new AccessDeniedException();
         }
-        if($targetType === 'player'){
-            $playerIds = array_map(fn($player) => $player->getId(), $fight->getPlayers()->toArray());
+        if ($targetType === 'player') {
+            $playerIds = array_map(fn ($player) => $player->getId(), $fight->getPlayers()->toArray());
             $this->validatePlayerId($targetId, $playerIds);
         }
-        if($targetType === 'mob'){
-            $mobIds = array_map(fn($mob) => $mob->getId(), $fight->getMobs()->toArray());
+        if ($targetType === 'mob') {
+            $mobIds = array_map(fn ($mob) => $mob->getId(), $fight->getMobs()->toArray());
             $this->validateMobId($targetId, $mobIds);
         }
-        
+
         return $fight;
     }
 

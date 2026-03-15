@@ -10,7 +10,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, 'feature/**', 'fix/**']
+    branches: [main, develop, 'feature/**', 'fix/**', 'claude/**']
   pull_request:
     branches: [main, develop]
   workflow_call:  # Permet à d'autres workflows de réutiliser cette CI
@@ -54,6 +54,8 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
+        env:
+          SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Run PHP-CS-Fixer (dry-run)
         run: vendor/bin/php-cs-fixer fix --dry-run --diff --format=github
@@ -86,6 +88,8 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
+        env:
+          SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Warmup Symfony cache (dev)
         run: php bin/console cache:warmup --env=dev
@@ -97,6 +101,11 @@ jobs:
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse --no-progress --error-format=github
+        env:
+          DATABASE_URL: "postgresql://localhost/fake?serverVersion=17"
+          MERCURE_URL: "http://localhost/.well-known/mercure"
+          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
+          MERCURE_JWT_SECRET: "test"
 
   # ---------------------------------------------------------------------------
   # 3. Tests unitaires et d'intégration (PHPUnit)
@@ -141,6 +150,8 @@ jobs:
 
       - name: Install dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
+        env:
+          SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Run PHPUnit
         run: vendor/bin/phpunit --testdox

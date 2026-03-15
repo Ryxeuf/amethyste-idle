@@ -9,7 +9,6 @@ use App\Event\Fight\ActionEvent;
 use App\Event\Fight\MobActionHitEvent;
 use App\Event\Fight\MobActionMissEvent;
 use App\GameEngine\Fight\Handler\MobActionHandlerInterface;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -42,6 +41,7 @@ class MobActionHandler
         $mob = $fight->getMobs()->first();
         if (!$mob || $mob->isDead()) {
             $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
+
             return $result;
         }
 
@@ -55,6 +55,7 @@ class MobActionHandler
             $this->logger->debug('[MobActionHandler] Mob is paralyzed/frozen, skipping turn');
             $result['messages'][] = sprintf('%s est immobilise !', $mob->getName());
             $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
+
             return $result;
         }
 
@@ -66,6 +67,7 @@ class MobActionHandler
         $target = $fight->getPlayers()->first();
         if (!$target || $target->isDead()) {
             $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
+
             return $result;
         }
 
@@ -101,6 +103,7 @@ class MobActionHandler
         // For 'spell' action, pick from the monster's spell pool
         if ($action === 'spell' && $mob->getMonster()->getSpells()->count() > 0) {
             $spells = $mob->getMonster()->getSpells()->toArray();
+
             return $spells[array_rand($spells)];
         }
 

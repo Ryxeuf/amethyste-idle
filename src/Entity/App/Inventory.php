@@ -18,7 +18,7 @@ class Inventory
 
     public function __toString(): string
     {
-        return "Inventaire [".$this->getType()."] de " . $this->getPlayer();
+        return 'Inventaire [' . $this->getType() . '] de ' . $this->getPlayer();
     }
 
     /**
@@ -71,9 +71,8 @@ class Inventory
     #[ORM\OneToMany(targetEntity: PlayerItem::class, mappedBy: 'inventory')]
     private $items;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -83,9 +82,9 @@ class Inventory
     }
 
     /**
-     * Set size
+     * Set size.
      *
-     * @param integer $size
+     * @param int $size
      *
      * @return Inventory
      */
@@ -97,7 +96,7 @@ class Inventory
     }
 
     /**
-     * Get size
+     * Get size.
      *
      * @return int
      */
@@ -106,15 +105,12 @@ class Inventory
         return $this->size;
     }
 
-
     /**
-     * Set player
-     *
-     * @param Player $player
+     * Set player.
      *
      * @return Inventory
      */
-    public function setPlayer(Player $player = null)
+    public function setPlayer(?Player $player = null)
     {
         $this->player = $player;
 
@@ -122,7 +118,7 @@ class Inventory
     }
 
     /**
-     * Get player
+     * Get player.
      *
      * @return Player
      */
@@ -132,9 +128,9 @@ class Inventory
     }
 
     /**
-     * Set gold
+     * Set gold.
      *
-     * @param integer $gold
+     * @param int $gold
      *
      * @return Inventory
      */
@@ -151,9 +147,9 @@ class Inventory
     }
 
     /**
-     * Get gold
+     * Get gold.
      *
-     * @return integer
+     * @return int
      */
     public function getGold()
     {
@@ -161,9 +157,9 @@ class Inventory
     }
 
     /**
-     * Set type
+     * Set type.
      *
-     * @param integer $type
+     * @param int $type
      *
      * @return Inventory
      */
@@ -175,16 +171,17 @@ class Inventory
     }
 
     /**
-     * Get type
+     * Get type.
      *
-     * @return integer
+     * @return int
      */
     public function getType()
     {
         return $this->type;
     }
+
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
@@ -192,9 +189,7 @@ class Inventory
     }
 
     /**
-     * Add item
-     *
-     * @param PlayerItem $item
+     * Add item.
      *
      * @return Inventory
      */
@@ -206,9 +201,7 @@ class Inventory
     }
 
     /**
-     * Remove item
-     *
-     * @param PlayerItem $item
+     * Remove item.
      */
     public function removeItem(PlayerItem $item)
     {
@@ -216,7 +209,7 @@ class Inventory
     }
 
     /**
-     * Get items
+     * Get items.
      *
      * @return \Doctrine\Common\Collections\Collection|PlayerItem[]
      */

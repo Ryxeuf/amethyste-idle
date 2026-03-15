@@ -3,7 +3,7 @@
 namespace App\Helper;
 
 use App\Entity\App\DomainExperience;
-use App\Entity\CharacterInterface;
+use App\Entity\App\Player;
 use App\Entity\Game\Domain;
 
 class PlayerDomainHelper
@@ -12,7 +12,7 @@ class PlayerDomainHelper
     {
     }
 
-    public function getDomainExperience(Domain $domain, ?CharacterInterface $character = null): ?DomainExperience
+    public function getDomainExperience(Domain $domain, ?Player $character = null): ?DomainExperience
     {
         $player = $character ?? $this->playerHelper->getPlayer();
         foreach ($player->getDomainExperiences() as $domainExperience) {
@@ -24,7 +24,7 @@ class PlayerDomainHelper
         return null;
     }
 
-    public function getAvailableDomainExperience(Domain $domain, ?CharacterInterface $character = null): int
+    public function getAvailableDomainExperience(Domain $domain, ?Player $character = null): int
     {
         $player = $character ?? $this->playerHelper->getPlayer();
         foreach ($player->getDomainExperiences() as $domainExperience) {
@@ -54,7 +54,7 @@ class PlayerDomainHelper
         foreach ($this->playerHelper->getPlayer()->getSkills() as $skill) {
             $actions = $skill->getActions() ?? [];
             foreach ($actions as $playerAction) {
-                if ($action === ($playerAction['action']?? null)) {
+                if ($action === ($playerAction['action'] ?? null)) {
                     switch ($action) {
                         // Dans le cas d'un harvest, on check le spot
                         case 'harvest':

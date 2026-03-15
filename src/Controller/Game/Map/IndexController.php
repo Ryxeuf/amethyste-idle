@@ -2,10 +2,10 @@
 
 namespace App\Controller\Game\Map;
 
+use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Helper\PlayerHelper;
 
 #[Route('/game/map', name: 'app_game_map')]
 class IndexController extends AbstractController
@@ -27,7 +27,7 @@ class IndexController extends AbstractController
 
         $coordinates = $player->getCoordinates() ?? '0.0';
         [$x, $y] = array_map('intval', explode('.', $coordinates));
-        
+
         return $this->render('game/map/index.html.twig', [
             'mapId' => $player->getMap()->getId(),
             'playerX' => $x,
@@ -35,4 +35,4 @@ class IndexController extends AbstractController
             'playerId' => $player->getId(),
         ]);
     }
-} 
+}

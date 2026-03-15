@@ -19,7 +19,7 @@ class MobAttackHandler implements MobActionHandlerInterface
     public function getSpell(Mob $mob): Spell
     {
         if (!$mob->getAttack()) {
-            throw new EntityNotFoundException("Mob attack impossible");
+            throw new EntityNotFoundException('Mob attack impossible');
         }
 
         return $mob->getAttack();

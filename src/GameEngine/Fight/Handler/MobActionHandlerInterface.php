@@ -2,7 +2,6 @@
 
 namespace App\GameEngine\Fight\Handler;
 
-use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\Game\Spell;
 

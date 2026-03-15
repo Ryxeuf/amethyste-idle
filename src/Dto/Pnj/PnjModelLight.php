@@ -15,10 +15,9 @@ class PnjModelLight
 
     public function __construct(Pnj $pnj)
     {
-        $this->id          = $pnj->getId();
-        $this->name        = $pnj->getName();
-        $this->class       = $pnj->getClassType();
+        $this->id = $pnj->getId();
+        $this->name = $pnj->getName();
+        $this->class = $pnj->getClassType();
         $this->coordinates = $pnj->getCoordinates();
     }
-
 }

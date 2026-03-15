@@ -11,7 +11,7 @@ use App\Entity\App\Player;
 
 class FightTimelineHelper
 {
-    final const TIMELINE_LENGTH = 10;
+    final public const TIMELINE_LENGTH = 10;
 
     private ?array $timeline = null;
 
@@ -22,16 +22,16 @@ class FightTimelineHelper
 
         $order = [];
         foreach ($players as $player) {
-            for ($i = 1; $i <= $player->getSpeed(); $i++) {
+            for ($i = 1; $i <= $player->getSpeed(); ++$i) {
                 $speed = $player->getSpeed();
                 if ($player instanceof Mob) {
                     $speed *= 0.999;
                 }
                 $index = round($i * $count / $speed, 3);
                 $order[] = [
-                    'object' => ($player),
-                    'speed'  => $speed,
-                    'index'  => $index,
+                    'object' => $player,
+                    'speed' => $speed,
+                    'index' => $index,
                 ];
             }
         }
@@ -97,7 +97,7 @@ class FightTimelineHelper
             $sequence = $this->getTimeLine($fight);
             $count = is_countable($sequence) ? count($sequence) : 0;
             $this->timeline = [];
-            for ($i = 0; $i < $count * 2; $i++) {
+            for ($i = 0; $i < $count * 2; ++$i) {
                 $object = $sequence[$i % $count]['object'];
                 if ($object instanceof Player) {
                     $this->timeline[$i] = $this->generateTimelinePlayerItem($object);

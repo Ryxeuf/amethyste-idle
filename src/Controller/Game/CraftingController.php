@@ -2,9 +2,9 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\ExperimentationManager;
-use App\Entity\Game\Recipe;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -62,7 +62,7 @@ class CraftingController extends AbstractController
                             'count' => 0,
                         ];
                     }
-                    $playerItems[$slug]['count']++;
+                    ++$playerItems[$slug]['count'];
                 }
             }
         }

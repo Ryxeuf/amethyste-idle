@@ -2,8 +2,8 @@
 
 namespace App\Dto\Item;
 
-use App\Entity\App\Slot as SlotEntity;
 use ApiPlatform\Metadata\ApiProperty;
+use App\Entity\App\Slot as SlotEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 class SlotModel
@@ -22,5 +22,4 @@ class SlotModel
             $this->itemSet = new SlotItemModel($slot->getItemSet());
         }
     }
-
 }

@@ -38,7 +38,7 @@ class CraftQualityTest extends TestCase
         // exceptionalChance = max(0, 0-40) = 0
         // superiorChance = max(0, 0-10) = 0
         // Donc tout roll > 0 donne NORMAL
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 20; ++$i) {
             $quality = CraftQuality::rollQuality(0);
             $this->assertSame(CraftQuality::NORMAL, $quality);
         }
@@ -48,7 +48,7 @@ class CraftQualityTest extends TestCase
     {
         $validQualities = CraftQuality::cases();
 
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; ++$i) {
             $quality = CraftQuality::rollQuality(random_int(0, 100));
             $this->assertContains($quality, $validQualities);
         }

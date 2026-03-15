@@ -29,9 +29,8 @@ class PlayerNotification
     #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id')]
     private $player;
 
-
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -41,7 +40,7 @@ class PlayerNotification
     }
 
     /**
-     * Set comment
+     * Set comment.
      *
      * @param string $comment
      *
@@ -55,7 +54,7 @@ class PlayerNotification
     }
 
     /**
-     * Get comment
+     * Get comment.
      *
      * @return string
      */
@@ -65,9 +64,9 @@ class PlayerNotification
     }
 
     /**
-     * Set type
+     * Set type.
      *
-     * @param integer $type
+     * @param int $type
      *
      * @return PlayerNotification
      */
@@ -79,7 +78,7 @@ class PlayerNotification
     }
 
     /**
-     * Get type
+     * Get type.
      *
      * @return int
      */
@@ -89,13 +88,11 @@ class PlayerNotification
     }
 
     /**
-     * Set player
-     *
-     * @param Player $player
+     * Set player.
      *
      * @return PlayerNotification
      */
-    public function setPlayer(Player $player = null)
+    public function setPlayer(?Player $player = null)
     {
         $this->player = $player;
 
@@ -103,7 +100,7 @@ class PlayerNotification
     }
 
     /**
-     * Get player
+     * Get player.
      *
      * @return Player
      */
@@ -113,7 +110,7 @@ class PlayerNotification
     }
 
     /**
-     * Set adminComment
+     * Set adminComment.
      *
      * @param string $adminComment
      *
@@ -127,7 +124,7 @@ class PlayerNotification
     }
 
     /**
-     * Get adminComment
+     * Get adminComment.
      *
      * @return string
      */

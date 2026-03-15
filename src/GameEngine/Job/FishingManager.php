@@ -47,7 +47,7 @@ class FishingManager
     /**
      * Démarre la pêche et retourne les données de tension pour le mini-jeu.
      *
-     * @return array{spot_id: int, spot_name: string, difficulty: int, started: bool}
+     * @return array{spot_id?: int, spot_name?: string, difficulty?: int, started: bool, error?: string}
      */
     public function startFishing(Player $player, ObjectLayer $spot): array
     {

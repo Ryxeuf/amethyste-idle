@@ -28,7 +28,8 @@ class MapApiController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly Packages $packages,
         private readonly SpriteConfigProvider $spriteConfigProvider,
-    ) {}
+    ) {
+    }
 
     #[Route('/config', name: 'api_map_config', methods: ['GET'])]
     public function config(): JsonResponse
@@ -78,14 +79,14 @@ class MapApiController extends AbstractController
         $radius = $request->query->getInt('radius', 0);
 
         $pCoords = explode('.', $player->getCoordinates() ?? '0.0');
-        $px = (int)($pCoords[0] ?? 0);
-        $py = (int)($pCoords[1] ?? 0);
+        $px = (int) ($pCoords[0] ?? 0);
+        $py = (int) ($pCoords[1] ?? 0);
 
         $players = [];
         foreach ($this->entityManager->getRepository(Player::class)->findBy(['map' => $map]) as $p) {
             $coords = explode('.', $p->getCoordinates() ?? '0.0');
-            $ex = (int)($coords[0] ?? 0);
-            $ey = (int)($coords[1] ?? 0);
+            $ex = (int) ($coords[0] ?? 0);
+            $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
@@ -102,8 +103,8 @@ class MapApiController extends AbstractController
         $mobs = [];
         foreach ($this->entityManager->getRepository(Mob::class)->findBy(['map' => $map]) as $mob) {
             $coords = explode('.', $mob->getCoordinates() ?? '0.0');
-            $ex = (int)($coords[0] ?? 0);
-            $ey = (int)($coords[1] ?? 0);
+            $ex = (int) ($coords[0] ?? 0);
+            $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
@@ -119,8 +120,8 @@ class MapApiController extends AbstractController
         $pnjs = [];
         foreach ($this->entityManager->getRepository(Pnj::class)->findBy(['map' => $map]) as $pnj) {
             $coords = explode('.', $pnj->getCoordinates() ?? '0.0');
-            $ex = (int)($coords[0] ?? 0);
-            $ey = (int)($coords[1] ?? 0);
+            $ex = (int) ($coords[0] ?? 0);
+            $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
@@ -146,8 +147,8 @@ class MapApiController extends AbstractController
             'type' => ObjectLayer::TYPE_PORTAL,
         ]) as $portal) {
             $coords = explode('.', $portal->getCoordinates() ?? '0.0');
-            $ex = (int)($coords[0] ?? 0);
-            $ey = (int)($coords[1] ?? 0);
+            $ex = (int) ($coords[0] ?? 0);
+            $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
@@ -165,8 +166,8 @@ class MapApiController extends AbstractController
             'type' => ObjectLayer::TYPE_HARVEST_SPOT,
         ]) as $spot) {
             $coords = explode('.', $spot->getCoordinates() ?? '0.0');
-            $ex = (int)($coords[0] ?? 0);
-            $ey = (int)($coords[1] ?? 0);
+            $ex = (int) ($coords[0] ?? 0);
+            $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
@@ -202,14 +203,14 @@ class MapApiController extends AbstractController
         $player = $this->playerHelper->getPlayer();
 
         $data = json_decode($request->getContent(), true) ?? [];
-        $targetX = (int)($data['targetX'] ?? 0);
-        $targetY = (int)($data['targetY'] ?? 0);
-        $fromX = isset($data['fromX']) ? (int)$data['fromX'] : null;
-        $fromY = isset($data['fromY']) ? (int)$data['fromY'] : null;
+        $targetX = (int) ($data['targetX'] ?? 0);
+        $targetY = (int) ($data['targetY'] ?? 0);
+        $fromX = isset($data['fromX']) ? (int) $data['fromX'] : null;
+        $fromY = isset($data['fromY']) ? (int) $data['fromY'] : null;
 
         $coords = explode('.', $player->getCoordinates() ?? '0.0');
-        $currentX = (int)($coords[0] ?? 0);
-        $currentY = (int)($coords[1] ?? 0);
+        $currentX = (int) ($coords[0] ?? 0);
+        $currentY = (int) ($coords[1] ?? 0);
 
         if ($fromX !== null && $fromY !== null) {
             $currentX = $fromX;
@@ -231,9 +232,9 @@ class MapApiController extends AbstractController
 
         $traversedPath = $playerMoveProcessor->processMove($player, $movements);
 
-        $path = array_map(fn(array $cell) => [
-            'x' => (int)$cell['x'],
-            'y' => (int)$cell['y'],
+        $path = array_map(fn (array $cell) => [
+            'x' => (int) $cell['x'],
+            'y' => (int) $cell['y'],
         ], $traversedPath);
 
         $response = ['path' => $path];
@@ -257,7 +258,7 @@ class MapApiController extends AbstractController
         $player = $this->playerHelper->getPlayer();
 
         $data = json_decode($request->getContent(), true) ?? [];
-        $destinationMapId = (int)($data['mapId'] ?? 0);
+        $destinationMapId = (int) ($data['mapId'] ?? 0);
         $destinationCoordinates = $data['coordinates'] ?? null;
 
         if (!$destinationMapId || !$destinationCoordinates) {
@@ -293,8 +294,8 @@ class MapApiController extends AbstractController
         return $this->json([
             'success' => true,
             'mapId' => $destinationMap->getId(),
-            'x' => (int)($coords[0] ?? 0),
-            'y' => (int)($coords[1] ?? 0),
+            'x' => (int) ($coords[0] ?? 0),
+            'y' => (int) ($coords[1] ?? 0),
         ]);
     }
 
@@ -338,7 +339,7 @@ class MapApiController extends AbstractController
             $data = $area->getFullDataArray();
             $terrains = $data['terrains'] ?? [];
             foreach ($terrains as $firstGid => $terrain) {
-                $gid = (int)($terrain['firstgid'] ?? $firstGid);
+                $gid = (int) ($terrain['firstgid'] ?? $firstGid);
                 if (isset($seen[$gid])) {
                     continue;
                 }
@@ -347,14 +348,14 @@ class MapApiController extends AbstractController
                 $image = $terrain['image'] ?? 'terrain.png';
                 $name = pathinfo($image, PATHINFO_FILENAME);
                 $publicPath = $this->packages->getUrl('styles/images/terrain/' . $image);
-                $columns = self::TILESET_COLUMNS[$name] ?? (int)($terrain['columns'] ?? 32);
+                $columns = self::TILESET_COLUMNS[$name] ?? (int) ($terrain['columns'] ?? 32);
 
                 $tilesets[] = [
                     'name' => $name,
                     'image' => $publicPath,
                     'columns' => $columns,
-                    'tileWidth' => (int)($terrain['tilewidth'] ?? 32),
-                    'tileHeight' => (int)($terrain['tileheight'] ?? 32),
+                    'tileWidth' => (int) ($terrain['tilewidth'] ?? 32),
+                    'tileHeight' => (int) ($terrain['tileheight'] ?? 32),
                     'firstGid' => $gid,
                 ];
             }
@@ -363,7 +364,7 @@ class MapApiController extends AbstractController
             }
         }
 
-        usort($tilesets, fn($a, $b) => $a['firstGid'] - $b['firstGid']);
+        usort($tilesets, fn ($a, $b) => $a['firstGid'] - $b['firstGid']);
 
         return $tilesets;
     }
@@ -381,8 +382,8 @@ class MapApiController extends AbstractController
 
         foreach ($map->getAreas() as $area) {
             $areaCoords = explode('.', $area->getCoordinates() ?? '0.0');
-            $areaX = (int)($areaCoords[0] ?? 0);
-            $areaY = (int)($areaCoords[1] ?? 0);
+            $areaX = (int) ($areaCoords[0] ?? 0);
+            $areaY = (int) ($areaCoords[1] ?? 0);
 
             $areaMinGlobalX = $areaX * $areaWidth;
             $areaMinGlobalY = $areaY * $areaHeight;
@@ -402,8 +403,8 @@ class MapApiController extends AbstractController
             $areaData = $area->getFullDataArray();
             $cellsData = $areaData['cells'] ?? [];
 
-            for ($lx = $localMinX; $lx <= $localMaxX; $lx++) {
-                for ($ly = $localMinY; $ly <= $localMaxY; $ly++) {
+            for ($lx = $localMinX; $lx <= $localMaxX; ++$lx) {
+                for ($ly = $localMinY; $ly <= $localMaxY; ++$ly) {
                     $cellData = $cellsData[$lx][$ly] ?? null;
                     if ($cellData === null) {
                         continue;

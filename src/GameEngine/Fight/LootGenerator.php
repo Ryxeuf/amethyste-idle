@@ -17,7 +17,7 @@ class LootGenerator implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            MobDeadEvent::NAME => "mobDied"
+            MobDeadEvent::NAME => 'mobDied',
         ];
     }
 
@@ -40,7 +40,7 @@ class LootGenerator implements EventSubscriberInterface
                 $this->entityManager->persist($item);
             }
         }
-        $mob->setItems($items);
+        $mob->setItems(new \Doctrine\Common\Collections\ArrayCollection($items));
 
         $this->entityManager->flush();
         $this->entityManager->refresh($mob);

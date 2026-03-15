@@ -38,12 +38,12 @@ class QualityCalculator
         $roll = random_int(1, 100);
 
         if ($roll <= $upgradeChance && $currentIndex < count(self::QUALITY_TIERS) - 1) {
-            $currentIndex++;
+            ++$currentIndex;
 
             // Craft critique : 5% de chance de sauter un palier supplementaire
             $criticalRoll = random_int(1, 100);
             if ($criticalRoll <= 5 && $currentIndex < count(self::QUALITY_TIERS) - 1) {
-                $currentIndex++;
+                ++$currentIndex;
             }
         }
 

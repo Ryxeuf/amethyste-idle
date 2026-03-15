@@ -3,8 +3,8 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\Game\Item;
-use App\Helper\PlayerHelper;
 use App\Helper\GearHelper;
+use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,11 +22,11 @@ class EquipmentController extends AbstractController
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
-        
+
         // Récupérer l'inventaire du joueur
         $bagInventory = $this->playerHelper->getBagInventory();
         $player = $this->playerHelper->getPlayer();
-        
+
         // Tableau pour stocker les équipements équipés
         $equipped = [
             Item::GEAR_LOCATION_HEAD => null,
@@ -40,27 +40,27 @@ class EquipmentController extends AbstractController
             Item::GEAR_LOCATION_LEG => null,
             Item::GEAR_LOCATION_FOOT => null,
             Item::GEAR_LOCATION_RING_1 => null,
-            Item::GEAR_LOCATION_RING_2 => null
+            Item::GEAR_LOCATION_RING_2 => null,
         ];
-        
+
         // Récupérer les équipements du joueur (équipés et non équipés)
         $equipments = [];
-        
+
         // Parcourir tous les objets du sac pour trouver les équipements
         foreach ($bagInventory->getItems() as $item) {
             // Si c'est un équipement et qu'il n'est pas équipé
             if ($item->getGenericItem()->isGear() && !$this->gearHelper->isEquipped($item)) {
                 $genericItem = $item->getGenericItem();
                 $gearLocation = $genericItem->getGearLocation();
-                
+
                 // Ajouter l'équipement à la liste des équipements disponibles
                 $stats = [];
                 if ($genericItem->getProtection()) {
                     $stats['Défense'] = $genericItem->getProtection();
                 }
-                
+
                 // Récupérer d'autres statistiques si disponibles
-                
+
                 $equipments[] = [
                     'id' => $item->getId(),
                     'name' => $genericItem->getName(),
@@ -69,11 +69,11 @@ class EquipmentController extends AbstractController
                     'level' => $genericItem->getLevel() ?? 1,
                     'rarity' => $genericItem->getElement(),
                     'description' => $genericItem->getDescription(),
-                    'stats' => $stats
+                    'stats' => $stats,
                 ];
             }
         }
-        
+
         // Récupérer les équipements équipés avec GearHelper
         foreach (array_keys($equipped) as $slotType) {
             $equippedItem = $this->gearHelper->getEquippedGearByLocation($slotType);
@@ -83,30 +83,30 @@ class EquipmentController extends AbstractController
                 if ($genericItem->getProtection()) {
                     $stats['Défense'] = $genericItem->getProtection();
                 }
-                
+
                 $equipped[$slotType] = [
                     'id' => $equippedItem->getId(),
                     'name' => $genericItem->getName(),
                     'level' => $genericItem->getLevel() ?? 1,
                     'rarity' => $genericItem->getElement(),
                     'description' => $genericItem->getDescription(),
-                    'stats' => $stats
+                    'stats' => $stats,
                 ];
             }
         }
-        
+
         // Calculer les statistiques du joueur en fonction des équipements
         $stats = $this->calculatePlayerStats($player, $equipped);
-        
+
         return $this->render('game/inventory/equipment/_list.html.twig', [
             'equipments' => $equipments,
             'equipped' => $equipped,
-            'stats' => $stats
+            'stats' => $stats,
         ]);
     }
-    
+
     /**
-     * Calcule les statistiques du joueur en fonction des équipements équipés
+     * Calcule les statistiques du joueur en fonction des équipements équipés.
      */
     private function calculatePlayerStats($player, array $equipped): array
     {
@@ -117,21 +117,21 @@ class EquipmentController extends AbstractController
             'magic' => 12,
             'speed' => 15,
             'health' => 100,
-            'mana' => 50
+            'mana' => 50,
         ];
-        
+
         // Ajouter les bonus des équipements
         foreach ($equipped as $item) {
             if ($item !== null && isset($item['stats']['Défense'])) {
                 $stats['defense'] += $item['stats']['Défense'];
             }
         }
-        
+
         return $stats;
     }
-    
+
     /**
-     * Traduit le type d'emplacement en nom lisible
+     * Traduit le type d'emplacement en nom lisible.
      */
     private function getSlotTypeName(string $slotType): string
     {
@@ -150,4 +150,4 @@ class EquipmentController extends AbstractController
             default => 'Inconnu',
         };
     }
-} 
+}

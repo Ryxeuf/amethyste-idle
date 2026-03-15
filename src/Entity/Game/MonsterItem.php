@@ -6,29 +6,29 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Entity()]
-#[ORM\Table(name: "game_monster_items")]
+#[ORM\Table(name: 'game_monster_items')]
 class MonsterItem
 {
     use TimestampableEntity;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: "IDENTITY")]
-    #[ORM\Column(name: "id", type: "integer")]
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\Column(name: "probability", type: "float")]
+    #[ORM\Column(name: 'probability', type: 'float')]
     private $probability;
 
     #[ORM\ManyToOne(targetEntity: Item::class)]
-    #[ORM\JoinColumn(name: "item_id", referencedColumnName: "id")]
+    #[ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     private $item;
 
-    #[ORM\ManyToOne(targetEntity: Monster::class, inversedBy: "monster_items")]
-    #[ORM\JoinColumn(name: "monster_id", referencedColumnName: "id")]
+    #[ORM\ManyToOne(targetEntity: Monster::class, inversedBy: 'monster_items')]
+    #[ORM\JoinColumn(name: 'monster_id', referencedColumnName: 'id')]
     private $monster;
 
     /**
-     * Get id
+     * Get id.
      *
      * @return int
      */
@@ -38,7 +38,7 @@ class MonsterItem
     }
 
     /**
-     * Set probability
+     * Set probability.
      *
      * @param float $probability
      *
@@ -52,7 +52,7 @@ class MonsterItem
     }
 
     /**
-     * Get probability
+     * Get probability.
      *
      * @return float
      */
@@ -62,13 +62,11 @@ class MonsterItem
     }
 
     /**
-     * Set item
-     *
-     * @param Item $item
+     * Set item.
      *
      * @return MonsterItem
      */
-    public function setItem(Item $item = null)
+    public function setItem(?Item $item = null)
     {
         $this->item = $item;
 
@@ -76,7 +74,7 @@ class MonsterItem
     }
 
     /**
-     * Get item
+     * Get item.
      *
      * @return Item
      */
@@ -86,13 +84,11 @@ class MonsterItem
     }
 
     /**
-     * Set monster
-     *
-     * @param Monster $monster
+     * Set monster.
      *
      * @return MonsterItem
      */
-    public function setMonster(Monster $monster = null)
+    public function setMonster(?Monster $monster = null)
     {
         $this->monster = $monster;
 
@@ -100,7 +96,7 @@ class MonsterItem
     }
 
     /**
-     * Get monster
+     * Get monster.
      *
      * @return Monster
      */

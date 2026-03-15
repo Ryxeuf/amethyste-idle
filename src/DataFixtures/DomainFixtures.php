@@ -28,7 +28,7 @@ class DomainFixtures extends Fixture
             'alchimist' => 'Alchimiste',
             'jeweller' => 'Joaillier',
         ];
-        
+
         foreach ($domains as $key => $title) {
             $domain = new Domain();
             $domain->setTitle($title);
@@ -36,11 +36,11 @@ class DomainFixtures extends Fixture
             $domain->setGraphHeight(rand(5, 10));
             $domain->setCreatedAt(new \DateTime());
             $domain->setUpdatedAt(new \DateTime());
-            
+
             $manager->persist($domain);
             $this->addReference($key, $domain);
         }
-        
+
         $manager->flush();
     }
-} 
+}

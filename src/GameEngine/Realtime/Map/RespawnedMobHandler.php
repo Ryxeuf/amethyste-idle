@@ -10,12 +10,12 @@ class RespawnedMobHandler extends RespawnedHandler implements EventSubscriberInt
     public static function getSubscribedEvents(): array
     {
         return [
-            MobRespawnedEvent::NAME => 'respawnMob'
+            MobRespawnedEvent::NAME => 'respawnMob',
         ];
     }
 
     public function respawnMob(MobRespawnedEvent $event): void
     {
-        $this->respawn('mob', ['id' => $event->getMob()->getId(), 'slug' => $event->getMob()->getMonster()->getSlug()], $event->getMob()->getCell()->getId());
+        $this->respawn('mob', ['id' => $event->getMob()->getId(), 'slug' => $event->getMob()->getMonster()->getSlug()], $event->getMob()->getCoordinates());
     }
 }

@@ -10,7 +10,7 @@ class MovedMobHandler extends MovedHandler implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            MobMovedEvent::NAME => 'moveMob'
+            MobMovedEvent::NAME => 'moveMob',
         ];
     }
 

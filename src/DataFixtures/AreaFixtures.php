@@ -14,17 +14,17 @@ class AreaFixtures extends Fixture implements DependentFixtureInterface
     {
         // Charger les données des areas depuis le fichier JSON
         $jsonFile = dirname(__DIR__, 2) . '/fixtures/area_data.json';
-        
+
         if (!file_exists($jsonFile)) {
             throw new \Exception("Le fichier $jsonFile n'existe pas. Veuillez exécuter le script scripts/concat_area_fixtures.php pour le générer.");
         }
-        
+
         $areasData = json_decode(file_get_contents($jsonFile), true);
-        
+
         if (empty($areasData)) {
             throw new \Exception("Aucune donnée d'area trouvée dans $jsonFile.");
         }
-        
+
         // Création des areas pour chaque map
         foreach ($areasData as $mapRef => $areas) {
             foreach ($areas as $areaData) {
@@ -36,21 +36,21 @@ class AreaFixtures extends Fixture implements DependentFixtureInterface
                 $area->setMap($this->getReference($mapRef, Map::class));
                 $area->setCreatedAt(new \DateTime());
                 $area->setUpdatedAt(new \DateTime());
-                
+
                 $manager->persist($area);
-                
+
                 // Créer une référence unique pour chaque area
                 $this->addReference('area_' . $mapRef . '_' . $areaData['coordinates'], $area);
             }
         }
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
             MapFixtures::class,
         ];
     }
-} 
+}

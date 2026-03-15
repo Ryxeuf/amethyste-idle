@@ -6,5 +6,5 @@ use Doctrine\ORM\EntityNotFoundException;
 
 class PlayerItemNotFoundException extends EntityNotFoundException
 {
-    protected $message = "Objet introuvable";
+    protected $message = 'Objet introuvable';
 }

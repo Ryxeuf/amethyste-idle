@@ -5,11 +5,17 @@ namespace App\GameEngine\Map;
 interface PriorityQueueInterface
 {
     public function isEmpty(): bool;
+
     public function push($element, $priority): bool;
+
     public function pop();
+
     public function purge(): void;
+
     public function count(): int;
+
     public function contains($element): bool;
+
     public function change_priority($element, $new_priority): bool;
 
     // How you perform the 'contains' and 'change_priority' methods is up to you.

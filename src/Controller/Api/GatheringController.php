@@ -76,7 +76,7 @@ class GatheringController extends AbstractController
 
         return $this->json([
             'success' => count($result['items']) > 0,
-            'items' => array_map(fn($pi) => [
+            'items' => array_map(fn ($pi) => [
                 'name' => $pi->getGenericItem()->getName(),
                 'slug' => $pi->getGenericItem()->getSlug(),
             ], $result['items']),

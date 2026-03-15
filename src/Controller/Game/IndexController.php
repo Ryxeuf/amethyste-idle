@@ -12,9 +12,9 @@ class IndexController extends AbstractController
     public function __invoke(): Response
     {
         $user = $this->getUser();
-        
+
         return $this->render('game/index.html.twig', [
             'user' => $user,
         ]);
     }
-} 
+}

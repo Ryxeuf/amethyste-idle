@@ -22,8 +22,7 @@ class HarvestManager
         private readonly EntityManagerInterface $entityManager,
         private readonly InventoryHelper $inventoryHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
-    )
-    {
+    ) {
     }
 
     /**
@@ -33,7 +32,7 @@ class HarvestManager
     {
         // Check si le spot est disponible (respawn)
         if (!$objectLayer->isAvailable()) {
-            throw new UnauthorizedHttpException("Récolte impossible");
+            throw new UnauthorizedHttpException('Récolte impossible');
         }
 
         // Check si l'objet est récoltable
@@ -42,7 +41,7 @@ class HarvestManager
             $canBeHarvested = $canBeHarvested || $action['action'] === PlayerActionHelper::HARVEST;
         }
         if (!$canBeHarvested) {
-            throw new UnauthorizedHttpException("Vous ne pouvez pas récolter " . $objectLayer->getName());
+            throw new UnauthorizedHttpException('Vous ne pouvez pas récolter ' . $objectLayer->getName());
         }
     }
 

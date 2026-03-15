@@ -88,7 +88,7 @@ class ButcheringManager
         );
 
         $itemNames = array_map(
-            fn(PlayerItem $pi) => $pi->getGenericItem()->getName(),
+            fn (PlayerItem $pi) => $pi->getGenericItem()->getName(),
             $harvestedItems
         );
 
@@ -102,7 +102,7 @@ class ButcheringManager
 
         return [
             'success' => count($harvestedItems) > 0,
-            'items' => array_map(fn(PlayerItem $pi) => [
+            'items' => array_map(fn (PlayerItem $pi) => [
                 'name' => $pi->getGenericItem()->getName(),
                 'slug' => $pi->getGenericItem()->getSlug(),
             ], $harvestedItems),

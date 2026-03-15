@@ -5,8 +5,8 @@ namespace App\Helper;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
-use App\Repository\App\PlayerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Service\ResetInterface;
 
@@ -21,11 +21,11 @@ class PlayerHelper implements ResetInterface
     public function getPlayer(): ?Player
     {
         if ($this->player === null) {
-            /** @var PlayerRepository $playerRepository */
+            /** @var EntityRepository $playerRepository */
             $playerRepository = $this->entityManager->getRepository(Player::class);
-            if ($this->security->getUser() && $this->security->getUser()->getPlayer()) {
-                /** @var Player $player */
-                $this->player = $playerRepository->find($this->security->getUser()->getPlayer()->getId());
+            $user = $this->security->getUser();
+            if ($user instanceof \App\Entity\User && $user->getPlayer()) {
+                $this->player = $playerRepository->find($user->getPlayer()->getId());
             }
         }
 
@@ -45,8 +45,9 @@ class PlayerHelper implements ResetInterface
     public function getBagInventory()
     {
         foreach ($this->getPlayer()->getInventories() as $inventory) {
-            if ($inventory->isBag())
+            if ($inventory->isBag()) {
                 return $inventory;
+            }
         }
 
         return $this->createInventory(Inventory::TYPE_BAG);
@@ -55,8 +56,9 @@ class PlayerHelper implements ResetInterface
     public function getBankInventory()
     {
         foreach ($this->getPlayer()->getInventories() as $inventory) {
-            if ($inventory->isBank())
+            if ($inventory->isBank()) {
                 return $inventory;
+            }
         }
 
         return $this->createInventory(Inventory::TYPE_BANK);
@@ -65,8 +67,9 @@ class PlayerHelper implements ResetInterface
     public function getMateriaInventory()
     {
         foreach ($this->getPlayer()->getInventories() as $inventory) {
-            if ($inventory->isMateria())
+            if ($inventory->isMateria()) {
                 return $inventory;
+            }
         }
 
         return $this->createInventory(Inventory::TYPE_MATERIA);
@@ -78,7 +81,7 @@ class PlayerHelper implements ResetInterface
     public function getUsableItems()
     {
         foreach ($this->getBagInventory()->getItems() as $item) {
-            if ($item->getGenericItem()->getSpell() && $item->getGenericItem()->isObject()){
+            if ($item->getGenericItem()->getSpell() && $item->getGenericItem()->isObject()) {
                 yield $item;
             }
         }

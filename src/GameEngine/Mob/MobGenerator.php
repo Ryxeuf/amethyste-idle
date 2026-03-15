@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Mob;
 
+use App\Dto\Cell\CellModelLight;
 use App\Entity\App\Mob;
 use App\Entity\Game\Monster;
 use App\Event\Map\MobRespawnedEvent;
@@ -21,12 +22,12 @@ class MobGenerator
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function generate(Monster $monster, Cell $cell)
+    public function generate(Monster $monster, CellModelLight $cell)
     {
         $mob = new Mob();
         $mob->setMonster($monster);
         $mob->setLife($monster->getLife());
-        $mob->setCell($cell);
+        $mob->setCoordinates($cell->x . '.' . $cell->y);
         $mob->setLevel($monster->getLevel());
 
         $this->entityManager->persist($mob);

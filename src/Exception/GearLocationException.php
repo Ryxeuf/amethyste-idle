@@ -2,10 +2,8 @@
 
 namespace App\Exception;
 
-use Exception;
-
-class GearLocationException extends Exception
+class GearLocationException extends \Exception
 {
-    protected $message = "Équipement au mauvais endroit";
+    protected $message = 'Équipement au mauvais endroit';
 
 }

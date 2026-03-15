@@ -20,9 +20,6 @@ class SlotItemModel
 
     public string $genericItemSlug;
 
-    /**
-     * @var int
-     */
     public int $level;
 
     public string $element;

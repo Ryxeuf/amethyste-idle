@@ -285,6 +285,7 @@ class SpellApplicatorTest extends TestCase
                 if ($char === $sender) {
                     return [$fightBurnEffect];
                 }
+
                 return [];
             });
 
@@ -327,6 +328,7 @@ class SpellApplicatorTest extends TestCase
                 if ($char === $target) {
                     return [$fightShieldEffect];
                 }
+
                 return [];
             });
 
@@ -367,6 +369,7 @@ class SpellApplicatorTest extends TestCase
                 if ($char === $target) {
                     return [$fightShieldEffect];
                 }
+
                 return [];
             });
 

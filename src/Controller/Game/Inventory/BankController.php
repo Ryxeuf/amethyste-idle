@@ -13,7 +13,7 @@ class BankController extends AbstractController
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
-        
+
         // Simuler la récupération des objets en banque
         // Dans un vrai cas d'usage, vous récupéreriez ces données depuis la base de données
         $bankItems = [
@@ -22,26 +22,26 @@ class BankController extends AbstractController
                 'name' => 'Amulette de Protection',
                 'type' => 'Talisman',
                 'quantity' => 1,
-                'description' => 'Réduit les dégâts subis de 10%.'
+                'description' => 'Réduit les dégâts subis de 10%.',
             ],
             [
                 'id' => 202,
                 'name' => 'Clé du Donjon',
                 'type' => 'Clé spéciale',
                 'quantity' => 2,
-                'description' => 'Permet d\'accéder au Donjon des Ombres.'
+                'description' => 'Permet d\'accéder au Donjon des Ombres.',
             ],
             [
                 'id' => 203,
                 'name' => 'Grimoire Ancien',
                 'type' => 'Livre',
                 'quantity' => 1,
-                'description' => 'Contient des sorts anciens. À déchiffrer.'
-            ]
+                'description' => 'Contient des sorts anciens. À déchiffrer.',
+            ],
         ];
-        
+
         return $this->render('game/inventory/bank/_list.html.twig', [
-            'bankItems' => $bankItems
+            'bankItems' => $bankItems,
         ]);
     }
-} 
+}

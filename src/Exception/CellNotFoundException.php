@@ -6,5 +6,5 @@ use Doctrine\ORM\EntityNotFoundException;
 
 class CellNotFoundException extends EntityNotFoundException
 {
-    protected $message = "Destination introuvable";
+    protected $message = 'Destination introuvable';
 }

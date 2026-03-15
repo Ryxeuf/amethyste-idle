@@ -10,9 +10,9 @@ class CellAction
     /** @var string */
     public $type;
 
-    /** @var string */
+    /** @var array|string */
     public $data;
 
-    /** @var string */
+    /** @var string|null */
     public $spot;
 }

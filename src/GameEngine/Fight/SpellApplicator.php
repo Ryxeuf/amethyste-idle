@@ -11,7 +11,6 @@ use App\Entity\Game\StatusEffect;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Item\ItemUtils;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -88,7 +87,7 @@ class SpellApplicator
         if ($target->getLife() > 0) {
             $target->setDiedAt(null);
         } else {
-            $target->setDiedAt(new DateTime());
+            $target->setDiedAt(new \DateTime());
         }
 
         $this->entityManager->persist($target);

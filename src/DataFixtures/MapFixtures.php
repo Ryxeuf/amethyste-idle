@@ -20,17 +20,17 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $map->setAreaHeight(60);
         $map->setCreatedAt(new \DateTime());
         $map->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($map);
         $this->addReference('map_1', $map);
-        
+
         $manager->flush();
     }
-    
+
     public function getDependencies(): array
     {
         return [
             WorldFixtures::class,
         ];
     }
-} 
+}

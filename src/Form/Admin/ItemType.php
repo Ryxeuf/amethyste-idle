@@ -47,7 +47,7 @@ class ItemType extends AbstractType
                 'required' => false,
                 'placeholder' => '-- Aucun --',
                 'choices' => array_combine(
-                    array_map(fn(string $loc) => ucfirst(str_replace('_', ' ', $loc)), Item::GEAR_LOCATIONS),
+                    array_map(fn (string $loc) => ucfirst(str_replace('_', ' ', $loc)), Item::GEAR_LOCATIONS),
                     Item::GEAR_LOCATIONS
                 ),
             ])

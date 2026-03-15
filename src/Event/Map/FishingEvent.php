@@ -9,7 +9,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class FishingEvent extends Event
 {
-    final public const NAME = "event.map.fishing";
+    final public const NAME = 'event.map.fishing';
 
     public function __construct(
         private readonly Player $player,

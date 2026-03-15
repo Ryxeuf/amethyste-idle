@@ -15,10 +15,10 @@ class WorldFixtures extends Fixture
         $world->setName('Demo world');
         $world->setCreatedAt(new \DateTime());
         $world->setUpdatedAt(new \DateTime());
-        
+
         $manager->persist($world);
         $this->addReference('world_1', $world);
-        
+
         $manager->flush();
     }
-} 
+}

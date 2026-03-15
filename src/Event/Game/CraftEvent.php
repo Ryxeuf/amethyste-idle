@@ -8,7 +8,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CraftEvent extends Event
 {
-    final public const NAME = "event.game.craft";
+    final public const NAME = 'event.game.craft';
 
     public function __construct(
         private readonly Player $player,

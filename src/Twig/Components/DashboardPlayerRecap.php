@@ -12,9 +12,8 @@ class DashboardPlayerRecap
 
     public function getMapName(): string
     {
-        return "Fixture Map";
+        return 'Fixture Map';
     }
-    
 
     public function getX(): int
     {
@@ -48,9 +47,6 @@ class DashboardPlayerRecap
 
     public function getName(): string
     {
-        return "John Doe";
+        return 'John Doe';
     }
-    
-    
-    
 }

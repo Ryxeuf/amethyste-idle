@@ -3,8 +3,10 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
-use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\Entity\CharacterInterface;
+use App\GameEngine\Fight\Handler\PlayerActionHandlerInterface;
+use App\GameEngine\Fight\PlayerActionHandler;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,9 +14,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Entity\CharacterInterface;
-use App\GameEngine\Fight\PlayerActionHandler;
-use App\GameEngine\Fight\Handler\PlayerActionHandlerInterface;
 
 #[Route('/game/fight/attack', name: 'app_game_fight_attack')]
 class FightAttackController extends AbstractController
@@ -83,8 +82,8 @@ class FightAttackController extends AbstractController
             'fight' => [
                 'step' => $fight->getStep(),
                 'terminated' => $fight->isTerminated(),
-                'victory' => $fight->isVictory()
-            ]
+                'victory' => $fight->isVictory(),
+            ],
         ]);
     }
 
@@ -107,7 +106,7 @@ class FightAttackController extends AbstractController
         return null;
     }
 
-    private function calculateDamage(Player $attacker, Player|Mob $target): int
+    private function calculateDamage(Player $attacker, CharacterInterface $target): int
     {
         // Calculer les dégâts de base
         $baseDamage = $attacker->getHit();

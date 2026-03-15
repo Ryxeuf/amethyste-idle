@@ -2,20 +2,17 @@
 
 namespace App\GameEngine\Fight;
 
-use App\ApiResource\FightResource;
 use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Event\Fight\ActionEvent;
+use App\GameEngine\Fight\Handler\PlayerActionHandlerInterface;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityNotFoundException;
-use Exception;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
-use App\GameEngine\Fight\Handler\PlayerActionHandlerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class PlayerActionHandler
 {
-
     public function __construct(
         #[AutowireIterator(tag: PlayerActionHandlerInterface::class)]
         private readonly iterable $handlers,
@@ -27,7 +24,7 @@ class PlayerActionHandler
 
     /**
      * @throws EntityNotFoundException
-     * @throws Exception
+     * @throws \Exception
      */
     public function doAction(Fight $fight, string $context, int $targetId, string $targetType): Fight
     {
@@ -45,8 +42,7 @@ class PlayerActionHandler
     }
 
     /**
-     *
-     * @throws Exception
+     * @throws \Exception
      */
     protected function applyAction(Fight $fight, string $context, Player $player): bool
     {
@@ -56,6 +52,6 @@ class PlayerActionHandler
             }
         }
 
-        throw new Exception("No action available for this action");
+        throw new \Exception('No action available for this action');
     }
 }

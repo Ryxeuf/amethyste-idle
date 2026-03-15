@@ -7,7 +7,7 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class PlayerDeadEvent extends Event
 {
-    final public const NAME = "event.player.dead";
+    final public const NAME = 'event.player.dead';
 
     /**
      * @var Player

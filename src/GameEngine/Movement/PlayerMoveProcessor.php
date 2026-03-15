@@ -22,10 +22,12 @@ class PlayerMoveProcessor
         private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly FightHandler $fightHandler,
         private readonly PortalDetector $portalDetector,
-    ) {}
+    ) {
+    }
 
     /**
      * @param array<array{x: int, y: int}> $cells
+     *
      * @return array<array{x: int, y: int}> The actually traversed path (truncated at mob if encountered)
      */
     public function processMove(Player $player, array $cells): array
@@ -34,6 +36,7 @@ class PlayerMoveProcessor
 
         if ($player->getFight()) {
             $this->logger->info('Player {player} is in a fight, move ignored', ['player' => $player->getId()]);
+
             return [];
         }
 
@@ -42,7 +45,7 @@ class PlayerMoveProcessor
         }
 
         $pathCoords = array_map(
-            fn(array $cell) => CellHelper::stringifyCoordinates($cell['x'], $cell['y']),
+            fn (array $cell) => CellHelper::stringifyCoordinates($cell['x'], $cell['y']),
             $cells
         );
 
