@@ -58,7 +58,7 @@ jobs:
           SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Run PHP-CS-Fixer (dry-run)
-        run: vendor/bin/php-cs-fixer fix --dry-run --diff --format=github
+        run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
   # ---------------------------------------------------------------------------
   # 2. Analyse statique (PHPStan)
@@ -154,7 +154,7 @@ jobs:
           SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
       - name: Run PHPUnit
-        run: vendor/bin/phpunit --testdox
+        run: vendor/bin/phpunit --testdox --exclude-group e2e --testsuite Unit,Functional
         env:
           APP_ENV: test
           DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
@@ -217,6 +217,25 @@ jobs:
 
       - name: Install ChromeDriver
         run: vendor/bin/bdi detect drivers
+
+      - name: Create .env.test.local for Panther server
+        run: |
+          echo 'DATABASE_URL="postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"' > .env.test.local
+          echo 'MERCURE_URL=http://localhost/.well-known/mercure' >> .env.test.local
+          echo 'MERCURE_PUBLIC_URL=http://localhost/.well-known/mercure' >> .env.test.local
+          echo 'MERCURE_JWT_SECRET=test' >> .env.test.local
+          echo 'MESSENGER_TRANSPORT_DSN=in-memory://' >> .env.test.local
+
+      - name: Warmup Symfony cache and install assets
+        run: |
+          php bin/console cache:warmup --env=test
+          php bin/console assets:install public --env=test
+        env:
+          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
+          MERCURE_URL: "http://localhost/.well-known/mercure"
+          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
+          MERCURE_JWT_SECRET: "test"
+          MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Setup test database
         run: |
