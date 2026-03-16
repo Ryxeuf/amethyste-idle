@@ -5,6 +5,7 @@ namespace App\Controller\Game\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,7 +19,8 @@ class FightLootProceedController extends AbstractController
 {
     public function __construct(
         private readonly PlayerHelper $playerHelper,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly StatusEffectManager $statusEffectManager,
     ) {
     }
 
@@ -54,6 +56,7 @@ class FightLootProceedController extends AbstractController
             $player->setFight(null);
             $this->entityManager->persist($player);
         }
+        $this->statusEffectManager->clearAllEffects($fight);
         $this->entityManager->remove($fight);
 
         // $player->addItems($items);
