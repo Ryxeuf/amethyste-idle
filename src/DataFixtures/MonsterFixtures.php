@@ -119,7 +119,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     'role' => 'healer',
                 ],
             ],
-            'spectre' => [
+            'specter' => [
                 'name' => 'Spectre',
                 'life' => 32,
                 'hit' => 90,

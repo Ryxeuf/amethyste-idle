@@ -49,8 +49,8 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'taiju', 'item' => 'wood_log', 'probability' => 50],
             ['monster' => 'taiju', 'item' => 'healing_potion_small', 'probability' => 15],
 
-            ['monster' => 'spectre', 'item' => 'ancient_scroll', 'probability' => 8],
-            ['monster' => 'spectre', 'item' => 'energy_potion_small', 'probability' => 25],
+            ['monster' => 'specter', 'item' => 'ancient_scroll', 'probability' => 8],
+            ['monster' => 'specter', 'item' => 'energy_potion_small', 'probability' => 25],
 
             ['monster' => 'banshee', 'item' => 'ancient_scroll', 'probability' => 12],
             ['monster' => 'banshee', 'item' => 'energy_potion_small', 'probability' => 30],
