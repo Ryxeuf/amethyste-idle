@@ -7,3 +7,8 @@ services:
       APP_SECRET: ${APP_SECRET:-e454dd0213910bb338128f1a8306c1caa01114e1c30748e3882eb72ba4c117e7}
       MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
+
+networks:
+  traefik-network:
+    name: traefik-network
+    external: true

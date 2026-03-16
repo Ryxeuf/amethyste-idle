@@ -7,6 +7,7 @@ use App\Entity\CharacterInterface;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
+use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/game/fight/spell', name: 'app_game_fight_spell')]
+#[Route('/game/fight/spell', name: 'app_game_fight_spell', methods: ['POST'])]
 class FightSpellController extends AbstractController
 {
     public function __construct(
@@ -27,6 +28,7 @@ class FightSpellController extends AbstractController
         private readonly SpellApplicator $spellApplicator,
         private readonly ElementalSynergyCalculator $synergyCalculator,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly MobActionHandler $mobActionHandler,
     ) {
     }
 
@@ -160,13 +162,21 @@ class FightSpellController extends AbstractController
         $energyRegen = max(1, (int) ($player->getMaxEnergy() * 0.05));
         $player->setEnergy(min($player->getMaxEnergy(), $player->getEnergy() + $energyRegen));
 
+        // Tour du mob (si le combat continue)
+        $mobResult = ['messages' => [], 'dangerAlert' => null];
+        if (!$fight->isTerminated()) {
+            $mobResult = $this->mobActionHandler->doAction($fight);
+            $fight->setStep($fight->getStep() + 1);
+        }
+
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 
         return new JsonResponse([
             'success' => true,
             'hit' => $hit,
-            'messages' => $messages,
+            'messages' => array_merge($messages, $mobResult['messages']),
+            'dangerAlert' => $mobResult['dangerAlert'],
             'synergy' => $synergyData ? $synergyData['label'] : null,
             'fight' => [
                 'step' => $fight->getStep(),

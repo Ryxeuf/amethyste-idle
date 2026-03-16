@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\PlayerItem;
+use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -12,13 +13,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/game/fight/item', name: 'app_game_fight_item')]
+#[Route('/game/fight/item', name: 'app_game_fight_item', methods: ['POST'])]
 class FightItemController extends AbstractController
 {
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly SpellApplicator $spellApplicator,
+        private readonly MobActionHandler $mobActionHandler,
     ) {
     }
 
@@ -87,12 +89,20 @@ class FightItemController extends AbstractController
         // Advance fight step
         $fight->setStep($fight->getStep() + 1);
 
+        // Tour du mob (si le combat continue)
+        $mobResult = ['messages' => [], 'dangerAlert' => null];
+        if (!$fight->isTerminated()) {
+            $mobResult = $this->mobActionHandler->doAction($fight);
+            $fight->setStep($fight->getStep() + 1);
+        }
+
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 
         return new JsonResponse([
             'success' => true,
-            'messages' => $messages,
+            'messages' => array_merge($messages, $mobResult['messages']),
+            'dangerAlert' => $mobResult['dangerAlert'],
             'fight' => [
                 'step' => $fight->getStep(),
                 'terminated' => $fight->isTerminated(),

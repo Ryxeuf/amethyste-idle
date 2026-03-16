@@ -113,15 +113,3 @@ RUN set -eux; \
 	composer dump-env prod; \
 	composer run-script --no-dev post-install-cmd; \
 	chmod +x bin/console; sync;
-
-# Installation des extensions PHP requises
-RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        libpq-dev \
-    ; \
-    docker-php-ext-install -j$(nproc) \
-        pdo_pgsql \
-    ; \
-    apt-get clean; \
-    rm -rf /var/lib/apt/lists/*
