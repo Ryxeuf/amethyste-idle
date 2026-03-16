@@ -10,26 +10,19 @@ use App\Event\Fight\MobActionHitEvent;
 use App\Event\Fight\MobActionMissEvent;
 use App\GameEngine\Fight\Handler\MobActionHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class MobActionHandler
 {
-    /**
-     * @var iterable|MobActionHandlerInterface[]
-     */
-    protected $handlers;
-
-    /**
-     * @param MobActionHandlerInterface[]|iterable $handlers
-     */
     public function __construct(
-        iterable $handlers,
+        #[AutowireIterator(tag: MobActionHandlerInterface::class)]
+        private readonly iterable $handlers,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly SpellApplicator $spellApplicator,
         private readonly LoggerInterface $logger,
         private readonly StatusEffectManager $statusEffectManager,
     ) {
-        $this->handlers = $handlers;
     }
 
     /**

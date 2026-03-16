@@ -6,8 +6,6 @@ use App\Controller\Game\Fight\FightAttackController;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
-use App\Entity\Game\Monster;
-use App\Entity\Game\Spell;
 use App\GameEngine\Fight\MobActionHandler;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;

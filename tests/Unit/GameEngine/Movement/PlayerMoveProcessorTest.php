@@ -77,7 +77,7 @@ class PlayerMoveProcessorTest extends TestCase
         $mobRepo = $this->createMock(EntityRepository::class);
         $mobRepo->method('findBy')->willReturn([$mob]);
         $this->em->method('getRepository')->with(Mob::class)->willReturn($mobRepo);
-        $this->em->method('flush')->willReturn(null);
+        $this->em->method('flush');
 
         $fight = new Fight();
         $this->fightHandler->expects($this->once())
@@ -112,7 +112,7 @@ class PlayerMoveProcessorTest extends TestCase
         $mobRepo = $this->createMock(EntityRepository::class);
         $mobRepo->method('findBy')->willReturn([]);
         $this->em->method('getRepository')->with(Mob::class)->willReturn($mobRepo);
-        $this->em->method('flush')->willReturn(null);
+        $this->em->method('flush');
 
         $portal = $this->createMock(ObjectLayer::class);
         $this->portalDetector->method('detectPortal')->willReturn($portal);
@@ -137,7 +137,7 @@ class PlayerMoveProcessorTest extends TestCase
         $mobRepo = $this->createMock(EntityRepository::class);
         $mobRepo->method('findBy')->willReturn([]);
         $this->em->method('getRepository')->with(Mob::class)->willReturn($mobRepo);
-        $this->em->method('flush')->willReturn(null);
+        $this->em->method('flush');
 
         $this->portalDetector->method('detectPortal')->willReturn(null);
 
@@ -166,7 +166,7 @@ class PlayerMoveProcessorTest extends TestCase
         $mobRepo = $this->createMock(EntityRepository::class);
         $mobRepo->method('findBy')->willReturnOnConsecutiveCalls([$mob], []);
         $this->em->method('getRepository')->with(Mob::class)->willReturn($mobRepo);
-        $this->em->method('flush')->willReturn(null);
+        $this->em->method('flush');
 
         $fight = new Fight();
         $this->fightHandler->method('startFight')->willReturn($fight);
@@ -188,6 +188,9 @@ class PlayerMoveProcessorTest extends TestCase
         $player->setCoordinates($coords);
         $player->setLastCoordinates($coords);
         $player->setName('TestPlayer');
+
+        $ref = new \ReflectionProperty(Player::class, 'id');
+        $ref->setValue($player, 1);
 
         return $player;
     }
