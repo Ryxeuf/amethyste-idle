@@ -104,6 +104,9 @@ class FightAttackController extends AbstractController
 
     private function calculateDamage(Player $attacker, CharacterInterface $target): int
     {
-        return $attacker->getHit();
+        $baseDamage = 3;
+        $variance = random_int(0, 2);
+
+        return $baseDamage + $variance;
     }
 }

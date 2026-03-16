@@ -18,8 +18,8 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         // Joueur pour l'admin remy
         $playerRemy = new Player();
         $playerRemy->setName('Rémy');
-        $playerRemy->setLife(10);
-        $playerRemy->setMaxLife(10);
+        $playerRemy->setLife(20);
+        $playerRemy->setMaxLife(20);
         $playerRemy->setEnergy(80);
         $playerRemy->setMaxEnergy(100);
         $playerRemy->setMap($this->getReference('map_1', Map::class));
@@ -37,8 +37,8 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         // Création du joueur demo
         $playerDemo = new Player();
         $playerDemo->setName('Player demo');
-        $playerDemo->setLife(10);
-        $playerDemo->setMaxLife(10);
+        $playerDemo->setLife(20);
+        $playerDemo->setMaxLife(20);
         $playerDemo->setEnergy(80);
         $playerDemo->setMaxEnergy(100);
         $playerDemo->setMap($this->getReference('map_1', Map::class));
@@ -59,8 +59,8 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         // Création du joueur demo 2
         $playerDemo2 = new Player();
         $playerDemo2->setName('Player demo 2');
-        $playerDemo2->setLife(10);
-        $playerDemo2->setMaxLife(10);
+        $playerDemo2->setLife(20);
+        $playerDemo2->setMaxLife(20);
         $playerDemo2->setEnergy(80);
         $playerDemo2->setMaxEnergy(100);
         $playerDemo2->setMap($this->getReference('map_1', Map::class));

@@ -13,27 +13,95 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Création des items pour les monstres
         $monsterItems = [
-            'zombie_mushroom' => [
-                'monster' => 'zombie',
-                'item' => 'mushroom',
-                'probability' => 75,
-            ],
-            'zombie_leather_skin_1' => [
-                'monster' => 'zombie',
-                'item' => 'leather_skin_1',
-                'probability' => 90,
-            ],
-            'zombie_pickaxe' => [
-                'monster' => 'zombie',
-                'item' => 'pickaxe',
-                'probability' => 10,
-            ],
+            // --- Niveau 1 : Gelée, Gobelin, Chauve-souris, Rat géant, Zombie ---
+            ['monster' => 'slime', 'item' => 'mushroom', 'probability' => 60],
+            ['monster' => 'slime', 'item' => 'healing_potion_small', 'probability' => 10],
+
+            ['monster' => 'goblin', 'item' => 'mushroom', 'probability' => 50],
+            ['monster' => 'goblin', 'item' => 'beer_pint', 'probability' => 30],
+            ['monster' => 'goblin', 'item' => 'healing_potion_small', 'probability' => 15],
+
+            ['monster' => 'bat', 'item' => 'leather_skin_1', 'probability' => 40],
+            ['monster' => 'bat', 'item' => 'mushroom', 'probability' => 25],
+
+            ['monster' => 'giant_rat', 'item' => 'leather_skin_1', 'probability' => 60],
+            ['monster' => 'giant_rat', 'item' => 'mushroom', 'probability' => 35],
+            ['monster' => 'giant_rat', 'item' => 'healing_potion_small', 'probability' => 10],
+
+            ['monster' => 'zombie', 'item' => 'mushroom', 'probability' => 75],
+            ['monster' => 'zombie', 'item' => 'leather_skin_1', 'probability' => 90],
+            ['monster' => 'zombie', 'item' => 'pickaxe', 'probability' => 10],
+
+            // --- Niveau 2 : Squelette, Araignée, Serpent, Taiju, Spectre, Banshee ---
+            ['monster' => 'skeleton', 'item' => 'leather_skin_2', 'probability' => 50],
+            ['monster' => 'skeleton', 'item' => 'short_sword', 'probability' => 8],
+            ['monster' => 'skeleton', 'item' => 'healing_potion_small', 'probability' => 20],
+
+            ['monster' => 'spider', 'item' => 'leather_skin_1', 'probability' => 70],
+            ['monster' => 'spider', 'item' => 'mushroom', 'probability' => 40],
+            ['monster' => 'spider', 'item' => 'energy_potion_small', 'probability' => 12],
+
+            ['monster' => 'venom_snake', 'item' => 'leather_skin_1', 'probability' => 65],
+            ['monster' => 'venom_snake', 'item' => 'healing_potion_small', 'probability' => 20],
+
+            ['monster' => 'taiju', 'item' => 'mushroom', 'probability' => 80],
+            ['monster' => 'taiju', 'item' => 'wood_log', 'probability' => 50],
+            ['monster' => 'taiju', 'item' => 'healing_potion_small', 'probability' => 15],
+
+            ['monster' => 'spectre', 'item' => 'ancient_scroll', 'probability' => 8],
+            ['monster' => 'spectre', 'item' => 'energy_potion_small', 'probability' => 25],
+
+            ['monster' => 'banshee', 'item' => 'ancient_scroll', 'probability' => 12],
+            ['monster' => 'banshee', 'item' => 'energy_potion_small', 'probability' => 30],
+            ['monster' => 'banshee', 'item' => 'healing_potion_small', 'probability' => 20],
+
+            // --- Niveau 3 : Ochu, Loup-garou, Gargouille, Troll, Élémentaire ---
+            ['monster' => 'ochu', 'item' => 'mushroom', 'probability' => 90],
+            ['monster' => 'ochu', 'item' => 'wood_log', 'probability' => 60],
+            ['monster' => 'ochu', 'item' => 'healing_potion_medium', 'probability' => 10],
+
+            ['monster' => 'werewolf', 'item' => 'leather_skin_2', 'probability' => 80],
+            ['monster' => 'werewolf', 'item' => 'short_sword', 'probability' => 12],
+            ['monster' => 'werewolf', 'item' => 'healing_potion_small', 'probability' => 25],
+
+            ['monster' => 'gargoyle', 'item' => 'leather_skin_2', 'probability' => 50],
+            ['monster' => 'gargoyle', 'item' => 'pickaxe', 'probability' => 15],
+            ['monster' => 'gargoyle', 'item' => 'energy_potion_small', 'probability' => 20],
+
+            ['monster' => 'troll', 'item' => 'leather_skin_2', 'probability' => 70],
+            ['monster' => 'troll', 'item' => 'wood_log', 'probability' => 50],
+            ['monster' => 'troll', 'item' => 'long_sword', 'probability' => 5],
+            ['monster' => 'troll', 'item' => 'healing_potion_medium', 'probability' => 15],
+
+            ['monster' => 'fire_elemental', 'item' => 'materia_fire_ball', 'probability' => 8],
+            ['monster' => 'fire_elemental', 'item' => 'energy_potion_small', 'probability' => 30],
+            ['monster' => 'fire_elemental', 'item' => 'healing_potion_small', 'probability' => 20],
+
+            // --- Niveau 4 : Griffon, Minotaure, Golem ---
+            ['monster' => 'griffin', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'griffin', 'item' => 'healing_potion_medium', 'probability' => 20],
+            ['monster' => 'griffin', 'item' => 'ancient_scroll', 'probability' => 10],
+
+            ['monster' => 'minotaur', 'item' => 'long_sword', 'probability' => 10],
+            ['monster' => 'minotaur', 'item' => 'leather_armor', 'probability' => 8],
+            ['monster' => 'minotaur', 'item' => 'healing_potion_medium', 'probability' => 25],
+
+            ['monster' => 'stone_golem', 'item' => 'pickaxe', 'probability' => 30],
+            ['monster' => 'stone_golem', 'item' => 'materia_stone_throw', 'probability' => 10],
+            ['monster' => 'stone_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
+            ['monster' => 'stone_golem', 'item' => 'iron_sword', 'probability' => 5],
+
+            // --- Boss : Dragon ---
+            ['monster' => 'dragon', 'item' => 'materia_fire_ball', 'probability' => 40],
+            ['monster' => 'dragon', 'item' => 'materia_flame_rain', 'probability' => 25],
+            ['monster' => 'dragon', 'item' => 'iron_sword', 'probability' => 20],
+            ['monster' => 'dragon', 'item' => 'healing_potion_medium', 'probability' => 80],
+            ['monster' => 'dragon', 'item' => 'ancient_scroll', 'probability' => 50],
+            ['monster' => 'dragon', 'item' => 'leather_armor', 'probability' => 15],
         ];
 
-        // Création des associations monster-item
-        foreach ($monsterItems as $key => $data) {
+        foreach ($monsterItems as $data) {
             $monsterItem = new MonsterItem();
             $monsterItem->setMonster($this->getReference($data['monster'], Monster::class));
             $monsterItem->setItem($this->getReference($data['item'], Item::class));
@@ -42,7 +110,6 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             $monsterItem->setUpdatedAt(new \DateTime());
 
             $manager->persist($monsterItem);
-            $this->addReference($key, $monsterItem);
         }
 
         $manager->flush();
