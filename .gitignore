@@ -25,3 +25,7 @@ node_modules
 ###> phpstan/phpstan ###
 phpstan.cache
 ###< phpstan/phpstan ###
+
+###> dbrekelmans/bdi ###
+/drivers/
+###< dbrekelmans/bdi ###
