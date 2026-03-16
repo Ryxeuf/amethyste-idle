@@ -71,7 +71,7 @@
 					{% set isCurrentPlayer = fightPlayer.id == player.id %}
 					<div class="selectable-target rounded-xl p-3 sm:p-4 transition-all
 						{% if isCurrentPlayer %}bg-gradient-to-br from-purple-900/80 to-purple-800/80 border-2 border-purple-500{% else %}game-card border border-purple-500/20{% endif %}"
-						data-fightPlayer-id="{{ fightPlayer.id }}" data-target-type="player">
+						data-player-id="{{ fightPlayer.id }}" data-target-type="player">
 
 						<div class="flex items-center gap-3 mb-2">
 							<div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0
@@ -369,18 +369,23 @@
 			actionButtons.forEach(button => {
 				button.addEventListener('click', async function(e) {
 					if (this.disabled) return;
-					if (!selectedTarget) {
+
+					const actionUrl = this.dataset.href;
+					const isFlee = actionUrl.includes('/flee');
+
+					if (!isFlee && !selectedTarget) {
 						alert('Veuillez selectionner une cible');
 						return;
 					}
 
-					const actionUrl = this.dataset.href;
-					const targetId = selectedTarget.dataset.fightPlayerId || selectedTarget.dataset.mobId;
-					const targetType = selectedTarget.dataset.targetType;
+					const targetId = selectedTarget ? (selectedTarget.dataset.playerId || selectedTarget.dataset.mobId) : null;
+					const targetType = selectedTarget ? selectedTarget.dataset.targetType : null;
 					const spellSlug = this.dataset.spellSlug || null;
 
 					try {
-						const body = { targetId: targetId, targetType: targetType };
+						const body = {};
+						if (targetId) body.targetId = parseInt(targetId, 10);
+						if (targetType) body.targetType = targetType;
 						if (spellSlug) body.spellSlug = spellSlug;
 
 						const response = await fetch(actionUrl, {
@@ -389,10 +394,28 @@
 							body: JSON.stringify(body)
 						});
 
-						if (!response.ok) {
-							console.error('Erreur lors de l\'action', response);
-							throw new Error('Erreur lors de l\'action');
+						const data = await response.json();
+
+						if (!response.ok || data.error) {
+							alert(data.error || "{{ 'game.fight.error_action'|trans|e('js') }}");
+							return;
 						}
+
+						if (data.fight && data.fight.terminated) {
+							if (data.fight.victory) {
+								window.location.href = '{{ path("app_game_fight_loot") }}';
+							} else {
+								window.location.href = '{{ path("app_game_map") }}';
+							}
+							return;
+						}
+
+						if (data.fled) {
+							window.location.href = '{{ path("app_game_map") }}';
+							return;
+						}
+
+						window.location.reload();
 					} catch (error) {
 						console.error('Erreur:', error);
 						alert("{{ 'game.fight.error_action'|trans|e('js') }}");

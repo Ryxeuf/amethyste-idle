@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/game/fight/flee', name: 'app_game_fight_flee')]
+#[Route('/game/fight/flee', name: 'app_game_fight_flee', methods: ['POST'])]
 class FightFleeController extends AbstractController
 {
     public function __construct(
