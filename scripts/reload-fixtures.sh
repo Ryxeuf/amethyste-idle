@@ -100,9 +100,13 @@ docker compose "${COMPOSE_ARGS[@]}" run --rm \
   "
 
 echo ""
-echo "==> [5/5] Restauration des deps prod dans le conteneur principal..."
-php_exec composer install --no-dev --optimize-autoloader --no-interaction --quiet 2>/dev/null || true
+echo "==> [5/5] Restauration des deps dans le conteneur principal..."
+if [[ "$MODE" == "prod" ]]; then
+  php_exec composer install --no-dev --optimize-autoloader --no-interaction --quiet 2>/dev/null || true
+else
+  php_exec composer install --no-interaction --quiet 2>/dev/null || true
+fi
 php_exec php /app/bin/console cache:clear --no-warmup 2>/dev/null || true
 
 echo ""
-echo "Done. Schema reinitialise, fixtures chargees, deps prod restaurees."
+echo "Done. Schema reinitialise, fixtures chargees, deps restaurees ($MODE)."
