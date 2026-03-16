@@ -17,7 +17,7 @@ final class Version20260313EnhancedCombat extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Create game_status_effects table
-        $this->addSql('CREATE TABLE game_status_effects (
+        $this->addSql('CREATE TABLE IF NOT EXISTS game_status_effects (
             id SERIAL PRIMARY KEY,
             slug VARCHAR(255) NOT NULL UNIQUE,
             name VARCHAR(255) NOT NULL,
@@ -34,7 +34,7 @@ final class Version20260313EnhancedCombat extends AbstractMigration
         )');
 
         // Create fight_status_effect table
-        $this->addSql('CREATE TABLE fight_status_effect (
+        $this->addSql('CREATE TABLE IF NOT EXISTS fight_status_effect (
             id SERIAL PRIMARY KEY,
             fight_id INT NOT NULL REFERENCES fight(id),
             target_type VARCHAR(20) NOT NULL,
@@ -45,28 +45,28 @@ final class Version20260313EnhancedCombat extends AbstractMigration
             created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
             updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
         )');
-        $this->addSql('CREATE INDEX IDX_fight_status_effect_fight ON fight_status_effect (fight_id)');
-        $this->addSql('CREATE INDEX IDX_fight_status_effect_status ON fight_status_effect (status_effect_id)');
-        $this->addSql('CREATE INDEX IDX_fight_status_effect_target ON fight_status_effect (target_type, target_id)');
+        $this->addSql('CREATE INDEX IF NOT EXISTS IDX_fight_status_effect_fight ON fight_status_effect (fight_id)');
+        $this->addSql('CREATE INDEX IF NOT EXISTS IDX_fight_status_effect_status ON fight_status_effect (status_effect_id)');
+        $this->addSql('CREATE INDEX IF NOT EXISTS IDX_fight_status_effect_target ON fight_status_effect (target_type, target_id)');
 
         // Spell enhancements
-        $this->addSql('ALTER TABLE game_spells ADD COLUMN cooldown INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE game_spells ADD COLUMN energy_cost INT NOT NULL DEFAULT 0');
-        $this->addSql('ALTER TABLE game_spells ADD COLUMN status_effect_slug VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE game_spells ADD COLUMN aoe_targets INT NOT NULL DEFAULT 1');
+        $this->addSql('ALTER TABLE game_spells ADD COLUMN IF NOT EXISTS cooldown INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_spells ADD COLUMN IF NOT EXISTS energy_cost INT NOT NULL DEFAULT 0');
+        $this->addSql('ALTER TABLE game_spells ADD COLUMN IF NOT EXISTS status_effect_slug VARCHAR(255) DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_spells ADD COLUMN IF NOT EXISTS aoe_targets INT NOT NULL DEFAULT 1');
 
         // Monster AI & Boss
-        $this->addSql('ALTER TABLE game_monsters ADD COLUMN ai_pattern JSON DEFAULT NULL');
-        $this->addSql('ALTER TABLE game_monsters ADD COLUMN elemental_resistances JSON DEFAULT NULL');
-        $this->addSql('ALTER TABLE game_monsters ADD COLUMN is_boss BOOLEAN NOT NULL DEFAULT FALSE');
-        $this->addSql('ALTER TABLE game_monsters ADD COLUMN boss_phases JSON DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_monsters ADD COLUMN IF NOT EXISTS ai_pattern JSON DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_monsters ADD COLUMN IF NOT EXISTS elemental_resistances JSON DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_monsters ADD COLUMN IF NOT EXISTS is_boss BOOLEAN NOT NULL DEFAULT FALSE');
+        $this->addSql('ALTER TABLE game_monsters ADD COLUMN IF NOT EXISTS boss_phases JSON DEFAULT NULL');
 
         // Fight: elemental synergy tracking + cooldowns
-        $this->addSql('ALTER TABLE fight ADD COLUMN last_element_used VARCHAR(25) DEFAULT NULL');
-        $this->addSql('ALTER TABLE fight ADD COLUMN cooldowns JSON DEFAULT NULL');
+        $this->addSql('ALTER TABLE fight ADD COLUMN IF NOT EXISTS last_element_used VARCHAR(25) DEFAULT NULL');
+        $this->addSql('ALTER TABLE fight ADD COLUMN IF NOT EXISTS cooldowns JSON DEFAULT NULL');
 
         // PlayerItem: materia experience
-        $this->addSql('ALTER TABLE player_item ADD COLUMN experience INT NOT NULL DEFAULT 0');
+        $this->addSql('ALTER TABLE player_item ADD COLUMN IF NOT EXISTS experience INT NOT NULL DEFAULT 0');
     }
 
     public function down(Schema $schema): void

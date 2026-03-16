@@ -17,19 +17,19 @@ final class Version20260313HarvestAndCraft extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Item: add tool fields
-        $this->addSql('ALTER TABLE game_items ADD COLUMN tool_type VARCHAR(50) DEFAULT NULL');
-        $this->addSql('ALTER TABLE game_items ADD COLUMN tool_tier INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE game_items ADD COLUMN durability INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_items ADD COLUMN IF NOT EXISTS tool_type VARCHAR(50) DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_items ADD COLUMN IF NOT EXISTS tool_tier INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE game_items ADD COLUMN IF NOT EXISTS durability INT DEFAULT NULL');
 
         // PlayerItem: add current_durability
-        $this->addSql('ALTER TABLE player_item ADD COLUMN current_durability INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE player_item ADD COLUMN IF NOT EXISTS current_durability INT DEFAULT NULL');
 
         // ObjectLayer: add respawn_delay and required_tool_type
-        $this->addSql('ALTER TABLE object_layer ADD COLUMN respawn_delay INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE object_layer ADD COLUMN required_tool_type VARCHAR(50) DEFAULT NULL');
+        $this->addSql('ALTER TABLE object_layer ADD COLUMN IF NOT EXISTS respawn_delay INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE object_layer ADD COLUMN IF NOT EXISTS required_tool_type VARCHAR(50) DEFAULT NULL');
 
         // CraftRecipe table
-        $this->addSql('CREATE TABLE game_craft_recipes (
+        $this->addSql('CREATE TABLE IF NOT EXISTS game_craft_recipes (
             id SERIAL PRIMARY KEY,
             slug VARCHAR(255) NOT NULL UNIQUE,
             name VARCHAR(255) NOT NULL,

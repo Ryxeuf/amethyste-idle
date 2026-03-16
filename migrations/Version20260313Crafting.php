@@ -17,7 +17,7 @@ final class Version20260313Crafting extends AbstractMigration
     public function up(Schema $schema): void
     {
         // Table game_recipes
-        $this->addSql('CREATE TABLE game_recipes (
+        $this->addSql('CREATE TABLE IF NOT EXISTS game_recipes (
             id SERIAL PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             slug VARCHAR(100) NOT NULL UNIQUE,
@@ -35,11 +35,11 @@ final class Version20260313Crafting extends AbstractMigration
             CONSTRAINT fk_game_recipes_result FOREIGN KEY (result_id) REFERENCES game_items (id) ON DELETE RESTRICT
         )');
 
-        $this->addSql('CREATE INDEX idx_game_recipes_craft ON game_recipes (craft)');
-        $this->addSql('CREATE INDEX idx_game_recipes_result ON game_recipes (result_id)');
+        $this->addSql('CREATE INDEX IF NOT EXISTS idx_game_recipes_craft ON game_recipes (craft)');
+        $this->addSql('CREATE INDEX IF NOT EXISTS idx_game_recipes_result ON game_recipes (result_id)');
 
         // Colonne discovered_recipes sur la table player
-        $this->addSql('ALTER TABLE player ADD COLUMN discovered_recipes JSON DEFAULT NULL');
+        $this->addSql('ALTER TABLE player ADD COLUMN IF NOT EXISTS discovered_recipes JSON DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
