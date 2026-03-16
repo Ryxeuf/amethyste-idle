@@ -337,6 +337,12 @@
       "hp": "HP",
       "energy": "Energy",
       "level_short": "Lv.",
+      "turn": "Turn",
+      "actions": "Actions",
+      "log": {
+        "title": "Combat Log",
+        "empty": "No actions recorded."
+      },
       "loot": {
         "title": "Combat summary",
         "gold": "Gold earned",

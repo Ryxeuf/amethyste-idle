@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\PlayerItem;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\Helper\PlayerHelper;
@@ -21,6 +22,7 @@ class FightItemController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly SpellApplicator $spellApplicator,
         private readonly MobActionHandler $mobActionHandler,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -67,6 +69,7 @@ class FightItemController extends AbstractController
             $spellMessages = $this->spellApplicator->apply($spell, $player, $target, ['fight' => $fight]);
             $messages[] = sprintf('Vous utilisez %s !', $item->getName());
             $messages = array_merge($messages, $spellMessages);
+            $this->combatLogger->logItem($fight, $player, $item->getName());
 
             if ($spell->getHeal() > 0) {
                 $messages[] = sprintf('Vous récupérez %d PV.', $spell->getHeal());
@@ -94,6 +97,15 @@ class FightItemController extends AbstractController
         if (!$fight->isTerminated()) {
             $mobResult = $this->mobActionHandler->doAction($fight);
             $fight->setStep($fight->getStep() + 1);
+        }
+
+        // Log victoire/defaite
+        if ($fight->isTerminated()) {
+            if ($fight->isVictory()) {
+                $this->combatLogger->logVictory($fight);
+            } else {
+                $this->combatLogger->logDefeat($fight);
+            }
         }
 
         $this->entityManager->persist($player);

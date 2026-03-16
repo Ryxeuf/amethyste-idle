@@ -22,6 +22,7 @@ class MobActionHandler
         private readonly SpellApplicator $spellApplicator,
         private readonly LoggerInterface $logger,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -47,6 +48,7 @@ class MobActionHandler
             || $this->statusEffectManager->isCharacterFrozen($fight, $mob)) {
             $this->logger->debug('[MobActionHandler] Mob is paralyzed/frozen, skipping turn');
             $result['messages'][] = sprintf('%s est immobilise !', $mob->getName());
+            $this->combatLogger->logImmobilized($fight, $mob);
             $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
 
             return $result;
@@ -74,9 +76,11 @@ class MobActionHandler
             $spellMessages = $this->spellApplicator->apply($spell, $mob, $target, ['fight' => $fight]);
             $result['messages'][] = sprintf('%s utilise %s !', $mob->getName(), $spell->getName());
             $result['messages'] = array_merge($result['messages'], $spellMessages);
+            $this->combatLogger->logSpell($fight, $mob, $target, $spell->getName(), true);
             $this->eventDispatcher->dispatch(new MobActionHitEvent($spell->getName()), MobActionHitEvent::NAME);
         } else {
             $result['messages'][] = sprintf('%s rate son attaque !', $mob->getName());
+            $this->combatLogger->logSpell($fight, $mob, $target, $spell->getName(), false);
             $this->eventDispatcher->dispatch(new MobActionMissEvent($spell->getName()), MobActionMissEvent::NAME);
         }
 

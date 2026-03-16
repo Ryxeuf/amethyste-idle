@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
@@ -16,6 +17,7 @@ class FightIndexController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatSkillResolver $combatSkillResolver,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -83,6 +85,9 @@ class FightIndexController extends AbstractController
             }
         }
 
+        // Get combat logs
+        $fightLogs = $this->combatLogger->getLogsForFight($fight);
+
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
             'fight' => $fight,
@@ -91,6 +96,7 @@ class FightIndexController extends AbstractController
             'unlockedSpells' => $unlockedSpells,
             'playerCooldowns' => $playerCooldowns,
             'dangerAlert' => $dangerAlert,
+            'fightLogs' => $fightLogs,
         ]);
     }
 }
