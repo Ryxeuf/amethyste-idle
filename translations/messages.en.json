@@ -94,6 +94,8 @@
         "empty": "No items in this tab"
       },
       "materials": "Materials",
+      "bank": "Bank",
+      "materia": "Materia",
       "stats": "Stats",
       "slot": {
         "head": "Head",
@@ -108,7 +110,8 @@
         "foot": "Feet",
         "ring_1": "Ring 1",
         "ring_2": "Ring 2",
-        "accessory": "Accessory"
+        "accessory": "Accessory",
+        "empty": "Empty"
       },
       "actions": {
         "equip": "Equip",
