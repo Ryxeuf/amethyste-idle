@@ -174,6 +174,7 @@
 										{% set cooldown = playerCooldowns[spell.slug] ?? 0 %}
 										{% set hasEnergy = player.energy >= spell.energyCost %}
 										{% set isAvailable = cooldown == 0 and hasEnergy %}
+										{% set isDefensive = (spell.heal is not null and spell.heal > 0) and (spell.damage is null or spell.damage == 0) %}
 										<button class="spell-btn fight-action relative px-2 py-2 rounded-lg text-xs font-medium transition-all touch-target
 											{% if not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
 											{% if spell.element == 'fire' %} ring-1 ring-orange-500/50
@@ -185,6 +186,7 @@
 											{% endif %}"
 											data-href="{{ path("app_game_fight_spell") }}"
 											data-spell-slug="{{ spell.slug }}"
+											data-spell-type="{{ isDefensive ? 'defensive' : 'offensive' }}"
 											{% if not isAvailable %}disabled{% endif %}
 											title="{{ spell.description }}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
 											<span class="block truncate">{{ spell.name }}</span>
@@ -353,6 +355,14 @@
 			let selectedTarget = null;
 			const selectableTargets = document.querySelectorAll('.selectable-target');
 			const actionButtons = document.querySelectorAll('.fight-action');
+			const aliveMobs = document.querySelectorAll('.selectable-target[data-target-type="mob"]');
+			const playerTargets = document.querySelectorAll('.selectable-target[data-target-type="player"]');
+
+			// Auto-select the single mob if there's only one
+			if (aliveMobs.length === 1) {
+				aliveMobs[0].classList.add('selected');
+				selectedTarget = aliveMobs[0];
+			}
 
 			selectableTargets.forEach(target => {
 				target.addEventListener('click', function() {
@@ -366,20 +376,50 @@
 				});
 			});
 
+			function resolveTarget(button) {
+				const isFlee = button.dataset.href.includes('/flee');
+				if (isFlee) return { resolved: true, target: null };
+
+				const isDefensiveSpell = button.dataset.spellType === 'defensive';
+
+				if (isDefensiveSpell) {
+					// Defensive spell: auto-target current player if solo
+					if (playerTargets.length === 1) {
+						return { resolved: true, target: playerTargets[0] };
+					}
+					if (selectedTarget && selectedTarget.dataset.targetType === 'player') {
+						return { resolved: true, target: selectedTarget };
+					}
+					return { resolved: false };
+				}
+
+				// Offensive action: use selected target, or auto-target single mob
+				if (selectedTarget && selectedTarget.dataset.targetType === 'mob') {
+					return { resolved: true, target: selectedTarget };
+				}
+				if (aliveMobs.length === 1) {
+					return { resolved: true, target: aliveMobs[0] };
+				}
+				if (selectedTarget) {
+					return { resolved: true, target: selectedTarget };
+				}
+				return { resolved: false };
+			}
+
 			actionButtons.forEach(button => {
 				button.addEventListener('click', async function(e) {
 					if (this.disabled) return;
 
 					const actionUrl = this.dataset.href;
-					const isFlee = actionUrl.includes('/flee');
+					const { resolved, target } = resolveTarget(this);
 
-					if (!isFlee && !selectedTarget) {
+					if (!resolved) {
 						alert("{{ 'game.fight.select_target'|trans|e('js') }}");
 						return;
 					}
 
-					const targetId = selectedTarget ? (selectedTarget.dataset.playerId || selectedTarget.dataset.mobId) : null;
-					const targetType = selectedTarget ? selectedTarget.dataset.targetType : null;
+					const targetId = target ? (target.dataset.playerId || target.dataset.mobId) : null;
+					const targetType = target ? target.dataset.targetType : null;
 					const spellSlug = this.dataset.spellSlug || null;
 
 					try {
