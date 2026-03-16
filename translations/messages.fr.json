@@ -337,6 +337,12 @@
       "hp": "PV",
       "energy": "Énergie",
       "level_short": "Nv.",
+      "turn": "Tour",
+      "actions": "Actions",
+      "log": {
+        "title": "Journal de combat",
+        "empty": "Aucune action enregistrée."
+      },
       "loot": {
         "title": "Récapitulatif du combat",
         "gold": "Or gagné",

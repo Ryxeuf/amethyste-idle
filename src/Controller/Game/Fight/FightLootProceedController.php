@@ -5,6 +5,7 @@ namespace App\Controller\Game\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ class FightLootProceedController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly CombatLogArchiver $combatLogArchiver,
     ) {
     }
 
@@ -44,6 +46,8 @@ class FightLootProceedController extends AbstractController
         if (!$player) {
             return new JsonResponse(['error' => 'Player not found'], Response::HTTP_NOT_FOUND);
         }
+
+        $this->combatLogArchiver->archive($fight);
 
         $player->setFight(null);
         $this->entityManager->persist($player);

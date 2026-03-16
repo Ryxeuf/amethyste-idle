@@ -4,6 +4,7 @@ namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\CharacterInterface;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
@@ -29,6 +30,7 @@ class FightSpellController extends AbstractController
         private readonly ElementalSynergyCalculator $synergyCalculator,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly MobActionHandler $mobActionHandler,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -139,11 +141,14 @@ class FightSpellController extends AbstractController
         if ($hit) {
             $this->spellApplicator->apply($spell, $player, $target, $options);
             $messages[] = sprintf('%s lance %s !', $player->getName(), $spell->getName());
+            $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), true);
             if ($synergyData) {
                 $messages[] = sprintf('Synergie %s activée !', $synergyData['label']);
+                $this->combatLogger->logSynergy($fight, $synergyData['label']);
             }
         } else {
             $messages[] = sprintf('%s a raté !', $spell->getName());
+            $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), false);
         }
 
         // Set cooldown
@@ -167,6 +172,15 @@ class FightSpellController extends AbstractController
         if (!$fight->isTerminated()) {
             $mobResult = $this->mobActionHandler->doAction($fight);
             $fight->setStep($fight->getStep() + 1);
+        }
+
+        // Log victoire/defaite
+        if ($fight->isTerminated()) {
+            if ($fight->isVictory()) {
+                $this->combatLogger->logVictory($fight);
+            } else {
+                $this->combatLogger->logDefeat($fight);
+            }
         }
 
         $this->entityManager->persist($player);

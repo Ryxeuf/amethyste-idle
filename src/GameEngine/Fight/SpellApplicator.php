@@ -20,6 +20,7 @@ class SpellApplicator
         private readonly EntityManagerInterface $entityManager,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -42,6 +43,9 @@ class SpellApplicator
             $damage = ItemUtils::getCriticalModified($damage);
             $isCritical = true;
             $messages[] = 'Coup critique !';
+            if ($fight !== null) {
+                $this->combatLogger->logCritical($fight, $sender);
+            }
         }
 
         // Elemental resistance (reduce damage if target is a mob with resistances)
@@ -52,6 +56,9 @@ class SpellApplicator
                 $damage = max(0, $damage);
                 if ($resistance > 0) {
                     $messages[] = sprintf('%s resiste a %s !', $target->getName(), $spell->getElement());
+                    if ($fight !== null) {
+                        $this->combatLogger->logResist($fight, $target, $spell->getElement());
+                    }
                 } elseif ($resistance < 0) {
                     $messages[] = sprintf('%s est faible face a %s !', $target->getName(), $spell->getElement());
                 }
@@ -75,6 +82,7 @@ class SpellApplicator
                 $absorbed = min($damage, $shieldAbsorb);
                 $damage -= $absorbed;
                 $messages[] = sprintf('Le bouclier absorbe %d degats !', $absorbed);
+                $this->combatLogger->logShield($fight, $target, $absorbed);
             }
         }
 
@@ -90,6 +98,16 @@ class SpellApplicator
             $target->setDiedAt(new \DateTime());
         }
 
+        // Log damage and heal
+        if ($fight !== null) {
+            if ($damage > 0) {
+                $this->combatLogger->logDamage($fight, $target, $damage, $spell->getName());
+            }
+            if ($heal > 0) {
+                $this->combatLogger->logHeal($fight, $target, $heal, $spell->getName());
+            }
+        }
+
         $this->entityManager->persist($target);
         $this->entityManager->flush();
         $this->entityManager->refresh($target);
@@ -103,10 +121,14 @@ class SpellApplicator
             if ($statusEffect !== null) {
                 $this->statusEffectManager->applyStatusEffect($fight, $target, $statusEffect);
                 $messages[] = sprintf('%s est affecte par %s !', $target->getName(), $statusEffect->getName());
+                $this->combatLogger->logStatusApply($fight, $target, $statusEffect->getName());
             }
         }
 
         if ($target->isDead()) {
+            if ($fight !== null) {
+                $this->combatLogger->logDeath($fight, $target);
+            }
             if ($target instanceof Mob) {
                 $this->eventDispatcher->dispatch(new MobDeadEvent($target), MobDeadEvent::NAME);
             }

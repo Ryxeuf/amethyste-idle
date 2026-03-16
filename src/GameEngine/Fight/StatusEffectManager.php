@@ -14,6 +14,7 @@ class StatusEffectManager
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -85,6 +86,7 @@ class StatusEffectManager
                     $damage,
                     $effect->getName()
                 );
+                $this->combatLogger->logStatusTick($fight, $character, $effect->getName(), $damage, 'damage');
             }
 
             // Heal over time (regeneration)
@@ -100,6 +102,7 @@ class StatusEffectManager
                     $heal,
                     $effect->getName()
                 );
+                $this->combatLogger->logStatusTick($fight, $character, $effect->getName(), $heal, 'heal');
             }
 
             // Decrement remaining turns

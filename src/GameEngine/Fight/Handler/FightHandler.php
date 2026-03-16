@@ -5,6 +5,7 @@ namespace App\GameEngine\Fight\Handler;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\GameEngine\Fight\CombatLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -13,6 +14,7 @@ class FightHandler
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -29,6 +31,9 @@ class FightHandler
         $player->setIsMoving(false);
 
         $this->entityManager->persist($fight);
+        $this->entityManager->flush();
+
+        $this->combatLogger->logFightStart($fight);
         $this->entityManager->flush();
 
         return $fight;

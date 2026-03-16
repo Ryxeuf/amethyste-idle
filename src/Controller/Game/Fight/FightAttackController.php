@@ -5,6 +5,7 @@ namespace App\Controller\Game\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\MobActionHandler;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ class FightAttackController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly MobActionHandler $mobActionHandler,
         private readonly EntityManagerInterface $entityManager,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -55,9 +57,12 @@ class FightAttackController extends AbstractController
         $target->setLife(max(0, $target->getLife() - $damage));
         $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
 
+        $this->combatLogger->logAttack($fight, $player, $target, $damage);
+
         if ($target->getLife() === 0) {
             $target->setDiedAt(new \DateTime());
             $messages[] = sprintf('%s est vaincu !', $target->getName());
+            $this->combatLogger->logDeath($fight, $target);
         }
 
         $fight->setStep($fight->getStep() + 1);
@@ -67,6 +72,15 @@ class FightAttackController extends AbstractController
         if (!$fight->isTerminated()) {
             $mobResult = $this->mobActionHandler->doAction($fight);
             $fight->setStep($fight->getStep() + 1);
+        }
+
+        // Log victoire/defaite
+        if ($fight->isTerminated()) {
+            if ($fight->isVictory()) {
+                $this->combatLogger->logVictory($fight);
+            } else {
+                $this->combatLogger->logDefeat($fight);
+            }
         }
 
         $this->entityManager->flush();

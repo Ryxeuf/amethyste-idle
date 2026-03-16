@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +18,7 @@ class FightFleeController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly CombatLogger $combatLogger,
     ) {
     }
 
@@ -53,6 +55,8 @@ class FightFleeController extends AbstractController
         $mobSpeed = $mob ? $mob->getSpeed() : 10;
         $fleeChance = min(90, max(50, 50 + ($playerSpeed - $mobSpeed) * 2));
         $success = random_int(1, 100) <= $fleeChance;
+
+        $this->combatLogger->logFlee($fight, $player, $success);
 
         if ($success) {
             // End fight - remove player from fight

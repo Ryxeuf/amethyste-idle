@@ -3,16 +3,19 @@
 {% block title %}{{ 'game.fight.title'|trans }}{% endblock %}
 
 {% block site_navbar %}
-	{# Minimal fight header — no full nav, just back button #}
+	{# Minimal fight header #}
 	<header class="bg-gray-800/95 backdrop-blur-sm border-b border-purple-900/30 sticky top-0 z-40">
 		<div class="flex items-center justify-between h-11 px-3 md:px-6" style="padding-top: var(--safe-top)">
 			<a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-base">{{ 'game.title'|trans }}</a>
-			<span class="text-sm text-gray-400">{{ 'game.fight.title'|trans }}</span>
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-gray-500">{{ 'game.fight.turn'|trans }} {{ fight.step }}</span>
+				<span class="text-sm text-gray-400">{{ 'game.fight.title'|trans }}</span>
+			</div>
 		</div>
 	</header>
 {% endblock %}
 
-{# Macro pour afficher les icones de statuts #}
+{# Macro pour les badges de statut #}
 {% macro status_effect_badges(effectsList) %}
 	{% for fse in effectsList %}
 		<span class="status-badge
@@ -36,6 +39,47 @@
 	{% endfor %}
 {% endmacro %}
 
+{# Macro pour une icone de type de log #}
+{% macro log_icon(type) %}
+	{% if type == 'attack' or type == 'spell' %}
+		<span class="text-red-400">&#9876;</span>
+	{% elseif type == 'damage' %}
+		<span class="text-red-500">&#10007;</span>
+	{% elseif type == 'heal' or type == 'status_tick' %}
+		<span class="text-green-400">&#10010;</span>
+	{% elseif type == 'death' %}
+		<span class="text-red-600">&#9760;</span>
+	{% elseif type == 'miss' %}
+		<span class="text-gray-500">&#8709;</span>
+	{% elseif type == 'critical' %}
+		<span class="text-yellow-400">&#9733;</span>
+	{% elseif type == 'shield' %}
+		<span class="text-blue-400">&#9711;</span>
+	{% elseif type == 'status_apply' %}
+		<span class="text-purple-400">&#10070;</span>
+	{% elseif type == 'synergy' %}
+		<span class="text-cyan-400">&#10024;</span>
+	{% elseif type == 'resist' %}
+		<span class="text-green-500">&#9650;</span>
+	{% elseif type == 'flee' %}
+		<span class="text-green-400">&#10132;</span>
+	{% elseif type == 'flee_fail' %}
+		<span class="text-red-400">&#10132;</span>
+	{% elseif type == 'immobilized' %}
+		<span class="text-yellow-500">&#9949;</span>
+	{% elseif type == 'item' %}
+		<span class="text-green-300">&#9753;</span>
+	{% elseif type == 'victory' %}
+		<span class="text-yellow-400">&#9812;</span>
+	{% elseif type == 'defeat' %}
+		<span class="text-red-600">&#9760;</span>
+	{% elseif type == 'fight_start' %}
+		<span class="text-purple-400">&#9876;</span>
+	{% else %}
+		<span class="text-gray-400">&#8226;</span>
+	{% endif %}
+{% endmacro %}
+
 {% block game_content %}
 	<style>
 		.selectable-target { cursor: pointer; transition: all 0.2s ease; }
@@ -48,69 +92,113 @@
 			width: 18px; height: 18px; font-size: 10px;
 			display: flex; align-items: center; justify-content: center;
 		}
+		/* Combat log styles */
+		.combat-log-container {
+			max-height: 200px;
+			overflow-y: auto;
+			scroll-behavior: smooth;
+			scrollbar-width: thin;
+			scrollbar-color: rgba(139, 92, 246, 0.3) transparent;
+		}
+		.combat-log-container::-webkit-scrollbar { width: 4px; }
+		.combat-log-container::-webkit-scrollbar-track { background: transparent; }
+		.combat-log-container::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
+		@media (min-width: 1024px) {
+			.combat-log-container { max-height: 400px; }
+		}
+		/* Mobile combatants row */
+		.fight-combatants-row {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.5rem;
+		}
+		@media (min-width: 1024px) {
+			.fight-combatants-row {
+				gap: 1rem;
+			}
+		}
+		/* Fight mobile layout */
+		.fight-mobile-layout {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+		@media (min-width: 1024px) {
+			.fight-mobile-layout {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+		}
+		/* Tab active state */
+		.fight-tab.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+		.fight-tab { color: #9ca3af; border-bottom-color: transparent; }
+		/* Compact progress bar for mobile */
+		.progress-bar-compact { height: 0.25rem; }
+		/* Log entry animation */
+		.log-entry { animation: logSlideIn 0.15s ease-out; }
+		@keyframes logSlideIn {
+			from { opacity: 0; transform: translateX(-4px); }
+			to { opacity: 1; transform: translateX(0); }
+		}
 	</style>
 
 	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
 		{# Danger alert #}
 		{% if dangerAlert is defined and dangerAlert %}
-			<div class="mb-3 p-3 bg-red-900/60 border border-red-500 rounded-xl text-center animate-pulse">
-				<span class="text-red-200 font-bold text-sm">{{ dangerAlert }}</span>
+			<div class="mb-2 p-2 bg-red-900/60 border border-red-500 rounded-lg text-center animate-pulse">
+				<span class="text-red-200 font-bold text-xs sm:text-sm">{{ dangerAlert }}</span>
 			</div>
 		{% endif %}
 
-		{# Timeline #}
-		<turbo-frame id="timeline">
-			{{ include('game/fight/partials/_timeline.html.twig') }}
-		</turbo-frame>
-
-		{# ===== MAIN FIGHT LAYOUT ===== #}
-		<div class="fight-grid">
-			{# --- PLAYER SECTION --- #}
-			<div class="space-y-3">
+		{# ===== COMBATANTS ROW: Player(s) vs Monster(s) ===== #}
+		<div class="fight-combatants-row mb-2 sm:mb-3">
+			{# --- PLAYERS --- #}
+			<div class="space-y-2">
 				{% for fightPlayer in fight.players %}
 					{% set isCurrentPlayer = fightPlayer.id == player.id %}
-					<div class="selectable-target rounded-xl p-3 sm:p-4 transition-all
+					<div class="selectable-target rounded-lg p-2 sm:p-3 transition-all
 						{% if isCurrentPlayer %}bg-gradient-to-br from-purple-900/80 to-purple-800/80 border-2 border-purple-500{% else %}game-card border border-purple-500/20{% endif %}"
 						data-player-id="{{ fightPlayer.id }}" data-target-type="player">
 
-						<div class="flex items-center gap-3 mb-2">
-							<div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0
+						<div class="flex items-center gap-2 mb-1.5">
+							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-purple-700 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0
 								{% if isCurrentPlayer %}ring-2 ring-purple-400{% endif %}">
-								<svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+								<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
 									<path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
 								</svg>
 							</div>
 							<div class="min-w-0 flex-1">
-								<h2 class="text-sm sm:text-base font-bold text-white truncate">{{ fightPlayer.name }}</h2>
-								<span class="text-xs text-purple-300">{{ 'game.statistics.level'|trans }} {{ fightPlayer.level ?? 0 }}</span>
+								<h2 class="text-xs sm:text-sm font-bold text-white truncate">{{ fightPlayer.name }}</h2>
+								<span class="text-[10px] text-purple-300">{{ 'game.fight.level_short'|trans }}{{ fightPlayer.level ?? 0 }}</span>
 							</div>
 						</div>
 
 						{# HP bar #}
-						<div class="mb-1.5">
+						<div class="mb-1">
 							<div class="flex items-center justify-between mb-0.5">
-								<span class="text-xs text-gray-400">{{ 'game.fight.hp'|trans }}</span>
-								<span class="text-xs font-bold text-white">{{ fightPlayer.life }}/{{ fightPlayer.maxLife }}</span>
+								<span class="text-[10px] text-gray-400">{{ 'game.fight.hp'|trans }}</span>
+								<span class="text-[10px] font-bold text-white">{{ fightPlayer.life }}/{{ fightPlayer.maxLife }}</span>
 							</div>
-							<div class="progress-bar">
-								<div class="progress-bar-fill bg-red-500 fightPlayer-progress-life" style="width: {{ (fightPlayer.life/fightPlayer.maxLife)*100 }}%"></div>
+							<div class="progress-bar progress-bar-compact">
+								<div class="progress-bar-fill bg-red-500" style="width: {{ (fightPlayer.life/fightPlayer.maxLife)*100 }}%"></div>
 							</div>
 						</div>
 
 						{# Energy bar #}
-						<div class="mb-1.5">
+						<div class="mb-1">
 							<div class="flex items-center justify-between mb-0.5">
-								<span class="text-xs text-gray-400">{{ 'game.fight.energy'|trans }}</span>
-								<span class="text-xs font-bold text-white">{{ fightPlayer.energy }}/{{ fightPlayer.maxEnergy }}</span>
+								<span class="text-[10px] text-gray-400">{{ 'game.fight.energy'|trans }}</span>
+								<span class="text-[10px] font-bold text-white">{{ fightPlayer.energy }}/{{ fightPlayer.maxEnergy }}</span>
 							</div>
-							<div class="progress-bar">
-								<div class="progress-bar-fill bg-blue-500 fightPlayer-progress-energy" style="width: {{ (fightPlayer.energy/fightPlayer.maxEnergy)*100 }}%"></div>
+							<div class="progress-bar progress-bar-compact">
+								<div class="progress-bar-fill bg-blue-500" style="width: {{ (fightPlayer.energy/fightPlayer.maxEnergy)*100 }}%"></div>
 							</div>
 						</div>
 
 						{# Status effects #}
-						{% if statusEffects['player_' ~ fightPlayer.id] is defined %}
-							<div class="flex flex-wrap gap-1 mt-2">
+						{% if statusEffects['player_' ~ fightPlayer.id] is defined and statusEffects['player_' ~ fightPlayer.id]|length > 0 %}
+							<div class="flex flex-wrap gap-0.5 mt-1">
 								{{ _self.status_effect_badges(statusEffects['player_' ~ fightPlayer.id]) }}
 							</div>
 						{% endif %}
@@ -118,47 +206,125 @@
 				{% endfor %}
 			</div>
 
-			{# --- CENTER: COMBAT ACTIONS --- #}
-			<div class="game-card p-3 sm:p-5">
-				<div class="flex flex-col items-center justify-center h-full space-y-4 sm:space-y-6">
-					{# Combat visual #}
-					<div class="relative w-28 h-28 sm:w-48 sm:h-48 lg:w-64 lg:h-64">
-						<div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-transparent rounded-full animate-pulse"></div>
-						<div class="absolute inset-0 flex items-center justify-center">
-							<div class="w-16 h-16 sm:w-24 sm:h-24 lg:w-32 lg:h-32 bg-gradient-to-br from-purple-600 to-purple-800 rounded-full flex items-center justify-center shadow-lg">
-								<svg class="w-8 h-8 sm:w-12 sm:h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/>
-								</svg>
+			{# --- MONSTERS --- #}
+			<div class="space-y-2">
+				{% for mob in fight.mobs %}
+					<div class="selectable-target game-card p-2 sm:p-3 rounded-lg transition-all"
+						data-mob-id="{{ mob.id }}" data-target-type="mob">
+
+						<div class="flex items-center gap-2 mb-1.5">
+							<div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
+								{% if mob.monster.isBoss %}
+									<span class="text-yellow-400 text-sm">&#9813;</span>
+								{% else %}
+									<svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+										<path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-2 1-3 .5 1.5 1 2 1 3a3 3 0 01.12 1.62z" clip-rule="evenodd"/>
+									</svg>
+								{% endif %}
+							</div>
+							<div class="min-w-0 flex-1">
+								<h2 class="text-xs sm:text-sm font-bold text-white truncate">
+									{{ mob.name }}
+									{% if mob.monster.isBoss %}
+										<span class="text-[9px] text-yellow-400 uppercase">Boss</span>
+									{% endif %}
+								</h2>
+								<div class="flex items-center gap-1">
+									<span class="text-[10px] text-gray-400">{{ 'game.fight.level_short'|trans }}{{ mob.level ?? 0 }}</span>
+									<span class="text-[9px]">
+										{% for i in 1..5 %}
+											{% if i <= (mob.monster.level ?? 1) %}
+												<span class="text-yellow-400">&#9733;</span>
+											{% else %}
+												<span class="text-gray-600">&#9733;</span>
+											{% endif %}
+										{% endfor %}
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					{# Action buttons #}
+						{# HP bar #}
+						<div class="mb-1">
+							<div class="flex items-center justify-between mb-0.5">
+								<span class="text-[10px] text-gray-400">{{ 'game.fight.hp'|trans }}</span>
+								<span class="text-[10px] font-bold text-white">{{ mob.life }}/{{ mob.maxLife }}</span>
+							</div>
+							<div class="progress-bar progress-bar-compact">
+								<div class="progress-bar-fill bg-red-500" style="width: {{ (mob.life/mob.maxLife)*100 }}%"></div>
+							</div>
+						</div>
+
+						{# Elemental resistances (boss only) #}
+						{% if mob.monster.isBoss and mob.monster.elementalResistances %}
+							<div class="flex flex-wrap gap-0.5 mt-1">
+								{% for element, value in mob.monster.elementalResistances %}
+									<span class="inline-flex items-center px-1 py-0.5 rounded text-[9px]
+										{% if value > 0 %}bg-green-900/30 text-green-400 border border-green-800
+										{% else %}bg-red-900/30 text-red-400 border border-red-800{% endif %}"
+										title="{{ element }}: {{ value > 0 ? '+' : '' }}{{ (value * 100)|round }}%">
+										{{ element|capitalize }} {{ value > 0 ? '+' : '' }}{{ (value * 100)|round }}%
+									</span>
+								{% endfor %}
+							</div>
+						{% endif %}
+
+						{# Status effects #}
+						{% if statusEffects['mob_' ~ mob.id] is defined and statusEffects['mob_' ~ mob.id]|length > 0 %}
+							<div class="flex flex-wrap gap-0.5 mt-1">
+								{{ _self.status_effect_badges(statusEffects['mob_' ~ mob.id]) }}
+							</div>
+						{% endif %}
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+
+		{# ===== ACTIONS + LOG (tabbed on mobile, side by side on desktop) ===== #}
+		<div class="fight-mobile-layout">
+			{# --- LEFT: ACTIONS --- #}
+			<div>
+				{# Mobile tabs #}
+				<div class="flex border-b border-gray-700 mb-2 lg:hidden">
+					<button class="fight-tab active flex-1 text-center py-2 text-xs font-semibold border-b-2 transition-colors" data-tab="actions">
+						{{ 'game.fight.actions'|trans }}
+					</button>
+					<button class="fight-tab flex-1 text-center py-2 text-xs font-semibold border-b-2 transition-colors" data-tab="log">
+						{{ 'game.fight.log.title'|trans }}
+						{% if fightLogs|length > 0 %}
+							<span class="ml-1 inline-flex items-center justify-center w-4 h-4 text-[9px] bg-purple-600 text-white rounded-full">{{ fightLogs|length }}</span>
+						{% endif %}
+					</button>
+				</div>
+
+				{# Actions panel #}
+				<div id="panel-actions" class="game-card p-2 sm:p-3">
 					{% if not fight.terminated %}
-						<div class="fight-actions-grid w-full">
+						{# Action buttons #}
+						<div class="fight-actions-grid w-full mb-2">
 							<button id="action-attack"
-									class="fight-action bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 active:from-red-800 active:to-red-900 transition-all font-medium touch-target"
+									class="fight-action bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg hover:from-red-700 hover:to-red-800 active:from-red-800 active:to-red-900 transition-all font-medium touch-target text-sm"
 									data-href="{{ path("app_game_fight_attack") }}"
 									data-content="{{ 'game.fight.attacking'|trans }}">
 								{{ 'game.fight.action.attack'|trans }}
 							</button>
 
 							<button id="fight-spells"
-									class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 active:from-blue-800 active:to-blue-900 transition-all font-medium touch-target"
+									class="bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 active:from-blue-800 active:to-blue-900 transition-all font-medium touch-target text-sm"
 									data-href="{{ path("app_game_fight_spell") }}"
 									data-target="#fight-action-container">
 								{{ 'game.fight.action.spell'|trans }}
 							</button>
 
 							<button id="fight-objects"
-									class="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 active:from-green-800 active:to-green-900 transition-all font-medium touch-target"
+									class="bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg hover:from-green-700 hover:to-green-800 active:from-green-800 active:to-green-900 transition-all font-medium touch-target text-sm"
 									data-href="{{ path("app_game_fight_item") }}"
 									data-target="#fight-action-container">
 								{{ 'game.fight.action.object'|trans }}
 							</button>
 
 							<button id="action-flee"
-									class="fight-action bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 active:from-gray-800 active:to-gray-900 transition-all font-medium touch-target"
+									class="fight-action bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-lg hover:from-gray-700 hover:to-gray-800 active:from-gray-800 active:to-gray-900 transition-all font-medium touch-target text-sm"
 									data-href="{{ path("app_game_fight_flee") }}"
 									data-content="{{ 'game.fight.fleeing'|trans }}">
 								{{ 'game.fight.action.flee'|trans }}
@@ -168,14 +334,14 @@
 						{# Skill spells #}
 						{% if unlockedSpells is defined and unlockedSpells|length > 0 %}
 							<div class="w-full">
-								<h4 class="text-xs font-semibold text-purple-300 mb-2">{{ 'game.fight.skill_spells'|trans }}</h4>
-								<div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+								<h4 class="text-[10px] font-semibold text-purple-300 mb-1.5">{{ 'game.fight.skill_spells'|trans }}</h4>
+								<div class="grid grid-cols-2 sm:grid-cols-3 gap-1">
 									{% for spell in unlockedSpells %}
 										{% set cooldown = playerCooldowns[spell.slug] ?? 0 %}
 										{% set hasEnergy = player.energy >= spell.energyCost %}
 										{% set isAvailable = cooldown == 0 and hasEnergy %}
 										{% set isDefensive = (spell.heal is not null and spell.heal > 0) and (spell.damage is null or spell.damage == 0) %}
-										<button class="spell-btn fight-action relative px-2 py-2 rounded-lg text-xs font-medium transition-all touch-target
+										<button class="spell-btn fight-action relative px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all touch-target
 											{% if not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
 											{% if spell.element == 'fire' %} ring-1 ring-orange-500/50
 											{% elseif spell.element == 'water' %} ring-1 ring-blue-500/50
@@ -191,7 +357,7 @@
 											title="{{ spell.description }}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
 											<span class="block truncate">{{ spell.name }}</span>
 											{% if spell.energyCost > 0 %}
-												<span class="block text-[10px] opacity-75 mt-0.5">
+												<span class="block text-[9px] opacity-75 mt-0.5">
 													{{ spell.energyCost }} EN
 													{% if spell.damage %} · {{ spell.damage }} DMG{% endif %}
 													{% if spell.heal %} · {{ spell.heal }} HEAL{% endif %}
@@ -201,149 +367,113 @@
 												<span class="cooldown-badge">{{ cooldown }}</span>
 											{% endif %}
 											{% if not hasEnergy and cooldown == 0 %}
-												<span class="block text-[10px] text-red-400">{{ 'game.fight.energy_insufficient'|trans }}</span>
+												<span class="block text-[9px] text-red-400">{{ 'game.fight.energy_insufficient'|trans }}</span>
 											{% endif %}
 										</button>
 									{% endfor %}
 								</div>
 							</div>
 						{% endif %}
+					{% else %}
+						{# Fight ended #}
+						<div>
+							<h3 class="text-lg sm:text-xl font-bold text-white text-center mb-3">{{ 'game.fight.terminated'|trans }}</h3>
+							{% if fight.victory %}
+								<form class="space-y-3" action="{{ path("app_game_fight_loot") }}" role="form" method="post">
+									<input type="hidden" name="fight" value="{{ fight.id }}">
+									<div class="bg-gray-700/50 rounded-lg p-2 sm:p-4">
+										<h4 class="text-sm font-semibold text-white mb-2">{{ 'game.fight.loot.items_list'|trans }}</h4>
+										<div class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-2">
+											{% for item in fight.loot %}
+												<div class="flex items-center justify-between p-2 bg-gray-800 rounded-lg border border-purple-500/20">
+													<div class="flex items-center gap-2 min-w-0">
+														<div class="w-6 h-6 bg-gradient-to-br from-purple-600 to-purple-800 rounded flex items-center justify-center flex-shrink-0">
+															<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+																<path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"/>
+															</svg>
+														</div>
+														<span class="text-white text-xs truncate">{{ item.name }}</span>
+													</div>
+													<input type="checkbox" class="form-checkbox h-4 w-4 text-purple-600 rounded border-gray-600 flex-shrink-0" checked name="items[]" value="{{ item.id }}">
+												</div>
+											{% endfor %}
+										</div>
+									</div>
+									<button type="submit" class="w-full px-3 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium touch-target text-sm">
+										{{ 'game.fight.loot.collect'|trans }}
+									</button>
+								</form>
+
+								{# Butcher buttons #}
+								{% for mob in fight.mobs %}
+								<div id="butcher-section-{{ mob.id }}" class="mt-2">
+									<button type="button"
+										class="butcher-btn w-full px-3 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all font-medium touch-target text-sm"
+										data-mob-id="{{ mob.id }}"
+										onclick="butcherMob({{ mob.id }}, this)">
+										{{ 'game.fight.butcher'|trans({'%name%': mob.monster.name}) }}
+									</button>
+									<div id="butcher-result-{{ mob.id }}" class="mt-1"></div>
+								</div>
+								{% endfor %}
+							{% else %}
+								<div class="text-center py-4">
+									<div class="inline-block p-3 bg-red-500/20 rounded-xl">
+										<svg class="w-10 h-10 text-red-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+											<path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-2 1-3 .5 1.5 1 2 1 3a3 3 0 01.12 1.62z" clip-rule="evenodd"/>
+										</svg>
+										<p class="text-white mt-2 font-medium text-sm">{{ 'game.fight.defeat'|trans }}</p>
+									</div>
+								</div>
+							{% endif %}
+						</div>
 					{% endif %}
 				</div>
 			</div>
 
-			{# --- MONSTERS SECTION --- #}
-			<div class="space-y-3">
-				{% for mob in fight.mobs %}
-					<div class="selectable-target game-card p-3 sm:p-4 rounded-xl transition-all"
-						data-mob-id="{{ mob.id }}" data-target-type="mob">
-
-						<div class="flex items-center gap-3 mb-2">
-							<div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-red-600 to-red-800 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
-								{% if mob.monster.isBoss %}
-									<span class="text-yellow-400 text-lg">&#9813;</span>
-								{% else %}
-									<svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-										<path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-2 1-3 .5 1.5 1 2 1 3a3 3 0 01.12 1.62z" clip-rule="evenodd"/>
-									</svg>
+			{# --- RIGHT: COMBAT LOG --- #}
+			<div id="panel-log" class="hidden lg:block">
+				<div class="hidden lg:block">
+					<h4 class="text-xs font-semibold text-purple-300 mb-1.5">{{ 'game.fight.log.title'|trans }}</h4>
+				</div>
+				<div class="game-card p-2 sm:p-3">
+					<div id="combat-log" class="combat-log-container">
+						{% if fightLogs|length == 0 %}
+							<p class="text-gray-500 text-xs text-center py-4">{{ 'game.fight.log.empty'|trans }}</p>
+						{% else %}
+							{% set currentTurn = -1 %}
+							{% for log in fightLogs %}
+								{% if log.turn != currentTurn %}
+									{% set currentTurn = log.turn %}
+									<div class="flex items-center gap-2 my-1.5">
+										<div class="flex-1 h-px bg-gray-700"></div>
+										<span class="text-[9px] text-gray-500 font-semibold uppercase">{{ 'game.fight.turn'|trans }} {{ log.turn }}</span>
+										<div class="flex-1 h-px bg-gray-700"></div>
+									</div>
 								{% endif %}
-							</div>
-							<div class="min-w-0 flex-1">
-								<h2 class="text-sm sm:text-base font-bold text-white truncate">
-									{{ mob.name }}
-									{% if mob.monster.isBoss %}
-										<span class="text-[10px] text-yellow-400 uppercase">Boss</span>
-									{% endif %}
-								</h2>
-								<div class="flex items-center gap-1">
-									<span class="text-xs text-gray-400">{{ 'game.fight.level_short'|trans }}{{ mob.level ?? 0 }}</span>
-									<span class="text-[10px]">
-										{% for i in 1..5 %}
-											{% if i <= (mob.monster.level ?? 1) %}
-												<span class="text-yellow-400">&#9733;</span>
-											{% else %}
-												<span class="text-gray-600">&#9733;</span>
-											{% endif %}
-										{% endfor %}
-									</span>
+								<div class="log-entry flex items-start gap-1.5 py-0.5 text-[11px] leading-tight
+									{% if log.type == 'death' or log.type == 'defeat' %}text-red-300
+									{% elseif log.type == 'victory' %}text-yellow-300
+									{% elseif log.type == 'heal' %}text-green-300
+									{% elseif log.type == 'critical' %}text-yellow-400
+									{% elseif log.type == 'miss' %}text-gray-500
+									{% elseif log.type == 'fight_start' %}text-purple-300
+									{% elseif log.actorType == 'mob' %}text-red-200
+									{% elseif log.actorType == 'player' %}text-blue-200
+									{% else %}text-gray-300{% endif %}">
+									<span class="flex-shrink-0 w-3 text-center">{{ _self.log_icon(log.type) }}</span>
+									<span>{{ log.message }}</span>
 								</div>
-							</div>
-						</div>
-
-						{# HP bar #}
-						<div class="mb-1.5">
-							<div class="flex items-center justify-between mb-0.5">
-								<span class="text-xs text-gray-400">{{ 'game.fight.hp'|trans }}</span>
-								<span class="text-xs font-bold text-white">{{ mob.life }}/{{ mob.maxLife }}</span>
-							</div>
-							<div class="progress-bar">
-								<div class="progress-bar-fill bg-red-500 mob-progress-life" style="width: {{ (mob.life/mob.maxLife)*100 }}%"></div>
-							</div>
-						</div>
-
-						{# Elemental resistances (boss only) #}
-						{% if mob.monster.isBoss and mob.monster.elementalResistances %}
-							<div class="flex flex-wrap gap-1 mt-2">
-								{% for element, value in mob.monster.elementalResistances %}
-									<span class="inline-flex items-center px-1 py-0.5 rounded text-[10px]
-										{% if value > 0 %}bg-green-900/30 text-green-400 border border-green-800
-										{% else %}bg-red-900/30 text-red-400 border border-red-800{% endif %}"
-										title="{{ element }}: {{ value > 0 ? '+' : '' }}{{ (value * 100)|round }}%">
-										{{ element|capitalize }} {{ value > 0 ? '+' : '' }}{{ (value * 100)|round }}%
-									</span>
-								{% endfor %}
-							</div>
-						{% endif %}
-
-						{# Status effects #}
-						{% if statusEffects['mob_' ~ mob.id] is defined %}
-							<div class="flex flex-wrap gap-1 mt-2">
-								{{ _self.status_effect_badges(statusEffects['mob_' ~ mob.id]) }}
-							</div>
+							{% endfor %}
 						{% endif %}
 					</div>
-				{% endfor %}
+				</div>
 			</div>
 		</div>
 
-		{# ===== NOTIFICATION & LOOT ===== #}
-		<div class="mt-4 sm:mt-6">
+		{# Notification component #}
+		<div class="mt-2">
 			{{ component('FightNotification', {fight: fight}) }}
-
-			{# Fight ended #}
-			<div id="fight-terminated" class="{% if not fight.terminated %}hidden{% endif %} game-card p-4 sm:p-6">
-				<h3 class="text-xl sm:text-2xl font-bold text-white text-center mb-4">{{ 'game.fight.terminated'|trans }}</h3>
-				<div id="fight-terminated-content">
-					{% if fight.victory %}
-						<form class="space-y-4" action="{{ path("app_game_fight_loot") }}" role="form" method="post">
-							<input type="hidden" name="fight" value="{{ fight.id }}">
-							<div class="bg-gray-700/50 rounded-xl p-3 sm:p-5">
-								<h4 class="text-base font-semibold text-white mb-3">{{ 'game.fight.loot.items_list'|trans }}</h4>
-								<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-									{% for item in fight.loot %}
-										<div class="flex items-center justify-between p-3 bg-gray-800 rounded-lg border border-purple-500/20">
-											<div class="flex items-center gap-2 min-w-0">
-												<div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-purple-800 rounded-lg flex items-center justify-center flex-shrink-0">
-													<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-														<path d="M11 17a1 1 0 001.447.894l4-2A1 1 0 0017 15V9.236a1 1 0 00-1.447-.894l-4 2a1 1 0 00-.553.894V17zM15.211 6.276a1 1 0 000-1.788l-4.764-2.382a1 1 0 00-.894 0L4.789 4.488a1 1 0 000 1.788l4.764 2.382a1 1 0 00.894 0l4.764-2.382zM4.447 8.342A1 1 0 003 9.236V15a1 1 0 00.553.894l4 2A1 1 0 009 17v-5.764a1 1 0 00-.553-.894l-4-2z"/>
-													</svg>
-												</div>
-												<span class="text-white text-sm truncate">{{ item.name }}</span>
-											</div>
-											<input type="checkbox" class="form-checkbox h-5 w-5 text-purple-600 rounded border-gray-600 flex-shrink-0" checked name="items[]" value="{{ item.id }}">
-										</div>
-									{% endfor %}
-								</div>
-							</div>
-							<button type="submit" class="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg hover:from-purple-700 hover:to-purple-800 transition-all font-medium touch-target">
-								{{ 'game.fight.loot.collect'|trans }}
-							</button>
-						</form>
-
-						{# Butcher buttons #}
-						{% for mob in fight.mobs %}
-						<div id="butcher-section-{{ mob.id }}" class="mt-3">
-							<button type="button"
-								class="butcher-btn w-full px-4 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all font-medium touch-target"
-								data-mob-id="{{ mob.id }}"
-								onclick="butcherMob({{ mob.id }}, this)">
-								{{ 'game.fight.butcher'|trans({'%name%': mob.monster.name}) }}
-							</button>
-							<div id="butcher-result-{{ mob.id }}" class="mt-2"></div>
-						</div>
-						{% endfor %}
-					{% else %}
-						<div class="text-center py-6">
-							<div class="inline-block p-4 bg-red-500/20 rounded-xl">
-								<svg class="w-12 h-12 text-red-500 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-									<path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-2 1-3 .5 1.5 1 2 1 3a3 3 0 01.12 1.62z" clip-rule="evenodd"/>
-								</svg>
-								<p class="text-white mt-3 font-medium">{{ 'game.fight.defeat'|trans }}</p>
-							</div>
-						</div>
-					{% endif %}
-				</div>
-			</div>
 		</div>
 	</div>
 {% endblock %}
@@ -352,13 +482,42 @@
 	{{ parent() }}
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
+			// ===== TAB SWITCHING (mobile) =====
+			const tabs = document.querySelectorAll('.fight-tab');
+			const panelActions = document.getElementById('panel-actions');
+			const panelLog = document.getElementById('panel-log');
+
+			tabs.forEach(tab => {
+				tab.addEventListener('click', function() {
+					tabs.forEach(t => t.classList.remove('active'));
+					this.classList.add('active');
+					const target = this.dataset.tab;
+					if (target === 'actions') {
+						panelActions.classList.remove('hidden');
+						if (panelLog) panelLog.classList.add('hidden', 'lg:block');
+					} else {
+						panelActions.classList.add('hidden');
+						if (panelLog) {
+							panelLog.classList.remove('hidden', 'lg:block');
+							panelLog.classList.add('block');
+						}
+					}
+				});
+			});
+
+			// Auto-scroll log to bottom
+			const logContainer = document.getElementById('combat-log');
+			if (logContainer) {
+				logContainer.scrollTop = logContainer.scrollHeight;
+			}
+
+			// ===== TARGET SELECTION =====
 			let selectedTarget = null;
 			const selectableTargets = document.querySelectorAll('.selectable-target');
 			const actionButtons = document.querySelectorAll('.fight-action');
 			const aliveMobs = document.querySelectorAll('.selectable-target[data-target-type="mob"]');
 			const playerTargets = document.querySelectorAll('.selectable-target[data-target-type="player"]');
 
-			// Auto-select the single mob if there's only one
 			if (aliveMobs.length === 1) {
 				aliveMobs[0].classList.add('selected');
 				selectedTarget = aliveMobs[0];
@@ -383,7 +542,6 @@
 				const isDefensiveSpell = button.dataset.spellType === 'defensive';
 
 				if (isDefensiveSpell) {
-					// Defensive spell: auto-target current player if solo
 					if (playerTargets.length === 1) {
 						return { resolved: true, target: playerTargets[0] };
 					}
@@ -393,7 +551,6 @@
 					return { resolved: false };
 				}
 
-				// Offensive action: use selected target, or auto-target single mob
 				if (selectedTarget && selectedTarget.dataset.targetType === 'mob') {
 					return { resolved: true, target: selectedTarget };
 				}
@@ -406,6 +563,7 @@
 				return { resolved: false };
 			}
 
+			// ===== ACTION HANDLING =====
 			actionButtons.forEach(button => {
 				button.addEventListener('click', async function(e) {
 					if (this.disabled) return;
@@ -417,6 +575,9 @@
 						alert("{{ 'game.fight.select_target'|trans|e('js') }}");
 						return;
 					}
+
+					// Disable all buttons during action
+					actionButtons.forEach(b => b.disabled = true);
 
 					const targetId = target ? (target.dataset.playerId || target.dataset.mobId) : null;
 					const targetType = target ? target.dataset.targetType : null;
@@ -438,6 +599,7 @@
 
 						if (!response.ok || data.error) {
 							alert(data.error || "{{ 'game.fight.error_action'|trans|e('js') }}");
+							actionButtons.forEach(b => b.disabled = false);
 							return;
 						}
 
@@ -459,6 +621,7 @@
 					} catch (error) {
 						console.error('Error:', error);
 						alert("{{ 'game.fight.error_action'|trans|e('js') }}");
+						actionButtons.forEach(b => b.disabled = false);
 					}
 				});
 			});
@@ -474,7 +637,7 @@
 				const data = await resp.json();
 
 				if (data.error) {
-					resultDiv.innerHTML = '<p class="text-red-400 text-sm">' + data.error + '</p>';
+					resultDiv.innerHTML = '<p class="text-red-400 text-xs">' + data.error + '</p>';
 					btn.disabled = false;
 					btn.textContent = "{{ 'game.fight.butcher_retry'|trans|e('js') }}";
 					return;
@@ -483,23 +646,23 @@
 				btn.style.display = 'none';
 
 				if (data.items && data.items.length > 0) {
-					let html = '<div class="bg-amber-900/30 border border-amber-500/30 rounded-lg p-3">';
-					html += '<p class="text-amber-400 text-sm font-bold mb-2">{{ "game.fight.butcher_materials"|trans|e("js") }}</p>';
+					let html = '<div class="bg-amber-900/30 border border-amber-500/30 rounded-lg p-2">';
+					html += '<p class="text-amber-400 text-xs font-bold mb-1">{{ "game.fight.butcher_materials"|trans|e("js") }}</p>';
 					for (const item of data.items) {
-						html += '<p class="text-yellow-300 text-xs">+ ' + item.name + '</p>';
+						html += '<p class="text-yellow-300 text-[11px]">+ ' + item.name + '</p>';
 					}
 					html += '</div>';
 					resultDiv.innerHTML = html;
 				} else {
-					resultDiv.innerHTML = '<p class="text-gray-400 text-sm">{{ "game.fight.butcher_none"|trans|e("js") }}</p>';
+					resultDiv.innerHTML = '<p class="text-gray-400 text-xs">{{ "game.fight.butcher_none"|trans|e("js") }}</p>';
 				}
 
 				if (data.message && data.message.includes('brise')) {
-					resultDiv.innerHTML += '<p class="text-red-400 text-xs mt-1 font-bold">{{ "game.fight.butcher_broken"|trans|e("js") }}</p>';
+					resultDiv.innerHTML += '<p class="text-red-400 text-[10px] mt-1 font-bold">{{ "game.fight.butcher_broken"|trans|e("js") }}</p>';
 				}
 			} catch (err) {
 				console.error('[butcher] Error:', err);
-				resultDiv.innerHTML = '<p class="text-red-400 text-sm">{{ "game.fight.connection_error"|trans|e("js") }}</p>';
+				resultDiv.innerHTML = '<p class="text-red-400 text-xs">{{ "game.fight.connection_error"|trans|e("js") }}</p>';
 				btn.disabled = false;
 				btn.textContent = "{{ 'game.fight.butcher_retry'|trans|e('js') }}";
 			}
