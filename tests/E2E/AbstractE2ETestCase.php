@@ -3,13 +3,10 @@
 namespace App\Tests\E2E;
 
 use Facebook\WebDriver\WebDriverBy;
-use Symfony\Component\Panther\Client;
 use Symfony\Component\Panther\PantherTestCase;
 
 abstract class AbstractE2ETestCase extends PantherTestCase
 {
-    protected static Client $pantherClient;
-
     protected function setUp(): void
     {
         parent::setUp();
