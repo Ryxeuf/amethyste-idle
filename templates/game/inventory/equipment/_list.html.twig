@@ -2,224 +2,192 @@
 
 {% block turbo_stream_content %}
 <turbo-frame id="inventory-content">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Équipement du personnage -->
-        <div class="bg-gray-800 rounded-lg shadow-lg p-6 col-span-1">
-            <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.equipped'|trans }}</h2>
-            <div class="grid grid-cols-2 gap-4">
-                {% for slotKey, slotItem in equipped %}
-                <div class="bg-gray-700 rounded p-3 flex items-center">
-                    <div class="w-12 h-12 bg-gray-600 rounded-md flex items-center justify-center mr-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            {% if slotKey == 'head' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                            {% elseif slotKey == 'shoulder' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                            {% elseif slotKey == 'neck' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            {% elseif slotKey == 'chest' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            {% elseif slotKey == 'hand' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
-                            {% elseif slotKey == 'main_weapon' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            {% elseif slotKey == 'side_weapon' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
-                            {% elseif slotKey == 'belt' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                            {% elseif slotKey == 'leg' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                            {% elseif slotKey == 'foot' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                            {% elseif slotKey == 'ring_1' or slotKey == 'ring_2' %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                            {% else %}
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            {% endif %}
-                        </svg>
-                    </div>
-                    <div>
-                        <div class="text-sm text-gray-400">{{ ('game.inventory.slot.' ~ slotKey)|trans }}</div>
-                        <div class="text-white">
-                            {% if slotItem %}
-                                {{ slotItem.name }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+    {# ===== STATS DU PERSONNAGE ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-4 mb-4">
+        <div class="grid grid-cols-4 gap-2 text-center">
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">PV</div>
+                <div class="text-sm font-bold text-red-400">{{ stats.life }}/{{ stats.maxLife }}</div>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">{{ 'game.stats.attack'|trans }}</div>
+                <div class="text-sm font-bold text-orange-400">{{ stats.hit }}</div>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">{{ 'game.stats.defense'|trans }}</div>
+                <div class="text-sm font-bold text-blue-400">{{ stats.protection }}</div>
+            </div>
+            <div>
+                <div class="text-xs text-gray-500 uppercase tracking-wide">{{ 'game.stats.speed'|trans }}</div>
+                <div class="text-sm font-bold text-green-400">{{ stats.speed }}</div>
             </div>
         </div>
-        
-        <!-- Statistiques du personnage -->
-        <div class="bg-gray-800 rounded-lg shadow-lg p-6 col-span-1 md:col-span-2 lg:col-span-2">
-            <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.stats'|trans }}</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div class="bg-gray-700 rounded p-4">
-                    <div class="text-sm text-gray-400">{{ 'game.stats.attack'|trans }}</div>
-                    <div class="text-2xl font-bold text-white">{{ stats.attack }}</div>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <div class="text-sm text-gray-400">{{ 'game.stats.defense'|trans }}</div>
-                    <div class="text-2xl font-bold text-white">{{ stats.defense }}</div>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <div class="text-sm text-gray-400">{{ 'game.stats.magic'|trans }}</div>
-                    <div class="text-2xl font-bold text-white">{{ stats.magic }}</div>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <div class="text-sm text-gray-400">{{ 'game.stats.speed'|trans }}</div>
-                    <div class="text-2xl font-bold text-white">{{ stats.speed }}</div>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <div class="text-sm text-gray-400">{{ 'game.stats.health'|trans }}</div>
-                    <div class="text-2xl font-bold text-white">{{ stats.health }}</div>
-                </div>
-                <div class="bg-gray-700 rounded p-4">
-                    <div class="text-sm text-gray-400">{{ 'game.stats.mana'|trans }}</div>
-                    <div class="text-2xl font-bold text-white">{{ stats.mana }}</div>
-                </div>
+        <div class="mt-2 grid grid-cols-2 gap-2">
+            <div class="bg-red-900/30 rounded-lg h-2 overflow-hidden">
+                <div class="bg-red-500 h-full rounded-lg transition-all" style="width: {{ (stats.life / stats.maxLife * 100)|round }}%"></div>
             </div>
+            <div class="bg-blue-900/30 rounded-lg h-2 overflow-hidden">
+                <div class="bg-blue-500 h-full rounded-lg transition-all" style="width: {{ (stats.energy / stats.maxEnergy * 100)|round }}%"></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-1">
+            <div class="text-[10px] text-gray-500 text-center">PV {{ stats.life }}/{{ stats.maxLife }}</div>
+            <div class="text-[10px] text-gray-500 text-center">EN {{ stats.energy }}/{{ stats.maxEnergy }}</div>
         </div>
     </div>
-    
-    <!-- Liste des équipements disponibles -->
-    <div class="mt-8 bg-gray-800 rounded-lg shadow-lg p-6">
-        <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.available_equipment'|trans }}</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {% if equipments is empty %}
-                <div class="col-span-full text-center text-gray-400 py-8">Aucun équipement disponible</div>
-            {% else %}
-                {% for item in equipments %}
-                    <div class="bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card" 
-                         data-item-id="{{ item.id }}" 
-                         data-is-gear="true"
-                         data-slot-type="{{ item.slotType }}">
-                        <div class="flex items-center mb-3">
-                            <div class="w-10 h-10 
-                                {% if item.rarity == 'common' %}bg-gray-600 text-gray-300
-                                {% elseif item.rarity == 'uncommon' %}bg-green-800 text-green-300
-                                {% elseif item.rarity == 'rare' %}bg-blue-800 text-blue-300
-                                {% elseif item.rarity == 'epic' %}bg-purple-800 text-purple-300
-                                {% elseif item.rarity == 'legendary' %}bg-yellow-700 text-yellow-300
-                                {% else %}bg-gray-600 text-gray-300
-                                {% endif %} rounded-md flex items-center justify-center mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <!-- Icon based on slot type -->
-                                    {% if item.slotType == 'head' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-                                    {% elseif item.slotType == 'shoulder' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                                    {% elseif item.slotType == 'neck' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    {% elseif item.slotType == 'chest' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    {% elseif item.slotType == 'hand' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
-                                    {% elseif item.slotType == 'main_weapon' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                    {% elseif item.slotType == 'side_weapon' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 12H6" />
-                                    {% elseif item.slotType == 'belt' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                    {% elseif item.slotType == 'leg' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                                    {% elseif item.slotType == 'foot' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                    {% elseif item.slotType == 'ring_1' or item.slotType == 'ring_2' %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                    {% else %}
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    {% endif %}
-                                </svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="text-white font-medium">{{ item.name }}</h3>
-                                <p class="text-xs text-gray-400">{{ item.slotTypeName|default('Équipement') }}</p>
-                            </div>
-                            <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">Niv. {{ item.level|default(1) }}</div>
+
+    {# ===== GRILLE D'EQUIPEMENT (Character Sheet RPG) ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-4 mb-4">
+        <h2 class="text-sm font-semibold text-purple-400 mb-3 uppercase tracking-wide">{{ 'game.inventory.equipped'|trans }}</h2>
+
+        {# Layout: gauche (tête, épaules, torse, mains, ceinture) | droite (cou, armes, jambes, pieds, anneaux) #}
+        <div class="grid grid-cols-2 gap-2">
+            {% for slotKey, playerItem in equipped %}
+                {% set slotLabel = ('game.inventory.slot.' ~ slotKey)|trans %}
+                {% if playerItem is not null %}
+                    <div class="equipment-slot group relative bg-gray-700/80 rounded-lg p-2.5 flex items-center gap-2.5 border border-gray-600/50 hover:border-purple-500/50 transition-colors">
+                        <div class="w-9 h-9 rounded-md flex items-center justify-center shrink-0
+                            {% if playerItem.genericItem.rarity == 'legendary' %}bg-yellow-700/40 text-yellow-400 ring-1 ring-yellow-600/50
+                            {% elseif playerItem.genericItem.rarity == 'epic' %}bg-purple-700/40 text-purple-400 ring-1 ring-purple-600/50
+                            {% elseif playerItem.genericItem.rarity == 'rare' %}bg-blue-700/40 text-blue-400 ring-1 ring-blue-600/50
+                            {% elseif playerItem.genericItem.rarity == 'uncommon' %}bg-green-700/40 text-green-400 ring-1 ring-green-600/50
+                            {% else %}bg-gray-600/50 text-gray-300{% endif %}">
+                            {{ _self.slot_icon(slotKey) }}
                         </div>
-                        <p class="text-sm text-gray-300 mt-1">{{ item.description|default('Aucune description') }}</p>
-                        {% if item.stats is defined and item.stats is not empty %}
-                            <div class="mt-2 pt-2 border-t border-gray-600">
-                                <div class="grid grid-cols-2 gap-2">
-                                    {% for stat, value in item.stats %}
-                                        <div class="text-xs">
-                                            <span class="text-gray-400">{{ stat }}:</span>
-                                            <span class="text-white">{% if value > 0 %}+{% endif %}{{ value }}</span>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endif %}
-                        <div class="mt-3 text-center">
-                            <button 
-                                class="bg-purple-600 hover:bg-purple-700 text-white py-1 px-3 rounded-md text-sm equip-item-btn"
-                                data-item-id="{{ item.id }}">
-                                {{ 'game.inventory.actions.equip'|trans }}
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs text-gray-500 leading-none">{{ slotLabel }}</div>
+                            <div class="text-sm text-white font-medium truncate">{{ playerItem.genericItem.name }}</div>
+                            {% if playerItem.genericItem.protection > 0 %}
+                                <div class="text-[10px] text-blue-400">+{{ playerItem.genericItem.protection }} DEF</div>
+                            {% endif %}
+                        </div>
+                        <form method="post" action="{{ path('app_game_inventory_equipment_unequip', {id: playerItem.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
+                            <button type="submit" class="w-7 h-7 rounded-md bg-red-900/40 text-red-400 hover:bg-red-800/60 flex items-center justify-center transition-colors" title="{{ 'game.inventory.actions.unequip'|trans }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
                             </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="equipment-slot bg-gray-800/60 rounded-lg p-2.5 flex items-center gap-2.5 border border-dashed border-gray-700/50">
+                        <div class="w-9 h-9 rounded-md bg-gray-700/30 flex items-center justify-center text-gray-600 shrink-0">
+                            {{ _self.slot_icon(slotKey) }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs text-gray-600 leading-none">{{ slotLabel }}</div>
+                            <div class="text-xs text-gray-600 italic">{{ ('game.inventory.slot.empty')|trans }}</div>
                         </div>
                     </div>
-                {% endfor %}
-            {% endif %}
+                {% endif %}
+            {% endfor %}
         </div>
+    </div>
+
+    {# ===== EQUIPEMENT DISPONIBLE ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-4">
+        <h2 class="text-sm font-semibold text-purple-400 mb-3 uppercase tracking-wide">{{ 'game.inventory.available_equipment'|trans }}</h2>
+
+        {% if availableGear is empty %}
+            <div class="text-center text-gray-500 py-8 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                Aucun équipement disponible
+            </div>
+        {% else %}
+            <div class="space-y-2">
+                {% for item in availableGear %}
+                    {% set gi = item.genericItem %}
+                    <div class="bg-gray-700/60 rounded-lg p-3 flex items-center gap-3 border border-gray-600/30 hover:border-gray-500/50 transition-colors">
+                        {# Icon avec rareté #}
+                        <div class="w-10 h-10 rounded-md flex items-center justify-center shrink-0
+                            {% if gi.rarity == 'legendary' %}bg-yellow-700/40 text-yellow-400 ring-1 ring-yellow-600/50
+                            {% elseif gi.rarity == 'epic' %}bg-purple-700/40 text-purple-400 ring-1 ring-purple-600/50
+                            {% elseif gi.rarity == 'rare' %}bg-blue-700/40 text-blue-400 ring-1 ring-blue-600/50
+                            {% elseif gi.rarity == 'uncommon' %}bg-green-700/40 text-green-400 ring-1 ring-green-600/50
+                            {% else %}bg-gray-600/50 text-gray-300{% endif %}">
+                            {{ _self.slot_icon(gi.gearLocation) }}
+                        </div>
+
+                        {# Infos #}
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-white font-medium truncate">{{ gi.name }}</span>
+                                {% if gi.level %}
+                                    <span class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded shrink-0">Niv.{{ gi.level }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-xs text-gray-500">{{ _self.slot_name(gi.gearLocation) }}</span>
+                                {% if gi.protection > 0 %}
+                                    <span class="text-[10px] text-blue-400">+{{ gi.protection }} DEF</span>
+                                {% endif %}
+                                {% if gi.rarity %}
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded
+                                        {% if gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
+                                        {% elseif gi.rarity == 'epic' %}bg-purple-900/40 text-purple-400
+                                        {% elseif gi.rarity == 'rare' %}bg-blue-900/40 text-blue-400
+                                        {% elseif gi.rarity == 'uncommon' %}bg-green-900/40 text-green-400
+                                        {% else %}bg-gray-800 text-gray-500{% endif %}">{{ gi.rarity|capitalize }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {# Bouton équiper #}
+                        <form method="post" action="{{ path('app_game_inventory_equipment_equip', {id: item.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
+                            <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium rounded-md transition-colors">
+                                {{ 'game.inventory.actions.equip'|trans }}
+                            </button>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 </turbo-frame>
 
-<script>
-document.addEventListener('turbo:load', () => {
-    initEquipmentButtons();
-});
+{# ===== MACRO: Icône par emplacement ===== #}
+{% macro slot_icon(slot) %}
+{% if slot == 'head' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg>
+{% elseif slot == 'neck' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v4m0 12v4M2 12h4m12 0h4"/></svg>
+{% elseif slot == 'chest' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2l3 5h6l3-5"/><rect x="4" y="7" width="16" height="13" rx="2"/><path d="M12 7v6"/></svg>
+{% elseif slot == 'shoulder' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10c0-3 2-5 8-5s8 2 8 5"/><rect x="6" y="10" width="12" height="6" rx="2"/></svg>
+{% elseif slot == 'hand' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 1 1 3 0m-3 6a1.5 1.5 0 0 0-3 0v2a7.5 7.5 0 0 0 15 0v-5a1.5 1.5 0 0 0-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 0 1 3 0v1m0 0V11m0-5.5a1.5 1.5 0 0 1 3 0v3m0 0V11"/></svg>
+{% elseif slot == 'main_weapon' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2l6 6-9 9-6-6 9-9z"/><path d="M5.5 16.5L2 22l5.5-3.5"/></svg>
+{% elseif slot == 'side_weapon' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+{% elseif slot == 'belt' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="20" height="6" rx="1"/><rect x="9" y="8" width="6" height="8" rx="1"/></svg>
+{% elseif slot == 'leg' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h4v14l-2 6H6V2zm8 0h4v20h-2l-2-6V2z"/></svg>
+{% elseif slot == 'foot' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16s1-4 4-4 4 4 8 4 4-4 4-4v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-5z"/></svg>
+{% elseif slot == 'ring_1' or slot == 'ring_2' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="14" r="5"/><path d="M12 9V2l3 3-3 3"/></svg>
+{% else %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+{% endif %}
+{% endmacro %}
 
-document.addEventListener('turbo:render', () => {
-    initEquipmentButtons();
-});
-
-function initEquipmentButtons() {
-    const equipButtons = document.querySelectorAll('.equip-item-btn');
-    
-    equipButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const itemId = this.getAttribute('data-item-id');
-            const url = '/game/inventory/equipment/equip/' + itemId;
-            
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Content-Type': 'application/json',
-                    'Accept': 'text/vnd.turbo-stream.html'
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-                Turbo.renderStreamMessage(html);
-            })
-            .catch(error => {
-                console.error('Erreur lors de l\'équipement de l\'item:', error);
-            });
-        });
-    });
-    
-    // Optionnel : permettre de cliquer sur toute la carte
-    const itemCards = document.querySelectorAll('.item-card');
-    
-    itemCards.forEach(card => {
-        card.addEventListener('click', function(e) {
-            // Éviter le déclenchement si on a cliqué sur le bouton directement
-            if (!e.target.closest('.equip-item-btn')) {
-                const equipButton = this.querySelector('.equip-item-btn');
-                if (equipButton) {
-                    equipButton.click();
-                }
-            }
-        });
-    });
-}
-</script>
-{% endblock %} 
+{# ===== MACRO: Nom d'emplacement ===== #}
+{% macro slot_name(slot) %}
+{% apply spaceless %}
+{% if slot == 'head' %}Tête
+{% elseif slot == 'neck' %}Cou
+{% elseif slot == 'chest' %}Torse
+{% elseif slot == 'shoulder' %}Épaules
+{% elseif slot == 'hand' %}Mains
+{% elseif slot == 'main_weapon' %}Arme principale
+{% elseif slot == 'side_weapon' %}Arme secondaire
+{% elseif slot == 'belt' %}Ceinture
+{% elseif slot == 'leg' %}Jambes
+{% elseif slot == 'foot' %}Pieds
+{% elseif slot == 'ring_1' %}Anneau 1
+{% elseif slot == 'ring_2' %}Anneau 2
+{% else %}Équipement{% endif %}
+{% endapply %}
+{% endmacro %}
+{% endblock %}

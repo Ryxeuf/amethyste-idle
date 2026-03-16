@@ -2,46 +2,40 @@
 
 {% block turbo_stream_content %}
 <turbo-frame id="inventory-content">
-    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
-        <h2 class="text-xl font-semibold text-purple-400 mb-4">{{ 'game.inventory.materia'|trans }}</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {% if materias is empty %}
-                <div class="col-span-full text-center text-gray-400 py-8">Aucune materia disponible</div>
-            {% else %}
+    <div class="bg-gray-800/50 rounded-xl p-4">
+        <h2 class="text-sm font-semibold text-purple-400 mb-3 uppercase tracking-wide">{{ 'game.inventory.materia'|trans }}</h2>
+        {% if materias is empty %}
+            <div class="text-center text-gray-500 py-8 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                Aucune materia disponible
+            </div>
+        {% else %}
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {% for item in materias %}
-                    <div class="bg-gray-700 rounded-lg p-4 flex flex-col hover:bg-gray-600 transition cursor-pointer item-card" 
-                         data-item-id="{{ item.id }}"
-                         data-is-materia="true">
-                        <div class="flex items-center mb-3">
-                            <div class="w-10 h-10 
-                                {% if item.rarity == 'common' %}bg-gray-600 text-gray-300
-                                {% elseif item.rarity == 'uncommon' %}bg-green-800 text-green-300
-                                {% elseif item.rarity == 'rare' %}bg-blue-800 text-blue-300
-                                {% elseif item.rarity == 'epic' %}bg-purple-800 text-purple-300
-                                {% elseif item.rarity == 'legendary' %}bg-yellow-700 text-yellow-300
-                                {% else %}bg-gray-600 text-gray-300
-                                {% endif %} rounded-md flex items-center justify-center mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                                </svg>
+                    <div class="bg-gray-700/60 rounded-lg p-3 border border-gray-600/30 hover:border-gray-500/50 transition-colors"
+                         data-item-id="{{ item.id }}">
+                        <div class="flex items-center gap-2 mb-1.5">
+                            <div class="w-8 h-8 rounded-md flex items-center justify-center shrink-0
+                                {% if item.element == 'fire' %}bg-red-900/40 text-red-400
+                                {% elseif item.element == 'water' %}bg-blue-900/40 text-blue-400
+                                {% elseif item.element == 'earth' %}bg-amber-900/40 text-amber-400
+                                {% elseif item.element == 'air' %}bg-cyan-900/40 text-cyan-400
+                                {% elseif item.element == 'light' %}bg-yellow-900/40 text-yellow-300
+                                {% elseif item.element == 'dark' %}bg-violet-900/40 text-violet-400
+                                {% else %}bg-green-900/40 text-green-400{% endif %}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                             </div>
-                            <div class="flex-1">
-                                <h3 class="text-white font-medium">{{ item.name }}</h3>
-                                <p class="text-xs text-gray-400">Materia</p>
-                            </div>
-                            <div class="text-sm font-semibold text-white bg-gray-800 px-2 py-1 rounded">Niv. {{ item.level|default(1) }}</div>
+                            <span class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded">Niv.{{ item.level }}</span>
                         </div>
-                        <p class="text-sm text-gray-300 mt-1">{{ item.description|default('Aucune description') }}</p>
-                        {% if item.effects is defined and item.effects is not empty %}
-                            <div class="mt-2 pt-2 border-t border-gray-600">
-                                <div class="text-xs text-gray-400">Effets:</div>
-                                <div class="text-sm text-white">{{ item.effects }}</div>
-                            </div>
+                        <div class="text-sm text-white font-medium truncate">{{ item.name }}</div>
+                        <div class="text-xs text-gray-500 mt-0.5">{{ item.description }}</div>
+                        {% if item.effects %}
+                            <div class="mt-1.5 text-[10px] text-purple-400 bg-purple-900/20 rounded px-1.5 py-1">{{ item.effects }}</div>
                         {% endif %}
                     </div>
                 {% endfor %}
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
 </turbo-frame>
-{% endblock %} 
+{% endblock %}

@@ -13,14 +13,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class IndexController extends AbstractController
 {
     public function __construct(
-        private readonly PlayerHelper $playerHelper
+        private readonly PlayerHelper $playerHelper,
     ) {
     }
 
     #[Route('', name: '_index')]
     public function __invoke(): Response
     {
-        // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $player = $this->playerHelper->getPlayer();
@@ -30,15 +29,11 @@ class IndexController extends AbstractController
 
         $inventory = $this->playerHelper->getBagInventory();
 
-        // Données de base pour l'inventaire
-        $inventoryData = [
-            'items' => $inventory->getItems(),
-            'size' => $inventory->getSize(),
-            'type' => $inventory->getType(),
-        ];
-
         return $this->render('game/inventory/index.html.twig', [
-            'inventory' => $inventoryData,
+            'gold' => $inventory->getGold(),
+            'gils' => $player->getGils(),
+            'bagSize' => $inventory->getSize(),
+            'bagUsed' => $inventory->getOccupiedSpace(),
         ]);
     }
 }

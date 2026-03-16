@@ -110,7 +110,8 @@
         "foot": "Pieds",
         "ring_1": "Anneau 1",
         "ring_2": "Anneau 2",
-        "accessory": "Accessoire"
+        "accessory": "Accessoire",
+        "empty": "Vide"
       },
       "actions": {
         "equip": "Équiper",
