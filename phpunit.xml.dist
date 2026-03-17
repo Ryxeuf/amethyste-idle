@@ -17,7 +17,7 @@
         <server name="KERNEL_CLASS" value="App\Kernel"/>
         <env name="PANTHER_NO_HEADLESS" value="0"/>
         <env name="PANTHER_CHROME_ARGUMENTS" value="--disable-gpu --no-sandbox --disable-dev-shm-usage"/>
-        <env name="PANTHER_WEB_SERVER_ROUTER" value="./tests/router.php"/>
+        <env name="PANTHER_WEB_SERVER_ROUTER" value="../tests/router.php"/>
     </php>
 
     <testsuites>

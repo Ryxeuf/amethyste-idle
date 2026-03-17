@@ -8,8 +8,14 @@ class AuthenticationTest extends AbstractE2ETestCase
 {
     public function testLoginPageIsAccessible(): void
     {
-        static::$pantherClient->request('GET', '/login');
-        static::$pantherClient->waitFor('#inputEmail');
+        $crawler = static::$pantherClient->request('GET', '/login');
+
+        try {
+            static::$pantherClient->waitFor('#inputEmail', 10);
+        } catch (\Exception $e) {
+            $pageSource = static::$pantherClient->getPageSource();
+            $this->fail('Page /login did not contain #inputEmail. Page source: ' . substr($pageSource, 0, 2000));
+        }
 
         $this->assertSelectorExists('#inputEmail');
         $this->assertSelectorExists('#inputPassword');
