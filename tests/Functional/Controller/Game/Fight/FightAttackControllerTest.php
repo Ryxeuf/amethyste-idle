@@ -6,6 +6,7 @@ use App\Controller\Game\Fight\FightAttackController;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\MobActionHandler;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -21,6 +22,7 @@ class FightAttackControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private MobActionHandler&MockObject $mobActionHandler;
     private EntityManagerInterface&MockObject $entityManager;
+    private CombatLogger&MockObject $combatLogger;
     private FightAttackController $controller;
 
     protected function setUp(): void
@@ -28,11 +30,13 @@ class FightAttackControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->mobActionHandler = $this->createMock(MobActionHandler::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         $this->controller = new FightAttackController(
             $this->playerHelper,
             $this->mobActionHandler,
             $this->entityManager,
+            $this->combatLogger,
         );
 
         // Stub the container for security checks

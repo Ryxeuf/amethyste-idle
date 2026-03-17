@@ -7,6 +7,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\Game\Spell;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\MobActionHandler;
@@ -28,6 +29,7 @@ class FightSpellControllerTest extends TestCase
     private ElementalSynergyCalculator&MockObject $synergyCalculator;
     private StatusEffectManager&MockObject $statusEffectManager;
     private MobActionHandler&MockObject $mobActionHandler;
+    private CombatLogger&MockObject $combatLogger;
     private FightSpellController $controller;
 
     protected function setUp(): void
@@ -39,6 +41,7 @@ class FightSpellControllerTest extends TestCase
         $this->synergyCalculator = $this->createMock(ElementalSynergyCalculator::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->mobActionHandler = $this->createMock(MobActionHandler::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         $this->controller = new FightSpellController(
             $this->playerHelper,
@@ -48,6 +51,7 @@ class FightSpellControllerTest extends TestCase
             $this->synergyCalculator,
             $this->statusEffectManager,
             $this->mobActionHandler,
+            $this->combatLogger,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
