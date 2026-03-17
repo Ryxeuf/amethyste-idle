@@ -11,14 +11,17 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     {
         parent::setUp();
 
-        static::$pantherClient = static::createPantherClient([
-            'browser' => static::CHROME,
-        ]);
+        if (null === static::$pantherClient) {
+            static::$pantherClient = static::createPantherClient([
+                'browser' => static::CHROME,
+            ]);
+        }
     }
 
     protected function login(string $email = 'remy@amethyste.game', string $password = 'test'): void
     {
         static::$pantherClient->request('GET', '/login');
+        static::$pantherClient->waitFor('#inputEmail');
 
         static::$pantherClient->findElement(WebDriverBy::id('inputEmail'))->sendKeys($email);
         static::$pantherClient->findElement(WebDriverBy::id('inputPassword'))->sendKeys($password);

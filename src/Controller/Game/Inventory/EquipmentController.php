@@ -2,7 +2,6 @@
 
 namespace App\Controller\Game\Inventory;
 
-use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;

@@ -11,6 +11,7 @@ use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,6 +25,7 @@ class SpellApplicatorTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private StatusEffectManager&MockObject $statusEffectManager;
+    private CombatLogger&MockObject $combatLogger;
     private SpellApplicator $spellApplicator;
 
     protected function setUp(): void
@@ -31,6 +33,7 @@ class SpellApplicatorTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         // Par defaut, pas de status effect actif
         $this->statusEffectManager->method('isCharacterBerserk')->willReturn(false);
@@ -45,6 +48,7 @@ class SpellApplicatorTest extends TestCase
             $this->entityManager,
             $this->eventDispatcher,
             $this->statusEffectManager,
+            $this->combatLogger,
         );
     }
 
@@ -250,6 +254,7 @@ class SpellApplicatorTest extends TestCase
             $this->entityManager,
             $this->eventDispatcher,
             $this->statusEffectManager,
+            $this->combatLogger,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -293,6 +298,7 @@ class SpellApplicatorTest extends TestCase
             $this->entityManager,
             $this->eventDispatcher,
             $this->statusEffectManager,
+            $this->combatLogger,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -336,6 +342,7 @@ class SpellApplicatorTest extends TestCase
             $this->entityManager,
             $this->eventDispatcher,
             $this->statusEffectManager,
+            $this->combatLogger,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -377,6 +384,7 @@ class SpellApplicatorTest extends TestCase
             $this->entityManager,
             $this->eventDispatcher,
             $this->statusEffectManager,
+            $this->combatLogger,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
