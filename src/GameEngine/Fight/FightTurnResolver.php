@@ -67,7 +67,7 @@ class FightTurnResolver
         $currentRound = (int) floor($fight->getStep() / max(1, count($turnOrder))) + 1;
 
         $timeline = [];
-        for ($r = 0; $r < $rounds; $r++) {
+        for ($r = 0; $r < $rounds; ++$r) {
             foreach ($turnOrder as $participant) {
                 $timeline[] = array_merge($participant, [
                     'round' => $currentRound + $r,
