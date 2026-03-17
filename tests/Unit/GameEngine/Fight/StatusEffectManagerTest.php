@@ -7,6 +7,7 @@ use App\Entity\App\FightStatusEffect;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\Game\StatusEffect;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\StatusEffectManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -16,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 class StatusEffectManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
+    private CombatLogger&MockObject $combatLogger;
     private EntityRepository&MockObject $fightStatusEffectRepo;
     private StatusEffectManager $manager;
     private Fight&MockObject $fight;
@@ -33,8 +35,9 @@ class StatusEffectManagerTest extends TestCase
         $this->entityManager->method('flush');
 
         $this->fight = $this->createMock(Fight::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
-        $this->manager = new StatusEffectManager($this->entityManager);
+        $this->manager = new StatusEffectManager($this->entityManager, $this->combatLogger);
     }
 
     /**
