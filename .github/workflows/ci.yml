@@ -10,7 +10,7 @@ name: CI
 
 on:
   push:
-    branches: [main, develop, 'feature/**', 'fix/**', 'claude/**']
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
   workflow_call:  # Permet à d'autres workflows de réutiliser cette CI
