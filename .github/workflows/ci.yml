@@ -286,6 +286,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [lint, phpstan, tests]
     permissions:
+      contents: read
       packages: write
 
     steps:
