@@ -47,6 +47,8 @@ jobs:
     name: "Deploy to production"
     runs-on: ubuntu-latest
     needs: [ci]
+    permissions:
+      packages: read
     environment:
       name: production
       url: https://amethyste.best
@@ -64,6 +66,17 @@ jobs:
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Login to GHCR on server
+        env:
+          SSH_HOST: ${{ secrets.DEPLOY_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_USER }}
+          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SSH_PORT="${RAW_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" \
+            "echo '${GHCR_TOKEN}' | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
 
       - name: Deploy to server
         env:
@@ -94,7 +107,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            # Exécuter le script de déploiement
+            # Exécuter le script de déploiement (pull image GHCR + restart)
             echo ""
             echo "==> Lancement du deploiement..."
             ./scripts/deploy.sh --prod

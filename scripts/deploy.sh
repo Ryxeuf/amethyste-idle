@@ -57,8 +57,14 @@ if [[ "$COMPOSER_UPDATE" -eq 1 ]]; then
   echo ""
 fi
 
-echo "==> 1/5 Construction et demarrage des services..."
-docker compose "${COMPOSE_ARGS[@]}" up -d --build --wait
+if [[ "$MODE" == "prod" ]]; then
+  echo "==> 1/5 Pull de l'image de production et demarrage des services..."
+  docker compose "${COMPOSE_ARGS[@]}" pull php
+  docker compose "${COMPOSE_ARGS[@]}" up -d --wait
+else
+  echo "==> 1/5 Construction et demarrage des services..."
+  docker compose "${COMPOSE_ARGS[@]}" up -d --build --wait
+fi
 
 echo ""
 echo "==> 2/5 Activation de la page de maintenance (conteneur php)..."
