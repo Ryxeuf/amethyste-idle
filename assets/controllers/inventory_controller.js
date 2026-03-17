@@ -19,7 +19,7 @@ import { Controller } from '@hotwired/stimulus';
  *   </div>
  */
 export default class extends Controller {
-    static targets = ['item', 'tooltip', 'sheet', 'sheetBackdrop'];
+    static targets = ['item', 'tooltip', 'sheet', 'sheetBackdrop', 'tab', 'tabsNav', 'tabsWrapper'];
 
     connect() {
         this._createTooltip();
@@ -27,8 +27,10 @@ export default class extends Controller {
         this._isMobile = window.matchMedia('(hover: none)').matches;
         this._onResize = () => {
             this._isMobile = window.matchMedia('(hover: none)').matches;
+            this._updateFades();
         };
         window.addEventListener('resize', this._onResize);
+        this._initScrollFades();
     }
 
     disconnect() {
@@ -36,6 +38,30 @@ export default class extends Controller {
         this._tooltip?.remove();
         this._sheet?.remove();
         this._backdrop?.remove();
+    }
+
+    // ---- Tab switching ----
+
+    switchTab(event) {
+        const tab = event.currentTarget;
+        this.tabTargets.forEach(t => t.classList.remove('inv-tab--active'));
+        tab.classList.add('inv-tab--active');
+    }
+
+    _initScrollFades() {
+        if (!this.hasTabsNavTarget) return;
+        this.hasTabsNavTarget && this.tabsNavTarget.addEventListener('scroll', () => this._updateFades(), { passive: true });
+        setTimeout(() => this._updateFades(), 100);
+    }
+
+    _updateFades() {
+        if (!this.hasTabsWrapperTarget || !this.hasTabsNavTarget) return;
+        const scroller = this.tabsNavTarget;
+        const wrapper = this.tabsWrapperTarget;
+        const sl = scroller.scrollLeft;
+        const maxScroll = scroller.scrollWidth - scroller.clientWidth;
+        wrapper.classList.toggle('scroll-left', sl > 8);
+        wrapper.classList.toggle('scroll-right', sl < maxScroll - 8);
     }
 
     // ---- Tooltip (desktop hover) ----
