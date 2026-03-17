@@ -8,6 +8,7 @@ use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -31,6 +32,7 @@ class FightSpellController extends AbstractController
         private readonly StatusEffectManager $statusEffectManager,
         private readonly MobActionHandler $mobActionHandler,
         private readonly CombatLogger $combatLogger,
+        private readonly FightTurnResolver $turnResolver,
     ) {
     }
 
@@ -48,6 +50,34 @@ class FightSpellController extends AbstractController
 
         if (!$data || !isset($data['spellSlug']) || !isset($data['targetId']) || !isset($data['targetType'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Priorite de vitesse : le mob agit en premier s'il est plus rapide
+        $mobFirst = $this->turnResolver->isMobFirst($fight);
+        $mobResult = ['messages' => [], 'dangerAlert' => null];
+
+        if ($mobFirst && !$fight->isTerminated()) {
+            $mobResult = $this->mobActionHandler->doAction($fight);
+            $fight->setStep($fight->getStep() + 1);
+        }
+
+        // Si le joueur est mort apres l'action du mob, fin du combat
+        if ($player->isDead()) {
+            $this->combatLogger->logDefeat($fight);
+            $this->entityManager->flush();
+
+            return new JsonResponse([
+                'success' => true,
+                'hit' => false,
+                'messages' => $mobResult['messages'],
+                'dangerAlert' => $mobResult['dangerAlert'],
+                'synergy' => null,
+                'fight' => [
+                    'step' => $fight->getStep(),
+                    'terminated' => true,
+                    'victory' => false,
+                ],
+            ]);
         }
 
         // Check paralysis/freeze
@@ -167,9 +197,9 @@ class FightSpellController extends AbstractController
         $energyRegen = max(1, (int) ($player->getMaxEnergy() * 0.05));
         $player->setEnergy(min($player->getMaxEnergy(), $player->getEnergy() + $energyRegen));
 
-        // Tour du mob (si le combat continue)
+        // Tour du mob — apres le joueur si le joueur est plus rapide
         $mobResult = ['messages' => [], 'dangerAlert' => null];
-        if (!$fight->isTerminated()) {
+        if (!$mobFirst && !$fight->isTerminated()) {
             $mobResult = $this->mobActionHandler->doAction($fight);
             $fight->setStep($fight->getStep() + 1);
         }
@@ -189,7 +219,9 @@ class FightSpellController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'hit' => $hit,
-            'messages' => array_merge($messages, $mobResult['messages']),
+            'messages' => $mobFirst
+                ? array_merge($mobResult['messages'], $messages)
+                : array_merge($messages, $mobResult['messages']),
             'dangerAlert' => $mobResult['dangerAlert'],
             'synergy' => $synergyData ? $synergyData['label'] : null,
             'fight' => [

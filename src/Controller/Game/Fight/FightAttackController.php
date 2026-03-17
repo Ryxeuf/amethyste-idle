@@ -6,6 +6,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class FightAttackController extends AbstractController
         private readonly MobActionHandler $mobActionHandler,
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogger $combatLogger,
+        private readonly FightTurnResolver $turnResolver,
     ) {
     }
 
@@ -51,25 +53,34 @@ class FightAttackController extends AbstractController
         }
 
         $messages = [];
+        $mobResult = ['messages' => [], 'dangerAlert' => null];
+        $mobFirst = $this->turnResolver->isMobFirst($fight);
 
-        // Effectuer l'attaque du joueur
-        $damage = $this->calculateDamage($player, $target);
-        $target->setLife(max(0, $target->getLife() - $damage));
-        $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
+        // --- Mob agit en premier si plus rapide ---
+        if ($mobFirst && !$fight->isTerminated()) {
+            $mobResult = $this->mobActionHandler->doAction($fight);
+            $fight->setStep($fight->getStep() + 1);
+        }
 
-        $this->combatLogger->logAttack($fight, $player, $target, $damage);
+        // --- Tour du joueur (s'il est encore vivant) ---
+        if (!$player->isDead()) {
+            $damage = $this->calculateDamage($player, $target);
+            $target->setLife(max(0, $target->getLife() - $damage));
+            $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
 
-        if ($target->getLife() === 0) {
-            $target->setDiedAt(new \DateTime());
-            $messages[] = sprintf('%s est vaincu !', $target->getName());
-            $this->combatLogger->logDeath($fight, $target);
+            $this->combatLogger->logAttack($fight, $player, $target, $damage);
+
+            if ($target->getLife() === 0) {
+                $target->setDiedAt(new \DateTime());
+                $messages[] = sprintf('%s est vaincu !', $target->getName());
+                $this->combatLogger->logDeath($fight, $target);
+            }
         }
 
         $fight->setStep($fight->getStep() + 1);
 
-        // Tour du mob (si le combat continue)
-        $mobResult = ['messages' => [], 'dangerAlert' => null];
-        if (!$fight->isTerminated()) {
+        // --- Mob agit apres si plus lent ---
+        if (!$mobFirst && !$fight->isTerminated()) {
             $mobResult = $this->mobActionHandler->doAction($fight);
             $fight->setStep($fight->getStep() + 1);
         }
@@ -87,7 +98,9 @@ class FightAttackController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'messages' => array_merge($messages, $mobResult['messages']),
+            'messages' => $mobFirst
+                ? array_merge($mobResult['messages'], $messages)
+                : array_merge($messages, $mobResult['messages']),
             'dangerAlert' => $mobResult['dangerAlert'],
             'fight' => [
                 'step' => $fight->getStep(),

@@ -59,6 +59,9 @@ class FightFleeController extends AbstractController
         $this->combatLogger->logFlee($fight, $player, $success);
 
         if ($success) {
+            // Repositionner le joueur sur sa case precedente (avant le combat)
+            $player->setCoordinates($player->getLastCoordinates());
+
             // End fight - remove player from fight
             $player->setFight(null);
             $fight->setInProgress(false);

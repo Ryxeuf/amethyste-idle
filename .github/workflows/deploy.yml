@@ -1,55 +1,43 @@
 # =============================================================================
-# CD Pipeline — Déploiement automatique sur le serveur de production
+# CD Pipeline — Deploiement automatique sur le serveur de production
 # =============================================================================
 #
-# Déclenchée automatiquement quand un push arrive sur `main`.
+# Declenchee automatiquement quand semantic-release publie une nouvelle release.
+# Peut aussi etre lance manuellement via workflow_dispatch (rollback, re-deploy).
 #
-# Prérequis (GitHub Secrets à configurer) :
+# Prerequis (GitHub Secrets a configurer) :
 #   - DEPLOY_HOST        : IP ou hostname du serveur (ex: amethyste.best)
 #   - DEPLOY_USER        : Utilisateur SSH (ex: deploy)
-#   - DEPLOY_SSH_KEY     : Clé privée SSH (ed25519 recommandée)
+#   - DEPLOY_SSH_KEY     : Cle privee SSH (ed25519 recommandee)
 #   - DEPLOY_PATH        : Chemin du projet sur le serveur (ex: /opt/amethyste-idle)
-#   - DEPLOY_SSH_PORT    : Port SSH (optionnel, défaut 22)
+#   - DEPLOY_SSH_PORT    : Port SSH (optionnel, defaut 22)
 #
-# Fonctionnement :
-#   1. La CI complète doit passer (tests, lint, phpstan, build Docker)
-#   2. Connexion SSH au serveur de production
-#   3. Pull des dernières modifications
-#   4. Exécution du script deploy.sh --prod
+# Flux :
+#   push main -> release.yml (CI + semantic-release + Docker push)
+#            -> release publiee -> deploy.yml (ce fichier)
 #
 # =============================================================================
 
 name: Deploy
 
 on:
-  push:
-    branches: [main]
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version a deployer (ex: v1.2.3). Defaut: latest release."
+        required: false
+        type: string
 
 concurrency:
   group: deploy-production
-  cancel-in-progress: false  # Ne JAMAIS annuler un déploiement en cours
-
-env:
-  DEPLOY_TIMEOUT: 600  # 10 minutes max pour le déploiement
+  cancel-in-progress: false
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # 1. CI — On réutilise le workflow CI complet
-  # ---------------------------------------------------------------------------
-  ci:
-    name: "CI"
-    uses: ./.github/workflows/ci.yml
-    permissions:
-      contents: read
-      packages: write
-
-  # ---------------------------------------------------------------------------
-  # 2. Déploiement sur le serveur de production
-  # ---------------------------------------------------------------------------
   deploy:
     name: "Deploy to production"
     runs-on: ubuntu-latest
-    needs: [ci]
     permissions:
       contents: read
       packages: read
@@ -60,6 +48,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "tag=${{ inputs.version }}" >> $GITHUB_OUTPUT
+            echo "Deploiement manuel: ${{ inputs.version }}"
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "Deploiement automatique: ${{ github.event.release.tag_name }}"
+          else
+            echo "tag=latest" >> $GITHUB_OUTPUT
+            echo "Deploiement: latest"
+          fi
 
       - name: Configure SSH
         env:
@@ -88,22 +90,24 @@ jobs:
           SSH_USER: ${{ secrets.DEPLOY_USER }}
           RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          DEPLOY_VERSION: ${{ steps.version.outputs.tag }}
         run: |
           SSH_PORT="${RAW_PORT:-22}"
-          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" << 'DEPLOY_SCRIPT'
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" << DEPLOY_SCRIPT
             set -euo pipefail
 
             echo "========================================="
             echo " Deploiement Amethyste-Idle"
-            echo " Date: $(date '+%Y-%m-%d %H:%M:%S')"
+            echo " Version: ${DEPLOY_VERSION}"
+            echo " Date: \$(date '+%Y-%m-%d %H:%M:%S')"
             echo " Commit: ${{ github.sha }}"
             echo "========================================="
 
             cd ${{ secrets.DEPLOY_PATH }}
 
-            # Sauvegarder le commit actuel pour rollback éventuel
-            PREVIOUS_COMMIT=$(git rev-parse HEAD)
-            echo "Commit precedent: ${PREVIOUS_COMMIT}"
+            # Sauvegarder le commit actuel pour rollback eventuel
+            PREVIOUS_COMMIT=\$(git rev-parse HEAD)
+            echo "Commit precedent: \${PREVIOUS_COMMIT}"
 
             # Pull des modifications
             echo ""
@@ -111,7 +115,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
 
-            # Exécuter le script de déploiement (pull image GHCR + restart)
+            # Executer le script de deploiement (pull image GHCR + restart)
             echo ""
             echo "==> Lancement du deploiement..."
             ./scripts/deploy.sh --prod
@@ -119,7 +123,8 @@ jobs:
             echo ""
             echo "========================================="
             echo " Deploiement termine avec succes!"
-            echo " Nouveau commit: $(git rev-parse HEAD)"
+            echo " Version: ${DEPLOY_VERSION}"
+            echo " Commit: \$(git rev-parse HEAD)"
             echo "========================================="
           DEPLOY_SCRIPT
 
@@ -140,7 +145,6 @@ jobs:
 
             echo ""
             echo "==> Health check..."
-            # Attendre que le conteneur PHP soit prêt
             for i in $(seq 1 30); do
               if docker compose -f compose.yaml -f compose.prod.yaml exec -T php curl -sf http://localhost:2019/metrics > /dev/null 2>&1; then
                 echo "Health check OK!"
@@ -153,6 +157,14 @@ jobs:
             echo "ERREUR: Health check echoue apres 60 secondes"
             exit 1
           VERIFY_SCRIPT
+
+      - name: Deploy summary
+        if: success()
+        run: |
+          echo "### Deploiement reussi" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: ${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: https://amethyste.best" >> $GITHUB_STEP_SUMMARY
 
       - name: Cleanup SSH
         if: always()

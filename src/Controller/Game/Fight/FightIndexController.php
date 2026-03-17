@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class FightIndexController extends AbstractController
         private readonly CombatLogger $combatLogger,
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogArchiver $combatLogArchiver,
+        private readonly FightTurnResolver $turnResolver,
     ) {
     }
 
@@ -93,6 +95,10 @@ class FightIndexController extends AbstractController
         // Get combat logs
         $fightLogs = $this->combatLogger->getLogsForFight($fight);
 
+        // Timeline : ordre des tours base sur la vitesse
+        $timeline = $this->turnResolver->getTimeline($fight, 3);
+        $currentRound = (int) floor($fight->getStep() / max(1, count($this->turnResolver->getTurnOrder($fight)))) + 1;
+
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
             'fight' => $fight,
@@ -102,6 +108,8 @@ class FightIndexController extends AbstractController
             'playerCooldowns' => $playerCooldowns,
             'dangerAlert' => $dangerAlert,
             'fightLogs' => $fightLogs,
+            'timeline' => $timeline,
+            'currentRound' => $currentRound,
         ]);
     }
 
