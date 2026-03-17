@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Inventory;
 
+use App\Helper\ItemHelper;
 use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,22 +11,17 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/game/inventory/items', name: 'app_game_inventory_items_list')]
 class ItemsController extends AbstractController
 {
-    public function __construct(private readonly PlayerHelper $playerHelper)
+    public function __construct(private readonly PlayerHelper $playerHelper, private readonly ItemHelper $itemHelper)
     {
     }
 
     public function __invoke(): Response
     {
-        // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
 
-        // Récupérer l'inventaire sac du joueur
         $bagInventory = $this->playerHelper->getBagInventory();
-
-        // Récupérer les objets consommables de l'inventaire
         $playerItems = $bagInventory->getItems();
 
-        // Transformer les objets PlayerItem en tableau pour la vue
         $items = [];
         foreach ($playerItems as $item) {
             if ($item->getGenericItem()->isObject()) {
@@ -34,8 +30,9 @@ class ItemsController extends AbstractController
                     'id' => $item->getId(),
                     'name' => $genericItem->getName(),
                     'type' => 'Consommable',
-                    'quantity' => 1, // Si vous avez un champ pour la quantité dans PlayerItem, utilisez-le ici
+                    'quantity' => 1,
                     'description' => $genericItem->getDescription(),
+                    'usable' => $this->itemHelper->getItemSpell($genericItem) !== null,
                 ];
             }
         }
