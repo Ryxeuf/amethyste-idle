@@ -10,6 +10,7 @@ use App\Entity\Game\Spell;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -30,6 +31,7 @@ class FightSpellControllerTest extends TestCase
     private StatusEffectManager&MockObject $statusEffectManager;
     private MobActionHandler&MockObject $mobActionHandler;
     private CombatLogger&MockObject $combatLogger;
+    private FightTurnResolver&MockObject $turnResolver;
     private FightSpellController $controller;
 
     protected function setUp(): void
@@ -42,6 +44,8 @@ class FightSpellControllerTest extends TestCase
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->mobActionHandler = $this->createMock(MobActionHandler::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
+        $this->turnResolver = $this->createMock(FightTurnResolver::class);
+        $this->turnResolver->method('isMobFirst')->willReturn(false);
 
         $this->controller = new FightSpellController(
             $this->playerHelper,
@@ -52,6 +56,7 @@ class FightSpellControllerTest extends TestCase
             $this->statusEffectManager,
             $this->mobActionHandler,
             $this->combatLogger,
+            $this->turnResolver,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
