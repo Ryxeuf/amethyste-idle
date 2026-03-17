@@ -4,7 +4,6 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\App\FightLog;
-use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use Doctrine\ORM\EntityManagerInterface;

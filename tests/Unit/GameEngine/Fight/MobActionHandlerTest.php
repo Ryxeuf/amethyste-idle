@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use App\Event\Fight\ActionEvent;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\Handler\MobActionHandlerInterface;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
@@ -24,6 +25,7 @@ class MobActionHandlerTest extends TestCase
     private SpellApplicator&MockObject $spellApplicator;
     private LoggerInterface&MockObject $logger;
     private StatusEffectManager&MockObject $statusEffectManager;
+    private CombatLogger&MockObject $combatLogger;
 
     protected function setUp(): void
     {
@@ -31,6 +33,7 @@ class MobActionHandlerTest extends TestCase
         $this->spellApplicator = $this->createMock(SpellApplicator::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         // Par defaut : pas de status, pas de messages
         $this->statusEffectManager->method('processStartOfTurn')->willReturn([]);
@@ -46,6 +49,7 @@ class MobActionHandlerTest extends TestCase
             $this->spellApplicator,
             $this->logger,
             $this->statusEffectManager,
+            $this->combatLogger,
         );
     }
 
