@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
+use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\Helper\PlayerHelper;
@@ -25,6 +26,7 @@ class FightItemControllerTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private SpellApplicator&MockObject $spellApplicator;
     private MobActionHandler&MockObject $mobActionHandler;
+    private CombatLogger&MockObject $combatLogger;
     private FightItemController $controller;
 
     protected function setUp(): void
@@ -33,12 +35,14 @@ class FightItemControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->spellApplicator = $this->createMock(SpellApplicator::class);
         $this->mobActionHandler = $this->createMock(MobActionHandler::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         $this->controller = new FightItemController(
             $this->playerHelper,
             $this->entityManager,
             $this->spellApplicator,
             $this->mobActionHandler,
+            $this->combatLogger,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
