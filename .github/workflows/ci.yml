@@ -21,7 +21,7 @@ concurrency:
 
 env:
   PHP_VERSION: '8.4'
-  POSTGRES_DB: amethyste_test
+  POSTGRES_DB: amethyste
   POSTGRES_USER: app
   POSTGRES_PASSWORD: test_password
 
@@ -153,6 +153,14 @@ jobs:
         env:
           SYMFONY_SKIP_AUTO_SCRIPTS: 1
 
+      - name: Create test database
+        run: php bin/console doctrine:database:create --env=test --if-not-exists
+        env:
+          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
+          MERCURE_URL: "http://localhost/.well-known/mercure"
+          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
+          MERCURE_JWT_SECRET: "test"
+
       - name: Run PHPUnit
         run: vendor/bin/phpunit --testdox --exclude-group e2e --testsuite Unit,Functional
         env:
@@ -239,6 +247,7 @@ jobs:
 
       - name: Setup test database
         run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:schema:create --env=test
           php bin/console doctrine:fixtures:load --env=test --no-interaction
         env:
