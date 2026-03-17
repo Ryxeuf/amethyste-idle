@@ -2,32 +2,64 @@
 
 {% block turbo_stream_content %}
 <turbo-frame id="inventory-content">
-    <div class="bg-gray-800/50 rounded-xl p-4">
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
         <div class="flex items-center justify-between mb-3">
-            <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wide">{{ 'game.inventory.bank'|trans }}</h2>
-            <span class="text-xs text-gray-500">{{ bankItems|length }}/{{ bankSize }}</span>
+            <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                {{ 'game.inventory.bank'|trans }}
+            </h2>
+            <div class="flex items-center gap-2">
+                <div class="flex items-center gap-1.5">
+                    <div class="w-12 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                        <div class="h-full bg-purple-500 rounded-full transition-all" style="width: {{ bankSize > 0 ? (bankItems|length / bankSize * 100)|round : 0 }}%"></div>
+                    </div>
+                    <span class="text-[10px] text-gray-500">{{ bankItems|length }}/{{ bankSize }}</span>
+                </div>
+            </div>
         </div>
+
         {% if bankItems is empty %}
-            <div class="text-center text-gray-500 py-8 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-                Votre coffre est vide
+            <div class="text-center text-gray-600 py-10">
+                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gray-800/50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                </div>
+                <p class="text-sm">Votre coffre est vide</p>
+                <p class="text-xs text-gray-700 mt-1">Déposez des objets ici pour les garder en sécurité</p>
             </div>
         {% else %}
-            <div class="space-y-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for item in bankItems %}
                     {% set gi = item.genericItem %}
-                    <div class="bg-gray-700/60 rounded-lg p-3 flex items-center gap-3 border border-gray-600/30">
-                        <div class="w-9 h-9 rounded-md flex items-center justify-center shrink-0
-                            {% if gi.rarity == 'legendary' %}bg-yellow-700/40 text-yellow-400
-                            {% elseif gi.rarity == 'epic' %}bg-purple-700/40 text-purple-400
-                            {% elseif gi.rarity == 'rare' %}bg-blue-700/40 text-blue-400
-                            {% elseif gi.rarity == 'uncommon' %}bg-green-700/40 text-green-400
-                            {% else %}bg-gray-600/50 text-gray-400{% endif %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                    <div class="inv-item-card flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0
+                            {% if gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
+                            {% elseif gi.rarity == 'epic' %}bg-purple-900/40 text-purple-400
+                            {% elseif gi.rarity == 'rare' %}bg-blue-900/40 text-blue-400
+                            {% elseif gi.rarity == 'uncommon' %}bg-green-900/40 text-green-400
+                            {% else %}bg-gray-700/50 text-gray-400{% endif %}">
+                            {% if gi.isGear() %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                            {% elseif gi.isMateria() %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                            {% elseif gi.isResource() %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            {% else %}
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                            {% endif %}
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="text-sm text-white font-medium truncate">{{ gi.name }}</div>
-                            <div class="text-xs text-gray-500">{{ gi.type|capitalize }}</div>
+                            <div class="flex items-center gap-2 mt-0.5">
+                                <span class="text-[10px] text-gray-500 capitalize">{{ gi.type }}</span>
+                                {% if gi.rarity %}
+                                    <span class="text-[9px] font-medium uppercase px-1 py-0.5 rounded
+                                        {% if gi.rarity == 'legendary' %}bg-yellow-900/30 text-yellow-400
+                                        {% elseif gi.rarity == 'epic' %}bg-purple-900/30 text-purple-400
+                                        {% elseif gi.rarity == 'rare' %}bg-blue-900/30 text-blue-400
+                                        {% elseif gi.rarity == 'uncommon' %}bg-green-900/30 text-green-400
+                                        {% else %}bg-gray-800 text-gray-500{% endif %}">{{ gi.rarity|capitalize }}</span>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
