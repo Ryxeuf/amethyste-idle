@@ -2,10 +2,13 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\Entity\App\Player;
+use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,6 +21,8 @@ class FightIndexController extends AbstractController
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatSkillResolver $combatSkillResolver,
         private readonly CombatLogger $combatLogger,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly CombatLogArchiver $combatLogArchiver,
     ) {
     }
 
@@ -32,13 +37,13 @@ class FightIndexController extends AbstractController
             throw $this->createNotFoundException('Player not found');
         }
         if (!$player->getFight()) {
-            throw $this->createNotFoundException('Fight not found');
+            return $this->redirectToRoute('app_game_map');
         }
         if ($player->getFight()->isVictory()) {
             return $this->redirectToRoute('app_game_fight_loot');
         }
         if ($player->getFight()->isDefeat()) {
-            return $this->redirectToRoute('app_game_map');
+            return $this->handleDefeat($player);
         }
 
         $fight = $player->getFight();
@@ -97,6 +102,48 @@ class FightIndexController extends AbstractController
             'playerCooldowns' => $playerCooldowns,
             'dangerAlert' => $dangerAlert,
             'fightLogs' => $fightLogs,
+        ]);
+    }
+
+    /**
+     * Gere la defaite : nettoie le combat, respawn le joueur, et redirige vers la carte.
+     * Casse la boucle de redirection /game/fight <-> /game/map.
+     */
+    private function handleDefeat(Player $player): Response
+    {
+        $fight = $player->getFight();
+
+        // Archiver les logs du combat avant nettoyage
+        $this->combatLogArchiver->archive($fight);
+
+        // Nettoyer les effets de statut
+        $this->statusEffectManager->clearAllEffects($fight);
+
+        // Dissocier tous les joueurs du combat
+        foreach ($fight->getPlayers() as $fightPlayer) {
+            $fightPlayer->setFight(null);
+            $this->entityManager->persist($fightPlayer);
+        }
+
+        // Supprimer les mobs du combat
+        foreach ($fight->getMobs() as $mob) {
+            $this->entityManager->remove($mob);
+        }
+
+        // Supprimer le combat
+        $this->entityManager->remove($fight);
+
+        // Respawn du joueur (restaurer HP si pas deja fait par le PlayerRespawnHandler)
+        if ($player->isDead()) {
+            $player->setLife((int) round($player->getMaxLife() / 2));
+            $player->setDiedAt(null);
+        }
+
+        $this->entityManager->persist($player);
+        $this->entityManager->flush();
+
+        return $this->render('game/fight/defeat.html.twig', [
+            'player' => $player,
         ]);
     }
 }

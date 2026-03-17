@@ -31,6 +31,7 @@ class PlayerRespawnHandler implements EventSubscriberInterface
         }
 
         $player->setLife((int) round($player->getMaxLife() / 2));
+        $player->setDiedAt(null);
         $player->setCoordinates($coordinates);
         $this->entityManager->persist($player);
         $this->entityManager->flush();

@@ -321,6 +321,8 @@
       "terminated": "Combat terminé",
       "victory": "Victoire !",
       "defeat": "Vous êtes mort...",
+      "defeat_description": "Vous avez été vaincu au combat. Vous réapparaissez avec la moitié de vos points de vie.",
+      "return_to_map": "Retourner sur la carte",
       "select_target": "Veuillez sélectionner une cible",
       "attacking": "Attaque en cours...",
       "fleeing": "Fuite en cours...",

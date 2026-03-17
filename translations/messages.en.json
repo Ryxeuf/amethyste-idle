@@ -321,6 +321,8 @@
       "terminated": "Combat ended",
       "victory": "Victory!",
       "defeat": "You have been defeated...",
+      "defeat_description": "You were defeated in combat. You respawn with half of your hit points.",
+      "return_to_map": "Return to map",
       "select_target": "Please select a target",
       "attacking": "Attacking...",
       "fleeing": "Fleeing...",

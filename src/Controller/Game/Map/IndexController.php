@@ -21,7 +21,7 @@ class IndexController extends AbstractController
         if ($player === null) {
             return $this->redirectToRoute('app_dashboard');
         }
-        if ($player->getFight() !== null) {
+        if ($player->getFight() !== null && !$player->getFight()->isTerminated()) {
             return $this->redirectToRoute('app_game_fight');
         }
 
