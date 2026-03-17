@@ -39,8 +39,6 @@ class MobActionHandlerTest extends TestCase
         $this->statusEffectManager->method('processStartOfTurn')->willReturn([]);
         $this->statusEffectManager->method('isCharacterParalyzed')->willReturn(false);
         $this->statusEffectManager->method('isCharacterFrozen')->willReturn(false);
-
-        $this->combatLogger = $this->createMock(CombatLogger::class);
     }
 
     private function createHandler(array $handlers = []): MobActionHandler

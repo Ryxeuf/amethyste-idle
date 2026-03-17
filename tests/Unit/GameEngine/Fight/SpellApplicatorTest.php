@@ -44,8 +44,6 @@ class SpellApplicatorTest extends TestCase
         $this->entityManager->method('flush');
         $this->entityManager->method('refresh');
 
-        $this->combatLogger = $this->createMock(CombatLogger::class);
-
         $this->spellApplicator = new SpellApplicator(
             $this->entityManager,
             $this->eventDispatcher,
