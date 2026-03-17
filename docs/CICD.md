@@ -22,9 +22,16 @@ Push/PR sur n'importe quelle branche
 │              │   (prod)     │               │
 │              └──────────────┘               │
 └─────────────────────────────────────────────┘
-                       │
-                       │ (uniquement sur main)
-                       ▼
+          │                          │
+          │ (PR vers main)           │ (push sur develop)
+          ▼                          ▼
+┌────────────────────┐   ┌─────────────────────┐
+│  Auto-merge PR     │   │ Auto-merge develop  │
+│  (squash merge)    │   │    → main           │
+└────────┬───────────┘   └──────────┬──────────┘
+         └───────────┬──────────────┘
+                     │ (push sur main)
+                     ▼
 ┌─────────────────────────────────────────────┐
 │            CD Pipeline (Deploy)             │
 │                                             │
@@ -91,6 +98,25 @@ Le job `docker-build` ne s'exécute que si les 3 premiers passent.
   # Un test spécifique
   docker compose exec php vendor/bin/phpunit --filter DijkstraTest
   ```
+
+---
+
+## Auto-Merge (`.github/workflows/auto-merge.yml`)
+
+Déclenché automatiquement quand le workflow CI se termine avec succès.
+
+### Deux modes
+
+| Mode | Déclencheur | Action |
+|------|-------------|--------|
+| **Auto-merge PR** | CI passe sur une PR vers `main` | Squash-merge automatique de la PR |
+| **Auto-merge develop** | CI passe sur un push vers `develop` | Merge `develop` dans `main` |
+
+### Comportement
+
+- **PRs** : quand la CI réussit sur une PR ciblant `main`, le workflow la merge automatiquement (squash merge). Si le merge échoue (conflits, protections), il échoue silencieusement.
+- **develop** : quand un push sur `develop` passe la CI, le workflow merge `develop` dans `main`. En cas de conflit, une issue GitHub est créée automatiquement pour alerter.
+- Le push résultant sur `main` déclenche ensuite le pipeline CD (deploy).
 
 ---
 
