@@ -4,8 +4,8 @@
 <turbo-frame id="inventory-content">
     <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
         <div class="flex items-center justify-between mb-3">
-            <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <h2 class="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 {{ 'game.inventory.materials'|trans }}
             </h2>
             {% if materials is not empty %}
@@ -14,27 +14,31 @@
         </div>
 
         {% if materials is empty %}
-            <div class="text-center text-gray-600 py-10">
-                <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-gray-800/50 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+            <div class="text-center text-gray-600 py-8 sm:py-10">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-3 rounded-full bg-gray-800/50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 sm:h-8 sm:w-8 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                 </div>
-                <p class="text-sm">Aucune ressource disponible</p>
-                <p class="text-xs text-gray-700 mt-1">Récoltez des ressources sur la carte du monde</p>
+                <p class="text-xs sm:text-sm">Aucune ressource disponible</p>
+                <p class="text-[10px] sm:text-xs text-gray-700 mt-1">Récoltez des ressources sur la carte du monde</p>
             </div>
         {% else %}
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                 {% for item in materials %}
                     {% set gi = item.genericItem %}
-                    <div class="inv-item-card text-center p-3">
-                        <div class="w-10 h-10 mx-auto rounded-lg flex items-center justify-center mb-2
+                    <div class="inv-item-card text-center p-2.5 sm:p-3"
+                         data-inventory-target="item"
+                         data-item-name="{{ gi.name }}"
+                         data-item-desc="{{ gi.description }}"
+                         data-item-rarity="{{ gi.rarity }}">
+                        <div class="w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-lg flex items-center justify-center mb-1.5
                             {% if gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
                             {% elseif gi.rarity == 'epic' %}bg-purple-900/40 text-purple-400
                             {% elseif gi.rarity == 'rare' %}bg-blue-900/40 text-blue-400
                             {% elseif gi.rarity == 'uncommon' %}bg-green-900/40 text-green-400
                             {% else %}bg-gray-700/50 text-gray-400{% endif %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                         </div>
-                        <div class="text-sm text-white font-medium truncate">{{ gi.name }}</div>
+                        <div class="text-xs sm:text-sm text-white font-medium truncate">{{ gi.name }}</div>
                         {% if gi.rarity %}
                             <span class="inline-block mt-1 text-[9px] font-medium uppercase px-1.5 py-0.5 rounded
                                 {% if gi.rarity == 'legendary' %}bg-yellow-900/30 text-yellow-400

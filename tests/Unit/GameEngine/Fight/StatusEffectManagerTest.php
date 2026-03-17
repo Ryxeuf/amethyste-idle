@@ -17,8 +17,8 @@ use PHPUnit\Framework\TestCase;
 class StatusEffectManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
-    private EntityRepository&MockObject $fightStatusEffectRepo;
     private CombatLogger&MockObject $combatLogger;
+    private EntityRepository&MockObject $fightStatusEffectRepo;
     private StatusEffectManager $manager;
     private Fight&MockObject $fight;
 
@@ -36,6 +36,7 @@ class StatusEffectManagerTest extends TestCase
         $this->entityManager->method('flush');
 
         $this->fight = $this->createMock(Fight::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         $this->manager = new StatusEffectManager($this->entityManager, $this->combatLogger);
     }
