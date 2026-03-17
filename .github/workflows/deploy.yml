@@ -39,6 +39,9 @@ jobs:
   ci:
     name: "CI"
     uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      packages: write
 
   # ---------------------------------------------------------------------------
   # 2. Déploiement sur le serveur de production
