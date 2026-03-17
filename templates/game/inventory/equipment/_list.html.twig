@@ -2,138 +2,156 @@
 
 {% block turbo_stream_content %}
 <turbo-frame id="inventory-content">
-    {# ===== STATS DU PERSONNAGE ===== #}
-    <div class="bg-gray-800/50 rounded-xl p-4 mb-4">
-        <div class="grid grid-cols-4 gap-2 text-center">
-            <div>
-                <div class="text-xs text-gray-500 uppercase tracking-wide">PV</div>
-                <div class="text-sm font-bold text-red-400">{{ stats.life }}/{{ stats.maxLife }}</div>
-            </div>
-            <div>
-                <div class="text-xs text-gray-500 uppercase tracking-wide">{{ 'game.stats.attack'|trans }}</div>
-                <div class="text-sm font-bold text-orange-400">{{ stats.hit }}</div>
-            </div>
-            <div>
-                <div class="text-xs text-gray-500 uppercase tracking-wide">{{ 'game.stats.defense'|trans }}</div>
-                <div class="text-sm font-bold text-blue-400">{{ stats.protection }}</div>
-            </div>
-            <div>
-                <div class="text-xs text-gray-500 uppercase tracking-wide">{{ 'game.stats.speed'|trans }}</div>
-                <div class="text-sm font-bold text-green-400">{{ stats.speed }}</div>
-            </div>
-        </div>
-        <div class="mt-2 grid grid-cols-2 gap-2">
-            <div class="bg-red-900/30 rounded-lg h-2 overflow-hidden">
-                <div class="bg-red-500 h-full rounded-lg transition-all" style="width: {{ (stats.life / stats.maxLife * 100)|round }}%"></div>
-            </div>
-            <div class="bg-blue-900/30 rounded-lg h-2 overflow-hidden">
-                <div class="bg-blue-500 h-full rounded-lg transition-all" style="width: {{ (stats.energy / stats.maxEnergy * 100)|round }}%"></div>
+    {# ===== CHARACTER SHEET RPG ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 mb-4 border border-gray-700/30">
+        {# Stats compactes en haut #}
+        <div class="flex items-center justify-between mb-3 pb-3 border-b border-gray-700/30">
+            <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                {{ 'game.inventory.equipped'|trans }}
+            </h2>
+            <div class="flex items-center gap-3 text-xs">
+                <span class="flex items-center gap-1 text-orange-400" title="{{ 'game.stats.attack'|trans }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2l6 6-9 9-6-6 9-9z"/><path d="M5.5 16.5L2 22l5.5-3.5"/></svg>
+                    {{ stats.hit }}
+                </span>
+                <span class="flex items-center gap-1 text-blue-400" title="{{ 'game.stats.defense'|trans }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    {{ stats.protection }}
+                </span>
+                <span class="flex items-center gap-1 text-green-400" title="{{ 'game.stats.speed'|trans }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    {{ stats.speed }}
+                </span>
             </div>
         </div>
-        <div class="grid grid-cols-2 gap-2 mt-1">
-            <div class="text-[10px] text-gray-500 text-center">PV {{ stats.life }}/{{ stats.maxLife }}</div>
-            <div class="text-[10px] text-gray-500 text-center">EN {{ stats.energy }}/{{ stats.maxEnergy }}</div>
-        </div>
-    </div>
 
-    {# ===== GRILLE D'EQUIPEMENT (Character Sheet RPG) ===== #}
-    <div class="bg-gray-800/50 rounded-xl p-4 mb-4">
-        <h2 class="text-sm font-semibold text-purple-400 mb-3 uppercase tracking-wide">{{ 'game.inventory.equipped'|trans }}</h2>
+        {# Barres PV / EN #}
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] text-red-400 font-medium uppercase">PV</span>
+                    <span class="text-[10px] text-gray-500">{{ stats.life }}/{{ stats.maxLife }}</span>
+                </div>
+                <div class="h-2 bg-gray-900/60 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-red-600 to-red-400 rounded-full transition-all" style="width: {{ (stats.life / stats.maxLife * 100)|round }}%"></div>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] text-blue-400 font-medium uppercase">EN</span>
+                    <span class="text-[10px] text-gray-500">{{ stats.energy }}/{{ stats.maxEnergy }}</span>
+                </div>
+                <div class="h-2 bg-gray-900/60 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-blue-600 to-blue-400 rounded-full transition-all" style="width: {{ (stats.energy / stats.maxEnergy * 100)|round }}%"></div>
+                </div>
+            </div>
+        </div>
 
-        {# Layout: gauche (tête, épaules, torse, mains, ceinture) | droite (cou, armes, jambes, pieds, anneaux) #}
-        <div class="grid grid-cols-2 gap-2">
-            {% for slotKey, playerItem in equipped %}
-                {% set slotLabel = ('game.inventory.slot.' ~ slotKey)|trans %}
-                {% if playerItem is not null %}
-                    <div class="equipment-slot group relative bg-gray-700/80 rounded-lg p-2.5 flex items-center gap-2.5 border border-gray-600/50 hover:border-purple-500/50 transition-colors">
-                        <div class="w-9 h-9 rounded-md flex items-center justify-center shrink-0
-                            {% if playerItem.genericItem.rarity == 'legendary' %}bg-yellow-700/40 text-yellow-400 ring-1 ring-yellow-600/50
-                            {% elseif playerItem.genericItem.rarity == 'epic' %}bg-purple-700/40 text-purple-400 ring-1 ring-purple-600/50
-                            {% elseif playerItem.genericItem.rarity == 'rare' %}bg-blue-700/40 text-blue-400 ring-1 ring-blue-600/50
-                            {% elseif playerItem.genericItem.rarity == 'uncommon' %}bg-green-700/40 text-green-400 ring-1 ring-green-600/50
-                            {% else %}bg-gray-600/50 text-gray-300{% endif %}">
-                            {{ _self.slot_icon(slotKey) }}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-xs text-gray-500 leading-none">{{ slotLabel }}</div>
-                            <div class="text-sm text-white font-medium truncate">{{ playerItem.genericItem.name }}</div>
-                            {% if playerItem.genericItem.protection > 0 %}
-                                <div class="text-[10px] text-blue-400">+{{ playerItem.genericItem.protection }} DEF</div>
-                            {% endif %}
-                        </div>
-                        <form method="post" action="{{ path('app_game_inventory_equipment_unequip', {id: playerItem.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
-                            <button type="submit" class="w-7 h-7 rounded-md bg-red-900/40 text-red-400 hover:bg-red-800/60 flex items-center justify-center transition-colors" title="{{ 'game.inventory.actions.unequip'|trans }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                {% else %}
-                    <div class="equipment-slot bg-gray-800/60 rounded-lg p-2.5 flex items-center gap-2.5 border border-dashed border-gray-700/50">
-                        <div class="w-9 h-9 rounded-md bg-gray-700/30 flex items-center justify-center text-gray-600 shrink-0">
-                            {{ _self.slot_icon(slotKey) }}
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-xs text-gray-600 leading-none">{{ slotLabel }}</div>
-                            <div class="text-xs text-gray-600 italic">{{ ('game.inventory.slot.empty')|trans }}</div>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
+        {# ===== PAPERDOLL: Silhouette + Slots ===== #}
+        <div class="equip-paperdoll">
+            {# Colonne gauche #}
+            <div class="equip-col-left">
+                {{ _self.gear_slot('head', equipped.head, 'Tête') }}
+                {{ _self.gear_slot('shoulder', equipped.shoulder, 'Épaules') }}
+                {{ _self.gear_slot('chest', equipped.chest, 'Torse') }}
+                {{ _self.gear_slot('hand', equipped.hand, 'Mains') }}
+                {{ _self.gear_slot('belt', equipped.belt, 'Ceinture') }}
+                {{ _self.gear_slot('leg', equipped.leg, 'Jambes') }}
+            </div>
+
+            {# Centre: Silhouette personnage #}
+            <div class="equip-center">
+                <div class="equip-silhouette">
+                    {# Silhouette SVG stylisée #}
+                    <svg viewBox="0 0 120 200" class="w-full h-full text-purple-500/20" fill="currentColor">
+                        {# Tête #}
+                        <circle cx="60" cy="28" r="18"/>
+                        {# Cou #}
+                        <rect x="54" y="46" width="12" height="8" rx="2"/>
+                        {# Épaules + Torse #}
+                        <path d="M25 58 C25 54, 35 50, 60 50 C85 50, 95 54, 95 58 L95 105 C95 108, 92 110, 88 110 L32 110 C28 110, 25 108, 25 105 Z"/>
+                        {# Ceinture #}
+                        <rect x="28" y="108" width="64" height="8" rx="2" class="text-purple-600/15"/>
+                        {# Jambe gauche #}
+                        <path d="M30 116 L32 160 C32 163, 35 165, 38 165 L52 165 C55 165, 56 163, 55 160 L52 116 Z"/>
+                        {# Jambe droite #}
+                        <path d="M68 116 L65 160 C64 163, 65 165, 68 165 L82 165 C85 165, 88 163, 88 160 L90 116 Z"/>
+                        {# Pied gauche #}
+                        <path d="M30 163 L22 173 C20 176, 22 180, 26 180 L52 180 C56 180, 58 176, 56 173 L52 163 Z"/>
+                        {# Pied droit #}
+                        <path d="M68 163 L64 173 C62 176, 64 180, 68 180 L94 180 C98 180, 100 176, 98 173 L90 163 Z"/>
+                        {# Bras gauche #}
+                        <path d="M25 58 L12 85 C10 90, 12 95, 16 95 L22 95 L28 70 Z" class="text-purple-500/15"/>
+                        {# Bras droit #}
+                        <path d="M95 58 L108 85 C110 90, 108 95, 104 95 L98 95 L92 70 Z" class="text-purple-500/15"/>
+                        {# Main gauche #}
+                        <circle cx="14" cy="98" r="7" class="text-purple-500/15"/>
+                        {# Main droite #}
+                        <circle cx="106" cy="98" r="7" class="text-purple-500/15"/>
+                    </svg>
+                </div>
+            </div>
+
+            {# Colonne droite #}
+            <div class="equip-col-right">
+                {{ _self.gear_slot('neck', equipped.neck, 'Cou') }}
+                {{ _self.gear_slot('main_weapon', equipped.main_weapon, 'Arme') }}
+                {{ _self.gear_slot('side_weapon', equipped.side_weapon, 'Bouclier') }}
+                {{ _self.gear_slot('ring_1', equipped.ring_1, 'Anneau') }}
+                {{ _self.gear_slot('ring_2', equipped.ring_2, 'Anneau') }}
+                {{ _self.gear_slot('foot', equipped.foot, 'Pieds') }}
+            </div>
         </div>
     </div>
 
     {# ===== EQUIPEMENT DISPONIBLE ===== #}
-    <div class="bg-gray-800/50 rounded-xl p-4">
-        <h2 class="text-sm font-semibold text-purple-400 mb-3 uppercase tracking-wide">{{ 'game.inventory.available_equipment'|trans }}</h2>
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                {{ 'game.inventory.available_equipment'|trans }}
+            </h2>
+            {% if availableGear is not empty %}
+                <span class="text-[10px] bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full">{{ availableGear|length }}</span>
+            {% endif %}
+        </div>
 
         {% if availableGear is empty %}
-            <div class="text-center text-gray-500 py-8 text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
-                Aucun équipement disponible
+            <div class="text-center text-gray-600 py-8">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                <p class="text-sm">Aucun équipement disponible</p>
             </div>
         {% else %}
-            <div class="space-y-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for item in availableGear %}
                     {% set gi = item.genericItem %}
-                    <div class="bg-gray-700/60 rounded-lg p-3 flex items-center gap-3 border border-gray-600/30 hover:border-gray-500/50 transition-colors">
-                        {# Icon avec rareté #}
-                        <div class="w-10 h-10 rounded-md flex items-center justify-center shrink-0
-                            {% if gi.rarity == 'legendary' %}bg-yellow-700/40 text-yellow-400 ring-1 ring-yellow-600/50
-                            {% elseif gi.rarity == 'epic' %}bg-purple-700/40 text-purple-400 ring-1 ring-purple-600/50
-                            {% elseif gi.rarity == 'rare' %}bg-blue-700/40 text-blue-400 ring-1 ring-blue-600/50
-                            {% elseif gi.rarity == 'uncommon' %}bg-green-700/40 text-green-400 ring-1 ring-green-600/50
-                            {% else %}bg-gray-600/50 text-gray-300{% endif %}">
+                    <div class="equip-available-item group {{ _self.rarity_border_class(gi.rarity) }}">
+                        {# Icône avec rareté #}
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 {{ _self.rarity_bg_class(gi.rarity) }}">
                             {{ _self.slot_icon(gi.gearLocation) }}
                         </div>
 
                         {# Infos #}
                         <div class="flex-1 min-w-0">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm text-white font-medium truncate">{{ gi.name }}</span>
-                                {% if gi.level %}
-                                    <span class="text-[10px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded shrink-0">Niv.{{ gi.level }}</span>
-                                {% endif %}
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-sm font-medium truncate {{ _self.rarity_text_class(gi.rarity) }}">{{ gi.name }}</span>
                             </div>
                             <div class="flex items-center gap-2 mt-0.5">
-                                <span class="text-xs text-gray-500">{{ _self.slot_name(gi.gearLocation) }}</span>
+                                <span class="text-[10px] text-gray-500">{{ _self.slot_name(gi.gearLocation) }}</span>
                                 {% if gi.protection > 0 %}
-                                    <span class="text-[10px] text-blue-400">+{{ gi.protection }} DEF</span>
+                                    <span class="text-[10px] text-blue-400 font-medium">+{{ gi.protection }} DEF</span>
                                 {% endif %}
-                                {% if gi.rarity %}
-                                    <span class="text-[10px] px-1.5 py-0.5 rounded
-                                        {% if gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
-                                        {% elseif gi.rarity == 'epic' %}bg-purple-900/40 text-purple-400
-                                        {% elseif gi.rarity == 'rare' %}bg-blue-900/40 text-blue-400
-                                        {% elseif gi.rarity == 'uncommon' %}bg-green-900/40 text-green-400
-                                        {% else %}bg-gray-800 text-gray-500{% endif %}">{{ gi.rarity|capitalize }}</span>
+                                {% if gi.level %}
+                                    <span class="text-[10px] text-gray-600">Niv.{{ gi.level }}</span>
                                 {% endif %}
                             </div>
                         </div>
 
                         {# Bouton équiper #}
                         <form method="post" action="{{ path('app_game_inventory_equipment_equip', {id: item.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
-                            <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-medium rounded-md transition-colors">
-                                {{ 'game.inventory.actions.equip'|trans }}
+                            <button type="submit" class="w-8 h-8 rounded-lg bg-purple-600/80 hover:bg-purple-500 text-white flex items-center justify-center transition-all hover:scale-105" title="{{ 'game.inventory.actions.equip'|trans }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                             </button>
                         </form>
                     </div>
@@ -142,6 +160,81 @@
         {% endif %}
     </div>
 </turbo-frame>
+
+{# ===== MACRO: Slot d'équipement pour le paperdoll ===== #}
+{% macro gear_slot(slotKey, playerItem, label) %}
+{% if playerItem is not null %}
+    {% set gi = playerItem.genericItem %}
+    <div class="equip-slot equip-slot--filled group {{ _self.rarity_slot_class(gi.rarity) }}" title="{{ gi.name }}">
+        <div class="equip-slot-icon {{ _self.rarity_bg_class(gi.rarity) }}">
+            {{ _self.slot_icon(slotKey) }}
+        </div>
+        <div class="equip-slot-info">
+            <span class="equip-slot-label">{{ label }}</span>
+            <span class="equip-slot-name {{ _self.rarity_text_class(gi.rarity) }}">{{ gi.name }}</span>
+            {% if gi.protection > 0 %}
+                <span class="equip-slot-stat">+{{ gi.protection }}</span>
+            {% endif %}
+        </div>
+        <form method="post" action="{{ path('app_game_inventory_equipment_unequip', {id: playerItem.id}) }}" data-turbo-frame="inventory-content" class="equip-slot-action">
+            <button type="submit" class="equip-unequip-btn" title="{{ 'game.inventory.actions.unequip'|trans }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+            </button>
+        </form>
+    </div>
+{% else %}
+    <div class="equip-slot equip-slot--empty">
+        <div class="equip-slot-icon equip-slot-icon--empty">
+            {{ _self.slot_icon(slotKey) }}
+        </div>
+        <div class="equip-slot-info">
+            <span class="equip-slot-label">{{ label }}</span>
+            <span class="equip-slot-empty-text">—</span>
+        </div>
+    </div>
+{% endif %}
+{% endmacro %}
+
+{# ===== MACRO: Classes de rareté ===== #}
+{% macro rarity_bg_class(rarity) %}
+{% apply spaceless %}
+{% if rarity == 'legendary' %}bg-yellow-900/50 text-yellow-400
+{% elseif rarity == 'epic' %}bg-purple-900/50 text-purple-400
+{% elseif rarity == 'rare' %}bg-blue-900/50 text-blue-400
+{% elseif rarity == 'uncommon' %}bg-green-900/50 text-green-400
+{% else %}bg-gray-700/50 text-gray-400{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{% macro rarity_text_class(rarity) %}
+{% apply spaceless %}
+{% if rarity == 'legendary' %}text-yellow-400
+{% elseif rarity == 'epic' %}text-purple-300
+{% elseif rarity == 'rare' %}text-blue-300
+{% elseif rarity == 'uncommon' %}text-green-300
+{% else %}text-white{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{% macro rarity_border_class(rarity) %}
+{% apply spaceless %}
+{% if rarity == 'legendary' %}equip-rarity-legendary
+{% elseif rarity == 'epic' %}equip-rarity-epic
+{% elseif rarity == 'rare' %}equip-rarity-rare
+{% elseif rarity == 'uncommon' %}equip-rarity-uncommon
+{% else %}equip-rarity-common{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{% macro rarity_slot_class(rarity) %}
+{% apply spaceless %}
+{% if rarity == 'legendary' %}equip-slot-legendary
+{% elseif rarity == 'epic' %}equip-slot-epic
+{% elseif rarity == 'rare' %}equip-slot-rare
+{% elseif rarity == 'uncommon' %}equip-slot-uncommon
+{% else %}{% endif %}
+{% endapply %}
+{% endmacro %}
 
 {# ===== MACRO: Icône par emplacement ===== #}
 {% macro slot_icon(slot) %}

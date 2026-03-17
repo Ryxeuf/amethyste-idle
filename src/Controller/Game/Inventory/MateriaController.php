@@ -34,7 +34,8 @@ class MateriaController extends AbstractController
                     'id' => $item->getId(),
                     'name' => $genericItem->getName(),
                     'level' => $genericItem->getLevel() ?? 1,
-                    'rarity' => $genericItem->getElement(), // Utiliser l'élément comme rareté
+                    'element' => $genericItem->getElement(),
+                    'rarity' => $genericItem->getRarity(),
                     'description' => $genericItem->getDescription(),
                     'effects' => $genericItem->getEffect() ?? '',
                 ];
