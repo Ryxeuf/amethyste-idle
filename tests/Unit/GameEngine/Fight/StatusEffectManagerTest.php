@@ -19,6 +19,7 @@ class StatusEffectManagerTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private CombatLogger&MockObject $combatLogger;
     private EntityRepository&MockObject $fightStatusEffectRepo;
+    private CombatLogger&MockObject $combatLogger;
     private StatusEffectManager $manager;
     private Fight&MockObject $fight;
 
@@ -26,6 +27,7 @@ class StatusEffectManagerTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->fightStatusEffectRepo = $this->createMock(EntityRepository::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         $this->entityManager->method('getRepository')
             ->with(FightStatusEffect::class)

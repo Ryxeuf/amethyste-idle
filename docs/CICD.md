@@ -5,7 +5,7 @@
 Le projet utilise **GitHub Actions** pour l'intégration continue (CI) et le déploiement continu (CD).
 
 ```
-Push/PR sur n'importe quelle branche
+Push/PR sur develop ou PR vers main
         │
         ▼
 ┌─────────────────────────────────────────────┐
@@ -19,19 +19,29 @@ Push/PR sur n'importe quelle branche
 │                      ▼                      │
 │              ┌──────────────┐               │
 │              │ Docker Build │               │
-│              │   (prod)     │               │
+│              │ (validation) │               │
 │              └──────────────┘               │
 └─────────────────────────────────────────────┘
-                       │
-                       │ (uniquement sur main)
-                       ▼
+          │                          │
+          │ (PR vers main)           │ (push sur develop)
+          ▼                          ▼
+┌────────────────────┐   ┌─────────────────────┐
+│  Auto-merge PR     │   │ Auto-merge develop  │
+│  (squash merge)    │   │    → main           │
+└────────┬───────────┘   └──────────┬──────────┘
+         └───────────┬──────────────┘
+                     │ (push sur main)
+                     ▼
 ┌─────────────────────────────────────────────┐
-│            CD Pipeline (Deploy)             │
+│        CD Pipeline (Deploy + CI)            │
 │                                             │
-│  1. SSH vers le serveur de production       │
-│  2. git pull origin main                    │
-│  3. ./scripts/deploy.sh --prod              │
-│  4. Health check du conteneur PHP           │
+│  1. CI complete (lint, phpstan, tests)      │
+│  2. Build Docker → push vers GHCR           │
+│  3. SSH vers le serveur de production       │
+│  4. git pull origin main                    │
+│  5. docker compose pull (image GHCR)        │
+│  6. deploy.sh --prod (assets, cache)        │
+│  7. Health check du conteneur PHP           │
 └─────────────────────────────────────────────┘
 ```
 
@@ -40,8 +50,9 @@ Push/PR sur n'importe quelle branche
 ## Pipeline CI (`.github/workflows/ci.yml`)
 
 Déclenchée sur :
-- **Push** sur `main`, `develop`, `feature/**`, `fix/**`
+- **Push** sur `develop`
 - **Pull Request** vers `main` ou `develop`
+- **workflow_call** depuis `deploy.yml` (push sur `main`)
 
 ### Jobs
 
@@ -50,9 +61,9 @@ Déclenchée sur :
 | `lint` | Vérifie le style PSR-12/Symfony avec PHP-CS-Fixer | ~1 min |
 | `phpstan` | Analyse statique niveau 5 (types, Symfony, Doctrine) | ~2 min |
 | `tests` | Tests unitaires PHPUnit avec PostgreSQL 17 | ~2 min |
-| `docker-build` | Build de l'image Docker de production (validation) | ~3 min |
+| `docker-build` | Build de l'image Docker de production. Push vers GHCR sur `main` | ~3 min |
 
-Le job `docker-build` ne s'exécute que si les 3 premiers passent.
+Le job `docker-build` ne s'exécute que si les 3 premiers passent. Sur la branche `main`, l'image est poussée vers GitHub Container Registry (`ghcr.io/ryxeuf/amethyste-idle`). Sur les autres branches/PRs, le build valide uniquement que le Dockerfile compile.
 
 ### Outils de qualité
 
@@ -94,22 +105,42 @@ Le job `docker-build` ne s'exécute que si les 3 premiers passent.
 
 ---
 
+## Auto-Merge (`.github/workflows/auto-merge.yml`)
+
+Déclenché automatiquement quand le workflow CI se termine avec succès.
+
+### Deux modes
+
+| Mode | Déclencheur | Action |
+|------|-------------|--------|
+| **Auto-merge PR** | CI passe sur une PR vers `main` | Squash-merge automatique de la PR |
+| **Auto-merge develop** | CI passe sur un push vers `develop` | Merge `develop` dans `main` |
+
+### Comportement
+
+- **PRs** : quand la CI réussit sur une PR ciblant `main`, le workflow la merge automatiquement (squash merge). Si le merge échoue (conflits, protections), il échoue silencieusement.
+- **develop** : quand un push sur `develop` passe la CI, le workflow merge `develop` dans `main`. En cas de conflit, une issue GitHub est créée automatiquement pour alerter.
+- Le push résultant sur `main` déclenche ensuite le pipeline CD (deploy).
+
+---
+
 ## Pipeline CD (`.github/workflows/deploy.yml`)
 
 Déclenchée **uniquement** sur push vers `main`.
 
 ### Flux
 
-1. **CI complète** — Tous les jobs CI doivent passer
+1. **CI complète** — Tous les jobs CI doivent passer (lint, phpstan, tests, docker build + push GHCR)
 2. **Connexion SSH** — Connexion sécurisée au serveur de production
-3. **Pull du code** — `git fetch && git reset --hard origin/main`
-4. **Déploiement** — Exécution de `./scripts/deploy.sh --prod` qui :
-   - Reconstruit les conteneurs Docker
+3. **Login GHCR** — Authentification Docker au registry GitHub sur le serveur
+4. **Pull du code** — `git fetch && git reset --hard origin/main`
+5. **Déploiement** — Exécution de `./scripts/deploy.sh --prod` qui :
+   - Pull l'image Docker depuis GHCR (pas de rebuild sur le serveur)
    - Active la page de maintenance
    - Compile les assets (Tailwind + AssetMapper)
    - Vide et préchauffe le cache Symfony
    - Désactive la maintenance
-5. **Health check** — Vérifie que le conteneur PHP répond (max 60 secondes)
+6. **Health check** — Vérifie que le conteneur PHP répond (max 60 secondes)
 
 ### Sécurité
 

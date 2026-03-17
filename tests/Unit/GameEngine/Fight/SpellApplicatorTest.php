@@ -33,6 +33,7 @@ class SpellApplicatorTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         // Par defaut, pas de status effect actif
         $this->statusEffectManager->method('isCharacterBerserk')->willReturn(false);

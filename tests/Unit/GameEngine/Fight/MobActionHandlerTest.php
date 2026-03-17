@@ -33,6 +33,7 @@ class MobActionHandlerTest extends TestCase
         $this->spellApplicator = $this->createMock(SpellApplicator::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
+        $this->combatLogger = $this->createMock(CombatLogger::class);
 
         // Par defaut : pas de status, pas de messages
         $this->statusEffectManager->method('processStartOfTurn')->willReturn([]);

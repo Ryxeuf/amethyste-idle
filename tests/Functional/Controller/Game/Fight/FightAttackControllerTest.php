@@ -126,7 +126,11 @@ class FightAttackControllerTest extends TestCase
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->mobActionHandler->method('doAction')->willReturn(['messages' => [], 'dangerAlert' => null]);
 
-        $mob->expects($this->once())->method('setLife')->with(17);
+        // baseDamage=3 + random_int(0,2) => degats entre 3 et 5 => vie entre 15 et 17
+        $mob->expects($this->once())->method('setLife')->with($this->logicalAnd(
+            $this->greaterThanOrEqual(15),
+            $this->lessThanOrEqual(17),
+        ));
 
         $request = $this->createJsonRequest(['targetId' => 5, 'targetType' => 'mob']);
         $response = $this->controller->__invoke($request);
