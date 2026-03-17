@@ -1,5 +1,6 @@
 services:
   php:
+    image: ghcr.io/ryxeuf/amethyste-idle:latest
     build:
       context: .
       target: frankenphp_prod
