@@ -234,8 +234,9 @@ jobs:
           echo 'MERCURE_JWT_SECRET=test' >> .env.test.local
           echo 'MESSENGER_TRANSPORT_DSN=in-memory://' >> .env.test.local
 
-      - name: Warmup Symfony cache and install assets
+      - name: Warmup Symfony cache, build assets
         run: |
+          php bin/console tailwind:build --env=test
           php bin/console cache:warmup --env=test
           php bin/console assets:install public --env=test
         env:
