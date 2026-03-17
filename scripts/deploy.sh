@@ -67,23 +67,27 @@ else
 fi
 
 echo ""
-echo "==> 2/5 Activation de la page de maintenance (conteneur php)..."
+echo "==> 2/6 Activation de la page de maintenance (conteneur php)..."
 run_php touch /app/var/maintenance.flag
 MAINTENANCE_ON=1
 echo "    (les visiteurs voient la page de maintenance)"
 
 echo ""
-echo "==> 3/5 Compilation des assets (Tailwind + AssetMapper)..."
-run_php php /app/bin/console tailwind:build --no-interaction 2>/dev/null || true
-run_php php /app/bin/console asset-map:compile 2>/dev/null || true
+echo "==> 3/6 Migrations de la base de donnees..."
+run_php php /app/bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 
 echo ""
-echo "==> 4/5 Vidage du cache (conteneur php)..."
-run_php php /app/bin/console cache:clear --no-warmup 2>/dev/null || true
-run_php php /app/bin/console cache:warmup 2>/dev/null || true
+echo "==> 4/6 Compilation des assets (Tailwind + AssetMapper)..."
+run_php php /app/bin/console tailwind:build --no-interaction
+run_php php /app/bin/console asset-map:compile
 
 echo ""
-echo "==> 5/5 Etat des services"
+echo "==> 5/6 Vidage du cache (conteneur php)..."
+run_php php /app/bin/console cache:clear --no-warmup
+run_php php /app/bin/console cache:warmup
+
+echo ""
+echo "==> 6/6 Etat des services"
 docker compose "${COMPOSE_ARGS[@]}" ps
 
 echo ""

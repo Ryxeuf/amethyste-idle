@@ -313,6 +313,7 @@ jobs:
           context: .
           target: frankenphp_prod
           push: ${{ github.ref == 'refs/heads/main' }}
+          load: true
           tags: |
             ghcr.io/${{ env.IMAGE_NAME }}:latest
             ghcr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
@@ -320,3 +321,10 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             APP_ENV=prod
+
+      - name: Smoke test — verify critical assets in image
+        run: |
+          docker run --rm ghcr.io/${{ env.IMAGE_NAME }}:latest \
+            test -f /app/assets/vendor/pixi-bundle.js \
+            && echo "OK: pixi-bundle.js present" \
+            || (echo "FAIL: pixi-bundle.js missing from image" && exit 1)

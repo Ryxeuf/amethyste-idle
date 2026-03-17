@@ -9,7 +9,8 @@
 ###< symfony/framework-bundle ###
 ###> symfony/asset-mapper ###
 /public/assets/
-/assets/vendor/
+/assets/vendor/*
+!/assets/vendor/pixi-bundle.js
 ###< symfony/asset-mapper ###
 node_modules
 
