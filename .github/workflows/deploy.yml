@@ -56,20 +56,24 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure SSH
+        env:
+          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
         run: |
+          SSH_PORT="${RAW_PORT:-22}"
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p ${{ secrets.DEPLOY_SSH_PORT || 22 }} -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -p "$SSH_PORT" -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Deploy to server
         env:
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
           SSH_USER: ${{ secrets.DEPLOY_USER }}
-          SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         run: |
-          ssh -i ~/.ssh/deploy_key -p $SSH_PORT ${SSH_USER}@${SSH_HOST} << 'DEPLOY_SCRIPT'
+          SSH_PORT="${RAW_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" << 'DEPLOY_SCRIPT'
             set -euo pipefail
 
             echo "========================================="
@@ -106,9 +110,10 @@ jobs:
         env:
           SSH_HOST: ${{ secrets.DEPLOY_HOST }}
           SSH_USER: ${{ secrets.DEPLOY_USER }}
-          SSH_PORT: ${{ secrets.DEPLOY_SSH_PORT || 22 }}
+          RAW_PORT: ${{ secrets.DEPLOY_SSH_PORT }}
         run: |
-          ssh -i ~/.ssh/deploy_key -p $SSH_PORT ${SSH_USER}@${SSH_HOST} << 'VERIFY_SCRIPT'
+          SSH_PORT="${RAW_PORT:-22}"
+          ssh -i ~/.ssh/deploy_key -p "$SSH_PORT" "${SSH_USER}@${SSH_HOST}" << 'VERIFY_SCRIPT'
             set -euo pipefail
 
             cd ${{ secrets.DEPLOY_PATH }}
