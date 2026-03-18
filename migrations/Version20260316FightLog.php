@@ -16,7 +16,7 @@ final class Version20260316FightLog extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('CREATE TABLE fight_log (
+        $this->addSql('CREATE TABLE IF NOT EXISTS fight_log (
             id SERIAL PRIMARY KEY,
             fight_id INTEGER NOT NULL REFERENCES fight(id) ON DELETE CASCADE,
             turn INTEGER NOT NULL,
@@ -28,7 +28,7 @@ final class Version20260316FightLog extends AbstractMigration
             metadata JSON DEFAULT NULL,
             created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
         )');
-        $this->addSql('CREATE INDEX idx_fight_log_fight_turn ON fight_log (fight_id, turn)');
+        $this->addSql('CREATE INDEX IF NOT EXISTS idx_fight_log_fight_turn ON fight_log (fight_id, turn)');
     }
 
     public function down(Schema $schema): void
