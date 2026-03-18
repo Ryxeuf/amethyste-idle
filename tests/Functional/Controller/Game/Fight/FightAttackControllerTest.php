@@ -126,12 +126,12 @@ class FightAttackControllerTest extends TestCase
         $mobLife = 20;
         $mob = $this->createMobMock(id: 5, life: $mobLife);
         $fight = $this->createFightMock(mobs: [$mob]);
-        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 3);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 100);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->mobActionHandler->method('doAction')->willReturn(['messages' => [], 'dangerAlert' => null]);
 
-        // baseDamage=3 + random_int(0,2) => degats entre 3 et 5 => vie entre 15 et 17
+        // hit=100 => touche toujours, baseDamage=3 + random_int(0,2) => degats entre 3 et 5 => vie entre 15 et 17
         $mob->expects($this->once())->method('setLife')->with($this->logicalAnd(
             $this->greaterThanOrEqual(15),
             $this->lessThanOrEqual(17),
@@ -143,6 +143,7 @@ class FightAttackControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertTrue($data['success']);
+        $this->assertTrue($data['hit']);
         $this->assertNotEmpty($data['messages']);
     }
 
@@ -150,7 +151,7 @@ class FightAttackControllerTest extends TestCase
     {
         $mob = $this->createMobMock(id: 5, life: 2);
         $fight = $this->createFightMock(mobs: [$mob], terminated: true, victory: true);
-        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 5);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 100);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
@@ -166,15 +167,39 @@ class FightAttackControllerTest extends TestCase
 
         $data = json_decode($response->getContent(), true);
         $this->assertTrue($data['success']);
+        $this->assertTrue($data['hit']);
         $this->assertTrue($data['fight']['terminated']);
         $this->assertTrue($data['fight']['victory']);
+    }
+
+    public function testAttackMissesWhenHitIsZero(): void
+    {
+        $mob = $this->createMobMock(id: 5, life: 20);
+        $fight = $this->createFightMock(mobs: [$mob]);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 0);
+
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->mobActionHandler->method('doAction')->willReturn(['messages' => [], 'dangerAlert' => null]);
+
+        // hit=0 => rate toujours, la vie du mob ne change pas
+        $mob->expects($this->never())->method('setLife');
+
+        $request = $this->createJsonRequest(['targetId' => 5, 'targetType' => 'mob']);
+        $response = $this->controller->__invoke($request);
+
+        $data = json_decode($response->getContent(), true);
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($data['success']);
+        $this->assertFalse($data['hit']);
+        $this->assertNotEmpty($data['messages']);
+        $this->assertStringContainsString('rate', $data['messages'][0]);
     }
 
     public function testAttackTargetIdCastToIntFromStringJson(): void
     {
         $mob = $this->createMobMock(id: 5, life: 20);
         $fight = $this->createFightMock(mobs: [$mob]);
-        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 3);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 100);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->mobActionHandler->method('doAction')->willReturn(['messages' => [], 'dangerAlert' => null]);
@@ -195,7 +220,7 @@ class FightAttackControllerTest extends TestCase
     {
         $mob = $this->createMobMock(id: 5, life: 20);
         $fight = $this->createFightMock(mobs: [$mob]);
-        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 3);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 100);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->mobActionHandler->expects($this->once())->method('doAction')
@@ -213,7 +238,7 @@ class FightAttackControllerTest extends TestCase
     {
         $mob = $this->createMobMock(id: 5, life: 20);
         $fight = $this->createFightMock(mobs: [$mob], step: 0);
-        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 3);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 100);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->mobActionHandler->method('doAction')->willReturn(['messages' => [], 'dangerAlert' => null]);
@@ -229,7 +254,7 @@ class FightAttackControllerTest extends TestCase
     {
         $mob = $this->createMobMock(id: 5, life: 20);
         $fight = $this->createFightMock(mobs: [$mob]);
-        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 3);
+        $player = $this->createPlayerMock(id: 1, fight: $fight, hit: 100);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->mobActionHandler->method('doAction')->willReturn(['messages' => [], 'dangerAlert' => null]);
@@ -245,7 +270,7 @@ class FightAttackControllerTest extends TestCase
         return Request::create('/game/fight/attack', 'POST', [], [], [], [], json_encode($data));
     }
 
-    private function createPlayerMock(int $id = 1, ?Fight $fight = null, int $hit = 5, int $life = 50, string $name = 'TestPlayer'): Player&MockObject
+    private function createPlayerMock(int $id = 1, ?Fight $fight = null, int $hit = 50, int $life = 50, string $name = 'TestPlayer'): Player&MockObject
     {
         $player = $this->createMock(Player::class);
         $player->method('getId')->willReturn($id);

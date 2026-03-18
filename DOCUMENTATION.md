@@ -262,7 +262,7 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 | Entité | Description | Champs clés |
 |--------|-------------|-------------|
 | **User** | Compte utilisateur | email, username, roles, password |
-| **Player** | Personnage jouable | name, life, maxLife, energy, hit, speed, classType, coordinates, isMoving |
+| **Player** | Personnage jouable | name, life, maxLife, energy, hit (précision 0-100), speed, classType, coordinates, isMoving |
 | **Mob** | Instance de monstre | monster (template), level, coordinates, life |
 | **Fight** | Combat en cours | step, inProgress, players[], mobs[], statusEffects[] |
 | **FightStatusEffect** | Effet de statut actif | fight, targetType, targetId, type, remainingTurns, power |
@@ -277,10 +277,10 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 | **MonsterItem** | Table de loot | monster, item, probability (float) |
 | **Domain** | Domaine de compétence | title, skills[] |
 | **Skill** | Compétence | title, requiredPoints, damage/heal/hit/critical/life bonuses, requirements[] |
-| **Spell** | Sort | name, damage, heal, hit, critical, element |
+| **Spell** | Sort | name, damage, heal, hit (précision 0-100), critical, element |
 | **Pnj** | Personnage non-joueur | name, dialog (JSON), coordinates |
 | **Quest** | Quête | (entité référencée, détails dans fixtures) |
-| **DomainExperience** | XP par domaine | totalExperience, usedExperience, damage/heal/hit/critical |
+| **DomainExperience** | XP par domaine | totalExperience, usedExperience, damage/heal/hit (bonus précision)/critical |
 | **QueueRespawnMob** | File de respawn | monster, delay, coordinates, map |
 
 ### Traits partagés
@@ -343,18 +343,39 @@ Le moteur repose sur **21 événements** organisés en deux catégories :
 8. Si le joueur meurt → `PlayerDeadEvent` → `PlayerRespawnHandler` (respawn à 50% HP)
 9. Combat terminé → loot → `FightLootedEvent` → `FightCleaner` nettoie
 
+### Chances de toucher (hit)
+
+La stat `hit` représente la **précision** (chances de toucher), et non les dégâts. Elle est exprimée en pourcentage (0-100).
+
+- **Attaque basique** : `hitChances = player.hit` (défaut : 50)
+- **Sort** : `hitChances = spell.hit + bonusSkills.hit` (défaut sort : 75)
+- **Mob** : `hitChances = monster.hit` (défaut : 20)
+
+`FightCalculator::hasAttackHit(hitChances)` tire un nombre aléatoire entre 0 et 99. Si ce nombre est inférieur à `hitChances`, l'attaque touche. Sinon, elle rate.
+
+Les bonus de `hit` proviennent des compétences débloquées (`Skill.hit`) et sont cumulés dans `DomainExperience.hit` via `SkillAcquiring`.
+
 ### Calcul des dégâts
 
+Les dégâts sont calculés **uniquement si l'attaque touche** :
+
 ```
-hitChances = spell.hit + domainExperience.hit
+# 1. Vérification de précision (hit)
+hitChances = spell.hit + domainExperience.hit   # (ou player.hit pour attaque basique)
+hit = random(0-99) < hitChances                  # true = touche, false = rate
+
+# 2. Calcul des dégâts (seulement si hit = true)
 isCritical = random(0-99) < (spell.critical + domainExperience.critical)
 damage = spell.damage + domainExperience.damage
 if critical: damage *= 1.5
 if elementalResistance: damage *= (1 - resistance)  # ex: 0.5 = 50% résistance
 if berserk: damage *= 1.5  # bonus dégâts sous berserk
-if shield: damage *= 0.5   # réduction dégâts sous bouclier
+if burn: damage *= 0.75    # réduction dégâts sous brûlure
+if shield: damage -= shieldAbsorb  # absorption du bouclier
 targetLife = clamp(targetLife - damage, 0, maxLife)
 ```
+
+> **Important** : `hit` = précision (chances de toucher). Les dégâts proviennent de `spell.damage`, des bonus de domaine, et des modificateurs (critiques, élémentaires, statuts).
 
 ### Éléments de sorts
 
