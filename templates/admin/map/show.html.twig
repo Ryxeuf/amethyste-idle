@@ -4,12 +4,12 @@
 {% block page_title %}{{ map.name }}{% endblock %}
 
 {% block body %}
-<div class="flex justify-between items-center mb-6">
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
     <h1 class="text-xl sm:text-2xl font-bold">{{ map.name }}</h1>
     <a href="{{ path('admin_map_index') }}" class="text-gray-400 hover:text-white text-sm">Retour</a>
 </div>
 
-<div class="grid grid-cols-3 gap-3 sm:gap-6 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
     <div class="bg-gray-800 rounded-lg p-3 sm:p-4">
         <h3 class="text-xs sm:text-sm text-gray-400 mb-1">Joueurs</h3>
         <p class="text-xl sm:text-2xl font-bold text-purple-400">{{ players|length }}</p>
@@ -26,67 +26,73 @@
 
 {% if players|length > 0 %}
 <h2 class="text-lg sm:text-xl font-bold mb-3">Joueurs sur la carte</h2>
-<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto mb-8">
-    <table class="w-full text-left text-sm">
-        <thead class="border-b border-gray-800">
-            <tr>
-                <th class="px-4 py-3 text-gray-400 font-medium">Nom</th>
-                <th class="px-4 py-3 text-gray-400 font-medium">Position</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800">
-            {% for player in players %}
-            <tr class="hover:bg-gray-800 transition-colors">
-                <td class="px-4 py-3 text-gray-200">{{ player.name }}</td>
-                <td class="px-4 py-3 text-gray-400">{{ player.coordinates ?? '-' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-800">
+                <tr>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Nom</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Position</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for player in players %}
+                <tr class="hover:bg-gray-800 transition-colors">
+                    <td class="px-4 py-3 text-gray-200">{{ player.name }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ player.coordinates ?? '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endif %}
 
 {% if mobs|length > 0 %}
 <h2 class="text-lg sm:text-xl font-bold mb-3">Mobs sur la carte</h2>
-<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto mb-8">
-    <table class="w-full text-left text-sm">
-        <thead class="border-b border-gray-800">
-            <tr>
-                <th class="px-4 py-3 text-gray-400 font-medium">Monstre</th>
-                <th class="px-4 py-3 text-gray-400 font-medium">Position</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800">
-            {% for mob in mobs %}
-            <tr class="hover:bg-gray-800 transition-colors">
-                <td class="px-4 py-3 text-gray-200">{{ mob.monster ? mob.monster.name : '-' }}</td>
-                <td class="px-4 py-3 text-gray-400">{{ mob.coordinates ?? '-' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-800">
+                <tr>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Monstre</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Position</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for mob in mobs %}
+                <tr class="hover:bg-gray-800 transition-colors">
+                    <td class="px-4 py-3 text-gray-200">{{ mob.monster ? mob.monster.name : '-' }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ mob.coordinates ?? '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endif %}
 
 {% if pnjs|length > 0 %}
 <h2 class="text-lg sm:text-xl font-bold mb-3">PNJ sur la carte</h2>
-<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto">
-    <table class="w-full text-left text-sm">
-        <thead class="border-b border-gray-800">
-            <tr>
-                <th class="px-4 py-3 text-gray-400 font-medium">Nom</th>
-                <th class="px-4 py-3 text-gray-400 font-medium">Position</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800">
-            {% for pnj in pnjs %}
-            <tr class="hover:bg-gray-800 transition-colors">
-                <td class="px-4 py-3 text-gray-200">{{ pnj.name }}</td>
-                <td class="px-4 py-3 text-gray-400">{{ pnj.coordinates ?? '-' }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-800">
+                <tr>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Nom</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Position</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for pnj in pnjs %}
+                <tr class="hover:bg-gray-800 transition-colors">
+                    <td class="px-4 py-3 text-gray-200">{{ pnj.name }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ pnj.coordinates ?? '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endif %}
 {% endblock %}

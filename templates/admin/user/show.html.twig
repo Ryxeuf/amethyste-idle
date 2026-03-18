@@ -4,7 +4,7 @@
 {% block page_title %}Utilisateur : {{ user.username ?? user.email }}{% endblock %}
 
 {% block body %}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {# User info card #}
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Informations</h2>
@@ -19,7 +19,7 @@
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Email</dt>
-                    <dd class="text-gray-200 text-sm truncate ml-4">{{ user.email }}</dd>
+                    <dd class="text-gray-200 text-sm break-all">{{ user.email }}</dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Prenom</dt>

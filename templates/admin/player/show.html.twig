@@ -4,7 +4,7 @@
 {% block page_title %}Joueur : {{ player.name }}{% endblock %}
 
 {% block body %}
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {# Player info card #}
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Informations</h2>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Email</dt>
-                    <dd class="text-gray-200 text-sm truncate ml-4">{{ player.user.email }}</dd>
+                    <dd class="text-gray-200 text-sm break-all">{{ player.user.email }}</dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">Role</dt>
@@ -119,7 +119,7 @@
                         ({{ inv.items|length }}/{{ inv.size }})
                     </h3>
                     {% if inv.items|length > 0 %}
-                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                             {% for pi in inv.items %}
                                 <div class="bg-gray-800 rounded-lg p-2 text-xs">
                                     <p class="text-gray-200 font-medium truncate">{{ pi.genericItem.name }}</p>
@@ -146,7 +146,7 @@
                     {% for pq in activeQuests %}
                         <div class="flex justify-between items-center text-sm bg-gray-800 rounded-lg px-3 py-2">
                             <span class="text-gray-200">{{ pq.quest.name }}</span>
-                            <span class="text-yellow-400 text-xs">En cours</span>
+                            <span class="text-yellow-400 text-xs flex-shrink-0 ml-2">En cours</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -161,7 +161,7 @@
                     {% for pq in completedQuests %}
                         <div class="flex justify-between items-center text-sm bg-gray-800 rounded-lg px-3 py-2">
                             <span class="text-gray-200">{{ pq.quest.name }}</span>
-                            <span class="text-green-400 text-xs">Terminee</span>
+                            <span class="text-green-400 text-xs flex-shrink-0 ml-2">Terminee</span>
                         </div>
                     {% endfor %}
                 </div>
@@ -239,12 +239,10 @@
                         <option value="{{ item.id }}">{{ item.name }} ({{ item.type }})</option>
                     {% endfor %}
                 </select>
-                <div class="flex gap-2">
-                    <input type="number" name="quantity" value="1" min="1" max="99" class="w-20 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
-                    <button type="submit" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
-                        Donner
-                    </button>
-                </div>
+                <input type="number" name="quantity" value="1" min="1" max="99" class="w-full sm:w-20 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                <button type="submit" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0">
+                    Donner
+                </button>
             </form>
         </div>
 
@@ -253,8 +251,8 @@
             <h3 class="text-sm font-medium text-gray-400 mb-3">Donner des gils</h3>
             <form method="post" action="{{ path('admin_player_give_gils', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2">
                 <input type="hidden" name="_token" value="{{ csrf_token('give_gils' ~ player.id) }}">
-                <input type="number" name="amount" value="100" min="1" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200" placeholder="Montant en gils">
-                <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">
+                <input type="number" name="amount" value="100" min="1" class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200" placeholder="Montant en gils">
+                <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0 whitespace-nowrap">
                     Donner des gils
                 </button>
             </form>

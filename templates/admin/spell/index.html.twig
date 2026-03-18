@@ -4,8 +4,8 @@
 {% block page_title %}Sorts{% endblock %}
 
 {% block body %}
-    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
-        <form method="get" class="flex items-center gap-2 flex-wrap">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+        <form method="get" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <input type="text" name="q" value="{{ search }}" placeholder="Rechercher un sort..."
                    class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
             <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
@@ -13,54 +13,56 @@
                 <a href="{{ path('admin_spell_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
             {% endif %}
         </form>
-        <a href="{{ path('admin_spell_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center flex-shrink-0">+ Nouveau sort</a>
+        <a href="{{ path('admin_spell_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">+ Nouveau sort</a>
     </div>
 
-    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-800 text-gray-400">
-                    <th class="text-left px-4 py-3 font-medium">ID</th>
-                    <th class="text-left px-4 py-3 font-medium">Nom</th>
-                    <th class="text-left px-4 py-3 font-medium">Element</th>
-                    <th class="text-left px-4 py-3 font-medium">Degats</th>
-                    <th class="text-left px-4 py-3 font-medium">Soin</th>
-                    <th class="text-left px-4 py-3 font-medium">Precision</th>
-                    <th class="text-left px-4 py-3 font-medium">Critique</th>
-                    <th class="text-right px-4 py-3 font-medium">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-800">
-                {% for spell in spells %}
-                    <tr class="hover:bg-gray-800 transition-colors">
-                        <td class="px-4 py-3 text-gray-500">{{ spell.id }}</td>
-                        <td class="px-4 py-3 text-gray-200 font-medium">{{ spell.name }}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex px-2 py-1 text-xs rounded-full {% if spell.element == 'fire' %}bg-red-900 text-red-300{% elseif spell.element == 'water' %}bg-blue-900 text-blue-300{% elseif spell.element == 'earth' %}bg-yellow-900 text-yellow-300{% elseif spell.element == 'air' %}bg-teal-900 text-teal-300{% elseif spell.element == 'light' %}bg-white text-gray-900{% elseif spell.element == 'dark' %}bg-purple-900 text-purple-300{% else %}bg-gray-700 text-gray-300{% endif %}">
-                                {{ spell.element }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-gray-400">{{ spell.damage ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-400">{{ spell.heal ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-400">{{ spell.hit }}%</td>
-                        <td class="px-4 py-3 text-gray-400">{{ spell.critical }}%</td>
-                        <td class="px-4 py-3 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ path('admin_spell_edit', {id: spell.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
-                                <form method="post" action="{{ path('admin_spell_delete', {id: spell.id}) }}" onsubmit="return confirm('Supprimer ce sort ?');" class="inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ spell.id) }}">
-                                    <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
-                                </form>
-                            </div>
-                        </td>
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-800 text-gray-400">
+                        <th class="text-left px-4 py-3 font-medium">ID</th>
+                        <th class="text-left px-4 py-3 font-medium">Nom</th>
+                        <th class="text-left px-4 py-3 font-medium">Element</th>
+                        <th class="text-left px-4 py-3 font-medium">Degats</th>
+                        <th class="text-left px-4 py-3 font-medium">Soin</th>
+                        <th class="text-left px-4 py-3 font-medium">Precision</th>
+                        <th class="text-left px-4 py-3 font-medium">Critique</th>
+                        <th class="text-right px-4 py-3 font-medium">Actions</th>
                     </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">Aucun sort trouve.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for spell in spells %}
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-4 py-3 text-gray-500">{{ spell.id }}</td>
+                            <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ spell.name }}</td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full {% if spell.element == 'fire' %}bg-red-900 text-red-300{% elseif spell.element == 'water' %}bg-blue-900 text-blue-300{% elseif spell.element == 'earth' %}bg-yellow-900 text-yellow-300{% elseif spell.element == 'air' %}bg-teal-900 text-teal-300{% elseif spell.element == 'light' %}bg-white text-gray-900{% elseif spell.element == 'dark' %}bg-purple-900 text-purple-300{% else %}bg-gray-700 text-gray-300{% endif %}">
+                                    {{ spell.element }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">{{ spell.damage ?? '-' }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ spell.heal ?? '-' }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ spell.hit }}%</td>
+                            <td class="px-4 py-3 text-gray-400">{{ spell.critical }}%</td>
+                            <td class="px-4 py-3 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ path('admin_spell_edit', {id: spell.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
+                                    <form method="post" action="{{ path('admin_spell_delete', {id: spell.id}) }}" onsubmit="return confirm('Supprimer ce sort ?');" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ spell.id) }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">Aucun sort trouve.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {% if totalPages is defined and totalPages > 1 %}
