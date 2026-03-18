@@ -2,9 +2,11 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Game\RaceFixtures;
 use App\DataFixtures\Game\SkillFixtures;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
+use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -27,6 +29,7 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setLastCoordinates('85.34');
         $playerRemy->setUser($this->getReference('user_remy', User::class));
         $playerRemy->setClassType('admin');
+        $playerRemy->setRace($this->getReference('race_human', Race::class));
         $playerRemy->setCreatedAt(new \DateTime());
         $playerRemy->setUpdatedAt(new \DateTime());
         $playerRemy->addSkill($this->getReference('pyro_materia_1', Skill::class));
@@ -46,6 +49,7 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo->setLastCoordinates('85.35');
         $playerDemo->setUser($this->getReference('user_demo', User::class));
         $playerDemo->setClassType('demo');
+        $playerDemo->setRace($this->getReference('race_human', Race::class));
         $playerDemo->setCreatedAt(new \DateTime());
         $playerDemo->setUpdatedAt(new \DateTime());
 
@@ -68,6 +72,7 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo2->setLastCoordinates('85.36');
         $playerDemo2->setUser($this->getReference('user_demo_2', User::class));
         $playerDemo2->setClassType('demo-2');
+        $playerDemo2->setRace($this->getReference('race_human', Race::class));
         $playerDemo2->setCreatedAt(new \DateTime());
         $playerDemo2->setUpdatedAt(new \DateTime());
 
@@ -87,6 +92,7 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
             UserFixtures::class,
             MapFixtures::class,
             SkillFixtures::class,
+            RaceFixtures::class,
         ];
     }
 }
