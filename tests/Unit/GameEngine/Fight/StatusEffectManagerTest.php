@@ -6,6 +6,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\FightStatusEffect;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerStatusEffect;
 use App\Entity\Game\StatusEffect;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -19,6 +20,7 @@ class StatusEffectManagerTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private CombatLogger&MockObject $combatLogger;
     private EntityRepository&MockObject $fightStatusEffectRepo;
+    private EntityRepository&MockObject $playerStatusEffectRepo;
     private StatusEffectManager $manager;
     private Fight&MockObject $fight;
 
@@ -26,11 +28,20 @@ class StatusEffectManagerTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->fightStatusEffectRepo = $this->createMock(EntityRepository::class);
+        $this->playerStatusEffectRepo = $this->createMock(EntityRepository::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
 
         $this->entityManager->method('getRepository')
-            ->with(FightStatusEffect::class)
-            ->willReturn($this->fightStatusEffectRepo);
+            ->willReturnCallback(function (string $class) {
+                if ($class === FightStatusEffect::class) {
+                    return $this->fightStatusEffectRepo;
+                }
+                if ($class === PlayerStatusEffect::class) {
+                    return $this->playerStatusEffectRepo;
+                }
+
+                return $this->createMock(EntityRepository::class);
+            });
 
         $this->entityManager->method('persist');
         $this->entityManager->method('flush');
@@ -51,6 +62,9 @@ class StatusEffectManagerTest extends TestCase
         ?int $damagePerTurn = null,
         ?int $healPerTurn = null,
         string $name = 'Effet',
+        ?string $category = null,
+        ?int $frequency = null,
+        ?int $realTimeDuration = null,
     ): StatusEffect {
         $effect = new StatusEffect();
         $effect->setType($type);
@@ -60,6 +74,9 @@ class StatusEffectManagerTest extends TestCase
         $effect->setHealPerTurn($healPerTurn);
         $effect->setName($name);
         $effect->setSlug(strtolower($name));
+        $effect->setCategory($category);
+        $effect->setFrequency($frequency);
+        $effect->setRealTimeDuration($realTimeDuration);
 
         return $effect;
     }
@@ -136,6 +153,9 @@ class StatusEffectManagerTest extends TestCase
             ->with(5);
         $existingEffect->expects($this->once())
             ->method('setAppliedAt');
+        $existingEffect->expects($this->once())
+            ->method('setLastTickTurn')
+            ->with(null);
 
         $this->fightStatusEffectRepo->method('findOneBy')->willReturn($existingEffect);
 
@@ -158,26 +178,28 @@ class StatusEffectManagerTest extends TestCase
     public function testProcessStartOfTurnHandlesDotDamage(): void
     {
         $player = $this->createPlayerMock(life: 100, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(1);
 
         $poisonEffect = $this->createStatusEffect(
             type: StatusEffect::TYPE_POISON,
             damagePerTurn: 15,
             name: 'Poison',
+            category: StatusEffect::CATEGORY_DOT,
         );
 
         $fightStatusEffect = $this->createMock(FightStatusEffect::class);
         $fightStatusEffect->method('getStatusEffect')->willReturn($poisonEffect);
         $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(null);
         $fightStatusEffect->expects($this->once())->method('decrementTurn');
+        $fightStatusEffect->expects($this->once())->method('setLastTickTurn')->with(1);
 
         $this->fightStatusEffectRepo->method('findBy')
             ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
-                // getActiveEffects appelle findBy avec fight, targetType, targetId
                 if (isset($criteria['targetType'])) {
                     return [$fightStatusEffect];
                 }
 
-                // cleanExpiredEffects appelle findBy avec juste fight
                 return [$fightStatusEffect];
             });
 
@@ -194,17 +216,21 @@ class StatusEffectManagerTest extends TestCase
     public function testProcessStartOfTurnHandlesHotHealing(): void
     {
         $player = $this->createPlayerMock(life: 70, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(1);
 
         $regenEffect = $this->createStatusEffect(
             type: StatusEffect::TYPE_REGENERATION,
             healPerTurn: 10,
             name: 'Regeneration',
+            category: StatusEffect::CATEGORY_HOT,
         );
 
         $fightStatusEffect = $this->createMock(FightStatusEffect::class);
         $fightStatusEffect->method('getStatusEffect')->willReturn($regenEffect);
         $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(null);
         $fightStatusEffect->expects($this->once())->method('decrementTurn');
+        $fightStatusEffect->expects($this->once())->method('setLastTickTurn')->with(1);
 
         $this->fightStatusEffectRepo->method('findBy')
             ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
@@ -228,6 +254,7 @@ class StatusEffectManagerTest extends TestCase
     public function testProcessStartOfTurnHealingCappedAtMaxLife(): void
     {
         $player = $this->createPlayerMock(life: 95, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(1);
 
         $regenEffect = $this->createStatusEffect(
             type: StatusEffect::TYPE_REGENERATION,
@@ -238,7 +265,9 @@ class StatusEffectManagerTest extends TestCase
         $fightStatusEffect = $this->createMock(FightStatusEffect::class);
         $fightStatusEffect->method('getStatusEffect')->willReturn($regenEffect);
         $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(null);
         $fightStatusEffect->method('decrementTurn');
+        $fightStatusEffect->method('setLastTickTurn');
 
         $this->fightStatusEffectRepo->method('findBy')
             ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
@@ -258,6 +287,7 @@ class StatusEffectManagerTest extends TestCase
     public function testProcessStartOfTurnDotCanKill(): void
     {
         $player = $this->createPlayerMock(life: 5, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(1);
 
         $poisonEffect = $this->createStatusEffect(
             type: StatusEffect::TYPE_POISON,
@@ -268,7 +298,9 @@ class StatusEffectManagerTest extends TestCase
         $fightStatusEffect = $this->createMock(FightStatusEffect::class);
         $fightStatusEffect->method('getStatusEffect')->willReturn($poisonEffect);
         $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(null);
         $fightStatusEffect->method('decrementTurn');
+        $fightStatusEffect->method('setLastTickTurn');
 
         $this->fightStatusEffectRepo->method('findBy')
             ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
@@ -290,12 +322,126 @@ class StatusEffectManagerTest extends TestCase
     public function testProcessStartOfTurnReturnsEmptyWhenNoEffects(): void
     {
         $player = $this->createPlayerMock();
+        $this->fight->method('getStep')->willReturn(1);
 
         $this->fightStatusEffectRepo->method('findBy')->willReturn([]);
 
         $messages = $this->manager->processStartOfTurn($this->fight, $player);
 
         $this->assertEmpty($messages);
+    }
+
+    // --- Tests frequency-based ticking ---
+
+    public function testProcessStartOfTurnSkipsTickWhenFrequencyNotReached(): void
+    {
+        $player = $this->createPlayerMock(life: 100, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(3);
+
+        // Effect with frequency 3 (tick every 3 turns), last ticked at turn 2
+        $poisonEffect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_POISON,
+            damagePerTurn: 10,
+            name: 'Poison lent',
+            category: StatusEffect::CATEGORY_DOT,
+            frequency: 3,
+        );
+
+        $fightStatusEffect = $this->createMock(FightStatusEffect::class);
+        $fightStatusEffect->method('getStatusEffect')->willReturn($poisonEffect);
+        $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(2);
+        // Should still decrement turn even without ticking
+        $fightStatusEffect->expects($this->once())->method('decrementTurn');
+        // Should NOT set lastTickTurn (no tick occurred)
+        $fightStatusEffect->expects($this->never())->method('setLastTickTurn');
+
+        $this->fightStatusEffectRepo->method('findBy')
+            ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
+                if (isset($criteria['targetType'])) {
+                    return [$fightStatusEffect];
+                }
+
+                return [$fightStatusEffect];
+            });
+
+        $messages = $this->manager->processStartOfTurn($this->fight, $player);
+
+        // No damage should be applied (tick skipped)
+        $this->assertSame(100, $player->getLife());
+        $this->assertEmpty($messages);
+    }
+
+    public function testProcessStartOfTurnTicksWhenFrequencyReached(): void
+    {
+        $player = $this->createPlayerMock(life: 100, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(5);
+
+        // Effect with frequency 2 (tick every 2 turns), last ticked at turn 3
+        $poisonEffect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_POISON,
+            damagePerTurn: 8,
+            name: 'Poison insidieux',
+            category: StatusEffect::CATEGORY_DOT,
+            frequency: 2,
+        );
+
+        $fightStatusEffect = $this->createMock(FightStatusEffect::class);
+        $fightStatusEffect->method('getStatusEffect')->willReturn($poisonEffect);
+        $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(3);
+        $fightStatusEffect->expects($this->once())->method('decrementTurn');
+        $fightStatusEffect->expects($this->once())->method('setLastTickTurn')->with(5);
+
+        $this->fightStatusEffectRepo->method('findBy')
+            ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
+                if (isset($criteria['targetType'])) {
+                    return [$fightStatusEffect];
+                }
+
+                return [$fightStatusEffect];
+            });
+
+        $messages = $this->manager->processStartOfTurn($this->fight, $player);
+
+        $this->assertSame(92, $player->getLife());
+        $this->assertNotEmpty($messages);
+    }
+
+    public function testProcessStartOfTurnFirstTickAlwaysOccurs(): void
+    {
+        $player = $this->createPlayerMock(life: 100, maxLife: 100);
+        $this->fight->method('getStep')->willReturn(1);
+
+        // Effect with frequency 5, never ticked
+        $poisonEffect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_POISON,
+            damagePerTurn: 10,
+            name: 'Poison lent',
+            frequency: 5,
+        );
+
+        $fightStatusEffect = $this->createMock(FightStatusEffect::class);
+        $fightStatusEffect->method('getStatusEffect')->willReturn($poisonEffect);
+        $fightStatusEffect->method('isExpired')->willReturn(false);
+        $fightStatusEffect->method('getLastTickTurn')->willReturn(null);
+        $fightStatusEffect->expects($this->once())->method('setLastTickTurn')->with(1);
+        $fightStatusEffect->expects($this->once())->method('decrementTurn');
+
+        $this->fightStatusEffectRepo->method('findBy')
+            ->willReturnCallback(function (array $criteria) use ($fightStatusEffect) {
+                if (isset($criteria['targetType'])) {
+                    return [$fightStatusEffect];
+                }
+
+                return [$fightStatusEffect];
+            });
+
+        $messages = $this->manager->processStartOfTurn($this->fight, $player);
+
+        // First tick always applies damage
+        $this->assertSame(90, $player->getLife());
+        $this->assertNotEmpty($messages);
     }
 
     // --- Tests isCharacterParalyzed/Frozen/Silenced/Berserk ---
@@ -514,5 +660,194 @@ class StatusEffectManagerTest extends TestCase
             ->method('remove');
 
         $this->manager->clearAllEffects($this->fight);
+    }
+
+    // --- Tests persistent effects (PlayerStatusEffect) ---
+
+    public function testApplyPersistentEffectCreatesPlayerStatusEffect(): void
+    {
+        $player = $this->createPlayerMock();
+        $effect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_REGENERATION,
+            name: 'Food buff',
+            category: StatusEffect::CATEGORY_BUFF,
+            realTimeDuration: 300,
+        );
+
+        $this->playerStatusEffectRepo->method('findBy')->willReturn([]);
+
+        $this->entityManager->expects($this->atLeastOnce())
+            ->method('persist')
+            ->with($this->isInstanceOf(PlayerStatusEffect::class));
+
+        $result = $this->manager->applyPersistentEffect($player, $effect);
+
+        $this->assertNotNull($result);
+        $this->assertInstanceOf(PlayerStatusEffect::class, $result);
+    }
+
+    public function testApplyPersistentEffectReturnsNullWhenNoRealTimeDuration(): void
+    {
+        $player = $this->createPlayerMock();
+        $effect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_POISON,
+            name: 'Poison',
+        );
+
+        $result = $this->manager->applyPersistentEffect($player, $effect);
+
+        $this->assertNull($result);
+    }
+
+    public function testApplyPersistentEffectReturnsNullWhenChanceFails(): void
+    {
+        $player = $this->createPlayerMock();
+        $effect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_REGENERATION,
+            name: 'Buff',
+            chance: 0,
+            realTimeDuration: 300,
+        );
+
+        $result = $this->manager->applyPersistentEffect($player, $effect);
+
+        $this->assertNull($result);
+    }
+
+    public function testGetActivePersistentEffectsFiltersExpired(): void
+    {
+        $player = $this->createPlayerMock();
+
+        $activeEffect = $this->createMock(PlayerStatusEffect::class);
+        $activeEffect->method('isExpired')->willReturn(false);
+
+        $expiredEffect = $this->createMock(PlayerStatusEffect::class);
+        $expiredEffect->method('isExpired')->willReturn(true);
+
+        $this->playerStatusEffectRepo->method('findBy')
+            ->with(['player' => $player])
+            ->willReturn([$activeEffect, $expiredEffect]);
+
+        $result = $this->manager->getActivePersistentEffects($player);
+
+        $this->assertCount(1, $result);
+        $this->assertSame($activeEffect, $result[0]);
+    }
+
+    public function testCleanExpiredPersistentEffects(): void
+    {
+        $player = $this->createPlayerMock();
+
+        $activeEffect = $this->createMock(PlayerStatusEffect::class);
+        $activeEffect->method('isExpired')->willReturn(false);
+
+        $expiredEffect = $this->createMock(PlayerStatusEffect::class);
+        $expiredEffect->method('isExpired')->willReturn(true);
+
+        $this->playerStatusEffectRepo->method('findBy')
+            ->with(['player' => $player])
+            ->willReturn([$activeEffect, $expiredEffect]);
+
+        $this->entityManager->expects($this->once())
+            ->method('remove')
+            ->with($expiredEffect);
+
+        $this->manager->cleanExpiredPersistentEffects($player);
+    }
+
+    public function testGetPersistentStatModifiers(): void
+    {
+        $player = $this->createPlayerMock();
+
+        $effect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_BERSERK,
+            name: 'Elixir',
+            category: StatusEffect::CATEGORY_BUFF,
+        );
+        $effect->setStatModifier(['damage' => 0.15]);
+
+        $playerEffect = $this->createMock(PlayerStatusEffect::class);
+        $playerEffect->method('isExpired')->willReturn(false);
+        $playerEffect->method('getStatusEffect')->willReturn($effect);
+
+        $this->playerStatusEffectRepo->method('findBy')
+            ->with(['player' => $player])
+            ->willReturn([$playerEffect]);
+
+        $modifiers = $this->manager->getPersistentStatModifiers($player);
+
+        $this->assertArrayHasKey('damage', $modifiers);
+        $this->assertEqualsWithDelta(0.15, $modifiers['damage'], 0.001);
+    }
+
+    // --- Test integration: food buff loaded into combat ---
+
+    public function testLoadPersistentEffectsIntoFight(): void
+    {
+        $player = $this->createPlayerMock(id: 5);
+
+        $buffEffect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_REGENERATION,
+            name: 'Repas',
+            category: StatusEffect::CATEGORY_BUFF,
+            realTimeDuration: 300,
+        );
+        $buffEffect->setStatModifier(['max_life' => 0.10]);
+
+        $playerEffect = $this->createMock(PlayerStatusEffect::class);
+        $playerEffect->method('isExpired')->willReturn(false);
+        $playerEffect->method('getStatusEffect')->willReturn($buffEffect);
+        $playerEffect->method('getRemainingSeconds')->willReturn(150);
+        $playerEffect->method('getAppliedAt')->willReturn(new \DateTime());
+
+        $this->playerStatusEffectRepo->method('findBy')
+            ->with(['player' => $player])
+            ->willReturn([$playerEffect]);
+
+        $persisted = [];
+        $this->entityManager->expects($this->atLeastOnce())
+            ->method('persist')
+            ->willReturnCallback(function ($entity) use (&$persisted) {
+                $persisted[] = $entity;
+            });
+
+        $this->manager->loadPersistentEffectsIntoFight($this->fight, $player);
+
+        // Should have persisted a FightStatusEffect
+        $fightEffects = array_filter($persisted, fn ($e) => $e instanceof FightStatusEffect);
+        $this->assertNotEmpty($fightEffects);
+
+        $fightEffect = reset($fightEffects);
+        $this->assertSame($buffEffect, $fightEffect->getStatusEffect());
+        // 150 seconds / 30 = 5 turns
+        $this->assertSame(5, $fightEffect->getRemainingTurns());
+    }
+
+    public function testLoadPersistentEffectsSkipsDebuffs(): void
+    {
+        $player = $this->createPlayerMock(id: 5);
+
+        $debuffEffect = $this->createStatusEffect(
+            type: StatusEffect::TYPE_POISON,
+            name: 'Malediction',
+            category: StatusEffect::CATEGORY_DEBUFF,
+            realTimeDuration: 300,
+        );
+
+        $playerEffect = $this->createMock(PlayerStatusEffect::class);
+        $playerEffect->method('isExpired')->willReturn(false);
+        $playerEffect->method('getStatusEffect')->willReturn($debuffEffect);
+        $playerEffect->method('getRemainingSeconds')->willReturn(150);
+
+        $this->playerStatusEffectRepo->method('findBy')
+            ->with(['player' => $player])
+            ->willReturn([$playerEffect]);
+
+        // Should NOT persist any FightStatusEffect for debuffs
+        $this->entityManager->expects($this->never())
+            ->method('persist')
+            ->with($this->isInstanceOf(FightStatusEffect::class));
+
+        $this->manager->loadPersistentEffectsIntoFight($this->fight, $player);
     }
 }
