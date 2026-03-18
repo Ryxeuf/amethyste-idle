@@ -4,19 +4,19 @@
 {% block page_title %}Items{% endblock %}
 
 {% block body %}
-    <div class="flex items-center justify-between mb-6">
-        <form method="get" class="flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+        <form method="get" class="flex items-center gap-2 flex-wrap">
             <input type="text" name="q" value="{{ search }}" placeholder="Rechercher un item..."
-                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-64">
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
             <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
             {% if search %}
                 <a href="{{ path('admin_item_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
             {% endif %}
         </form>
-        <a href="{{ path('admin_item_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">+ Nouvel item</a>
+        <a href="{{ path('admin_item_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center flex-shrink-0">+ Nouvel item</a>
     </div>
 
-    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto">
         <table class="w-full text-sm">
             <thead>
                 <tr class="border-b border-gray-800 text-gray-400">

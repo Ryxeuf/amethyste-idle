@@ -4,43 +4,50 @@
 {% block page_title %}Tables de loot{% endblock %}
 
 {% block body %}
-<div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold">Tables de loot</h1>
-    <a href="{{ path('admin_loot_table_new') }}" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded text-white">Nouveau</a>
+<div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6">
+    <form method="get" class="flex items-center gap-2 flex-wrap">
+        <input type="text" name="q" value="{{ search }}" placeholder="Rechercher par monstre ou item..."
+               class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
+        <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
+        {% if search %}
+            <a href="{{ path('admin_loot_table_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
+        {% endif %}
+    </form>
+    <a href="{{ path('admin_loot_table_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center flex-shrink-0">+ Nouveau</a>
 </div>
 
-<form method="get" class="mb-4">
-    <input type="text" name="q" value="{{ search }}" placeholder="Rechercher par monstre ou item..." class="bg-gray-700 text-white px-4 py-2 rounded w-64 border border-gray-600 focus:border-purple-500 focus:outline-none">
-</form>
-
-<table class="w-full text-left">
-    <thead class="border-b border-gray-600">
-        <tr>
-            <th class="px-4 py-3 text-gray-400 text-sm">Monstre</th>
-            <th class="px-4 py-3 text-gray-400 text-sm">Item</th>
-            <th class="px-4 py-3 text-gray-400 text-sm">Probabilite</th>
-            <th class="px-4 py-3 text-gray-400 text-sm">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for entry in lootEntries %}
-        <tr class="border-b border-gray-700 hover:bg-gray-800">
-            <td class="px-4 py-3">{{ entry.monster ? entry.monster.name : '-' }}</td>
-            <td class="px-4 py-3">{{ entry.item ? entry.item.name : '-' }}</td>
-            <td class="px-4 py-3">{{ entry.probability }}%</td>
-            <td class="px-4 py-3 space-x-2">
-                <a href="{{ path('admin_loot_table_edit', {id: entry.id}) }}" class="text-purple-400 hover:text-purple-300">Modifier</a>
-                <form method="post" action="{{ path('admin_loot_table_delete', {id: entry.id}) }}" class="inline" onsubmit="return confirm('Supprimer cette entree ?')">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entry.id) }}">
-                    <button type="submit" class="text-red-400 hover:text-red-300">Supprimer</button>
-                </form>
-            </td>
-        </tr>
-        {% else %}
-        <tr><td colspan="4" class="px-4 py-6 text-center text-gray-500">Aucune entree de loot.</td></tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden overflow-x-auto">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="border-b border-gray-800 text-gray-400">
+                <th class="text-left px-4 py-3 font-medium">Monstre</th>
+                <th class="text-left px-4 py-3 font-medium">Item</th>
+                <th class="text-left px-4 py-3 font-medium">Probabilite</th>
+                <th class="text-right px-4 py-3 font-medium">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+            {% for entry in lootEntries %}
+            <tr class="hover:bg-gray-800 transition-colors">
+                <td class="px-4 py-3 text-gray-200">{{ entry.monster ? entry.monster.name : '-' }}</td>
+                <td class="px-4 py-3 text-gray-400">{{ entry.item ? entry.item.name : '-' }}</td>
+                <td class="px-4 py-3 text-gray-400">{{ entry.probability }}%</td>
+                <td class="px-4 py-3 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <a href="{{ path('admin_loot_table_edit', {id: entry.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
+                        <form method="post" action="{{ path('admin_loot_table_delete', {id: entry.id}) }}" class="inline" onsubmit="return confirm('Supprimer cette entree ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entry.id) }}">
+                            <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="px-4 py-8 text-center text-gray-500">Aucune entree de loot.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
     {% if totalPages is defined and totalPages > 1 %}
         {% include 'admin/_pagination.html.twig' %}
