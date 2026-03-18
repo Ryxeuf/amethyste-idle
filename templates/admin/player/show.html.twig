@@ -6,7 +6,7 @@
 {% block body %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {# Player info card #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Informations</h2>
             <dl class="space-y-3">
                 <div class="flex justify-between">
@@ -51,7 +51,7 @@
         </div>
 
         {# Stats card #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Statistiques</h2>
             <dl class="space-y-3">
                 <div class="flex justify-between">
@@ -86,7 +86,7 @@
         </div>
 
         {# Domain XP #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Progression par domaine</h2>
             {% if domainXp|length > 0 %}
                 <div class="space-y-3">
@@ -109,7 +109,7 @@
     </div>
 
     {# Inventory #}
-    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-4">Inventaire</h2>
         {% if inventories|length > 0 %}
             {% for inv in inventories %}
@@ -139,7 +139,7 @@
 
     {# Quests #}
     <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Quetes actives ({{ activeQuests|length }})</h2>
             {% if activeQuests|length > 0 %}
                 <div class="space-y-2">
@@ -154,7 +154,7 @@
                 <p class="text-gray-500 text-sm">Aucune quete active.</p>
             {% endif %}
         </div>
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Quetes terminees ({{ completedQuests|length }})</h2>
             {% if completedQuests|length > 0 %}
                 <div class="space-y-2">
@@ -172,7 +172,7 @@
     </div>
 
     {# Talents #}
-    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-4">Talents ({{ player.skills|length }})</h2>
         {% if player.skills|length > 0 %}
             <div class="flex flex-wrap gap-2">
@@ -186,7 +186,7 @@
     </div>
 
     {# Admin actions #}
-    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-4">Actions administrateur</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

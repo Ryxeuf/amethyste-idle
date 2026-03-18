@@ -6,7 +6,7 @@
 {% block body %}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {# User info card #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Informations</h2>
             <dl class="space-y-3">
                 <div class="flex justify-between">
@@ -47,7 +47,7 @@
         </div>
 
         {# Roles card #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Roles actuels</h2>
             <div class="flex flex-wrap gap-2 mb-6">
                 {% for role in user.roles %}
@@ -92,7 +92,7 @@
         </div>
 
         {# Players card #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
             <h2 class="text-lg font-semibold text-gray-200 mb-4">Personnages ({{ user.players|length }})</h2>
             {% if user.players|length > 0 %}
                 <div class="space-y-3">
@@ -113,7 +113,7 @@
     </div>
 
     {# Admin actions #}
-    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-4">Actions</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {# Ban/Unban #}
@@ -136,7 +136,7 @@
 
             {# Reset password (Super Admin only) #}
             {% if is_granted('ROLE_SUPER_ADMIN') and app.user.id != user.id %}
-                <form method="post" action="{{ path('admin_user_reset_password', {id: user.id}) }}" class="flex gap-2">
+                <form method="post" action="{{ path('admin_user_reset_password', {id: user.id}) }}" class="flex gap-2 sm:col-span-2 lg:col-span-1">
                     <input type="hidden" name="_token" value="{{ csrf_token('reset_password' ~ user.id) }}">
                     <input type="password" name="new_password" placeholder="Nouveau mot de passe" minlength="6" required
                            class="flex-1 min-w-0 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500">
