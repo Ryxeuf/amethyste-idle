@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/maps', name: 'admin_map_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_WORLD_BUILDER')]
 class MapController extends AbstractController
 {
     public function __construct(
