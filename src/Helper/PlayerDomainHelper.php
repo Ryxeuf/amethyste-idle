@@ -69,9 +69,44 @@ class PlayerDomainHelper
                     }
                 }
             }
-
         }
 
         return null;
+    }
+
+    /**
+     * Retourne TOUS les domaines associés à un skill ayant l'action donnée.
+     *
+     * @return Domain[]
+     */
+    public function getDomainsBySkillAction(string $action, array $options = []): array
+    {
+        $domains = [];
+        foreach ($this->playerHelper->getPlayer()->getSkills() as $skill) {
+            $actions = $skill->getActions() ?? [];
+            foreach ($actions as $playerAction) {
+                if ($action === ($playerAction['action'] ?? null)) {
+                    $match = false;
+                    switch ($action) {
+                        case 'harvest':
+                            if (null !== $spot = $options['spot'] ?? null) {
+                                if (in_array($spot, $playerAction['spots'])) {
+                                    $match = true;
+                                }
+                            }
+                            break;
+                        default:
+                            $match = true;
+                    }
+                    if ($match) {
+                        foreach ($skill->getDomains() as $domain) {
+                            $domains[$domain->getId()] = $domain;
+                        }
+                    }
+                }
+            }
+        }
+
+        return array_values($domains);
     }
 }

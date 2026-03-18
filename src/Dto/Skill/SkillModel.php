@@ -7,9 +7,14 @@ use App\Dto\Domain\DomainModel;
 class SkillModel extends SkillModelLight
 {
     /**
-     * @var DomainModel
+     * @var DomainModel|null
      */
     public $domain;
+
+    /**
+     * @var DomainModel[]
+     */
+    public array $domains = [];
 
     /**
      * @var SkillModel[]

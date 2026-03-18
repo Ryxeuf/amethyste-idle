@@ -26,12 +26,13 @@ class SkillType extends AbstractType
             ->add('hit', IntegerType::class, ['label' => 'Precision bonus'])
             ->add('critical', IntegerType::class, ['label' => 'Critique bonus'])
             ->add('life', IntegerType::class, ['label' => 'Vie bonus'])
-            ->add('domain', EntityType::class, [
+            ->add('domains', EntityType::class, [
                 'class' => Domain::class,
                 'choice_label' => 'title',
-                'label' => 'Domaine',
+                'label' => 'Domaines',
                 'required' => false,
-                'placeholder' => '-- Aucun --',
+                'multiple' => true,
+                'expanded' => true,
             ])
         ;
     }

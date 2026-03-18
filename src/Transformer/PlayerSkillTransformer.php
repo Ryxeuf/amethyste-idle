@@ -18,7 +18,13 @@ class PlayerSkillTransformer extends AbstractSkillTransformer
     {
         $output = new SkillPlayer($skill);
 
-        $output->domain = new DomainModel($skill->getDomain());
+        $firstDomain = $skill->getDomain();
+        if ($firstDomain !== null) {
+            $output->domain = new DomainModel($firstDomain);
+        }
+        foreach ($skill->getDomains() as $domain) {
+            $output->domains[] = new DomainModel($domain);
+        }
 
         $this->setRequirements($output, $skill);
         $this->setAchievements($output, $skill);
@@ -26,9 +32,15 @@ class PlayerSkillTransformer extends AbstractSkillTransformer
         $player = $this->playerHelper->getPlayer();
         $output->acquired = $player->hasSkill($skill);
 
-        foreach ($skill->getDomain()->getPlayerExperiences() as $playerExperience) {
-            if ($playerExperience->getPlayer() === $player) {
-                $output->canBeAcquired = $playerExperience->getAvailableExperience() >= $skill->getRequiredPoints();
+        // Multi-domaine : vérifier l'XP disponible dans au moins un des domaines
+        foreach ($skill->getDomains() as $domain) {
+            foreach ($domain->getPlayerExperiences() as $playerExperience) {
+                if ($playerExperience->getPlayer() === $player) {
+                    if ($playerExperience->getAvailableExperience() >= $skill->getRequiredPoints()) {
+                        $output->canBeAcquired = true;
+                        break 2;
+                    }
+                }
             }
         }
 

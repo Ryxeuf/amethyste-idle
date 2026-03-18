@@ -40,7 +40,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             }
 
             if (isset($data['domain'])) {
-                $skill->setDomain($this->getReference($data['domain'], Domain::class));
+                $domains = is_array($data['domain']) ? $data['domain'] : [$data['domain']];
+                foreach ($domains as $domainRef) {
+                    $skill->addDomain($this->getReference($domainRef, Domain::class));
+                }
             }
 
             if (isset($data['actions'])) {

@@ -18,7 +18,16 @@ class PlayerSkillHelper
 
         $player = $this->playerHelper->getPlayer();
         $requirements = $skill->getRequirements()->toArray();
-        $hasEnoughPoints = $this->playerDomainHelper->getAvailableDomainExperience($skill->getDomain(), $player) >= $skill->getRequiredPoints();
+
+        // Multi-domaine : il faut assez de points dans AU MOINS UN des domaines
+        $hasEnoughPoints = false;
+        foreach ($skill->getDomains() as $domain) {
+            if ($this->playerDomainHelper->getAvailableDomainExperience($domain, $player) >= $skill->getRequiredPoints()) {
+                $hasEnoughPoints = true;
+                break;
+            }
+        }
+
         $playerRequirementsMatching = array_intersect($player->getSkills()->toArray(), $requirements);
         $playerMeetsRequirements = count($requirements) === count($playerRequirementsMatching);
 
