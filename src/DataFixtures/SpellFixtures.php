@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -49,7 +50,7 @@ class SpellFixtures extends Fixture
             'fire_ball' => [
                 'slug' => 'fire-ball',
                 'damage' => 2,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Boule de feu',
                 'description' => 'Une boule de feu pour tout cramer',
@@ -62,7 +63,7 @@ class SpellFixtures extends Fixture
             'flame' => [
                 'slug' => 'flame',
                 'damage' => 1,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Flammèche',
                 'description' => 'Un sort de flammèche',
@@ -72,7 +73,7 @@ class SpellFixtures extends Fixture
             'flamer' => [
                 'slug' => 'flamer',
                 'damage' => 3,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Feu',
                 'description' => 'Un sort de feu',
@@ -82,7 +83,7 @@ class SpellFixtures extends Fixture
             'flame_rain' => [
                 'slug' => 'flame-rain',
                 'damage' => 5,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Pluie de flammes',
                 'description' => 'Une pluie de flammes qui carbonise tout sur une large zone',
@@ -97,7 +98,7 @@ class SpellFixtures extends Fixture
             'inferno' => [
                 'slug' => 'inferno',
                 'damage' => 7,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Inferno',
                 'description' => 'Un brasier dévastateur qui consume tout sur son passage',
@@ -112,7 +113,7 @@ class SpellFixtures extends Fixture
             'fire_wall' => [
                 'slug' => 'fire-wall',
                 'damage' => 4,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Mur de feu',
                 'description' => 'Crée un mur de flammes infranchissable',
@@ -122,7 +123,7 @@ class SpellFixtures extends Fixture
             'fire_nova' => [
                 'slug' => 'fire-nova',
                 'damage' => 6,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Nova de feu',
                 'description' => 'Une explosion de feu qui se propage dans toutes les directions',
@@ -132,7 +133,7 @@ class SpellFixtures extends Fixture
             'phoenix_flame' => [
                 'slug' => 'phoenix-flame',
                 'damage' => 5,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => 2,
                 'name' => 'Flamme du phénix',
                 'description' => 'Des flammes régénératrices qui brûlent et soignent à la fois',
@@ -142,7 +143,7 @@ class SpellFixtures extends Fixture
             'meteor_strike' => [
                 'slug' => 'meteor-strike',
                 'damage' => 8,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Frappe météorique',
                 'description' => 'Invoque un météore enflammé qui s\'écrase sur l\'ennemi',
@@ -152,7 +153,7 @@ class SpellFixtures extends Fixture
             'burning_touch' => [
                 'slug' => 'burning-touch',
                 'damage' => 2,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Toucher brûlant',
                 'description' => 'Un simple contact qui inflige des brûlures',
@@ -162,7 +163,7 @@ class SpellFixtures extends Fixture
             'heat_wave' => [
                 'slug' => 'heat-wave',
                 'damage' => 3,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Vague de chaleur',
                 'description' => 'Une onde de chaleur qui affaiblit les ennemis',
@@ -172,7 +173,7 @@ class SpellFixtures extends Fixture
             'dragon_breath' => [
                 'slug' => 'dragon-breath',
                 'damage' => 6,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Souffle du dragon',
                 'description' => 'Un souffle de feu devastateur',
@@ -185,7 +186,7 @@ class SpellFixtures extends Fixture
             'volcanic_eruption' => [
                 'slug' => 'volcanic-eruption',
                 'damage' => 10,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Eruption volcanique',
                 'description' => 'Dechaine la puissance d\'un volcan sur les ennemis',
@@ -200,7 +201,7 @@ class SpellFixtures extends Fixture
             'ember_shield' => [
                 'slug' => 'ember-shield',
                 'damage' => 1,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => 3,
                 'name' => 'Bouclier d\'étincelles',
                 'description' => 'Un bouclier de braises qui protège et brûle les attaquants',
@@ -210,7 +211,7 @@ class SpellFixtures extends Fixture
             'fire_whip' => [
                 'slug' => 'fire-whip',
                 'damage' => 4,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Fouet de feu',
                 'description' => 'Un fouet enflammé qui frappe à distance',
@@ -220,7 +221,7 @@ class SpellFixtures extends Fixture
             'combustion' => [
                 'slug' => 'combustion',
                 'damage' => 3,
-                'element' => 'fire',
+                'element' => Element::Fire,
                 'heal' => null,
                 'name' => 'Combustion',
                 'description' => 'Enflamme instantanément la cible',
@@ -232,7 +233,7 @@ class SpellFixtures extends Fixture
             'life_heal' => [
                 'slug' => 'life-heal',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 5,
                 'name' => 'Soin mineur',
                 'description' => 'Un soin mineur qui fait du bien',
@@ -243,7 +244,7 @@ class SpellFixtures extends Fixture
             'rejuvenation' => [
                 'slug' => 'rejuvenation',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 8,
                 'name' => 'Regeneration',
                 'description' => 'Un sort de regeneration qui restaure progressivement la sante',
@@ -255,7 +256,7 @@ class SpellFixtures extends Fixture
             'divine_blessing' => [
                 'slug' => 'divine-blessing',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 12,
                 'name' => 'Benediction divine',
                 'description' => 'Une puissante benediction qui soigne les blessures graves',
@@ -268,7 +269,7 @@ class SpellFixtures extends Fixture
             'healing_wave' => [
                 'slug' => 'healing-wave',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 7,
                 'name' => 'Vague de guérison',
                 'description' => 'Une vague d\'énergie curative qui soigne les blessures',
@@ -278,7 +279,7 @@ class SpellFixtures extends Fixture
             'life_transfer' => [
                 'slug' => 'life-transfer',
                 'damage' => 2,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 4,
                 'name' => 'Transfert de vie',
                 'description' => 'Transfère l\'énergie vitale de l\'ennemi vers soi',
@@ -288,7 +289,7 @@ class SpellFixtures extends Fixture
             'holy_light' => [
                 'slug' => 'holy-light',
                 'damage' => 3,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 3,
                 'name' => 'Lumiere',
                 'description' => 'Une lumiere divine qui soigne les allies et blesse les ennemis',
@@ -299,7 +300,7 @@ class SpellFixtures extends Fixture
             'vitality_surge' => [
                 'slug' => 'vitality-surge',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 10,
                 'name' => 'Afflux de vitalité',
                 'description' => 'Un puissant afflux d\'énergie vitale qui restaure la santé',
@@ -309,7 +310,7 @@ class SpellFixtures extends Fixture
             'life_shield' => [
                 'slug' => 'life-shield',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 6,
                 'name' => 'Bouclier de vie',
                 'description' => 'Crée un bouclier protecteur qui absorbe les dégâts',
@@ -319,7 +320,7 @@ class SpellFixtures extends Fixture
             'angelic_touch' => [
                 'slug' => 'angelic-touch',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 4,
                 'name' => 'Toucher angélique',
                 'description' => 'Un toucher qui apaise les blessures',
@@ -329,7 +330,7 @@ class SpellFixtures extends Fixture
             'purification' => [
                 'slug' => 'purification',
                 'damage' => 1,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 5,
                 'name' => 'Purification',
                 'description' => 'Purifie le corps et l\'esprit, eliminant les afflictions',
@@ -340,7 +341,7 @@ class SpellFixtures extends Fixture
             'celestial_blessing' => [
                 'slug' => 'celestial-blessing',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 15,
                 'name' => 'Bénédiction céleste',
                 'description' => 'Une bénédiction des cieux qui restaure une grande quantité de santé',
@@ -350,7 +351,7 @@ class SpellFixtures extends Fixture
             'life_burst' => [
                 'slug' => 'life-burst',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 9,
                 'name' => 'Explosion de vie',
                 'description' => 'Une explosion d\'énergie vitale qui soigne instantanément',
@@ -360,7 +361,7 @@ class SpellFixtures extends Fixture
             'divine_intervention' => [
                 'slug' => 'divine-intervention',
                 'damage' => 5,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 5,
                 'name' => 'Jugement sacre',
                 'description' => 'Un jugement divin qui soigne les allies et punit les ennemis',
@@ -373,7 +374,7 @@ class SpellFixtures extends Fixture
             'healing_touch' => [
                 'slug' => 'healing-touch',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 3,
                 'name' => 'Toucher guérisseur',
                 'description' => 'Un simple toucher qui soigne les blessures légères',
@@ -383,7 +384,7 @@ class SpellFixtures extends Fixture
             'life_bloom' => [
                 'slug' => 'life-bloom',
                 'damage' => null,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 6,
                 'name' => 'Floraison de vie',
                 'description' => 'Une énergie vitale qui se répand progressivement',
@@ -393,7 +394,7 @@ class SpellFixtures extends Fixture
             'sacred_light' => [
                 'slug' => 'sacred-light',
                 'damage' => 4,
-                'element' => 'life',
+                'element' => Element::Light,
                 'heal' => 2,
                 'name' => 'Lumière sacrée',
                 'description' => 'Un rayon de lumière divine qui purifie et soigne',
@@ -405,7 +406,7 @@ class SpellFixtures extends Fixture
             'punishment' => [
                 'slug' => 'punishment',
                 'damage' => 1,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Châtiment',
                 'description' => 'Un sort de châtiment',
@@ -415,7 +416,7 @@ class SpellFixtures extends Fixture
             'soul_drain' => [
                 'slug' => 'soul-drain',
                 'damage' => 3,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => 1,
                 'name' => 'Drain de vie',
                 'description' => 'Aspire l\'energie vitale de la cible pour se soigner',
@@ -426,7 +427,7 @@ class SpellFixtures extends Fixture
             'death_touch' => [
                 'slug' => 'death-touch',
                 'damage' => 4,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Toucher mortel',
                 'description' => 'Un contact qui inflige une douleur intense',
@@ -436,7 +437,7 @@ class SpellFixtures extends Fixture
             'shadow_bolt' => [
                 'slug' => 'shadow-bolt',
                 'damage' => 5,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Éclair d\'ombre',
                 'description' => 'Un projectile d\'énergie sombre qui frappe la cible',
@@ -446,7 +447,7 @@ class SpellFixtures extends Fixture
             'life_leech' => [
                 'slug' => 'life-leech',
                 'damage' => 4,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => 2,
                 'name' => 'Sangsue vitale',
                 'description' => 'Absorbe l\'énergie vitale de la cible',
@@ -456,7 +457,7 @@ class SpellFixtures extends Fixture
             'death_grip' => [
                 'slug' => 'death-grip',
                 'damage' => 3,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Emprise de la mort',
                 'description' => 'Une main spectrale qui saisit et blesse la cible',
@@ -466,7 +467,7 @@ class SpellFixtures extends Fixture
             'shadow_wave' => [
                 'slug' => 'shadow-wave',
                 'damage' => 6,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Vague d\'ombre',
                 'description' => 'Une vague d\'énergie sombre qui balaye la zone',
@@ -476,7 +477,7 @@ class SpellFixtures extends Fixture
             'necrotic_touch' => [
                 'slug' => 'necrotic-touch',
                 'damage' => 2,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Toucher nécrotique',
                 'description' => 'Un toucher qui provoque la nécrose des tissus',
@@ -486,7 +487,7 @@ class SpellFixtures extends Fixture
             'dark_harvest' => [
                 'slug' => 'dark-harvest',
                 'damage' => 7,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => 3,
                 'name' => 'Moisson sombre',
                 'description' => 'Recolte l\'energie vitale des ennemis affaiblis',
@@ -500,7 +501,7 @@ class SpellFixtures extends Fixture
             'soul_rip' => [
                 'slug' => 'soul-rip',
                 'damage' => 8,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Déchirure d\'âme',
                 'description' => 'Déchire l\'âme de la cible, causant une douleur intense',
@@ -510,7 +511,7 @@ class SpellFixtures extends Fixture
             'death_nova' => [
                 'slug' => 'death-nova',
                 'damage' => 6,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Nova de mort',
                 'description' => 'Une explosion d\'énergie mortelle qui se propage',
@@ -520,7 +521,7 @@ class SpellFixtures extends Fixture
             'shadow_mend' => [
                 'slug' => 'shadow-mend',
                 'damage' => 1,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => 5,
                 'name' => 'Guérison des ombres',
                 'description' => 'Utilise l\'énergie sombre pour soigner les blessures',
@@ -530,7 +531,7 @@ class SpellFixtures extends Fixture
             'plague_strike' => [
                 'slug' => 'plague-strike',
                 'damage' => 3,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Malediction',
                 'description' => 'Maudit la cible, empoisonnant son corps et son ame',
@@ -542,7 +543,7 @@ class SpellFixtures extends Fixture
             'death_coil' => [
                 'slug' => 'death-coil',
                 'damage' => 5,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => null,
                 'name' => 'Spirale de mort',
                 'description' => 'Une spirale d\'énergie nécrotique qui frappe la cible',
@@ -552,7 +553,7 @@ class SpellFixtures extends Fixture
             'soul_siphon' => [
                 'slug' => 'soul-siphon',
                 'damage' => 4,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => 4,
                 'name' => 'Siphon d\'âme',
                 'description' => 'Siphonne l\'essence vitale de la cible',
@@ -562,7 +563,7 @@ class SpellFixtures extends Fixture
             'dark_ritual' => [
                 'slug' => 'dark-ritual',
                 'damage' => 2,
-                'element' => 'death',
+                'element' => Element::Dark,
                 'heal' => 6,
                 'name' => 'Rituel sombre',
                 'description' => 'Un rituel qui sacrifie une partie de sa force pour se soigner',
@@ -574,7 +575,7 @@ class SpellFixtures extends Fixture
             'stone_throw' => [
                 'slug' => 'stone-throw',
                 'damage' => 1,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Jet de cailloux',
                 'description' => 'Un sort de jet de cailloux',
@@ -584,7 +585,7 @@ class SpellFixtures extends Fixture
             'earthquake' => [
                 'slug' => 'earthquake',
                 'damage' => 4,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Tremblement de terre',
                 'description' => 'Provoque un séisme qui déstabilise les ennemis',
@@ -594,7 +595,7 @@ class SpellFixtures extends Fixture
             'rock_armor' => [
                 'slug' => 'rock-armor',
                 'damage' => 0,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => 3,
                 'name' => 'Parade',
                 'description' => 'Une parade rocheuse qui absorbe les degats',
@@ -606,7 +607,7 @@ class SpellFixtures extends Fixture
             'boulder_throw' => [
                 'slug' => 'boulder-throw',
                 'damage' => 6,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Lancer de rocher',
                 'description' => 'Lance un énorme rocher sur l\'ennemi',
@@ -616,7 +617,7 @@ class SpellFixtures extends Fixture
             'earth_spike' => [
                 'slug' => 'earth-spike',
                 'damage' => 3,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Pic de terre',
                 'description' => 'Un pic rocheux jaillit du sol et transperce l\'ennemi',
@@ -626,7 +627,7 @@ class SpellFixtures extends Fixture
             'stone_spikes' => [
                 'slug' => 'stone-spikes',
                 'damage' => 4,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Pics de pierre',
                 'description' => 'Fait jaillir plusieurs pics de pierre acérés du sol',
@@ -636,7 +637,7 @@ class SpellFixtures extends Fixture
             'landslide' => [
                 'slug' => 'landslide',
                 'damage' => 5,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Glissement de terrain',
                 'description' => 'Déclenche un glissement de terrain qui ensevelit les ennemis',
@@ -646,7 +647,7 @@ class SpellFixtures extends Fixture
             'stone_skin' => [
                 'slug' => 'stone-skin',
                 'damage' => 0,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => 5,
                 'name' => 'Bouclier magique',
                 'description' => 'Un bouclier de pierre magique offrant une protection accrue',
@@ -658,7 +659,7 @@ class SpellFixtures extends Fixture
             'earth_shield' => [
                 'slug' => 'earth-shield',
                 'damage' => 1,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => 4,
                 'name' => 'Bouclier terreux',
                 'description' => 'Un bouclier de terre qui protège et contre-attaque',
@@ -668,7 +669,7 @@ class SpellFixtures extends Fixture
             'crystal_spear' => [
                 'slug' => 'crystal-spear',
                 'damage' => 7,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Lance de cristal',
                 'description' => 'Une lance de cristal tranchante qui transperce les armures',
@@ -678,7 +679,7 @@ class SpellFixtures extends Fixture
             'quicksand' => [
                 'slug' => 'quicksand',
                 'damage' => 2,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Sables mouvants',
                 'description' => 'Transforme le sol en sables mouvants qui engloutissent l\'ennemi',
@@ -688,7 +689,7 @@ class SpellFixtures extends Fixture
             'stone_wall' => [
                 'slug' => 'stone-wall',
                 'damage' => 0,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => 6,
                 'name' => 'Mur de fer',
                 'description' => 'Erige un mur de fer infranchissable',
@@ -701,7 +702,7 @@ class SpellFixtures extends Fixture
             'earth_blessing' => [
                 'slug' => 'earth-blessing',
                 'damage' => 0,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => 8,
                 'name' => 'Bénédiction de la terre',
                 'description' => 'Invoque la bénédiction de la terre pour soigner et protéger',
@@ -711,7 +712,7 @@ class SpellFixtures extends Fixture
             'mountain_strength' => [
                 'slug' => 'mountain-strength',
                 'damage' => 3,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => 3,
                 'name' => 'Force de la montagne',
                 'description' => 'Puise dans la force des montagnes pour renforcer le corps',
@@ -721,7 +722,7 @@ class SpellFixtures extends Fixture
             'crystal_growth' => [
                 'slug' => 'crystal-growth',
                 'damage' => 4,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Croissance cristalline',
                 'description' => 'Des cristaux acérés poussent rapidement et blessent l\'ennemi',
@@ -731,7 +732,7 @@ class SpellFixtures extends Fixture
             'tectonic_shift' => [
                 'slug' => 'tectonic-shift',
                 'damage' => 8,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Déplacement tectonique',
                 'description' => 'Provoque un violent déplacement des plaques tectoniques',
@@ -741,7 +742,7 @@ class SpellFixtures extends Fixture
             'petrification' => [
                 'slug' => 'petrification',
                 'damage' => 5,
-                'element' => 'earth',
+                'element' => Element::Earth,
                 'heal' => null,
                 'name' => 'Pétrification',
                 'description' => 'Transforme partiellement l\'ennemi en pierre',
@@ -753,7 +754,7 @@ class SpellFixtures extends Fixture
             'sword_10' => [
                 'slug' => 'slug-10',
                 'damage' => 1,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => "Coup d'épée",
                 'description' => "Un coup d'épée neutre",
@@ -763,7 +764,7 @@ class SpellFixtures extends Fixture
             'sharp_blade' => [
                 'slug' => 'sharp-blade',
                 'damage' => 1,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Frappe puissante',
                 'description' => 'Une frappe puissante avec une lame tranchante',
@@ -775,7 +776,7 @@ class SpellFixtures extends Fixture
             'metal_storm' => [
                 'slug' => 'metal-storm',
                 'damage' => 5,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Tempête métallique',
                 'description' => 'Une pluie de fragments métalliques acérés',
@@ -785,7 +786,7 @@ class SpellFixtures extends Fixture
             'iron_fist' => [
                 'slug' => 'iron-fist',
                 'damage' => 3,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Charge',
                 'description' => 'Une charge brutale avec un poing de fer',
@@ -797,7 +798,7 @@ class SpellFixtures extends Fixture
             'blade_dance' => [
                 'slug' => 'blade-dance',
                 'damage' => 6,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Tourbillon d\'epee',
                 'description' => 'Un tourbillon devastateur de lames qui frappe tous les ennemis',
@@ -811,7 +812,7 @@ class SpellFixtures extends Fixture
             'steel_shield' => [
                 'slug' => 'steel-shield',
                 'damage' => 0,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => 4,
                 'name' => 'Bouclier d\'acier',
                 'description' => 'Un bouclier métallique qui offre une protection solide',
@@ -821,7 +822,7 @@ class SpellFixtures extends Fixture
             'razor_edge' => [
                 'slug' => 'razor-edge',
                 'damage' => 7,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Lame rasoir',
                 'description' => 'Une lame si fine qu\'elle coupe presque tout',
@@ -831,7 +832,7 @@ class SpellFixtures extends Fixture
             'metal_skin' => [
                 'slug' => 'metal-skin',
                 'damage' => 1,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => 5,
                 'name' => 'Peau métallique',
                 'description' => 'Transforme la peau en métal pour une protection accrue',
@@ -841,7 +842,7 @@ class SpellFixtures extends Fixture
             'shrapnel_burst' => [
                 'slug' => 'shrapnel-burst',
                 'damage' => 4,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Explosion d\'éclats',
                 'description' => 'Une explosion qui projette des éclats métalliques dans toutes les directions',
@@ -851,7 +852,7 @@ class SpellFixtures extends Fixture
             'iron_maiden' => [
                 'slug' => 'iron-maiden',
                 'damage' => 8,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Vierge de fer',
                 'description' => 'Emprisonne l\'ennemi dans une cage de pointes métalliques',
@@ -861,7 +862,7 @@ class SpellFixtures extends Fixture
             'chain_lightning' => [
                 'slug' => 'chain-lightning',
                 'damage' => 5,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Chaîne d\'éclairs',
                 'description' => 'Des chaînes métalliques chargées d\'électricité frappent l\'ennemi',
@@ -871,7 +872,7 @@ class SpellFixtures extends Fixture
             'metallic_regeneration' => [
                 'slug' => 'metallic-regeneration',
                 'damage' => 0,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => 6,
                 'name' => 'Régénération métallique',
                 'description' => 'Utilise des particules métalliques pour réparer les blessures',
@@ -881,7 +882,7 @@ class SpellFixtures extends Fixture
             'blade_barrier' => [
                 'slug' => 'blade-barrier',
                 'damage' => 3,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => 3,
                 'name' => 'Barrière de lames',
                 'description' => 'Crée une barrière de lames tournoyantes qui protège et attaque',
@@ -891,7 +892,7 @@ class SpellFixtures extends Fixture
             'silver_bolt' => [
                 'slug' => 'silver-bolt',
                 'damage' => 6,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Carreau d\'argent',
                 'description' => 'Un projectile d\'argent pur qui transperce les défenses',
@@ -901,7 +902,7 @@ class SpellFixtures extends Fixture
             'crushing_weight' => [
                 'slug' => 'crushing-weight',
                 'damage' => 7,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Poids écrasant',
                 'description' => 'Une masse métallique qui s\'abat sur l\'ennemi',
@@ -911,7 +912,7 @@ class SpellFixtures extends Fixture
             'magnetic_pull' => [
                 'slug' => 'magnetic-pull',
                 'damage' => 2,
-                'element' => 'metal',
+                'element' => Element::Metal,
                 'heal' => null,
                 'name' => 'Attraction magnétique',
                 'description' => 'Attire violemment les objets métalliques vers l\'ennemi',
@@ -923,7 +924,7 @@ class SpellFixtures extends Fixture
             'liana_whip' => [
                 'slug' => 'liana-whip',
                 'damage' => 1,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Liane',
                 'description' => 'Des lianes fouettent l\'ennemi',
@@ -934,7 +935,7 @@ class SpellFixtures extends Fixture
             'thorn_burst' => [
                 'slug' => 'thorn-burst',
                 'damage' => 3,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Explosion d\'épines',
                 'description' => 'Des épines jaillissent du sol et blessent les ennemis',
@@ -944,7 +945,7 @@ class SpellFixtures extends Fixture
             'natural_healing' => [
                 'slug' => 'natural-healing',
                 'damage' => null,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => 4,
                 'name' => 'Guérison naturelle',
                 'description' => 'Les forces de la nature soignent les blessures',
@@ -954,7 +955,7 @@ class SpellFixtures extends Fixture
             'poison_cloud' => [
                 'slug' => 'poison-cloud',
                 'damage' => 4,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Empoisonnement',
                 'description' => 'Un nuage de spores toxiques qui empoisonne l\'ennemi',
@@ -966,7 +967,7 @@ class SpellFixtures extends Fixture
             'entangling_roots' => [
                 'slug' => 'entangling-roots',
                 'damage' => 2,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Racines enchevetrees',
                 'description' => 'Des racines surgissent du sol et immobilisent l\'ennemi',
@@ -977,7 +978,7 @@ class SpellFixtures extends Fixture
             'nature_wrath' => [
                 'slug' => 'nature-wrath',
                 'damage' => 6,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Appel de la foret',
                 'description' => 'Dechaine la fureur de la nature sur l\'ennemi',
@@ -991,7 +992,7 @@ class SpellFixtures extends Fixture
             'leaf_blade' => [
                 'slug' => 'leaf-blade',
                 'damage' => 5,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Lame feuille',
                 'description' => 'Une lame tranchante formée de feuilles acérées',
@@ -1001,7 +1002,7 @@ class SpellFixtures extends Fixture
             'forest_embrace' => [
                 'slug' => 'forest-embrace',
                 'damage' => null,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => 7,
                 'name' => 'Étreinte de la forêt',
                 'description' => 'L\'énergie de la forêt enveloppe et soigne les blessures',
@@ -1011,7 +1012,7 @@ class SpellFixtures extends Fixture
             'venomous_bite' => [
                 'slug' => 'venomous-bite',
                 'damage' => 3,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Morsure venimeuse',
                 'description' => 'Une morsure qui injecte un venin puissant',
@@ -1021,7 +1022,7 @@ class SpellFixtures extends Fixture
             'wild_growth' => [
                 'slug' => 'wild-growth',
                 'damage' => 1,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => 5,
                 'name' => 'Croissance sauvage',
                 'description' => 'Des plantes médicinales poussent rapidement et soignent les blessures',
@@ -1031,7 +1032,7 @@ class SpellFixtures extends Fixture
             'nature_fury' => [
                 'slug' => 'nature-fury',
                 'damage' => 8,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Fureur naturelle',
                 'description' => 'Libère toute la puissance destructrice de la nature',
@@ -1041,7 +1042,7 @@ class SpellFixtures extends Fixture
             'thorn_shield' => [
                 'slug' => 'thorn-shield',
                 'damage' => 2,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => 3,
                 'name' => 'Bouclier d\'épines',
                 'description' => 'Un bouclier d\'épines qui protège et blesse les attaquants',
@@ -1051,7 +1052,7 @@ class SpellFixtures extends Fixture
             'toxic_spores' => [
                 'slug' => 'toxic-spores',
                 'damage' => 4,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Spores toxiques',
                 'description' => 'Libère des spores hautement toxiques dans l\'air',
@@ -1061,7 +1062,7 @@ class SpellFixtures extends Fixture
             'nature_blessing' => [
                 'slug' => 'nature-blessing',
                 'damage' => null,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => 10,
                 'name' => 'Bénédiction de la nature',
                 'description' => 'La bénédiction de la nature qui restaure la vitalité',
@@ -1071,7 +1072,7 @@ class SpellFixtures extends Fixture
             'vine_snare' => [
                 'slug' => 'vine-snare',
                 'damage' => 3,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => null,
                 'name' => 'Piège de vignes',
                 'description' => 'Des vignes surgissent et s\'enroulent autour de l\'ennemi',
@@ -1081,7 +1082,7 @@ class SpellFixtures extends Fixture
             'primal_surge' => [
                 'slug' => 'primal-surge',
                 'damage' => 5,
-                'element' => 'nature',
+                'element' => Element::Beast,
                 'heal' => 5,
                 'name' => 'Afflux primordial',
                 'description' => 'Un afflux d\'énergie primordiale qui soigne et blesse',
@@ -1093,7 +1094,7 @@ class SpellFixtures extends Fixture
             'wind_lame' => [
                 'slug' => 'wind-lame',
                 'damage' => 1,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => "Lame d'air",
                 'description' => "une lame d'air tranchante",
@@ -1103,7 +1104,7 @@ class SpellFixtures extends Fixture
             'tornado' => [
                 'slug' => 'tornado',
                 'damage' => 4,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Tornade',
                 'description' => 'Une violente tornade qui emporte tout sur son passage',
@@ -1113,7 +1114,7 @@ class SpellFixtures extends Fixture
             'wind_shield' => [
                 'slug' => 'wind-shield',
                 'damage' => 0,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => 2,
                 'name' => 'Bouclier de vent',
                 'description' => 'Un tourbillon protecteur qui dévie les attaques',
@@ -1123,7 +1124,7 @@ class SpellFixtures extends Fixture
             'gust' => [
                 'slug' => 'gust',
                 'damage' => 2,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Bourrasque',
                 'description' => 'Une puissante bourrasque qui repousse l\'ennemi',
@@ -1133,7 +1134,7 @@ class SpellFixtures extends Fixture
             'air_dash' => [
                 'slug' => 'air-dash',
                 'damage' => 1,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => 1,
                 'name' => 'Ruée d\'air',
                 'description' => 'Permet de se déplacer rapidement sur un coussin d\'air',
@@ -1143,7 +1144,7 @@ class SpellFixtures extends Fixture
             'air_slash' => [
                 'slug' => 'air-slash',
                 'damage' => 5,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Tranchant aérien',
                 'description' => 'Une lame d\'air comprimé qui tranche l\'ennemi',
@@ -1153,7 +1154,7 @@ class SpellFixtures extends Fixture
             'cyclone' => [
                 'slug' => 'cyclone',
                 'damage' => 6,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Cyclone',
                 'description' => 'Un puissant cyclone qui déchire tout sur son passage',
@@ -1163,7 +1164,7 @@ class SpellFixtures extends Fixture
             'wind_blast' => [
                 'slug' => 'wind-blast',
                 'damage' => 3,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Souffle du vent',
                 'description' => 'Une rafale concentrée qui frappe l\'ennemi',
@@ -1173,7 +1174,7 @@ class SpellFixtures extends Fixture
             'healing_breeze' => [
                 'slug' => 'healing-breeze',
                 'damage' => null,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => 5,
                 'name' => 'Brise guérisseuse',
                 'description' => 'Une douce brise qui apaise et soigne les blessures',
@@ -1183,7 +1184,7 @@ class SpellFixtures extends Fixture
             'vacuum_blade' => [
                 'slug' => 'vacuum-blade',
                 'damage' => 7,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Lame de vide',
                 'description' => 'Une lame créée par le vide qui tranche tout',
@@ -1193,7 +1194,7 @@ class SpellFixtures extends Fixture
             'wind_wall' => [
                 'slug' => 'wind-wall',
                 'damage' => 1,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => 4,
                 'name' => 'Mur de vent',
                 'description' => 'Un mur de vent qui protège et repousse les attaques',
@@ -1203,7 +1204,7 @@ class SpellFixtures extends Fixture
             'hurricane' => [
                 'slug' => 'hurricane',
                 'damage' => 8,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Ouragan',
                 'description' => 'Un ouragan dévastateur qui ravage tout',
@@ -1213,7 +1214,7 @@ class SpellFixtures extends Fixture
             'air_current' => [
                 'slug' => 'air-current',
                 'damage' => 2,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => 3,
                 'name' => 'Courant d\'air',
                 'description' => 'Un courant d\'air revigorant qui soigne et protège',
@@ -1223,7 +1224,7 @@ class SpellFixtures extends Fixture
             'pressure_point' => [
                 'slug' => 'pressure-point',
                 'damage' => 4,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Point de pression',
                 'description' => 'Concentre l\'air sur un point précis pour causer des dégâts internes',
@@ -1233,7 +1234,7 @@ class SpellFixtures extends Fixture
             'wind_scythe' => [
                 'slug' => 'wind-scythe',
                 'damage' => 6,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Faux de vent',
                 'description' => 'Une faux d\'air tranchante qui fauche les ennemis',
@@ -1243,7 +1244,7 @@ class SpellFixtures extends Fixture
             'tempest' => [
                 'slug' => 'tempest',
                 'damage' => 5,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => null,
                 'name' => 'Tempête',
                 'description' => 'Une violente tempête qui frappe de toutes parts',
@@ -1253,7 +1254,7 @@ class SpellFixtures extends Fixture
             'wind_blessing' => [
                 'slug' => 'wind-blessing',
                 'damage' => null,
-                'element' => 'wind',
+                'element' => Element::Air,
                 'heal' => 7,
                 'name' => 'Bénédiction du vent',
                 'description' => 'La bénédiction des vents qui soigne et revigore',
@@ -1265,7 +1266,7 @@ class SpellFixtures extends Fixture
             'none_attack_1' => [
                 'slug' => 'none-attack-1',
                 'damage' => 1,
-                'element' => 'none',
+                'element' => Element::None,
                 'heal' => null,
                 'name' => 'Attaque',
                 'description' => 'Attaque 1',
@@ -1275,7 +1276,7 @@ class SpellFixtures extends Fixture
             'none_attack_2' => [
                 'slug' => 'none-attack-2',
                 'damage' => 2,
-                'element' => 'none',
+                'element' => Element::None,
                 'heal' => null,
                 'name' => 'Attaque',
                 'description' => 'Attaque 2',
@@ -1285,7 +1286,7 @@ class SpellFixtures extends Fixture
             'none_heal_2' => [
                 'slug' => 'none-heal-2',
                 'damage' => null,
-                'element' => 'none',
+                'element' => Element::None,
                 'heal' => 2,
                 'name' => 'Soin',
                 'description' => 'Soin 2',

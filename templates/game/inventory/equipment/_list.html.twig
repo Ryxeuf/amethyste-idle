@@ -121,7 +121,7 @@
                          data-item-rarity="{{ gi.rarity }}"
                          data-item-protection="{{ gi.protection }}"
                          data-item-level="{{ gi.level }}"
-                         data-item-element="{{ gi.element }}"
+                         data-item-element="{{ gi.element.value }}"
                          data-item-slot="{{ gi.gearLocation }}">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 {{ _self.rarity_bg_class(gi.rarity) }}">
                             {{ _self.slot_icon(gi.gearLocation) }}
@@ -158,7 +158,7 @@
          data-item-rarity="{{ gi.rarity }}"
          data-item-protection="{{ gi.protection }}"
          data-item-level="{{ gi.level }}"
-         data-item-element="{{ gi.element }}"
+         data-item-element="{{ gi.element.value }}"
          data-item-slot="{{ slotKey }}">
         <div class="equip-slot-icon {{ _self.rarity_bg_class(gi.rarity) }}">
             {{ _self.slot_icon(slotKey) }}

@@ -46,7 +46,7 @@ class ItemSpell
         $this->id = $spell->getId();
         $this->damage = $spell->getDamage();
         $this->heal = $spell->getHeal();
-        $this->element = $spell->getElement();
+        $this->element = $spell->getElement()->value;
         $this->spellRange = $spell->getSpellRange();
         $this->name = $spell->getName();
         $this->description = $spell->getDescription();

@@ -5,9 +5,11 @@ namespace App\Form\Admin;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -30,17 +32,10 @@ class ItemType extends AbstractType
                     'Materia' => Item::TYPE_MATERIA,
                 ],
             ])
-            ->add('element', ChoiceType::class, [
+            ->add('element', EnumType::class, [
                 'label' => 'Element',
-                'choices' => [
-                    'Aucun' => Item::ELEMENT_NONE,
-                    'Feu' => Item::ELEMENT_FIRE,
-                    'Eau' => Item::ELEMENT_WATER,
-                    'Terre' => Item::ELEMENT_EARTH,
-                    'Air' => Item::ELEMENT_AIR,
-                    'Lumiere' => Item::ELEMENT_LIGHT,
-                    'Tenebres' => Item::ELEMENT_DARK,
-                ],
+                'class' => Element::class,
+                'choice_label' => fn (Element $e) => $e->label(),
             ])
             ->add('gearLocation', ChoiceType::class, [
                 'label' => 'Emplacement',

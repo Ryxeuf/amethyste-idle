@@ -2,7 +2,7 @@ App\Entity\Game\Spell:
   punishment (extends spell):
     slug: punishment
     damage: 1
-    element: 'death'
+    element: 'dark'
     heal: null
     name: "Châtiment"
     description: "Un sort de châtiment"

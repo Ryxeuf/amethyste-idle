@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
+use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
@@ -54,12 +55,12 @@ class SpellApplicator
             $result = $this->damageCalculator->applyElementalResistance($damage, $spell, $target);
             $damage = $result['damage'];
             if ($result['resisted']) {
-                $messages[] = sprintf('%s resiste a %s !', $target->getName(), $spell->getElement());
+                $messages[] = sprintf('%s resiste a %s !', $target->getName(), $spell->getElement()->value);
                 if ($fight !== null) {
-                    $this->combatLogger->logResist($fight, $target, $spell->getElement());
+                    $this->combatLogger->logResist($fight, $target, $spell->getElement()->value);
                 }
             } elseif ($result['weak']) {
-                $messages[] = sprintf('%s est faible face a %s !', $target->getName(), $spell->getElement());
+                $messages[] = sprintf('%s est faible face a %s !', $target->getName(), $spell->getElement()->value);
             }
         }
 

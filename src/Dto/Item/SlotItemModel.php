@@ -38,7 +38,7 @@ class SlotItemModel
         $this->id = $item->getId();
         $this->name = $item->getGenericItem()->getName();
         $this->description = $item->getGenericItem()->getDescription();
-        $this->element = $item->getGenericItem()->getElement();
+        $this->element = $item->getGenericItem()->getElement()->value;
         $this->genericItemId = $item->getGenericItem()->getId();
         $this->genericItemSlug = $item->getGenericItem()->getSlug();
         $this->type = $item->getGenericItem()->getType();
