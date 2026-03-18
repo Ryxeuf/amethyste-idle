@@ -19,8 +19,8 @@ class PlayerQuestFixtures extends Fixture implements DependentFixtureInterface
                 'player' => 'player_demo',
                 'quest' => 'quest_zombie_1',
                 'tracking' => [
-                    'kill' => [
-                        'zombie' => 2, // Le joueur a déjà tué 2 zombies sur 5
+                    'monsters' => [
+                        ['count' => 2, 'necessary' => 2, 'slug' => 'zombie', 'name' => 'Zombie'],
                     ],
                 ],
             ],
@@ -29,7 +29,7 @@ class PlayerQuestFixtures extends Fixture implements DependentFixtureInterface
                 'quest' => 'quest_mushroom_1',
                 'tracking' => [
                     'collect' => [
-                        'mushroom' => 3, // Le joueur a déjà collecté 3 champignons sur 5
+                        'mushroom' => 3,
                     ],
                 ],
             ],
@@ -37,8 +37,8 @@ class PlayerQuestFixtures extends Fixture implements DependentFixtureInterface
                 'player' => 'player_demo_2',
                 'quest' => 'quest_taiju_1',
                 'tracking' => [
-                    'kill' => [
-                        'taiju' => 0, // Le joueur n'a pas encore commencé cette quête
+                    'monsters' => [
+                        ['count' => 0, 'necessary' => 1, 'slug' => 'taiju', 'name' => 'Taiju'],
                     ],
                 ],
             ],
