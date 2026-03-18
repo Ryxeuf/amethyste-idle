@@ -1,7 +1,9 @@
 # ROADMAP — Amethyste-Idle
 
 > MMORPG navigateur web — Univers médiéval-fantastique-futuriste (FF7/8/9 × Zelda × stein.world)
-> Dernière mise à jour : 2026-03-14
+> Dernière mise à jour : 2026-03-18
+
+> **Voir aussi** : [docs/GAME_DESIGN_ROADMAP.md](docs/GAME_DESIGN_ROADMAP.md) — Plan d'implémentation détaillé des nouvelles règles de game design (éléments, multi-domaine, materia=capacités, bestiaire, succès)
 
 ---
 
