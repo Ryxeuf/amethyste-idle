@@ -2,9 +2,7 @@
 
 namespace App\Controller\Game;
 
-use App\Entity\App\Inventory;
 use App\Helper\PlayerHelper;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,7 +11,6 @@ class IndexController extends AbstractController
 {
     public function __construct(
         private readonly PlayerHelper $playerHelper,
-        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
