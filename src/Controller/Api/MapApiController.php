@@ -116,7 +116,9 @@ class MapApiController extends AbstractController
 
             $mobs[] = [
                 'id' => $mob->getId(),
+                'name' => $mob->getMonster()->getName(),
                 'slug' => $mob->getMonster()->getSlug(),
+                'level' => $mob->getLevel(),
                 'x' => $ex,
                 'y' => $ey,
                 'spriteKey' => $spriteKey,
