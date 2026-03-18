@@ -218,6 +218,9 @@
                 <select name="role" class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
                     <option value="ROLE_USER" {% if 'ROLE_USER' in player.user.roles and 'ROLE_ADMIN' not in player.user.roles and 'ROLE_PLAYER' not in player.user.roles %}selected{% endif %}>User</option>
                     <option value="ROLE_PLAYER" {% if 'ROLE_PLAYER' in player.user.roles %}selected{% endif %}>Player</option>
+                    <option value="ROLE_GAME_DESIGNER" {% if 'ROLE_GAME_DESIGNER' in player.user.roles %}selected{% endif %}>Game Designer</option>
+                    <option value="ROLE_WORLD_BUILDER" {% if 'ROLE_WORLD_BUILDER' in player.user.roles %}selected{% endif %}>World Builder</option>
+                    <option value="ROLE_MODERATOR" {% if 'ROLE_MODERATOR' in player.user.roles %}selected{% endif %}>Moderateur</option>
                     <option value="ROLE_ADMIN" {% if 'ROLE_ADMIN' in player.user.roles %}selected{% endif %}>Admin</option>
                 </select>
                 <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors" onclick="return confirm('Changer le role ?');">

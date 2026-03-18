@@ -1,0 +1,155 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Utilisateur "{{ user.username ?? user.email }}" - Admin{% endblock %}
+{% block page_title %}Utilisateur : {{ user.username ?? user.email }}{% endblock %}
+
+{% block body %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {# User info card #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Informations</h2>
+            <dl class="space-y-3">
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">ID</dt>
+                    <dd class="text-gray-200 text-sm">{{ user.id }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Pseudo</dt>
+                    <dd class="text-gray-200 text-sm font-medium">{{ user.username ?? '-' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Email</dt>
+                    <dd class="text-gray-200 text-sm">{{ user.email }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Prenom</dt>
+                    <dd class="text-gray-200 text-sm">{{ user.firstName ?? '-' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Nom</dt>
+                    <dd class="text-gray-200 text-sm">{{ user.lastName ?? '-' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Inscription</dt>
+                    <dd class="text-gray-200 text-sm">{{ user.createdAt ? user.createdAt|date('d/m/Y H:i') : '-' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Statut</dt>
+                    <dd>
+                        {% if user.isBanned %}
+                            <span class="inline-flex px-2 py-1 text-xs rounded-full bg-red-900 text-red-300">Banni</span>
+                        {% else %}
+                            <span class="inline-flex px-2 py-1 text-xs rounded-full bg-green-900 text-green-300">Actif</span>
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {# Roles card #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Roles actuels</h2>
+            <div class="flex flex-wrap gap-2 mb-6">
+                {% for role in user.roles %}
+                    <span class="inline-flex px-3 py-1.5 text-xs font-medium rounded-full
+                        {% if role == 'ROLE_SUPER_ADMIN' %}bg-red-900 text-red-300 border border-red-800
+                        {% elseif role == 'ROLE_ADMIN' %}bg-purple-900 text-purple-300 border border-purple-800
+                        {% elseif role == 'ROLE_GAME_DESIGNER' %}bg-blue-900 text-blue-300 border border-blue-800
+                        {% elseif role == 'ROLE_WORLD_BUILDER' %}bg-green-900 text-green-300 border border-green-800
+                        {% elseif role == 'ROLE_MODERATOR' %}bg-yellow-900 text-yellow-300 border border-yellow-800
+                        {% elseif role == 'ROLE_PLAYER' %}bg-indigo-900 text-indigo-300 border border-indigo-800
+                        {% else %}bg-gray-700 text-gray-300 border border-gray-600{% endif %}">
+                        {{ role|replace({'ROLE_': ''}) }}
+                    </span>
+                {% endfor %}
+            </div>
+
+            {% if app.user.id != user.id %}
+                <form method="post" action="{{ path('admin_user_update_roles', {id: user.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('roles' ~ user.id) }}">
+                    <h3 class="text-sm font-medium text-gray-400 mb-3">Modifier les roles</h3>
+                    <div class="space-y-2">
+                        {% for roleKey, roleLabel in availableRoles %}
+                            {% if roleKey != 'ROLE_SUPER_ADMIN' or is_granted('ROLE_SUPER_ADMIN') %}
+                                <label class="flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-750 cursor-pointer transition-colors">
+                                    <input type="checkbox" name="roles[]" value="{{ roleKey }}"
+                                           {% if roleKey in user.roles %}checked{% endif %}
+                                           class="w-4 h-4 rounded border-gray-600 text-purple-600 focus:ring-purple-500 bg-gray-700">
+                                    <span class="text-sm text-gray-200">{{ roleLabel }}</span>
+                                    <span class="text-xs text-gray-500 ml-auto">{{ roleKey }}</span>
+                                </label>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            onclick="return confirm('Modifier les roles de cet utilisateur ?');">
+                        Enregistrer les roles
+                    </button>
+                </form>
+            {% else %}
+                <p class="text-gray-500 text-sm italic">Vous ne pouvez pas modifier vos propres roles.</p>
+            {% endif %}
+        </div>
+
+        {# Players card #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Personnages ({{ user.players|length }})</h2>
+            {% if user.players|length > 0 %}
+                <div class="space-y-3">
+                    {% for player in user.players %}
+                        <a href="{{ path('admin_player_show', {id: player.id}) }}" class="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-750 transition-colors">
+                            <div>
+                                <p class="text-gray-200 text-sm font-medium">{{ player.name }}</p>
+                                <p class="text-gray-500 text-xs">{{ player.classType }} — {{ player.map ? player.map.name : 'Aucune carte' }}</p>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-500 text-sm">Aucun personnage.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Admin actions #}
+    <div class="mt-6 bg-gray-900 border border-gray-800 rounded-xl p-6">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {# Ban/Unban #}
+            {% if app.user.id != user.id %}
+                <form method="post" action="{{ path('admin_user_ban', {id: user.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('ban' ~ user.id) }}">
+                    {% if user.isBanned %}
+                        <button type="submit" class="w-full bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                onclick="return confirm('Debannir cet utilisateur ?');">
+                            Debannir
+                        </button>
+                    {% else %}
+                        <button type="submit" class="w-full bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                onclick="return confirm('Bannir cet utilisateur ?');">
+                            Bannir
+                        </button>
+                    {% endif %}
+                </form>
+            {% endif %}
+
+            {# Reset password (Super Admin only) #}
+            {% if is_granted('ROLE_SUPER_ADMIN') and app.user.id != user.id %}
+                <form method="post" action="{{ path('admin_user_reset_password', {id: user.id}) }}" class="flex gap-2">
+                    <input type="hidden" name="_token" value="{{ csrf_token('reset_password' ~ user.id) }}">
+                    <input type="password" name="new_password" placeholder="Nouveau mot de passe" minlength="6" required
+                           class="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-500">
+                    <button type="submit" class="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap"
+                            onclick="return confirm('Reinitialiser le mot de passe ?');">
+                        Reset MDP
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ path('admin_user_index') }}" class="text-gray-400 hover:text-gray-300 text-sm">Retour a la liste</a>
+    </div>
+{% endblock %}

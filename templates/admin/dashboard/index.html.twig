@@ -7,10 +7,17 @@
     {# Content metrics #}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {% for metric in metrics %}
-            <{% if metric.route %}a href="{{ path(metric.route) }}"{% else %}div{% endif %} class="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-{{ metric.color }}-700 transition-colors">
-                <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">{{ metric.label }}</p>
-                <p class="text-2xl font-bold text-gray-100 mt-1">{{ metric.count }}</p>
-            </{% if metric.route %}a{% else %}div{% endif %}>
+            {% if metric.route %}
+                <a href="{{ path(metric.route) }}" class="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-{{ metric.color }}-700 transition-colors">
+                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">{{ metric.label }}</p>
+                    <p class="text-2xl font-bold text-gray-100 mt-1">{{ metric.count }}</p>
+                </a>
+            {% else %}
+                <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+                    <p class="text-xs text-gray-500 font-medium uppercase tracking-wider">{{ metric.label }}</p>
+                    <p class="text-2xl font-bold text-gray-100 mt-1">{{ metric.count }}</p>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
 
@@ -25,62 +32,66 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {# Maintenance status #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <h2 class="text-lg font-semibold text-gray-200 mb-4">Mode maintenance</h2>
-            <div class="flex items-center justify-between">
-                <div>
-                    {% if maintenanceActive %}
-                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-900 text-red-300 text-sm font-medium">
-                            <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
-                            Maintenance active
-                        </span>
-                        <p class="text-gray-500 text-sm mt-2">Le site est inaccessible aux joueurs.</p>
-                    {% else %}
-                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-900 text-green-300 text-sm font-medium">
-                            <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                            En ligne
-                        </span>
-                        <p class="text-gray-500 text-sm mt-2">Le site fonctionne normalement.</p>
-                    {% endif %}
-                </div>
-                <a href="{{ path('admin_maintenance_index') }}" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">
-                    Gerer
-                </a>
-            </div>
-        </div>
-
-        {# Recent activity #}
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-gray-200">Activite recente</h2>
-                <a href="{{ path('admin_log_index') }}" class="text-purple-400 hover:text-purple-300 text-sm">Voir tout</a>
-            </div>
-            {% if recentLogs|length > 0 %}
-                <div class="space-y-3">
-                    {% for log in recentLogs %}
-                        <div class="flex items-start gap-3 text-sm">
-                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium
-                                {% if log.action == 'create' %}bg-green-900 text-green-300
-                                {% elseif log.action == 'update' %}bg-blue-900 text-blue-300
-                                {% elseif log.action == 'delete' %}bg-red-900 text-red-300
-                                {% else %}bg-gray-700 text-gray-300{% endif %}
-                                flex-shrink-0 mt-0.5">
-                                {{ log.action }}
+        {# Maintenance status - Admin only #}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                <h2 class="text-lg font-semibold text-gray-200 mb-4">Mode maintenance</h2>
+                <div class="flex items-center justify-between">
+                    <div>
+                        {% if maintenanceActive %}
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-900 text-red-300 text-sm font-medium">
+                                <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+                                Maintenance active
                             </span>
-                            <div class="min-w-0">
-                                <p class="text-gray-300 truncate">
-                                    <span class="text-gray-500">{{ log.adminUser.username ?? log.adminUser.email }}</span>
-                                    — {{ log.entityType }}{% if log.entityLabel %} « {{ log.entityLabel }} »{% endif %}
-                                </p>
-                                <p class="text-gray-600 text-xs">{{ log.createdAt|date('d/m/Y H:i') }}</p>
-                            </div>
-                        </div>
-                    {% endfor %}
+                            <p class="text-gray-500 text-sm mt-2">Le site est inaccessible aux joueurs.</p>
+                        {% else %}
+                            <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-900 text-green-300 text-sm font-medium">
+                                <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                                En ligne
+                            </span>
+                            <p class="text-gray-500 text-sm mt-2">Le site fonctionne normalement.</p>
+                        {% endif %}
+                    </div>
+                    <a href="{{ path('admin_maintenance_index') }}" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">
+                        Gerer
+                    </a>
                 </div>
-            {% else %}
-                <p class="text-gray-500 text-sm">Aucune activite recente.</p>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
+
+        {# Recent activity - Admin only #}
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-semibold text-gray-200">Activite recente</h2>
+                    <a href="{{ path('admin_log_index') }}" class="text-purple-400 hover:text-purple-300 text-sm">Voir tout</a>
+                </div>
+                {% if recentLogs|length > 0 %}
+                    <div class="space-y-3">
+                        {% for log in recentLogs %}
+                            <div class="flex items-start gap-3 text-sm">
+                                <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium
+                                    {% if log.action == 'create' %}bg-green-900 text-green-300
+                                    {% elseif log.action == 'update' %}bg-blue-900 text-blue-300
+                                    {% elseif log.action == 'delete' %}bg-red-900 text-red-300
+                                    {% else %}bg-gray-700 text-gray-300{% endif %}
+                                    flex-shrink-0 mt-0.5">
+                                    {{ log.action }}
+                                </span>
+                                <div class="min-w-0">
+                                    <p class="text-gray-300 truncate">
+                                        <span class="text-gray-500">{{ log.adminUser.username ?? log.adminUser.email }}</span>
+                                        — {{ log.entityType }}{% if log.entityLabel %} &laquo; {{ log.entityLabel }} &raquo;{% endif %}
+                                    </p>
+                                    <p class="text-gray-600 text-xs">{{ log.createdAt|date('d/m/Y H:i') }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Aucune activite recente.</p>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
