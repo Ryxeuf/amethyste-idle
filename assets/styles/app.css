@@ -875,6 +875,124 @@ html, body {
   background: rgba(153, 27, 27, 0.6);
 }
 
+/* ===== DASHBOARD: Quick Action Cards ===== */
+.dashboard-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(75, 85, 99, 0.3);
+  background: rgba(31, 41, 55, 0.6);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  min-height: 6rem;
+}
+
+.dashboard-action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dashboard-action-card:active {
+  transform: translateY(0);
+}
+
+.dashboard-action-explore {
+  border-color: rgba(34, 197, 94, 0.25);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), rgba(31, 41, 55, 0.6));
+}
+.dashboard-action-explore:hover {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(31, 41, 55, 0.8));
+}
+.dashboard-action-explore .dashboard-action-icon { color: #4ade80; }
+
+.dashboard-action-inventory {
+  border-color: rgba(139, 92, 246, 0.25);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(31, 41, 55, 0.6));
+}
+.dashboard-action-inventory:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(31, 41, 55, 0.8));
+}
+.dashboard-action-inventory .dashboard-action-icon { color: #a78bfa; }
+
+.dashboard-action-skills {
+  border-color: rgba(59, 130, 246, 0.25);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(31, 41, 55, 0.6));
+}
+.dashboard-action-skills:hover {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(31, 41, 55, 0.8));
+}
+.dashboard-action-skills .dashboard-action-icon { color: #60a5fa; }
+
+.dashboard-action-craft {
+  border-color: rgba(245, 158, 11, 0.25);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(31, 41, 55, 0.6));
+}
+.dashboard-action-craft:hover {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(31, 41, 55, 0.8));
+}
+.dashboard-action-craft .dashboard-action-icon { color: #fbbf24; }
+
+.dashboard-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-action-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  line-height: 1;
+}
+
+.dashboard-action-hint {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  line-height: 1;
+}
+
+/* ===== DASHBOARD: Domain dots & bars ===== */
+.dashboard-domain-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dashboard-domain-feu, .dashboard-domain-fire { background: #ef4444; }
+.dashboard-domain-eau, .dashboard-domain-water { background: #3b82f6; }
+.dashboard-domain-terre, .dashboard-domain-earth { background: #f59e0b; }
+.dashboard-domain-air, .dashboard-domain-wind { background: #06b6d4; }
+.dashboard-domain-lumiere, .dashboard-domain-light { background: #fde047; }
+.dashboard-domain-ombre, .dashboard-domain-dark, .dashboard-domain-shadow { background: #a78bfa; }
+
+.dashboard-domain-bar-feu, .dashboard-domain-bar-fire { background: #ef4444; }
+.dashboard-domain-bar-eau, .dashboard-domain-bar-water { background: #3b82f6; }
+.dashboard-domain-bar-terre, .dashboard-domain-bar-earth { background: #f59e0b; }
+.dashboard-domain-bar-air, .dashboard-domain-bar-wind { background: #06b6d4; }
+.dashboard-domain-bar-lumiere, .dashboard-domain-bar-light { background: #fde047; }
+.dashboard-domain-bar-ombre, .dashboard-domain-bar-dark, .dashboard-domain-bar-shadow { background: #a78bfa; }
+
+/* Fallback for unknown domains */
+.dashboard-domain-dot:not([class*="dashboard-domain-"]) { background: #8b5cf6; }
+
+/* Line clamp utility */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 /* Landscape orientation compact mode */
 @media (max-height: 500px) and (orientation: landscape) {
   .game-bottom-nav {

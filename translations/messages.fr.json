@@ -224,6 +224,50 @@
       "agility": "Agilité",
       "intelligence": "Intelligence"
     },
+    "home": {
+      "player": {
+        "life": "Vie",
+        "energy": "Énergie",
+        "map": "Carte",
+        "dead": "Vous êtes mort... Retournez sur la carte pour réapparaître.",
+        "in_fight": "Un combat est en cours !",
+        "birthdate": "Né le",
+        "member_since": "Aventurier depuis le %date%"
+      },
+      "actions": {
+        "explore": "Explorer",
+        "craft": "Artisanat",
+        "skills_count": "%count% acquises",
+        "recipes_count": "%count% recettes"
+      },
+      "domains": {
+        "title": "Progression",
+        "available_xp": "%xp% XP disponibles",
+        "empty": "Aucun domaine débloqué",
+        "view_all": "Voir les compétences"
+      },
+      "quests": {
+        "title": "Quêtes actives",
+        "empty": "Aucune quête en cours",
+        "empty_hint": "Parlez aux PNJ pour obtenir des quêtes",
+        "view_all": "Voir les %count% quêtes"
+      },
+      "equipment": {
+        "title": "Équipement",
+        "manage": "Gérer",
+        "empty": "Aucun équipement",
+        "empty_hint": "Équipez-vous via l'inventaire"
+      },
+      "fight_banner": {
+        "title": "Combat en cours !",
+        "description": "Tour %step% — Rejoignez le combat"
+      },
+      "world": {
+        "current_map": "Carte actuelle",
+        "players_nearby": "Joueurs proches",
+        "skills_unlocked": "Compétences"
+      }
+    },
     "footer": {
       "back_to_home": "Retour à l'accueil"
     },
