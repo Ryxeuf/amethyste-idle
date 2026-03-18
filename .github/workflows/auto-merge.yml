@@ -1,22 +1,17 @@
 # =============================================================================
 # Auto-Merge Pipeline — Amethyste-Idle
 # =============================================================================
-# Deux comportements :
-#   1. PRs vers main : merge automatique quand la CI passe
-#   2. Push sur develop : merge automatique dans main quand la CI passe
+# Merge automatique des PRs vers main quand la CI passe.
 #
 # Prérequis :
-#   - Secret GITHUB_TOKEN (automatique) ou PAT avec droits repo
+#   - Secret PAT_AUTO_MERGE (PAT avec droits repo) — recommandé pour bypass
+#     les branch protection rules. Si absent, utilise le GITHUB_TOKEN par défaut.
 #   - Branch protection sur main : exiger que les status checks passent
 # =============================================================================
 
 name: Auto-Merge
 
 on:
-  # Déclenché quand les checks de CI sont terminés
-  check_suite:
-    types: [completed]
-
   # Déclenché quand le workflow CI se termine
   workflow_run:
     workflows: ["CI"]
@@ -28,14 +23,13 @@ concurrency:
 
 jobs:
   # ---------------------------------------------------------------------------
-  # 1. Auto-merge des PRs quand la CI passe
+  # Auto-merge des PRs quand la CI passe
   # ---------------------------------------------------------------------------
   auto-merge-pr:
     name: "Auto-merge PR"
     runs-on: ubuntu-latest
     if: >-
-      github.event_name == 'workflow_run'
-      && github.event.workflow_run.conclusion == 'success'
+      github.event.workflow_run.conclusion == 'success'
       && github.event.workflow_run.event == 'pull_request'
     permissions:
       contents: write
@@ -46,7 +40,7 @@ jobs:
         id: find-pr
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.PAT_AUTO_MERGE }}
+          github-token: ${{ secrets.PAT_AUTO_MERGE || github.token }}
           script: |
             const headBranch = context.payload.workflow_run.head_branch;
             const { data: pulls } = await github.rest.pulls.list({
@@ -71,7 +65,7 @@ jobs:
         if: steps.find-pr.outputs.pr_found == 'true'
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.PAT_AUTO_MERGE }}
+          github-token: ${{ secrets.PAT_AUTO_MERGE || github.token }}
           script: |
             const prNumber = ${{ steps.find-pr.outputs.pr_number || 0 }};
             if (prNumber === 0) return;
@@ -85,77 +79,5 @@ jobs:
               });
               console.log(`PR #${prNumber} mergée avec succès !`);
             } catch (error) {
-              console.log(`Impossible de merger la PR #${prNumber}: ${error.message}`);
-              // Ne pas échouer — la PR peut avoir des conflits ou d'autres protections
+              core.setFailed(`Impossible de merger la PR #${prNumber}: ${error.message}`);
             }
-
-  # ---------------------------------------------------------------------------
-  # 2. Auto-merge de develop vers main quand la CI passe
-  # ---------------------------------------------------------------------------
-  auto-merge-develop:
-    name: "Auto-merge develop → main"
-    runs-on: ubuntu-latest
-    if: >-
-      github.event_name == 'workflow_run'
-      && github.event.workflow_run.conclusion == 'success'
-      && github.event.workflow_run.head_branch == 'develop'
-      && github.event.workflow_run.event == 'push'
-    permissions:
-      contents: write
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.PAT_AUTO_MERGE }}
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Merge develop into main
-        run: |
-          echo "==> Récupération des branches..."
-          git fetch origin main develop
-
-          echo ""
-          echo "==> Checkout main..."
-          git checkout main
-
-          echo ""
-          echo "==> Merge de develop dans main..."
-          git merge origin/develop --no-edit -m "chore: auto-merge develop into main"
-
-          echo ""
-          echo "==> Push vers main..."
-          git push origin main
-
-      - name: Notify merge conflict
-        if: failure()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: '⚠️ Auto-merge develop → main échoué (conflit)',
-              body: [
-                'Le merge automatique de `develop` vers `main` a échoué.',
-                '',
-                '**Cause probable** : conflit de merge.',
-                '',
-                '**Action requise** : merger manuellement `develop` dans `main` et résoudre les conflits.',
-                '',
-                '```bash',
-                'git checkout main',
-                'git merge develop',
-                '# Résoudre les conflits...',
-                'git push origin main',
-                '```',
-                '',
-                `Workflow run: ${context.payload.workflow_run.html_url}`,
-              ].join('\n'),
-              labels: ['bug', 'deploy'],
-            });
