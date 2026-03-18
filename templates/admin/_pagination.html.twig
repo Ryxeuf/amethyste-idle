@@ -1,8 +1,8 @@
-<div class="flex items-center justify-between mt-6">
+<div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-6">
     <p class="text-sm text-gray-500">
         Page {{ currentPage }} sur {{ totalPages }}
     </p>
-    <div class="flex items-center gap-1">
+    <div class="flex items-center gap-1 flex-wrap justify-center">
         {% if currentPage > 1 %}
             <a href="?page={{ currentPage - 1 }}{% if search is defined and search %}&q={{ search }}{% endif %}"
                class="px-3 py-1.5 rounded-lg text-sm bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors">
