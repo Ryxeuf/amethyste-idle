@@ -138,7 +138,7 @@ class Pnj
 
     public function getDialog(): array
     {
-        return $this->dialog;
+        return $this->dialog ?? [];
     }
 
     public function setDialog(array $dialog = []): void

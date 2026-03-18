@@ -21,7 +21,7 @@ class ItemModel
 
     public string $genericItemSlug;
 
-    public int $level;
+    public ?int $level;
 
     public string $element;
 

@@ -72,7 +72,7 @@ class ShopController extends AbstractController
         }
 
         $player = $this->playerHelper->getPlayer();
-        $totalCost = $item->getPrice() * $quantity;
+        $totalCost = ($item->getPrice() ?? 0) * $quantity;
 
         if ($player->getGils() < $totalCost) {
             return new JsonResponse([
@@ -124,7 +124,7 @@ class ShopController extends AbstractController
         $item = $playerItem->getGenericItem();
 
         // Sell price = 30% of buy price
-        $sellPrice = max(1, (int) ($item->getPrice() * 0.3));
+        $sellPrice = max(1, (int) (($item->getPrice() ?? 0) * 0.3));
 
         $player->addGils($sellPrice);
         $this->entityManager->remove($playerItem);

@@ -286,7 +286,7 @@ class Item
     /**
      * Get energyCost.
      */
-    public function getEnergyCost(): int
+    public function getEnergyCost(): ?int
     {
         return $this->energyCost;
     }
@@ -362,7 +362,7 @@ class Item
     /**
      * Get price.
      */
-    public function getPrice(): int
+    public function getPrice(): ?int
     {
         return $this->price;
     }
@@ -426,7 +426,7 @@ class Item
         $this->slug = $slug;
     }
 
-    public function getLevel(): int
+    public function getLevel(): ?int
     {
         return $this->level;
     }
