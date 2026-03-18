@@ -33,6 +33,7 @@ class Player implements CharacterInterface
         $this->inventories = new ArrayCollection();
         $this->domainExperiences = new ArrayCollection();
         $this->quests = new ArrayCollection();
+        $this->completedQuests = new ArrayCollection();
         $this->skills = new ArrayCollection();
     }
 
@@ -88,6 +89,9 @@ class Player implements CharacterInterface
 
     #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'player')]
     private $quests;
+
+    #[ORM\OneToMany(targetEntity: PlayerQuestCompleted::class, mappedBy: 'player')]
+    private $completedQuests;
 
     #[ORM\ManyToMany(targetEntity: Skill::class)]
     #[ORM\JoinTable(name: 'player_skill')]
@@ -312,6 +316,12 @@ class Player implements CharacterInterface
     public function setQuests(Collection $quests): void
     {
         $this->quests = $quests;
+    }
+
+    /** @return Collection<int, PlayerQuestCompleted> */
+    public function getCompletedQuests(): Collection
+    {
+        return $this->completedQuests;
     }
 
     public function isMoving(): bool

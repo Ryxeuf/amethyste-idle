@@ -23,11 +23,11 @@ class PlayerQuestCompleted
     #[ORM\Column(name: 'id', type: 'integer')]
     private $id;
 
-    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: 'quests')]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: 'completedQuests')]
     #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id')]
     private $player;
 
-    #[ORM\ManyToOne(targetEntity: Quest::class, inversedBy: 'players')]
+    #[ORM\ManyToOne(targetEntity: Quest::class)]
     #[ORM\JoinColumn(name: 'quest_id', referencedColumnName: 'id')]
     private $quest;
 

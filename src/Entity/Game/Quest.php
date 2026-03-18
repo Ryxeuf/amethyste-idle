@@ -84,7 +84,7 @@ class Quest
 
     public function getRequirements(): array
     {
-        return $this->requirements;
+        return $this->requirements ?? [];
     }
 
     public function setRequirements(array $requirements): Quest
@@ -96,7 +96,7 @@ class Quest
 
     public function getRewards(): array
     {
-        return $this->rewards;
+        return $this->rewards ?? [];
     }
 
     public function setRewards(array $rewards): Quest
