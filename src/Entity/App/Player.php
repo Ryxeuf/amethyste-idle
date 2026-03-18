@@ -5,7 +5,6 @@ namespace App\Entity\App;
 use App\Entity\App\Traits\CharacterStatsTrait;
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
-use App\Entity\Game\Quest;
 use App\Entity\Game\Skill;
 use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -87,7 +86,7 @@ class Player implements CharacterInterface
     #[ORM\JoinColumn(name: 'fight_id', referencedColumnName: 'id')]
     private ?Fight $fight = null;
 
-    #[ORM\OneToMany(targetEntity: Quest::class, mappedBy: 'player')]
+    #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'player')]
     private $quests;
 
     #[ORM\ManyToMany(targetEntity: Skill::class)]
@@ -304,7 +303,7 @@ class Player implements CharacterInterface
         $this->classType = $classType;
     }
 
-    /** @return Collection<int, Quest> */
+    /** @return Collection<int, PlayerQuest> */
     public function getQuests(): Collection
     {
         return $this->quests;
