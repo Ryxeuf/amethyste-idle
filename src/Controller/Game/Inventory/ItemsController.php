@@ -32,7 +32,7 @@ class ItemsController extends AbstractController
                     'type' => 'Consommable',
                     'quantity' => 1,
                     'description' => $genericItem->getDescription(),
-                    'usable' => $this->itemHelper->getItemSpell($genericItem) !== null,
+                    'usable' => $this->itemHelper->isUsable($genericItem),
                 ];
             }
         }
