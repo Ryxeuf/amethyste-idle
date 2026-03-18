@@ -9,8 +9,9 @@ use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\GameEngine\Item\ItemEffectEncoder;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\Service\ResetInterface;
 
-class ItemHelper
+class ItemHelper implements ResetInterface
 {
     /**
      * @var array|Spell[]
@@ -107,5 +108,11 @@ class ItemHelper
         }
 
         return $modifiers;
+    }
+
+    public function reset(): void
+    {
+        $this->spells = [];
+        $this->skills = [];
     }
 }
