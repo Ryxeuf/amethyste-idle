@@ -77,6 +77,11 @@ class ItemHelper
         return $this->skills[$item->getId()] ?? null;
     }
 
+    public function isUsable(Item $item): bool
+    {
+        return $this->getItemSpell($item) !== null || $this->getItemSkillLearning($item) !== null;
+    }
+
     public function getItemBuildItem(Item $item): ?Item
     {
         return null;
