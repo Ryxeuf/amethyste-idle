@@ -78,6 +78,15 @@ class Spell
     #[ORM\Column(name: 'aoe_targets', type: 'integer', options: ['default' => 1])]
     private int $aoeTargets = 1;
 
+    #[ORM\Column(name: 'level', type: 'integer', options: ['default' => 1])]
+    private int $level = 1;
+
+    #[ORM\Column(name: 'value_type', type: 'string', length: 10, options: ['default' => 'fixed'])]
+    private string $valueType = 'fixed';
+
+    public const VALUE_TYPE_FIXED = 'fixed';
+    public const VALUE_TYPE_PERCENT = 'percent';
+
     /**
      * Get id.
      */
@@ -266,5 +275,30 @@ class Spell
     public function isAoe(): bool
     {
         return $this->aoeTargets === 0 || $this->aoeTargets > 1;
+    }
+
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(int $level): void
+    {
+        $this->level = $level;
+    }
+
+    public function getValueType(): string
+    {
+        return $this->valueType;
+    }
+
+    public function setValueType(string $valueType): void
+    {
+        $this->valueType = $valueType;
+    }
+
+    public function isPercent(): bool
+    {
+        return $this->valueType === self::VALUE_TYPE_PERCENT;
     }
 }
