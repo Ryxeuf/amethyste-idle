@@ -33,6 +33,7 @@ class ItemsController extends AbstractController
                     'quantity' => 1,
                     'description' => $genericItem->getDescription(),
                     'usable' => $this->itemHelper->isUsable($genericItem),
+                    'bound' => $item->isBound(),
                 ];
             }
         }

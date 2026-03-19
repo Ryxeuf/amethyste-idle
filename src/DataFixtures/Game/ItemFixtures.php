@@ -89,6 +89,10 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                     $item->setSpell($this->getReference($spellReference, Spell::class));
                 }
 
+                if (isset($data['boundToPlayer'])) {
+                    $item->setBoundToPlayer((bool) $data['boundToPlayer']);
+                }
+
                 $manager->persist($item);
                 $this->addReference($reference, $item);
             }

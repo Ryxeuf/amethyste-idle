@@ -1262,6 +1262,28 @@ class SpellFixtures extends Fixture
                 'level' => 3,
             ],
 
+            // Sorts de consommables
+            'beer_heal' => [
+                'slug' => 'beer-heal',
+                'damage' => null,
+                'element' => Element::None,
+                'heal' => 3,
+                'name' => 'Gorgée de bière',
+                'description' => 'Une bonne chope de bière qui réchauffe et revigore',
+                'hit' => 100,
+                'level' => 1,
+            ],
+            'mushroom_heal' => [
+                'slug' => 'mushroom-heal',
+                'damage' => null,
+                'element' => Element::Beast,
+                'heal' => 1,
+                'name' => 'Champignon comestible',
+                'description' => 'Un champignon aux vertus curatives... ou pas',
+                'hit' => 100,
+                'level' => 1,
+            ],
+
             // Sorts sans élément
             'none_attack_1' => [
                 'slug' => 'none-attack-1',

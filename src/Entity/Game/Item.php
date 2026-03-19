@@ -176,6 +176,9 @@ class Item
     #[ORM\Column(name: 'rarity', type: 'string', length: 50, nullable: true)]
     private ?string $rarity = null;
 
+    #[ORM\Column(name: 'bound_to_player', type: 'boolean', options: ['default' => false])]
+    private bool $boundToPlayer = false;
+
     /**
      * Get id.
      */
@@ -501,5 +504,15 @@ class Item
     public function setRarity(?string $rarity): void
     {
         $this->rarity = $rarity;
+    }
+
+    public function isBoundToPlayer(): bool
+    {
+        return $this->boundToPlayer;
+    }
+
+    public function setBoundToPlayer(bool $boundToPlayer): void
+    {
+        $this->boundToPlayer = $boundToPlayer;
     }
 }
