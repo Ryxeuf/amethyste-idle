@@ -8,7 +8,6 @@ use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
-use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
