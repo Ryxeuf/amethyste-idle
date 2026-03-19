@@ -35,6 +35,12 @@ class PnjType extends AbstractType
                 'required' => false,
                 'attr' => ['rows' => 8, 'class' => 'font-mono'],
             ])
+            ->add('shopItemsJson', TextareaType::class, [
+                'label' => 'Articles boutique (slugs JSON, ex: ["life-potion", "short-sword"])',
+                'mapped' => false,
+                'required' => false,
+                'attr' => ['rows' => 3, 'class' => 'font-mono', 'placeholder' => '["slug-1", "slug-2"]'],
+            ])
         ;
     }
 

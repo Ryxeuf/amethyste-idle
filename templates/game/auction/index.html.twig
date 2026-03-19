@@ -1,0 +1,317 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Hotel des ventes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        {# Header #}
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">Hotel des ventes</h2>
+                <p class="text-purple-200/70 text-xs">{{ total }} annonce{{ total > 1 ? 's' : '' }} active{{ total > 1 ? 's' : '' }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-yellow-400 font-bold text-sm sm:text-base" id="player-gils">{{ player.gils }} Gils</span>
+                <a href="{{ path('app_game_map') }}" class="text-purple-200/70 hover:text-white text-xs sm:text-sm">Retour</a>
+            </div>
+        </div>
+
+        <div class="game-card-body">
+            {# Tabs #}
+            <div class="flex gap-2 mb-4 border-b border-gray-700 pb-2">
+                <button onclick="switchTab('browse')" id="tab-browse" class="px-3 py-1.5 text-sm rounded-lg bg-purple-600 text-white transition-colors">Parcourir</button>
+                <button onclick="switchTab('sell')" id="tab-sell" class="px-3 py-1.5 text-sm rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">Vendre</button>
+                <button onclick="switchTab('my-listings')" id="tab-my-listings" class="px-3 py-1.5 text-sm rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">Mes annonces ({{ myListings|length }})</button>
+                <button onclick="switchTab('history')" id="tab-history" class="px-3 py-1.5 text-sm rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors">Historique</button>
+            </div>
+
+            {# === Browse Tab === #}
+            <div id="panel-browse">
+                {# Filters #}
+                <form method="get" action="{{ path('app_game_auction') }}" class="flex flex-wrap gap-2 mb-4">
+                    <input type="text" name="q" value="{{ search }}" placeholder="Rechercher..."
+                           class="flex-1 min-w-[120px] px-3 py-1.5 bg-gray-700/50 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500">
+                    <select name="type" class="px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-lg text-sm text-white">
+                        <option value="">Tous types</option>
+                        <option value="stuff" {{ type == 'stuff' ? 'selected' : '' }}>Objets</option>
+                        <option value="gear" {{ type == 'gear' ? 'selected' : '' }}>Equipement</option>
+                        <option value="materia" {{ type == 'materia' ? 'selected' : '' }}>Materia</option>
+                        <option value="resource" {{ type == 'resource' ? 'selected' : '' }}>Ressources</option>
+                        <option value="tool" {{ type == 'tool' ? 'selected' : '' }}>Outils</option>
+                    </select>
+                    <select name="rarity" class="px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-lg text-sm text-white">
+                        <option value="">Toutes raretés</option>
+                        <option value="common" {{ rarity == 'common' ? 'selected' : '' }}>Commun</option>
+                        <option value="uncommon" {{ rarity == 'uncommon' ? 'selected' : '' }}>Peu commun</option>
+                        <option value="rare" {{ rarity == 'rare' ? 'selected' : '' }}>Rare</option>
+                        <option value="epic" {{ rarity == 'epic' ? 'selected' : '' }}>Epique</option>
+                        <option value="legendary" {{ rarity == 'legendary' ? 'selected' : '' }}>Legendaire</option>
+                    </select>
+                    <select name="sort" class="px-2 py-1.5 bg-gray-700/50 border border-gray-600 rounded-lg text-sm text-white">
+                        <option value="newest" {{ sortBy == 'newest' ? 'selected' : '' }}>Plus recent</option>
+                        <option value="price_asc" {{ sortBy == 'price_asc' ? 'selected' : '' }}>Prix croissant</option>
+                        <option value="price_desc" {{ sortBy == 'price_desc' ? 'selected' : '' }}>Prix decroissant</option>
+                        <option value="expiring" {{ sortBy == 'expiring' ? 'selected' : '' }}>Expire bientot</option>
+                    </select>
+                    <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg transition-colors">Filtrer</button>
+                </form>
+
+                {# Listings #}
+                {% if listings is empty %}
+                    <p class="text-gray-500 text-sm text-center py-8">Aucune annonce disponible.</p>
+                {% else %}
+                    <div class="space-y-2">
+                        {% for listing in listings %}
+                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors" id="listing-{{ listing.id }}">
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-white font-medium text-sm">{{ listing.item.name }}</span>
+                                        {% if listing.item.rarity %}
+                                            <span class="text-xs px-1.5 py-0.5 rounded
+                                                {% if listing.item.rarity == 'common' %}bg-gray-600 text-gray-300
+                                                {% elseif listing.item.rarity == 'uncommon' %}bg-green-900/50 text-green-400
+                                                {% elseif listing.item.rarity == 'rare' %}bg-blue-900/50 text-blue-400
+                                                {% elseif listing.item.rarity == 'epic' %}bg-purple-900/50 text-purple-400
+                                                {% elseif listing.item.rarity == 'legendary' %}bg-orange-900/50 text-orange-400
+                                                {% endif %}">{{ listing.item.rarity }}</span>
+                                        {% endif %}
+                                        <span class="text-xs text-gray-500">({{ listing.item.type }})</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                                        <span>Vendeur: {{ listing.seller.name }}</span>
+                                        <span>Expire: {{ listing.expiresAt|date('d/m H:i') }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 ml-3">
+                                    <div class="text-right">
+                                        <span class="text-yellow-400 text-sm font-mono whitespace-nowrap block">{{ listing.price }} G</span>
+                                        <span class="text-xs text-gray-500">(taxe: {{ listing.taxAmount }} G)</span>
+                                    </div>
+                                    {% if listing.seller.id != player.id %}
+                                        <button onclick="buyAuction({{ listing.id }}, '{{ listing.item.name }}', {{ listing.price }})"
+                                                class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if player.gils < listing.price %} opacity-50 cursor-not-allowed{% endif %}"
+                                                {% if player.gils < listing.price %}disabled{% endif %}>
+                                            Acheter
+                                        </button>
+                                    {% else %}
+                                        <span class="text-xs text-purple-400">Votre annonce</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {# Pagination #}
+                    {% if totalPages > 1 %}
+                        <div class="flex justify-center gap-2 mt-4">
+                            {% for p in 1..totalPages %}
+                                <a href="{{ path('app_game_auction', {page: p, q: search, type: type, rarity: rarity, sort: sortBy}) }}"
+                                   class="px-3 py-1 rounded text-sm {% if p == currentPage %}bg-purple-600 text-white{% else %}bg-gray-700 text-gray-400 hover:text-white{% endif %}">
+                                    {{ p }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            {# === Sell Tab === #}
+            <div id="panel-sell" class="hidden">
+                <h3 class="text-lg font-semibold text-purple-300 mb-3">Mettre un objet en vente</h3>
+                {% set bag = player.inventories|first %}
+                {% if bag and bag.items|length > 0 %}
+                    <div class="space-y-2 max-h-96 overflow-y-auto">
+                        {% for playerItem in bag.items %}
+                            {% if playerItem.gear == 0 %}
+                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors"
+                                 id="auction-sell-item-{{ playerItem.id }}">
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-white font-medium text-sm">{{ playerItem.genericItem.name }}</span>
+                                    <span class="text-gray-500 text-xs ml-1">({{ playerItem.genericItem.type }})</span>
+                                    {% if playerItem.genericItem.price %}
+                                        <span class="text-gray-500 text-xs ml-1">| Prix boutique: {{ playerItem.genericItem.price }} G</span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex items-center gap-2 ml-3">
+                                    <input type="number" min="1" value="{{ playerItem.genericItem.price ?: 10 }}" placeholder="Prix"
+                                           class="w-20 px-2 py-1.5 bg-gray-600 border border-gray-500 rounded text-sm text-white text-right"
+                                           id="price-{{ playerItem.id }}">
+                                    <select id="duration-{{ playerItem.id }}" class="px-2 py-1.5 bg-gray-600 border border-gray-500 rounded text-sm text-white">
+                                        <option value="24">24h</option>
+                                        <option value="48">48h</option>
+                                        <option value="72">72h</option>
+                                    </select>
+                                    <button onclick="listItem({{ playerItem.id }})"
+                                            class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded-lg transition-colors touch-target">
+                                        Vendre
+                                    </button>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-500 text-sm">Votre inventaire est vide.</p>
+                {% endif %}
+                <p class="text-xs text-gray-500 mt-3">Taxe de transaction: 5% prelevee sur chaque vente reussie. Maximum 20 annonces actives.</p>
+            </div>
+
+            {# === My Listings Tab === #}
+            <div id="panel-my-listings" class="hidden">
+                <h3 class="text-lg font-semibold text-purple-300 mb-3">Mes annonces actives</h3>
+                {% if myListings is empty %}
+                    <p class="text-gray-500 text-sm text-center py-4">Vous n'avez aucune annonce active.</p>
+                {% else %}
+                    <div class="space-y-2">
+                        {% for listing in myListings %}
+                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3" id="my-listing-{{ listing.id }}">
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-white font-medium text-sm">{{ listing.item.name }}</span>
+                                    <div class="text-xs text-gray-400 mt-1">
+                                        Expire: {{ listing.expiresAt|date('d/m/Y H:i') }}
+                                        | Vous recevrez: {{ listing.sellerProceeds }} G (apres taxe)
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3 ml-3">
+                                    <span class="text-yellow-400 text-sm font-mono">{{ listing.price }} G</span>
+                                    <button onclick="cancelListing({{ listing.id }})"
+                                            class="px-3 py-1.5 bg-red-600/80 hover:bg-red-500 text-white text-xs rounded-lg transition-colors touch-target">
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {# === History Tab === #}
+            <div id="panel-history" class="hidden">
+                <h3 class="text-lg font-semibold text-purple-300 mb-3">Dernieres ventes</h3>
+                {% if priceHistory is empty %}
+                    <p class="text-gray-500 text-sm text-center py-4">Aucune vente recente.</p>
+                {% else %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="text-gray-400 text-xs border-b border-gray-700">
+                                    <th class="text-left py-2 px-2">Objet</th>
+                                    <th class="text-right py-2 px-2">Prix</th>
+                                    <th class="text-right py-2 px-2">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in priceHistory %}
+                                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/30">
+                                        <td class="py-2 px-2 text-white">{{ entry.name }}</td>
+                                        <td class="py-2 px-2 text-yellow-400 text-right font-mono">{{ entry.price }} G</td>
+                                        <td class="py-2 px-2 text-gray-400 text-right">{{ entry.soldAt ? entry.soldAt|date('d/m H:i') : '-' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Messages area #}
+            <div id="auction-messages" class="mt-4 hidden">
+                <div class="bg-green-900/50 border border-green-700 rounded-lg p-3 text-green-300 text-sm" id="auction-message-text"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function switchTab(tab) {
+    ['browse', 'sell', 'my-listings', 'history'].forEach(t => {
+        const panel = document.getElementById(`panel-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tab) {
+            panel.classList.remove('hidden');
+            btn.className = 'px-3 py-1.5 text-sm rounded-lg bg-purple-600 text-white transition-colors';
+        } else {
+            panel.classList.add('hidden');
+            btn.className = 'px-3 py-1.5 text-sm rounded-lg text-gray-400 hover:text-white hover:bg-gray-700 transition-colors';
+        }
+    });
+}
+
+async function buyAuction(listingId, itemName, price) {
+    if (!confirm(`Acheter ${itemName} pour ${price} Gils ?`)) return;
+    try {
+        const resp = await fetch(`/game/auction/buy/${listingId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showMessage(data.message);
+            document.getElementById('player-gils').textContent = data.gils + ' Gils';
+            const el = document.getElementById(`listing-${listingId}`);
+            if (el) el.remove();
+        } else {
+            showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+async function listItem(playerItemId) {
+    const price = parseInt(document.getElementById(`price-${playerItemId}`).value) || 0;
+    const duration = parseInt(document.getElementById(`duration-${playerItemId}`).value) || 24;
+    if (price < 1) { showMessage('Le prix doit etre au minimum 1 Gil', true); return; }
+
+    try {
+        const resp = await fetch('/game/auction/sell', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playerItemId, price, duration }),
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showMessage(data.message);
+            const el = document.getElementById(`auction-sell-item-${playerItemId}`);
+            if (el) el.remove();
+        } else {
+            showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+async function cancelListing(listingId) {
+    if (!confirm('Annuler cette annonce ? L\'objet sera remis dans votre inventaire.')) return;
+    try {
+        const resp = await fetch(`/game/auction/cancel/${listingId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showMessage(data.message);
+            const el = document.getElementById(`my-listing-${listingId}`);
+            if (el) el.remove();
+        } else {
+            showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+function showMessage(msg, isError = false) {
+    const container = document.getElementById('auction-messages');
+    const text = document.getElementById('auction-message-text');
+    container.classList.remove('hidden');
+    text.textContent = msg;
+    text.className = isError
+        ? 'bg-red-900/50 border border-red-700 rounded-lg p-3 text-red-300 text-sm'
+        : 'bg-green-900/50 border border-green-700 rounded-lg p-3 text-green-300 text-sm';
+    setTimeout(() => container.classList.add('hidden'), 3000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Transactions - Admin{% endblock %}
+{% block page_title %}Transactions economiques{% endblock %}
+
+{% block body %}
+{# Stats cards #}
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="text-2xl font-bold text-white">{{ stats.total_transactions }}</div>
+        <div class="text-xs text-gray-400 mt-1">Total transactions</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="text-2xl font-bold text-purple-400">{{ stats.shop_buys }}</div>
+        <div class="text-xs text-gray-400 mt-1">Achats boutique</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="text-2xl font-bold text-red-400">{{ stats.shop_sells }}</div>
+        <div class="text-xs text-gray-400 mt-1">Ventes boutique</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="text-2xl font-bold text-yellow-400">{{ stats.auction_buys }}</div>
+        <div class="text-xs text-gray-400 mt-1">Achats HDV</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="text-2xl font-bold text-green-400">{{ stats.trades }}</div>
+        <div class="text-xs text-gray-400 mt-1">Echanges</div>
+    </div>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div class="text-2xl font-bold text-blue-400">{{ stats.active_auctions }}</div>
+        <div class="text-xs text-gray-400 mt-1">Annonces actives</div>
+    </div>
+</div>
+
+{# Filters #}
+<div class="flex items-center gap-3 mb-4">
+    <a href="{{ path('admin_transaction_index') }}" class="px-3 py-1.5 rounded text-sm {% if type == '' %}bg-purple-700 text-white{% else %}bg-gray-800 text-gray-400 hover:text-white{% endif %}">Tous</a>
+    <a href="{{ path('admin_transaction_index', {type: 'shop_buy'}) }}" class="px-3 py-1.5 rounded text-sm {% if type == 'shop_buy' %}bg-purple-700 text-white{% else %}bg-gray-800 text-gray-400 hover:text-white{% endif %}">Achat boutique</a>
+    <a href="{{ path('admin_transaction_index', {type: 'shop_sell'}) }}" class="px-3 py-1.5 rounded text-sm {% if type == 'shop_sell' %}bg-purple-700 text-white{% else %}bg-gray-800 text-gray-400 hover:text-white{% endif %}">Vente boutique</a>
+    <a href="{{ path('admin_transaction_index', {type: 'auction_buy'}) }}" class="px-3 py-1.5 rounded text-sm {% if type == 'auction_buy' %}bg-purple-700 text-white{% else %}bg-gray-800 text-gray-400 hover:text-white{% endif %}">Achat HDV</a>
+    <a href="{{ path('admin_transaction_index', {type: 'trade'}) }}" class="px-3 py-1.5 rounded text-sm {% if type == 'trade' %}bg-purple-700 text-white{% else %}bg-gray-800 text-gray-400 hover:text-white{% endif %}">Echange</a>
+</div>
+
+{# Transactions table #}
+<div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+    <table class="w-full text-sm">
+        <thead>
+            <tr class="text-gray-400 text-xs border-b border-gray-700">
+                <th class="text-left py-3 px-4">Date</th>
+                <th class="text-left py-3 px-4">Type</th>
+                <th class="text-left py-3 px-4">Joueur</th>
+                <th class="text-left py-3 px-4">Autre joueur</th>
+                <th class="text-left py-3 px-4">Item</th>
+                <th class="text-right py-3 px-4">Qte</th>
+                <th class="text-right py-3 px-4">Gils</th>
+                <th class="text-left py-3 px-4">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tx in transactions %}
+                <tr class="border-b border-gray-700/50 hover:bg-gray-700/30">
+                    <td class="py-2 px-4 text-gray-400">{{ tx.createdAt|date('d/m/Y H:i') }}</td>
+                    <td class="py-2 px-4">
+                        <span class="px-2 py-0.5 rounded text-xs
+                            {% if tx.type == 'shop_buy' %}bg-purple-900/50 text-purple-300
+                            {% elseif tx.type == 'shop_sell' %}bg-red-900/50 text-red-300
+                            {% elseif tx.type == 'auction_buy' %}bg-yellow-900/50 text-yellow-300
+                            {% elseif tx.type == 'auction_list' %}bg-blue-900/50 text-blue-300
+                            {% elseif tx.type == 'trade' %}bg-green-900/50 text-green-300
+                            {% else %}bg-gray-700 text-gray-300{% endif %}">
+                            {{ tx.type }}
+                        </span>
+                    </td>
+                    <td class="py-2 px-4 text-white">{{ tx.player.name }}</td>
+                    <td class="py-2 px-4 text-gray-400">{{ tx.otherPlayer ? tx.otherPlayer.name : '-' }}</td>
+                    <td class="py-2 px-4 text-white">{{ tx.item ? tx.item.name : '-' }}</td>
+                    <td class="py-2 px-4 text-right text-gray-300">{{ tx.quantity }}</td>
+                    <td class="py-2 px-4 text-right text-yellow-400 font-mono">{{ tx.gilsAmount }} G</td>
+                    <td class="py-2 px-4 text-gray-400 text-xs max-w-xs truncate">{{ tx.description }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="8" class="py-8 text-center text-gray-500">Aucune transaction.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# Pagination #}
+{% if totalPages > 1 %}
+    <div class="flex justify-center gap-2 mt-4">
+        {% for p in 1..totalPages %}
+            <a href="{{ path('admin_transaction_index', {page: p, type: type}) }}"
+               class="px-3 py-1 rounded text-sm {% if p == currentPage %}bg-purple-700 text-white{% else %}bg-gray-800 text-gray-400 hover:text-white{% endif %}">
+                {{ p }}
+            </a>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}

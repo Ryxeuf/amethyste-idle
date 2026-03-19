@@ -4,6 +4,8 @@ namespace App\Controller\Game;
 
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
+use App\Entity\App\ShopStock;
+use App\Entity\App\TransactionLog;
 use App\Entity\Game\Item;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,12 +35,15 @@ class ShopController extends AbstractController
         }
 
         $player = $this->playerHelper->getPlayer();
-        $shopItems = $this->getShopItems($pnj);
+        $shopItems = $this->getShopItemsWithStock($pnj);
+
+        $equippedItems = $this->getEquippedItems();
 
         return $this->render('game/shop/index.html.twig', [
             'pnj' => $pnj,
             'shopItems' => $shopItems,
             'player' => $player,
+            'equippedItems' => $equippedItems,
         ]);
     }
 
@@ -60,7 +65,6 @@ class ShopController extends AbstractController
             return new JsonResponse(['error' => 'Item invalide'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Check item is in this shop
         $shopSlugs = $pnj->getShopItems();
         if (!in_array($itemSlug, $shopSlugs, true)) {
             return new JsonResponse(['error' => 'Cet objet n\'est pas en vente ici'], Response::HTTP_BAD_REQUEST);
@@ -76,12 +80,36 @@ class ShopController extends AbstractController
 
         if ($player->getGils() < $totalCost) {
             return new JsonResponse([
-                'error' => sprintf('Pas assez de Gils ! (requis: %d, possédés: %d)', $totalCost, $player->getGils()),
+                'error' => sprintf('Pas assez de Gils ! (requis: %d, possedes: %d)', $totalCost, $player->getGils()),
             ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Check stock
+        $stock = $this->entityManager->getRepository(ShopStock::class)->findOneBy([
+            'pnj' => $pnj,
+            'item' => $item,
+        ]);
+
+        if ($stock !== null) {
+            $this->restockIfNeeded($stock);
+
+            if ($stock->hasLimitedStock() && $stock->getCurrentStock() < $quantity) {
+                return new JsonResponse([
+                    'error' => sprintf('Stock insuffisant ! (disponible: %d)', $stock->getCurrentStock()),
+                ], Response::HTTP_BAD_REQUEST);
+            }
         }
 
         // Debit gils
         $player->removeGils($totalCost);
+
+        // Decrement stock
+        if ($stock !== null && $stock->hasLimitedStock()) {
+            for ($i = 0; $i < $quantity; ++$i) {
+                $stock->decrementStock();
+            }
+            $this->entityManager->persist($stock);
+        }
 
         // Add item to player bag inventory
         $bag = $this->playerHelper->getBagInventory();
@@ -93,13 +121,29 @@ class ShopController extends AbstractController
             $this->entityManager->persist($playerItem);
         }
 
+        // Log transaction
+        $this->logTransaction(
+            TransactionLog::TYPE_SHOP_BUY,
+            $player,
+            $item,
+            $quantity,
+            $totalCost,
+            sprintf('Achat de %dx %s chez %s', $quantity, $item->getName(), $pnj->getName())
+        );
+
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 
+        $stockInfo = null;
+        if ($stock !== null && $stock->hasLimitedStock()) {
+            $stockInfo = $stock->getCurrentStock();
+        }
+
         return new JsonResponse([
             'success' => true,
-            'message' => sprintf('Vous avez acheté %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost),
+            'message' => sprintf('Vous avez achete %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost),
             'gils' => $player->getGils(),
+            'stock' => $stockInfo,
         ]);
     }
 
@@ -107,6 +151,11 @@ class ShopController extends AbstractController
     public function sell(int $id, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
+        if (!$pnj) {
+            return new JsonResponse(['error' => 'Boutique introuvable'], Response::HTTP_NOT_FOUND);
+        }
 
         $data = json_decode($request->getContent(), true);
         $playerItemId = $data['playerItemId'] ?? null;
@@ -120,6 +169,11 @@ class ShopController extends AbstractController
             return new JsonResponse(['error' => 'Objet introuvable'], Response::HTTP_NOT_FOUND);
         }
 
+        // Prevent selling equipped items
+        if ($playerItem->getGear() > 0) {
+            return new JsonResponse(['error' => 'Impossible de vendre un objet equipe'], Response::HTTP_BAD_REQUEST);
+        }
+
         $player = $this->playerHelper->getPlayer();
         $item = $playerItem->getGenericItem();
 
@@ -128,6 +182,17 @@ class ShopController extends AbstractController
 
         $player->addGils($sellPrice);
         $this->entityManager->remove($playerItem);
+
+        // Log transaction
+        $this->logTransaction(
+            TransactionLog::TYPE_SHOP_SELL,
+            $player,
+            $item,
+            1,
+            $sellPrice,
+            sprintf('Vente de %s chez %s', $item->getName(), $pnj->getName())
+        );
+
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 
@@ -139,15 +204,78 @@ class ShopController extends AbstractController
     }
 
     /**
-     * @return Item[]
+     * @return array<array{item: Item, stock: ShopStock|null}>
      */
-    private function getShopItems(Pnj $pnj): array
+    private function getShopItemsWithStock(Pnj $pnj): array
     {
         $slugs = $pnj->getShopItems();
         if (!$slugs) {
             return [];
         }
 
-        return $this->entityManager->getRepository(Item::class)->findBy(['slug' => $slugs]);
+        $items = $this->entityManager->getRepository(Item::class)->findBy(['slug' => $slugs]);
+        $stocks = $this->entityManager->getRepository(ShopStock::class)->findBy(['pnj' => $pnj]);
+
+        $stockByItemId = [];
+        foreach ($stocks as $stock) {
+            $this->restockIfNeeded($stock);
+            $stockByItemId[$stock->getItem()->getId()] = $stock;
+        }
+
+        $result = [];
+        foreach ($items as $item) {
+            $stock = $stockByItemId[$item->getId()] ?? null;
+            $result[] = [
+                'item' => $item,
+                'stock' => $stock,
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @return array<string, PlayerItem>
+     */
+    private function getEquippedItems(): array
+    {
+        $bag = $this->playerHelper->getBagInventory();
+        $equipped = [];
+
+        foreach ($bag->getItems() as $playerItem) {
+            if ($playerItem->getGear() > 0 && $playerItem->getGenericItem()->getGearLocation()) {
+                $equipped[$playerItem->getGenericItem()->getGearLocation()] = $playerItem;
+            }
+        }
+
+        return $equipped;
+    }
+
+    private function restockIfNeeded(ShopStock $stock): void
+    {
+        if ($stock->needsRestock()) {
+            $stock->restock();
+            $this->entityManager->persist($stock);
+        }
+    }
+
+    private function logTransaction(
+        string $type,
+        \App\Entity\App\Player $player,
+        Item $item,
+        int $quantity,
+        int $gilsAmount,
+        string $description,
+    ): void {
+        $log = new TransactionLog();
+        $log->setType($type);
+        $log->setPlayer($player);
+        $log->setItem($item);
+        $log->setQuantity($quantity);
+        $log->setGilsAmount($gilsAmount);
+        $log->setDescription($description);
+        $log->setCreatedAt(new \DateTime());
+        $log->setUpdatedAt(new \DateTime());
+        $this->entityManager->persist($log);
     }
 }

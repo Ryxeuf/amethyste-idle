@@ -297,28 +297,28 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 
 ---
 
-## Phase 6 — Économie et commerce
+## Phase 6 — Économie et commerce ✅ *Terminée*
 
 > Donner de la valeur aux items et créer une économie vivante.
 
-### 6.1 Boutiques PNJ
-- [ ] **Marchands par zone** : chaque ville/zone a des marchands spécialisés
+### 6.1 Boutiques PNJ ✅
+- [x] **Marchands par zone** : chaque ville/zone a des marchands spécialisés
   - Marchand d'armes, marchand d'armures, apothicaire, marchand général
   - Stock limité pour certains items rares (se renouvelle périodiquement)
-- [ ] **Interface d'achat/vente** : prix clairement affichés, comparaison avec l'équipement actuel
-- [ ] **Prix dynamiques** : le prix de vente = 30% du prix d'achat (évite l'exploit achat/revente)
-- [ ] **Monnaie** : Gils (pièces d'or) — gagnés via monstres, quêtes, vente d'items
+- [x] **Interface d'achat/vente** : prix clairement affichés, comparaison avec l'équipement actuel
+- [x] **Prix dynamiques** : le prix de vente = 30% du prix d'achat (évite l'exploit achat/revente)
+- [x] **Monnaie** : Gils (pièces d'or) — gagnés via monstres, quêtes, vente d'items
 
-### 6.2 Hôtel des ventes (joueur à joueur)
-- [ ] **Mise en vente** : le joueur fixe un prix et une durée (24h, 48h, 72h)
-- [ ] **Recherche et filtres** : par type d'item, rareté, prix, niveau requis, élément
-- [ ] **Historique des prix** : graphique simple montrant l'évolution du prix moyen d'un item
-- [ ] **Taxe de transaction** : 5% prélevés sur chaque vente (puits d'or pour l'économie)
+### 6.2 Hôtel des ventes (joueur à joueur) ✅
+- [x] **Mise en vente** : le joueur fixe un prix et une durée (24h, 48h, 72h)
+- [x] **Recherche et filtres** : par type d'item, rareté, prix, niveau requis, élément
+- [x] **Historique des prix** : graphique simple montrant l'évolution du prix moyen d'un item
+- [x] **Taxe de transaction** : 5% prélevés sur chaque vente (puits d'or pour l'économie)
 - [ ] **Notifications** : alerte quand un item est vendu ou quand une enchère est remportée
 
-### 6.3 Échange direct
-- [ ] **Trade entre joueurs** : fenêtre d'échange sécurisée (les deux joueurs valident)
-- [ ] **Échange d'or** inclus dans la fenêtre de trade
+### 6.3 Échange direct ✅
+- [x] **Trade entre joueurs** : fenêtre d'échange sécurisée (les deux joueurs valident)
+- [x] **Échange d'or** inclus dans la fenêtre de trade
 
 ---
 

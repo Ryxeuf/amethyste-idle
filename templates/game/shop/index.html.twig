@@ -26,20 +26,63 @@
                     <p class="text-gray-500 text-sm">Aucun objet en vente.</p>
                 {% else %}
                     <div class="space-y-2">
-                        {% for item in shopItems %}
-                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors"
-                                 data-item-slug="{{ item.slug }}">
-                                <div class="flex-1 min-w-0">
-                                    <span class="text-white font-medium text-sm">{{ item.name }}</span>
-                                    <p class="text-gray-400 text-xs truncate">{{ item.description|slice(0, 60) }}{% if item.description|length > 60 %}...{% endif %}</p>
-                                </div>
-                                <div class="flex items-center gap-3 ml-3">
-                                    <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">{{ item.price }} G</span>
-                                    <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ item.price }}, {{ pnj.id }})"
-                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if player.gils < item.price %} opacity-50 cursor-not-allowed{% endif %}"
-                                            {% if player.gils < item.price %}disabled{% endif %}>
-                                        Acheter
-                                    </button>
+                        {% for entry in shopItems %}
+                            {% set item = entry.item %}
+                            {% set stock = entry.stock %}
+                            {% set outOfStock = stock and stock.hasLimitedStock and stock.currentStock <= 0 %}
+                            {% set canAfford = player.gils >= item.price %}
+                            <div class="bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors{% if outOfStock %} opacity-40{% endif %}"
+                                 data-item-slug="{{ item.slug }}" id="shop-item-{{ item.slug }}">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-white font-medium text-sm">{{ item.name }}</span>
+                                            {% if item.rarity %}
+                                                <span class="text-xs px-1.5 py-0.5 rounded
+                                                    {% if item.rarity == 'common' %}bg-gray-600 text-gray-300
+                                                    {% elseif item.rarity == 'uncommon' %}bg-green-900/50 text-green-400
+                                                    {% elseif item.rarity == 'rare' %}bg-blue-900/50 text-blue-400
+                                                    {% elseif item.rarity == 'epic' %}bg-purple-900/50 text-purple-400
+                                                    {% elseif item.rarity == 'legendary' %}bg-orange-900/50 text-orange-400
+                                                    {% endif %}">{{ item.rarity }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-gray-400 text-xs truncate">{{ item.description|slice(0, 80) }}{% if item.description|length > 80 %}...{% endif %}</p>
+                                        {# Stats comparison for gear items #}
+                                        {% if item.gearLocation and equippedItems[item.gearLocation] is defined %}
+                                            {% set equipped = equippedItems[item.gearLocation].genericItem %}
+                                            <div class="flex items-center gap-2 mt-1 text-xs">
+                                                <span class="text-gray-500">vs {{ equipped.name }}:</span>
+                                                {% if item.protection is not null and equipped.protection is not null %}
+                                                    {% set diff = item.protection - equipped.protection %}
+                                                    <span class="{% if diff > 0 %}text-green-400{% elseif diff < 0 %}text-red-400{% else %}text-gray-400{% endif %}">
+                                                        DEF {{ diff > 0 ? '+' : '' }}{{ diff }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if item.value is not null and equipped.value is not null %}
+                                                    {% set diff = item.value - equipped.value %}
+                                                    <span class="{% if diff > 0 %}text-green-400{% elseif diff < 0 %}text-red-400{% else %}text-gray-400{% endif %}">
+                                                        ATK {{ diff > 0 ? '+' : '' }}{{ diff }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% elseif item.gearLocation %}
+                                            <div class="text-xs text-gray-500 mt-1">Emplacement: {{ item.gearLocation }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex items-center gap-3 ml-3">
+                                        {% if stock and stock.hasLimitedStock %}
+                                            <span class="text-xs {% if stock.currentStock <= 2 %}text-red-400{% else %}text-gray-400{% endif %}" id="stock-{{ item.slug }}">
+                                                x{{ stock.currentStock }}
+                                            </span>
+                                        {% endif %}
+                                        <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">{{ item.price }} G</span>
+                                        <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ item.price }}, {{ pnj.id }})"
+                                                class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if not canAfford or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
+                                                {% if not canAfford or outOfStock %}disabled{% endif %}>
+                                            {% if outOfStock %}Epuise{% else %}Acheter{% endif %}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         {% endfor %}
@@ -54,6 +97,7 @@
                 {% if bag and bag.items|length > 0 %}
                     <div class="space-y-2 max-h-96 overflow-y-auto">
                         {% for playerItem in bag.items %}
+                            {% if playerItem.gear == 0 %}
                             <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors"
                                  id="sell-item-{{ playerItem.id }}">
                                 <div class="flex-1 min-w-0">
@@ -68,6 +112,7 @@
                                     </button>
                                 </div>
                             </div>
+                            {% endif %}
                         {% endfor %}
                     </div>
                 {% else %}
@@ -96,8 +141,22 @@ async function buyItem(slug, name, price, pnjId) {
         if (data.success) {
             showMessage(data.message);
             document.getElementById('player-gils').textContent = data.gils + ' Gils';
-            // Reload page to update sell list
-            setTimeout(() => location.reload(), 800);
+            // Update stock display if applicable
+            if (data.stock !== null && data.stock !== undefined) {
+                const stockEl = document.getElementById(`stock-${slug}`);
+                if (stockEl) {
+                    stockEl.textContent = `x${data.stock}`;
+                    if (data.stock <= 2) stockEl.className = 'text-xs text-red-400';
+                    if (data.stock <= 0) {
+                        const itemEl = document.getElementById(`shop-item-${slug}`);
+                        if (itemEl) itemEl.classList.add('opacity-40');
+                        const btn = itemEl?.querySelector('button');
+                        if (btn) { btn.disabled = true; btn.textContent = 'Epuise'; }
+                    }
+                }
+            }
+            // Update buy buttons affordability
+            updateBuyButtons(data.gils);
         } else {
             showMessage(data.error || 'Erreur', true);
         }
@@ -119,12 +178,30 @@ async function sellItem(playerItemId, name, pnjId) {
             document.getElementById('player-gils').textContent = data.gils + ' Gils';
             const el = document.getElementById(`sell-item-${playerItemId}`);
             if (el) el.remove();
+            updateBuyButtons(data.gils);
         } else {
             showMessage(data.error || 'Erreur', true);
         }
     } catch (e) {
         showMessage('Erreur de connexion', true);
     }
+}
+
+function updateBuyButtons(currentGils) {
+    document.querySelectorAll('[data-item-slug]').forEach(el => {
+        const btn = el.querySelector('button');
+        if (!btn || btn.textContent.trim() === 'Epuise') return;
+        const priceText = el.querySelector('.text-yellow-400')?.textContent;
+        if (!priceText) return;
+        const price = parseInt(priceText);
+        if (currentGils >= price) {
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        } else {
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+        }
+    });
 }
 
 function showMessage(msg, isError = false) {

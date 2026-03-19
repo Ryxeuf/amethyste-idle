@@ -63,6 +63,9 @@ class PnjController extends AbstractController
             $dialogJson = $form->get('dialogJson')->getData();
             $pnj->setDialog($dialogJson ? json_decode($dialogJson, true) ?? [] : []);
 
+            $shopItemsJson = $form->get('shopItemsJson')->getData();
+            $pnj->setShopItems($shopItemsJson ? json_decode($shopItemsJson, true) : null);
+
             $this->em->persist($pnj);
             $this->em->flush();
             $this->adminLogger->log('create', 'Pnj', $pnj->getId(), $pnj->getName());
@@ -85,11 +88,18 @@ class PnjController extends AbstractController
             json_encode($pnj->getDialog(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
 
+        $form->get('shopItemsJson')->setData(
+            $pnj->getShopItems() ? json_encode($pnj->getShopItems(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) : null
+        );
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $dialogJson = $form->get('dialogJson')->getData();
             $pnj->setDialog($dialogJson ? json_decode($dialogJson, true) ?? [] : []);
+
+            $shopItemsJson = $form->get('shopItemsJson')->getData();
+            $pnj->setShopItems($shopItemsJson ? json_decode($shopItemsJson, true) : null);
 
             $this->em->flush();
             $this->adminLogger->log('update', 'Pnj', $pnj->getId(), $pnj->getName());
