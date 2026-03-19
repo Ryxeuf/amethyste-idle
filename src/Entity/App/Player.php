@@ -5,6 +5,7 @@ namespace App\Entity\App;
 use App\Entity\App\Traits\CharacterStatsTrait;
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
+use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -66,6 +67,10 @@ class Player implements CharacterInterface
 
     #[ORM\Column(name: 'class_type', type: 'string', length: 255)]
     private string $classType;
+
+    #[ORM\ManyToOne(targetEntity: Race::class)]
+    #[ORM\JoinColumn(name: 'race_id', referencedColumnName: 'id', nullable: true)]
+    private ?Race $race = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'players')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
@@ -390,5 +395,17 @@ class Player implements CharacterInterface
         $this->gils -= $amount;
 
         return true;
+    }
+
+    public function getRace(): ?Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(?Race $race): self
+    {
+        $this->race = $race;
+
+        return $this;
     }
 }
