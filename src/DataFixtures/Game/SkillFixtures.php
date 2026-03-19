@@ -99,6 +99,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getGuardianSkills(),
             $this->getNecromancerSkills(),
             $this->getDruidSkills(),
+            $this->getHunterSkills(),
+            $this->getTamerSkills(),
             $this->getStormcallerSkills(),
             $this->getArcherSkills(),
             $this->getWandererSkills(),
@@ -1415,45 +1417,409 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // DRUIDE (bete) — 4 skills existants conserves
+    // DRUIDE (bete) — 13 skills, healer/support nature
     // =========================================================================
     private function getDruidSkills(): array
     {
+        $d = 'druid';
+
         return [
-            'druid_materia_1' => [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'druid_apprenti_1' => [
                 'title' => 'Materia : Liane',
-                'slug' => 'druid-materia-1',
+                'slug' => 'druid-apprenti-1',
                 'description' => 'Permet d\'utiliser la materia Liane',
                 'requiredPoints' => 0,
-                'domain' => 'druid',
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'liana-whip']],
             ],
-            'druid_heal_1' => [
+            'druid_apprenti_2' => [
+                'title' => 'Materia : Guerison naturelle',
+                'slug' => 'druid-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Guerison naturelle',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'natural-healing']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'druid_rang2_1' => [
                 'title' => 'Symbiose naturelle',
-                'slug' => 'druid-heal-1',
+                'slug' => 'druid-rang2-1',
                 'description' => 'Augmente la puissance des soins de nature',
                 'requiredPoints' => 10,
-                'domain' => 'druid',
+                'domain' => $d,
                 'heal' => 1,
-                'requirements' => ['druid_materia_1'],
+                'requirements' => ['druid_apprenti_1'],
             ],
-            'druid_materia_2' => [
+            'druid_rang2_2' => [
+                'title' => 'Affinite naturelle',
+                'slug' => 'druid-rang2-2',
+                'description' => 'Augmente la precision des sorts de nature',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['druid_apprenti_1'],
+            ],
+            'druid_rang2_3' => [
                 'title' => 'Materia : Empoisonnement',
-                'slug' => 'druid-materia-2',
-                'description' => "Permet d'utiliser la materia Empoisonnement (DoT)",
-                'requiredPoints' => 20,
-                'domain' => 'druid',
+                'slug' => 'druid-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Empoisonnement (DoT)',
+                'requiredPoints' => 15,
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'poison-cloud']],
-                'requirements' => ['druid_heal_1'],
+                'requirements' => ['druid_apprenti_2'],
             ],
-            'druid_materia_3' => [
-                'title' => 'Materia : Appel de la foret',
-                'slug' => 'druid-materia-3',
-                'description' => "Permet d'utiliser la materia Appel de la foret",
+            'druid_rang2_4' => [
+                'title' => 'Materia : Bouclier d\'epines',
+                'slug' => 'druid-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'epines',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thorn-shield']],
+                'requirements' => ['druid_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'druid_rang3_1' => [
+                'title' => 'Materia : Etreinte de la foret',
+                'slug' => 'druid-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Etreinte de la foret (soin puissant)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'forest-embrace']],
+                'requirements' => ['druid_rang2_1', 'druid_rang2_2'],
+            ],
+            'druid_rang3_2' => [
+                'title' => 'Materia : Croissance sauvage',
+                'slug' => 'druid-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Croissance sauvage (soin + degats)',
                 'requiredPoints' => 30,
-                'domain' => 'druid',
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wild-growth']],
+                'requirements' => ['druid_rang2_3'],
+            ],
+            'druid_rang3_3' => [
+                'title' => 'Communion vegetale',
+                'slug' => 'druid-rang3-3',
+                'description' => 'Augmente les soins et la vitalite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'life' => 3,
+                'requirements' => ['druid_rang2_4'],
+            ],
+            'druid_rang3_4' => [
+                'title' => 'Materia : Appel de la foret',
+                'slug' => 'druid-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Appel de la foret (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'nature-wrath']],
-                'requirements' => ['druid_materia_2'],
+                'requirements' => ['druid_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'druid_rang4_1' => [
+                'title' => 'Materia : Benediction de la nature',
+                'slug' => 'druid-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Benediction de la nature — soin surpuissant',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-blessing']],
+                'requirements' => ['druid_rang3_1', 'druid_rang3_2'],
+            ],
+            'druid_rang4_2' => [
+                'title' => 'Materia : Afflux primordial',
+                'slug' => 'druid-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Afflux primordial (soin + degats)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'primal-surge']],
+                'requirements' => ['druid_rang3_3', 'druid_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'druid_rang5_1' => [
+                'title' => 'Materia : Fureur naturelle',
+                'slug' => 'druid-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Fureur naturelle',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-fury']],
+                'requirements' => ['druid_rang4_1', 'druid_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // CHASSEUR (bete) — 13 skills, DPS distance pieges et pistage
+    // =========================================================================
+    private function getHunterSkills(): array
+    {
+        $d = 'hunter';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'hunter_apprenti_1' => [
+                'title' => 'Materia : Appel du faucon',
+                'slug' => 'hunter-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Appel du faucon',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'falcon-strike']],
+            ],
+            'hunter_apprenti_2' => [
+                'title' => 'Materia : Morsure venimeuse',
+                'slug' => 'hunter-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Morsure venimeuse',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'venomous-bite']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'hunter_rang2_1' => [
+                'title' => 'Oeil de pisteur',
+                'slug' => 'hunter-rang2-1',
+                'description' => 'Augmente la precision des tirs',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['hunter_apprenti_1'],
+            ],
+            'hunter_rang2_2' => [
+                'title' => 'Instinct de chasseur',
+                'slug' => 'hunter-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['hunter_apprenti_1'],
+            ],
+            'hunter_rang2_3' => [
+                'title' => 'Materia : Piege a ours',
+                'slug' => 'hunter-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Piege a ours (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'bear-trap']],
+                'requirements' => ['hunter_apprenti_2'],
+            ],
+            'hunter_rang2_4' => [
+                'title' => 'Materia : Piege de vignes',
+                'slug' => 'hunter-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Piege de vignes',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vine-snare']],
+                'requirements' => ['hunter_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'hunter_rang3_1' => [
+                'title' => 'Materia : Tir empoisonne',
+                'slug' => 'hunter-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tir empoisonne (poison)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'poison-arrow']],
+                'requirements' => ['hunter_rang2_1', 'hunter_rang2_2'],
+            ],
+            'hunter_rang3_2' => [
+                'title' => 'Materia : Spores toxiques',
+                'slug' => 'hunter-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Spores toxiques',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'toxic-spores']],
+                'requirements' => ['hunter_rang2_3'],
+            ],
+            'hunter_rang3_3' => [
+                'title' => 'Traque mortelle',
+                'slug' => 'hunter-rang3-3',
+                'description' => 'Augmente les degats et le critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['hunter_rang2_4'],
+            ],
+            'hunter_rang3_4' => [
+                'title' => 'Materia : Lame feuille',
+                'slug' => 'hunter-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Lame feuille',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'leaf-blade']],
+                'requirements' => ['hunter_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'hunter_rang4_1' => [
+                'title' => 'Materia : Explosion d\'epines',
+                'slug' => 'hunter-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Explosion d\'epines',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thorn-burst']],
+                'requirements' => ['hunter_rang3_1', 'hunter_rang3_2'],
+            ],
+            'hunter_rang4_2' => [
+                'title' => 'Materia : Fureur naturelle',
+                'slug' => 'hunter-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Fureur naturelle',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-fury']],
+                'requirements' => ['hunter_rang3_3', 'hunter_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'hunter_rang5_1' => [
+                'title' => 'Materia : Chasse en meute',
+                'slug' => 'hunter-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Chasse en meute (AoE)',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'pack-hunt']],
+                'requirements' => ['hunter_rang4_1', 'hunter_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // DOMPTEUR (bete) — 13 skills, tank/invocateur familiers
+    // =========================================================================
+    private function getTamerSkills(): array
+    {
+        $d = 'tamer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'tamer_apprenti_1' => [
+                'title' => 'Materia : Lien bestial',
+                'slug' => 'tamer-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Lien bestial',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'beast-bond']],
+            ],
+            'tamer_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'epines',
+                'slug' => 'tamer-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'epines',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thorn-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'tamer_rang2_1' => [
+                'title' => 'Lien renforce',
+                'slug' => 'tamer-rang2-1',
+                'description' => 'Augmente la puissance des soins du familier',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['tamer_apprenti_1'],
+            ],
+            'tamer_rang2_2' => [
+                'title' => 'Instinct animal',
+                'slug' => 'tamer-rang2-2',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['tamer_apprenti_1'],
+            ],
+            'tamer_rang2_3' => [
+                'title' => 'Materia : Racines enchevetrees',
+                'slug' => 'tamer-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Racines enchevetrees (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'entangling-roots']],
+                'requirements' => ['tamer_apprenti_2'],
+            ],
+            'tamer_rang2_4' => [
+                'title' => 'Constitution bestiale',
+                'slug' => 'tamer-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['tamer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'tamer_rang3_1' => [
+                'title' => 'Materia : Charge sauvage',
+                'slug' => 'tamer-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Charge sauvage',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'savage-charge']],
+                'requirements' => ['tamer_rang2_1', 'tamer_rang2_2'],
+            ],
+            'tamer_rang3_2' => [
+                'title' => 'Materia : Croissance sauvage',
+                'slug' => 'tamer-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Croissance sauvage (soin + degats)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wild-growth']],
+                'requirements' => ['tamer_rang2_3'],
+            ],
+            'tamer_rang3_3' => [
+                'title' => 'Carapace epaisse',
+                'slug' => 'tamer-rang3-3',
+                'description' => 'Augmente les points de vie et les soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'heal' => 1,
+                'requirements' => ['tamer_rang2_4'],
+            ],
+            'tamer_rang3_4' => [
+                'title' => 'Materia : Liane',
+                'slug' => 'tamer-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Liane',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'liana-whip']],
+                'requirements' => ['tamer_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'tamer_rang4_1' => [
+                'title' => 'Materia : Afflux primordial',
+                'slug' => 'tamer-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Afflux primordial (soin + degats)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'primal-surge']],
+                'requirements' => ['tamer_rang3_1', 'tamer_rang3_2'],
+            ],
+            'tamer_rang4_2' => [
+                'title' => 'Materia : Benediction de la nature',
+                'slug' => 'tamer-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Benediction de la nature',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-blessing']],
+                'requirements' => ['tamer_rang3_3', 'tamer_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'tamer_rang5_1' => [
+                'title' => 'Materia : Rugissement alpha',
+                'slug' => 'tamer-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Rugissement alpha',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'alpha-roar']],
+                'requirements' => ['tamer_rang4_1', 'tamer_rang4_2'],
             ],
         ];
     }
