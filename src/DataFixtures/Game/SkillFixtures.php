@@ -17,10 +17,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
         // Premiere passe : creation des competences
         foreach ($skillsData as $reference => $data) {
-            if ($reference === 'skill (template)') {
-                continue;
-            }
-
             $skill = new Skill();
 
             if (isset($data['slug'])) {
@@ -73,7 +69,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
         // Deuxieme passe : definition des prerequis
         foreach ($skillsData as $reference => $data) {
-            if ($reference === 'skill (template)' || !isset($data['requirements'])) {
+            if (!isset($data['requirements'])) {
                 continue;
             }
 
@@ -90,67 +86,160 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
     private function getSkillsData(): array
     {
+        return array_merge(
+            $this->getPyromancySkills(),
+            $this->getSoldierSkills(),
+            $this->getHealerSkills(),
+            $this->getDefenderSkills(),
+            $this->getNecromancerSkills(),
+            $this->getDruidSkills(),
+            $this->getStormcallerSkills(),
+            $this->getMinerSkills(),
+            $this->getHerbalistSkills(),
+        );
+    }
+
+    // =========================================================================
+    // PYROMANCIE (feu) — 15 skills, domaine modele complet
+    // =========================================================================
+    private function getPyromancySkills(): array
+    {
+        $d = 'pyromancy';
+
         return [
-            // =====================================================
-            // PYROMANCIE — Boule de feu > Pluie de flammes > Inferno
-            // =====================================================
-            'pyro_materia_1' => [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'pyro_apprenti_1' => [
                 'title' => 'Apprenti pyromancien',
-                'slug' => 'pyro-materia-1',
+                'slug' => 'pyro-apprenti-1',
                 'description' => 'Debloque le sort Boule de feu',
                 'requiredPoints' => 0,
-                'domain' => 'pyromancy',
+                'domain' => $d,
                 'actions' => ['combat' => ['spell_slug' => 'fire-ball']],
             ],
-            'pyro_critical_1' => [
-                'title' => 'Points faibles',
-                'slug' => 'pyro-critical-1',
-                'description' => 'Augmente les chances de coup critique',
-                'requiredPoints' => 10,
-                'domain' => 'pyromancy',
-                'critical' => 1,
-                'requirements' => ['pyro_materia_1'],
-            ],
-            'pyro_damage_1' => [
-                'title' => 'Efficacite du feu',
-                'slug' => 'pyro-damage-1',
-                'description' => 'Augmente les degats de pyromancie',
-                'requiredPoints' => 10,
-                'domain' => 'pyromancy',
-                'damage' => 1,
-                'requirements' => ['pyro_materia_1'],
-            ],
-            'pyro_materia_2' => [
-                'title' => 'Pluie de flammes',
-                'slug' => 'pyro-materia-2',
-                'description' => 'Debloque le sort Pluie de flammes (AoE)',
-                'requiredPoints' => 20,
-                'domain' => 'pyromancy',
-                'actions' => ['combat' => ['spell_slug' => 'flame-rain']],
-                'requirements' => ['pyro_critical_1', 'pyro_damage_1'],
-            ],
-            'pyro_materia_3' => [
-                'title' => 'Inferno',
-                'slug' => 'pyro-materia-3',
-                'description' => 'Debloque le sort Inferno — devastation totale',
-                'requiredPoints' => 30,
-                'domain' => 'pyromancy',
-                'actions' => ['combat' => ['spell_slug' => 'inferno']],
-                'requirements' => ['pyro_materia_2'],
-            ],
-            'pyro_hit_1' => [
-                'title' => 'Chaude precision',
-                'slug' => 'pyro-hit-1',
-                'description' => 'Augmente les chances de toucher',
-                'requiredPoints' => 20,
-                'hit' => 1,
-                'domain' => 'pyromancy',
-                'requirements' => ['pyro_materia_2'],
+            'pyro_apprenti_2' => [
+                'title' => 'Initiation au feu',
+                'slug' => 'pyro-apprenti-2',
+                'description' => 'Debloque le sort Flammeche',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'flame']],
             ],
 
-            // =====================================================
-            // SOLDAT — Frappe puissante > Charge > Tourbillon d'epee
-            // =====================================================
+            // Rang 2 (10-20 pts) — 4 skills
+            'pyro_rang2_1' => [
+                'title' => 'Points faibles',
+                'slug' => 'pyro-rang2-1',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['pyro_apprenti_1'],
+            ],
+            'pyro_rang2_2' => [
+                'title' => 'Efficacite du feu',
+                'slug' => 'pyro-rang2-2',
+                'description' => 'Augmente les degats de pyromancie',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['pyro_apprenti_1'],
+            ],
+            'pyro_rang2_3' => [
+                'title' => 'Mur de feu',
+                'slug' => 'pyro-rang2-3',
+                'description' => 'Debloque le sort Mur de feu',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fire-wall']],
+                'requirements' => ['pyro_apprenti_2'],
+            ],
+            'pyro_rang2_4' => [
+                'title' => 'Toucher brulant',
+                'slug' => 'pyro-rang2-4',
+                'description' => 'Debloque le sort Toucher brulant',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'burning-touch']],
+                'requirements' => ['pyro_apprenti_2'],
+            ],
+
+            // Rang 3 (20-50 pts) — 4 skills
+            'pyro_rang3_1' => [
+                'title' => 'Pluie de flammes',
+                'slug' => 'pyro-rang3-1',
+                'description' => 'Debloque le sort Pluie de flammes (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'flame-rain']],
+                'requirements' => ['pyro_rang2_1', 'pyro_rang2_2'],
+            ],
+            'pyro_rang3_2' => [
+                'title' => 'Nova de feu',
+                'slug' => 'pyro-rang3-2',
+                'description' => 'Debloque le sort Nova de feu',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fire-nova']],
+                'requirements' => ['pyro_rang2_3'],
+            ],
+            'pyro_rang3_3' => [
+                'title' => 'Chaude precision',
+                'slug' => 'pyro-rang3-3',
+                'description' => 'Augmente la precision des sorts de feu',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['pyro_rang2_4'],
+            ],
+            'pyro_rang3_4' => [
+                'title' => 'Flamme du phenix',
+                'slug' => 'pyro-rang3-4',
+                'description' => 'Debloque le sort Flamme du phenix (degats + soin)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'phoenix-flame']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'pyro_rang4_1' => [
+                'title' => 'Inferno',
+                'slug' => 'pyro-rang4-1',
+                'description' => 'Debloque le sort Inferno — devastation totale',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'inferno']],
+                'requirements' => ['pyro_rang3_1', 'pyro_rang3_2'],
+            ],
+            'pyro_rang4_2' => [
+                'title' => 'Souffle du dragon',
+                'slug' => 'pyro-rang4-2',
+                'description' => 'Debloque le sort Souffle du dragon (AoE)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'dragon-breath']],
+                'requirements' => ['pyro_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'pyro_rang5_1' => [
+                'title' => 'Eruption volcanique',
+                'slug' => 'pyro-rang5-1',
+                'description' => 'Debloque le sort ultime Eruption volcanique',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'volcanic-eruption']],
+                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // SOLDAT (metal) — 4 skills existants conserves
+    // =========================================================================
+    private function getSoldierSkills(): array
+    {
+        return [
             'soldier_apprentice' => [
                 'title' => 'Apprenti soldat',
                 'slug' => 'soldier-apprentice',
@@ -186,10 +275,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['combat' => ['spell_slug' => 'blade-dance']],
                 'requirements' => ['soldier_materia_1', 'soldier_damage_1'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // SOIGNEUR — Soin mineur > Regeneration > Benediction
-            // =====================================================
+    // =========================================================================
+    // GUERISSEUR (eau) — 4 skills existants conserves
+    // =========================================================================
+    private function getHealerSkills(): array
+    {
+        return [
             'healer_materia_1' => [
                 'title' => 'Apprenti soigneur',
                 'slug' => 'healer-materia-1',
@@ -225,10 +319,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['combat' => ['spell_slug' => 'divine-blessing']],
                 'requirements' => ['healer_materia_2'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // DEFENSEUR — Parade > Bouclier magique > Mur de fer
-            // =====================================================
+    // =========================================================================
+    // DEFENSEUR (terre) — 4 skills existants conserves
+    // =========================================================================
+    private function getDefenderSkills(): array
+    {
+        return [
             'defender_materia_1' => [
                 'title' => 'Apprenti defenseur',
                 'slug' => 'defender-materia-1',
@@ -264,16 +363,21 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['combat' => ['spell_slug' => 'stone-wall']],
                 'requirements' => ['defender_materia_2'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // NECROMANCIEN — Drain de vie > Malediction > Moisson sombre
-            // =====================================================
+    // =========================================================================
+    // NECROMANCIEN (ombre) — adapte de 'necro' vers 'necromancer'
+    // =========================================================================
+    private function getNecromancerSkills(): array
+    {
+        return [
             'necro_materia_1' => [
-                'title' => 'Apprenti necro',
+                'title' => 'Apprenti necromancien',
                 'slug' => 'necro-materia-1',
                 'description' => 'Debloque le sort Drain de vie',
                 'requiredPoints' => 0,
-                'domain' => 'necro',
+                'domain' => 'necromancer',
                 'actions' => ['combat' => ['spell_slug' => 'soul-drain']],
             ],
             'necro_damage_1' => [
@@ -281,7 +385,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'necro-damage-1',
                 'description' => 'Augmente les degats des sorts de mort',
                 'requiredPoints' => 10,
-                'domain' => 'necro',
+                'domain' => 'necromancer',
                 'damage' => 1,
                 'requirements' => ['necro_materia_1'],
             ],
@@ -290,7 +394,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'necro-materia-2',
                 'description' => 'Debloque le sort Malediction (poison)',
                 'requiredPoints' => 20,
-                'domain' => 'necro',
+                'domain' => 'necromancer',
                 'actions' => ['combat' => ['spell_slug' => 'plague-strike']],
                 'requirements' => ['necro_damage_1'],
             ],
@@ -299,14 +403,19 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'necro-materia-3',
                 'description' => 'Debloque la Moisson sombre — drain massif',
                 'requiredPoints' => 30,
-                'domain' => 'necro',
+                'domain' => 'necromancer',
                 'actions' => ['combat' => ['spell_slug' => 'dark-harvest']],
                 'requirements' => ['necro_materia_2'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // DRUIDE — Liane > Empoisonnement > Appel de la foret
-            // =====================================================
+    // =========================================================================
+    // DRUIDE (bete) — 4 skills existants conserves
+    // =========================================================================
+    private function getDruidSkills(): array
+    {
+        return [
             'druid_materia_1' => [
                 'title' => 'Apprenti druide',
                 'slug' => 'druid-materia-1',
@@ -342,49 +451,59 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['combat' => ['spell_slug' => 'nature-wrath']],
                 'requirements' => ['druid_materia_2'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // MAGE BLANC — Lumiere > Purification > Jugement sacre
-            // =====================================================
-            'white_wizard_materia_1' => [
-                'title' => 'Apprenti mage blanc',
-                'slug' => 'white-wizard-materia-1',
-                'description' => 'Debloque le sort Lumiere',
+    // =========================================================================
+    // FOUDROMANCIEN (air) — remplace white_wizard
+    // =========================================================================
+    private function getStormcallerSkills(): array
+    {
+        return [
+            'storm_materia_1' => [
+                'title' => 'Apprenti foudromancien',
+                'slug' => 'storm-materia-1',
+                'description' => 'Debloque le sort Lame d\'air',
                 'requiredPoints' => 0,
-                'domain' => 'white_wizard',
-                'actions' => ['combat' => ['spell_slug' => 'holy-light']],
+                'domain' => 'stormcaller',
+                'actions' => ['combat' => ['spell_slug' => 'wind-lame']],
             ],
-            'white_wizard_hit_1' => [
-                'title' => 'Eclat divin',
-                'slug' => 'white-wizard-hit-1',
+            'storm_hit_1' => [
+                'title' => 'Precision du vent',
+                'slug' => 'storm-hit-1',
                 'description' => 'Augmente la precision des sorts',
                 'requiredPoints' => 10,
-                'domain' => 'white_wizard',
+                'domain' => 'stormcaller',
                 'hit' => 2,
-                'requirements' => ['white_wizard_materia_1'],
+                'requirements' => ['storm_materia_1'],
             ],
-            'white_wizard_materia_2' => [
-                'title' => 'Purification',
-                'slug' => 'white-wizard-materia-2',
-                'description' => 'Debloque le sort Purification',
+            'storm_materia_2' => [
+                'title' => 'Tornade',
+                'slug' => 'storm-materia-2',
+                'description' => 'Debloque le sort Tornade',
                 'requiredPoints' => 20,
-                'domain' => 'white_wizard',
-                'actions' => ['combat' => ['spell_slug' => 'purification']],
-                'requirements' => ['white_wizard_hit_1'],
+                'domain' => 'stormcaller',
+                'actions' => ['combat' => ['spell_slug' => 'tornado']],
+                'requirements' => ['storm_hit_1'],
             ],
-            'white_wizard_materia_3' => [
-                'title' => 'Jugement sacre',
-                'slug' => 'white-wizard-materia-3',
-                'description' => 'Debloque le Jugement sacre — sort ultime',
+            'storm_materia_3' => [
+                'title' => 'Ouragan',
+                'slug' => 'storm-materia-3',
+                'description' => 'Debloque le sort Ouragan — sort ultime',
                 'requiredPoints' => 30,
-                'domain' => 'white_wizard',
-                'actions' => ['combat' => ['spell_slug' => 'divine-intervention']],
-                'requirements' => ['white_wizard_materia_2'],
+                'domain' => 'stormcaller',
+                'actions' => ['combat' => ['spell_slug' => 'hurricane']],
+                'requirements' => ['storm_materia_2'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // MINEUR (inchange)
-            // =====================================================
+    // =========================================================================
+    // MINEUR (terre/recolte) — skills existants conserves
+    // =========================================================================
+    private function getMinerSkills(): array
+    {
+        return [
             'miner_ruby_xs' => [
                 'slug' => 'miner-ruby-xs',
                 'title' => 'Minage du ruby debutant',
@@ -447,10 +566,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => 'miner',
                 'requirements' => ['miner_iron_xs'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // HERBORISTE (inchange)
-            // =====================================================
+    // =========================================================================
+    // HERBORISTE (bete/recolte) — skills existants conserves
+    // =========================================================================
+    private function getHerbalistSkills(): array
+    {
+        return [
             'herbalist_dandelion' => [
                 'slug' => 'herbalist-dandelion-xs',
                 'title' => 'Recolte de pissenlit',
