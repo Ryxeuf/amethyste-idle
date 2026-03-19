@@ -88,6 +88,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     {
         return array_merge(
             $this->getPyromancySkills(),
+            $this->getBerserkerSkills(),
+            $this->getArtificerSkills(),
             $this->getSoldierSkills(),
             $this->getHealerSkills(),
             $this->getDefenderSkills(),
@@ -230,6 +232,278 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['combat' => ['spell_slug' => 'volcanic-eruption']],
                 'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // BERSERKER (feu) — 15 skills, rage et CaC devastateur
+    // =========================================================================
+    private function getBerserkerSkills(): array
+    {
+        $d = 'berserker';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'berserk_apprenti_1' => [
+                'title' => 'Apprenti berserker',
+                'slug' => 'berserk-apprenti-1',
+                'description' => 'Debloque le sort Flamme de rage',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'rage-flame']],
+            ],
+            'berserk_apprenti_2' => [
+                'title' => 'Instinct de combat',
+                'slug' => 'berserk-apprenti-2',
+                'description' => 'Debloque le sort Toucher brulant',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'burning-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'berserk_rang2_1' => [
+                'title' => 'Brutalite',
+                'slug' => 'berserk-rang2-1',
+                'description' => 'Augmente les degats physiques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['berserk_apprenti_1'],
+            ],
+            'berserk_rang2_2' => [
+                'title' => 'Coups sauvages',
+                'slug' => 'berserk-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['berserk_apprenti_1'],
+            ],
+            'berserk_rang2_3' => [
+                'title' => 'Vague de chaleur',
+                'slug' => 'berserk-rang2-3',
+                'description' => 'Debloque le sort Vague de chaleur',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'heat-wave']],
+                'requirements' => ['berserk_apprenti_2'],
+            ],
+            'berserk_rang2_4' => [
+                'title' => 'Peau epaisse',
+                'slug' => 'berserk-rang2-4',
+                'description' => 'Augmente les points de vie',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['berserk_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'berserk_rang3_1' => [
+                'title' => 'Charge enflammee',
+                'slug' => 'berserk-rang3-1',
+                'description' => 'Debloque le sort Charge enflammee',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'berserk-charge']],
+                'requirements' => ['berserk_rang2_1', 'berserk_rang2_2'],
+            ],
+            'berserk_rang3_2' => [
+                'title' => 'Combustion',
+                'slug' => 'berserk-rang3-2',
+                'description' => 'Debloque le sort Combustion',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'combustion']],
+                'requirements' => ['berserk_rang2_3'],
+            ],
+            'berserk_rang3_3' => [
+                'title' => 'Rage interieure',
+                'slug' => 'berserk-rang3-3',
+                'description' => 'Augmente les degats et le critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['berserk_rang2_4'],
+            ],
+            'berserk_rang3_4' => [
+                'title' => 'Fouet de feu',
+                'slug' => 'berserk-rang3-4',
+                'description' => 'Debloque le sort Fouet de feu',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fire-whip']],
+                'requirements' => ['berserk_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'berserk_rang4_1' => [
+                'title' => 'Frappe de furie',
+                'slug' => 'berserk-rang4-1',
+                'description' => 'Debloque le sort Frappe de furie — degats devastateurs',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fury-strike']],
+                'requirements' => ['berserk_rang3_1', 'berserk_rang3_2'],
+            ],
+            'berserk_rang4_2' => [
+                'title' => 'Frappe meteorique',
+                'slug' => 'berserk-rang4-2',
+                'description' => 'Debloque le sort Frappe meteorique',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'meteor-strike']],
+                'requirements' => ['berserk_rang3_3', 'berserk_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'berserk_rang5_1' => [
+                'title' => 'Furie sanguinaire',
+                'slug' => 'berserk-rang5-1',
+                'description' => 'Debloque le sort ultime Furie sanguinaire',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'blood-fury']],
+                'requirements' => ['berserk_rang4_1', 'berserk_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ARTIFICIER (feu) — 15 skills, pieges et explosifs
+    // =========================================================================
+    private function getArtificerSkills(): array
+    {
+        $d = 'artificer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'artif_apprenti_1' => [
+                'title' => 'Apprenti artificier',
+                'slug' => 'artif-apprenti-1',
+                'description' => 'Debloque le sort Flammeche',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'flame']],
+            ],
+            'artif_apprenti_2' => [
+                'title' => 'Bricoleur',
+                'slug' => 'artif-apprenti-2',
+                'description' => 'Debloque le sort Bouclier d\'etincelles',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'ember-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'artif_rang2_1' => [
+                'title' => 'Piege incendiaire',
+                'slug' => 'artif-rang2-1',
+                'description' => 'Debloque le sort Piege incendiaire',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fire-trap']],
+                'requirements' => ['artif_apprenti_1'],
+            ],
+            'artif_rang2_2' => [
+                'title' => 'Precision mecanique',
+                'slug' => 'artif-rang2-2',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['artif_apprenti_1'],
+            ],
+            'artif_rang2_3' => [
+                'title' => 'Bombe flash',
+                'slug' => 'artif-rang2-3',
+                'description' => 'Debloque le sort Bombe flash (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'flash-bomb']],
+                'requirements' => ['artif_apprenti_2'],
+            ],
+            'artif_rang2_4' => [
+                'title' => 'Blindage',
+                'slug' => 'artif-rang2-4',
+                'description' => 'Augmente les points de vie',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['artif_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'artif_rang3_1' => [
+                'title' => 'Mine explosive',
+                'slug' => 'artif-rang3-1',
+                'description' => 'Debloque le sort Mine explosive (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'explosive-mine']],
+                'requirements' => ['artif_rang2_1', 'artif_rang2_2'],
+            ],
+            'artif_rang3_2' => [
+                'title' => 'Nova de feu',
+                'slug' => 'artif-rang3-2',
+                'description' => 'Debloque le sort Nova de feu',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fire-nova']],
+                'requirements' => ['artif_rang2_3'],
+            ],
+            'artif_rang3_3' => [
+                'title' => 'Degats amplifies',
+                'slug' => 'artif-rang3-3',
+                'description' => 'Augmente les degats des pieges',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['artif_rang2_4'],
+            ],
+            'artif_rang3_4' => [
+                'title' => 'Mur de feu',
+                'slug' => 'artif-rang3-4',
+                'description' => 'Debloque le sort Mur de feu',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'fire-wall']],
+                'requirements' => ['artif_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'artif_rang4_1' => [
+                'title' => 'Pluie de flammes',
+                'slug' => 'artif-rang4-1',
+                'description' => 'Debloque le sort Pluie de flammes (AoE)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'flame-rain']],
+                'requirements' => ['artif_rang3_1', 'artif_rang3_2'],
+            ],
+            'artif_rang4_2' => [
+                'title' => 'Souffle du dragon',
+                'slug' => 'artif-rang4-2',
+                'description' => 'Debloque le sort Souffle du dragon',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'dragon-breath']],
+                'requirements' => ['artif_rang3_3', 'artif_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'artif_rang5_1' => [
+                'title' => 'Barrage d\'artillerie',
+                'slug' => 'artif-rang5-1',
+                'description' => 'Debloque le sort ultime Barrage d\'artillerie',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'artillery-barrage']],
+                'requirements' => ['artif_rang4_1', 'artif_rang4_2'],
             ],
         ];
     }

@@ -219,10 +219,10 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.B — Arbres de talent Feu (Berserker + Artificier) [S] → PR #6b
+## Phase 6.B — Arbres de talent Feu (Berserker + Artificier) [S] ✅ *Terminée* → PR #6b
 
-- [ ] `SkillFixtures::getBerserkerSkills()` — 15 compétences (Rage → Furie sanguinaire)
-- [ ] `SkillFixtures::getArtificerSkills()` — 15 compétences (Piège incendiaire → Barrage d'artillerie)
+- [x] `SkillFixtures::getBerserkerSkills()` — 15 compétences (Rage → Furie sanguinaire)
+- [x] `SkillFixtures::getArtificerSkills()` — 15 compétences (Piège incendiaire → Barrage d'artillerie)
 
 ---
 
@@ -467,7 +467,7 @@ Phase 13 (Documentation finale)
 | 4 | StatusEffect hybride | M | Non | ✅ |
 | 5 | Skills multi-domaines | L | **OUI** | ✅ |
 | 6.A | Infrastructure 32 domaines + Pyromancien modèle | M | Non | #6 ✅ |
-| 6.B | Arbres de talent Feu (Berserker, Artificier) | S | Non | #6b |
+| 6.B | Arbres de talent Feu (Berserker, Artificier) | S | Non | #6b ✅ |
 | 6.C | Arbres de talent Eau (Hydro, Guérisseur, Marémancien) | S | Non | #6c |
 | 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d |
 | 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e |
