@@ -10,7 +10,8 @@ use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
-use App\GameEngine\Item\ItemUtils;
+use App\GameEngine\Fight\Calculator\CriticalCalculator;
+use App\GameEngine\Fight\Calculator\DamageCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -21,6 +22,8 @@ class SpellApplicator
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatLogger $combatLogger,
+        private readonly DamageCalculator $damageCalculator,
+        private readonly CriticalCalculator $criticalCalculator,
     ) {
     }
 
@@ -32,16 +35,14 @@ class SpellApplicator
         $fight = $options['fight'] ?? null;
 
         $messages = [];
-        $isCritical = false;
 
-        $heal = $spell->getHeal() !== null && $spell->getHeal() !== 0 ? $domainHeal + $spell->getHeal() : 0;
-        $damage = $spell->getDamage() !== null && $spell->getDamage() !== 0 ? $domainDamage + $spell->getDamage() : 0;
+        $damage = $this->damageCalculator->computeBaseDamage($spell, $domainDamage, $target);
+        $heal = $this->damageCalculator->computeBaseHeal($spell, $domainHeal, $target);
 
         // Critical hit check
-        if (ItemUtils::isActionCritical($spell->getCritical() + $domainCritical)) {
-            $heal = ItemUtils::getCriticalModified($heal);
-            $damage = ItemUtils::getCriticalModified($damage);
-            $isCritical = true;
+        if ($this->criticalCalculator->isCritical($spell, $domainCritical)) {
+            $heal = $this->criticalCalculator->applyCriticalModifier($heal);
+            $damage = $this->criticalCalculator->applyCriticalModifier($damage);
             $messages[] = 'Coup critique !';
             if ($fight !== null) {
                 $this->combatLogger->logCritical($fight, $sender);
@@ -50,39 +51,36 @@ class SpellApplicator
 
         // Elemental resistance (reduce damage if target is a mob with resistances)
         if ($damage > 0 && $target instanceof Mob) {
-            $resistance = $target->getMonster()->getElementalResistance($spell->getElement());
-            if ($resistance !== 0.0) {
-                $damage = (int) round($damage * (1.0 - $resistance));
-                $damage = max(0, $damage);
-                if ($resistance > 0) {
-                    $messages[] = sprintf('%s resiste a %s !', $target->getName(), $spell->getElement());
-                    if ($fight !== null) {
-                        $this->combatLogger->logResist($fight, $target, $spell->getElement());
-                    }
-                } elseif ($resistance < 0) {
-                    $messages[] = sprintf('%s est faible face a %s !', $target->getName(), $spell->getElement());
+            $result = $this->damageCalculator->applyElementalResistance($damage, $spell, $target);
+            $damage = $result['damage'];
+            if ($result['resisted']) {
+                $messages[] = sprintf('%s resiste a %s !', $target->getName(), $spell->getElement());
+                if ($fight !== null) {
+                    $this->combatLogger->logResist($fight, $target, $spell->getElement());
                 }
+            } elseif ($result['weak']) {
+                $messages[] = sprintf('%s est faible face a %s !', $target->getName(), $spell->getElement());
             }
         }
 
         // Berserk damage modifier on sender
         if ($fight !== null && $this->statusEffectManager->isCharacterBerserk($fight, $sender)) {
-            $damage = (int) round($damage * 1.5);
+            $damage = $this->damageCalculator->applyBerserkModifier($damage);
         }
 
         // Burn damage reduction on sender
         if ($fight !== null && $this->hasBurnEffect($fight, $sender)) {
-            $damage = (int) round($damage * 0.75);
+            $damage = $this->damageCalculator->applyBurnReduction($damage);
         }
 
         // Shield absorption on target
         if ($damage > 0 && $fight !== null) {
             $shieldAbsorb = $this->getShieldAbsorb($fight, $target);
             if ($shieldAbsorb > 0) {
-                $absorbed = min($damage, $shieldAbsorb);
-                $damage -= $absorbed;
-                $messages[] = sprintf('Le bouclier absorbe %d degats !', $absorbed);
-                $this->combatLogger->logShield($fight, $target, $absorbed);
+                $result = $this->damageCalculator->applyShieldAbsorption($damage, $shieldAbsorb);
+                $damage = $result['damage'];
+                $messages[] = sprintf('Le bouclier absorbe %d degats !', $result['absorbed']);
+                $this->combatLogger->logShield($fight, $target, $result['absorbed']);
             }
         }
 

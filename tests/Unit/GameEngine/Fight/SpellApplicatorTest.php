@@ -11,6 +11,8 @@ use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
+use App\GameEngine\Fight\Calculator\CriticalCalculator;
+use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -49,6 +51,8 @@ class SpellApplicatorTest extends TestCase
             $this->eventDispatcher,
             $this->statusEffectManager,
             $this->combatLogger,
+            new DamageCalculator(),
+            new CriticalCalculator(),
         );
     }
 
@@ -63,6 +67,7 @@ class SpellApplicatorTest extends TestCase
         string $element = Spell::ELEMENT_NONE,
         ?string $statusEffectSlug = null,
         string $name = 'Sort de test',
+        string $valueType = 'fixed',
     ): Spell&MockObject {
         $spell = $this->createMock(Spell::class);
         $spell->method('getDamage')->willReturn($damage === 0 ? null : $damage);
@@ -72,6 +77,8 @@ class SpellApplicatorTest extends TestCase
         $spell->method('getElement')->willReturn($element);
         $spell->method('getStatusEffectSlug')->willReturn($statusEffectSlug);
         $spell->method('getName')->willReturn($name);
+        $spell->method('isPercent')->willReturn($valueType === 'percent');
+        $spell->method('getLevel')->willReturn(1);
 
         return $spell;
     }
@@ -255,6 +262,8 @@ class SpellApplicatorTest extends TestCase
             $this->eventDispatcher,
             $this->statusEffectManager,
             $this->combatLogger,
+            new DamageCalculator(),
+            new CriticalCalculator(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -299,6 +308,8 @@ class SpellApplicatorTest extends TestCase
             $this->eventDispatcher,
             $this->statusEffectManager,
             $this->combatLogger,
+            new DamageCalculator(),
+            new CriticalCalculator(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -343,6 +354,8 @@ class SpellApplicatorTest extends TestCase
             $this->eventDispatcher,
             $this->statusEffectManager,
             $this->combatLogger,
+            new DamageCalculator(),
+            new CriticalCalculator(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -385,6 +398,8 @@ class SpellApplicatorTest extends TestCase
             $this->eventDispatcher,
             $this->statusEffectManager,
             $this->combatLogger,
+            new DamageCalculator(),
+            new CriticalCalculator(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -517,6 +532,36 @@ class SpellApplicatorTest extends TestCase
         $this->spellApplicator->apply($spell, $sender, $target);
 
         $this->assertSame(80, $target->getLife());
+    }
+
+    public function testPercentDamageUsesTargetMaxLife(): void
+    {
+        // Sort avec 10% de degats sur cible avec 200 maxLife => 20 degats
+        $spell = $this->createSpell(damage: 10, critical: 0, valueType: 'percent');
+        $sender = $this->createPlayerMock();
+        $target = $this->createMobMock(life: 100, maxLife: 200);
+
+        $monster = $this->createMock(Monster::class);
+        $monster->method('getElementalResistance')->willReturn(0.0);
+        $target->method('getMonster')->willReturn($monster);
+
+        $this->spellApplicator->apply($spell, $sender, $target);
+
+        // 10% de 200 = 20 degats => 100 - 20 = 80
+        $this->assertSame(80, $target->getLife());
+    }
+
+    public function testPercentHealUsesTargetMaxLife(): void
+    {
+        // Sort avec 10% de soin sur cible avec 200 maxLife => 20 soin
+        $spell = $this->createSpell(heal: 10, critical: 0, valueType: 'percent');
+        $sender = $this->createPlayerMock();
+        $target = $this->createPlayerMock(life: 50, maxLife: 200);
+
+        $this->spellApplicator->apply($spell, $sender, $target);
+
+        // 10% de 200 = 20 soin => 50 + 20 = 70
+        $this->assertSame(70, $target->getLife());
     }
 
     public function testApplyReturnsMessagesArray(): void
