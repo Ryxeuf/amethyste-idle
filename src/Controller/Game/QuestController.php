@@ -5,6 +5,7 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Quest;
+use App\Event\Game\QuestCompletedEvent;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\QuestTrackingFormater;
 use App\Helper\PlayerHelper;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/game/quests')]
 class QuestController extends AbstractController
@@ -22,6 +24,7 @@ class QuestController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerQuestHelper $playerQuestHelper,
         private readonly QuestTrackingFormater $questTrackingFormater,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -154,6 +157,8 @@ class QuestController extends AbstractController
         $this->entityManager->persist($completedQuest);
         $this->entityManager->persist($player);
         $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(new QuestCompletedEvent($player, $quest), QuestCompletedEvent::NAME);
 
         return new JsonResponse([
             'success' => true,
