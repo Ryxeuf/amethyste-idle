@@ -17,7 +17,7 @@ class CombatCapacityResolver
      * Get available combat spells from equipped materia.
      *
      * @return array<string, array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool}>
-     *         Keyed by spell slug, deduplicated (best match wins)
+     *                                                                                                 Keyed by spell slug, deduplicated (best match wins)
      */
     public function getEquippedMateriaSpells(Player $player): array
     {

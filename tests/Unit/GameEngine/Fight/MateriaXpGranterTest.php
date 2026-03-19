@@ -10,6 +10,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
+use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use App\GameEngine\Fight\MateriaXpGranter;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -63,10 +64,11 @@ class MateriaXpGranterTest extends TestCase
     /**
      * Cree un PlayerItem materia mock qui attend recevoir de l'XP.
      */
-    private function createMateriaItem(int $expectedXp = 0): PlayerItem&MockObject
+    private function createMateriaItem(int $expectedXp = 0, Element $element = Element::Fire): PlayerItem&MockObject
     {
         $genericItem = $this->createMock(Item::class);
         $genericItem->method('getName')->willReturn('Materia Feu');
+        $genericItem->method('getElement')->willReturn($element);
 
         $materia = $this->createMock(PlayerItem::class);
         $materia->method('isMateria')->willReturn(true);
@@ -86,10 +88,11 @@ class MateriaXpGranterTest extends TestCase
     /**
      * Cree un Slot mock contenant un item (ou null).
      */
-    private function createSlot(?PlayerItem $materia = null): Slot&MockObject
+    private function createSlot(?PlayerItem $materia = null, ?Element $element = null): Slot&MockObject
     {
         $slot = $this->createMock(Slot::class);
         $slot->method('getItemSet')->willReturn($materia);
+        $slot->method('getElement')->willReturn($element);
 
         return $slot;
     }
