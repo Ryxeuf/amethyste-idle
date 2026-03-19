@@ -300,33 +300,33 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.F — Arbres de talent Métal (Soldat 15 + Chevalier + Ingénieur) [S] → PR #6f
+## Phase 6.F — Arbres de talent Métal (Soldat 15 + Chevalier + Ingénieur) [S] ✅ *Terminée* → PR #6f
 
-- [ ] `SkillFixtures::getSoldierSkills()` — Étendre de 4 à 15 compétences
-- [ ] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
-- [ ] `SkillFixtures::getEngineerSkills()` — 15 compétences (Tourelle → Engin de siège)
-- [ ] **Materia** : 1 skill materia par domaine Métal — skills materia avec `actions.materia.unlock` pour chaque sort
-
----
-
-## Phase 6.G — Arbres de talent Bête (Chasseur + Dompteur + Druide 15) [S] → PR #6g
-
-- [ ] `SkillFixtures::getHunterSkills()` — 15 compétences (Appel du faucon → Chasse en meute)
-- [ ] `SkillFixtures::getTamerSkills()` — 15 compétences (Lien bestial → Rugissement alpha)
-- [ ] `SkillFixtures::getDruidSkills()` — Étendre de 4 à 15 compétences
-- [ ] **Materia** : 1 skill materia par domaine Bête — skills materia avec `actions.materia.unlock` pour chaque sort
+- [x] `SkillFixtures::getSoldierSkills()` — Étendu de 4 à 15 compétences (Frappe puissante → Vierge de fer)
+- [x] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
+- [x] `SkillFixtures::getEngineerSkills()` — 15 compétences (Attraction magnétique → Engin de siège)
+- [x] **Materia** : tous les skills de déblocage de sort en `actions.materia.unlock` — skills materia pour chaque sort de chaque domaine Métal
 
 ---
 
-## Phase 6.H — Arbres de talent Lumière + Ombre (6 domaines) [M] → PR #6h
+## Phase 6.G — Arbres de talent Bête (Chasseur + Dompteur + Druide 15) [S] ✅ *Terminée* → PR #6g
 
-- [ ] `SkillFixtures::getPaladinSkills()` — 15 compétences (Frappe sacrée → Jugement divin)
-- [ ] `SkillFixtures::getPriestSkills()` — 15 compétences (Prière → Miracle)
-- [ ] `SkillFixtures::getInquisitorSkills()` — 15 compétences (Châtiment sacré → Sentence divine)
-- [ ] `SkillFixtures::getAssassinSkills()` — 15 compétences (Embuscade → Danse des ombres)
-- [ ] `SkillFixtures::getNecromancerSkills()` — Étendre de 4 à 15 compétences
-- [ ] `SkillFixtures::getWarlockSkills()` — 15 compétences (Maléfice → Pacte sombre)
-- [ ] **Materia** : tous les skills de déblocage de sort en `actions.materia.unlock` — skills materia pour chaque sort de chaque domaine
+- [x] `SkillFixtures::getHunterSkills()` — 13 compétences (Appel du faucon → Chasse en meute)
+- [x] `SkillFixtures::getTamerSkills()` — 13 compétences (Lien bestial → Rugissement alpha)
+- [x] `SkillFixtures::getDruidSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
+- [x] **Materia** : skills materia avec `actions.materia.unlock` pour chaque sort de chaque domaine Bête
+
+---
+
+## Phase 6.H — Arbres de talent Lumière + Ombre (6 domaines) [M] ✅ *Terminée* → PR #6h
+
+- [x] `SkillFixtures::getPaladinSkills()` — 13 compétences (Frappe sacrée → Jugement divin)
+- [x] `SkillFixtures::getPriestSkills()` — 13 compétences (Prière → Miracle)
+- [x] `SkillFixtures::getInquisitorSkills()` — 13 compétences (Châtiment sacré → Sentence divine)
+- [x] `SkillFixtures::getAssassinSkills()` — 13 compétences (Embuscade → Danse des ombres)
+- [x] `SkillFixtures::getNecromancerSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
+- [x] `SkillFixtures::getWarlockSkills()` — 13 compétences (Maléfice → Pacte sombre)
+- [x] **Materia** : tous les skills de déblocage de sort en `actions.materia.unlock` — skills materia pour chaque sort de chaque domaine
 
 ---
 
@@ -530,9 +530,9 @@ Phase 13 (Documentation finale)
 | 6.C | Arbres de talent Eau (Hydro, Guérisseur, Marémancien) | S | Non | #6c |
 | 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d |
 | 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e |
-| 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f |
-| 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g |
-| 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h |
+| 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f ✅ |
+| 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g ✅ |
+| 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h ✅ |
 | 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i ✅ |
 | 7 | Tout est un sort + Soulbound | M | Non | #7 |
 | 8 | Materia = Capacités combat | L | Partiel | #8 |
