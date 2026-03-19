@@ -226,11 +226,11 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.C — Arbres de talent Eau (Hydromancien + Guérisseur 15 + Marémancien) [S] → PR #6c
+## Phase 6.C — Arbres de talent Eau (Hydromancien + Guérisseur 15 + Marémancien) [S] ✅ *Terminée* → PR #6c
 
-- [ ] `SkillFixtures::getHydromancerSkills()` — 15 compétences (Jet d'eau → Tsunami)
-- [ ] `SkillFixtures::getHealerSkills()` — Étendre de 4 à 15 compétences
-- [ ] `SkillFixtures::getTidecallerSkills()` — 15 compétences (Marée montante → Maelström)
+- [x] `SkillFixtures::getHydromancerSkills()` — 13 compétences (Jet d'eau → Tsunami)
+- [x] `SkillFixtures::getHealerSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
+- [x] `SkillFixtures::getTidecallerSkills()` — 13 compétences (Marée montante → Maelström)
 
 ---
 

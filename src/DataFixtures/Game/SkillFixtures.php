@@ -90,8 +90,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getPyromancySkills(),
             $this->getBerserkerSkills(),
             $this->getArtificerSkills(),
-            $this->getSoldierSkills(),
+            $this->getHydromancerSkills(),
             $this->getHealerSkills(),
+            $this->getTidecallerSkills(),
+            $this->getSoldierSkills(),
             $this->getDefenderSkills(),
             $this->getNecromancerSkills(),
             $this->getDruidSkills(),
@@ -553,45 +555,406 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // GUERISSEUR (eau) — 4 skills existants conserves
+    // HYDROMANCIEN (eau) — 13 skills, mage offensif eau/glace
+    // =========================================================================
+    private function getHydromancerSkills(): array
+    {
+        $d = 'hydromancer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'hydro_apprenti_1' => [
+                'title' => 'Apprenti hydromancien',
+                'slug' => 'hydro-apprenti-1',
+                'description' => 'Debloque le sort Jet d\'eau',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'water-jet']],
+            ],
+            'hydro_apprenti_2' => [
+                'title' => 'Initiation au givre',
+                'slug' => 'hydro-apprenti-2',
+                'description' => 'Debloque le sort Toucher glace',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'frozen-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'hydro_rang2_1' => [
+                'title' => 'Efficacite de l\'eau',
+                'slug' => 'hydro-rang2-1',
+                'description' => 'Augmente les degats des sorts d\'eau',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['hydro_apprenti_1'],
+            ],
+            'hydro_rang2_2' => [
+                'title' => 'Points faibles',
+                'slug' => 'hydro-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['hydro_apprenti_1'],
+            ],
+            'hydro_rang2_3' => [
+                'title' => 'Trait de givre',
+                'slug' => 'hydro-rang2-3',
+                'description' => 'Debloque le sort Trait de givre (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'frost-bolt']],
+                'requirements' => ['hydro_apprenti_2'],
+            ],
+            'hydro_rang2_4' => [
+                'title' => 'Lance de glace',
+                'slug' => 'hydro-rang2-4',
+                'description' => 'Debloque le sort Lance de glace',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'ice-lance']],
+                'requirements' => ['hydro_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'hydro_rang3_1' => [
+                'title' => 'Tempete de glace',
+                'slug' => 'hydro-rang3-1',
+                'description' => 'Debloque le sort Tempete de glace (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'ice-storm']],
+                'requirements' => ['hydro_rang2_1', 'hydro_rang2_2'],
+            ],
+            'hydro_rang3_2' => [
+                'title' => 'Prison d\'eau',
+                'slug' => 'hydro-rang3-2',
+                'description' => 'Debloque le sort Prison d\'eau (paralysie)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'water-prison']],
+                'requirements' => ['hydro_rang2_3'],
+            ],
+            'hydro_rang3_3' => [
+                'title' => 'Precision glaciale',
+                'slug' => 'hydro-rang3-3',
+                'description' => 'Augmente la precision des sorts d\'eau',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['hydro_rang2_4'],
+            ],
+            'hydro_rang3_4' => [
+                'title' => 'Raz-de-maree',
+                'slug' => 'hydro-rang3-4',
+                'description' => 'Debloque le sort Raz-de-maree (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'tidal-wave']],
+                'requirements' => ['hydro_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'hydro_rang4_1' => [
+                'title' => 'Maelstrom',
+                'slug' => 'hydro-rang4-1',
+                'description' => 'Debloque le sort Maelstrom — tourbillon devastateur',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'maelstrom']],
+                'requirements' => ['hydro_rang3_1', 'hydro_rang3_2'],
+            ],
+            'hydro_rang4_2' => [
+                'title' => 'Bulle protectrice',
+                'slug' => 'hydro-rang4-2',
+                'description' => 'Debloque le sort Bulle protectrice',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'bubble-shield']],
+                'requirements' => ['hydro_rang3_3', 'hydro_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'hydro_rang5_1' => [
+                'title' => 'Tsunami',
+                'slug' => 'hydro-rang5-1',
+                'description' => 'Debloque le sort ultime Tsunami',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'tsunami']],
+                'requirements' => ['hydro_rang4_1', 'hydro_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // GUERISSEUR (eau) — 13 skills, soigneur complet
     // =========================================================================
     private function getHealerSkills(): array
     {
+        $d = 'healer';
+
         return [
+            // Rang 1 (0 pts) — 2 skills d'entree
             'healer_materia_1' => [
                 'title' => 'Apprenti soigneur',
                 'slug' => 'healer-materia-1',
                 'description' => 'Debloque le sort Soin mineur',
                 'requiredPoints' => 0,
-                'domain' => 'healer',
+                'domain' => $d,
                 'actions' => ['combat' => ['spell_slug' => 'life-heal']],
             ],
+            'healer_apprenti_2' => [
+                'title' => 'Initiation aquatique',
+                'slug' => 'healer-apprenti-2',
+                'description' => 'Debloque le sort Soin aquatique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'water-heal']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
             'healer_heal_1' => [
                 'title' => 'Main guerisseuse',
                 'slug' => 'healer-heal-1',
                 'description' => 'Augmente la puissance des soins',
                 'requiredPoints' => 10,
-                'domain' => 'healer',
+                'domain' => $d,
                 'heal' => 1,
                 'requirements' => ['healer_materia_1'],
             ],
+            'healer_rang2_2' => [
+                'title' => 'Concentration',
+                'slug' => 'healer-rang2-2',
+                'description' => 'Augmente la precision des soins',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['healer_materia_1'],
+            ],
+            'healer_rang2_3' => [
+                'title' => 'Vague de guerison',
+                'slug' => 'healer-rang2-3',
+                'description' => 'Debloque le sort Vague de guerison',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'healing-wave']],
+                'requirements' => ['healer_apprenti_2'],
+            ],
+            'healer_rang2_4' => [
+                'title' => 'Vitalite',
+                'slug' => 'healer-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['healer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
             'healer_materia_2' => [
                 'title' => 'Regeneration',
                 'slug' => 'healer-materia-2',
                 'description' => 'Debloque le sort Regeneration (HoT)',
-                'requiredPoints' => 20,
-                'domain' => 'healer',
+                'requiredPoints' => 25,
+                'domain' => $d,
                 'actions' => ['combat' => ['spell_slug' => 'rejuvenation']],
-                'requirements' => ['healer_heal_1'],
+                'requirements' => ['healer_heal_1', 'healer_rang2_2'],
             ],
+            'healer_rang3_2' => [
+                'title' => 'Voile de brume',
+                'slug' => 'healer-rang3-2',
+                'description' => 'Debloque le sort Voile de brume (soin + bouclier)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'mist-veil']],
+                'requirements' => ['healer_rang2_3'],
+            ],
+            'healer_rang3_3' => [
+                'title' => 'Afflux de vitalite',
+                'slug' => 'healer-rang3-3',
+                'description' => 'Debloque le sort Afflux de vitalite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'vitality-surge']],
+                'requirements' => ['healer_rang2_4'],
+            ],
+            'healer_rang3_4' => [
+                'title' => 'Bouclier de vie',
+                'slug' => 'healer-rang3-4',
+                'description' => 'Debloque le sort Bouclier de vie',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'life-shield']],
+                'requirements' => ['healer_materia_2'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
             'healer_materia_3' => [
                 'title' => 'Benediction divine',
                 'slug' => 'healer-materia-3',
                 'description' => 'Debloque la Benediction divine — soin puissant',
-                'requiredPoints' => 30,
-                'domain' => 'healer',
+                'requiredPoints' => 60,
+                'domain' => $d,
                 'actions' => ['combat' => ['spell_slug' => 'divine-blessing']],
-                'requirements' => ['healer_materia_2'],
+                'requirements' => ['healer_materia_2', 'healer_rang3_2'],
+            ],
+            'healer_rang4_2' => [
+                'title' => 'Benediction de l\'ocean',
+                'slug' => 'healer-rang4-2',
+                'description' => 'Debloque la Benediction de l\'ocean (regeneration)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'ocean-blessing']],
+                'requirements' => ['healer_rang3_3', 'healer_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'healer_rang5_1' => [
+                'title' => 'Benediction celeste',
+                'slug' => 'healer-rang5-1',
+                'description' => 'Debloque le sort ultime Benediction celeste',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'celestial-blessing']],
+                'requirements' => ['healer_materia_3', 'healer_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // MAREMANCIEN (eau) — 13 skills, maree et support hybride
+    // =========================================================================
+    private function getTidecallerSkills(): array
+    {
+        $d = 'tidecaller';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'tide_apprenti_1' => [
+                'title' => 'Apprenti maremancien',
+                'slug' => 'tide-apprenti-1',
+                'description' => 'Debloque le sort Maree montante',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'rising-tide']],
+            ],
+            'tide_apprenti_2' => [
+                'title' => 'Protection des flots',
+                'slug' => 'tide-apprenti-2',
+                'description' => 'Debloque le sort Bouclier aquatique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'aqua-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'tide_rang2_1' => [
+                'title' => 'Force des marees',
+                'slug' => 'tide-rang2-1',
+                'description' => 'Augmente les degats des sorts d\'eau',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['tide_apprenti_1'],
+            ],
+            'tide_rang2_2' => [
+                'title' => 'Torrent',
+                'slug' => 'tide-rang2-2',
+                'description' => 'Debloque le sort Torrent',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'torrent']],
+                'requirements' => ['tide_apprenti_1'],
+            ],
+            'tide_rang2_3' => [
+                'title' => 'Soin aquatique',
+                'slug' => 'tide-rang2-3',
+                'description' => 'Debloque le sort Soin aquatique',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'water-heal']],
+                'requirements' => ['tide_apprenti_2'],
+            ],
+            'tide_rang2_4' => [
+                'title' => 'Resilience marine',
+                'slug' => 'tide-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['tide_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'tide_rang3_1' => [
+                'title' => 'Raz-de-maree',
+                'slug' => 'tide-rang3-1',
+                'description' => 'Debloque le sort Raz-de-maree (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'tidal-wave']],
+                'requirements' => ['tide_rang2_1', 'tide_rang2_2'],
+            ],
+            'tide_rang3_2' => [
+                'title' => 'Voile de brume',
+                'slug' => 'tide-rang3-2',
+                'description' => 'Debloque le sort Voile de brume (soin + bouclier)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'mist-veil']],
+                'requirements' => ['tide_rang2_3'],
+            ],
+            'tide_rang3_3' => [
+                'title' => 'Guerison des eaux',
+                'slug' => 'tide-rang3-3',
+                'description' => 'Augmente la puissance des soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['tide_rang2_4'],
+            ],
+            'tide_rang3_4' => [
+                'title' => 'Prison d\'eau',
+                'slug' => 'tide-rang3-4',
+                'description' => 'Debloque le sort Prison d\'eau (paralysie)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'water-prison']],
+                'requirements' => ['tide_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'tide_rang4_1' => [
+                'title' => 'Tempete de glace',
+                'slug' => 'tide-rang4-1',
+                'description' => 'Debloque le sort Tempete de glace (AoE)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'ice-storm']],
+                'requirements' => ['tide_rang3_1', 'tide_rang3_2'],
+            ],
+            'tide_rang4_2' => [
+                'title' => 'Benediction de l\'ocean',
+                'slug' => 'tide-rang4-2',
+                'description' => 'Debloque la Benediction de l\'ocean (regeneration)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'ocean-blessing']],
+                'requirements' => ['tide_rang3_3', 'tide_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'tide_rang5_1' => [
+                'title' => 'Maelstrom',
+                'slug' => 'tide-rang5-1',
+                'description' => 'Debloque le sort ultime Maelstrom',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['combat' => ['spell_slug' => 'maelstrom']],
+                'requirements' => ['tide_rang4_1', 'tide_rang4_2'],
             ],
         ];
     }
