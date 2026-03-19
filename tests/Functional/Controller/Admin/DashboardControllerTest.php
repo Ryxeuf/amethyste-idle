@@ -3,9 +3,9 @@
 namespace App\Tests\Functional\Controller\Admin;
 
 use App\Controller\Admin\DashboardController;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -126,7 +126,7 @@ class DashboardControllerTest extends TestCase
         $repo->method('count')->willReturn(0);
 
         // Mock repository for AdminLog with its own query builder
-        $logQuery = $this->createMock(AbstractQuery::class);
+        $logQuery = $this->createMock(Query::class);
         $logQuery->method('getResult')->willReturn([]);
 
         $logQb = $this->createMock(QueryBuilder::class);
@@ -154,7 +154,7 @@ class DashboardControllerTest extends TestCase
         $queryBuilders = [];
 
         // 1. totalGils query builder
-        $gilsQuery = $this->createMock(AbstractQuery::class);
+        $gilsQuery = $this->createMock(Query::class);
         $gilsQuery->method('getSingleScalarResult')->willReturn(0);
         $gilsQb = $this->createMock(QueryBuilder::class);
         $gilsQb->method('select')->willReturnSelf();
@@ -163,7 +163,7 @@ class DashboardControllerTest extends TestCase
         $queryBuilders[] = $gilsQb;
 
         // 2. bannedPlayers query builder
-        $bannedQuery = $this->createMock(AbstractQuery::class);
+        $bannedQuery = $this->createMock(Query::class);
         $bannedQuery->method('getSingleScalarResult')->willReturn(0);
         $bannedQb = $this->createMock(QueryBuilder::class);
         $bannedQb->method('select')->willReturnSelf();
@@ -174,7 +174,7 @@ class DashboardControllerTest extends TestCase
 
         // 3-5. Zone stats query builders (pnj, mobs, players)
         foreach ([$pnjData, $mobData, $playerData] as $result) {
-            $query = $this->createMock(AbstractQuery::class);
+            $query = $this->createMock(Query::class);
             $query->method('getResult')->willReturn($result);
 
             $qb = $this->createMock(QueryBuilder::class);
