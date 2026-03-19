@@ -91,7 +91,7 @@ class CombatCapacityResolver
         $slotElement = $slot->getElement();
         $materiaElement = $materia->getGenericItem()->getElement();
 
-        if ($slotElement === null || $materiaElement === null) {
+        if ($slotElement === null) {
             return false;
         }
 
