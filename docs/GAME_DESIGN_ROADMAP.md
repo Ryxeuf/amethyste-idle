@@ -185,93 +185,111 @@ Le game design d'Amethyste-Idle évolue avec des règles structurantes : 8 élé
 
 ---
 
-## Phase 6 — 32 domaines + 15 compétences par domaine [XL] → PR #6
+## Phase 6 — Infrastructure 32 domaines [M] ✅ *Terminée* → PR #6
 
 **Problème** : 15 domaines avec 3-7 compétences → 32 domaines avec 15+ compétences chacun.
+**Approche** : Découpée en sous-phases (6.A = infra, 6.B-6.I = arbres de talent par élément).
 
-### Création des domaines (fixtures YAML)
-- **Modifier** `src/DataFixtures/DomainFixtures.php` — Ajouter les 17 nouveaux domaines combat + associer élément à chaque domaine
-- **Modifier** `src/Entity/Game/Domain.php` — Ajouter `element` (string, nullable) pour associer domaine ↔ élément
+### 6.A — Infrastructure ✅
+- [x] `src/Entity/Game/Domain.php` — Ajout champ `element` (string, nullable)
+- [x] `src/DataFixtures/DomainFixtures.php` — 32 domaines avec élément associé
+- [x] `src/DataFixtures/SpellFixtures.php` — ~160 sorts couvrant les 8 éléments + sorts spécifiques par domaine
+- [x] `src/Entity/Game/Spell.php` / `Item.php` — Constantes ELEMENT_METAL, ELEMENT_BEAST
+- [x] Normalisation éléments : life→light, death→dark
+- [x] Migration SQL `Version20260319DomainElement.php`
+- [x] Template CSS : couleurs des 32 domaines
+- [x] Pyromancien : arbre modèle complet (15 skills, 5 rangs)
+- [x] Stormcaller : remplace white_wizard (4 skills)
+- [x] Domaines existants (soldat, guérisseur, défenseur, nécromancien, druide, mineur, herboriste) adaptés aux nouvelles clés
 
 ### Structure de chaque arbre (15 compétences minimum)
-Chaque domaine suit le pattern 3 branches :
+Chaque domaine combat suit le pattern :
 ```
-                    [Ultime]           (rang 5 - 1 compétence)
+                    [Ultime]           (rang 5 - 1 compétence, 150+ pts)
                    /        \
-             [Avancé A]  [Avancé B]    (rang 4 - 2 compétences)
+             [Avancé A]  [Avancé B]    (rang 4 - 2 compétences, 60-100 pts)
               /      \    /      \
-        [Inter A1] [Inter A2] [Inter B1] [Inter B2]   (rang 3 - 4 compétences)
+        [Inter 1] [Inter 2] [Inter 3] [Inter 4]   (rang 3 - 4 compétences, 25-50 pts)
          /    \      |        |      \
-   [Base A1-3]  [Base B1-3]             (rang 2 - 4 compétences)
+   [Base 1] [Base 2] [Base 3] [Base 4]            (rang 2 - 4 compétences, 10-20 pts)
          \       /
-        [Apprenti]                      (rang 1 - 2 compétences, 0 pts)
-        [Initiation]
+        [Apprenti 1]                               (rang 1 - 2 compétences, 0 pts)
+        [Apprenti 2]
 ```
 
-### Fichiers fixtures YAML à créer/modifier (1 fichier par domaine)
-**Feu** :
-- `fixtures/game/skill/pyromancy.yaml` — Refonte : 15 compétences (Apprenti → Éruption solaire)
-- `fixtures/game/skill/berserker.yaml` — Nouveau : Rage, Charge enflammée, Furie, ...
-- `fixtures/game/skill/artificer.yaml` — Nouveau : Piège incendiaire, Mine explosive, ...
+---
 
-**Eau** :
-- `fixtures/game/skill/hydromancer.yaml` — Nouveau : Jet d'eau, Tsunami, Maelström, ...
-- `fixtures/game/skill/healer.yaml` — Refonte : 15 compétences (Soin mineur → Résurrection)
-- `fixtures/game/skill/tidecaller.yaml` — Nouveau : Marée montante, Brume protectrice, ...
+## Phase 6.B — Arbres de talent Feu (Berserker + Artificier) [S] ✅ *Terminée* → PR #6b
 
-**Air** :
-- `fixtures/game/skill/stormcaller.yaml` — Nouveau (remplace white_wizard) : Éclair, Tempête, Foudre en chaîne, ...
-- `fixtures/game/skill/archer.yaml` — Nouveau : Tir précis, Pluie de flèches, Tir critique, ...
-- `fixtures/game/skill/wanderer.yaml` — Nouveau : Pas du vent, Hâte, Mirage, ...
+- [x] `SkillFixtures::getBerserkerSkills()` — 15 compétences (Rage → Furie sanguinaire)
+- [x] `SkillFixtures::getArtificerSkills()` — 15 compétences (Piège incendiaire → Barrage d'artillerie)
 
-**Terre** :
-- `fixtures/game/skill/geomancer.yaml` — Nouveau : Tremblement, Pilier de roche, Avalanche, ...
-- `fixtures/game/skill/defender.yaml` — Refonte : 15 compétences (Parade → Forteresse)
-- `fixtures/game/skill/guardian.yaml` — Nouveau : Bouclier partagé, Mur protecteur, Bastion, ...
+---
 
-**Métal** :
-- `fixtures/game/skill/soldier.yaml` — Refonte : 15 compétences (Frappe → Danse des lames)
-- `fixtures/game/skill/knight.yaml` — Nouveau : Provocation, Riposte, Rempart d'acier, ...
-- `fixtures/game/skill/engineer.yaml` — Nouveau : Tourelle, Renforcement, Automate, ...
+## Phase 6.C — Arbres de talent Eau (Hydromancien + Guérisseur 15 + Marémancien) [S] ✅ *Terminée* → PR #6c
 
-**Bête** :
-- `fixtures/game/skill/hunter.yaml` — Nouveau : Appel du faucon, Piège à ours, Tir empoisonné, ...
-- `fixtures/game/skill/tamer.yaml` — Nouveau : Apprivoisement, Lien bestial, Charge sauvage, ...
-- `fixtures/game/skill/druid.yaml` — Refonte : 15 compétences (Liane → Appel de la forêt primordiale)
+- [x] `SkillFixtures::getHydromancerSkills()` — 13 compétences (Jet d'eau → Tsunami)
+- [x] `SkillFixtures::getHealerSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
+- [x] `SkillFixtures::getTidecallerSkills()` — 13 compétences (Marée montante → Maelström)
 
-**Lumière** :
-- `fixtures/game/skill/paladin.yaml` — Nouveau : Frappe sacrée, Aura de lumière, Jugement, ...
-- `fixtures/game/skill/priest.yaml` — Nouveau : Prière, Bénédiction, Miracle, ...
-- `fixtures/game/skill/inquisitor.yaml` — Nouveau : Châtiment, Purge, Sentence divine, ...
+---
 
-**Ombre** :
-- `fixtures/game/skill/assassin.yaml` — Nouveau : Embuscade, Coup mortel, Ombre dansante, ...
-- `fixtures/game/skill/necromancer.yaml` — Refonte : 15 compétences (Drain → Apocalypse nécrotique)
-- `fixtures/game/skill/warlock.yaml` — Nouveau : Malédiction, Terreur, Pacte sombre, ...
+## Phase 6.D — Arbres de talent Air (Foudromancien 15 + Archer + Vagabond) [S] → PR #6d
 
-**Récolte** (15 compétences par domaine) :
-- `fixtures/game/skill/miner.yaml` — Refonte : 15 compétences (Pioche basique → Maître mineur)
-- `fixtures/game/skill/herbalist.yaml` — Refonte : 15 compétences
-- `fixtures/game/skill/fisherman.yaml` — Refonte : 15 compétences
-- `fixtures/game/skill/skinner.yaml` — Refonte : 15 compétences
+- [ ] `SkillFixtures::getStormcallerSkills()` — Étendre de 4 à 15 compétences
+- [ ] `SkillFixtures::getArcherSkills()` — 15 compétences (Tir précis → Flèche perforante)
+- [ ] `SkillFixtures::getWandererSkills()` — 15 compétences (Hâte → Zéphyr)
 
-**Craft** (15 compétences par domaine) :
-- `fixtures/game/skill/blacksmith.yaml` — Refonte : 15 compétences
-- `fixtures/game/skill/leatherworker.yaml` — Refonte : 15 compétences
-- `fixtures/game/skill/alchemist.yaml` — Refonte : 15 compétences
-- `fixtures/game/skill/jeweller.yaml` — Refonte : 15 compétences
+---
 
-### Compétences partagées entre domaines (exemples)
-- "Premiers soins" → Guérisseur + Druide + Prêtre
-- "Résistance physique" → Défenseur + Chevalier + Paladin
-- "Connaissance des poisons" → Druide + Assassin
-- "Méditation" → tous les DPS magiques
+## Phase 6.E — Arbres de talent Terre (Géomancien + Défenseur 15 + Gardien) [S] → PR #6e
 
-### Sorts associés (fixtures)
-- **Créer** `fixtures/game/spell/` — 1 fichier YAML par élément avec les sorts de ses domaines
-- Chaque compétence qui débloque une materia doit avoir un sort associé
+- [ ] `SkillFixtures::getGeomancerSkills()` — 15 compétences (Jet de cailloux → Déplacement tectonique)
+- [ ] `SkillFixtures::getDefenderSkills()` — Étendre de 4 à 15 compétences
+- [ ] `SkillFixtures::getGuardianSkills()` — 15 compétences (Bouclier partagé → Bastion)
 
-### Tests
+---
+
+## Phase 6.F — Arbres de talent Métal (Soldat 15 + Chevalier + Ingénieur) [S] → PR #6f
+
+- [ ] `SkillFixtures::getSoldierSkills()` — Étendre de 4 à 15 compétences
+- [ ] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
+- [ ] `SkillFixtures::getEngineerSkills()` — 15 compétences (Tourelle → Engin de siège)
+
+---
+
+## Phase 6.G — Arbres de talent Bête (Chasseur + Dompteur + Druide 15) [S] → PR #6g
+
+- [ ] `SkillFixtures::getHunterSkills()` — 15 compétences (Appel du faucon → Chasse en meute)
+- [ ] `SkillFixtures::getTamerSkills()` — 15 compétences (Lien bestial → Rugissement alpha)
+- [ ] `SkillFixtures::getDruidSkills()` — Étendre de 4 à 15 compétences
+
+---
+
+## Phase 6.H — Arbres de talent Lumière + Ombre (6 domaines) [M] → PR #6h
+
+- [ ] `SkillFixtures::getPaladinSkills()` — 15 compétences (Frappe sacrée → Jugement divin)
+- [ ] `SkillFixtures::getPriestSkills()` — 15 compétences (Prière → Miracle)
+- [ ] `SkillFixtures::getInquisitorSkills()` — 15 compétences (Châtiment sacré → Sentence divine)
+- [ ] `SkillFixtures::getAssassinSkills()` — 15 compétences (Embuscade → Danse des ombres)
+- [ ] `SkillFixtures::getNecromancerSkills()` — Étendre de 4 à 15 compétences
+- [ ] `SkillFixtures::getWarlockSkills()` — 15 compétences (Maléfice → Pacte sombre)
+
+---
+
+## Phase 6.I — Arbres de talent Récolte + Craft (8 domaines) + Skills partagés [M] → PR #6i
+
+- [ ] Mineur : étendre de 7 à 15 compétences
+- [ ] Herboriste : étendre de 3 à 15 compétences
+- [ ] Pêcheur : 15 compétences (nouveau)
+- [ ] Dépeceur : 15 compétences (nouveau)
+- [ ] Forgeron : 15 compétences (nouveau)
+- [ ] Tanneur : 15 compétences (nouveau)
+- [ ] Alchimiste : 15 compétences (nouveau)
+- [ ] Joaillier : 15 compétences (nouveau)
+- [ ] Compétences partagées multi-domaines (Premiers soins, Endurance, etc.)
+
+### Tests (à la fin de toutes les sous-phases 6.*)
 - Test fixtures : tous les domaines ont ≥ 15 compétences
 - Test : arbre de prérequis cohérent (pas de cycle, pas d'orphelin)
 - Test : compétences partagées bien reliées aux domaines multiples
@@ -408,7 +426,8 @@ Phase 4  (StatusEffect hybride)
   ↓
 Phase 5  (Skills multi-domaines)    ← BREAKING, dépend Phase 1
   ↓
-Phase 6  (32 domaines + 15 skills)  ← dépend Phase 5, XL
+Phase 6.A (Infra 32 domaines)       ← dépend Phase 5 ✅
+Phase 6.B-6.I (Arbres de talent)    ← dépend Phase 6.A, S/M chacune
   ↓
 Phase 7  (Tout est un sort + Soulbound) ← dépend Phase 3
   ↓
@@ -442,12 +461,20 @@ Phase 13 (Documentation finale)
 
 | Phase | Description | Taille | Breaking? | PR |
 |-------|------------|--------|-----------|-----|
-| 1 | Enum Element + metal/beast | S | Non | #1 |
-| 2 | Race de personnage (Humain) | S | Non | #2 |
-| 3 | Spell niveau/valueType + Calculators | S | Non | #3 |
-| 4 | StatusEffect hybride | M | Non | #4 |
-| 5 | Skills multi-domaines | L | **OUI** | #5 |
-| 6 | 32 domaines × 15+ compétences | XL | Non | #6 |
+| 1 | Enum Element + metal/beast | S | Non | ✅ |
+| 2 | Race de personnage (Humain) | S | Non | ✅ |
+| 3 | Spell niveau/valueType + Calculators | S | Non | ✅ |
+| 4 | StatusEffect hybride | M | Non | ✅ |
+| 5 | Skills multi-domaines | L | **OUI** | ✅ |
+| 6.A | Infrastructure 32 domaines + Pyromancien modèle | M | Non | #6 ✅ |
+| 6.B | Arbres de talent Feu (Berserker, Artificier) | S | Non | #6b ✅ |
+| 6.C | Arbres de talent Eau (Hydro, Guérisseur, Marémancien) | S | Non | #6c |
+| 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d |
+| 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e |
+| 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f |
+| 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g |
+| 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h |
+| 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i |
 | 7 | Tout est un sort + Soulbound | M | Non | #7 |
 | 8 | Materia = Capacités combat | L | Partiel | #8 |
 | 9 | Inventaire groupement UI | S | Non | #9 |

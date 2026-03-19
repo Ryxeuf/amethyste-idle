@@ -27,6 +27,8 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 7. **Coordonnees** : toujours au format string `"x.y"` en base. Utiliser `getX()`/`getY()` pour extraire les composantes entieres.
 
+8. **Taille des phases** : si une phase ou feature semble trop volumineuse (taille L ou XL, ex: 400+ lignes de fixtures, 10+ fichiers a modifier), la decouper en sous-phases realisables en une seule session. Chaque sous-phase doit etre commitable et testable independamment. Ne jamais tenter d'ecrire plus de ~200 lignes de donnees/fixtures en une seule passe.
+
 ## Stack technique
 
 | Couche | Technologie |

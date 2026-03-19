@@ -29,7 +29,7 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 | Combat tour par tour | ✅ Fait | Timeline, attaque, sorts, items, fuite, loot |
 | Inventaire | ✅ Fait | Sac (100), Materia (50), Banque (1000), équipement 12 slots |
 | Système Materia | ✅ Fait | Sertissage, 7 éléments, slots sur équipement |
-| Arbres de talent | ✅ Fait | 15 domaines, 29 compétences, XP par domaine |
+| Arbres de talent | ✅ Fait | 32 domaines (8 éléments), Pyromancien modèle (15 skills), XP par domaine |
 | Monstres | ✅ Fait | 12 types, tables de loot, respawn par queue |
 | Quêtes | ✅ Fait | 10 quêtes (tuer/collecter), récompenses |
 | PNJ & Dialogues | ✅ Fait | 60 PNJ, dialogues conditionnels, branches |
