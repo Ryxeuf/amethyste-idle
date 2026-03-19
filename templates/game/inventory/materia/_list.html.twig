@@ -8,8 +8,12 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                 {{ 'game.inventory.materia'|trans }}
             </h2>
-            {% if materias is not empty %}
-                <span class="text-[10px] bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full">{{ materias|length }}</span>
+            {% set totalMaterias = 0 %}
+            {% for item in materias %}
+                {% set totalMaterias = totalMaterias + item.quantity %}
+            {% endfor %}
+            {% if totalMaterias > 0 %}
+                <span class="text-[10px] bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full">{{ totalMaterias }}</span>
             {% endif %}
         </div>
 
@@ -33,9 +37,7 @@
                          data-item-element="{{ item.element }}"
                          data-item-effects="{{ item.effects }}"
                          data-item-id="{{ item.id }}">
-                        <div class="materia-orb materia-orb-{{ item.element }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white/90" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
-                        </div>
+                        <div class="materia-orb materia-orb-{{ item.element }}"></div>
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-1.5">
                                 <span class="text-xs sm:text-sm text-white font-medium truncate">{{ item.name }}</span>
@@ -43,6 +45,9 @@
                             </div>
                             <div class="text-[10px] sm:text-xs text-gray-500 mt-0.5 truncate">{{ item.description }}</div>
                         </div>
+                        {% if item.quantity > 1 %}
+                            <span class="text-[10px] sm:text-xs bg-purple-900/30 text-purple-400 font-medium px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg shrink-0">x{{ item.quantity }}</span>
+                        {% endif %}
                         <span class="text-[9px] font-medium uppercase px-1.5 py-0.5 rounded shrink-0
                             {% if item.element == 'fire' %}bg-red-900/30 text-red-400
                             {% elseif item.element == 'water' %}bg-blue-900/30 text-blue-400
