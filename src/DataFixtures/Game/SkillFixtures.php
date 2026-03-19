@@ -2567,11 +2567,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['smith_shield', 'smith_plate'],
             ],
-            'smith_materia_slot' => [
-                'slug' => 'smith-materia-slot',
-                'title' => 'Ajout de slot materia',
-                'description' => 'Permet d\'ajouter un slot materia supplementaire aux equipements forges',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-add-materia-slot']]],
+            'smith_whetstone' => [
+                'slug' => 'smith-whetstone',
+                'title' => 'Forge de pierres a aiguiser',
+                'description' => 'Permet de forger des pierres a aiguiser pour ameliorer les armes',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-whetstone']]],
                 'requiredPoints' => 30,
                 'domain' => $d,
                 'requirements' => ['smith_temper'],
@@ -2605,14 +2605,14 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['smith_steel_weapons', 'smith_steel_armor'],
             ],
-            'smith_materia_slot_2' => [
-                'slug' => 'smith-materia-slot-2',
-                'title' => 'Double slot materia',
-                'description' => 'Permet d\'ajouter deux slots materia aux equipements forges',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-add-materia-slot-2']]],
+            'smith_heavy_armor' => [
+                'slug' => 'smith-heavy-armor',
+                'title' => 'Forge d\'armures lourdes',
+                'description' => 'Permet de forger des armures lourdes en acier renforce',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-heavy-steel-plate']]],
                 'requiredPoints' => 80,
                 'domain' => $d,
-                'requirements' => ['smith_materia_slot', 'smith_reinforcement'],
+                'requirements' => ['smith_whetstone', 'smith_reinforcement'],
             ],
             'smith_alloy' => [
                 'slug' => 'smith-alloy',
@@ -2632,7 +2632,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-legendary-sword', 'recipe-legendary-plate']]],
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'requirements' => ['smith_mithril', 'smith_materia_slot_2'],
+                'requirements' => ['smith_mithril', 'smith_heavy_armor'],
             ],
         ];
     }
@@ -2998,11 +2998,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'critical' => 1,
                 'requirements' => ['jewel_cut_basic'],
             ],
-            'jewel_socket_materia' => [
-                'slug' => 'jewel-socket-materia',
-                'title' => 'Sertissage de materia basique',
-                'description' => 'Permet de sertir des materia dans les slots d\'equipement',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-socket-materia-basic']]],
+            'jewel_bracelet' => [
+                'slug' => 'jewel-bracelet',
+                'title' => 'Fabrication de bracelets',
+                'description' => 'Permet de fabriquer des bracelets en metal et gemmes',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-bracelet']]],
                 'requiredPoints' => 20,
                 'domain' => $d,
                 'requirements' => ['jewel_ring_basic'],
@@ -3027,24 +3027,24 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['jewel_amulet_basic'],
             ],
-            'jewel_materia_quality' => [
-                'slug' => 'jewel-materia-quality',
-                'title' => 'Sertissage ameliore',
-                'description' => 'Augmente la puissance des materia serties de 10%',
+            'jewel_filigree' => [
+                'slug' => 'jewel-filigree',
+                'title' => 'Filigrane',
+                'description' => 'Maitrise du filigrane — ameliore la qualite des bijoux fabriques',
                 'requiredPoints' => 30,
                 'domain' => $d,
                 'damage' => 1,
                 'heal' => 1,
-                'requirements' => ['jewel_socket_materia'],
+                'requirements' => ['jewel_bracelet'],
             ],
-            'jewel_socket_materia_2' => [
-                'slug' => 'jewel-socket-materia-2',
-                'title' => 'Sertissage de materia avance',
-                'description' => 'Permet de sertir des materia de rang superieur',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-socket-materia-advanced']]],
+            'jewel_crown' => [
+                'slug' => 'jewel-crown',
+                'title' => 'Fabrication de couronnes',
+                'description' => 'Permet de fabriquer des couronnes ornees de gemmes',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-gold-crown']]],
                 'requiredPoints' => 40,
                 'domain' => $d,
-                'requirements' => ['jewel_socket_materia'],
+                'requirements' => ['jewel_bracelet'],
             ],
             'jewel_enchant' => [
                 'slug' => 'jewel-enchant',
@@ -3066,15 +3066,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'requirements' => ['jewel_cut_rare', 'jewel_ring_gold'],
             ],
-            'jewel_materia_mastery' => [
-                'slug' => 'jewel-materia-mastery',
-                'title' => 'Maitrise du sertissage',
-                'description' => 'Sertissage parfait — bonus de materia augmente de 25%',
+            'jewel_gem_elemental' => [
+                'slug' => 'jewel-gem-elemental',
+                'title' => 'Taille de gemmes elementaires',
+                'description' => 'Maitrise de la taille de gemmes infusees d\'energie elementaire',
                 'requiredPoints' => 80,
                 'domain' => $d,
                 'damage' => 2,
                 'heal' => 2,
-                'requirements' => ['jewel_materia_quality', 'jewel_socket_materia_2'],
+                'requirements' => ['jewel_filigree', 'jewel_crown'],
             ],
             'jewel_prismatic' => [
                 'slug' => 'jewel-prismatic',
@@ -3094,7 +3094,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => [['action' => 'craft', 'recipes' => ['recipe-legendary-ring', 'recipe-legendary-amulet']]],
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'requirements' => ['jewel_masterwork', 'jewel_materia_mastery'],
+                'requirements' => ['jewel_masterwork', 'jewel_gem_elemental'],
             ],
         ];
     }
