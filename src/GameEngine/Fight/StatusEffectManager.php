@@ -6,6 +6,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\FightStatusEffect;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerStatusEffect;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\StatusEffect;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +37,7 @@ class StatusEffectManager
         if ($existing !== null) {
             $existing->setRemainingTurns($effect->getDuration());
             $existing->setAppliedAt(new \DateTime());
+            $existing->setLastTickTurn(null);
             $this->entityManager->persist($existing);
             $this->entityManager->flush();
 
@@ -63,11 +65,22 @@ class StatusEffectManager
     public function processStartOfTurn(Fight $fight, CharacterInterface $character): array
     {
         $messages = [];
-        $targetType = $this->getTargetType($character);
         $activeEffects = $this->getActiveEffects($fight, $character);
+        $currentTurn = $fight->getStep();
 
         foreach ($activeEffects as $fightEffect) {
             $effect = $fightEffect->getStatusEffect();
+
+            // Check frequency: should this effect tick this turn?
+            if (!$this->shouldTick($fightEffect, $currentTurn)) {
+                $fightEffect->decrementTurn();
+                $this->entityManager->persist($fightEffect);
+
+                continue;
+            }
+
+            // Record tick turn
+            $fightEffect->setLastTickTurn($currentTurn);
 
             // Damage over time (poison, burn)
             if ($effect->isDamaging()) {
@@ -226,6 +239,174 @@ class StatusEffectManager
     }
 
     /**
+     * Apply a persistent (out-of-combat) status effect to a player.
+     */
+    public function applyPersistentEffect(Player $player, StatusEffect $effect): ?PlayerStatusEffect
+    {
+        if ($effect->getRealTimeDuration() === null || $effect->getRealTimeDuration() <= 0) {
+            return null;
+        }
+
+        // Check probability
+        if (random_int(1, 100) > $effect->getChance()) {
+            return null;
+        }
+
+        // Check if effect already exists (refresh instead of stack)
+        $existing = $this->findExistingPersistentEffect($player, $effect);
+        if ($existing !== null) {
+            $expiresAt = new \DateTime();
+            $expiresAt->modify(sprintf('+%d seconds', $effect->getRealTimeDuration()));
+            $existing->setExpiresAt($expiresAt);
+            $existing->setAppliedAt(new \DateTime());
+            $this->entityManager->persist($existing);
+            $this->entityManager->flush();
+
+            return $existing;
+        }
+
+        $playerEffect = new PlayerStatusEffect();
+        $playerEffect->setPlayer($player);
+        $playerEffect->setStatusEffect($effect);
+        $playerEffect->setAppliedAt(new \DateTime());
+
+        $expiresAt = new \DateTime();
+        $expiresAt->modify(sprintf('+%d seconds', $effect->getRealTimeDuration()));
+        $playerEffect->setExpiresAt($expiresAt);
+
+        $this->entityManager->persist($playerEffect);
+        $this->entityManager->flush();
+
+        return $playerEffect;
+    }
+
+    /**
+     * Get active persistent effects for a player (non-expired).
+     *
+     * @return PlayerStatusEffect[]
+     */
+    public function getActivePersistentEffects(Player $player): array
+    {
+        $allEffects = $this->entityManager->getRepository(PlayerStatusEffect::class)->findBy([
+            'player' => $player,
+        ]);
+
+        $active = [];
+        foreach ($allEffects as $effect) {
+            if (!$effect->isExpired()) {
+                $active[] = $effect;
+            }
+        }
+
+        return $active;
+    }
+
+    /**
+     * Get persistent stat modifiers for a player (out-of-combat buffs).
+     *
+     * @return array<string, float>
+     */
+    public function getPersistentStatModifiers(Player $player): array
+    {
+        $modifiers = [];
+        $activeEffects = $this->getActivePersistentEffects($player);
+
+        foreach ($activeEffects as $playerEffect) {
+            $effect = $playerEffect->getStatusEffect();
+            if ($effect->hasStatModifier()) {
+                foreach ($effect->getStatModifier() as $stat => $value) {
+                    if (!isset($modifiers[$stat])) {
+                        $modifiers[$stat] = 0.0;
+                    }
+                    $modifiers[$stat] += $value;
+                }
+            }
+        }
+
+        return $modifiers;
+    }
+
+    /**
+     * Clean expired persistent effects for a player.
+     */
+    public function cleanExpiredPersistentEffects(Player $player): void
+    {
+        $allEffects = $this->entityManager->getRepository(PlayerStatusEffect::class)->findBy([
+            'player' => $player,
+        ]);
+
+        foreach ($allEffects as $effect) {
+            if ($effect->isExpired()) {
+                $this->entityManager->remove($effect);
+            }
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Load persistent effects into a fight when combat starts.
+     * Converts active persistent buffs into FightStatusEffects.
+     */
+    public function loadPersistentEffectsIntoFight(Fight $fight, Player $player): void
+    {
+        $persistentEffects = $this->getActivePersistentEffects($player);
+
+        foreach ($persistentEffects as $playerEffect) {
+            $effect = $playerEffect->getStatusEffect();
+
+            // Only load buffs and HoTs into combat
+            if ($effect->getCategory() !== StatusEffect::CATEGORY_BUFF && $effect->getCategory() !== StatusEffect::CATEGORY_HOT) {
+                continue;
+            }
+
+            // Calculate remaining turns from real-time duration
+            $remainingSeconds = $playerEffect->getRemainingSeconds();
+            if ($remainingSeconds <= 0) {
+                continue;
+            }
+
+            // Convert seconds to turns (minimum 1 turn)
+            $remainingTurns = max(1, (int) ceil($remainingSeconds / 30));
+
+            $fightEffect = new FightStatusEffect();
+            $fightEffect->setFight($fight);
+            $fightEffect->setTargetType(FightStatusEffect::TARGET_TYPE_PLAYER);
+            $fightEffect->setTargetId($player->getId());
+            $fightEffect->setStatusEffect($effect);
+            $fightEffect->setRemainingTurns($remainingTurns);
+            $fightEffect->setAppliedAt($playerEffect->getAppliedAt());
+
+            $this->entityManager->persist($fightEffect);
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Determine if a fight status effect should tick this turn based on frequency.
+     */
+    private function shouldTick(FightStatusEffect $fightEffect, int $currentTurn): bool
+    {
+        $frequency = $fightEffect->getStatusEffect()->getFrequency();
+
+        // No frequency set = tick every turn (default behavior)
+        if ($frequency === null || $frequency <= 1) {
+            return true;
+        }
+
+        $lastTick = $fightEffect->getLastTickTurn();
+
+        // Never ticked = first tick
+        if ($lastTick === null) {
+            return true;
+        }
+
+        // Tick if enough turns have passed
+        return ($currentTurn - $lastTick) >= $frequency;
+    }
+
+    /**
      * Check if a character has a specific effect type active.
      */
     private function hasEffectOfType(Fight $fight, CharacterInterface $character, string $type): bool
@@ -249,6 +430,22 @@ class StatusEffectManager
             'targetId' => $targetId,
             'statusEffect' => $effect,
         ]);
+    }
+
+    private function findExistingPersistentEffect(Player $player, StatusEffect $effect): ?PlayerStatusEffect
+    {
+        $allEffects = $this->entityManager->getRepository(PlayerStatusEffect::class)->findBy([
+            'player' => $player,
+            'statusEffect' => $effect,
+        ]);
+
+        foreach ($allEffects as $playerEffect) {
+            if (!$playerEffect->isExpired()) {
+                return $playerEffect;
+            }
+        }
+
+        return null;
     }
 
     private function getTargetType(CharacterInterface $target): string

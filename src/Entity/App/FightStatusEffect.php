@@ -40,6 +40,9 @@ class FightStatusEffect
     #[ORM\Column(name: 'applied_at', type: 'datetime')]
     private \DateTime $appliedAt;
 
+    #[ORM\Column(name: 'last_tick_turn', type: 'integer', nullable: true)]
+    private ?int $lastTickTurn = null;
+
     public function __construct()
     {
         $this->appliedAt = new \DateTime();
@@ -113,6 +116,16 @@ class FightStatusEffect
     public function setAppliedAt(\DateTime $appliedAt): void
     {
         $this->appliedAt = $appliedAt;
+    }
+
+    public function getLastTickTurn(): ?int
+    {
+        return $this->lastTickTurn;
+    }
+
+    public function setLastTickTurn(?int $lastTickTurn): void
+    {
+        $this->lastTickTurn = $lastTickTurn;
     }
 
     public function isExpired(): bool

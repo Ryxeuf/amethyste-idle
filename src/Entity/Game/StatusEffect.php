@@ -31,6 +31,18 @@ class StatusEffect
         self::TYPE_BERSERK,
     ];
 
+    public const CATEGORY_BUFF = 'buff';
+    public const CATEGORY_DEBUFF = 'debuff';
+    public const CATEGORY_HOT = 'hot';
+    public const CATEGORY_DOT = 'dot';
+
+    public const CATEGORIES = [
+        self::CATEGORY_BUFF,
+        self::CATEGORY_DEBUFF,
+        self::CATEGORY_HOT,
+        self::CATEGORY_DOT,
+    ];
+
     public function __toString(): string
     {
         return $this->name;
@@ -70,6 +82,15 @@ class StatusEffect
 
     #[ORM\Column(name: 'icon', type: 'string', length: 100, nullable: true)]
     private ?string $icon = null;
+
+    #[ORM\Column(name: 'category', type: 'string', length: 20, nullable: true)]
+    private ?string $category = null;
+
+    #[ORM\Column(name: 'frequency', type: 'integer', nullable: true)]
+    private ?int $frequency = null;
+
+    #[ORM\Column(name: 'real_time_duration', type: 'integer', nullable: true)]
+    private ?int $realTimeDuration = null;
 
     public function getId(): int
     {
@@ -179,6 +200,61 @@ class StatusEffect
     public function setIcon(?string $icon): void
     {
         $this->icon = $icon;
+    }
+
+    public function getCategory(): ?string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?string $category): void
+    {
+        $this->category = $category;
+    }
+
+    public function getFrequency(): ?int
+    {
+        return $this->frequency;
+    }
+
+    public function setFrequency(?int $frequency): void
+    {
+        $this->frequency = $frequency;
+    }
+
+    public function getRealTimeDuration(): ?int
+    {
+        return $this->realTimeDuration;
+    }
+
+    public function setRealTimeDuration(?int $realTimeDuration): void
+    {
+        $this->realTimeDuration = $realTimeDuration;
+    }
+
+    public function isBuff(): bool
+    {
+        return $this->category === self::CATEGORY_BUFF;
+    }
+
+    public function isDebuff(): bool
+    {
+        return $this->category === self::CATEGORY_DEBUFF;
+    }
+
+    public function isHot(): bool
+    {
+        return $this->category === self::CATEGORY_HOT;
+    }
+
+    public function isDot(): bool
+    {
+        return $this->category === self::CATEGORY_DOT;
+    }
+
+    public function hasPersistentDuration(): bool
+    {
+        return $this->realTimeDuration !== null && $this->realTimeDuration > 0;
     }
 
     public function isDamaging(): bool

@@ -35,6 +35,7 @@ class Player implements CharacterInterface
         $this->quests = new ArrayCollection();
         $this->completedQuests = new ArrayCollection();
         $this->skills = new ArrayCollection();
+        $this->statusEffects = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -102,6 +103,28 @@ class Player implements CharacterInterface
 
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
+
+    #[ORM\OneToMany(targetEntity: PlayerStatusEffect::class, mappedBy: 'player', cascade: ['remove'])]
+    private Collection $statusEffects;
+
+    /** @return Collection<int, PlayerStatusEffect> */
+    public function getStatusEffects(): Collection
+    {
+        return $this->statusEffects;
+    }
+
+    public function addStatusEffect(PlayerStatusEffect $statusEffect): void
+    {
+        if (!$this->statusEffects->contains($statusEffect)) {
+            $this->statusEffects->add($statusEffect);
+            $statusEffect->setPlayer($this);
+        }
+    }
+
+    public function removeStatusEffect(PlayerStatusEffect $statusEffect): void
+    {
+        $this->statusEffects->removeElement($statusEffect);
+    }
 
     public function getSpeed(): int
     {
