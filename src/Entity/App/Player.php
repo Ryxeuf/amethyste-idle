@@ -38,6 +38,7 @@ class Player implements CharacterInterface
         $this->skills = new ArrayCollection();
         $this->statusEffects = new ArrayCollection();
         $this->bestiaryEntries = new ArrayCollection();
+        $this->achievements = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -115,6 +116,15 @@ class Player implements CharacterInterface
 
     #[ORM\OneToMany(targetEntity: PlayerBestiary::class, mappedBy: 'player', cascade: ['remove'])]
     private Collection $bestiaryEntries;
+
+    #[ORM\OneToMany(targetEntity: PlayerAchievement::class, mappedBy: 'player')]
+    private Collection $achievements;
+
+    /** @return Collection<int, PlayerAchievement> */
+    public function getAchievements(): Collection
+    {
+        return $this->achievements;
+    }
 
     /** @return Collection<int, PlayerStatusEffect> */
     public function getStatusEffects(): Collection
