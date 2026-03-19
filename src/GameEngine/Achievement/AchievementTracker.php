@@ -142,7 +142,7 @@ class AchievementTracker implements EventSubscriberInterface
             ->join('pa.achievement', 'a')
             ->where('pa.player = :player')
             ->andWhere('pa.progress >= 1')
-            ->andWhere("a.category = :category")
+            ->andWhere('a.category = :category')
             ->setParameter('player', $player)
             ->setParameter('category', 'combat');
 
