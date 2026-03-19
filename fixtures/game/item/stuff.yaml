@@ -24,6 +24,8 @@ App\Entity\Game\Item:
     description: 'Une chope de bière pour boire'
     type: 'stuff'
     slug: 'beer-pint'
+    spell: '@beer_heal'
+    effect: '{"action":"use_spell", "slug":"beer-heal"}'
     nbUsages: 1
     price: 5
   mushroom (extends item):
@@ -32,6 +34,9 @@ App\Entity\Game\Item:
     description: 'Un champignon, mais est-il comestible ?'
     type: 'stuff'
     slug: 'mushroom'
+    spell: '@mushroom_heal'
+    effect: '{"action":"use_spell", "slug":"mushroom-heal"}'
+    nbUsages: 1
     price: 2
   pickaxe (extends item):
     id: 5
@@ -71,6 +76,7 @@ App\Entity\Game\Item:
     effect: '{"action":"learn_skill", "slug":"healer-materia-1" }'
     nbUsages: 1
     price: 100
+    boundToPlayer: true
   miner_domain_parchment (extends item):
     id: 10
     name: 'Découverte du minage'
@@ -80,6 +86,7 @@ App\Entity\Game\Item:
     effect: '{"action":"learn_skill", "slug":"miner-ruby-xs" }'
     nbUsages: 1
     price: 100
+    boundToPlayer: true
   herbalist_domain_parchment (extends item):
     id: 15
     name: "Découverte de l'herborisme"
@@ -89,3 +96,4 @@ App\Entity\Game\Item:
     effect: '{"action":"learn_skill", "slug":"herbalist-mint-xs" }'
     nbUsages: 1
     price: 100
+    boundToPlayer: true

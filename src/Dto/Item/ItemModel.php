@@ -21,7 +21,7 @@ class ItemModel
 
     public string $genericItemSlug;
 
-    public int $level;
+    public ?int $level;
 
     public string $element;
 
@@ -47,7 +47,7 @@ class ItemModel
         $this->id = $item->getId();
         $this->name = $item->getGenericItem()->getName();
         $this->description = $item->getGenericItem()->getDescription();
-        $this->element = $item->getGenericItem()->getElement();
+        $this->element = $item->getGenericItem()->getElement()->value;
         $this->nbSlots = $item->getSlots()->count();
         $this->genericItemId = $item->getGenericItem()->getId();
         $this->genericItemSlug = $item->getGenericItem()->getSlug();

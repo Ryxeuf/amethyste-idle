@@ -224,6 +224,50 @@
       "agility": "Agility",
       "intelligence": "Intelligence"
     },
+    "home": {
+      "player": {
+        "life": "Health",
+        "energy": "Energy",
+        "map": "Map",
+        "dead": "You are dead... Return to the map to respawn.",
+        "in_fight": "A fight is in progress!",
+        "birthdate": "Born on",
+        "member_since": "Adventurer since %date%"
+      },
+      "actions": {
+        "explore": "Explore",
+        "craft": "Crafting",
+        "skills_count": "%count% learned",
+        "recipes_count": "%count% recipes"
+      },
+      "domains": {
+        "title": "Progression",
+        "available_xp": "%xp% XP available",
+        "empty": "No domains unlocked",
+        "view_all": "View skills"
+      },
+      "quests": {
+        "title": "Active Quests",
+        "empty": "No active quests",
+        "empty_hint": "Talk to NPCs to get quests",
+        "view_all": "View all %count% quests"
+      },
+      "equipment": {
+        "title": "Equipment",
+        "manage": "Manage",
+        "empty": "No equipment",
+        "empty_hint": "Equip items from your inventory"
+      },
+      "fight_banner": {
+        "title": "Fight in progress!",
+        "description": "Turn %step% — Join the fight"
+      },
+      "world": {
+        "current_map": "Current map",
+        "players_nearby": "Players nearby",
+        "skills_unlocked": "Skills"
+      }
+    },
     "footer": {
       "back_to_home": "Back to home"
     },
@@ -332,6 +376,8 @@
       "attacking": "Attacking...",
       "fleeing": "Fleeing...",
       "skill_spells": "Skill spells",
+      "materia_spells": "Materia",
+      "element_match_bonus": "Element match bonus +25%",
       "energy_insufficient": "Not enough energy",
       "cooldown_remaining": "Cooldown: %turns% turns",
       "butcher": "Butcher %name%",

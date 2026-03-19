@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\Element;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -10,24 +11,6 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 class Spell
 {
     use TimestampableEntity;
-
-    public const ELEMENT_NONE = 'none';
-    public const ELEMENT_FIRE = 'fire';
-    public const ELEMENT_WATER = 'water';
-    public const ELEMENT_EARTH = 'earth';
-    public const ELEMENT_AIR = 'air';
-    public const ELEMENT_LIGHT = 'light';
-    public const ELEMENT_DARK = 'dark';
-
-    public const ELEMENTS = [
-        self::ELEMENT_NONE,
-        self::ELEMENT_FIRE,
-        self::ELEMENT_WATER,
-        self::ELEMENT_EARTH,
-        self::ELEMENT_AIR,
-        self::ELEMENT_LIGHT,
-        self::ELEMENT_DARK,
-    ];
 
     public function __toString(): string
     {
@@ -63,8 +46,8 @@ class Spell
     #[ORM\Column(name: 'spell_range', type: 'integer', nullable: true)]
     private $spellRange;
 
-    #[ORM\Column(name: 'element', type: 'string', length: 25)]
-    private $element = self::ELEMENT_NONE;
+    #[ORM\Column(name: 'element', type: 'string', length: 25, enumType: Element::class)]
+    private Element $element = Element::None;
 
     #[ORM\Column(name: 'cooldown', type: 'integer', nullable: true)]
     private ?int $cooldown = null;
@@ -77,6 +60,15 @@ class Spell
 
     #[ORM\Column(name: 'aoe_targets', type: 'integer', options: ['default' => 1])]
     private int $aoeTargets = 1;
+
+    #[ORM\Column(name: 'level', type: 'integer', options: ['default' => 1])]
+    private int $level = 1;
+
+    #[ORM\Column(name: 'value_type', type: 'string', length: 10, options: ['default' => 'fixed'])]
+    private string $valueType = 'fixed';
+
+    public const VALUE_TYPE_FIXED = 'fixed';
+    public const VALUE_TYPE_PERCENT = 'percent';
 
     /**
      * Get id.
@@ -175,20 +167,14 @@ class Spell
         return $this->spellRange;
     }
 
-    /**
-     * Set element.
-     */
-    public function setElement(string $element): Spell
+    public function setElement(Element $element): Spell
     {
         $this->element = $element;
 
         return $this;
     }
 
-    /**
-     * Get element.
-     */
-    public function getElement(): string
+    public function getElement(): Element
     {
         return $this->element;
     }
@@ -266,5 +252,30 @@ class Spell
     public function isAoe(): bool
     {
         return $this->aoeTargets === 0 || $this->aoeTargets > 1;
+    }
+
+    public function getLevel(): int
+    {
+        return $this->level;
+    }
+
+    public function setLevel(int $level): void
+    {
+        $this->level = $level;
+    }
+
+    public function getValueType(): string
+    {
+        return $this->valueType;
+    }
+
+    public function setValueType(string $valueType): void
+    {
+        $this->valueType = $valueType;
+    }
+
+    public function isPercent(): bool
+    {
+        return $this->valueType === self::VALUE_TYPE_PERCENT;
     }
 }

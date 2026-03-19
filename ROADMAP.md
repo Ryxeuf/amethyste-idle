@@ -1,7 +1,9 @@
 # ROADMAP — Amethyste-Idle
 
 > MMORPG navigateur web — Univers médiéval-fantastique-futuriste (FF7/8/9 × Zelda × stein.world)
-> Dernière mise à jour : 2026-03-14
+> Dernière mise à jour : 2026-03-18
+
+> **Voir aussi** : [docs/GAME_DESIGN_ROADMAP.md](docs/GAME_DESIGN_ROADMAP.md) — Plan d'implémentation détaillé des nouvelles règles de game design (éléments, multi-domaine, materia=capacités, bestiaire, succès)
 
 ---
 
@@ -27,7 +29,7 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 | Combat tour par tour | ✅ Fait | Timeline, attaque, sorts, items, fuite, loot |
 | Inventaire | ✅ Fait | Sac (100), Materia (50), Banque (1000), équipement 12 slots |
 | Système Materia | ✅ Fait | Sertissage, 7 éléments, slots sur équipement |
-| Arbres de talent | ✅ Fait | 15 domaines, 29 compétences, XP par domaine |
+| Arbres de talent | ✅ Fait | 32 domaines (8 éléments), Pyromancien modèle (15 skills), XP par domaine |
 | Monstres | ✅ Fait | 12 types, tables de loot, respawn par queue |
 | Quêtes | ✅ Fait | 10 quêtes (tuer/collecter), récompenses |
 | PNJ & Dialogues | ✅ Fait | 60 PNJ, dialogues conditionnels, branches |

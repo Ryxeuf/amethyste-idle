@@ -3,9 +3,12 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\PlayerItem;
+use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\InventoryHelper;
 use App\Helper\ItemHelper;
 use App\Helper\PlayerHelper;
+use App\Helper\PlayerSkillHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +22,9 @@ class UseItemController extends AbstractController
         private readonly ItemHelper $itemHelper,
         private readonly InventoryHelper $inventoryHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly SkillAcquiring $skillAcquiring,
+        private readonly PlayerSkillHelper $playerSkillHelper,
+        private readonly SpellApplicator $spellApplicator,
     ) {
     }
 
@@ -43,9 +49,8 @@ class UseItemController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_items_list');
         }
 
-        // Vérifier que l'objet a un sort lié (potion, parchemin, etc.)
-        $spell = $this->itemHelper->getItemSpell($item);
-        if (!$spell) {
+        // Vérifier que l'objet est utilisable (sort ou apprentissage de compétence)
+        if (!$this->itemHelper->isUsable($item)) {
             $this->addFlash('error', 'Cet objet ne peut pas être utilisé.');
 
             return $this->redirectToRoute('app_game_inventory_items_list');
@@ -65,14 +70,22 @@ class UseItemController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_items_list');
         }
 
-        // Appliquer l'effet du sort sur le joueur
-        $heal = $spell->getHeal();
-        if ($heal !== null && $heal > 0) {
-            $newLife = min($player->getLife() + $heal, $player->getMaxLife());
-            $player->setLife($newLife);
-            $this->addFlash('success', sprintf('Vous utilisez %s et récupérez %d PV.', $item->getName(), $heal));
-        } else {
+        // Cas 1 : Sort lié (potion de soin, etc.) → déléguer au SpellApplicator
+        if ($spell = $this->itemHelper->getItemSpell($item)) {
+            $modifiers = $this->itemHelper->getItemSpellModifiers($item, $player);
+            $this->spellApplicator->apply($spell, $player, $player, $modifiers);
             $this->addFlash('success', sprintf('Vous utilisez %s.', $item->getName()));
+        }
+        // Cas 2 : Apprentissage de compétence (parchemin)
+        elseif ($skill = $this->itemHelper->getItemSkillLearning($item)) {
+            if ($this->playerSkillHelper->hasSkill($skill)) {
+                $this->addFlash('error', 'Vous connaissez déjà cette compétence.');
+
+                return $this->redirectToRoute('app_game_inventory_items_list');
+            }
+
+            $this->skillAcquiring->acquireSkill($skill);
+            $this->addFlash('success', sprintf('Vous étudiez %s et apprenez la compétence « %s » !', $item->getName(), $skill->getTitle()));
         }
 
         // Décrémenter les usages
@@ -83,7 +96,6 @@ class UseItemController extends AbstractController
                 $this->entityManager->remove($playerItem);
             }
         } elseif ($nbUsages == 0) {
-            // Plus d'usages restants
             $this->entityManager->remove($playerItem);
         }
         // nbUsages == -1 signifie usage illimité

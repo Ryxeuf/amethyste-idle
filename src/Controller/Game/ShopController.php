@@ -76,7 +76,7 @@ class ShopController extends AbstractController
         }
 
         $player = $this->playerHelper->getPlayer();
-        $totalCost = $item->getPrice() * $quantity;
+        $totalCost = ($item->getPrice() ?? 0) * $quantity;
 
         if ($player->getGils() < $totalCost) {
             return new JsonResponse([
@@ -118,6 +118,9 @@ class ShopController extends AbstractController
             $playerItem->setGenericItem($item);
             $playerItem->setInventory($bag);
             $playerItem->setGear(0);
+            if ($item->isBoundToPlayer()) {
+                $playerItem->setBoundToPlayerId($player->getId());
+            }
             $this->entityManager->persist($playerItem);
         }
 
@@ -177,8 +180,15 @@ class ShopController extends AbstractController
         $player = $this->playerHelper->getPlayer();
         $item = $playerItem->getGenericItem();
 
+        // Soulbound items cannot be sold
+        if ($playerItem->isBound()) {
+            return new JsonResponse([
+                'error' => 'Cet objet est lié à votre personnage et ne peut pas être vendu.',
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         // Sell price = 30% of buy price
-        $sellPrice = max(1, (int) ($item->getPrice() * 0.3));
+        $sellPrice = max(1, (int) (($item->getPrice() ?? 0) * 0.3));
 
         $player->addGils($sellPrice);
         $this->entityManager->remove($playerItem);

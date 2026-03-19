@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/pnjs', name: 'admin_pnj_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_GAME_DESIGNER')]
 class PnjController extends AbstractController
 {
     public function __construct(
@@ -37,7 +37,7 @@ class PnjController extends AbstractController
 
         $page = max(1, $request->query->getInt('page', 1));
         $limit = 25;
-        $total = (int) (clone $qb)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
+        $total = (int) (clone $qb)->select('COUNT(p.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
         $pnjs = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()

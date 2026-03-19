@@ -5,7 +5,7 @@ namespace App\Entity\App;
 use App\Entity\App\Traits\CharacterStatsTrait;
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
-use App\Entity\Game\Quest;
+use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -34,7 +34,11 @@ class Player implements CharacterInterface
         $this->inventories = new ArrayCollection();
         $this->domainExperiences = new ArrayCollection();
         $this->quests = new ArrayCollection();
+        $this->completedQuests = new ArrayCollection();
         $this->skills = new ArrayCollection();
+        $this->statusEffects = new ArrayCollection();
+        $this->bestiaryEntries = new ArrayCollection();
+        $this->achievements = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -66,6 +70,10 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'class_type', type: 'string', length: 255)]
     private string $classType;
 
+    #[ORM\ManyToOne(targetEntity: Race::class)]
+    #[ORM\JoinColumn(name: 'race_id', referencedColumnName: 'id', nullable: true)]
+    private ?Race $race = null;
+
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'players')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
     private User $user;
@@ -87,8 +95,11 @@ class Player implements CharacterInterface
     #[ORM\JoinColumn(name: 'fight_id', referencedColumnName: 'id')]
     private ?Fight $fight = null;
 
-    #[ORM\OneToMany(targetEntity: Quest::class, mappedBy: 'player')]
+    #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'player')]
     private $quests;
+
+    #[ORM\OneToMany(targetEntity: PlayerQuestCompleted::class, mappedBy: 'player')]
+    private $completedQuests;
 
     #[ORM\ManyToMany(targetEntity: Skill::class)]
     #[ORM\JoinTable(name: 'player_skill')]
@@ -99,6 +110,46 @@ class Player implements CharacterInterface
 
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
+
+    #[ORM\OneToMany(targetEntity: PlayerStatusEffect::class, mappedBy: 'player', cascade: ['remove'])]
+    private Collection $statusEffects;
+
+    #[ORM\OneToMany(targetEntity: PlayerBestiary::class, mappedBy: 'player', cascade: ['remove'])]
+    private Collection $bestiaryEntries;
+
+    #[ORM\OneToMany(targetEntity: PlayerAchievement::class, mappedBy: 'player')]
+    private Collection $achievements;
+
+    /** @return Collection<int, PlayerAchievement> */
+    public function getAchievements(): Collection
+    {
+        return $this->achievements;
+    }
+
+    /** @return Collection<int, PlayerStatusEffect> */
+    public function getStatusEffects(): Collection
+    {
+        return $this->statusEffects;
+    }
+
+    public function addStatusEffect(PlayerStatusEffect $statusEffect): void
+    {
+        if (!$this->statusEffects->contains($statusEffect)) {
+            $this->statusEffects->add($statusEffect);
+            $statusEffect->setPlayer($this);
+        }
+    }
+
+    public function removeStatusEffect(PlayerStatusEffect $statusEffect): void
+    {
+        $this->statusEffects->removeElement($statusEffect);
+    }
+
+    /** @return Collection<int, PlayerBestiary> */
+    public function getBestiaryEntries(): Collection
+    {
+        return $this->bestiaryEntries;
+    }
 
     public function getSpeed(): int
     {
@@ -304,7 +355,7 @@ class Player implements CharacterInterface
         $this->classType = $classType;
     }
 
-    /** @return Collection<int, Quest> */
+    /** @return Collection<int, PlayerQuest> */
     public function getQuests(): Collection
     {
         return $this->quests;
@@ -313,6 +364,12 @@ class Player implements CharacterInterface
     public function setQuests(Collection $quests): void
     {
         $this->quests = $quests;
+    }
+
+    /** @return Collection<int, PlayerQuestCompleted> */
+    public function getCompletedQuests(): Collection
+    {
+        return $this->completedQuests;
     }
 
     public function isMoving(): bool
@@ -358,5 +415,17 @@ class Player implements CharacterInterface
         $this->gils -= $amount;
 
         return true;
+    }
+
+    public function getRace(): ?Race
+    {
+        return $this->race;
+    }
+
+    public function setRace(?Race $race): self
+    {
+        $this->race = $race;
+
+        return $this;
     }
 }

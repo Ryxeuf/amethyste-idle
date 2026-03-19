@@ -10,9 +10,10 @@ use Doctrine\ORM\EntityRepository;
 
 class PlayerQuestHelper
 {
-    public function __construct(private readonly PlayerHelper $playerHelper, EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     /**
@@ -90,10 +91,11 @@ class PlayerQuestHelper
         $count = 0;
         $necessary = 0;
         $tracking = $playerQuest->getTracking();
-        foreach ($tracking as $requirements) {
-            foreach ($requirements as $requirement) {
-                $count += $requirement['count'];
-                $necessary += $requirement['necessary'];
+
+        if (isset($tracking['monsters'])) {
+            foreach ($tracking['monsters'] as $monster) {
+                $count += $monster['count'] ?? 0;
+                $necessary += $monster['necessary'] ?? 0;
             }
         }
 

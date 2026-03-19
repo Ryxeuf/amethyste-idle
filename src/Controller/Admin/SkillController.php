@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/skills', name: 'admin_skill_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_GAME_DESIGNER')]
 class SkillController extends AbstractController
 {
     public function __construct(
@@ -37,7 +37,7 @@ class SkillController extends AbstractController
 
         $page = max(1, $request->query->getInt('page', 1));
         $limit = 25;
-        $total = (int) (clone $qb)->select('COUNT(s.id)')->getQuery()->getSingleScalarResult();
+        $total = (int) (clone $qb)->select('COUNT(s.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
         $skills = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()

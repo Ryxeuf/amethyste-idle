@@ -4,66 +4,68 @@
 {% block page_title %}Recettes de craft{% endblock %}
 
 {% block body %}
-    <div class="flex items-center justify-between mb-6">
-        <form method="get" class="flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+        <form method="get" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <input type="text" name="q" value="{{ search }}" placeholder="Rechercher une recette..."
-                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-64">
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
             <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
             {% if search %}
                 <a href="{{ path('admin_craft_recipe_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
             {% endif %}
         </form>
-        <a href="{{ path('admin_craft_recipe_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">+ Nouvelle recette</a>
+        <a href="{{ path('admin_craft_recipe_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">+ Nouvelle recette</a>
     </div>
 
     <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="border-b border-gray-800 text-gray-400">
-                    <th class="text-left px-4 py-3 font-medium">ID</th>
-                    <th class="text-left px-4 py-3 font-medium">Nom</th>
-                    <th class="text-left px-4 py-3 font-medium">Profession</th>
-                    <th class="text-left px-4 py-3 font-medium">Resultat</th>
-                    <th class="text-left px-4 py-3 font-medium">Niveau</th>
-                    <th class="text-left px-4 py-3 font-medium">XP</th>
-                    <th class="text-right px-4 py-3 font-medium">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-800">
-                {% for recipe in recipes %}
-                    <tr class="hover:bg-gray-800 transition-colors">
-                        <td class="px-4 py-3 text-gray-500">{{ recipe.id }}</td>
-                        <td class="px-4 py-3 text-gray-200 font-medium">{{ recipe.name }}</td>
-                        <td class="px-4 py-3">
-                            <span class="inline-flex px-2 py-1 text-xs rounded-full
-                                {% if recipe.profession == 'blacksmith' %}bg-gray-700 text-gray-300
-                                {% elseif recipe.profession == 'alchemist' %}bg-green-900 text-green-300
-                                {% elseif recipe.profession == 'tanner' %}bg-yellow-900 text-yellow-300
-                                {% elseif recipe.profession == 'jeweler' %}bg-purple-900 text-purple-300
-                                {% endif %}">
-                                {{ recipe.profession }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-gray-400">{{ recipe.resultItemSlug }} x{{ recipe.resultQuantity }}</td>
-                        <td class="px-4 py-3 text-gray-400">{{ recipe.requiredLevel }}</td>
-                        <td class="px-4 py-3 text-gray-400">{{ recipe.experienceGain }}</td>
-                        <td class="px-4 py-3 text-right">
-                            <div class="flex items-center justify-end gap-2">
-                                <a href="{{ path('admin_craft_recipe_edit', {id: recipe.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
-                                <form method="post" action="{{ path('admin_craft_recipe_delete', {id: recipe.id}) }}" onsubmit="return confirm('Supprimer cette recette ?');" class="inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
-                                    <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
-                                </form>
-                            </div>
-                        </td>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-800 text-gray-400">
+                        <th class="text-left px-4 py-3 font-medium">ID</th>
+                        <th class="text-left px-4 py-3 font-medium">Nom</th>
+                        <th class="text-left px-4 py-3 font-medium">Profession</th>
+                        <th class="text-left px-4 py-3 font-medium">Resultat</th>
+                        <th class="text-left px-4 py-3 font-medium">Niveau</th>
+                        <th class="text-left px-4 py-3 font-medium">XP</th>
+                        <th class="text-right px-4 py-3 font-medium">Actions</th>
                     </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucune recette trouvee.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for recipe in recipes %}
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-4 py-3 text-gray-500">{{ recipe.id }}</td>
+                            <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ recipe.name }}</td>
+                            <td class="px-4 py-3">
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full
+                                    {% if recipe.profession == 'blacksmith' %}bg-gray-700 text-gray-300
+                                    {% elseif recipe.profession == 'alchemist' %}bg-green-900 text-green-300
+                                    {% elseif recipe.profession == 'tanner' %}bg-yellow-900 text-yellow-300
+                                    {% elseif recipe.profession == 'jeweler' %}bg-purple-900 text-purple-300
+                                    {% endif %}">
+                                    {{ recipe.profession }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">{{ recipe.resultItemSlug }} x{{ recipe.resultQuantity }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ recipe.requiredLevel }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ recipe.experienceGain }}</td>
+                            <td class="px-4 py-3 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ path('admin_craft_recipe_edit', {id: recipe.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
+                                    <form method="post" action="{{ path('admin_craft_recipe_delete', {id: recipe.id}) }}" onsubmit="return confirm('Supprimer cette recette ?');" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ recipe.id) }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucune recette trouvee.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     {% if totalPages > 1 %}

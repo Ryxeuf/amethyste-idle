@@ -26,6 +26,7 @@ class Skill
         $this->requirements = new ArrayCollection();
         $this->achievements = new ArrayCollection();
         $this->items = new ArrayCollection();
+        $this->domains = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -76,9 +77,9 @@ class Skill
     #[ORM\ManyToMany(targetEntity: Item::class, mappedBy: 'requirements')]
     private $items;
 
-    #[ORM\ManyToOne(targetEntity: Domain::class, inversedBy: 'skills')]
-    #[ORM\JoinColumn(name: 'domain_id', referencedColumnName: 'id')]
-    private $domain;
+    #[ORM\ManyToMany(targetEntity: Domain::class, inversedBy: 'skills')]
+    #[ORM\JoinTable(name: 'skill_domain')]
+    private Collection $domains;
 
     /**
      * Get id.
@@ -170,21 +171,47 @@ class Skill
     }
 
     /**
-     * Set domain.
+     * @return Collection<int, Domain>
      */
-    public function setDomain(?Domain $domain = null): self
+    public function getDomains(): Collection
     {
-        $this->domain = $domain;
+        return $this->domains;
+    }
+
+    public function addDomain(Domain $domain): self
+    {
+        if (!$this->domains->contains($domain)) {
+            $this->domains[] = $domain;
+        }
+
+        return $this;
+    }
+
+    public function removeDomain(Domain $domain): self
+    {
+        $this->domains->removeElement($domain);
 
         return $this;
     }
 
     /**
-     * Get domain.
+     * Rétrocompatibilité : retourne le premier domaine.
      */
-    public function getDomain(): Domain
+    public function getDomain(): ?Domain
     {
-        return $this->domain;
+        return $this->domains->first() ?: null;
+    }
+
+    /**
+     * Rétrocompatibilité : ajoute un domaine (remplace setDomain).
+     */
+    public function setDomain(?Domain $domain = null): self
+    {
+        if ($domain !== null) {
+            $this->addDomain($domain);
+        }
+
+        return $this;
     }
 
     /**

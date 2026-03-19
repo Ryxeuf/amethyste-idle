@@ -36,7 +36,7 @@ class AdminLogController extends AbstractController
                ->setParameter('q', '%' . $search . '%');
         }
 
-        $total = (clone $qb)->select('COUNT(l.id)')->getQuery()->getSingleScalarResult();
+        $total = (clone $qb)->select('COUNT(l.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
         $logs = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()

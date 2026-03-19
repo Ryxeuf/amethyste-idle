@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/craft-recipes', name: 'admin_craft_recipe_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_GAME_DESIGNER')]
 class CraftRecipeController extends AbstractController
 {
     public function __construct(
@@ -37,7 +37,7 @@ class CraftRecipeController extends AbstractController
 
         $page = max(1, $request->query->getInt('page', 1));
         $limit = 25;
-        $total = (int) (clone $qb)->select('COUNT(r.id)')->getQuery()->getSingleScalarResult();
+        $total = (int) (clone $qb)->select('COUNT(r.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
         $recipes = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()

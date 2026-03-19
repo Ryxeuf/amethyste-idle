@@ -2,7 +2,7 @@
 
 namespace App\GameEngine\Fight;
 
-use App\Entity\Game\Spell;
+use App\Enum\Element;
 
 class ElementalSynergyCalculator
 {
@@ -11,8 +11,8 @@ class ElementalSynergyCalculator
      * Each synergy is bidirectional.
      */
     private const SYNERGIES = [
-        Spell::ELEMENT_WATER => [
-            Spell::ELEMENT_FIRE => [
+        'water' => [
+            'fire' => [
                 'name' => 'steam',
                 'label' => 'Vapeur',
                 'effect' => 'debuff_precision',
@@ -21,8 +21,8 @@ class ElementalSynergyCalculator
                 'description' => 'La combinaison eau + feu crée de la vapeur, réduisant la précision ennemie.',
             ],
         ],
-        Spell::ELEMENT_EARTH => [
-            Spell::ELEMENT_AIR => [
+        'earth' => [
+            'air' => [
                 'name' => 'sandstorm',
                 'label' => 'Tempête de sable',
                 'effect' => 'aoe_damage',
@@ -31,8 +31,8 @@ class ElementalSynergyCalculator
                 'description' => 'La combinaison terre + air crée une tempête de sable infligeant des dégâts de zone.',
             ],
         ],
-        Spell::ELEMENT_LIGHT => [
-            Spell::ELEMENT_DARK => [
+        'light' => [
+            'dark' => [
                 'name' => 'eclipse',
                 'label' => 'Éclipse',
                 'effect' => 'massive_damage_self_damage',
@@ -42,14 +42,50 @@ class ElementalSynergyCalculator
                 'description' => 'La combinaison lumière + ténèbres crée une éclipse : dégâts massifs mais aussi des dégâts sur le lanceur.',
             ],
         ],
-        Spell::ELEMENT_FIRE => [
-            Spell::ELEMENT_EARTH => [
+        'fire' => [
+            'earth' => [
                 'name' => 'floral_explosion',
                 'label' => 'Explosion florale',
                 'effect' => 'poison_fire',
                 'damageMultiplier' => 1.3,
                 'statusEffect' => 'poison',
                 'description' => 'La combinaison feu + terre crée une explosion florale : dégâts de feu et empoisonnement.',
+            ],
+        ],
+        'metal' => [
+            'fire' => [
+                'name' => 'forge',
+                'label' => 'Forge ardente',
+                'effect' => 'buff_damage',
+                'damageMultiplier' => 1.4,
+                'statusEffect' => 'burn',
+                'description' => 'La combinaison métal + feu crée une forge ardente : métal chauffé à blanc, dégâts amplifiés et brûlure.',
+            ],
+            'light' => [
+                'name' => 'holy_blade',
+                'label' => 'Lame sacrée',
+                'effect' => 'burst_damage',
+                'damageMultiplier' => 1.6,
+                'statusEffect' => null,
+                'description' => 'La combinaison métal + lumière forge une lame sacrée : dégâts purs amplifiés.',
+            ],
+        ],
+        'beast' => [
+            'earth' => [
+                'name' => 'primal_fury',
+                'label' => 'Furie primale',
+                'effect' => 'buff_berserk',
+                'damageMultiplier' => 1.4,
+                'statusEffect' => 'berserk',
+                'description' => 'La combinaison bête + terre déchaîne une furie primale : rage sauvage et puissance brute.',
+            ],
+            'dark' => [
+                'name' => 'venomous_shadow',
+                'label' => 'Ombre venimeuse',
+                'effect' => 'poison_dark',
+                'damageMultiplier' => 1.5,
+                'statusEffect' => 'poison',
+                'description' => 'La combinaison bête + ténèbres crée une ombre venimeuse : poison virulent amplifié par les ténèbres.',
             ],
         ],
     ];
@@ -59,9 +95,9 @@ class ElementalSynergyCalculator
      *
      * @return array|null Synergy data if combo matches, null otherwise
      */
-    public function checkSynergy(string $lastElement, string $currentElement): ?array
+    public function checkSynergy(Element $lastElement, Element $currentElement): ?array
     {
-        if ($lastElement === Spell::ELEMENT_NONE || $currentElement === Spell::ELEMENT_NONE) {
+        if ($lastElement === Element::None || $currentElement === Element::None) {
             return null;
         }
 
@@ -69,14 +105,17 @@ class ElementalSynergyCalculator
             return null;
         }
 
+        $last = $lastElement->value;
+        $current = $currentElement->value;
+
         // Check direct order
-        if (isset(self::SYNERGIES[$lastElement][$currentElement])) {
-            return self::SYNERGIES[$lastElement][$currentElement];
+        if (isset(self::SYNERGIES[$last][$current])) {
+            return self::SYNERGIES[$last][$current];
         }
 
         // Check reverse order (synergies are bidirectional)
-        if (isset(self::SYNERGIES[$currentElement][$lastElement])) {
-            return self::SYNERGIES[$currentElement][$lastElement];
+        if (isset(self::SYNERGIES[$current][$last])) {
+            return self::SYNERGIES[$current][$last];
         }
 
         return null;

@@ -53,7 +53,7 @@ class DomainExperience
     #[ORM\Column(name: 'critical', type: 'integer', options: ['default' => 0])]
     private $critical = 0;
 
-    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: 'domain_experiences')]
+    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: 'domainExperiences')]
     #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id')]
     private $player;
 

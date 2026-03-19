@@ -145,6 +145,11 @@ class AuctionController extends AbstractController
             return new JsonResponse(['error' => 'Impossible de vendre un objet equipe'], Response::HTTP_BAD_REQUEST);
         }
 
+        // Prevent listing soulbound items
+        if ($playerItem->isBound()) {
+            return new JsonResponse(['error' => 'Cet objet est lie a votre personnage et ne peut pas etre vendu'], Response::HTTP_BAD_REQUEST);
+        }
+
         // Check max active listings (limit to 20)
         $activeCount = $this->entityManager->getRepository(AuctionListing::class)->count([
             'seller' => $player,

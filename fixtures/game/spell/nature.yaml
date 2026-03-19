@@ -2,7 +2,7 @@ App\Entity\Game\Spell:
   liana_whip (extends spell):
     slug: liana-whip
     damage: 1
-    element: 'nature'
+    element: 'beast'
     heal: null
     name: "Fouet de liane"
     description: "Un sort de fouet de liane"

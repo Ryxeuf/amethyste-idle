@@ -99,8 +99,8 @@ class TradeController extends AbstractController
         $validItemIds = [];
         foreach ($itemIds as $itemId) {
             $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find((int) $itemId);
-            if (!$playerItem || $playerItem->getInventory()?->getId() !== $bag->getId() || $playerItem->getGear() > 0) {
-                return new JsonResponse(['error' => 'Un des objets proposes est invalide'], Response::HTTP_BAD_REQUEST);
+            if (!$playerItem || $playerItem->getInventory()?->getId() !== $bag->getId() || $playerItem->getGear() > 0 || $playerItem->isBound()) {
+                return new JsonResponse(['error' => 'Un des objets proposes est invalide ou lie au personnage'], Response::HTTP_BAD_REQUEST);
             }
             $validItemIds[] = (int) $itemId;
         }
@@ -163,8 +163,8 @@ class TradeController extends AbstractController
         $validItemIds = [];
         foreach ($itemIds as $itemId) {
             $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find((int) $itemId);
-            if (!$playerItem || $playerItem->getInventory()?->getId() !== $bag->getId() || $playerItem->getGear() > 0) {
-                return new JsonResponse(['error' => 'Un des objets proposes est invalide'], Response::HTTP_BAD_REQUEST);
+            if (!$playerItem || $playerItem->getInventory()?->getId() !== $bag->getId() || $playerItem->getGear() > 0 || $playerItem->isBound()) {
+                return new JsonResponse(['error' => 'Un des objets proposes est invalide ou lie au personnage'], Response::HTTP_BAD_REQUEST);
             }
             $validItemIds[] = (int) $itemId;
         }

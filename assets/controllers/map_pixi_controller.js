@@ -120,6 +120,11 @@ export default class extends Controller {
         this._animatedEntities = [];
         this._particles = [];
 
+        if (this._tooltipEl && this._tooltipEl.parentNode) {
+            this._tooltipEl.parentNode.removeChild(this._tooltipEl);
+            this._tooltipEl = null;
+        }
+
         if (this._app) {
             this._app.destroy(true);
             this._app = null;
@@ -172,9 +177,12 @@ export default class extends Controller {
         this._worldContainer.addChild(this._playerContainer);
         this._app.stage.addChild(this._worldContainer);
 
+        this._initTooltip();
+
         this._app.canvas.addEventListener('pointerdown', (e) => this._onPointerDown(e));
         this._app.canvas.addEventListener('pointermove', (e) => this._onPointerMove(e));
         this._app.canvas.addEventListener('pointerup', (e) => this._onPointerUp(e));
+        this._app.canvas.addEventListener('pointerleave', () => this._hideTooltip());
 
         this._onKeyDown = (e) => this._handleKeyDown(e);
         document.addEventListener('keydown', this._onKeyDown);
@@ -378,15 +386,15 @@ export default class extends Controller {
 
         for (const p of data.players) {
             if (p.self) continue;
-            this._createEntitySprite('player', p.id, p.x, p.y, p.spriteKey, p.name);
+            this._createEntitySprite('player', p.id, p.x, p.y, p.spriteKey, p.name, { name: p.name });
         }
 
         for (const mob of data.mobs) {
-            this._createEntitySprite('mob', mob.id, mob.x, mob.y, mob.spriteKey, 'M');
+            this._createEntitySprite('mob', mob.id, mob.x, mob.y, mob.spriteKey, 'M', { name: mob.name, level: mob.level });
         }
 
         for (const pnj of data.pnjs) {
-            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N');
+            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N', { name: pnj.name });
         }
 
         for (const portal of (data.portals || [])) {
@@ -400,7 +408,7 @@ export default class extends Controller {
         this._createPlayerMarker();
     }
 
-    _createEntitySprite(type, id, x, y, spriteKey, label) {
+    _createEntitySprite(type, id, x, y, spriteKey, label, meta = {}) {
         const key = `${type}_${id}`;
         const animator = this._createAnimator(spriteKey);
 
@@ -415,7 +423,7 @@ export default class extends Controller {
             container.position.set(x * this._tileSize, y * this._tileSize);
             container.zIndex = y * this._tileSize;
             this._entityContainer.addChild(container);
-            this._entitySprites[key] = { container, x, y, type, animator };
+            this._entitySprites[key] = { container, x, y, type, animator, meta };
             this._animatedEntities.push(animator);
         } else {
             // Fallback: cached colored marker
@@ -429,7 +437,7 @@ export default class extends Controller {
             container.position.set(x * this._tileSize, y * this._tileSize);
             container.zIndex = y * this._tileSize;
             this._entityContainer.addChild(container);
-            this._entitySprites[key] = { container, x, y, type, animator: null };
+            this._entitySprites[key] = { container, x, y, type, animator: null, meta };
         }
 
         // Spatial hash registration
@@ -507,7 +515,8 @@ export default class extends Controller {
         this._entityContainer.addChild(sprite);
 
         const key = `portal_${portal.id}`;
-        this._entitySprites[key] = { container: sprite, x: portal.x, y: portal.y, type: 'portal', animator: null };
+        this._entitySprites[key] = { container: sprite, x: portal.x, y: portal.y, type: 'portal', animator: null, meta: { name: portal.name } };
+        this._addToSpatialHash(key, portal.x, portal.y);
     }
 
     _getPortalTexture() {
@@ -551,6 +560,7 @@ export default class extends Controller {
         this._entitySprites[key] = {
             container: sprite, x: spot.x, y: spot.y,
             type: 'harvest', animator: null, spotData: spot,
+            meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds },
         };
         this._addToSpatialHash(key, spot.x, spot.y);
     }
@@ -855,6 +865,166 @@ export default class extends Controller {
         this._entityPool.push(container);
     }
 
+    // --- Hover Tooltip (desktop) ---
+
+    _initTooltip() {
+        this._tooltipEl = document.createElement('div');
+        Object.assign(this._tooltipEl.style, {
+            position: 'absolute',
+            pointerEvents: 'none',
+            zIndex: '1000',
+            display: 'none',
+            padding: '4px 8px',
+            background: 'rgba(15, 10, 30, 0.92)',
+            border: '1px solid #b8860b',
+            borderRadius: '4px',
+            color: '#f0e6d2',
+            fontFamily: '"Press Start 2P", "Courier New", monospace',
+            fontSize: '9px',
+            lineHeight: '1.4',
+            whiteSpace: 'nowrap',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.6), inset 0 0 6px rgba(184,134,11,0.15)',
+            maxWidth: '200px',
+            transition: 'opacity 0.15s',
+        });
+        this.element.style.position = 'relative';
+        this.element.appendChild(this._tooltipEl);
+        this._tooltipTileKey = null;
+    }
+
+    _updateTooltip(e) {
+        const rect = this._app.canvas.getBoundingClientRect();
+        const scaleX = this._app.canvas.width / rect.width;
+        const scaleY = this._app.canvas.height / rect.height;
+        const screenX = (e.clientX - rect.left) * scaleX;
+        const screenY = (e.clientY - rect.top) * scaleY;
+
+        const worldX = screenX - this._worldContainer.position.x;
+        const worldY = screenY - this._worldContainer.position.y;
+
+        const tileX = Math.floor(worldX / this._tileSize);
+        const tileY = Math.floor(worldY / this._tileSize);
+        const tileKey = `${tileX},${tileY}`;
+
+        // Skip if same tile
+        if (tileKey === this._tooltipTileKey) {
+            // Just reposition
+            if (this._tooltipEl.style.display !== 'none') {
+                this._positionTooltip(e, rect);
+            }
+            return;
+        }
+        this._tooltipTileKey = tileKey;
+
+        // Check for entities on this tile
+        const entities = this._getEntitiesAt(tileX, tileY);
+        if (entities.size === 0) {
+            // Check if it's the player's own tile
+            if (tileX === Math.floor(this._playerX) && tileY === Math.floor(this._playerY)) {
+                this._showTooltip(this._buildPlayerSelfTooltip(), e, rect);
+                return;
+            }
+            this._hideTooltip();
+            return;
+        }
+
+        // Build tooltip content from first entity found
+        let html = '';
+        for (const key of entities) {
+            const entry = this._entitySprites[key];
+            if (!entry) continue;
+            const line = this._buildTooltipLine(entry);
+            if (line) {
+                if (html) html += '<br>';
+                html += line;
+            }
+        }
+
+        if (html) {
+            this._showTooltip(html, e, rect);
+        } else {
+            this._hideTooltip();
+        }
+    }
+
+    _buildTooltipLine(entry) {
+        const meta = entry.meta || {};
+        const type = entry.type;
+
+        const icons = { player: '👤', mob: '💀', pnj: '💬', portal: '🌀', harvest: '✦' };
+        const colors = { player: '#7cb3ff', mob: '#ff6b6b', pnj: '#c084fc', portal: '#a855f7', harvest: '#fbbf24' };
+        const icon = icons[type] || '';
+        const color = colors[type] || '#f0e6d2';
+
+        if (type === 'player') {
+            return `<span style="color:${color}">${icon} ${this._escHtml(meta.name || '???')}</span>`;
+        }
+        if (type === 'mob') {
+            const lvl = meta.level ? ` <span style="color:#aaa;font-size:8px">Nv.${meta.level}</span>` : '';
+            return `<span style="color:${color}">${icon} ${this._escHtml(meta.name || '???')}${lvl}</span>`;
+        }
+        if (type === 'pnj') {
+            return `<span style="color:${color}">${icon} ${this._escHtml(meta.name || '???')}</span>`;
+        }
+        if (type === 'portal') {
+            return `<span style="color:${color}">${icon} ${this._escHtml(meta.name || 'Portail')}</span>`;
+        }
+        if (type === 'harvest') {
+            const spot = entry.spotData || meta;
+            const name = this._escHtml(spot.name || '???');
+            if (spot.available === false && spot.remainingSeconds > 0) {
+                return `<span style="color:#888">${icon} ${name} <span style="font-size:8px">(${spot.remainingSeconds}s)</span></span>`;
+            }
+            return `<span style="color:${color}">${icon} ${name}</span>`;
+        }
+        return null;
+    }
+
+    _buildPlayerSelfTooltip() {
+        return '<span style="color:#7cb3ff">👤 Vous</span>';
+    }
+
+    _showTooltip(html, e, rect) {
+        this._tooltipEl.innerHTML = html;
+        this._tooltipEl.style.display = 'block';
+        this._tooltipEl.style.opacity = '1';
+        this._positionTooltip(e, rect);
+        this._app.canvas.style.cursor = 'default';
+    }
+
+    _positionTooltip(e, rect) {
+        const offsetX = 12;
+        const offsetY = -8;
+        let left = e.clientX - rect.left + offsetX;
+        let top = e.clientY - rect.top + offsetY;
+
+        // Clamp to stay inside the container
+        const tipW = this._tooltipEl.offsetWidth;
+        const tipH = this._tooltipEl.offsetHeight;
+        if (left + tipW > rect.width) left = left - tipW - offsetX * 2;
+        if (top + tipH > rect.height) top = rect.height - tipH - 4;
+        if (top < 0) top = 4;
+
+        this._tooltipEl.style.left = `${left}px`;
+        this._tooltipEl.style.top = `${top}px`;
+    }
+
+    _hideTooltip() {
+        if (this._tooltipEl) {
+            this._tooltipEl.style.display = 'none';
+            this._tooltipTileKey = null;
+        }
+        if (this._app) {
+            this._app.canvas.style.cursor = 'pointer';
+        }
+    }
+
+    _escHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     // --- Haptic Feedback (mobile) ---
 
     _vibrate(pattern = 15) {
@@ -904,7 +1074,9 @@ export default class extends Controller {
     }
 
     _onPointerMove(e) {
-        // No-op for now; swipe is detected on pointer up
+        // Tooltip hover (desktop only, skip touch)
+        if (e.pointerType !== 'mouse') return;
+        this._updateTooltip(e);
     }
 
     _onPointerUp(e) {

@@ -1,0 +1,88 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Utilisateurs - Admin{% endblock %}
+{% block page_title %}Utilisateurs{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <form method="get" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <input type="text" name="q" value="{{ search }}" placeholder="Rechercher un utilisateur..."
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
+            <select name="role" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                <option value="">Tous les roles</option>
+                {% for roleKey, roleLabel in availableRoles %}
+                    <option value="{{ roleKey }}" {% if roleFilter == roleKey %}selected{% endif %}>{{ roleLabel }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Filtrer</button>
+            {% if search or roleFilter %}
+                <a href="{{ path('admin_user_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
+            {% endif %}
+        </form>
+        <span class="text-gray-500 text-sm flex-shrink-0">{{ total }} utilisateur{{ total > 1 ? 's' : '' }}</span>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-800 text-gray-400">
+                        <th class="text-left px-4 py-3 font-medium">ID</th>
+                        <th class="text-left px-4 py-3 font-medium">Utilisateur</th>
+                        <th class="text-left px-4 py-3 font-medium">Email</th>
+                        <th class="text-left px-4 py-3 font-medium">Roles</th>
+                        <th class="text-left px-4 py-3 font-medium">Statut</th>
+                        <th class="text-left px-4 py-3 font-medium">Inscription</th>
+                        <th class="text-right px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for user in users %}
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-4 py-3 text-gray-500">{{ user.id }}</td>
+                            <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ user.username ?? '-' }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ user.email }}</td>
+                            <td class="px-4 py-3">
+                                <div class="flex flex-wrap gap-1">
+                                    {% for role in user.roles %}
+                                        {% if role != 'ROLE_USER' %}
+                                            <span class="inline-flex px-2 py-0.5 text-xs rounded-full
+                                                {% if role == 'ROLE_SUPER_ADMIN' %}bg-red-900 text-red-300
+                                                {% elseif role == 'ROLE_ADMIN' %}bg-purple-900 text-purple-300
+                                                {% elseif role == 'ROLE_GAME_DESIGNER' %}bg-blue-900 text-blue-300
+                                                {% elseif role == 'ROLE_WORLD_BUILDER' %}bg-green-900 text-green-300
+                                                {% elseif role == 'ROLE_MODERATOR' %}bg-yellow-900 text-yellow-300
+                                                {% elseif role == 'ROLE_PLAYER' %}bg-indigo-900 text-indigo-300
+                                                {% else %}bg-gray-700 text-gray-300{% endif %}">
+                                                {{ role|replace({'ROLE_': ''}) }}
+                                            </span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if user.isBanned %}
+                                    <span class="inline-flex px-2 py-1 text-xs rounded-full bg-red-900 text-red-300">Banni</span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-1 text-xs rounded-full bg-green-900 text-green-300">Actif</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ user.createdAt ? user.createdAt|date('d/m/Y') : '-' }}</td>
+                            <td class="px-4 py-3 text-right">
+                                <a href="{{ path('admin_user_show', {id: user.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Voir</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucun utilisateur trouve.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if totalPages is defined and totalPages > 1 %}
+        {% include 'admin/_pagination.html.twig' %}
+    {% endif %}
+{% endblock %}

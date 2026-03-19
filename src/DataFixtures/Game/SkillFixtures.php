@@ -17,10 +17,6 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
         // Premiere passe : creation des competences
         foreach ($skillsData as $reference => $data) {
-            if ($reference === 'skill (template)') {
-                continue;
-            }
-
             $skill = new Skill();
 
             if (isset($data['slug'])) {
@@ -40,7 +36,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             }
 
             if (isset($data['domain'])) {
-                $skill->setDomain($this->getReference($data['domain'], Domain::class));
+                $domains = is_array($data['domain']) ? $data['domain'] : [$data['domain']];
+                foreach ($domains as $domainRef) {
+                    $skill->addDomain($this->getReference($domainRef, Domain::class));
+                }
             }
 
             if (isset($data['actions'])) {
@@ -70,7 +69,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
         // Deuxieme passe : definition des prerequis
         foreach ($skillsData as $reference => $data) {
-            if ($reference === 'skill (template)' || !isset($data['requirements'])) {
+            if (!isset($data['requirements'])) {
                 continue;
             }
 
@@ -87,301 +86,3292 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
 
     private function getSkillsData(): array
     {
+        return array_merge(
+            $this->getPyromancySkills(),
+            $this->getBerserkerSkills(),
+            $this->getArtificerSkills(),
+            $this->getHydromancerSkills(),
+            $this->getHealerSkills(),
+            $this->getTidecallerSkills(),
+            $this->getSoldierSkills(),
+            $this->getKnightSkills(),
+            $this->getEngineerSkills(),
+            $this->getGeomancerSkills(),
+            $this->getDefenderSkills(),
+            $this->getGuardianSkills(),
+            $this->getNecromancerSkills(),
+            $this->getDruidSkills(),
+            $this->getHunterSkills(),
+            $this->getTamerSkills(),
+            $this->getStormcallerSkills(),
+            $this->getArcherSkills(),
+            $this->getWandererSkills(),
+            $this->getPaladinSkills(),
+            $this->getPriestSkills(),
+            $this->getInquisitorSkills(),
+            $this->getAssassinSkills(),
+            $this->getWarlockSkills(),
+            $this->getMinerSkills(),
+            $this->getHerbalistSkills(),
+        );
+    }
+
+    // =========================================================================
+    // PYROMANCIE (feu) — 15 skills, domaine modele complet
+    // =========================================================================
+    private function getPyromancySkills(): array
+    {
+        $d = 'pyromancy';
+
         return [
-            // =====================================================
-            // PYROMANCIE — Boule de feu > Pluie de flammes > Inferno
-            // =====================================================
-            'pyro_materia_1' => [
-                'title' => 'Apprenti pyromancien',
-                'slug' => 'pyro-materia-1',
-                'description' => 'Debloque le sort Boule de feu',
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'pyro_apprenti_1' => [
+                'title' => 'Materia : Boule de feu',
+                'slug' => 'pyro-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Boule de feu',
                 'requiredPoints' => 0,
-                'domain' => 'pyromancy',
-                'actions' => ['combat' => ['spell_slug' => 'fire-ball']],
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-ball']],
             ],
-            'pyro_critical_1' => [
+            'pyro_apprenti_2' => [
+                'title' => 'Materia : Flammeche',
+                'slug' => 'pyro-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Flammeche',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'flame']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'pyro_rang2_1' => [
                 'title' => 'Points faibles',
-                'slug' => 'pyro-critical-1',
+                'slug' => 'pyro-rang2-1',
                 'description' => 'Augmente les chances de coup critique',
                 'requiredPoints' => 10,
-                'domain' => 'pyromancy',
+                'domain' => $d,
                 'critical' => 1,
-                'requirements' => ['pyro_materia_1'],
+                'requirements' => ['pyro_apprenti_1'],
             ],
-            'pyro_damage_1' => [
+            'pyro_rang2_2' => [
                 'title' => 'Efficacite du feu',
-                'slug' => 'pyro-damage-1',
+                'slug' => 'pyro-rang2-2',
                 'description' => 'Augmente les degats de pyromancie',
                 'requiredPoints' => 10,
-                'domain' => 'pyromancy',
+                'domain' => $d,
                 'damage' => 1,
-                'requirements' => ['pyro_materia_1'],
+                'requirements' => ['pyro_apprenti_1'],
             ],
-            'pyro_materia_2' => [
-                'title' => 'Pluie de flammes',
-                'slug' => 'pyro-materia-2',
-                'description' => 'Debloque le sort Pluie de flammes (AoE)',
-                'requiredPoints' => 20,
-                'domain' => 'pyromancy',
-                'actions' => ['combat' => ['spell_slug' => 'flame-rain']],
-                'requirements' => ['pyro_critical_1', 'pyro_damage_1'],
+            'pyro_rang2_3' => [
+                'title' => 'Materia : Mur de feu',
+                'slug' => 'pyro-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Mur de feu',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-wall']],
+                'requirements' => ['pyro_apprenti_2'],
             ],
-            'pyro_materia_3' => [
-                'title' => 'Inferno',
-                'slug' => 'pyro-materia-3',
-                'description' => 'Debloque le sort Inferno — devastation totale',
-                'requiredPoints' => 30,
-                'domain' => 'pyromancy',
-                'actions' => ['combat' => ['spell_slug' => 'inferno']],
-                'requirements' => ['pyro_materia_2'],
-            ],
-            'pyro_hit_1' => [
-                'title' => 'Chaude precision',
-                'slug' => 'pyro-hit-1',
-                'description' => 'Augmente les chances de toucher',
-                'requiredPoints' => 20,
-                'hit' => 1,
-                'domain' => 'pyromancy',
-                'requirements' => ['pyro_materia_2'],
+            'pyro_rang2_4' => [
+                'title' => 'Materia : Toucher brulant',
+                'slug' => 'pyro-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Toucher brulant',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'burning-touch']],
+                'requirements' => ['pyro_apprenti_2'],
             ],
 
-            // =====================================================
-            // SOLDAT — Frappe puissante > Charge > Tourbillon d'epee
-            // =====================================================
-            'soldier_apprentice' => [
-                'title' => 'Apprenti soldat',
-                'slug' => 'soldier-apprentice',
-                'description' => 'Debloque la Frappe puissante',
-                'requiredPoints' => 0,
-                'domain' => 'soldier',
-                'actions' => ['combat' => ['spell_slug' => 'sharp-blade']],
+            // Rang 3 (20-50 pts) — 4 skills
+            'pyro_rang3_1' => [
+                'title' => 'Materia : Pluie de flammes',
+                'slug' => 'pyro-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Pluie de flammes (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'flame-rain']],
+                'requirements' => ['pyro_rang2_1', 'pyro_rang2_2'],
             ],
-            'soldier_damage_1' => [
-                'title' => 'Force brute',
-                'slug' => 'soldier-damage-1',
+            'pyro_rang3_2' => [
+                'title' => 'Materia : Nova de feu',
+                'slug' => 'pyro-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Nova de feu',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-nova']],
+                'requirements' => ['pyro_rang2_3'],
+            ],
+            'pyro_rang3_3' => [
+                'title' => 'Chaude precision',
+                'slug' => 'pyro-rang3-3',
+                'description' => 'Augmente la precision des sorts de feu',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['pyro_rang2_4'],
+            ],
+            'pyro_rang3_4' => [
+                'title' => 'Materia : Flamme du phenix',
+                'slug' => 'pyro-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Flamme du phenix (degats + soin)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'phoenix-flame']],
+                'requirements' => ['pyro_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'pyro_rang4_1' => [
+                'title' => 'Materia : Inferno',
+                'slug' => 'pyro-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Inferno — devastation totale',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'inferno']],
+                'requirements' => ['pyro_rang3_1', 'pyro_rang3_2'],
+            ],
+            'pyro_rang4_2' => [
+                'title' => 'Materia : Souffle du dragon',
+                'slug' => 'pyro-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Souffle du dragon (AoE)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dragon-breath']],
+                'requirements' => ['pyro_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'pyro_rang5_1' => [
+                'title' => 'Materia : Eruption volcanique',
+                'slug' => 'pyro-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Eruption volcanique',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'volcanic-eruption']],
+                'requirements' => ['pyro_rang4_1', 'pyro_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // BERSERKER (feu) — 15 skills, rage et CaC devastateur
+    // =========================================================================
+    private function getBerserkerSkills(): array
+    {
+        $d = 'berserker';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'berserk_apprenti_1' => [
+                'title' => 'Materia : Flamme de rage',
+                'slug' => 'berserk-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Flamme de rage',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rage-flame']],
+            ],
+            'berserk_apprenti_2' => [
+                'title' => 'Materia : Toucher brulant',
+                'slug' => 'berserk-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher brulant',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'burning-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'berserk_rang2_1' => [
+                'title' => 'Brutalite',
+                'slug' => 'berserk-rang2-1',
                 'description' => 'Augmente les degats physiques',
                 'requiredPoints' => 10,
-                'domain' => 'soldier',
+                'domain' => $d,
                 'damage' => 1,
-                'requirements' => ['soldier_apprentice'],
+                'requirements' => ['berserk_apprenti_1'],
             ],
-            'soldier_materia_1' => [
-                'title' => 'Charge',
-                'slug' => 'soldier-materia-1',
-                'description' => 'Debloque le sort Charge',
+            'berserk_rang2_2' => [
+                'title' => 'Coups sauvages',
+                'slug' => 'berserk-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
                 'requiredPoints' => 10,
-                'domain' => 'soldier',
-                'actions' => ['combat' => ['spell_slug' => 'iron-fist']],
-                'requirements' => ['soldier_apprentice'],
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['berserk_apprenti_1'],
             ],
-            'soldier_materia_2' => [
-                'title' => 'Tourbillon d\'epee',
-                'slug' => 'soldier-materia-2',
-                'description' => "Debloque le Tourbillon d'epee (AoE)",
-                'requiredPoints' => 25,
-                'domain' => 'soldier',
-                'actions' => ['combat' => ['spell_slug' => 'blade-dance']],
-                'requirements' => ['soldier_materia_1', 'soldier_damage_1'],
+            'berserk_rang2_3' => [
+                'title' => 'Materia : Vague de chaleur',
+                'slug' => 'berserk-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Vague de chaleur',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'heat-wave']],
+                'requirements' => ['berserk_apprenti_2'],
+            ],
+            'berserk_rang2_4' => [
+                'title' => 'Peau epaisse',
+                'slug' => 'berserk-rang2-4',
+                'description' => 'Augmente les points de vie',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['berserk_apprenti_2'],
             ],
 
-            // =====================================================
-            // SOIGNEUR — Soin mineur > Regeneration > Benediction
-            // =====================================================
-            'healer_materia_1' => [
-                'title' => 'Apprenti soigneur',
-                'slug' => 'healer-materia-1',
-                'description' => 'Debloque le sort Soin mineur',
-                'requiredPoints' => 0,
-                'domain' => 'healer',
-                'actions' => ['combat' => ['spell_slug' => 'life-heal']],
+            // Rang 3 (25-50 pts) — 4 skills
+            'berserk_rang3_1' => [
+                'title' => 'Materia : Charge enflammee',
+                'slug' => 'berserk-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Charge enflammee',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'berserk-charge']],
+                'requirements' => ['berserk_rang2_1', 'berserk_rang2_2'],
             ],
+            'berserk_rang3_2' => [
+                'title' => 'Materia : Combustion',
+                'slug' => 'berserk-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Combustion',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'combustion']],
+                'requirements' => ['berserk_rang2_3'],
+            ],
+            'berserk_rang3_3' => [
+                'title' => 'Rage interieure',
+                'slug' => 'berserk-rang3-3',
+                'description' => 'Augmente les degats et le critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['berserk_rang2_4'],
+            ],
+            'berserk_rang3_4' => [
+                'title' => 'Materia : Fouet de feu',
+                'slug' => 'berserk-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Fouet de feu',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-whip']],
+                'requirements' => ['berserk_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'berserk_rang4_1' => [
+                'title' => 'Materia : Frappe de furie',
+                'slug' => 'berserk-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Frappe de furie — degats devastateurs',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fury-strike']],
+                'requirements' => ['berserk_rang3_1', 'berserk_rang3_2'],
+            ],
+            'berserk_rang4_2' => [
+                'title' => 'Materia : Frappe meteorique',
+                'slug' => 'berserk-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Frappe meteorique',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'meteor-strike']],
+                'requirements' => ['berserk_rang3_3', 'berserk_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'berserk_rang5_1' => [
+                'title' => 'Materia : Furie sanguinaire',
+                'slug' => 'berserk-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Furie sanguinaire',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'blood-fury']],
+                'requirements' => ['berserk_rang4_1', 'berserk_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ARTIFICIER (feu) — 15 skills, pieges et explosifs
+    // =========================================================================
+    private function getArtificerSkills(): array
+    {
+        $d = 'artificer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'artif_apprenti_1' => [
+                'title' => 'Materia : Flammeche',
+                'slug' => 'artif-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Flammeche',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'flame']],
+            ],
+            'artif_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'etincelles',
+                'slug' => 'artif-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'etincelles',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ember-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'artif_rang2_1' => [
+                'title' => 'Materia : Piege incendiaire',
+                'slug' => 'artif-rang2-1',
+                'description' => 'Permet d\'utiliser la materia Piege incendiaire',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-trap']],
+                'requirements' => ['artif_apprenti_1'],
+            ],
+            'artif_rang2_2' => [
+                'title' => 'Precision mecanique',
+                'slug' => 'artif-rang2-2',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['artif_apprenti_1'],
+            ],
+            'artif_rang2_3' => [
+                'title' => 'Materia : Bombe flash',
+                'slug' => 'artif-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Bombe flash (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'flash-bomb']],
+                'requirements' => ['artif_apprenti_2'],
+            ],
+            'artif_rang2_4' => [
+                'title' => 'Blindage',
+                'slug' => 'artif-rang2-4',
+                'description' => 'Augmente les points de vie',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['artif_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'artif_rang3_1' => [
+                'title' => 'Materia : Mine explosive',
+                'slug' => 'artif-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Mine explosive (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'explosive-mine']],
+                'requirements' => ['artif_rang2_1', 'artif_rang2_2'],
+            ],
+            'artif_rang3_2' => [
+                'title' => 'Materia : Nova de feu',
+                'slug' => 'artif-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Nova de feu',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-nova']],
+                'requirements' => ['artif_rang2_3'],
+            ],
+            'artif_rang3_3' => [
+                'title' => 'Degats amplifies',
+                'slug' => 'artif-rang3-3',
+                'description' => 'Augmente les degats des pieges',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['artif_rang2_4'],
+            ],
+            'artif_rang3_4' => [
+                'title' => 'Materia : Mur de feu',
+                'slug' => 'artif-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Mur de feu',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fire-wall']],
+                'requirements' => ['artif_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'artif_rang4_1' => [
+                'title' => 'Materia : Pluie de flammes',
+                'slug' => 'artif-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Pluie de flammes (AoE)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'flame-rain']],
+                'requirements' => ['artif_rang3_1', 'artif_rang3_2'],
+            ],
+            'artif_rang4_2' => [
+                'title' => 'Materia : Souffle du dragon',
+                'slug' => 'artif-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Souffle du dragon',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dragon-breath']],
+                'requirements' => ['artif_rang3_3', 'artif_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'artif_rang5_1' => [
+                'title' => 'Materia : Barrage d\'artillerie',
+                'slug' => 'artif-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Barrage d\'artillerie',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'artillery-barrage']],
+                'requirements' => ['artif_rang4_1', 'artif_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // SOLDAT (metal) — 15 skills, DPS CaC combos d'armes
+    // =========================================================================
+    private function getSoldierSkills(): array
+    {
+        $d = 'soldier';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'soldier_apprenti_1' => [
+                'title' => 'Materia : Frappe puissante',
+                'slug' => 'soldier-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Frappe puissante',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sharp-blade']],
+            ],
+            'soldier_apprenti_2' => [
+                'title' => 'Materia : Attraction magnetique',
+                'slug' => 'soldier-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Attraction magnetique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'magnetic-pull']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'soldier_rang2_1' => [
+                'title' => 'Force brute',
+                'slug' => 'soldier-rang2-1',
+                'description' => 'Augmente les degats physiques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['soldier_apprenti_1'],
+            ],
+            'soldier_rang2_2' => [
+                'title' => 'Precision martiale',
+                'slug' => 'soldier-rang2-2',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['soldier_apprenti_1'],
+            ],
+            'soldier_rang2_3' => [
+                'title' => 'Materia : Charge',
+                'slug' => 'soldier-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Charge',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'iron-fist']],
+                'requirements' => ['soldier_apprenti_2'],
+            ],
+            'soldier_rang2_4' => [
+                'title' => 'Materia : Explosion d\'eclats',
+                'slug' => 'soldier-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Explosion d\'eclats',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shrapnel-burst']],
+                'requirements' => ['soldier_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'soldier_rang3_1' => [
+                'title' => 'Materia : Tourbillon d\'epee',
+                'slug' => 'soldier-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tourbillon d\'epee (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'blade-dance']],
+                'requirements' => ['soldier_rang2_1', 'soldier_rang2_2'],
+            ],
+            'soldier_rang3_2' => [
+                'title' => 'Materia : Tempete metallique',
+                'slug' => 'soldier-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Tempete metallique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metal-storm']],
+                'requirements' => ['soldier_rang2_3'],
+            ],
+            'soldier_rang3_3' => [
+                'title' => 'Coups critiques',
+                'slug' => 'soldier-rang3-3',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['soldier_rang2_4'],
+            ],
+            'soldier_rang3_4' => [
+                'title' => 'Materia : Carreau d\'argent',
+                'slug' => 'soldier-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Carreau d\'argent',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'silver-bolt']],
+                'requirements' => ['soldier_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'soldier_rang4_1' => [
+                'title' => 'Materia : Lame rasoir',
+                'slug' => 'soldier-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Lame rasoir — coupe devastatrice',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'razor-edge']],
+                'requirements' => ['soldier_rang3_1', 'soldier_rang3_2'],
+            ],
+            'soldier_rang4_2' => [
+                'title' => 'Materia : Poids ecrasant',
+                'slug' => 'soldier-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Poids ecrasant',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crushing-weight']],
+                'requirements' => ['soldier_rang3_3', 'soldier_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'soldier_rang5_1' => [
+                'title' => 'Materia : Vierge de fer',
+                'slug' => 'soldier-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Vierge de fer',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'iron-maiden']],
+                'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // CHEVALIER (metal) — 15 skills, tank lourd contre-attaque
+    // =========================================================================
+    private function getKnightSkills(): array
+    {
+        $d = 'knight';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'knight_apprenti_1' => [
+                'title' => 'Materia : Provocation',
+                'slug' => 'knight-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Provocation',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'provocation']],
+            ],
+            'knight_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'acier',
+                'slug' => 'knight-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'acier',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'knight_rang2_1' => [
+                'title' => 'Constitution de fer',
+                'slug' => 'knight-rang2-1',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['knight_apprenti_1'],
+            ],
+            'knight_rang2_2' => [
+                'title' => 'Materia : Riposte',
+                'slug' => 'knight-rang2-2',
+                'description' => 'Permet d\'utiliser la materia Riposte',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'riposte']],
+                'requirements' => ['knight_apprenti_1'],
+            ],
+            'knight_rang2_3' => [
+                'title' => 'Materia : Peau metallique',
+                'slug' => 'knight-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Peau metallique',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metal-skin']],
+                'requirements' => ['knight_apprenti_2'],
+            ],
+            'knight_rang2_4' => [
+                'title' => 'Endurance du chevalier',
+                'slug' => 'knight-rang2-4',
+                'description' => 'Augmente la puissance des soins recus',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['knight_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'knight_rang3_1' => [
+                'title' => 'Materia : Barriere de lames',
+                'slug' => 'knight-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Barriere de lames (degats + soin)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'blade-barrier']],
+                'requirements' => ['knight_rang2_1', 'knight_rang2_2'],
+            ],
+            'knight_rang3_2' => [
+                'title' => 'Materia : Regeneration metallique',
+                'slug' => 'knight-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Regeneration metallique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metallic-regeneration']],
+                'requirements' => ['knight_rang2_3'],
+            ],
+            'knight_rang3_3' => [
+                'title' => 'Armure epaisse',
+                'slug' => 'knight-rang3-3',
+                'description' => 'Augmente les points de vie et la precision',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'hit' => 1,
+                'requirements' => ['knight_rang2_4'],
+            ],
+            'knight_rang3_4' => [
+                'title' => 'Materia : Chaine d\'eclairs',
+                'slug' => 'knight-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Chaine d\'eclairs',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'chain-lightning']],
+                'requirements' => ['knight_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'knight_rang4_1' => [
+                'title' => 'Materia : Poids ecrasant',
+                'slug' => 'knight-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Poids ecrasant — ecrasement brutal',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crushing-weight']],
+                'requirements' => ['knight_rang3_1', 'knight_rang3_2'],
+            ],
+            'knight_rang4_2' => [
+                'title' => 'Materia : Vierge de fer',
+                'slug' => 'knight-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Vierge de fer',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'iron-maiden']],
+                'requirements' => ['knight_rang3_3', 'knight_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'knight_rang5_1' => [
+                'title' => 'Materia : Forteresse d\'acier',
+                'slug' => 'knight-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Forteresse d\'acier',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-fortress']],
+                'requirements' => ['knight_rang4_1', 'knight_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // INGENIEUR (metal) — 15 skills, support technique constructions
+    // =========================================================================
+    private function getEngineerSkills(): array
+    {
+        $d = 'engineer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'engi_apprenti_1' => [
+                'title' => 'Materia : Attraction magnetique',
+                'slug' => 'engi-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Attraction magnetique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'magnetic-pull']],
+            ],
+            'engi_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'acier',
+                'slug' => 'engi-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'acier',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'engi_rang2_1' => [
+                'title' => 'Precision mecanique',
+                'slug' => 'engi-rang2-1',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['engi_apprenti_1'],
+            ],
+            'engi_rang2_2' => [
+                'title' => 'Materia : Tourelle',
+                'slug' => 'engi-rang2-2',
+                'description' => 'Permet d\'utiliser la materia Tourelle',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'turret']],
+                'requirements' => ['engi_apprenti_1'],
+            ],
+            'engi_rang2_3' => [
+                'title' => 'Materia : Explosion d\'eclats',
+                'slug' => 'engi-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Explosion d\'eclats',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shrapnel-burst']],
+                'requirements' => ['engi_apprenti_2'],
+            ],
+            'engi_rang2_4' => [
+                'title' => 'Blindage renforce',
+                'slug' => 'engi-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['engi_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'engi_rang3_1' => [
+                'title' => 'Materia : Automate reparateur',
+                'slug' => 'engi-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Automate reparateur',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'repair-bot']],
+                'requirements' => ['engi_rang2_1', 'engi_rang2_2'],
+            ],
+            'engi_rang3_2' => [
+                'title' => 'Materia : Barriere de lames',
+                'slug' => 'engi-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Barriere de lames (degats + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'blade-barrier']],
+                'requirements' => ['engi_rang2_3'],
+            ],
+            'engi_rang3_3' => [
+                'title' => 'Ameliorations mecaniques',
+                'slug' => 'engi-rang3-3',
+                'description' => 'Augmente les degats et les soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'heal' => 1,
+                'requirements' => ['engi_rang2_4'],
+            ],
+            'engi_rang3_4' => [
+                'title' => 'Materia : Chaine d\'eclairs',
+                'slug' => 'engi-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Chaine d\'eclairs',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'chain-lightning']],
+                'requirements' => ['engi_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'engi_rang4_1' => [
+                'title' => 'Materia : Tempete metallique',
+                'slug' => 'engi-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Tempete metallique',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metal-storm']],
+                'requirements' => ['engi_rang3_1', 'engi_rang3_2'],
+            ],
+            'engi_rang4_2' => [
+                'title' => 'Materia : Regeneration metallique',
+                'slug' => 'engi-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Regeneration metallique',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metallic-regeneration']],
+                'requirements' => ['engi_rang3_3', 'engi_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'engi_rang5_1' => [
+                'title' => 'Materia : Engin de siege',
+                'slug' => 'engi-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Engin de siege',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'siege-engine']],
+                'requirements' => ['engi_rang4_1', 'engi_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // HYDROMANCIEN (eau) — 13 skills, mage offensif eau/glace
+    // =========================================================================
+    private function getHydromancerSkills(): array
+    {
+        $d = 'hydromancer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'hydro_apprenti_1' => [
+                'title' => 'Materia : Jet d\'eau',
+                'slug' => 'hydro-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Jet d\'eau',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'water-jet']],
+            ],
+            'hydro_apprenti_2' => [
+                'title' => 'Materia : Toucher glace',
+                'slug' => 'hydro-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher glace',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'frozen-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'hydro_rang2_1' => [
+                'title' => 'Efficacite de l\'eau',
+                'slug' => 'hydro-rang2-1',
+                'description' => 'Augmente les degats des sorts d\'eau',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['hydro_apprenti_1'],
+            ],
+            'hydro_rang2_2' => [
+                'title' => 'Points faibles',
+                'slug' => 'hydro-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['hydro_apprenti_1'],
+            ],
+            'hydro_rang2_3' => [
+                'title' => 'Materia : Trait de givre',
+                'slug' => 'hydro-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Trait de givre (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'frost-bolt']],
+                'requirements' => ['hydro_apprenti_2'],
+            ],
+            'hydro_rang2_4' => [
+                'title' => 'Materia : Lance de glace',
+                'slug' => 'hydro-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Lance de glace',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ice-lance']],
+                'requirements' => ['hydro_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'hydro_rang3_1' => [
+                'title' => 'Materia : Tempete de glace',
+                'slug' => 'hydro-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tempete de glace (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ice-storm']],
+                'requirements' => ['hydro_rang2_1', 'hydro_rang2_2'],
+            ],
+            'hydro_rang3_2' => [
+                'title' => 'Materia : Prison d\'eau',
+                'slug' => 'hydro-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Prison d\'eau (paralysie)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'water-prison']],
+                'requirements' => ['hydro_rang2_3'],
+            ],
+            'hydro_rang3_3' => [
+                'title' => 'Precision glaciale',
+                'slug' => 'hydro-rang3-3',
+                'description' => 'Augmente la precision des sorts d\'eau',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['hydro_rang2_4'],
+            ],
+            'hydro_rang3_4' => [
+                'title' => 'Materia : Raz-de-maree',
+                'slug' => 'hydro-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Raz-de-maree (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tidal-wave']],
+                'requirements' => ['hydro_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'hydro_rang4_1' => [
+                'title' => 'Materia : Maelstrom',
+                'slug' => 'hydro-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Maelstrom — tourbillon devastateur',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'maelstrom']],
+                'requirements' => ['hydro_rang3_1', 'hydro_rang3_2'],
+            ],
+            'hydro_rang4_2' => [
+                'title' => 'Materia : Bulle protectrice',
+                'slug' => 'hydro-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Bulle protectrice',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'bubble-shield']],
+                'requirements' => ['hydro_rang3_3', 'hydro_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'hydro_rang5_1' => [
+                'title' => 'Materia : Tsunami',
+                'slug' => 'hydro-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Tsunami',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tsunami']],
+                'requirements' => ['hydro_rang4_1', 'hydro_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // GUERISSEUR (eau) — 13 skills, soigneur complet
+    // =========================================================================
+    private function getHealerSkills(): array
+    {
+        $d = 'healer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'healer_materia_1' => [
+                'title' => 'Materia : Soin mineur',
+                'slug' => 'healer-materia-1',
+                'description' => 'Permet d\'utiliser la materia Soin mineur',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-heal']],
+            ],
+            'healer_apprenti_2' => [
+                'title' => 'Materia : Soin aquatique',
+                'slug' => 'healer-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Soin aquatique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'water-heal']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
             'healer_heal_1' => [
                 'title' => 'Main guerisseuse',
                 'slug' => 'healer-heal-1',
                 'description' => 'Augmente la puissance des soins',
                 'requiredPoints' => 10,
-                'domain' => 'healer',
+                'domain' => $d,
                 'heal' => 1,
                 'requirements' => ['healer_materia_1'],
             ],
-            'healer_materia_2' => [
-                'title' => 'Regeneration',
-                'slug' => 'healer-materia-2',
-                'description' => 'Debloque le sort Regeneration (HoT)',
-                'requiredPoints' => 20,
-                'domain' => 'healer',
-                'actions' => ['combat' => ['spell_slug' => 'rejuvenation']],
-                'requirements' => ['healer_heal_1'],
+            'healer_rang2_2' => [
+                'title' => 'Concentration',
+                'slug' => 'healer-rang2-2',
+                'description' => 'Augmente la precision des soins',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['healer_materia_1'],
             ],
-            'healer_materia_3' => [
-                'title' => 'Benediction divine',
-                'slug' => 'healer-materia-3',
-                'description' => 'Debloque la Benediction divine — soin puissant',
+            'healer_rang2_3' => [
+                'title' => 'Materia : Vague de guerison',
+                'slug' => 'healer-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Vague de guerison',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-wave']],
+                'requirements' => ['healer_apprenti_2'],
+            ],
+            'healer_rang2_4' => [
+                'title' => 'Vitalite',
+                'slug' => 'healer-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['healer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'healer_materia_2' => [
+                'title' => 'Materia : Regeneration',
+                'slug' => 'healer-materia-2',
+                'description' => 'Permet d\'utiliser la materia Regeneration (HoT)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rejuvenation']],
+                'requirements' => ['healer_heal_1', 'healer_rang2_2'],
+            ],
+            'healer_rang3_2' => [
+                'title' => 'Materia : Voile de brume',
+                'slug' => 'healer-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Voile de brume (soin + bouclier)',
                 'requiredPoints' => 30,
-                'domain' => 'healer',
-                'actions' => ['combat' => ['spell_slug' => 'divine-blessing']],
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'mist-veil']],
+                'requirements' => ['healer_rang2_3'],
+            ],
+            'healer_rang3_3' => [
+                'title' => 'Materia : Afflux de vitalite',
+                'slug' => 'healer-rang3-3',
+                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
+                'requirements' => ['healer_rang2_4'],
+            ],
+            'healer_rang3_4' => [
+                'title' => 'Materia : Bouclier de vie',
+                'slug' => 'healer-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Bouclier de vie',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-shield']],
                 'requirements' => ['healer_materia_2'],
             ],
 
-            // =====================================================
-            // DEFENSEUR — Parade > Bouclier magique > Mur de fer
-            // =====================================================
-            'defender_materia_1' => [
-                'title' => 'Apprenti defenseur',
-                'slug' => 'defender-materia-1',
-                'description' => 'Debloque le sort Parade',
-                'requiredPoints' => 0,
-                'domain' => 'defender',
-                'actions' => ['combat' => ['spell_slug' => 'rock-armor']],
+            // Rang 4 (60-100 pts) — 2 skills
+            'healer_materia_3' => [
+                'title' => 'Materia : Benediction divine',
+                'slug' => 'healer-materia-3',
+                'description' => 'Permet d\'utiliser la materia Benediction divine — soin puissant',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
+                'requirements' => ['healer_materia_2', 'healer_rang3_2'],
             ],
-            'defender_life_1' => [
-                'title' => 'Constitution',
-                'slug' => 'defender-life-1',
-                'description' => 'Augmente les points de vie maximum',
-                'requiredPoints' => 10,
-                'domain' => 'defender',
-                'life' => 5,
-                'requirements' => ['defender_materia_1'],
-            ],
-            'defender_materia_2' => [
-                'title' => 'Bouclier magique',
-                'slug' => 'defender-materia-2',
-                'description' => 'Debloque le Bouclier magique — protection renforcee',
-                'requiredPoints' => 20,
-                'domain' => 'defender',
-                'actions' => ['combat' => ['spell_slug' => 'stone-skin']],
-                'requirements' => ['defender_life_1'],
-            ],
-            'defender_materia_3' => [
-                'title' => 'Mur de fer',
-                'slug' => 'defender-materia-3',
-                'description' => 'Debloque le Mur de fer — defense ultime',
-                'requiredPoints' => 30,
-                'domain' => 'defender',
-                'actions' => ['combat' => ['spell_slug' => 'stone-wall']],
-                'requirements' => ['defender_materia_2'],
+            'healer_rang4_2' => [
+                'title' => 'Materia : Benediction de l\'ocean',
+                'slug' => 'healer-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Benediction de l\'ocean (regeneration)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ocean-blessing']],
+                'requirements' => ['healer_rang3_3', 'healer_rang3_4'],
             ],
 
-            // =====================================================
-            // NECROMANCIEN — Drain de vie > Malediction > Moisson sombre
-            // =====================================================
-            'necro_materia_1' => [
-                'title' => 'Apprenti necro',
-                'slug' => 'necro-materia-1',
-                'description' => 'Debloque le sort Drain de vie',
-                'requiredPoints' => 0,
-                'domain' => 'necro',
-                'actions' => ['combat' => ['spell_slug' => 'soul-drain']],
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'healer_rang5_1' => [
+                'title' => 'Materia : Benediction celeste',
+                'slug' => 'healer-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Benediction celeste',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'celestial-blessing']],
+                'requirements' => ['healer_materia_3', 'healer_rang4_2'],
             ],
+        ];
+    }
+
+    // =========================================================================
+    // MAREMANCIEN (eau) — 13 skills, maree et support hybride
+    // =========================================================================
+    private function getTidecallerSkills(): array
+    {
+        $d = 'tidecaller';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'tide_apprenti_1' => [
+                'title' => 'Materia : Maree montante',
+                'slug' => 'tide-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Maree montante',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rising-tide']],
+            ],
+            'tide_apprenti_2' => [
+                'title' => 'Materia : Bouclier aquatique',
+                'slug' => 'tide-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier aquatique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'aqua-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'tide_rang2_1' => [
+                'title' => 'Force des marees',
+                'slug' => 'tide-rang2-1',
+                'description' => 'Augmente les degats des sorts d\'eau',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['tide_apprenti_1'],
+            ],
+            'tide_rang2_2' => [
+                'title' => 'Materia : Torrent',
+                'slug' => 'tide-rang2-2',
+                'description' => 'Permet d\'utiliser la materia Torrent',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'torrent']],
+                'requirements' => ['tide_apprenti_1'],
+            ],
+            'tide_rang2_3' => [
+                'title' => 'Materia : Soin aquatique',
+                'slug' => 'tide-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Soin aquatique',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'water-heal']],
+                'requirements' => ['tide_apprenti_2'],
+            ],
+            'tide_rang2_4' => [
+                'title' => 'Resilience marine',
+                'slug' => 'tide-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['tide_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'tide_rang3_1' => [
+                'title' => 'Materia : Raz-de-maree',
+                'slug' => 'tide-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Raz-de-maree (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tidal-wave']],
+                'requirements' => ['tide_rang2_1', 'tide_rang2_2'],
+            ],
+            'tide_rang3_2' => [
+                'title' => 'Materia : Voile de brume',
+                'slug' => 'tide-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Voile de brume (soin + bouclier)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'mist-veil']],
+                'requirements' => ['tide_rang2_3'],
+            ],
+            'tide_rang3_3' => [
+                'title' => 'Guerison des eaux',
+                'slug' => 'tide-rang3-3',
+                'description' => 'Augmente la puissance des soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['tide_rang2_4'],
+            ],
+            'tide_rang3_4' => [
+                'title' => 'Materia : Prison d\'eau',
+                'slug' => 'tide-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Prison d\'eau (paralysie)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'water-prison']],
+                'requirements' => ['tide_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'tide_rang4_1' => [
+                'title' => 'Materia : Tempete de glace',
+                'slug' => 'tide-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Tempete de glace (AoE)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ice-storm']],
+                'requirements' => ['tide_rang3_1', 'tide_rang3_2'],
+            ],
+            'tide_rang4_2' => [
+                'title' => 'Materia : Benediction de l\'ocean',
+                'slug' => 'tide-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Benediction de l\'ocean (regeneration)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ocean-blessing']],
+                'requirements' => ['tide_rang3_3', 'tide_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'tide_rang5_1' => [
+                'title' => 'Materia : Maelstrom',
+                'slug' => 'tide-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Maelstrom',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'maelstrom']],
+                'requirements' => ['tide_rang4_1', 'tide_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // GEOMANCIEN (terre) — 15 skills, DPS magique terre, degats de zone
+    // =========================================================================
+    private function getGeomancerSkills(): array
+    {
+        $d = 'geomancer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'geo_apprenti_1' => [
+                'title' => 'Materia : Jet de cailloux',
+                'slug' => 'geo-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Jet de cailloux',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-throw']],
+            ],
+            'geo_apprenti_2' => [
+                'title' => 'Materia : Sables mouvants',
+                'slug' => 'geo-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Sables mouvants',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'quicksand']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'geo_rang2_1' => [
+                'title' => 'Force tellurique',
+                'slug' => 'geo-rang2-1',
+                'description' => 'Augmente les degats des sorts de terre',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['geo_apprenti_1'],
+            ],
+            'geo_rang2_2' => [
+                'title' => 'Fissures precises',
+                'slug' => 'geo-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['geo_apprenti_1'],
+            ],
+            'geo_rang2_3' => [
+                'title' => 'Materia : Pic de terre',
+                'slug' => 'geo-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Pic de terre',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'earth-spike']],
+                'requirements' => ['geo_apprenti_2'],
+            ],
+            'geo_rang2_4' => [
+                'title' => 'Materia : Pics de pierre',
+                'slug' => 'geo-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Pics de pierre',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-spikes']],
+                'requirements' => ['geo_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'geo_rang3_1' => [
+                'title' => 'Materia : Tremblement de terre',
+                'slug' => 'geo-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tremblement de terre (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'earthquake']],
+                'requirements' => ['geo_rang2_1', 'geo_rang2_2'],
+            ],
+            'geo_rang3_2' => [
+                'title' => 'Materia : Glissement de terrain',
+                'slug' => 'geo-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Glissement de terrain',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'landslide']],
+                'requirements' => ['geo_rang2_3'],
+            ],
+            'geo_rang3_3' => [
+                'title' => 'Precision minerale',
+                'slug' => 'geo-rang3-3',
+                'description' => 'Augmente la precision des sorts de terre',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['geo_rang2_4'],
+            ],
+            'geo_rang3_4' => [
+                'title' => 'Materia : Lancer de rocher',
+                'slug' => 'geo-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Lancer de rocher',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'boulder-throw']],
+                'requirements' => ['geo_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'geo_rang4_1' => [
+                'title' => 'Materia : Petrification',
+                'slug' => 'geo-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Petrification — paralyse la cible',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'petrification']],
+                'requirements' => ['geo_rang3_1', 'geo_rang3_2'],
+            ],
+            'geo_rang4_2' => [
+                'title' => 'Materia : Lance de cristal',
+                'slug' => 'geo-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lance de cristal',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crystal-spear']],
+                'requirements' => ['geo_rang3_3', 'geo_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'geo_rang5_1' => [
+                'title' => 'Materia : Deplacement tectonique',
+                'slug' => 'geo-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Deplacement tectonique',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tectonic-shift']],
+                'requirements' => ['geo_rang4_1', 'geo_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // DEFENSEUR (terre) — 15 skills, tank absorption et murs
+    // =========================================================================
+    private function getDefenderSkills(): array
+    {
+        $d = 'defender';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'defender_apprenti_1' => [
+                'title' => 'Materia : Parade',
+                'slug' => 'defender-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Parade',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rock-armor']],
+            ],
+            'defender_apprenti_2' => [
+                'title' => 'Materia : Bouclier terreux',
+                'slug' => 'defender-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier terreux',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'earth-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'defender_rang2_1' => [
+                'title' => 'Constitution',
+                'slug' => 'defender-rang2-1',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['defender_apprenti_1'],
+            ],
+            'defender_rang2_2' => [
+                'title' => 'Riposte',
+                'slug' => 'defender-rang2-2',
+                'description' => 'Augmente les degats de contre-attaque',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['defender_apprenti_1'],
+            ],
+            'defender_rang2_3' => [
+                'title' => 'Materia : Peau de pierre',
+                'slug' => 'defender-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Peau de pierre — protection renforcee',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-skin']],
+                'requirements' => ['defender_apprenti_2'],
+            ],
+            'defender_rang2_4' => [
+                'title' => 'Materia : Pics de pierre',
+                'slug' => 'defender-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Pics de pierre — riposte epineuse',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-spikes']],
+                'requirements' => ['defender_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'defender_rang3_1' => [
+                'title' => 'Materia : Mur de fer',
+                'slug' => 'defender-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Mur de fer — defense ultime',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-wall']],
+                'requirements' => ['defender_rang2_1', 'defender_rang2_2'],
+            ],
+            'defender_rang3_2' => [
+                'title' => 'Materia : Force de la montagne',
+                'slug' => 'defender-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Force de la montagne (degats + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'mountain-strength']],
+                'requirements' => ['defender_rang2_3'],
+            ],
+            'defender_rang3_3' => [
+                'title' => 'Endurance de fer',
+                'slug' => 'defender-rang3-3',
+                'description' => 'Augmente les points de vie et la precision',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'hit' => 1,
+                'requirements' => ['defender_rang2_4'],
+            ],
+            'defender_rang3_4' => [
+                'title' => 'Materia : Croissance cristalline',
+                'slug' => 'defender-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Croissance cristalline (armure)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crystal-growth']],
+                'requirements' => ['defender_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'defender_rang4_1' => [
+                'title' => 'Materia : Tremblement de terre',
+                'slug' => 'defender-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Tremblement de terre — repousse les ennemis',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'earthquake']],
+                'requirements' => ['defender_rang3_1', 'defender_rang3_2'],
+            ],
+            'defender_rang4_2' => [
+                'title' => 'Materia : Lancer de rocher',
+                'slug' => 'defender-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lancer de rocher — projectile lourd',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'boulder-throw']],
+                'requirements' => ['defender_rang3_3', 'defender_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'defender_rang5_1' => [
+                'title' => 'Materia : Petrification',
+                'slug' => 'defender-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Petrification — defense absolue',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'petrification']],
+                'requirements' => ['defender_rang4_1', 'defender_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // GARDIEN (terre) — 15 skills, tank/support, protection de groupe
+    // =========================================================================
+    private function getGuardianSkills(): array
+    {
+        $d = 'guardian';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'guardian_apprenti_1' => [
+                'title' => 'Materia : Bouclier partage',
+                'slug' => 'guardian-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Bouclier partage',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shared-shield']],
+            ],
+            'guardian_apprenti_2' => [
+                'title' => 'Materia : Parade',
+                'slug' => 'guardian-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Parade',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rock-armor']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'guardian_rang2_1' => [
+                'title' => 'Robustesse',
+                'slug' => 'guardian-rang2-1',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['guardian_apprenti_1'],
+            ],
+            'guardian_rang2_2' => [
+                'title' => 'Materia : Benediction de la terre',
+                'slug' => 'guardian-rang2-2',
+                'description' => 'Permet d\'utiliser la materia Benediction de la terre (soin)',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'earth-blessing']],
+                'requirements' => ['guardian_apprenti_1'],
+            ],
+            'guardian_rang2_3' => [
+                'title' => 'Materia : Bouclier terreux',
+                'slug' => 'guardian-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Bouclier terreux',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'earth-shield']],
+                'requirements' => ['guardian_apprenti_2'],
+            ],
+            'guardian_rang2_4' => [
+                'title' => 'Vigilance',
+                'slug' => 'guardian-rang2-4',
+                'description' => 'Augmente la precision des protections',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['guardian_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'guardian_rang3_1' => [
+                'title' => 'Materia : Peau de pierre',
+                'slug' => 'guardian-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Peau de pierre — armure renforcee',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-skin']],
+                'requirements' => ['guardian_rang2_1', 'guardian_rang2_2'],
+            ],
+            'guardian_rang3_2' => [
+                'title' => 'Materia : Force de la montagne',
+                'slug' => 'guardian-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Force de la montagne',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'mountain-strength']],
+                'requirements' => ['guardian_rang2_3'],
+            ],
+            'guardian_rang3_3' => [
+                'title' => 'Protection innebreanlable',
+                'slug' => 'guardian-rang3-3',
+                'description' => 'Augmente les points de vie et le soin',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'heal' => 1,
+                'requirements' => ['guardian_rang2_4'],
+            ],
+            'guardian_rang3_4' => [
+                'title' => 'Materia : Mur de fer',
+                'slug' => 'guardian-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Mur de fer (bouclier puissant)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-wall']],
+                'requirements' => ['guardian_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'guardian_rang4_1' => [
+                'title' => 'Materia : Croissance cristalline',
+                'slug' => 'guardian-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Croissance cristalline — armure de cristal',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crystal-growth']],
+                'requirements' => ['guardian_rang3_1', 'guardian_rang3_2'],
+            ],
+            'guardian_rang4_2' => [
+                'title' => 'Materia : Lance de cristal',
+                'slug' => 'guardian-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lance de cristal — represailles',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crystal-spear']],
+                'requirements' => ['guardian_rang3_3', 'guardian_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'guardian_rang5_1' => [
+                'title' => 'Materia : Bastion',
+                'slug' => 'guardian-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Bastion — protection ultime du groupe',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'bastion']],
+                'requirements' => ['guardian_rang4_1', 'guardian_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // NECROMANCIEN (ombre) — 13 skills, drain de vie et maledictions
+    // =========================================================================
+    private function getNecromancerSkills(): array
+    {
+        $d = 'necromancer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'necro_materia_1' => [
+                'title' => 'Materia : Drain de vie',
+                'slug' => 'necro-materia-1',
+                'description' => 'Permet d\'utiliser la materia Drain de vie',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-drain']],
+            ],
+            'necro_apprenti_2' => [
+                'title' => 'Materia : Toucher necrotique',
+                'slug' => 'necro-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher necrotique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'necrotic-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
             'necro_damage_1' => [
                 'title' => 'Energie sombre',
                 'slug' => 'necro-damage-1',
                 'description' => 'Augmente les degats des sorts de mort',
                 'requiredPoints' => 10,
-                'domain' => 'necro',
+                'domain' => $d,
                 'damage' => 1,
                 'requirements' => ['necro_materia_1'],
             ],
+            'necro_rang2_2' => [
+                'title' => 'Corruption',
+                'slug' => 'necro-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['necro_materia_1'],
+            ],
             'necro_materia_2' => [
-                'title' => 'Malediction',
+                'title' => 'Materia : Malediction',
                 'slug' => 'necro-materia-2',
-                'description' => 'Debloque le sort Malediction (poison)',
-                'requiredPoints' => 20,
-                'domain' => 'necro',
-                'actions' => ['combat' => ['spell_slug' => 'plague-strike']],
-                'requirements' => ['necro_damage_1'],
+                'description' => 'Permet d\'utiliser la materia Malediction (poison)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'plague-strike']],
+                'requirements' => ['necro_apprenti_2'],
+            ],
+            'necro_rang2_4' => [
+                'title' => 'Materia : Sangsue vitale',
+                'slug' => 'necro-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Sangsue vitale (drain)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-leech']],
+                'requirements' => ['necro_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'necro_rang3_1' => [
+                'title' => 'Materia : Eclair d\'ombre',
+                'slug' => 'necro-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Eclair d\'ombre',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-bolt']],
+                'requirements' => ['necro_damage_1', 'necro_rang2_2'],
             ],
             'necro_materia_3' => [
-                'title' => 'Moisson sombre',
+                'title' => 'Materia : Moisson sombre',
                 'slug' => 'necro-materia-3',
-                'description' => 'Debloque la Moisson sombre — drain massif',
+                'description' => 'Permet d\'utiliser la materia Moisson sombre — drain massif',
                 'requiredPoints' => 30,
-                'domain' => 'necro',
-                'actions' => ['combat' => ['spell_slug' => 'dark-harvest']],
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-harvest']],
                 'requirements' => ['necro_materia_2'],
             ],
-
-            // =====================================================
-            // DRUIDE — Liane > Empoisonnement > Appel de la foret
-            // =====================================================
-            'druid_materia_1' => [
-                'title' => 'Apprenti druide',
-                'slug' => 'druid-materia-1',
-                'description' => 'Debloque le sort Liane',
-                'requiredPoints' => 0,
-                'domain' => 'druid',
-                'actions' => ['combat' => ['spell_slug' => 'liana-whip']],
+            'necro_rang3_3' => [
+                'title' => 'Maitrise necrotique',
+                'slug' => 'necro-rang3-3',
+                'description' => 'Augmente la precision des sorts de mort',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['necro_rang2_4'],
             ],
-            'druid_heal_1' => [
+            'necro_rang3_4' => [
+                'title' => 'Materia : Rituel sombre',
+                'slug' => 'necro-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Rituel sombre (sacrifice + soin)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-ritual']],
+                'requirements' => ['necro_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'necro_rang4_1' => [
+                'title' => 'Materia : Dechirure d\'ame',
+                'slug' => 'necro-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Dechirure d\'ame — degats massifs',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-rip']],
+                'requirements' => ['necro_rang3_1', 'necro_materia_3'],
+            ],
+            'necro_rang4_2' => [
+                'title' => 'Materia : Spirale de mort',
+                'slug' => 'necro-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Spirale de mort',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-coil']],
+                'requirements' => ['necro_rang3_3', 'necro_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'necro_rang5_1' => [
+                'title' => 'Materia : Nova de mort',
+                'slug' => 'necro-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Nova de mort',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-nova']],
+                'requirements' => ['necro_rang4_1', 'necro_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // DRUIDE (bete) — 13 skills, healer/support nature
+    // =========================================================================
+    private function getDruidSkills(): array
+    {
+        $d = 'druid';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'druid_apprenti_1' => [
+                'title' => 'Materia : Liane',
+                'slug' => 'druid-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Liane',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'liana-whip']],
+            ],
+            'druid_apprenti_2' => [
+                'title' => 'Materia : Guerison naturelle',
+                'slug' => 'druid-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Guerison naturelle',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'natural-healing']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'druid_rang2_1' => [
                 'title' => 'Symbiose naturelle',
-                'slug' => 'druid-heal-1',
+                'slug' => 'druid-rang2-1',
                 'description' => 'Augmente la puissance des soins de nature',
                 'requiredPoints' => 10,
-                'domain' => 'druid',
+                'domain' => $d,
                 'heal' => 1,
-                'requirements' => ['druid_materia_1'],
+                'requirements' => ['druid_apprenti_1'],
             ],
-            'druid_materia_2' => [
-                'title' => 'Empoisonnement',
-                'slug' => 'druid-materia-2',
-                'description' => "Debloque l'Empoisonnement (DoT)",
-                'requiredPoints' => 20,
-                'domain' => 'druid',
-                'actions' => ['combat' => ['spell_slug' => 'poison-cloud']],
-                'requirements' => ['druid_heal_1'],
-            ],
-            'druid_materia_3' => [
-                'title' => 'Appel de la foret',
-                'slug' => 'druid-materia-3',
-                'description' => "Debloque l'Appel de la foret — devastation naturelle",
-                'requiredPoints' => 30,
-                'domain' => 'druid',
-                'actions' => ['combat' => ['spell_slug' => 'nature-wrath']],
-                'requirements' => ['druid_materia_2'],
-            ],
-
-            // =====================================================
-            // MAGE BLANC — Lumiere > Purification > Jugement sacre
-            // =====================================================
-            'white_wizard_materia_1' => [
-                'title' => 'Apprenti mage blanc',
-                'slug' => 'white-wizard-materia-1',
-                'description' => 'Debloque le sort Lumiere',
-                'requiredPoints' => 0,
-                'domain' => 'white_wizard',
-                'actions' => ['combat' => ['spell_slug' => 'holy-light']],
-            ],
-            'white_wizard_hit_1' => [
-                'title' => 'Eclat divin',
-                'slug' => 'white-wizard-hit-1',
-                'description' => 'Augmente la precision des sorts',
+            'druid_rang2_2' => [
+                'title' => 'Affinite naturelle',
+                'slug' => 'druid-rang2-2',
+                'description' => 'Augmente la precision des sorts de nature',
                 'requiredPoints' => 10,
-                'domain' => 'white_wizard',
-                'hit' => 2,
-                'requirements' => ['white_wizard_materia_1'],
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['druid_apprenti_1'],
             ],
-            'white_wizard_materia_2' => [
-                'title' => 'Purification',
-                'slug' => 'white-wizard-materia-2',
-                'description' => 'Debloque le sort Purification',
-                'requiredPoints' => 20,
-                'domain' => 'white_wizard',
-                'actions' => ['combat' => ['spell_slug' => 'purification']],
-                'requirements' => ['white_wizard_hit_1'],
+            'druid_rang2_3' => [
+                'title' => 'Materia : Empoisonnement',
+                'slug' => 'druid-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Empoisonnement (DoT)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'poison-cloud']],
+                'requirements' => ['druid_apprenti_2'],
             ],
-            'white_wizard_materia_3' => [
-                'title' => 'Jugement sacre',
-                'slug' => 'white-wizard-materia-3',
-                'description' => 'Debloque le Jugement sacre — sort ultime',
-                'requiredPoints' => 30,
-                'domain' => 'white_wizard',
-                'actions' => ['combat' => ['spell_slug' => 'divine-intervention']],
-                'requirements' => ['white_wizard_materia_2'],
+            'druid_rang2_4' => [
+                'title' => 'Materia : Bouclier d\'epines',
+                'slug' => 'druid-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'epines',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thorn-shield']],
+                'requirements' => ['druid_apprenti_2'],
             ],
 
-            // =====================================================
-            // MINEUR (inchange)
-            // =====================================================
+            // Rang 3 (25-50 pts) — 4 skills
+            'druid_rang3_1' => [
+                'title' => 'Materia : Etreinte de la foret',
+                'slug' => 'druid-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Etreinte de la foret (soin puissant)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'forest-embrace']],
+                'requirements' => ['druid_rang2_1', 'druid_rang2_2'],
+            ],
+            'druid_rang3_2' => [
+                'title' => 'Materia : Croissance sauvage',
+                'slug' => 'druid-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Croissance sauvage (soin + degats)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wild-growth']],
+                'requirements' => ['druid_rang2_3'],
+            ],
+            'druid_rang3_3' => [
+                'title' => 'Communion vegetale',
+                'slug' => 'druid-rang3-3',
+                'description' => 'Augmente les soins et la vitalite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'life' => 3,
+                'requirements' => ['druid_rang2_4'],
+            ],
+            'druid_rang3_4' => [
+                'title' => 'Materia : Appel de la foret',
+                'slug' => 'druid-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Appel de la foret (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-wrath']],
+                'requirements' => ['druid_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'druid_rang4_1' => [
+                'title' => 'Materia : Benediction de la nature',
+                'slug' => 'druid-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Benediction de la nature — soin surpuissant',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-blessing']],
+                'requirements' => ['druid_rang3_1', 'druid_rang3_2'],
+            ],
+            'druid_rang4_2' => [
+                'title' => 'Materia : Afflux primordial',
+                'slug' => 'druid-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Afflux primordial (soin + degats)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'primal-surge']],
+                'requirements' => ['druid_rang3_3', 'druid_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'druid_rang5_1' => [
+                'title' => 'Materia : Fureur naturelle',
+                'slug' => 'druid-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Fureur naturelle',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-fury']],
+                'requirements' => ['druid_rang4_1', 'druid_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // CHASSEUR (bete) — 13 skills, DPS distance pieges et pistage
+    // =========================================================================
+    private function getHunterSkills(): array
+    {
+        $d = 'hunter';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'hunter_apprenti_1' => [
+                'title' => 'Materia : Appel du faucon',
+                'slug' => 'hunter-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Appel du faucon',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'falcon-strike']],
+            ],
+            'hunter_apprenti_2' => [
+                'title' => 'Materia : Morsure venimeuse',
+                'slug' => 'hunter-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Morsure venimeuse',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'venomous-bite']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'hunter_rang2_1' => [
+                'title' => 'Oeil de pisteur',
+                'slug' => 'hunter-rang2-1',
+                'description' => 'Augmente la precision des tirs',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['hunter_apprenti_1'],
+            ],
+            'hunter_rang2_2' => [
+                'title' => 'Instinct de chasseur',
+                'slug' => 'hunter-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['hunter_apprenti_1'],
+            ],
+            'hunter_rang2_3' => [
+                'title' => 'Materia : Piege a ours',
+                'slug' => 'hunter-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Piege a ours (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'bear-trap']],
+                'requirements' => ['hunter_apprenti_2'],
+            ],
+            'hunter_rang2_4' => [
+                'title' => 'Materia : Piege de vignes',
+                'slug' => 'hunter-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Piege de vignes',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vine-snare']],
+                'requirements' => ['hunter_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'hunter_rang3_1' => [
+                'title' => 'Materia : Tir empoisonne',
+                'slug' => 'hunter-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tir empoisonne (poison)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'poison-arrow']],
+                'requirements' => ['hunter_rang2_1', 'hunter_rang2_2'],
+            ],
+            'hunter_rang3_2' => [
+                'title' => 'Materia : Spores toxiques',
+                'slug' => 'hunter-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Spores toxiques',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'toxic-spores']],
+                'requirements' => ['hunter_rang2_3'],
+            ],
+            'hunter_rang3_3' => [
+                'title' => 'Traque mortelle',
+                'slug' => 'hunter-rang3-3',
+                'description' => 'Augmente les degats et le critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['hunter_rang2_4'],
+            ],
+            'hunter_rang3_4' => [
+                'title' => 'Materia : Lame feuille',
+                'slug' => 'hunter-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Lame feuille',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'leaf-blade']],
+                'requirements' => ['hunter_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'hunter_rang4_1' => [
+                'title' => 'Materia : Explosion d\'epines',
+                'slug' => 'hunter-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Explosion d\'epines',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thorn-burst']],
+                'requirements' => ['hunter_rang3_1', 'hunter_rang3_2'],
+            ],
+            'hunter_rang4_2' => [
+                'title' => 'Materia : Fureur naturelle',
+                'slug' => 'hunter-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Fureur naturelle',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-fury']],
+                'requirements' => ['hunter_rang3_3', 'hunter_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'hunter_rang5_1' => [
+                'title' => 'Materia : Chasse en meute',
+                'slug' => 'hunter-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Chasse en meute (AoE)',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'pack-hunt']],
+                'requirements' => ['hunter_rang4_1', 'hunter_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // DOMPTEUR (bete) — 13 skills, tank/invocateur familiers
+    // =========================================================================
+    private function getTamerSkills(): array
+    {
+        $d = 'tamer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'tamer_apprenti_1' => [
+                'title' => 'Materia : Lien bestial',
+                'slug' => 'tamer-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Lien bestial',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'beast-bond']],
+            ],
+            'tamer_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'epines',
+                'slug' => 'tamer-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'epines',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'thorn-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'tamer_rang2_1' => [
+                'title' => 'Lien renforce',
+                'slug' => 'tamer-rang2-1',
+                'description' => 'Augmente la puissance des soins du familier',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['tamer_apprenti_1'],
+            ],
+            'tamer_rang2_2' => [
+                'title' => 'Instinct animal',
+                'slug' => 'tamer-rang2-2',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['tamer_apprenti_1'],
+            ],
+            'tamer_rang2_3' => [
+                'title' => 'Materia : Racines enchevetrees',
+                'slug' => 'tamer-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Racines enchevetrees (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'entangling-roots']],
+                'requirements' => ['tamer_apprenti_2'],
+            ],
+            'tamer_rang2_4' => [
+                'title' => 'Constitution bestiale',
+                'slug' => 'tamer-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['tamer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'tamer_rang3_1' => [
+                'title' => 'Materia : Charge sauvage',
+                'slug' => 'tamer-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Charge sauvage',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'savage-charge']],
+                'requirements' => ['tamer_rang2_1', 'tamer_rang2_2'],
+            ],
+            'tamer_rang3_2' => [
+                'title' => 'Materia : Croissance sauvage',
+                'slug' => 'tamer-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Croissance sauvage (soin + degats)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wild-growth']],
+                'requirements' => ['tamer_rang2_3'],
+            ],
+            'tamer_rang3_3' => [
+                'title' => 'Carapace epaisse',
+                'slug' => 'tamer-rang3-3',
+                'description' => 'Augmente les points de vie et les soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'heal' => 1,
+                'requirements' => ['tamer_rang2_4'],
+            ],
+            'tamer_rang3_4' => [
+                'title' => 'Materia : Liane',
+                'slug' => 'tamer-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Liane',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'liana-whip']],
+                'requirements' => ['tamer_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'tamer_rang4_1' => [
+                'title' => 'Materia : Afflux primordial',
+                'slug' => 'tamer-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Afflux primordial (soin + degats)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'primal-surge']],
+                'requirements' => ['tamer_rang3_1', 'tamer_rang3_2'],
+            ],
+            'tamer_rang4_2' => [
+                'title' => 'Materia : Benediction de la nature',
+                'slug' => 'tamer-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Benediction de la nature',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nature-blessing']],
+                'requirements' => ['tamer_rang3_3', 'tamer_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'tamer_rang5_1' => [
+                'title' => 'Materia : Rugissement alpha',
+                'slug' => 'tamer-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Rugissement alpha',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'alpha-roar']],
+                'requirements' => ['tamer_rang4_1', 'tamer_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // FOUDROMANCIEN (air) — 13 skills, mage foudre/vent offensif
+    // =========================================================================
+    private function getStormcallerSkills(): array
+    {
+        $d = 'stormcaller';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'storm_materia_1' => [
+                'title' => 'Materia : Lame d\'air',
+                'slug' => 'storm-materia-1',
+                'description' => 'Permet d\'utiliser la materia Lame d\'air',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-lame']],
+            ],
+            'storm_apprenti_2' => [
+                'title' => 'Materia : Bourrasque',
+                'slug' => 'storm-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bourrasque',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'gust']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'storm_hit_1' => [
+                'title' => 'Precision du vent',
+                'slug' => 'storm-hit-1',
+                'description' => 'Augmente la precision des sorts d\'air',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['storm_materia_1'],
+            ],
+            'storm_rang2_2' => [
+                'title' => 'Efficacite de l\'air',
+                'slug' => 'storm-rang2-2',
+                'description' => 'Augmente les degats des sorts d\'air',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['storm_materia_1'],
+            ],
+            'storm_materia_2' => [
+                'title' => 'Materia : Tornade',
+                'slug' => 'storm-materia-2',
+                'description' => 'Permet d\'utiliser la materia Tornade',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tornado']],
+                'requirements' => ['storm_apprenti_2'],
+            ],
+            'storm_rang2_4' => [
+                'title' => 'Materia : Souffle du vent',
+                'slug' => 'storm-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Souffle du vent',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-blast']],
+                'requirements' => ['storm_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'storm_rang3_1' => [
+                'title' => 'Materia : Cyclone',
+                'slug' => 'storm-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Cyclone (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'cyclone']],
+                'requirements' => ['storm_hit_1', 'storm_rang2_2'],
+            ],
+            'storm_rang3_2' => [
+                'title' => 'Materia : Faux de vent',
+                'slug' => 'storm-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Faux de vent',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-scythe']],
+                'requirements' => ['storm_materia_2'],
+            ],
+            'storm_rang3_3' => [
+                'title' => 'Oeil du cyclone',
+                'slug' => 'storm-rang3-3',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['storm_rang2_4'],
+            ],
+            'storm_rang3_4' => [
+                'title' => 'Materia : Mur de vent',
+                'slug' => 'storm-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Mur de vent (degats + soin)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-wall']],
+                'requirements' => ['storm_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'storm_rang4_1' => [
+                'title' => 'Materia : Tempete',
+                'slug' => 'storm-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Tempete — devastation aerienne',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tempest']],
+                'requirements' => ['storm_rang3_1', 'storm_rang3_2'],
+            ],
+            'storm_rang4_2' => [
+                'title' => 'Materia : Lame de vide',
+                'slug' => 'storm-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lame de vide',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vacuum-blade']],
+                'requirements' => ['storm_rang3_3', 'storm_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'storm_materia_3' => [
+                'title' => 'Materia : Ouragan',
+                'slug' => 'storm-materia-3',
+                'description' => 'Permet d\'utiliser la materia Ouragan',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'hurricane']],
+                'requirements' => ['storm_rang4_1', 'storm_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ARCHER (air) — 13 skills, tir a distance et vent
+    // =========================================================================
+    private function getArcherSkills(): array
+    {
+        $d = 'archer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'archer_apprenti_1' => [
+                'title' => 'Materia : Tir precis',
+                'slug' => 'archer-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Tir precis',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'precise-shot']],
+            ],
+            'archer_apprenti_2' => [
+                'title' => 'Materia : Ruee d\'air',
+                'slug' => 'archer-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Ruee d\'air',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-dash']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'archer_rang2_1' => [
+                'title' => 'Oeil de faucon',
+                'slug' => 'archer-rang2-1',
+                'description' => 'Augmente la precision des tirs',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['archer_apprenti_1'],
+            ],
+            'archer_rang2_2' => [
+                'title' => 'Fleche aceree',
+                'slug' => 'archer-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['archer_apprenti_1'],
+            ],
+            'archer_rang2_3' => [
+                'title' => 'Materia : Tranchant aerien',
+                'slug' => 'archer-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Tranchant aerien',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-slash']],
+                'requirements' => ['archer_apprenti_2'],
+            ],
+            'archer_rang2_4' => [
+                'title' => 'Materia : Point de pression',
+                'slug' => 'archer-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Point de pression',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'pressure-point']],
+                'requirements' => ['archer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'archer_rang3_1' => [
+                'title' => 'Materia : Tir critique',
+                'slug' => 'archer-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tir critique',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'critical-shot']],
+                'requirements' => ['archer_rang2_1', 'archer_rang2_2'],
+            ],
+            'archer_rang3_2' => [
+                'title' => 'Materia : Courant d\'air',
+                'slug' => 'archer-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Courant d\'air (degats + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-current']],
+                'requirements' => ['archer_rang2_3'],
+            ],
+            'archer_rang3_3' => [
+                'title' => 'Concentration mortelle',
+                'slug' => 'archer-rang3-3',
+                'description' => 'Augmente les degats et le critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['archer_rang2_4'],
+            ],
+            'archer_rang3_4' => [
+                'title' => 'Materia : Pluie de fleches',
+                'slug' => 'archer-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Pluie de fleches (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'arrow-rain']],
+                'requirements' => ['archer_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'archer_rang4_1' => [
+                'title' => 'Materia : Faux de vent',
+                'slug' => 'archer-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Faux de vent',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-scythe']],
+                'requirements' => ['archer_rang3_1', 'archer_rang3_2'],
+            ],
+            'archer_rang4_2' => [
+                'title' => 'Materia : Lame de vide',
+                'slug' => 'archer-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lame de vide',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vacuum-blade']],
+                'requirements' => ['archer_rang3_3', 'archer_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'archer_rang5_1' => [
+                'title' => 'Materia : Fleche perforante',
+                'slug' => 'archer-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Fleche perforante',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'piercing-arrow']],
+                'requirements' => ['archer_rang4_1', 'archer_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // VAGABOND (air) — 13 skills, support vitesse et evasion
+    // =========================================================================
+    private function getWandererSkills(): array
+    {
+        $d = 'wanderer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'wander_apprenti_1' => [
+                'title' => 'Materia : Hate',
+                'slug' => 'wander-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Hate',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'haste']],
+            ],
+            'wander_apprenti_2' => [
+                'title' => 'Materia : Bouclier de vent',
+                'slug' => 'wander-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier de vent',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'wander_rang2_1' => [
+                'title' => 'Agilite du vent',
+                'slug' => 'wander-rang2-1',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['wander_apprenti_1'],
+            ],
+            'wander_rang2_2' => [
+                'title' => 'Vitesse du vagabond',
+                'slug' => 'wander-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['wander_apprenti_1'],
+            ],
+            'wander_rang2_3' => [
+                'title' => 'Materia : Brise guerisseuse',
+                'slug' => 'wander-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Brise guerisseuse',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-breeze']],
+                'requirements' => ['wander_apprenti_2'],
+            ],
+            'wander_rang2_4' => [
+                'title' => 'Endurance du voyageur',
+                'slug' => 'wander-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['wander_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'wander_rang3_1' => [
+                'title' => 'Materia : Mirage',
+                'slug' => 'wander-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Mirage (degats + soin)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'mirage']],
+                'requirements' => ['wander_rang2_1', 'wander_rang2_2'],
+            ],
+            'wander_rang3_2' => [
+                'title' => 'Materia : Courant d\'air',
+                'slug' => 'wander-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Courant d\'air',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-current']],
+                'requirements' => ['wander_rang2_3'],
+            ],
+            'wander_rang3_3' => [
+                'title' => 'Souffle revitalisant',
+                'slug' => 'wander-rang3-3',
+                'description' => 'Augmente la puissance des soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['wander_rang2_4'],
+            ],
+            'wander_rang3_4' => [
+                'title' => 'Materia : Benediction du vent',
+                'slug' => 'wander-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Benediction du vent',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-blessing']],
+                'requirements' => ['wander_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'wander_rang4_1' => [
+                'title' => 'Materia : Mur de vent',
+                'slug' => 'wander-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Mur de vent (degats + soin)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-wall']],
+                'requirements' => ['wander_rang3_1', 'wander_rang3_2'],
+            ],
+            'wander_rang4_2' => [
+                'title' => 'Materia : Tempete',
+                'slug' => 'wander-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Tempete',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tempest']],
+                'requirements' => ['wander_rang3_3', 'wander_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'wander_rang5_1' => [
+                'title' => 'Materia : Zephyr',
+                'slug' => 'wander-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Zephyr',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'zephyr']],
+                'requirements' => ['wander_rang4_1', 'wander_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // PALADIN (lumiere) — 13 skills, guerrier sacre tank/healer
+    // =========================================================================
+    private function getPaladinSkills(): array
+    {
+        $d = 'paladin';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'paladin_apprenti_1' => [
+                'title' => 'Materia : Frappe sacree',
+                'slug' => 'paladin-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Frappe sacree',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sacred-strike']],
+            ],
+            'paladin_apprenti_2' => [
+                'title' => 'Materia : Aura de lumiere',
+                'slug' => 'paladin-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Aura de lumiere',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'light-aura']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'paladin_rang2_1' => [
+                'title' => 'Bras du jugement',
+                'slug' => 'paladin-rang2-1',
+                'description' => 'Augmente les degats des attaques sacrees',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['paladin_apprenti_1'],
+            ],
+            'paladin_rang2_2' => [
+                'title' => 'Constitution sacree',
+                'slug' => 'paladin-rang2-2',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['paladin_apprenti_1'],
+            ],
+            'paladin_rang2_3' => [
+                'title' => 'Materia : Lumiere',
+                'slug' => 'paladin-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Lumiere (degats + soin)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-light']],
+                'requirements' => ['paladin_apprenti_2'],
+            ],
+            'paladin_rang2_4' => [
+                'title' => 'Materia : Toucher guerisseur',
+                'slug' => 'paladin-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Toucher guerisseur',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-touch']],
+                'requirements' => ['paladin_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'paladin_rang3_1' => [
+                'title' => 'Materia : Lumiere sacree',
+                'slug' => 'paladin-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Lumiere sacree (degats + soin)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sacred-light']],
+                'requirements' => ['paladin_rang2_1', 'paladin_rang2_2'],
+            ],
+            'paladin_rang3_2' => [
+                'title' => 'Materia : Bouclier de vie',
+                'slug' => 'paladin-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier de vie',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-shield']],
+                'requirements' => ['paladin_rang2_3'],
+            ],
+            'paladin_rang3_3' => [
+                'title' => 'Precision divine',
+                'slug' => 'paladin-rang3-3',
+                'description' => 'Augmente la precision des attaques sacrees',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['paladin_rang2_4'],
+            ],
+            'paladin_rang3_4' => [
+                'title' => 'Materia : Purification',
+                'slug' => 'paladin-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Purification',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'purification']],
+                'requirements' => ['paladin_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'paladin_rang4_1' => [
+                'title' => 'Materia : Benediction divine',
+                'slug' => 'paladin-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Benediction divine — soin puissant',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
+                'requirements' => ['paladin_rang3_1', 'paladin_rang3_2'],
+            ],
+            'paladin_rang4_2' => [
+                'title' => 'Materia : Explosion de vie',
+                'slug' => 'paladin-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Explosion de vie',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-burst']],
+                'requirements' => ['paladin_rang3_3', 'paladin_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'paladin_rang5_1' => [
+                'title' => 'Materia : Jugement divin',
+                'slug' => 'paladin-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Jugement divin',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-judgment']],
+                'requirements' => ['paladin_rang4_1', 'paladin_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // PRETRE (lumiere) — 13 skills, healer pur
+    // =========================================================================
+    private function getPriestSkills(): array
+    {
+        $d = 'priest';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'priest_apprenti_1' => [
+                'title' => 'Materia : Priere',
+                'slug' => 'priest-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Priere',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'prayer']],
+            ],
+            'priest_apprenti_2' => [
+                'title' => 'Materia : Toucher angelique',
+                'slug' => 'priest-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher angelique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'angelic-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'priest_rang2_1' => [
+                'title' => 'Grace divine',
+                'slug' => 'priest-rang2-1',
+                'description' => 'Augmente la puissance des soins',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['priest_apprenti_1'],
+            ],
+            'priest_rang2_2' => [
+                'title' => 'Concentration sacree',
+                'slug' => 'priest-rang2-2',
+                'description' => 'Augmente la precision des soins',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['priest_apprenti_1'],
+            ],
+            'priest_rang2_3' => [
+                'title' => 'Materia : Vague de guerison',
+                'slug' => 'priest-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Vague de guerison',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-wave']],
+                'requirements' => ['priest_apprenti_2'],
+            ],
+            'priest_rang2_4' => [
+                'title' => 'Materia : Floraison de vie',
+                'slug' => 'priest-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Floraison de vie',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-bloom']],
+                'requirements' => ['priest_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'priest_rang3_1' => [
+                'title' => 'Materia : Regeneration',
+                'slug' => 'priest-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Regeneration (HoT)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rejuvenation']],
+                'requirements' => ['priest_rang2_1', 'priest_rang2_2'],
+            ],
+            'priest_rang3_2' => [
+                'title' => 'Materia : Afflux de vitalite',
+                'slug' => 'priest-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
+                'requirements' => ['priest_rang2_3'],
+            ],
+            'priest_rang3_3' => [
+                'title' => 'Vitalite du pretre',
+                'slug' => 'priest-rang3-3',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['priest_rang2_4'],
+            ],
+            'priest_rang3_4' => [
+                'title' => 'Materia : Transfert de vie',
+                'slug' => 'priest-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Transfert de vie',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-transfer']],
+                'requirements' => ['priest_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'priest_rang4_1' => [
+                'title' => 'Materia : Benediction celeste',
+                'slug' => 'priest-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Benediction celeste — soin ultime',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'celestial-blessing']],
+                'requirements' => ['priest_rang3_1', 'priest_rang3_2'],
+            ],
+            'priest_rang4_2' => [
+                'title' => 'Materia : Benediction divine',
+                'slug' => 'priest-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Benediction divine',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
+                'requirements' => ['priest_rang3_3', 'priest_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'priest_rang5_1' => [
+                'title' => 'Materia : Miracle',
+                'slug' => 'priest-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Miracle',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'miracle']],
+                'requirements' => ['priest_rang4_1', 'priest_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // INQUISITEUR (lumiere) — 13 skills, DPS magique sacre
+    // =========================================================================
+    private function getInquisitorSkills(): array
+    {
+        $d = 'inquisitor';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'inquis_apprenti_1' => [
+                'title' => 'Materia : Chatiment sacre',
+                'slug' => 'inquis-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Chatiment sacre',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'smite']],
+            ],
+            'inquis_apprenti_2' => [
+                'title' => 'Materia : Lumiere',
+                'slug' => 'inquis-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Lumiere',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-light']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'inquis_rang2_1' => [
+                'title' => 'Colere divine',
+                'slug' => 'inquis-rang2-1',
+                'description' => 'Augmente les degats des sorts sacres',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['inquis_apprenti_1'],
+            ],
+            'inquis_rang2_2' => [
+                'title' => 'Fanatisme',
+                'slug' => 'inquis-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['inquis_apprenti_1'],
+            ],
+            'inquis_rang2_3' => [
+                'title' => 'Materia : Lumiere sacree',
+                'slug' => 'inquis-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Lumiere sacree',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sacred-light']],
+                'requirements' => ['inquis_apprenti_2'],
+            ],
+            'inquis_rang2_4' => [
+                'title' => 'Materia : Purification',
+                'slug' => 'inquis-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Purification',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'purification']],
+                'requirements' => ['inquis_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'inquis_rang3_1' => [
+                'title' => 'Materia : Feu sacre',
+                'slug' => 'inquis-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Feu sacre',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-fire']],
+                'requirements' => ['inquis_rang2_1', 'inquis_rang2_2'],
+            ],
+            'inquis_rang3_2' => [
+                'title' => 'Materia : Explosion de vie',
+                'slug' => 'inquis-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Explosion de vie',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-burst']],
+                'requirements' => ['inquis_rang2_3'],
+            ],
+            'inquis_rang3_3' => [
+                'title' => 'Oeil inquisiteur',
+                'slug' => 'inquis-rang3-3',
+                'description' => 'Augmente la precision des sorts sacres',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['inquis_rang2_4'],
+            ],
+            'inquis_rang3_4' => [
+                'title' => 'Materia : Transfert de vie',
+                'slug' => 'inquis-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Transfert de vie',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-transfer']],
+                'requirements' => ['inquis_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'inquis_rang4_1' => [
+                'title' => 'Materia : Jugement sacre',
+                'slug' => 'inquis-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Jugement sacre — degats + soin',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-intervention']],
+                'requirements' => ['inquis_rang3_1', 'inquis_rang3_2'],
+            ],
+            'inquis_rang4_2' => [
+                'title' => 'Materia : Afflux de vitalite',
+                'slug' => 'inquis-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
+                'requirements' => ['inquis_rang3_3', 'inquis_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'inquis_rang5_1' => [
+                'title' => 'Materia : Sentence divine',
+                'slug' => 'inquis-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Sentence divine',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-sentence']],
+                'requirements' => ['inquis_rang4_1', 'inquis_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ASSASSIN (ombre) — 13 skills, furtivite et critiques
+    // =========================================================================
+    private function getAssassinSkills(): array
+    {
+        $d = 'assassin';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'assassin_apprenti_1' => [
+                'title' => 'Materia : Embuscade',
+                'slug' => 'assassin-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Embuscade',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ambush']],
+            ],
+            'assassin_apprenti_2' => [
+                'title' => 'Materia : Toucher necrotique',
+                'slug' => 'assassin-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher necrotique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'necrotic-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'assassin_rang2_1' => [
+                'title' => 'Lame dans l\'ombre',
+                'slug' => 'assassin-rang2-1',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['assassin_apprenti_1'],
+            ],
+            'assassin_rang2_2' => [
+                'title' => 'Frappe vicieuse',
+                'slug' => 'assassin-rang2-2',
+                'description' => 'Augmente les degats des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['assassin_apprenti_1'],
+            ],
+            'assassin_rang2_3' => [
+                'title' => 'Materia : Toucher mortel',
+                'slug' => 'assassin-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Toucher mortel',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-touch']],
+                'requirements' => ['assassin_apprenti_2'],
+            ],
+            'assassin_rang2_4' => [
+                'title' => 'Materia : Sangsue vitale',
+                'slug' => 'assassin-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Sangsue vitale (drain)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-leech']],
+                'requirements' => ['assassin_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'assassin_rang3_1' => [
+                'title' => 'Materia : Eclair d\'ombre',
+                'slug' => 'assassin-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Eclair d\'ombre',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-bolt']],
+                'requirements' => ['assassin_rang2_1', 'assassin_rang2_2'],
+            ],
+            'assassin_rang3_2' => [
+                'title' => 'Materia : Emprise de la mort',
+                'slug' => 'assassin-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Emprise de la mort',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-grip']],
+                'requirements' => ['assassin_rang2_3'],
+            ],
+            'assassin_rang3_3' => [
+                'title' => 'Precision assassine',
+                'slug' => 'assassin-rang3-3',
+                'description' => 'Augmente la precision des attaques furtives',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['assassin_rang2_4'],
+            ],
+            'assassin_rang3_4' => [
+                'title' => 'Materia : Siphon d\'ame',
+                'slug' => 'assassin-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Siphon d\'ame (drain)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-siphon']],
+                'requirements' => ['assassin_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'assassin_rang4_1' => [
+                'title' => 'Materia : Coup mortel',
+                'slug' => 'assassin-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Coup mortel — degats devastateurs',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'deadly-strike']],
+                'requirements' => ['assassin_rang3_1', 'assassin_rang3_2'],
+            ],
+            'assassin_rang4_2' => [
+                'title' => 'Materia : Nova de mort',
+                'slug' => 'assassin-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Nova de mort (AoE)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-nova']],
+                'requirements' => ['assassin_rang3_3', 'assassin_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'assassin_rang5_1' => [
+                'title' => 'Materia : Danse des ombres',
+                'slug' => 'assassin-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Danse des ombres',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-dance']],
+                'requirements' => ['assassin_rang4_1', 'assassin_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // SORCIER (ombre) — 13 skills, maledictions et debuffs
+    // =========================================================================
+    private function getWarlockSkills(): array
+    {
+        $d = 'warlock';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'warlock_apprenti_1' => [
+                'title' => 'Materia : Malefice',
+                'slug' => 'warlock-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Malefice',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'hex']],
+            ],
+            'warlock_apprenti_2' => [
+                'title' => 'Materia : Chatiment',
+                'slug' => 'warlock-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Chatiment',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'punishment']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'warlock_rang2_1' => [
+                'title' => 'Puissance maudite',
+                'slug' => 'warlock-rang2-1',
+                'description' => 'Augmente les degats des sorts sombres',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['warlock_apprenti_1'],
+            ],
+            'warlock_rang2_2' => [
+                'title' => 'Regard mauvais',
+                'slug' => 'warlock-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['warlock_apprenti_1'],
+            ],
+            'warlock_rang2_3' => [
+                'title' => 'Materia : Emprise de la mort',
+                'slug' => 'warlock-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Emprise de la mort',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-grip']],
+                'requirements' => ['warlock_apprenti_2'],
+            ],
+            'warlock_rang2_4' => [
+                'title' => 'Materia : Guerison des ombres',
+                'slug' => 'warlock-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Guerison des ombres',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-mend']],
+                'requirements' => ['warlock_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'warlock_rang3_1' => [
+                'title' => 'Materia : Terreur',
+                'slug' => 'warlock-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Terreur (paralysie)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'terror']],
+                'requirements' => ['warlock_rang2_1', 'warlock_rang2_2'],
+            ],
+            'warlock_rang3_2' => [
+                'title' => 'Materia : Rituel sombre',
+                'slug' => 'warlock-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Rituel sombre (sacrifice + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-ritual']],
+                'requirements' => ['warlock_rang2_3'],
+            ],
+            'warlock_rang3_3' => [
+                'title' => 'Canalisation sombre',
+                'slug' => 'warlock-rang3-3',
+                'description' => 'Augmente la puissance des soins sombres',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['warlock_rang2_4'],
+            ],
+            'warlock_rang3_4' => [
+                'title' => 'Materia : Vague d\'ombre',
+                'slug' => 'warlock-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Vague d\'ombre (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-wave']],
+                'requirements' => ['warlock_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'warlock_rang4_1' => [
+                'title' => 'Materia : Spirale de mort',
+                'slug' => 'warlock-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Spirale de mort',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-coil']],
+                'requirements' => ['warlock_rang3_1', 'warlock_rang3_2'],
+            ],
+            'warlock_rang4_2' => [
+                'title' => 'Materia : Siphon d\'ame',
+                'slug' => 'warlock-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Siphon d\'ame (drain)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-siphon']],
+                'requirements' => ['warlock_rang3_3', 'warlock_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'warlock_rang5_1' => [
+                'title' => 'Materia : Pacte sombre',
+                'slug' => 'warlock-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Pacte sombre',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-pact']],
+                'requirements' => ['warlock_rang4_1', 'warlock_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // MINEUR (terre/recolte) — skills existants conserves
+    // =========================================================================
+    private function getMinerSkills(): array
+    {
+        return [
             'miner_ruby_xs' => [
                 'slug' => 'miner-ruby-xs',
                 'title' => 'Minage du ruby debutant',
@@ -444,10 +3434,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => 'miner',
                 'requirements' => ['miner_iron_xs'],
             ],
+        ];
+    }
 
-            // =====================================================
-            // HERBORISTE (inchange)
-            // =====================================================
+    // =========================================================================
+    // HERBORISTE (bete/recolte) — skills existants conserves
+    // =========================================================================
+    private function getHerbalistSkills(): array
+    {
+        return [
             'herbalist_dandelion' => [
                 'slug' => 'herbalist-dandelion-xs',
                 'title' => 'Recolte de pissenlit',

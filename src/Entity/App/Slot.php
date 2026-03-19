@@ -2,6 +2,7 @@
 
 namespace App\Entity\App;
 
+use App\Enum\Element;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -16,8 +17,8 @@ class Slot
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
-    #[ORM\Column(name: 'element', type: 'string', length: 25, nullable: true)]
-    private $element;
+    #[ORM\Column(name: 'element', type: 'string', length: 25, nullable: true, enumType: Element::class)]
+    private ?Element $element = null;
 
     /**
      * Objet équipé dans le slot.
@@ -43,22 +44,14 @@ class Slot
         return $this->id;
     }
 
-    /**
-     * Set element.
-     *
-     * @param string $element
-     */
-    public function setElement($element): self
+    public function setElement(?Element $element): self
     {
         $this->element = $element;
 
         return $this;
     }
 
-    /**
-     * Get element.
-     */
-    public function getElement(): string
+    public function getElement(): ?Element
     {
         return $this->element;
     }
@@ -75,10 +68,8 @@ class Slot
 
     /**
      * Get itemSet.
-     *
-     * @return PlayerItem
      */
-    public function getItemSet()
+    public function getItemSet(): ?PlayerItem
     {
         return $this->item_set;
     }

@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\Element;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -50,14 +51,6 @@ class Item
     public const GEAR_LOCATION_RING_1 = 'ring_1';
     public const GEAR_LOCATION_RING_2 = 'ring_2';
     public const GEAR_LOCATION_SHOULDER = 'shoulder';
-
-    public const ELEMENT_NONE = 'none';
-    public const ELEMENT_FIRE = 'fire';
-    public const ELEMENT_WATER = 'water';
-    public const ELEMENT_EARTH = 'earth';
-    public const ELEMENT_AIR = 'air';
-    public const ELEMENT_LIGHT = 'light';
-    public const ELEMENT_DARK = 'dark';
 
     public const GEAR_LOCATIONS = [
         self::GEAR_LOCATION_HEAD,
@@ -138,8 +131,8 @@ class Item
     #[ORM\Column(name: 'space', type: 'integer')]
     private $space = 1;
 
-    #[ORM\Column(name: 'element', type: 'string', length: 25)]
-    private $element = self::ELEMENT_NONE;
+    #[ORM\Column(name: 'element', type: 'string', length: 25, enumType: Element::class)]
+    private Element $element = Element::None;
 
     #[ORM\Column(name: 'gear_location', type: 'string', nullable: true)]
     private $gearLocation;
@@ -182,6 +175,9 @@ class Item
 
     #[ORM\Column(name: 'rarity', type: 'string', length: 50, nullable: true)]
     private ?string $rarity = null;
+
+    #[ORM\Column(name: 'bound_to_player', type: 'boolean', options: ['default' => false])]
+    private bool $boundToPlayer = false;
 
     /**
      * Get id.
@@ -286,25 +282,19 @@ class Item
     /**
      * Get energyCost.
      */
-    public function getEnergyCost(): int
+    public function getEnergyCost(): ?int
     {
         return $this->energyCost;
     }
 
-    /**
-     * Set element.
-     */
-    public function setElement(string $element): Item
+    public function setElement(Element $element): Item
     {
         $this->element = $element;
 
         return $this;
     }
 
-    /**
-     * Get element.
-     */
-    public function getElement(): string
+    public function getElement(): Element
     {
         return $this->element;
     }
@@ -362,7 +352,7 @@ class Item
     /**
      * Get price.
      */
-    public function getPrice(): int
+    public function getPrice(): ?int
     {
         return $this->price;
     }
@@ -426,7 +416,7 @@ class Item
         $this->slug = $slug;
     }
 
-    public function getLevel(): int
+    public function getLevel(): ?int
     {
         return $this->level;
     }
@@ -514,5 +504,15 @@ class Item
     public function setRarity(?string $rarity): void
     {
         $this->rarity = $rarity;
+    }
+
+    public function isBoundToPlayer(): bool
+    {
+        return $this->boundToPlayer;
+    }
+
+    public function setBoundToPlayer(bool $boundToPlayer): void
+    {
+        $this->boundToPlayer = $boundToPlayer;
     }
 }

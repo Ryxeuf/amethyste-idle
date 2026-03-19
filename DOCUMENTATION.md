@@ -262,7 +262,7 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 | Entité | Description | Champs clés |
 |--------|-------------|-------------|
 | **User** | Compte utilisateur | email, username, roles, password |
-| **Player** | Personnage jouable | name, life, maxLife, energy, hit, speed, classType, coordinates, isMoving |
+| **Player** | Personnage jouable | name, life, maxLife, energy, hit (précision 0-100), speed, classType, coordinates, isMoving |
 | **Mob** | Instance de monstre | monster (template), level, coordinates, life |
 | **Fight** | Combat en cours | step, inProgress, players[], mobs[], statusEffects[] |
 | **FightStatusEffect** | Effet de statut actif | fight, targetType, targetId, type, remainingTurns, power |
@@ -277,10 +277,10 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 | **MonsterItem** | Table de loot | monster, item, probability (float) |
 | **Domain** | Domaine de compétence | title, skills[] |
 | **Skill** | Compétence | title, requiredPoints, damage/heal/hit/critical/life bonuses, requirements[] |
-| **Spell** | Sort | name, damage, heal, hit, critical, element |
+| **Spell** | Sort | name, damage, heal, hit (précision 0-100), critical, element |
 | **Pnj** | Personnage non-joueur | name, dialog (JSON), coordinates |
 | **Quest** | Quête | (entité référencée, détails dans fixtures) |
-| **DomainExperience** | XP par domaine | totalExperience, usedExperience, damage/heal/hit/critical |
+| **DomainExperience** | XP par domaine | totalExperience, usedExperience, damage/heal/hit (bonus précision)/critical |
 | **QueueRespawnMob** | File de respawn | monster, delay, coordinates, map |
 
 ### Traits partagés
@@ -343,18 +343,39 @@ Le moteur repose sur **21 événements** organisés en deux catégories :
 8. Si le joueur meurt → `PlayerDeadEvent` → `PlayerRespawnHandler` (respawn à 50% HP)
 9. Combat terminé → loot → `FightLootedEvent` → `FightCleaner` nettoie
 
+### Chances de toucher (hit)
+
+La stat `hit` représente la **précision** (chances de toucher), et non les dégâts. Elle est exprimée en pourcentage (0-100).
+
+- **Attaque basique** : `hitChances = player.hit` (défaut : 50)
+- **Sort** : `hitChances = spell.hit + bonusSkills.hit` (défaut sort : 75)
+- **Mob** : `hitChances = monster.hit` (défaut : 20)
+
+`FightCalculator::hasAttackHit(hitChances)` tire un nombre aléatoire entre 0 et 99. Si ce nombre est inférieur à `hitChances`, l'attaque touche. Sinon, elle rate.
+
+Les bonus de `hit` proviennent des compétences débloquées (`Skill.hit`) et sont cumulés dans `DomainExperience.hit` via `SkillAcquiring`.
+
 ### Calcul des dégâts
 
+Les dégâts sont calculés **uniquement si l'attaque touche** :
+
 ```
-hitChances = spell.hit + domainExperience.hit
+# 1. Vérification de précision (hit)
+hitChances = spell.hit + domainExperience.hit   # (ou player.hit pour attaque basique)
+hit = random(0-99) < hitChances                  # true = touche, false = rate
+
+# 2. Calcul des dégâts (seulement si hit = true)
 isCritical = random(0-99) < (spell.critical + domainExperience.critical)
 damage = spell.damage + domainExperience.damage
 if critical: damage *= 1.5
 if elementalResistance: damage *= (1 - resistance)  # ex: 0.5 = 50% résistance
 if berserk: damage *= 1.5  # bonus dégâts sous berserk
-if shield: damage *= 0.5   # réduction dégâts sous bouclier
+if burn: damage *= 0.75    # réduction dégâts sous brûlure
+if shield: damage -= shieldAbsorb  # absorption du bouclier
 targetLife = clamp(targetLife - damage, 0, maxLife)
 ```
+
+> **Important** : `hit` = précision (chances de toucher). Les dégâts proviennent de `spell.damage`, des bonus de domaine, et des modificateurs (critiques, élémentaires, statuts).
 
 ### Éléments de sorts
 
@@ -580,13 +601,54 @@ Chaque emplacement est un bit dans le champ `gear` de `PlayerItem` :
 
 > **Philosophie de progression** : Amethyste-Idle n'utilise **pas** de système de niveaux d'expérience propres au joueur (pas de "level up" global). La progression repose entièrement sur des **arbres de talent** organisés par domaine. Le joueur accumule de l'XP spécifique à chaque domaine en pratiquant les activités associées, puis investit cette XP pour débloquer des compétences dans l'arbre de talent correspondant.
 
-### Domaines disponibles
+### Éléments du jeu
 
-| Catégorie | Domaines |
-|-----------|---------|
-| **Combat** | Pyromancie, Soldat, Soigneur, Défenseur, Nécromancie, Mage blanc, Druide |
-| **Récolte** | Pêcheur, Mineur, Herboriste, Dépeceur |
-| **Artisanat** | Forgeron, Tanneur, Alchimiste, Joaillier |
+8 éléments + physique (none) :
+
+| Élément | Slug | Description |
+|---------|------|-------------|
+| Physique | `none` | Attaques non-élémentaires |
+| Feu | `fire` | Destruction, rage, pièges |
+| Eau | `water` | Soins, contrôle, potions |
+| Air | `air` | Foudre, précision, vitesse |
+| Terre | `earth` | Défense, géomancie, minéraux |
+| Métal | `metal` | Arts martiaux, forge, ingénierie |
+| Bête | `beast` | Nature, animaux, cuirs |
+| Lumière | `light` | Sacré, soins, jugement |
+| Ombre | `dark` | Nécromancie, assassinat, malédictions |
+
+### Domaines disponibles (32 domaines)
+
+| Catégorie | Élément | Domaines | Archétypes |
+|-----------|---------|----------|------------|
+| **Combat** | Feu | Pyromancien, Berserker, Artificier | DPS magique, DPS CaC, Support offensif |
+| | Eau | Hydromancien, Guérisseur, Marémancien | DPS magique, Healer, Support défensif |
+| | Air | Foudromancien, Archer, Vagabond | DPS magique, DPS distance, Support/Évasion |
+| | Terre | Géomancien, Défenseur, Gardien | DPS magique, Tank, Tank/Support |
+| | Métal | Soldat, Chevalier, Ingénieur | DPS CaC, Tank lourd, Support technique |
+| | Bête | Chasseur, Dompteur, Druide | DPS distance, Tank/Invocateur, Healer/Support |
+| | Lumière | Paladin, Prêtre, Inquisiteur | Tank/Healer, Healer pur, DPS magique |
+| | Ombre | Assassin, Nécromancien, Sorcier | DPS CaC, DPS magique/Invocateur, Support/Debuff |
+| **Récolte** | Terre | Mineur | — |
+| | Eau | Pêcheur | — |
+| | Bête | Herboriste, Dépeceur | — |
+| **Artisanat** | Métal | Forgeron | — |
+| | Bête | Tanneur | — |
+| | Eau | Alchimiste | — |
+| | Terre | Joaillier | — |
+
+### Compétences multi-domaines
+
+- Une même compétence peut appartenir à **plusieurs domaines** (relation ManyToMany)
+- Si un joueur débloque une compétence dans un domaine et qu'elle existe dans un second domaine déjà débloqué → **auto-apprentissage gratuit**
+- Utiliser une compétence partagée fait gagner **100% de l'XP dans chaque domaine** associé
+- Chaque domaine possède au minimum **15 compétences** organisées en arbre avec prérequis
+
+### Race de personnage
+
+- Entité `Race` avec `slug`, `name`, `description`, `statModifiers` (JSON), `spriteSheet`, `availableAtCreation`
+- Actuellement : seule la race **Humain** est disponible (stats neutres)
+- Les races futures pourront modifier les stats de base du personnage
 
 ### Mécanique d'acquisition (arbre de talent)
 

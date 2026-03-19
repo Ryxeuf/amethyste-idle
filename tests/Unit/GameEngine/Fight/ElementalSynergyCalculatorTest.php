@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\GameEngine\Fight;
 
-use App\Entity\Game\Spell;
+use App\Enum\Element;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testWaterFireSynergyExists(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_WATER, Spell::ELEMENT_FIRE);
+        $synergy = $this->calculator->checkSynergy(Element::Water, Element::Fire);
 
         $this->assertNotNull($synergy);
         $this->assertSame('steam', $synergy['name']);
@@ -29,7 +29,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testFireWaterSynergyIsBidirectional(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_FIRE, Spell::ELEMENT_WATER);
+        $synergy = $this->calculator->checkSynergy(Element::Fire, Element::Water);
 
         $this->assertNotNull($synergy);
         $this->assertSame('steam', $synergy['name']);
@@ -39,7 +39,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testEarthAirSynergyExists(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_EARTH, Spell::ELEMENT_AIR);
+        $synergy = $this->calculator->checkSynergy(Element::Earth, Element::Air);
 
         $this->assertNotNull($synergy);
         $this->assertSame('sandstorm', $synergy['name']);
@@ -48,7 +48,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testAirEarthSynergyIsBidirectional(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_AIR, Spell::ELEMENT_EARTH);
+        $synergy = $this->calculator->checkSynergy(Element::Air, Element::Earth);
 
         $this->assertNotNull($synergy);
         $this->assertSame('sandstorm', $synergy['name']);
@@ -58,7 +58,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testLightDarkSynergyExists(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_LIGHT, Spell::ELEMENT_DARK);
+        $synergy = $this->calculator->checkSynergy(Element::Light, Element::Dark);
 
         $this->assertNotNull($synergy);
         $this->assertSame('eclipse', $synergy['name']);
@@ -68,7 +68,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testDarkLightSynergyIsBidirectional(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_DARK, Spell::ELEMENT_LIGHT);
+        $synergy = $this->calculator->checkSynergy(Element::Dark, Element::Light);
 
         $this->assertNotNull($synergy);
         $this->assertSame('eclipse', $synergy['name']);
@@ -78,7 +78,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testFireEarthSynergyExists(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_FIRE, Spell::ELEMENT_EARTH);
+        $synergy = $this->calculator->checkSynergy(Element::Fire, Element::Earth);
 
         $this->assertNotNull($synergy);
         $this->assertSame('floral_explosion', $synergy['name']);
@@ -88,37 +88,79 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testEarthFireSynergyIsBidirectional(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_EARTH, Spell::ELEMENT_FIRE);
+        $synergy = $this->calculator->checkSynergy(Element::Earth, Element::Fire);
 
         $this->assertNotNull($synergy);
         $this->assertSame('floral_explosion', $synergy['name']);
+    }
+
+    // --- Tests synergies metal ---
+
+    public function testMetalFireSynergyExists(): void
+    {
+        $synergy = $this->calculator->checkSynergy(Element::Metal, Element::Fire);
+
+        $this->assertNotNull($synergy);
+        $this->assertSame('forge', $synergy['name']);
+        $this->assertSame(1.4, $synergy['damageMultiplier']);
+        $this->assertSame('burn', $synergy['statusEffect']);
+    }
+
+    public function testMetalLightSynergyExists(): void
+    {
+        $synergy = $this->calculator->checkSynergy(Element::Metal, Element::Light);
+
+        $this->assertNotNull($synergy);
+        $this->assertSame('holy_blade', $synergy['name']);
+        $this->assertSame(1.6, $synergy['damageMultiplier']);
+    }
+
+    // --- Tests synergies beast ---
+
+    public function testBeastEarthSynergyExists(): void
+    {
+        $synergy = $this->calculator->checkSynergy(Element::Beast, Element::Earth);
+
+        $this->assertNotNull($synergy);
+        $this->assertSame('primal_fury', $synergy['name']);
+        $this->assertSame(1.4, $synergy['damageMultiplier']);
+        $this->assertSame('berserk', $synergy['statusEffect']);
+    }
+
+    public function testBeastDarkSynergyExists(): void
+    {
+        $synergy = $this->calculator->checkSynergy(Element::Beast, Element::Dark);
+
+        $this->assertNotNull($synergy);
+        $this->assertSame('venomous_shadow', $synergy['name']);
+        $this->assertSame(1.5, $synergy['damageMultiplier']);
+        $this->assertSame('poison', $synergy['statusEffect']);
     }
 
     // --- Tests d'absence de synergie ---
 
     public function testNoSynergyForSameElement(): void
     {
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_FIRE, Spell::ELEMENT_FIRE));
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_WATER, Spell::ELEMENT_WATER));
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_EARTH, Spell::ELEMENT_EARTH));
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_DARK, Spell::ELEMENT_DARK));
+        $this->assertNull($this->calculator->checkSynergy(Element::Fire, Element::Fire));
+        $this->assertNull($this->calculator->checkSynergy(Element::Water, Element::Water));
+        $this->assertNull($this->calculator->checkSynergy(Element::Earth, Element::Earth));
+        $this->assertNull($this->calculator->checkSynergy(Element::Dark, Element::Dark));
+        $this->assertNull($this->calculator->checkSynergy(Element::Metal, Element::Metal));
+        $this->assertNull($this->calculator->checkSynergy(Element::Beast, Element::Beast));
     }
 
     public function testNoSynergyForNoneElement(): void
     {
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_NONE, Spell::ELEMENT_FIRE));
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_FIRE, Spell::ELEMENT_NONE));
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_NONE, Spell::ELEMENT_NONE));
+        $this->assertNull($this->calculator->checkSynergy(Element::None, Element::Fire));
+        $this->assertNull($this->calculator->checkSynergy(Element::Fire, Element::None));
+        $this->assertNull($this->calculator->checkSynergy(Element::None, Element::None));
     }
 
     public function testNoSynergyForUnmatchedPair(): void
     {
-        // Water + Earth n'a pas de synergie definie
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_WATER, Spell::ELEMENT_EARTH));
-        // Air + Fire n'a pas de synergie definie
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_AIR, Spell::ELEMENT_FIRE));
-        // Light + Water n'a pas de synergie definie
-        $this->assertNull($this->calculator->checkSynergy(Spell::ELEMENT_LIGHT, Spell::ELEMENT_WATER));
+        $this->assertNull($this->calculator->checkSynergy(Element::Water, Element::Earth));
+        $this->assertNull($this->calculator->checkSynergy(Element::Air, Element::Fire));
+        $this->assertNull($this->calculator->checkSynergy(Element::Light, Element::Water));
     }
 
     // --- Tests du multiplicateur de degats ---
@@ -136,7 +178,7 @@ class ElementalSynergyCalculatorTest extends TestCase
     public function testApplySynergyDamageWithEclipseMultiplier(): void
     {
         $baseDamage = 100;
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_LIGHT, Spell::ELEMENT_DARK);
+        $synergy = $this->calculator->checkSynergy(Element::Light, Element::Dark);
 
         $result = $this->calculator->applySynergyDamage($baseDamage, $synergy);
 
@@ -147,7 +189,7 @@ class ElementalSynergyCalculatorTest extends TestCase
     public function testApplySynergyDamageWithSteamMultiplier(): void
     {
         $baseDamage = 50;
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_WATER, Spell::ELEMENT_FIRE);
+        $synergy = $this->calculator->checkSynergy(Element::Water, Element::Fire);
 
         $result = $this->calculator->applySynergyDamage($baseDamage, $synergy);
 
@@ -180,7 +222,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testGetSelfDamageWithEclipse(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_LIGHT, Spell::ELEMENT_DARK);
+        $synergy = $this->calculator->checkSynergy(Element::Light, Element::Dark);
 
         $selfDamage = $this->calculator->getSelfDamage(200, $synergy);
 
@@ -190,7 +232,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
     public function testGetSelfDamageReturnsZeroWhenNoSelfDamagePercent(): void
     {
-        $synergy = $this->calculator->checkSynergy(Spell::ELEMENT_WATER, Spell::ELEMENT_FIRE);
+        $synergy = $this->calculator->checkSynergy(Element::Water, Element::Fire);
 
         $selfDamage = $this->calculator->getSelfDamage(200, $synergy);
 
@@ -221,11 +263,16 @@ class ElementalSynergyCalculatorTest extends TestCase
     {
         $all = $this->calculator->getAllSynergies();
 
-        $this->assertCount(4, $all);
+        // 4 originales + 2 metal + 2 beast = 8
+        $this->assertCount(8, $all);
         $this->assertArrayHasKey('water+fire', $all);
         $this->assertArrayHasKey('earth+air', $all);
         $this->assertArrayHasKey('light+dark', $all);
         $this->assertArrayHasKey('fire+earth', $all);
+        $this->assertArrayHasKey('metal+fire', $all);
+        $this->assertArrayHasKey('metal+light', $all);
+        $this->assertArrayHasKey('beast+earth', $all);
+        $this->assertArrayHasKey('beast+dark', $all);
     }
 
     public function testGetAllSynergiesContainsExpectedData(): void

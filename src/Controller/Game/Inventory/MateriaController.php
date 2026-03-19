@@ -25,22 +25,28 @@ class MateriaController extends AbstractController
         // Récupérer les objets materia de l'inventaire
         $playerItems = $materiaInventory->getItems();
 
-        // Transformer les objets PlayerItem en tableau pour la vue
-        $materias = [];
+        // Transformer et grouper les materia par slug+element+level
+        $grouped = [];
         foreach ($playerItems as $item) {
             if ($item->isMateria()) {
                 $genericItem = $item->getGenericItem();
-                $materias[] = [
-                    'id' => $item->getId(),
-                    'name' => $genericItem->getName(),
-                    'level' => $genericItem->getLevel() ?? 1,
-                    'element' => $genericItem->getElement(),
-                    'rarity' => $genericItem->getRarity(),
-                    'description' => $genericItem->getDescription(),
-                    'effects' => $genericItem->getEffect() ?? '',
-                ];
+                $key = $genericItem->getSlug() . '_' . $genericItem->getElement()->value . '_' . ($genericItem->getLevel() ?? 1);
+                if (!isset($grouped[$key])) {
+                    $grouped[$key] = [
+                        'id' => $item->getId(),
+                        'name' => $genericItem->getName(),
+                        'level' => $genericItem->getLevel() ?? 1,
+                        'element' => $genericItem->getElement()->value,
+                        'rarity' => $genericItem->getRarity(),
+                        'description' => $genericItem->getDescription(),
+                        'effects' => $genericItem->getEffect() ?? '',
+                        'quantity' => 0,
+                    ];
+                }
+                ++$grouped[$key]['quantity'];
             }
         }
+        $materias = array_values($grouped);
 
         return $this->render('game/inventory/materia/_list.html.twig', [
             'materias' => $materias,

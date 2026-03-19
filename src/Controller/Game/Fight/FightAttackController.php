@@ -6,6 +6,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\Helper\PlayerHelper;
@@ -64,16 +65,22 @@ class FightAttackController extends AbstractController
 
         // --- Tour du joueur (s'il est encore vivant) ---
         if (!$player->isDead()) {
-            $damage = $this->calculateDamage($player, $target);
-            $target->setLife(max(0, $target->getLife() - $damage));
-            $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
+            $hit = FightCalculator::hasAttackHit($player->getHit());
 
-            $this->combatLogger->logAttack($fight, $player, $target, $damage);
+            if ($hit) {
+                $damage = $this->calculateDamage($player, $target);
+                $target->setLife(max(0, $target->getLife() - $damage));
+                $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
 
-            if ($target->getLife() === 0) {
-                $target->setDiedAt(new \DateTime());
-                $messages[] = sprintf('%s est vaincu !', $target->getName());
-                $this->combatLogger->logDeath($fight, $target);
+                $this->combatLogger->logAttack($fight, $player, $target, $damage);
+
+                if ($target->getLife() === 0) {
+                    $target->setDiedAt(new \DateTime());
+                    $messages[] = sprintf('%s est vaincu !', $target->getName());
+                    $this->combatLogger->logDeath($fight, $target);
+                }
+            } else {
+                $messages[] = sprintf('%s rate son attaque !', $player->getName());
             }
         }
 
@@ -98,6 +105,7 @@ class FightAttackController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
+            'hit' => $hit ?? false,
             'messages' => $mobFirst
                 ? array_merge($mobResult['messages'], $messages)
                 : array_merge($messages, $mobResult['messages']),

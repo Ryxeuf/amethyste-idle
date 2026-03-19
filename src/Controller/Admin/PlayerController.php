@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/players', name: 'admin_player_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_MODERATOR')]
 class PlayerController extends AbstractController
 {
     public function __construct(
@@ -44,7 +44,7 @@ class PlayerController extends AbstractController
 
         $page = max(1, $request->query->getInt('page', 1));
         $limit = 25;
-        $total = (int) (clone $qb)->select('COUNT(p.id)')->getQuery()->getSingleScalarResult();
+        $total = (int) (clone $qb)->select('COUNT(p.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
         $players = $qb->setFirstResult(($page - 1) * $limit)
             ->setMaxResults($limit)
             ->getQuery()
@@ -116,7 +116,7 @@ class PlayerController extends AbstractController
     {
         if ($this->isCsrfTokenValid('role' . $player->getId(), $request->request->get('_token'))) {
             $role = $request->request->get('role');
-            $validRoles = ['ROLE_USER', 'ROLE_PLAYER', 'ROLE_ADMIN'];
+            $validRoles = ['ROLE_USER', 'ROLE_PLAYER', 'ROLE_GAME_DESIGNER', 'ROLE_WORLD_BUILDER', 'ROLE_MODERATOR', 'ROLE_ADMIN'];
 
             if (in_array($role, $validRoles, true)) {
                 $user = $player->getUser();

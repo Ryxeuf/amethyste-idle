@@ -4,6 +4,8 @@ namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\CharacterInterface;
+use App\Enum\Element;
+use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
@@ -27,6 +29,7 @@ class FightSpellController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatSkillResolver $combatSkillResolver,
+        private readonly CombatCapacityResolver $combatCapacityResolver,
         private readonly SpellApplicator $spellApplicator,
         private readonly ElementalSynergyCalculator $synergyCalculator,
         private readonly StatusEffectManager $statusEffectManager,
@@ -91,25 +94,15 @@ class FightSpellController extends AbstractController
             return new JsonResponse(['error' => 'Vous êtes réduit au silence !', 'success' => false]);
         }
 
-        // Verify player has this spell unlocked
+        // Verify player has this spell via equipped materia
         $spellSlug = $data['spellSlug'];
-        if (!$this->combatSkillResolver->hasSkillWithSpell($player, $spellSlug)) {
-            return new JsonResponse(['error' => 'Sort non débloqué'], Response::HTTP_FORBIDDEN);
+        $materiaEntry = $this->combatCapacityResolver->findMateriaSpell($player, $spellSlug);
+        if (!$materiaEntry) {
+            return new JsonResponse(['error' => 'Sort non disponible (materia non équipée)'], Response::HTTP_FORBIDDEN);
         }
 
-        // Find the spell
-        $unlockedSpells = $this->combatSkillResolver->getUnlockedSpells($player);
-        $spell = null;
-        foreach ($unlockedSpells as $s) {
-            if ($s->getSlug() === $spellSlug) {
-                $spell = $s;
-                break;
-            }
-        }
-
-        if (!$spell) {
-            return new JsonResponse(['error' => 'Sort introuvable'], Response::HTTP_NOT_FOUND);
-        }
+        $spell = $materiaEntry['spell'];
+        $elementMatch = $materiaEntry['elementMatch'];
 
         // Check cooldown
         $entityKey = 'player_' . $player->getId();
@@ -136,10 +129,15 @@ class FightSpellController extends AbstractController
         // Calculate combat bonuses from skills
         $bonuses = $this->combatSkillResolver->getCombatBonuses($player);
 
+        // Apply element match bonus from materia/slot matching (+25% damage)
+        if ($elementMatch) {
+            $bonuses['damage'] += (int) round($bonuses['damage'] * CombatCapacityResolver::ELEMENT_MATCH_DAMAGE_BONUS);
+        }
+
         // Check elemental synergy
         $synergyData = null;
         $lastElement = $fight->getLastElementUsed();
-        if ($lastElement && $spell->getElement() !== 'none') {
+        if ($lastElement !== null && $spell->getElement() !== Element::None) {
             $synergyData = $this->synergyCalculator->checkSynergy($lastElement, $spell->getElement());
         }
 

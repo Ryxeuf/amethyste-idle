@@ -4,10 +4,10 @@
 {% block page_title %}Cartes{% endblock %}
 
 {% block body %}
-    <div class="flex items-center justify-between mb-6">
-        <form method="get" class="flex items-center gap-2">
+    <div class="mb-6">
+        <form method="get" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
             <input type="text" name="q" value="{{ search }}" placeholder="Rechercher une carte..."
-                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-64">
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
             <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Rechercher</button>
             {% if search %}
                 <a href="{{ path('admin_map_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
@@ -15,7 +15,7 @@
         </form>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for map in maps %}
             {% set stats = mapStats[map.id] %}
             <a href="{{ path('admin_map_show', {id: map.id}) }}" class="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-purple-700 transition-colors block">
@@ -36,7 +36,7 @@
                 </div>
             </a>
         {% else %}
-            <div class="col-span-3 text-center text-gray-500 py-8">Aucune carte trouvee.</div>
+            <div class="col-span-full text-center text-gray-500 py-8">Aucune carte trouvee.</div>
         {% endfor %}
     </div>
 {% endblock %}
