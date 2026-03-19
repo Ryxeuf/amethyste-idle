@@ -309,12 +309,12 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.G — Arbres de talent Bête (Chasseur + Dompteur + Druide 15) [S] → PR #6g
+## Phase 6.G — Arbres de talent Bête (Chasseur + Dompteur + Druide 15) [S] ✅ *Terminée* → PR #6g
 
-- [ ] `SkillFixtures::getHunterSkills()` — 15 compétences (Appel du faucon → Chasse en meute)
-- [ ] `SkillFixtures::getTamerSkills()` — 15 compétences (Lien bestial → Rugissement alpha)
-- [ ] `SkillFixtures::getDruidSkills()` — Étendre de 4 à 15 compétences
-- [ ] **Materia** : 1 skill materia par domaine Bête — skills materia avec `actions.materia.unlock` pour chaque sort
+- [x] `SkillFixtures::getHunterSkills()` — 13 compétences (Appel du faucon → Chasse en meute)
+- [x] `SkillFixtures::getTamerSkills()` — 13 compétences (Lien bestial → Rugissement alpha)
+- [x] `SkillFixtures::getDruidSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
+- [x] **Materia** : skills materia avec `actions.materia.unlock` pour chaque sort de chaque domaine Bête
 
 ---
 
@@ -531,7 +531,7 @@ Phase 13 (Documentation finale)
 | 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d |
 | 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e |
 | 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f |
-| 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g |
+| 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g ✅ |
 | 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h |
 | 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i |
 | 7 | Tout est un sort + Soulbound | M | Non | #7 |
