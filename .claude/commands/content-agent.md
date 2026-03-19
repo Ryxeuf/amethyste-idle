@@ -19,11 +19,16 @@ Tu es un agent specialise dans la creation et la maintenance du contenu de jeu d
 - Les fixtures utilisent `doctrine/data-fixtures` avec references croisees (`addReference` / `getReference`)
 - Les fixtures ont des groupes et des ordres de chargement (`getDependencies()`)
 - Les items ont un type (stuff, material, consumable, materia, tool) et un gearLocation (bitmask pour les emplacements d'equipement)
-- Les sorts ont un element (fire, water, earth, air, light, dark, nature) et des stats (damage, heal, hit 0-100, critical 0-100)
+- Les sorts ont un element (fire, water, earth, air, light, dark, metal, beast) et des stats (damage, heal, hit 0-100, critical 0-100)
 - Les monstres ont un `aiPattern` JSON pour l'IA de combat
 - Les coordonnees sont au format string `"x.y"` — utiliser `getX()`/`getY()` pour extraire
 - Toutes les commandes PHP via `docker compose exec php`
 - Pas de niveau global : la progression est par arbres de talent/domaine uniquement
+- **REGLE FONDAMENTALE COMPETENCES/MATERIA** :
+  - Les skills sont TOUJOURS passifs : bonus stats ou deblocage materia (`actions.materia.unlock`)
+  - Ne JAMAIS utiliser `actions.combat.spell_slug` dans un skill — utiliser `actions.materia.unlock` a la place
+  - Les sorts actifs proviennent UNIQUEMENT des materia sockettees dans l'equipement
+  - Chaque materia necessite un skill dans un arbre de talent pour pouvoir etre equipee
 
 ## Fichiers cles a consulter
 

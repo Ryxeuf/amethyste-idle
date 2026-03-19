@@ -98,6 +98,8 @@ Depecage:   Monstre vaincu -> Cuir brut -> Cuir traite (tannerie) -> Armure lege
 - **Outils necessaires** : pas de minage sans pioche, pas de peche sans canne
 - **Durabilite = gold sink** : reparer/remplacer les outils coute de l'or ou des materiaux
 - **Experimentation recompensee** : en alchimie, decouvrir une nouvelle recette donne un bonus XP
+- **Materia craft** : le Joaillier gere le sertissage de materia (bonus sockets, qualite materia). Le Forgeron peut ajouter des slots materia aux equipements. Ces interactions materia/craft sont des competences passives dans les arbres de talent.
+- **REGLE FONDAMENTALE** : Les skills sont TOUJOURS passifs. Les sorts actifs viennent uniquement des materia sockettees. Chaque materia necessite un skill de deblocage (`actions.materia.unlock`) dans un arbre de talent.
 
 ## Comment tu travailles
 

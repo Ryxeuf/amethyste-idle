@@ -217,24 +217,51 @@ Chaque domaine combat suit le pattern :
         [Apprenti 2]
 ```
 
-### Compétences materia par domaine
+### Règles fondamentales des compétences et materia
 
-**Chaque domaine de combat** doit inclure **1 compétence materia** (rang 3, ~35 pts) qui renforce l'utilisation des materia de l'élément associé. Ces compétences utilisent le champ `actions.materia` du JSON :
+**CONTRAINTES ABSOLUES** pour toutes les phases présentes et futures :
 
+1. **Les compétences (skills) sont TOUJOURS passives.** Aucun skill ne doit accorder directement un sort actif en combat. Les skills servent uniquement à :
+   - **Débloquer l'utilisation d'une materia** — permet d'équiper et utiliser une materia spécifique
+   - **Accorder des bonus passifs** — augmente les stats (dégâts, soin, précision, critique, vie)
+   - **Permettre d'équiper certains objets** — prérequis d'équipement (armes, armures)
+
+2. **Les sorts actifs proviennent UNIQUEMENT des materia.** Pour lancer un sort en combat, le joueur doit :
+   - Posséder la materia correspondante (item de type materia)
+   - Avoir appris la compétence d'utilisation de cette materia dans un arbre de talent
+   - Avoir sockettée la materia dans un slot d'équipement
+
+3. **Chaque materia a une compétence associée** dans un ou plusieurs domaines. Sans cette compétence, la materia ne peut pas être équipée.
+
+### Format JSON des compétences
+
+**Déblocage materia** — utilise `actions.materia.unlock` avec le slug du sort associé :
 ```php
-'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]]
+'actions' => ['materia' => ['unlock' => 'fire-ball']]
 ```
 
-| Bonus | Effet | Valeur |
-|-------|-------|--------|
-| `xp_bonus` | Bonus XP materia de cet élément en combat | +20% |
-| `damage_bonus` | Bonus dégâts des sorts lancés via materia de cet élément | +10% |
+**Bonus passif** — utilise les champs stats directs (pas de JSON actions) :
+```php
+'damage' => 1, 'critical' => 2, 'life' => 5
+```
 
-**Intégration technique** : `CombatSkillResolver` doit lire `actions.materia` pour calculer les bonus. `MateriaXpGranter` et `CombatCapacityResolver` appliquent ces bonus en plus du matching élémentaire existant (+25%).
+**Déblocage équipement** (futur) — utilisera `actions.equipment` :
+```php
+'actions' => ['equipment' => ['type' => 'heavy_armor']]
+```
 
-**Placement dans l'arbre** : rang 3 (25-35 pts requis), prérequis d'un skill de rang 2. Le skill materia n'est pas obligatoire pour progresser vers les rangs supérieurs — c'est une branche optionnelle de spécialisation.
+### Convention de nommage des skills materia
 
-**Convention de nommage** : `{domaine}_materia_affinity` (slug: `{domaine}-materia-affinity`)
+- **Titre** : `Materia : [Nom du sort]` (ex: `Materia : Boule de feu`)
+- **Slug** : `{domaine}-materia-{spell-slug}` (ex: `pyro-materia-fire-ball`)
+- **Référence fixture** : `{domaine}_materia_{spell}` (ex: `pyro_materia_fireball`)
+- **Description** : `Permet d'utiliser la materia [Nom du sort]`
+
+### Intégration technique
+
+- `CombatCapacityResolver::getEquippedMateriaSpells()` doit vérifier que le joueur possède la compétence materia correspondante avant d'inclure le sort
+- `CombatSkillResolver` doit exposer une méthode `getUnlockedMateriaSpellSlugs(Player)` qui retourne les slugs de sorts autorisés par les skills materia
+- Le flow complet : Materia sockettée → Vérification skill `actions.materia.unlock` → Sort disponible en combat
 
 ---
 
@@ -242,7 +269,7 @@ Chaque domaine combat suit le pattern :
 
 - [x] `SkillFixtures::getBerserkerSkills()` — 15 compétences (Rage → Furie sanguinaire)
 - [x] `SkillFixtures::getArtificerSkills()` — 15 compétences (Piège incendiaire → Barrage d'artillerie)
-- [x] **Materia** : 1 skill materia par domaine Feu (Pyromancien, Berserker, Artificier) — affinité materia feu (+20% XP, +10% dégâts)
+- [x] **Materia** : tous les skills de déblocage de sort convertis en `actions.materia.unlock` (titres "Materia : [Nom]", descriptions "Permet d'utiliser la materia X")
 
 ---
 
@@ -251,7 +278,7 @@ Chaque domaine combat suit le pattern :
 - [x] `SkillFixtures::getHydromancerSkills()` — 13 compétences (Jet d'eau → Tsunami)
 - [x] `SkillFixtures::getHealerSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
 - [x] `SkillFixtures::getTidecallerSkills()` — 13 compétences (Marée montante → Maelström)
-- [x] **Materia** : 1 skill materia par domaine Eau (Hydromancien, Guérisseur, Marémancien) — affinité materia eau (+20% XP, +10% dégâts)
+- [x] **Materia** : tous les skills de déblocage de sort convertis en `actions.materia.unlock`
 
 ---
 
@@ -260,7 +287,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getStormcallerSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getArcherSkills()` — 15 compétences (Tir précis → Flèche perforante)
 - [ ] `SkillFixtures::getWandererSkills()` — 15 compétences (Hâte → Zéphyr)
-- [ ] **Materia** : 1 skill materia par domaine Air — affinité materia air (+20% XP, +10% dégâts)
+- [ ] **Materia** : 1 skill materia par domaine Air — skills materia avec `actions.materia.unlock` pour chaque sort
 
 ---
 
@@ -269,7 +296,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getGeomancerSkills()` — 15 compétences (Jet de cailloux → Déplacement tectonique)
 - [ ] `SkillFixtures::getDefenderSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getGuardianSkills()` — 15 compétences (Bouclier partagé → Bastion)
-- [ ] **Materia** : 1 skill materia par domaine Terre — affinité materia terre (+20% XP, +10% dégâts)
+- [ ] **Materia** : 1 skill materia par domaine Terre — skills materia avec `actions.materia.unlock` pour chaque sort
 
 ---
 
@@ -278,7 +305,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getSoldierSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
 - [ ] `SkillFixtures::getEngineerSkills()` — 15 compétences (Tourelle → Engin de siège)
-- [ ] **Materia** : 1 skill materia par domaine Métal — affinité materia métal (+20% XP, +10% dégâts)
+- [ ] **Materia** : 1 skill materia par domaine Métal — skills materia avec `actions.materia.unlock` pour chaque sort
 
 ---
 
@@ -287,7 +314,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getHunterSkills()` — 15 compétences (Appel du faucon → Chasse en meute)
 - [ ] `SkillFixtures::getTamerSkills()` — 15 compétences (Lien bestial → Rugissement alpha)
 - [ ] `SkillFixtures::getDruidSkills()` — Étendre de 4 à 15 compétences
-- [ ] **Materia** : 1 skill materia par domaine Bête — affinité materia bête (+20% XP, +10% dégâts)
+- [ ] **Materia** : 1 skill materia par domaine Bête — skills materia avec `actions.materia.unlock` pour chaque sort
 
 ---
 
@@ -299,7 +326,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getAssassinSkills()` — 15 compétences (Embuscade → Danse des ombres)
 - [ ] `SkillFixtures::getNecromancerSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getWarlockSkills()` — 15 compétences (Maléfice → Pacte sombre)
-- [ ] **Materia** : 1 skill materia par domaine Lumière + Ombre (6 skills) — affinité materia lumière/ombre (+20% XP, +10% dégâts)
+- [ ] **Materia** : tous les skills de déblocage de sort en `actions.materia.unlock` — skills materia pour chaque sort de chaque domaine
 
 ---
 
@@ -341,24 +368,29 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 8 — Materia & Slots = Capacités de combat [L] → PR #8
+## Phase 8 — Materia & Slots = Capacités de combat [L] ✅ *Partiellement terminée* → PR #8
 
 **Problème** : Slots materia ne déterminent pas les capacités combat.
 
+**Règle fondamentale** : Les sorts actifs proviennent UNIQUEMENT des materia sockettées. Les skills ne donnent que des bonus passifs et des déblocages de materia (`actions.materia.unlock`). Voir section "Règles fondamentales des compétences et materia" ci-dessus.
+
 ### Fichiers
-- **Créer** `src/GameEngine/Fight/CombatCapacityResolver.php` :
+- **✅ Créé** `src/GameEngine/Fight/CombatCapacityResolver.php` :
   - Sorts disponibles = materia équipées dans les slots
   - Attaque arme TOUJOURS disponible gratuitement (hors slots)
   - Joueur = 1 attaque arme + N sorts materia
-  - Bonus matching élément slot/materia (dégâts +X%, XP +X%)
-- **Modifier** `src/GameEngine/Fight/CombatSkillResolver.php` — Intégrer CombatCapacityResolver
+  - Bonus matching élément slot/materia (dégâts +25%, XP +25%)
+- **À modifier** `src/GameEngine/Fight/CombatCapacityResolver.php` — Ajouter vérification que le joueur possède la compétence `actions.materia.unlock` correspondante avant d'autoriser le sort
+- **À modifier** `src/GameEngine/Fight/CombatSkillResolver.php` — Ajouter `getUnlockedMateriaSpellSlugs(Player)` pour lister les sorts materia autorisés
+- **À modifier** `src/Helper/PlayerItemHelper.php` — `canEquipMateria()` : vérifier compétence requise
 - **Modifier** `src/Controller/Game/FightController.php` — Barre d'actions dynamique
-- **Modifier** `src/Helper/PlayerItemHelper.php` — `canEquipMateria()` : compétence requise
 - **Modifier** templates combat + équipement
 - **Utiliser** `assets/styles/images/materias.png` pour le rendu visuel des materia dans l'UI
 
 ### Tests
-- Test CombatCapacityResolver : sorts selon équipement, bonus matching
+- Test CombatCapacityResolver : sorts selon équipement + skill materia requis
+- Test : materia équipée SANS skill → sort NON disponible
+- Test : materia équipée AVEC skill → sort disponible
 - Test intégration : combat avec materia
 
 ---
