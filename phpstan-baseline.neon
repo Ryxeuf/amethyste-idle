@@ -199,12 +199,6 @@ parameters:
 			path: src/GameEngine/Fight/MateriaXpGranter.php
 
 		-
-			message: '#^Strict comparison using \!\=\= between App\\Entity\\App\\PlayerItem and null will always evaluate to true\.$#'
-			identifier: notIdentical.alwaysTrue
-			count: 1
-			path: src/GameEngine/Fight/MateriaXpGranter.php
-
-		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1

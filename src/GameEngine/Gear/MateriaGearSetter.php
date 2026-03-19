@@ -31,7 +31,7 @@ class MateriaGearSetter
             throw new ItemNotMateriaException();
         }
 
-        if (!$this->playerItemHelper->canBeEquipped($materia)) {
+        if (!$this->playerItemHelper->canEquipMateria($materia)) {
             throw new ItemRequirementsException();
         }
 

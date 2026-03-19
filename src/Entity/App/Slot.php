@@ -68,10 +68,8 @@ class Slot
 
     /**
      * Get itemSet.
-     *
-     * @return PlayerItem
      */
-    public function getItemSet()
+    public function getItemSet(): ?PlayerItem
     {
         return $this->item_set;
     }

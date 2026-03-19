@@ -169,6 +169,31 @@
             {% if gi.protection > 0 %}
                 <span class="equip-slot-stat">+{{ gi.protection }} DEF</span>
             {% endif %}
+            {# Materia slots #}
+            {% if playerItem.slots|length > 0 %}
+                <div class="flex items-center gap-1 mt-1">
+                    {% for slot in playerItem.slots %}
+                        {% set materiaItem = slot.itemSet %}
+                        {% set slotElement = slot.element %}
+                        {% if materiaItem is not null %}
+                            {% set materiaElement = materiaItem.genericItem.element %}
+                            {% set isMatch = slotElement is not null and slotElement.value != 'none' and materiaElement.value != 'none' and slotElement == materiaElement %}
+                            <span class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-medium
+                                {% if isMatch %}bg-yellow-900/50 text-yellow-400 ring-1 ring-yellow-500/50{% else %}bg-gray-700 text-gray-400{% endif %}"
+                                title="{{ materiaItem.genericItem.name }} (Nv.{{ materiaItem.materiaLevel }}){% if isMatch %} — {{ 'game.fight.element_match_bonus'|trans }}{% endif %}">
+                                <span class="w-2 h-2 rounded-full {{ _self.element_dot_class(materiaElement) }}"></span>
+                                {{ materiaItem.genericItem.name|slice(0, 8) }}
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] bg-gray-800 text-gray-600 ring-1 ring-gray-700/50"
+                                title="Slot vide{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
+                                <span class="w-2 h-2 rounded-full {% if slotElement is not null %}{{ _self.element_dot_class(slotElement) }}{% else %}bg-gray-600{% endif %}"></span>
+                                —
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
         <form method="post" action="{{ path('app_game_inventory_equipment_unequip', {id: playerItem.id}) }}" data-turbo-frame="inventory-content" class="equip-slot-action">
             <button type="submit" class="equip-unequip-btn" title="{{ 'game.inventory.actions.unequip'|trans }}">
@@ -275,6 +300,21 @@
 {% elseif slot == 'ring_1' %}Anneau 1
 {% elseif slot == 'ring_2' %}Anneau 2
 {% else %}Équipement{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{# ===== MACRO: Element dot color ===== #}
+{% macro element_dot_class(element) %}
+{% apply spaceless %}
+{% if element.value == 'fire' %}bg-orange-500
+{% elseif element.value == 'water' %}bg-blue-500
+{% elseif element.value == 'earth' %}bg-amber-600
+{% elseif element.value == 'air' %}bg-teal-400
+{% elseif element.value == 'light' %}bg-yellow-400
+{% elseif element.value == 'dark' %}bg-purple-500
+{% elseif element.value == 'metal' %}bg-gray-400
+{% elseif element.value == 'beast' %}bg-green-500
+{% else %}bg-gray-500{% endif %}
 {% endapply %}
 {% endmacro %}
 {% endblock %}
