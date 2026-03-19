@@ -94,6 +94,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getHealerSkills(),
             $this->getTidecallerSkills(),
             $this->getSoldierSkills(),
+            $this->getKnightSkills(),
+            $this->getEngineerSkills(),
             $this->getGeomancerSkills(),
             $this->getDefenderSkills(),
             $this->getGuardianSkills(),
@@ -522,45 +524,408 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // SOLDAT (metal) — 4 skills existants conserves
+    // SOLDAT (metal) — 15 skills, DPS CaC combos d'armes
     // =========================================================================
     private function getSoldierSkills(): array
     {
+        $d = 'soldier';
+
         return [
-            'soldier_apprentice' => [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'soldier_apprenti_1' => [
                 'title' => 'Materia : Frappe puissante',
-                'slug' => 'soldier-apprentice',
+                'slug' => 'soldier-apprenti-1',
                 'description' => 'Permet d\'utiliser la materia Frappe puissante',
                 'requiredPoints' => 0,
-                'domain' => 'soldier',
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'sharp-blade']],
             ],
-            'soldier_damage_1' => [
+            'soldier_apprenti_2' => [
+                'title' => 'Materia : Attraction magnetique',
+                'slug' => 'soldier-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Attraction magnetique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'magnetic-pull']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'soldier_rang2_1' => [
                 'title' => 'Force brute',
-                'slug' => 'soldier-damage-1',
+                'slug' => 'soldier-rang2-1',
                 'description' => 'Augmente les degats physiques',
                 'requiredPoints' => 10,
-                'domain' => 'soldier',
+                'domain' => $d,
                 'damage' => 1,
-                'requirements' => ['soldier_apprentice'],
+                'requirements' => ['soldier_apprenti_1'],
             ],
-            'soldier_materia_1' => [
-                'title' => 'Materia : Charge',
-                'slug' => 'soldier-materia-1',
-                'description' => 'Permet d\'utiliser la materia Charge',
+            'soldier_rang2_2' => [
+                'title' => 'Precision martiale',
+                'slug' => 'soldier-rang2-2',
+                'description' => 'Augmente la precision des attaques',
                 'requiredPoints' => 10,
-                'domain' => 'soldier',
-                'actions' => ['materia' => ['unlock' => 'iron-fist']],
-                'requirements' => ['soldier_apprentice'],
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['soldier_apprenti_1'],
             ],
-            'soldier_materia_2' => [
+            'soldier_rang2_3' => [
+                'title' => 'Materia : Charge',
+                'slug' => 'soldier-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Charge',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'iron-fist']],
+                'requirements' => ['soldier_apprenti_2'],
+            ],
+            'soldier_rang2_4' => [
+                'title' => 'Materia : Explosion d\'eclats',
+                'slug' => 'soldier-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Explosion d\'eclats',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shrapnel-burst']],
+                'requirements' => ['soldier_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'soldier_rang3_1' => [
                 'title' => 'Materia : Tourbillon d\'epee',
-                'slug' => 'soldier-materia-2',
-                'description' => "Permet d\'utiliser la materia Tourbillon d'epee (AoE)",
+                'slug' => 'soldier-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tourbillon d\'epee (AoE)',
                 'requiredPoints' => 25,
-                'domain' => 'soldier',
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'blade-dance']],
-                'requirements' => ['soldier_materia_1', 'soldier_damage_1'],
+                'requirements' => ['soldier_rang2_1', 'soldier_rang2_2'],
+            ],
+            'soldier_rang3_2' => [
+                'title' => 'Materia : Tempete metallique',
+                'slug' => 'soldier-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Tempete metallique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metal-storm']],
+                'requirements' => ['soldier_rang2_3'],
+            ],
+            'soldier_rang3_3' => [
+                'title' => 'Coups critiques',
+                'slug' => 'soldier-rang3-3',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['soldier_rang2_4'],
+            ],
+            'soldier_rang3_4' => [
+                'title' => 'Materia : Carreau d\'argent',
+                'slug' => 'soldier-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Carreau d\'argent',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'silver-bolt']],
+                'requirements' => ['soldier_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'soldier_rang4_1' => [
+                'title' => 'Materia : Lame rasoir',
+                'slug' => 'soldier-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Lame rasoir — coupe devastatrice',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'razor-edge']],
+                'requirements' => ['soldier_rang3_1', 'soldier_rang3_2'],
+            ],
+            'soldier_rang4_2' => [
+                'title' => 'Materia : Poids ecrasant',
+                'slug' => 'soldier-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Poids ecrasant',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crushing-weight']],
+                'requirements' => ['soldier_rang3_3', 'soldier_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'soldier_rang5_1' => [
+                'title' => 'Materia : Vierge de fer',
+                'slug' => 'soldier-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Vierge de fer',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'iron-maiden']],
+                'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // CHEVALIER (metal) — 15 skills, tank lourd contre-attaque
+    // =========================================================================
+    private function getKnightSkills(): array
+    {
+        $d = 'knight';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'knight_apprenti_1' => [
+                'title' => 'Materia : Provocation',
+                'slug' => 'knight-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Provocation',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'provocation']],
+            ],
+            'knight_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'acier',
+                'slug' => 'knight-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'acier',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'knight_rang2_1' => [
+                'title' => 'Constitution de fer',
+                'slug' => 'knight-rang2-1',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['knight_apprenti_1'],
+            ],
+            'knight_rang2_2' => [
+                'title' => 'Materia : Riposte',
+                'slug' => 'knight-rang2-2',
+                'description' => 'Permet d\'utiliser la materia Riposte',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'riposte']],
+                'requirements' => ['knight_apprenti_1'],
+            ],
+            'knight_rang2_3' => [
+                'title' => 'Materia : Peau metallique',
+                'slug' => 'knight-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Peau metallique',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metal-skin']],
+                'requirements' => ['knight_apprenti_2'],
+            ],
+            'knight_rang2_4' => [
+                'title' => 'Endurance du chevalier',
+                'slug' => 'knight-rang2-4',
+                'description' => 'Augmente la puissance des soins recus',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['knight_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'knight_rang3_1' => [
+                'title' => 'Materia : Barriere de lames',
+                'slug' => 'knight-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Barriere de lames (degats + soin)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'blade-barrier']],
+                'requirements' => ['knight_rang2_1', 'knight_rang2_2'],
+            ],
+            'knight_rang3_2' => [
+                'title' => 'Materia : Regeneration metallique',
+                'slug' => 'knight-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Regeneration metallique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metallic-regeneration']],
+                'requirements' => ['knight_rang2_3'],
+            ],
+            'knight_rang3_3' => [
+                'title' => 'Armure epaisse',
+                'slug' => 'knight-rang3-3',
+                'description' => 'Augmente les points de vie et la precision',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'hit' => 1,
+                'requirements' => ['knight_rang2_4'],
+            ],
+            'knight_rang3_4' => [
+                'title' => 'Materia : Chaine d\'eclairs',
+                'slug' => 'knight-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Chaine d\'eclairs',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'chain-lightning']],
+                'requirements' => ['knight_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'knight_rang4_1' => [
+                'title' => 'Materia : Poids ecrasant',
+                'slug' => 'knight-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Poids ecrasant — ecrasement brutal',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crushing-weight']],
+                'requirements' => ['knight_rang3_1', 'knight_rang3_2'],
+            ],
+            'knight_rang4_2' => [
+                'title' => 'Materia : Vierge de fer',
+                'slug' => 'knight-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Vierge de fer',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'iron-maiden']],
+                'requirements' => ['knight_rang3_3', 'knight_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'knight_rang5_1' => [
+                'title' => 'Materia : Forteresse d\'acier',
+                'slug' => 'knight-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Forteresse d\'acier',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-fortress']],
+                'requirements' => ['knight_rang4_1', 'knight_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // INGENIEUR (metal) — 15 skills, support technique constructions
+    // =========================================================================
+    private function getEngineerSkills(): array
+    {
+        $d = 'engineer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'engi_apprenti_1' => [
+                'title' => 'Materia : Attraction magnetique',
+                'slug' => 'engi-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Attraction magnetique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'magnetic-pull']],
+            ],
+            'engi_apprenti_2' => [
+                'title' => 'Materia : Bouclier d\'acier',
+                'slug' => 'engi-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier d\'acier',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'engi_rang2_1' => [
+                'title' => 'Precision mecanique',
+                'slug' => 'engi-rang2-1',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['engi_apprenti_1'],
+            ],
+            'engi_rang2_2' => [
+                'title' => 'Materia : Tourelle',
+                'slug' => 'engi-rang2-2',
+                'description' => 'Permet d\'utiliser la materia Tourelle',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'turret']],
+                'requirements' => ['engi_apprenti_1'],
+            ],
+            'engi_rang2_3' => [
+                'title' => 'Materia : Explosion d\'eclats',
+                'slug' => 'engi-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Explosion d\'eclats',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shrapnel-burst']],
+                'requirements' => ['engi_apprenti_2'],
+            ],
+            'engi_rang2_4' => [
+                'title' => 'Blindage renforce',
+                'slug' => 'engi-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['engi_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'engi_rang3_1' => [
+                'title' => 'Materia : Automate reparateur',
+                'slug' => 'engi-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Automate reparateur',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'repair-bot']],
+                'requirements' => ['engi_rang2_1', 'engi_rang2_2'],
+            ],
+            'engi_rang3_2' => [
+                'title' => 'Materia : Barriere de lames',
+                'slug' => 'engi-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Barriere de lames (degats + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'blade-barrier']],
+                'requirements' => ['engi_rang2_3'],
+            ],
+            'engi_rang3_3' => [
+                'title' => 'Ameliorations mecaniques',
+                'slug' => 'engi-rang3-3',
+                'description' => 'Augmente les degats et les soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'heal' => 1,
+                'requirements' => ['engi_rang2_4'],
+            ],
+            'engi_rang3_4' => [
+                'title' => 'Materia : Chaine d\'eclairs',
+                'slug' => 'engi-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Chaine d\'eclairs',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'chain-lightning']],
+                'requirements' => ['engi_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'engi_rang4_1' => [
+                'title' => 'Materia : Tempete metallique',
+                'slug' => 'engi-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Tempete metallique',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metal-storm']],
+                'requirements' => ['engi_rang3_1', 'engi_rang3_2'],
+            ],
+            'engi_rang4_2' => [
+                'title' => 'Materia : Regeneration metallique',
+                'slug' => 'engi-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Regeneration metallique',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'metallic-regeneration']],
+                'requirements' => ['engi_rang3_3', 'engi_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'engi_rang5_1' => [
+                'title' => 'Materia : Engin de siege',
+                'slug' => 'engi-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Engin de siege',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'siege-engine']],
+                'requirements' => ['engi_rang4_1', 'engi_rang4_2'],
             ],
         ];
     }

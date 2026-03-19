@@ -300,12 +300,12 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.F — Arbres de talent Métal (Soldat 15 + Chevalier + Ingénieur) [S] → PR #6f
+## Phase 6.F — Arbres de talent Métal (Soldat 15 + Chevalier + Ingénieur) [S] ✅ *Terminée* → PR #6f
 
-- [ ] `SkillFixtures::getSoldierSkills()` — Étendre de 4 à 15 compétences
-- [ ] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
-- [ ] `SkillFixtures::getEngineerSkills()` — 15 compétences (Tourelle → Engin de siège)
-- [ ] **Materia** : 1 skill materia par domaine Métal — skills materia avec `actions.materia.unlock` pour chaque sort
+- [x] `SkillFixtures::getSoldierSkills()` — Étendu de 4 à 15 compétences (Frappe puissante → Vierge de fer)
+- [x] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
+- [x] `SkillFixtures::getEngineerSkills()` — 15 compétences (Attraction magnétique → Engin de siège)
+- [x] **Materia** : tous les skills de déblocage de sort en `actions.materia.unlock` — skills materia pour chaque sort de chaque domaine Métal
 
 ---
 
@@ -530,7 +530,7 @@ Phase 13 (Documentation finale)
 | 6.C | Arbres de talent Eau (Hydro, Guérisseur, Marémancien) | S | Non | #6c |
 | 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d |
 | 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e |
-| 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f |
+| 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f ✅ |
 | 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g ✅ |
 | 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h ✅ |
 | 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i |
