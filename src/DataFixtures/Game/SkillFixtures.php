@@ -104,6 +104,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getStormcallerSkills(),
             $this->getArcherSkills(),
             $this->getWandererSkills(),
+            $this->getPaladinSkills(),
+            $this->getPriestSkills(),
+            $this->getInquisitorSkills(),
+            $this->getAssassinSkills(),
+            $this->getWarlockSkills(),
             $this->getMinerSkills(),
             $this->getHerbalistSkills(),
         );
@@ -1373,45 +1378,136 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // NECROMANCIEN (ombre) — adapte de 'necro' vers 'necromancer'
+    // NECROMANCIEN (ombre) — 13 skills, drain de vie et maledictions
     // =========================================================================
     private function getNecromancerSkills(): array
     {
+        $d = 'necromancer';
+
         return [
+            // Rang 1 (0 pts) — 2 skills d'entree
             'necro_materia_1' => [
                 'title' => 'Materia : Drain de vie',
                 'slug' => 'necro-materia-1',
                 'description' => 'Permet d\'utiliser la materia Drain de vie',
                 'requiredPoints' => 0,
-                'domain' => 'necromancer',
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'soul-drain']],
             ],
+            'necro_apprenti_2' => [
+                'title' => 'Materia : Toucher necrotique',
+                'slug' => 'necro-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher necrotique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'necrotic-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
             'necro_damage_1' => [
                 'title' => 'Energie sombre',
                 'slug' => 'necro-damage-1',
                 'description' => 'Augmente les degats des sorts de mort',
                 'requiredPoints' => 10,
-                'domain' => 'necromancer',
+                'domain' => $d,
                 'damage' => 1,
+                'requirements' => ['necro_materia_1'],
+            ],
+            'necro_rang2_2' => [
+                'title' => 'Corruption',
+                'slug' => 'necro-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
                 'requirements' => ['necro_materia_1'],
             ],
             'necro_materia_2' => [
                 'title' => 'Materia : Malediction',
                 'slug' => 'necro-materia-2',
                 'description' => 'Permet d\'utiliser la materia Malediction (poison)',
-                'requiredPoints' => 20,
-                'domain' => 'necromancer',
+                'requiredPoints' => 15,
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'plague-strike']],
-                'requirements' => ['necro_damage_1'],
+                'requirements' => ['necro_apprenti_2'],
+            ],
+            'necro_rang2_4' => [
+                'title' => 'Materia : Sangsue vitale',
+                'slug' => 'necro-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Sangsue vitale (drain)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-leech']],
+                'requirements' => ['necro_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'necro_rang3_1' => [
+                'title' => 'Materia : Eclair d\'ombre',
+                'slug' => 'necro-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Eclair d\'ombre',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-bolt']],
+                'requirements' => ['necro_damage_1', 'necro_rang2_2'],
             ],
             'necro_materia_3' => [
                 'title' => 'Materia : Moisson sombre',
                 'slug' => 'necro-materia-3',
                 'description' => 'Permet d\'utiliser la materia Moisson sombre — drain massif',
                 'requiredPoints' => 30,
-                'domain' => 'necromancer',
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'dark-harvest']],
                 'requirements' => ['necro_materia_2'],
+            ],
+            'necro_rang3_3' => [
+                'title' => 'Maitrise necrotique',
+                'slug' => 'necro-rang3-3',
+                'description' => 'Augmente la precision des sorts de mort',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['necro_rang2_4'],
+            ],
+            'necro_rang3_4' => [
+                'title' => 'Materia : Rituel sombre',
+                'slug' => 'necro-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Rituel sombre (sacrifice + soin)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-ritual']],
+                'requirements' => ['necro_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'necro_rang4_1' => [
+                'title' => 'Materia : Dechirure d\'ame',
+                'slug' => 'necro-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Dechirure d\'ame — degats massifs',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-rip']],
+                'requirements' => ['necro_rang3_1', 'necro_materia_3'],
+            ],
+            'necro_rang4_2' => [
+                'title' => 'Materia : Spirale de mort',
+                'slug' => 'necro-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Spirale de mort',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-coil']],
+                'requirements' => ['necro_rang3_3', 'necro_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'necro_rang5_1' => [
+                'title' => 'Materia : Nova de mort',
+                'slug' => 'necro-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Nova de mort',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-nova']],
+                'requirements' => ['necro_rang4_1', 'necro_rang4_2'],
             ],
         ];
     }
@@ -2226,6 +2322,681 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'zephyr']],
                 'requirements' => ['wander_rang4_1', 'wander_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // PALADIN (lumiere) — 13 skills, guerrier sacre tank/healer
+    // =========================================================================
+    private function getPaladinSkills(): array
+    {
+        $d = 'paladin';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'paladin_apprenti_1' => [
+                'title' => 'Materia : Frappe sacree',
+                'slug' => 'paladin-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Frappe sacree',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sacred-strike']],
+            ],
+            'paladin_apprenti_2' => [
+                'title' => 'Materia : Aura de lumiere',
+                'slug' => 'paladin-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Aura de lumiere',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'light-aura']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'paladin_rang2_1' => [
+                'title' => 'Bras du jugement',
+                'slug' => 'paladin-rang2-1',
+                'description' => 'Augmente les degats des attaques sacrees',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['paladin_apprenti_1'],
+            ],
+            'paladin_rang2_2' => [
+                'title' => 'Constitution sacree',
+                'slug' => 'paladin-rang2-2',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['paladin_apprenti_1'],
+            ],
+            'paladin_rang2_3' => [
+                'title' => 'Materia : Lumiere',
+                'slug' => 'paladin-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Lumiere (degats + soin)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-light']],
+                'requirements' => ['paladin_apprenti_2'],
+            ],
+            'paladin_rang2_4' => [
+                'title' => 'Materia : Toucher guerisseur',
+                'slug' => 'paladin-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Toucher guerisseur',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-touch']],
+                'requirements' => ['paladin_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'paladin_rang3_1' => [
+                'title' => 'Materia : Lumiere sacree',
+                'slug' => 'paladin-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Lumiere sacree (degats + soin)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sacred-light']],
+                'requirements' => ['paladin_rang2_1', 'paladin_rang2_2'],
+            ],
+            'paladin_rang3_2' => [
+                'title' => 'Materia : Bouclier de vie',
+                'slug' => 'paladin-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier de vie',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-shield']],
+                'requirements' => ['paladin_rang2_3'],
+            ],
+            'paladin_rang3_3' => [
+                'title' => 'Precision divine',
+                'slug' => 'paladin-rang3-3',
+                'description' => 'Augmente la precision des attaques sacrees',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['paladin_rang2_4'],
+            ],
+            'paladin_rang3_4' => [
+                'title' => 'Materia : Purification',
+                'slug' => 'paladin-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Purification',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'purification']],
+                'requirements' => ['paladin_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'paladin_rang4_1' => [
+                'title' => 'Materia : Benediction divine',
+                'slug' => 'paladin-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Benediction divine — soin puissant',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
+                'requirements' => ['paladin_rang3_1', 'paladin_rang3_2'],
+            ],
+            'paladin_rang4_2' => [
+                'title' => 'Materia : Explosion de vie',
+                'slug' => 'paladin-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Explosion de vie',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-burst']],
+                'requirements' => ['paladin_rang3_3', 'paladin_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'paladin_rang5_1' => [
+                'title' => 'Materia : Jugement divin',
+                'slug' => 'paladin-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Jugement divin',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-judgment']],
+                'requirements' => ['paladin_rang4_1', 'paladin_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // PRETRE (lumiere) — 13 skills, healer pur
+    // =========================================================================
+    private function getPriestSkills(): array
+    {
+        $d = 'priest';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'priest_apprenti_1' => [
+                'title' => 'Materia : Priere',
+                'slug' => 'priest-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Priere',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'prayer']],
+            ],
+            'priest_apprenti_2' => [
+                'title' => 'Materia : Toucher angelique',
+                'slug' => 'priest-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher angelique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'angelic-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'priest_rang2_1' => [
+                'title' => 'Grace divine',
+                'slug' => 'priest-rang2-1',
+                'description' => 'Augmente la puissance des soins',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['priest_apprenti_1'],
+            ],
+            'priest_rang2_2' => [
+                'title' => 'Concentration sacree',
+                'slug' => 'priest-rang2-2',
+                'description' => 'Augmente la precision des soins',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['priest_apprenti_1'],
+            ],
+            'priest_rang2_3' => [
+                'title' => 'Materia : Vague de guerison',
+                'slug' => 'priest-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Vague de guerison',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-wave']],
+                'requirements' => ['priest_apprenti_2'],
+            ],
+            'priest_rang2_4' => [
+                'title' => 'Materia : Floraison de vie',
+                'slug' => 'priest-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Floraison de vie',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-bloom']],
+                'requirements' => ['priest_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'priest_rang3_1' => [
+                'title' => 'Materia : Regeneration',
+                'slug' => 'priest-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Regeneration (HoT)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'rejuvenation']],
+                'requirements' => ['priest_rang2_1', 'priest_rang2_2'],
+            ],
+            'priest_rang3_2' => [
+                'title' => 'Materia : Afflux de vitalite',
+                'slug' => 'priest-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
+                'requirements' => ['priest_rang2_3'],
+            ],
+            'priest_rang3_3' => [
+                'title' => 'Vitalite du pretre',
+                'slug' => 'priest-rang3-3',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['priest_rang2_4'],
+            ],
+            'priest_rang3_4' => [
+                'title' => 'Materia : Transfert de vie',
+                'slug' => 'priest-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Transfert de vie',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-transfer']],
+                'requirements' => ['priest_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'priest_rang4_1' => [
+                'title' => 'Materia : Benediction celeste',
+                'slug' => 'priest-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Benediction celeste — soin ultime',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'celestial-blessing']],
+                'requirements' => ['priest_rang3_1', 'priest_rang3_2'],
+            ],
+            'priest_rang4_2' => [
+                'title' => 'Materia : Benediction divine',
+                'slug' => 'priest-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Benediction divine',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-blessing']],
+                'requirements' => ['priest_rang3_3', 'priest_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'priest_rang5_1' => [
+                'title' => 'Materia : Miracle',
+                'slug' => 'priest-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Miracle',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'miracle']],
+                'requirements' => ['priest_rang4_1', 'priest_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // INQUISITEUR (lumiere) — 13 skills, DPS magique sacre
+    // =========================================================================
+    private function getInquisitorSkills(): array
+    {
+        $d = 'inquisitor';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'inquis_apprenti_1' => [
+                'title' => 'Materia : Chatiment sacre',
+                'slug' => 'inquis-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Chatiment sacre',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'smite']],
+            ],
+            'inquis_apprenti_2' => [
+                'title' => 'Materia : Lumiere',
+                'slug' => 'inquis-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Lumiere',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-light']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'inquis_rang2_1' => [
+                'title' => 'Colere divine',
+                'slug' => 'inquis-rang2-1',
+                'description' => 'Augmente les degats des sorts sacres',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['inquis_apprenti_1'],
+            ],
+            'inquis_rang2_2' => [
+                'title' => 'Fanatisme',
+                'slug' => 'inquis-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['inquis_apprenti_1'],
+            ],
+            'inquis_rang2_3' => [
+                'title' => 'Materia : Lumiere sacree',
+                'slug' => 'inquis-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Lumiere sacree',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'sacred-light']],
+                'requirements' => ['inquis_apprenti_2'],
+            ],
+            'inquis_rang2_4' => [
+                'title' => 'Materia : Purification',
+                'slug' => 'inquis-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Purification',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'purification']],
+                'requirements' => ['inquis_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'inquis_rang3_1' => [
+                'title' => 'Materia : Feu sacre',
+                'slug' => 'inquis-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Feu sacre',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-fire']],
+                'requirements' => ['inquis_rang2_1', 'inquis_rang2_2'],
+            ],
+            'inquis_rang3_2' => [
+                'title' => 'Materia : Explosion de vie',
+                'slug' => 'inquis-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Explosion de vie',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-burst']],
+                'requirements' => ['inquis_rang2_3'],
+            ],
+            'inquis_rang3_3' => [
+                'title' => 'Oeil inquisiteur',
+                'slug' => 'inquis-rang3-3',
+                'description' => 'Augmente la precision des sorts sacres',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['inquis_rang2_4'],
+            ],
+            'inquis_rang3_4' => [
+                'title' => 'Materia : Transfert de vie',
+                'slug' => 'inquis-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Transfert de vie',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-transfer']],
+                'requirements' => ['inquis_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'inquis_rang4_1' => [
+                'title' => 'Materia : Jugement sacre',
+                'slug' => 'inquis-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Jugement sacre — degats + soin',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-intervention']],
+                'requirements' => ['inquis_rang3_1', 'inquis_rang3_2'],
+            ],
+            'inquis_rang4_2' => [
+                'title' => 'Materia : Afflux de vitalite',
+                'slug' => 'inquis-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Afflux de vitalite',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vitality-surge']],
+                'requirements' => ['inquis_rang3_3', 'inquis_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'inquis_rang5_1' => [
+                'title' => 'Materia : Sentence divine',
+                'slug' => 'inquis-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Sentence divine',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-sentence']],
+                'requirements' => ['inquis_rang4_1', 'inquis_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ASSASSIN (ombre) — 13 skills, furtivite et critiques
+    // =========================================================================
+    private function getAssassinSkills(): array
+    {
+        $d = 'assassin';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'assassin_apprenti_1' => [
+                'title' => 'Materia : Embuscade',
+                'slug' => 'assassin-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Embuscade',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'ambush']],
+            ],
+            'assassin_apprenti_2' => [
+                'title' => 'Materia : Toucher necrotique',
+                'slug' => 'assassin-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Toucher necrotique',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'necrotic-touch']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'assassin_rang2_1' => [
+                'title' => 'Lame dans l\'ombre',
+                'slug' => 'assassin-rang2-1',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['assassin_apprenti_1'],
+            ],
+            'assassin_rang2_2' => [
+                'title' => 'Frappe vicieuse',
+                'slug' => 'assassin-rang2-2',
+                'description' => 'Augmente les degats des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['assassin_apprenti_1'],
+            ],
+            'assassin_rang2_3' => [
+                'title' => 'Materia : Toucher mortel',
+                'slug' => 'assassin-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Toucher mortel',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-touch']],
+                'requirements' => ['assassin_apprenti_2'],
+            ],
+            'assassin_rang2_4' => [
+                'title' => 'Materia : Sangsue vitale',
+                'slug' => 'assassin-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Sangsue vitale (drain)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'life-leech']],
+                'requirements' => ['assassin_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'assassin_rang3_1' => [
+                'title' => 'Materia : Eclair d\'ombre',
+                'slug' => 'assassin-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Eclair d\'ombre',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-bolt']],
+                'requirements' => ['assassin_rang2_1', 'assassin_rang2_2'],
+            ],
+            'assassin_rang3_2' => [
+                'title' => 'Materia : Emprise de la mort',
+                'slug' => 'assassin-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Emprise de la mort',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-grip']],
+                'requirements' => ['assassin_rang2_3'],
+            ],
+            'assassin_rang3_3' => [
+                'title' => 'Precision assassine',
+                'slug' => 'assassin-rang3-3',
+                'description' => 'Augmente la precision des attaques furtives',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['assassin_rang2_4'],
+            ],
+            'assassin_rang3_4' => [
+                'title' => 'Materia : Siphon d\'ame',
+                'slug' => 'assassin-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Siphon d\'ame (drain)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-siphon']],
+                'requirements' => ['assassin_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'assassin_rang4_1' => [
+                'title' => 'Materia : Coup mortel',
+                'slug' => 'assassin-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Coup mortel — degats devastateurs',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'deadly-strike']],
+                'requirements' => ['assassin_rang3_1', 'assassin_rang3_2'],
+            ],
+            'assassin_rang4_2' => [
+                'title' => 'Materia : Nova de mort',
+                'slug' => 'assassin-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Nova de mort (AoE)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-nova']],
+                'requirements' => ['assassin_rang3_3', 'assassin_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'assassin_rang5_1' => [
+                'title' => 'Materia : Danse des ombres',
+                'slug' => 'assassin-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Danse des ombres',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-dance']],
+                'requirements' => ['assassin_rang4_1', 'assassin_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // SORCIER (ombre) — 13 skills, maledictions et debuffs
+    // =========================================================================
+    private function getWarlockSkills(): array
+    {
+        $d = 'warlock';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'warlock_apprenti_1' => [
+                'title' => 'Materia : Malefice',
+                'slug' => 'warlock-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Malefice',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'hex']],
+            ],
+            'warlock_apprenti_2' => [
+                'title' => 'Materia : Chatiment',
+                'slug' => 'warlock-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Chatiment',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'punishment']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'warlock_rang2_1' => [
+                'title' => 'Puissance maudite',
+                'slug' => 'warlock-rang2-1',
+                'description' => 'Augmente les degats des sorts sombres',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['warlock_apprenti_1'],
+            ],
+            'warlock_rang2_2' => [
+                'title' => 'Regard mauvais',
+                'slug' => 'warlock-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['warlock_apprenti_1'],
+            ],
+            'warlock_rang2_3' => [
+                'title' => 'Materia : Emprise de la mort',
+                'slug' => 'warlock-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Emprise de la mort',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-grip']],
+                'requirements' => ['warlock_apprenti_2'],
+            ],
+            'warlock_rang2_4' => [
+                'title' => 'Materia : Guerison des ombres',
+                'slug' => 'warlock-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Guerison des ombres',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-mend']],
+                'requirements' => ['warlock_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'warlock_rang3_1' => [
+                'title' => 'Materia : Terreur',
+                'slug' => 'warlock-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Terreur (paralysie)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'terror']],
+                'requirements' => ['warlock_rang2_1', 'warlock_rang2_2'],
+            ],
+            'warlock_rang3_2' => [
+                'title' => 'Materia : Rituel sombre',
+                'slug' => 'warlock-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Rituel sombre (sacrifice + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-ritual']],
+                'requirements' => ['warlock_rang2_3'],
+            ],
+            'warlock_rang3_3' => [
+                'title' => 'Canalisation sombre',
+                'slug' => 'warlock-rang3-3',
+                'description' => 'Augmente la puissance des soins sombres',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['warlock_rang2_4'],
+            ],
+            'warlock_rang3_4' => [
+                'title' => 'Materia : Vague d\'ombre',
+                'slug' => 'warlock-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Vague d\'ombre (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-wave']],
+                'requirements' => ['warlock_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'warlock_rang4_1' => [
+                'title' => 'Materia : Spirale de mort',
+                'slug' => 'warlock-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Spirale de mort',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'death-coil']],
+                'requirements' => ['warlock_rang3_1', 'warlock_rang3_2'],
+            ],
+            'warlock_rang4_2' => [
+                'title' => 'Materia : Siphon d\'ame',
+                'slug' => 'warlock-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Siphon d\'ame (drain)',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'soul-siphon']],
+                'requirements' => ['warlock_rang3_3', 'warlock_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'warlock_rang5_1' => [
+                'title' => 'Materia : Pacte sombre',
+                'slug' => 'warlock-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Pacte sombre',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'dark-pact']],
+                'requirements' => ['warlock_rang4_1', 'warlock_rang4_2'],
             ],
         ];
     }
