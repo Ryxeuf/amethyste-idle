@@ -24,4 +24,16 @@ class PlayerItemHelper
 
         return $this->inventoryHelper->hasItem($item) && $playerMeetRequirements;
     }
+
+    /**
+     * Return if a player can equip a materia (must be a materia + meet skill requirements).
+     */
+    public function canEquipMateria(PlayerItem $materia): bool
+    {
+        if (!$materia->isMateria()) {
+            return false;
+        }
+
+        return $this->canBeEquipped($materia);
+    }
 }

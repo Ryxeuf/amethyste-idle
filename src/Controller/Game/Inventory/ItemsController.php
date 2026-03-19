@@ -22,20 +22,26 @@ class ItemsController extends AbstractController
         $bagInventory = $this->playerHelper->getBagInventory();
         $playerItems = $bagInventory->getItems();
 
-        $items = [];
+        $grouped = [];
         foreach ($playerItems as $item) {
             if ($item->getGenericItem()->isObject()) {
                 $genericItem = $item->getGenericItem();
-                $items[] = [
-                    'id' => $item->getId(),
-                    'name' => $genericItem->getName(),
-                    'type' => 'Consommable',
-                    'quantity' => 1,
-                    'description' => $genericItem->getDescription(),
-                    'usable' => $this->itemHelper->isUsable($genericItem),
-                ];
+                $slug = $genericItem->getSlug();
+                if (!isset($grouped[$slug])) {
+                    $grouped[$slug] = [
+                        'id' => $item->getId(),
+                        'name' => $genericItem->getName(),
+                        'type' => 'Consommable',
+                        'quantity' => 0,
+                        'description' => $genericItem->getDescription(),
+                        'usable' => $this->itemHelper->isUsable($genericItem),
+                        'bound' => $item->isBound(),
+                    ];
+                }
+                ++$grouped[$slug]['quantity'];
             }
         }
+        $items = array_values($grouped);
 
         return $this->render('game/inventory/items/_list.html.twig', [
             'items' => $items,

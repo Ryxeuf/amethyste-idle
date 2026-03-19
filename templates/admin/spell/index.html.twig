@@ -37,8 +37,8 @@
                             <td class="px-4 py-3 text-gray-500">{{ spell.id }}</td>
                             <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ spell.name }}</td>
                             <td class="px-4 py-3">
-                                <span class="inline-flex px-2 py-1 text-xs rounded-full {% if spell.element == 'fire' %}bg-red-900 text-red-300{% elseif spell.element == 'water' %}bg-blue-900 text-blue-300{% elseif spell.element == 'earth' %}bg-yellow-900 text-yellow-300{% elseif spell.element == 'air' %}bg-teal-900 text-teal-300{% elseif spell.element == 'light' %}bg-white text-gray-900{% elseif spell.element == 'dark' %}bg-purple-900 text-purple-300{% else %}bg-gray-700 text-gray-300{% endif %}">
-                                    {{ spell.element }}
+                                <span class="inline-flex px-2 py-1 text-xs rounded-full {% if spell.element.value == 'fire' %}bg-red-900 text-red-300{% elseif spell.element.value == 'water' %}bg-blue-900 text-blue-300{% elseif spell.element.value == 'earth' %}bg-yellow-900 text-yellow-300{% elseif spell.element.value == 'air' %}bg-teal-900 text-teal-300{% elseif spell.element.value == 'light' %}bg-white text-gray-900{% elseif spell.element.value == 'dark' %}bg-purple-900 text-purple-300{% elseif spell.element.value == 'metal' %}bg-gray-600 text-gray-200{% elseif spell.element.value == 'beast' %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-300{% endif %}">
+                                    {{ spell.element.value }}
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-gray-400">{{ spell.damage ?? '-' }}</td>
