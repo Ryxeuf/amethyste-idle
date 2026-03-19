@@ -6,8 +6,11 @@ use App\Controller\Game\Fight\FightSpellController;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
+use App\Entity\App\Slot;
 use App\Entity\Game\Spell;
 use App\Enum\Element;
+use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
@@ -27,6 +30,7 @@ class FightSpellControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private EntityManagerInterface&MockObject $entityManager;
     private CombatSkillResolver&MockObject $combatSkillResolver;
+    private CombatCapacityResolver&MockObject $combatCapacityResolver;
     private SpellApplicator&MockObject $spellApplicator;
     private ElementalSynergyCalculator&MockObject $synergyCalculator;
     private StatusEffectManager&MockObject $statusEffectManager;
@@ -40,6 +44,7 @@ class FightSpellControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->combatSkillResolver = $this->createMock(CombatSkillResolver::class);
+        $this->combatCapacityResolver = $this->createMock(CombatCapacityResolver::class);
         $this->spellApplicator = $this->createMock(SpellApplicator::class);
         $this->synergyCalculator = $this->createMock(ElementalSynergyCalculator::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
@@ -52,6 +57,7 @@ class FightSpellControllerTest extends TestCase
             $this->playerHelper,
             $this->entityManager,
             $this->combatSkillResolver,
+            $this->combatCapacityResolver,
             $this->spellApplicator,
             $this->synergyCalculator,
             $this->statusEffectManager,
@@ -154,7 +160,7 @@ class FightSpellControllerTest extends TestCase
         $fight = $this->createFightMock();
         $player = $this->createPlayerMock(fight: $fight);
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(false);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn(null);
 
         $response = $this->controller->__invoke($this->createJsonRequest([
             'spellSlug' => 'fireball', 'targetId' => 1, 'targetType' => 'mob',
@@ -167,9 +173,9 @@ class FightSpellControllerTest extends TestCase
     {
         $fight = $this->createFightMock(cooldown: ['player_1' => ['fireball' => 2]]);
         $player = $this->createPlayerMock(id: 1, fight: $fight);
+        $spell = $this->createSpellMock('fireball');
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
-        $this->combatSkillResolver->method('getUnlockedSpells')->willReturn([$this->createSpellMock('fireball')]);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn($this->createMateriaSpellEntry($spell));
 
         $response = $this->controller->__invoke($this->createJsonRequest([
             'spellSlug' => 'fireball', 'targetId' => 1, 'targetType' => 'mob',
@@ -184,9 +190,9 @@ class FightSpellControllerTest extends TestCase
     {
         $fight = $this->createFightMock();
         $player = $this->createPlayerMock(id: 1, fight: $fight);
+        $spell = $this->createSpellMock('fireball');
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
-        $this->combatSkillResolver->method('getUnlockedSpells')->willReturn([$this->createSpellMock('fireball')]);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn($this->createMateriaSpellEntry($spell));
         $this->combatSkillResolver->method('consumeEnergy')->willReturn(false);
 
         $response = $this->controller->__invoke($this->createJsonRequest([
@@ -206,8 +212,7 @@ class FightSpellControllerTest extends TestCase
         $spell = $this->createSpellMock('fireball', element: Element::Fire, cooldown: 0);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
-        $this->combatSkillResolver->method('getUnlockedSpells')->willReturn([$spell]);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn($this->createMateriaSpellEntry($spell));
         $this->combatSkillResolver->method('consumeEnergy')->willReturn(true);
         $this->combatSkillResolver->method('getCombatBonuses')->willReturn([
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0,
@@ -232,8 +237,7 @@ class FightSpellControllerTest extends TestCase
         $spell = $this->createSpellMock('fireball');
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
-        $this->combatSkillResolver->method('getUnlockedSpells')->willReturn([$spell]);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn($this->createMateriaSpellEntry($spell));
         $this->combatSkillResolver->method('consumeEnergy')->willReturn(true);
 
         $response = $this->controller->__invoke($this->createJsonRequest([
@@ -251,8 +255,7 @@ class FightSpellControllerTest extends TestCase
         $spell = $this->createSpellMock('fireball', element: Element::Fire);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
-        $this->combatSkillResolver->method('getUnlockedSpells')->willReturn([$spell]);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn($this->createMateriaSpellEntry($spell));
         $this->combatSkillResolver->method('consumeEnergy')->willReturn(true);
         $this->combatSkillResolver->method('getCombatBonuses')->willReturn([
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0,
@@ -279,8 +282,7 @@ class FightSpellControllerTest extends TestCase
         $spell = $this->createSpellMock('fireball', element: Element::None);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
-        $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
-        $this->combatSkillResolver->method('getUnlockedSpells')->willReturn([$spell]);
+        $this->combatCapacityResolver->method('findMateriaSpell')->willReturn($this->createMateriaSpellEntry($spell, elementMatch: false));
         $this->combatSkillResolver->method('consumeEnergy')->willReturn(true);
         $this->combatSkillResolver->method('getCombatBonuses')->willReturn([
             'damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0,
@@ -350,6 +352,22 @@ class FightSpellControllerTest extends TestCase
         }
 
         return $fight;
+    }
+
+    /**
+     * @return array{spell: Spell, materia: PlayerItem&MockObject, slot: Slot&MockObject, elementMatch: bool}
+     */
+    private function createMateriaSpellEntry(Spell&MockObject $spell, bool $elementMatch = false): array
+    {
+        $materia = $this->createMock(PlayerItem::class);
+        $slot = $this->createMock(Slot::class);
+
+        return [
+            'spell' => $spell,
+            'materia' => $materia,
+            'slot' => $slot,
+            'elementMatch' => $elementMatch,
+        ];
     }
 
     private function createSpellMock(string $slug, Element $element = Element::None, int $cooldown = 0): Spell&MockObject

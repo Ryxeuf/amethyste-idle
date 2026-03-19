@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Fight;
 
+use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -53,15 +54,26 @@ class MateriaXpGranter implements EventSubscriberInterface
                     foreach ($playerItem->getSlots() as $slot) {
                         $materia = $slot->getItemSet();
                         if ($materia !== null && $materia->isMateria()) {
-                            $materia->addExperience($xpGain);
+                            // Apply element match XP bonus (+25%)
+                            $materiaXp = $xpGain;
+                            $slotElement = $slot->getElement();
+                            $materiaElement = $materia->getGenericItem()->getElement();
+                            if ($slotElement !== null && $slotElement !== Element::None
+                                && $materiaElement !== Element::None
+                                && $slotElement === $materiaElement) {
+                                $materiaXp = (int) round($materiaXp * (1.0 + CombatCapacityResolver::ELEMENT_MATCH_XP_BONUS));
+                            }
+
+                            $materia->addExperience($materiaXp);
                             $this->entityManager->persist($materia);
 
                             $this->logger->debug(sprintf(
-                                '[MateriaXpGranter] Materia %s gained %d XP (now %d, level %d)',
+                                '[MateriaXpGranter] Materia %s gained %d XP (now %d, level %d)%s',
                                 $materia->getGenericItem()->getName(),
-                                $xpGain,
+                                $materiaXp,
                                 $materia->getExperience(),
                                 $materia->getMateriaLevel(),
+                                $materiaXp > $xpGain ? ' [element match bonus]' : '',
                             ));
                         }
                     }

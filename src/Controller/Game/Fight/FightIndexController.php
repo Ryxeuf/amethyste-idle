@@ -3,9 +3,9 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Player;
+use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
-use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\Helper\PlayerHelper;
@@ -20,7 +20,7 @@ class FightIndexController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly StatusEffectManager $statusEffectManager,
-        private readonly CombatSkillResolver $combatSkillResolver,
+        private readonly CombatCapacityResolver $combatCapacityResolver,
         private readonly CombatLogger $combatLogger,
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogArchiver $combatLogArchiver,
@@ -59,13 +59,14 @@ class FightIndexController extends AbstractController
             $statusEffects['mob_' . $mob->getId()] = $this->statusEffectManager->getActiveEffects($fight, $mob);
         }
 
-        // Get unlocked combat spells for the player
-        $unlockedSpells = $this->combatSkillResolver->getUnlockedSpells($player);
+        // Get combat spells from equipped materia
+        $materiaSpells = $this->combatCapacityResolver->getEquippedMateriaSpells($player);
 
         // Get cooldowns for the player
         $playerCooldowns = [];
         $entityKey = 'player_' . $player->getId();
-        foreach ($unlockedSpells as $spell) {
+        foreach ($materiaSpells as $entry) {
+            $spell = $entry['spell'];
             $playerCooldowns[$spell->getSlug()] = $fight->getSpellCooldown($entityKey, $spell->getSlug());
         }
 
@@ -104,7 +105,7 @@ class FightIndexController extends AbstractController
             'fight' => $fight,
             'mob' => $mob,
             'statusEffects' => $statusEffects,
-            'unlockedSpells' => $unlockedSpells,
+            'materiaSpells' => $materiaSpells,
             'playerCooldowns' => $playerCooldowns,
             'dangerAlert' => $dangerAlert,
             'fightLogs' => $fightLogs,

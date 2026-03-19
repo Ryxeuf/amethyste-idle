@@ -376,6 +376,8 @@
       "attacking": "Attacking...",
       "fleeing": "Fleeing...",
       "skill_spells": "Skill spells",
+      "materia_spells": "Materia",
+      "element_match_bonus": "Element match bonus +25%",
       "energy_insufficient": "Not enough energy",
       "cooldown_remaining": "Cooldown: %turns% turns",
       "butcher": "Butcher %name%",

@@ -376,6 +376,8 @@
       "attacking": "Attaque en cours...",
       "fleeing": "Fuite en cours...",
       "skill_spells": "Sorts de compétences",
+      "materia_spells": "Materia",
+      "element_match_bonus": "Bonus élémentaire +25%",
       "energy_insufficient": "Énergie insuffisante",
       "cooldown_remaining": "Recharge : %turns% tours",
       "butcher": "Dépecer %name%",
