@@ -112,11 +112,71 @@ class DashboardController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        $zoneStats = $this->buildZoneStats();
+
         return $this->render('admin/dashboard/index.html.twig', [
             'metrics' => $metrics,
             'liveStats' => $liveStats,
             'maintenanceActive' => $maintenanceActive,
             'recentLogs' => $recentLogs,
+            'zoneStats' => $zoneStats,
         ]);
+    }
+
+    /**
+     * @return list<array{name: string, pnjCount: int, mobCount: int, playerCount: int}>
+     */
+    private function buildZoneStats(): array
+    {
+        $pnjCounts = $this->em->createQueryBuilder()
+            ->select('m.id, m.name, COUNT(p.id) AS pnjCount')
+            ->from(Map::class, 'm')
+            ->leftJoin('m.pnjs', 'p')
+            ->groupBy('m.id, m.name')
+            ->orderBy('m.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $livingMobCounts = $this->em->createQueryBuilder()
+            ->select('m.id, m.name, COUNT(mob.id) AS mobCount')
+            ->from(Map::class, 'm')
+            ->leftJoin('m.mobs', 'mob', 'WITH', 'mob.diedAt IS NULL')
+            ->groupBy('m.id, m.name')
+            ->orderBy('m.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $connectedThreshold = new \DateTimeImmutable('-15 minutes');
+        $connectedPlayerCounts = $this->em->createQueryBuilder()
+            ->select('m.id, m.name, COUNT(pl.id) AS playerCount')
+            ->from(Map::class, 'm')
+            ->leftJoin('m.players', 'pl', 'WITH', 'pl.updatedAt >= :threshold')
+            ->setParameter('threshold', $connectedThreshold)
+            ->groupBy('m.id, m.name')
+            ->orderBy('m.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+
+        $zones = [];
+        foreach ($pnjCounts as $row) {
+            $zones[$row['id']] = [
+                'name' => $row['name'],
+                'pnjCount' => (int) $row['pnjCount'],
+                'mobCount' => 0,
+                'playerCount' => 0,
+            ];
+        }
+        foreach ($livingMobCounts as $row) {
+            if (isset($zones[$row['id']])) {
+                $zones[$row['id']]['mobCount'] = (int) $row['mobCount'];
+            }
+        }
+        foreach ($connectedPlayerCounts as $row) {
+            if (isset($zones[$row['id']])) {
+                $zones[$row['id']]['playerCount'] = (int) $row['playerCount'];
+            }
+        }
+
+        return array_values($zones);
     }
 }
