@@ -604,14 +604,17 @@ html, body {
 
 /* ===== INVENTORY: Materia orb effects ===== */
 .materia-orb {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   flex-shrink: 0;
+  background-image: url('../images/materias_32.png');
+  background-size: 512px 512px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
 }
 .materia-orb::after {
   content: '';
@@ -623,19 +626,24 @@ html, body {
 }
 .materia-orb:hover::after { opacity: 0.7; }
 
-.materia-orb-fire { background: radial-gradient(circle, #ef4444 0%, #991b1b 100%); }
+/* Sprite positions: 512x512, 16x16 grid, 32px cells — col 3 for solid orb variant */
+.materia-orb-fire { background-position: -96px 0; }
 .materia-orb-fire::after { box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-.materia-orb-water { background: radial-gradient(circle, #3b82f6 0%, #1e3a8a 100%); }
+.materia-orb-water { background-position: -96px -288px; }
 .materia-orb-water::after { box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-.materia-orb-earth { background: radial-gradient(circle, #f59e0b 0%, #78350f 100%); }
+.materia-orb-earth { background-position: -96px -64px; }
 .materia-orb-earth::after { box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
-.materia-orb-air { background: radial-gradient(circle, #06b6d4 0%, #164e63 100%); }
+.materia-orb-air { background-position: -96px -320px; }
 .materia-orb-air::after { box-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
-.materia-orb-light { background: radial-gradient(circle, #fde047 0%, #a16207 100%); }
+.materia-orb-light { background-position: -96px -32px; }
 .materia-orb-light::after { box-shadow: 0 0 10px rgba(253, 224, 71, 0.5); }
-.materia-orb-dark { background: radial-gradient(circle, #a78bfa 0%, #4c1d95 100%); }
+.materia-orb-dark { background-position: -96px -416px; }
 .materia-orb-dark::after { box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); }
-.materia-orb-none { background: radial-gradient(circle, #22c55e 0%, #14532d 100%); }
+.materia-orb-metal { background-position: -96px -480px; }
+.materia-orb-metal::after { box-shadow: 0 0 10px rgba(156, 163, 175, 0.5); }
+.materia-orb-beast { background-position: -96px -160px; }
+.materia-orb-beast::after { box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
+.materia-orb-none { background-position: -96px -448px; }
 .materia-orb-none::after { box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
 
 /* ===== INVENTORY: Item cards ===== */
