@@ -152,7 +152,8 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 
 ## Documentation approfondie
 
-- [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (20 sections, modele de donnees, combat, carte, inventaire, quetes, etc.)
+- [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (22 sections, modele de donnees, combat, carte, inventaire, quetes, bestiaire, succes, etc.)
+- [docs/GAME_DESIGN_ROADMAP.md](docs/GAME_DESIGN_ROADMAP.md) — Plan d'implementation game design (13 phases, elements, domaines, materia, bestiaire, succes)
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 - [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)
@@ -175,6 +176,8 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 | `/api/map/entities` | Positions joueurs/mobs/PNJ |
 | `/api/map/move` | POST mouvement joueur |
 | `/api/map/pnj/{id}/dialog` | Dialogue PNJ |
+| `/game/bestiary` | Bestiaire joueur (paliers 10/50/100 kills) |
+| `/game/achievements` | Succes (combat, exploration, quetes) |
 
 ## Domaines web
 

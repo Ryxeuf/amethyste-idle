@@ -26,6 +26,8 @@
 18. [Fixtures & Données de test](#18-fixtures--données-de-test)
 19. [Internationalisation](#19-internationalisation)
 20. [Terrain & Tiled Map Editor](#20-terrain--tiled-map-editor)
+21. [Bestiaire](#21-bestiaire)
+22. [Système de succès (Achievements)](#22-système-de-succès-achievements)
 
 ---
 
@@ -231,12 +233,16 @@ Chaque router Traefik utilise le resolver `letsencrypt` (challenge TLS-ALPN-01 s
 ```
 User (1) ──── (N) Player (1) ──── (N) Inventory (1) ──── (N) PlayerItem
   │                 │                                          │
-  │                 ├──── (N) DomainExperience                 ├── genericItem → Item
-  │                 │           └── domain → Domain             ├── slots (N) → Slot
-  │                 │                   └── skills (N) → Skill  └── gear (bitmask)
+  │                 ├──── race → Race                           ├── genericItem → Item
+  │                 ├──── (N) DomainExperience                 ├── slots (N) → Slot
+  │                 │           └── domain → Domain             ├── gear (bitmask)
+  │                 │                   └── skills (N→N) Skill  └── boundToPlayerId
   │                 │
   │                 ├──── (N→N) Skill
   │                 ├──── (N) PlayerQuest → Quest
+  │                 ├──── (N) PlayerBestiary → Monster
+  │                 ├──── (N) PlayerAchievement → Achievement
+  │                 ├──── (N) PlayerStatusEffect → StatusEffect
   │                 ├──── fight → Fight
   │                 └──── map → Map
   │
@@ -253,8 +259,9 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
   │               └──── world → World
   │
   └── Item ──── spell → Spell
-           └── requirements (N→N) → Skill
-           └── domain → Domain
+           ├── requirements (N→N) → Skill
+           ├── domain → Domain
+           └── boundToPlayer (bool)
 ```
 
 ### Entités principales
@@ -275,13 +282,18 @@ User (1) ──── (N) Player (1) ──── (N) Inventory (1) ────
 | **Item** | Définition d'objet | name, type (stuff/gear/materia), gearLocation, effect, spell |
 | **Monster** | Template de monstre | name, life, speed, attack (Spell), monsterItems[] |
 | **MonsterItem** | Table de loot | monster, item, probability (float) |
-| **Domain** | Domaine de compétence | title, skills[] |
-| **Skill** | Compétence | title, requiredPoints, damage/heal/hit/critical/life bonuses, requirements[] |
-| **Spell** | Sort | name, damage, heal, hit (précision 0-100), critical, element |
+| **Domain** | Domaine de compétence | title, element, skills[] |
+| **Skill** | Compétence | title, requiredPoints, damage/heal/hit/critical/life bonuses, requirements[], domains[] (ManyToMany) |
+| **Spell** | Sort | name, damage, heal, hit (précision 0-100), critical, element, level, valueType (fixed/percent) |
+| **Race** | Race de personnage | slug, name, description, spriteSheet, statModifiers (JSON), availableAtCreation |
 | **Pnj** | Personnage non-joueur | name, dialog (JSON), coordinates |
 | **Quest** | Quête | (entité référencée, détails dans fixtures) |
 | **DomainExperience** | XP par domaine | totalExperience, usedExperience, damage/heal/hit (bonus précision)/critical |
 | **QueueRespawnMob** | File de respawn | monster, delay, coordinates, map |
+| **PlayerBestiary** | Suivi des monstres | player, monster, killCount, tiers (10/50/100 kills) |
+| **Achievement** | Définition de succès | slug, title, description, category, criteria (JSON), reward (JSON), icon |
+| **PlayerAchievement** | Progression succès | player, achievement, progress, completedAt |
+| **PlayerStatusEffect** | Effets persistants hors combat | player, statusEffect, appliedAt, expiresAt |
 
 ### Traits partagés
 
@@ -297,18 +309,25 @@ Le moteur est organisé en sous-domaines dans `src/GameEngine/` :
 
 ```
 GameEngine/
+├── Achievement/        # Système de succès
+│   └── AchievementTracker   # Écoute événements, progression, récompenses
 ├── Fight/              # Système de combat
+│   ├── Calculator/     # Calculs isolés (dégâts, toucher, critique)
+│   │   ├── DamageCalculator      # Dégâts fixes et pourcentage
+│   │   ├── HitChanceCalculator   # Précision (spell.level vs target)
+│   │   └── CriticalCalculator    # Calcul de critique
 │   ├── Handler/        # Handlers d'actions (attaque, sort, objet)
-│   ├── MobActionHandler     # IA des monstres (patterns, phases de boss)
-│   ├── SpellApplicator      # Application sorts (résistances, statuts, berserk)
-│   ├── StatusEffectManager  # Gestion effets de statut (DOT/HOT)
-│   ├── CombatSkillResolver  # Résolution sorts disponibles par compétences
-│   ├── ElementalSynergyCalculator  # Synergies élémentaires
-│   ├── MateriaXpGranter    # XP materia à la mort d'un monstre
-│   └── MateriaFusionManager # Fusion de materias
+│   ├── CombatCapacityResolver   # Sorts via materia sockettées
+│   ├── CombatSkillResolver      # Bonus passifs et materia autorisées
+│   ├── ElementalSynergyCalculator  # Synergies élémentaires (5 combos)
+│   ├── MateriaFusionManager     # Fusion de materias
+│   ├── MateriaXpGranter         # XP materia à la mort d'un monstre
+│   ├── MobActionHandler         # IA des monstres (patterns, phases de boss)
+│   ├── SpellApplicator          # Application sorts (résistances, statuts, berserk)
+│   └── StatusEffectManager      # Gestion effets de statut (DOT/HOT)
 ├── Gear/               # Équipement & materia
 ├── Generator/          # Génération d'items
-├── Item/               # Résolution d'effets d'items
+├── Item/               # Résolution d'effets d'items (ItemEffectEncoder)
 ├── Job/                # Récolte et jobs
 ├── Map/                # Pathfinding Dijkstra
 ├── Mob/                # Génération de mobs
@@ -379,7 +398,9 @@ targetLife = clamp(targetLife - damage, 0, maxLife)
 
 ### Éléments de sorts
 
-`NONE`, `FIRE`, `WATER`, `EARTH`, `AIR`, `LIGHT`, `DARK`
+Définis dans l'enum `src/Enum/Element.php` (PHP 8.4 backed enum string) :
+
+`NONE`, `FIRE`, `WATER`, `EARTH`, `AIR`, `LIGHT`, `DARK`, `METAL`, `BEAST`
 
 ### Synergies élémentaires
 
@@ -391,6 +412,7 @@ targetLife = clamp(targetLife - damage, 0, maxLife)
 | Terre + Air | `EARTH` + `AIR` | Tornado (Tornade) | Bonus de dégâts |
 | Lumière + Ténèbres | `LIGHT` + `DARK` | Eclipse | Bonus de dégâts |
 | Feu + Terre | `FIRE` + `EARTH` | Magma | Bonus de dégâts |
+| Métal + Bête | `METAL` + `BEAST` | Forge naturelle | Bonus de dégâts |
 
 ### Effets de statut
 
@@ -409,21 +431,29 @@ targetLife = clamp(targetLife - damage, 0, maxLife)
 
 Les fixtures (`StatusEffectFixtures`) définissent 11 effets incluant des variantes fortes (ex : poison fort, brûlure forte).
 
-### Compétences de combat actives
+### Compétences et Materia — Capacités de combat
 
-`CombatSkillResolver` détermine les sorts de combat disponibles pour un joueur en fonction de ses compétences débloquées. Les compétences sont liées aux sorts via le champ `actions.combat.spell_slug` dans `SkillFixtures`.
+**Règle fondamentale** : les compétences (skills) sont **toujours passives**. Les sorts actifs proviennent **uniquement des materia sockettées**.
 
-**7 archétypes de combat** avec 3-4 compétences chacun formant une chaîne de progression :
+- `CombatCapacityResolver` détermine les sorts disponibles en combat = materia équipées dans les slots d'équipement
+- `CombatSkillResolver` détermine les bonus passifs et les materia autorisées via `actions.materia.unlock`
+- L'attaque de base de l'arme est toujours disponible gratuitement (hors slots)
+- Bonus matching élément slot/materia : dégâts +25%, XP +25%
 
-| Archétype | Domaine | Description |
-|-----------|---------|-------------|
-| Pyromancien | Combat | Sorts de feu offensifs |
-| Soldat | Combat | Attaques physiques puissantes |
-| Soigneur | Combat | Sorts de soin |
-| Défenseur | Combat | Capacités défensives et bouclier |
-| Nécromancien | Combat | Sorts d'ombre et drain de vie |
-| Druide | Combat | Sorts de nature et régénération |
-| Mage blanc | Combat | Sorts de lumière et purification |
+**24 domaines de combat** (3 par élément) organisés en 8 éléments :
+
+| Élément | Domaines | Archétypes |
+|---------|----------|------------|
+| Feu | Pyromancien, Berserker, Artificier | DPS magique, DPS CaC, Support offensif |
+| Eau | Hydromancien, Guérisseur, Marémancien | DPS magique, Healer, Support défensif |
+| Air | Foudromancien, Archer, Vagabond | DPS magique, DPS distance, Support/Évasion |
+| Terre | Géomancien, Défenseur, Gardien | DPS magique, Tank, Tank/Support |
+| Métal | Soldat, Chevalier, Ingénieur | DPS CaC, Tank lourd, Support technique |
+| Bête | Chasseur, Dompteur, Druide | DPS distance, Tank/Invocateur, Healer/Support |
+| Lumière | Paladin, Prêtre, Inquisiteur | Tank/Healer, Healer pur, DPS magique |
+| Ombre | Assassin, Nécromancien, Sorcier | DPS CaC, DPS magique/Invocateur, Support/Debuff |
+
+Chaque domaine possède **13-24 compétences** organisées en arbre à 5 rangs (apprenti → base → intermédiaire → avancé → ultime).
 
 ### Materia — XP et Fusion
 
@@ -485,8 +515,12 @@ Les boss sont des monstres spéciaux avec des mécaniques avancées :
 |---------|------|
 | `SpellApplicator` | Application des dégâts/soins avec résistances élémentaires, berserk, burn, shield, effets de statut |
 | `StatusEffectManager` | Gestion DOT/HOT, vérification de statut, application des effets |
-| `CombatSkillResolver` | Résolution des sorts disponibles selon les compétences du joueur |
-| `ElementalSynergyCalculator` | Calcul des bonus de synergies élémentaires (4 combos) |
+| `CombatSkillResolver` | Résolution des bonus passifs et materia autorisées selon les compétences du joueur |
+| `CombatCapacityResolver` | Résolution des sorts disponibles via materia sockettées + vérification skills materia |
+| `ElementalSynergyCalculator` | Calcul des bonus de synergies élémentaires (5 combos) |
+| `DamageCalculator` | Calcul de dégâts isolé (fixe et pourcentage) |
+| `HitChanceCalculator` | Calcul de précision (spell.level vs monster.level) |
+| `CriticalCalculator` | Calcul de critique |
 | `MateriaXpGranter` | Attribution d'XP aux materias serties à la mort d'un monstre |
 | `MateriaFusionManager` | Fusion de materias |
 | `MobActionHandler` | IA des monstres : patterns séquentiels, soin bas HP, phases de boss |
@@ -850,15 +884,17 @@ ROLE_USER (base)
 | **Monde** | 1 | "Demo world" |
 | **Carte** | 1 | 60×60 cases |
 | **Inventaires** | 6 | 3 par joueur (sac, materia, banque) |
-| **Domaines** | 15 | Combat (7) + Récolte (4) + Artisanat (4) |
-| **Skills** | ~20 | Pyramides de compétences avec pré-requis |
-| **Sorts** | 14+ | Feu (4+), Vie (1), Mort (1), Nature (1), Vent (1), Terre (1), Métal (2), None (3) — avec coûts en énergie, cooldowns et effets de statut |
+| **Domaines** | 32 | Combat (24) + Récolte (4) + Artisanat (4), chacun associé à un élément |
+| **Skills** | ~400+ | 13-24 compétences par domaine combat, 4-13 par domaine récolte, arbres à 5 rangs |
+| **Sorts** | 160+ | Couvrant les 8 éléments + sorts spécifiques par domaine — avec coûts en énergie, cooldowns et effets de statut |
+| **Races** | 1 | Humain (stats neutres) |
 | **Effets de statut** | 11 | poison, paralysie, brûlure, gel, silence, régénération, bouclier, berserk + variantes fortes |
 | **Items** | ~25 | Materias (11), Gear (5), Stuff/Consommables (~10), Minerais (2), Plantes (2) |
-| **Monstres** | 5 | Zombie, Taiju, Ochu, Squelette, Dragon (boss avec 3 phases, résistances élémentaires, pattern IA) |
-| **Mobs** | 5 | Instances sur la carte |
-| **PNJ** | 1 | "Hello World" avec dialogue à branches |
-| **Table de loot** | 3 | Zombie → Champignon (75%), Peau (90%), Pioche (10%) |
+| **Monstres** | 5+ | Zombie, Taiju, Ochu, Squelette, Dragon (boss avec 3 phases, résistances élémentaires, pattern IA) |
+| **Mobs** | 5+ | Instances sur la carte |
+| **PNJ** | 60 | Dialogues à branches, conditions, quêtes |
+| **Table de loot** | 3+ | Zombie → Champignon (75%), Peau (90%), Pioche (10%) |
+| **Succès** | 34+ | Combat (24), Exploration (3), Quêtes (4+) |
 
 ---
 
@@ -944,6 +980,68 @@ Le bitmask de collision gère les directions :
 
 ---
 
+## 21. Bestiaire
+
+Le bestiaire permet au joueur de suivre ses rencontres avec les monstres du jeu.
+
+### Architecture
+
+- **`PlayerBestiary`** : entité qui stocke le compteur de kills par monstre et par joueur
+- **`BestiaryListener`** : EventSubscriber sur `MobDeadEvent`, crée/incrémente les entrées pour tous les joueurs survivants du combat
+- **`BestiaryController`** : route `/game/bestiary` avec stats (types découverts, kills totaux)
+
+### Système de paliers
+
+| Palier | Kills requis | Récompense |
+|--------|-------------|------------|
+| Tier 1 | 10 | Résistances/faiblesses élémentaires révélées |
+| Tier 2 | 50 | Table de loot avec probabilités visible |
+| Tier 3 | 100 | Titre "Chasseur de [monstre]" |
+
+### Méthodes clés de `PlayerBestiary`
+
+- `getTier()` : retourne le palier actuel (0-3)
+- `hasWeaknessesRevealed()` : tier ≥ 1
+- `hasLootTableRevealed()` : tier ≥ 2
+- `hasHunterTitle()` : tier ≥ 3
+- `getNextTierThreshold()` : prochain seuil de kills
+
+---
+
+## 22. Système de succès (Achievements)
+
+Les succès récompensent les joueurs pour leurs accomplissements dans le jeu.
+
+### Architecture
+
+- **`Achievement`** (Game) : définition d'un succès avec `criteria` (JSON) et `reward` (JSON)
+- **`PlayerAchievement`** (App) : progression du joueur vers un succès (progress, completedAt)
+- **`AchievementTracker`** : EventSubscriber sur `MobDeadEvent` et `QuestCompletedEvent`, met à jour la progression et applique les récompenses
+- **`AchievementController`** : route `/game/achievements` avec onglets par catégorie
+
+### Types de critères
+
+| Type | Description | Champs |
+|------|-------------|--------|
+| `mob_kill` | Tuer X monstres d'un type | `count`, `monster_slug` (optionnel) |
+| `quest_complete` | Compléter X quêtes | `count` |
+| `monster_discovery` | Découvrir X types de monstres | `count` |
+
+### Catégories
+
+| Catégorie | Nombre | Exemples |
+|-----------|--------|----------|
+| Combat | 24 | 3 paliers × 8 types de monstres (10/50/100 kills) |
+| Exploration | 3 | Découvrir 5/10/20 types de monstres |
+| Quêtes | 4+ | Compléter 5/10/25/50 quêtes |
+
+### Récompenses
+
+- **Gils** : monnaie du jeu
+- **Titres** : titres optionnels associés au joueur
+
+---
+
 ## Routes complètes
 
 | Méthode | URL | Nom | Controller |
@@ -975,3 +1073,5 @@ Le bitmask de collision gère les directions :
 | GET | `/game/fight/loot` | `app_game_fight_loot` | `Game\Fight\FightLootIndexController` |
 | POST | `/game/fight/loot/proceed` | `app_game_fight_loot_proceed` | `Game\Fight\FightLootProceedController` |
 | GET | `/game/fight/timeline` | `app_game_fight_timeline` | `Game\Fight\FightTimelineController` |
+| GET | `/game/bestiary` | `app_game_bestiary` | `Game\BestiaryController` |
+| GET | `/game/achievements` | `app_game_achievements` | `Game\AchievementController` |
