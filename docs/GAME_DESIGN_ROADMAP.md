@@ -4,7 +4,7 @@
 
 Le game design d'Amethyste-Idle évolue avec des règles structurantes : 8 éléments, 32+ domaines avec archétypes de joueur (tank, DPS, healer, support...), compétences multi-domaines (15+ par domaine), sorts comme base de toute action, materia = capacités de combat, races de personnage, items soulbound, bestiaire et succès.
 
-**État actuel** : 7 éléments (manque metal/bête), 15 domaines avec 3-7 compétences chacun, pas de race, pas de bestiaire ni succès.
+**État actuel** : 9 éléments (none + 8 éléments), 32 domaines avec 13-24 compétences chacun (combat), race Humain, bestiaire (3 paliers), 34+ succès. Phases 1-7 et 9-13 terminées. Phase 8 partiellement terminée. Phase 6.I (récolte/craft) encore à faire.
 
 **Règles transversales** :
 - **1 PR par phase** — chaque phase produit une pull request distincte
@@ -291,12 +291,12 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.E — Arbres de talent Terre (Géomancien + Défenseur 15 + Gardien) [S] → PR #6e
+## Phase 6.E — Arbres de talent Terre (Géomancien + Défenseur 15 + Gardien) [S] ✅ *Terminée* → PR #6e
 
-- [ ] `SkillFixtures::getGeomancerSkills()` — 15 compétences (Jet de cailloux → Déplacement tectonique)
-- [ ] `SkillFixtures::getDefenderSkills()` — Étendre de 4 à 15 compétences
-- [ ] `SkillFixtures::getGuardianSkills()` — 15 compétences (Bouclier partagé → Bastion)
-- [ ] **Materia** : 1 skill materia par domaine Terre — skills materia avec `actions.materia.unlock` pour chaque sort
+- [x] `SkillFixtures::getGeomancerSkills()` — 24 compétences (Jet de cailloux → Déplacement tectonique)
+- [x] `SkillFixtures::getDefenderSkills()` — Étendu de 4 à 15 compétences
+- [x] `SkillFixtures::getGuardianSkills()` — 24 compétences (Bouclier partagé → Bastion)
+- [x] **Materia** : skills materia avec `actions.materia.unlock` pour chaque sort de chaque domaine Terre
 
 ---
 
@@ -350,17 +350,17 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 7 — Tout est un sort + Soulbound [M] → PR #7
+## Phase 7 — Tout est un sort + Soulbound [M] ✅ *Terminée* → PR #7
 
 **Problème** : Uniformiser actions → sorts. Ajouter items liés au personnage.
 
 ### Fichiers
-- **Modifier** `src/Entity/Game/Item.php` — Ajouter `boundToPlayer` (bool)
-- **Modifier** `src/Entity/App/PlayerItem.php` — Ajouter `boundToPlayerId` (int, nullable)
-- **Modifier** `src/GameEngine/Item/ItemEffectEncoder.php` — `use_spell` comme norme
-- **Modifier** `src/Controller/Game/Inventory/UseItemController.php` — Cast spell puis destroy
-- **Créer** sorts pour consommables dans fixtures
-- **Modifier** templates inventaire — Icône "lié" sur items bound
+- **✅ Modifié** `src/Entity/Game/Item.php` — Ajout `boundToPlayer` (bool)
+- **✅ Modifié** `src/Entity/App/PlayerItem.php` — Ajout `boundToPlayerId` (int, nullable) + `isBound()`
+- **✅ Modifié** `src/GameEngine/Item/ItemEffectEncoder.php` — `use_spell` comme norme (ACTION_USE_SPELL constant)
+- **✅ Modifié** `src/Controller/Game/Inventory/UseItemController.php` — Cast spell puis destroy
+- **✅ Créé** sorts pour consommables dans fixtures
+- **✅ Modifié** templates inventaire — Icône "lié" sur items bound
 
 ### Tests
 - Test : consommable cast sort + destruction
@@ -395,44 +395,44 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 9 — Inventaire : groupement visuel [S] → PR #9
+## Phase 9 — Inventaire : groupement visuel [S] ✅ *Terminée* → PR #9
 
 ### Fichiers
-- **Modifier** `src/Controller/Game/Inventory/ItemsController.php` — Grouper par `genericItem.slug`
-- **Modifier** `templates/game/inventory/items/_list.html.twig` — "Potion de soin x3" avec dépliage
-- **Modifier** `templates/game/inventory/materia/_list.html.twig` — Idem
-- **Utiliser** `assets/styles/images/materias.png` pour les icônes materia
+- **✅ Modifié** `src/Controller/Game/Inventory/ItemsController.php` — Groupement par `genericItem.slug` avec comptage de quantité
+- **✅ Modifié** `templates/game/inventory/items/_list.html.twig` — Badge "x3" avec compteur, grille responsive
+- **✅ Modifié** `templates/game/inventory/materia/_list.html.twig` — Idem
+- **✅ Utilisé** `assets/styles/images/materias.png` pour les icônes materia
 
 ### Tests
 - Test fonctionnel : groupement visuel correct
 
 ---
 
-## Phase 10 — Dashboard enrichi [S] → PR #10
+## Phase 10 — Dashboard enrichi [S] ✅ *Terminée* → PR #10
 
 ### Fichiers
-- **Modifier** `src/Controller/Admin/DashboardController.php` — COUNT par map (PNJ, mobs vivants, joueurs connectés)
-- **Modifier** `templates/admin/dashboard.html.twig` — Section "Répartition par zone"
+- **✅ Modifié** `src/Controller/Admin/DashboardController.php` — `buildZoneStats()` avec COUNT par map (PNJ, mobs vivants, joueurs connectés dans les 15 dernières minutes)
+- **✅ Modifié** `templates/admin/dashboard.html.twig` — Section "Répartition par zone" avec métriques globales + live stats
 
 ### Tests
 - Test fonctionnel : compteurs par zone
 
 ---
 
-## Phase 11 — Bestiaire joueur [M] → PR #11
+## Phase 11 — Bestiaire joueur [M] ✅ *Terminée* → PR #11
 
 ### Fichiers
-- **Créer** `src/Entity/App/PlayerBestiary.php` (player, monster, killCount, firstEncounteredAt, firstKilledAt)
-- **Créer** `src/Repository/App/PlayerBestiaryRepository.php`
-- **Créer** `src/EventListener/BestiaryListener.php` — Écoute MobDeadEvent
-- **Créer** `src/Controller/Game/BestiaryController.php` — Route `/game/bestiary`
-- **Créer** `templates/game/bestiary/index.html.twig`
-- **Modifier** `src/Entity/App/Player.php` — Relation bestiary
-- **Migration** : CREATE TABLE player_bestiary
+- **✅ Créé** `src/Entity/App/PlayerBestiary.php` — player, monster, killCount, tiers (10/50/100 kills)
+- **✅ Créé** `src/Repository/App/PlayerBestiaryRepository.php`
+- **✅ Créé** `src/EventListener/BestiaryListener.php` — Écoute MobDeadEvent, met à jour tous les joueurs survivants
+- **✅ Créé** `src/Controller/Game/BestiaryController.php` — Route `/game/bestiary`
+- **✅ Créé** `templates/game/bestiary/index.html.twig` — Stats, badges de tier, barres de progression, résistances, loot table
+- **✅ Modifié** `src/Entity/App/Player.php` — Relation `bestiaryEntries` (OneToMany)
+- **✅ Migration** : `Version20260319PlayerBestiary.php`
 
 ### Paliers
-- 10 kills : faiblesses révélées
-- 50 kills : table de loot visible
+- 10 kills : faiblesses/résistances élémentaires révélées
+- 50 kills : table de loot avec probabilités visible
 - 100 kills : titre "Chasseur de [monstre]"
 
 ### Tests
@@ -440,28 +440,29 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 12 — Système de succès [M] → PR #12
+## Phase 12 — Système de succès [M] ✅ *Terminée* → PR #12
 
 ### Fichiers
-- **Créer** `src/Entity/App/Achievement.php` (slug, title, description, category, criteria JSON, reward JSON, icon)
-- **Créer** `src/Entity/App/PlayerAchievement.php` (player, achievement, progress, completedAt)
-- **Créer** `src/GameEngine/Achievement/AchievementTracker.php` — Écoute événements domaine
-- **Créer** `src/Controller/Game/AchievementController.php` — Route `/game/achievements`
-- **Créer** `templates/game/achievements/index.html.twig`
-- **Créer** `src/DataFixtures/AchievementFixtures.php`
-- **Migration** : CREATE TABLE achievements + player_achievements
+- **✅ Créé** `src/Entity/Game/Achievement.php` — slug, title, description, category (combat/exploration/quests), criteria JSON, reward JSON, icon
+- **✅ Créé** `src/Entity/App/PlayerAchievement.php` — player, achievement, progress, completedAt, contrainte unique (player_id, achievement_id)
+- **✅ Créé** `src/GameEngine/Achievement/AchievementTracker.php` — Écoute `MobDeadEvent` + `QuestCompletedEvent`, progression mob_kill/quest_complete/monster_discovery
+- **✅ Créé** `src/Controller/Game/AchievementController.php` — Route `/game/achievements`
+- **✅ Créé** `templates/game/achievements/index.html.twig` — Onglets par catégorie, cartes avec progression, barres, récompenses
+- **✅ Créé** `src/DataFixtures/AchievementFixtures.php` — 34+ succès (24 combat, 3 exploration, 4+ quêtes)
+- **✅ Migration** : `Version20260319Achievements.php`
 
-### Succès initiaux
-- Quêtes effectuées (5, 10, 25, 50)
-- Mobs tués par type (10, 50, 100)
-- Monstres découverts (5, 10, tous)
+### Succès implémentés
+- **Combat** : 24 succès (3 paliers × 8 types de monstres — 10/50/100 kills)
+- **Exploration** : 3 succès (découvrir 5/10/20 types de monstres distincts)
+- **Quêtes** : 4 succès (compléter 5/10/25/50 quêtes)
+- **Récompenses** : gils + titres optionnels
 
 ### Tests
 - Test AchievementTracker, test intégration
 
 ---
 
-## Phase 13 — Mise à jour documentation [S] → PR #13
+## Phase 13 — Mise à jour documentation [S] ✅ *Terminée* → PR #13
 
 - Mettre à jour `ROADMAP.md` — Marquer les items implémentés, ajouter les nouveaux domaines
 - Mettre à jour `DOCUMENTATION.md` — Documenter : enum Element, race, 32 domaines, multi-domaine, materia=capacités, calculators, bestiaire, succès
@@ -527,17 +528,17 @@ Phase 13 (Documentation finale)
 | 5 | Skills multi-domaines | L | **OUI** | ✅ |
 | 6.A | Infrastructure 32 domaines + Pyromancien modèle | M | Non | #6 ✅ |
 | 6.B | Arbres de talent Feu (Berserker, Artificier) | S | Non | #6b ✅ |
-| 6.C | Arbres de talent Eau (Hydro, Guérisseur, Marémancien) | S | Non | #6c |
-| 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d |
-| 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e |
+| 6.C | Arbres de talent Eau (Hydro, Guérisseur, Marémancien) | S | Non | #6c ✅ |
+| 6.D | Arbres de talent Air (Foudro, Archer, Vagabond) | S | Non | #6d ✅ |
+| 6.E | Arbres de talent Terre (Géo, Défenseur, Gardien) | S | Non | #6e ✅ |
 | 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f ✅ |
 | 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g ✅ |
 | 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h ✅ |
 | 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i |
-| 7 | Tout est un sort + Soulbound | M | Non | #7 |
-| 8 | Materia = Capacités combat | L | Partiel | #8 |
-| 9 | Inventaire groupement UI | S | Non | #9 |
-| 10 | Dashboard zones | S | Non | #10 |
-| 11 | Bestiaire | M | Non | #11 |
-| 12 | Succès/Achievements | M | Non | #12 |
-| 13 | Documentation finale | S | Non | #13 |
+| 7 | Tout est un sort + Soulbound | M | Non | #7 ✅ |
+| 8 | Materia = Capacités combat | L | Partiel | #8 ⚠️ |
+| 9 | Inventaire groupement UI | S | Non | #9 ✅ |
+| 10 | Dashboard zones | S | Non | #10 ✅ |
+| 11 | Bestiaire | M | Non | #11 ✅ |
+| 12 | Succès/Achievements | M | Non | #12 ✅ |
+| 13 | Documentation finale | S | Non | #13 ✅ |

@@ -66,10 +66,12 @@
 - `FightStatusEffect` : entité qui stocke les effets actifs par combat (cible, type, tours restants, puissance)
 - Les sorts peuvent appliquer des effets de statut via `SpellApplicator`
 
-### Résistances élémentaires
+### Éléments et résistances
+- 9 éléments (enum `Element.php`) : none, fire, water, earth, air, light, dark, metal, beast
 - Les monstres peuvent avoir des résistances élémentaires (ex : dragon résiste au feu)
 - `SpellApplicator` applique le coefficient de résistance aux dégâts
-- `ElementalSynergyCalculator` : 4 combos (Fire+Water=Steam, Earth+Air=Tornado, Light+Dark=Eclipse, Fire+Earth=Magma)
+- `ElementalSynergyCalculator` : 5 combos (Fire+Water=Steam, Earth+Air=Tornado, Light+Dark=Eclipse, Fire+Earth=Magma, Metal+Beast=Forge naturelle)
+- Calculators isolés : `DamageCalculator`, `HitChanceCalculator`, `CriticalCalculator`
 
 ### IA des monstres (`MobActionHandler`)
 - Pattern IA configurable via `Monster::aiPattern` (JSON)
@@ -84,21 +86,43 @@
 - Bannière d'alerte danger dans l'UI de combat
 - XP materia ×5 à la mort d'un boss
 
-### Compétences de combat actives
-- 7 archétypes : Pyromancien, Soldat, Soigneur, Défenseur, Nécromancien, Druide, Mage blanc
-- Chaque archétype a 3-4 compétences formant une chaîne de progression
-- Liaison compétence → sort via `actions.combat.spell_slug` dans `SkillFixtures`
-- `CombatSkillResolver` résout les sorts disponibles selon les compétences débloquées
+### Compétences et Materia — Capacités de combat
+- **Compétences = PASSIVES UNIQUEMENT** : les skills ne donnent jamais de sort actif directement
+- Les skills servent à : débloquer l'utilisation d'une materia (`actions.materia.unlock`), accorder des bonus passifs, permettre d'équiper certains objets
+- **Sorts actifs = UNIQUEMENT via materia** : posséder la materia + avoir le skill materia + socketter la materia
+- 24 domaines de combat (3 par élément × 8 éléments), chacun avec 13-24 compétences en arbre à 5 rangs
+- `CombatCapacityResolver` : sorts disponibles = materia sockettées + vérification skill materia
+- `CombatSkillResolver` : bonus passifs + materia autorisées via `actions.materia.unlock`
+- Attaque de base de l'arme toujours disponible gratuitement
 
 ### Materia
 - `MateriaXpGranter` : XP materia = 10 × niveau monstre (boss ×5)
 - `MateriaFusionManager` : fusion de deux materias en une materia supérieure
+- Bonus matching élément slot/materia : dégâts +25%, XP +25%
 
 ## Système de progression (arbres de talent)
 
 - Pas de "niveau du joueur" global
 - L'XP est gagnée par domaine (combat, récolte, artisanat) en pratiquant les activités liées
 - L'XP de domaine est investie dans un arbre de talent pour débloquer des compétences
+- 32 domaines : 24 combat + 4 récolte + 4 craft, chacun associé à un élément
 - Chaque compétence a un coût en points et des pré-requis (compétences parentes)
-- Les compétences débloquées donnent des bonus de stats (dégâts, soin, toucher, critique, vie)
+- Les compétences débloquées donnent des bonus passifs (dégâts, soin, toucher, critique, vie)
+- Les compétences peuvent débloquer l'usage de materia via `actions.materia.unlock`
+- Compétences multi-domaines : une même compétence dans plusieurs arbres, auto-unlock + 100% XP chaque domaine
 - La puissance du personnage = somme des talents débloqués dans tous ses arbres
+
+## Bestiaire et Succès
+
+### Bestiaire
+- `PlayerBestiary` : suivi des kills par monstre et par joueur
+- `BestiaryListener` : écoute `MobDeadEvent`, incrémente pour tous les joueurs survivants
+- 3 paliers : 10 kills (faiblesses), 50 kills (loot table), 100 kills (titre)
+- Route : `/game/bestiary`
+
+### Succès (Achievements)
+- `Achievement` : définition avec critères JSON et récompenses JSON
+- `PlayerAchievement` : progression joueur avec compteur et date de complétion
+- `AchievementTracker` : écoute `MobDeadEvent` + `QuestCompletedEvent`
+- 34+ succès : combat (24), exploration (3), quêtes (4+)
+- Route : `/game/achievements`

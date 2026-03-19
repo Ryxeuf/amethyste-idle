@@ -1,7 +1,7 @@
 # ROADMAP — Amethyste-Idle
 
 > MMORPG navigateur web — Univers médiéval-fantastique-futuriste (FF7/8/9 × Zelda × stein.world)
-> Dernière mise à jour : 2026-03-18
+> Dernière mise à jour : 2026-03-19
 
 > **Voir aussi** : [docs/GAME_DESIGN_ROADMAP.md](docs/GAME_DESIGN_ROADMAP.md) — Plan d'implémentation détaillé des nouvelles règles de game design (éléments, multi-domaine, materia=capacités, bestiaire, succès)
 
@@ -28,8 +28,8 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 | Déplacement temps réel | ✅ Fait | Mercure SSE, animation sprites, sync multi-joueurs |
 | Combat tour par tour | ✅ Fait | Timeline, attaque, sorts, items, fuite, loot |
 | Inventaire | ✅ Fait | Sac (100), Materia (50), Banque (1000), équipement 12 slots |
-| Système Materia | ✅ Fait | Sertissage, 7 éléments, slots sur équipement |
-| Arbres de talent | ✅ Fait | 32 domaines (8 éléments), Pyromancien modèle (15 skills), XP par domaine |
+| Système Materia | ✅ Fait | Sertissage, 9 éléments (none + 8), slots sur équipement, materia = capacités de combat |
+| Arbres de talent | ✅ Fait | 32 domaines (8 éléments × 3-4 domaines), 13-24 skills par domaine combat, XP par domaine |
 | Monstres | ✅ Fait | 12 types, tables de loot, respawn par queue |
 | Quêtes | ✅ Fait | 10 quêtes (tuer/collecter), récompenses |
 | PNJ & Dialogues | ✅ Fait | 60 PNJ, dialogues conditionnels, branches |
@@ -43,9 +43,14 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 | Performance | ✅ Fait | Tile pool, entity pool, spatial hash, texture cache, marker cache, monitoring FPS |
 | Auth | ✅ Fait | Login/register, rôles USER/PLAYER/ADMIN |
 | Accessibilité | ✅ Fait | ARIA labels, rôles WAI-ARIA, mode landscape, hints clavier |
+| Race | ✅ Fait | Race Humain (stats neutres), extensible pour futures races |
+| Items soulbound | ✅ Fait | boundToPlayer sur items, use_spell comme norme d'action |
+| Bestiaire | ✅ Fait | 3 paliers (10/50/100 kills), faiblesses, loot table, titres |
+| Succès | ✅ Fait | 34+ achievements (combat, exploration, quêtes), récompenses gils+titres |
+| Inventaire groupé | ✅ Fait | Groupement par slug, badge "x3", grille responsive |
 | Crafting | 🔴 Absent | Domaines définis, aucune mécanique ni UI |
 | Commerce | 🔴 Absent | Pas de boutiques PNJ ni échanges joueurs |
-| Administration | ✅ Fait | Panel admin complet (dashboard, CRUD, logs, maintenance) |
+| Administration | ✅ Fait | Panel admin complet (dashboard enrichi par zone, CRUD, logs, maintenance) |
 
 ---
 
@@ -427,26 +432,30 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 
 ---
 
-## Phase 10 — Catalogue et découvertes
+## Phase 10 — Catalogue et découvertes ✅ *Partiellement terminée*
 
 > Récompenser l'exploration et la curiosité.
 
-### 10.1 Bestiaire
-- [ ] **Fiche par monstre** : sprite, stats, faiblesses élémentaires, loot possible, lore/description
-- [ ] **Progression** : chaque monstre vaincu augmente le compteur → paliers de récompenses
-  - 10 kills : faiblesses révélées
-  - 50 kills : loot table complète visible
-  - 100 kills : titre "Chasseur de [monstre]" + bonus dégâts permanent contre ce type
+### 10.1 Bestiaire ✅
+- [x] **Fiche par monstre** : stats, faiblesses élémentaires, loot possible
+- [x] **Progression** : chaque monstre vaincu augmente le compteur → paliers de récompenses
+  - 10 kills : faiblesses révélées ✅
+  - 50 kills : loot table complète visible ✅
+  - 100 kills : titre "Chasseur de [monstre]" ✅
+- [x] **Route** : `/game/bestiary` avec stats, badges de tier, barres de progression
 
 ### 10.2 Herbier & catalogue minier
 - [ ] **Fiche par ressource** : image, description, zone de récolte, usages en craft
 - [ ] **Première découverte** : bonus XP + notification spéciale
 - [ ] **Complétion** : récompenses pour avoir trouvé toutes les ressources d'un type
 
-### 10.3 Système d'achievements
-- [ ] **Catégories** : Combat, Exploration, Récolte, Craft, Social, Quêtes, Secrets
-- [ ] **Récompenses** : titres, icônes de profil, emotes, items cosmétiques, bonus permanents
+### 10.3 Système d'achievements ✅
+- [x] **Catégories** : Combat (24), Exploration (3), Quêtes (4+)
+- [x] **Récompenses** : gils + titres optionnels
+- [x] **34+ succès** avec progression et barres visuelles
+- [x] **Route** : `/game/achievements` avec onglets par catégorie
 - [ ] **Achievements cachés** : découverts par des actions inhabituelles (visiter toutes les cases d'une map, vaincre un boss sans subir de dégâts, etc.)
+- [ ] **Catégories additionnelles** : Récolte, Craft, Social, Secrets
 
 ---
 
@@ -515,20 +524,20 @@ Cette roadmap couvre toutes les fonctionnalités nécessaires pour transformer A
 
 ## Priorités de développement (ordre recommandé)
 
-| Priorité | Phase | Justification |
-|----------|-------|---------------|
-| 🔴 1 | **Phase 1** — Fondations techniques | Nécessaire pour tout le reste (portails, object layers, perf) |
-| 🔴 2 | **Phase 2** — Administration | Permet de créer du contenu sans toucher au code |
-| 🔴 3 | **Phase 3** — Combat enrichi | Cœur du gameplay — doit être satisfaisant rapidement |
-| 🔴 4 | **Phase 4** — Récolte complète | Deuxième pilier — alimente le craft |
-| 🟠 5 | **Phase 5** — Craft | Troisième pilier — boucle gameplay récolte → craft → équipement |
-| 🟠 6 | **Phase 6** — Commerce | Donne de la valeur aux items craftés |
-| 🟠 7 | **Phase 7** — Quêtes & narration | Donne un but au joueur, guide la progression |
-| 🟡 8 | **Phase 8** — Progression & builds | Profondeur stratégique pour la rétention long terme |
-| 🟡 9 | **Phase 9** — Monde vivant | Polish qui rend le monde immersif |
-| 🟢 10 | **Phase 10** — Catalogue & achievements | Récompense l'exploration, rejouabilité |
-| 🟢 11 | **Phase 11** — Multijoueur & social | Communauté et rétention sociale |
-| 🟢 12 | **Phase 12** — Endgame | Contenu pour joueurs investis |
+| Priorité | Phase | Justification | État |
+|----------|-------|---------------|------|
+| 🔴 1 | **Phase 1** — Fondations techniques | Nécessaire pour tout le reste | ✅ |
+| 🔴 2 | **Phase 2** — Administration | Permet de créer du contenu sans toucher au code | ✅ |
+| 🔴 3 | **Phase 3** — Combat enrichi | Cœur du gameplay — doit être satisfaisant rapidement | 🟡 En cours |
+| 🔴 4 | **Phase 4** — Récolte complète | Deuxième pilier — alimente le craft | À faire |
+| 🟠 5 | **Phase 5** — Craft | Troisième pilier — boucle gameplay récolte → craft → équipement | À faire |
+| 🟠 6 | **Phase 6** — Commerce | Donne de la valeur aux items craftés | À faire |
+| 🟠 7 | **Phase 7** — Quêtes & narration | Donne un but au joueur, guide la progression | À faire |
+| 🟡 8 | **Phase 8** — Progression & builds | Profondeur stratégique pour la rétention long terme | 🟡 Partiel |
+| 🟡 9 | **Phase 9** — Monde vivant | Polish qui rend le monde immersif | À faire |
+| 🟢 10 | **Phase 10** — Catalogue & achievements | Récompense l'exploration, rejouabilité | 🟡 Partiel |
+| 🟢 11 | **Phase 11** — Multijoueur & social | Communauté et rétention sociale | À faire |
+| 🟢 12 | **Phase 12** — Endgame | Contenu pour joueurs investis | À faire |
 
 ---
 
