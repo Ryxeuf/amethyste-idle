@@ -43,7 +43,7 @@ class MateriaController extends AbstractController
                         'quantity' => 0,
                     ];
                 }
-                $grouped[$key]['quantity']++;
+                ++$grouped[$key]['quantity'];
             }
         }
         $materias = array_values($grouped);
