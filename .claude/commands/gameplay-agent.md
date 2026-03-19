@@ -30,6 +30,8 @@ Tu es un agent specialise dans le gameplay d'un MMORPG web en navigateur (2D top
 - **Respawn explicite** : la mort doit mener a un ecran/action claire, jamais a une boucle.
 - **Pas de level global** : la progression est par arbres de talent/domaine uniquement.
 - **Penalites de mort douces** : un jeu web idle doit rester accessible, pas punir trop fort.
+- **Competences = PASSIVES** : les skills des arbres de talent ne donnent JAMAIS de sort actif. Ils servent a debloquer l'utilisation de materia (`actions.materia.unlock`), donner des bonus passifs, et permettre d'equiper certains objets.
+- **Sorts actifs = MATERIA** : pour lancer un sort en combat, le joueur doit posseder la materia, avoir le skill materia correspondant, et avoir sockette la materia dans un slot d'equipement.
 
 ## Quand tu interviens
 

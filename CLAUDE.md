@@ -29,6 +29,14 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 8. **Taille des phases** : si une phase ou feature semble trop volumineuse (taille L ou XL, ex: 400+ lignes de fixtures, 10+ fichiers a modifier), la decouper en sous-phases realisables en une seule session. Chaque sous-phase doit etre commitable et testable independamment. Ne jamais tenter d'ecrire plus de ~200 lignes de donnees/fixtures en une seule passe.
 
+9. **Competences = PASSIVES UNIQUEMENT** : les skills des arbres de talent ne donnent JAMAIS de sort actif directement. Les skills servent a :
+   - **Debloquer l'utilisation d'une materia** (`actions.materia.unlock`) — prerequis pour equiper/utiliser une materia specifique
+   - **Accorder des bonus passifs** — stats (damage, heal, hit, critical, life)
+   - **Permettre d'equiper certains objets** — prerequis d'equipement
+   Ne JAMAIS utiliser `actions.combat.spell_slug` dans un skill. Utiliser `actions.materia.unlock` a la place.
+
+10. **Sorts actifs = UNIQUEMENT via materia** : pour lancer un sort en combat, le joueur doit (1) posseder la materia, (2) avoir appris la competence materia correspondante dans un arbre, (3) avoir sockette la materia dans un slot d'equipement. L'attaque de base de l'arme est toujours disponible gratuitement.
+
 ## Stack technique
 
 | Couche | Technologie |

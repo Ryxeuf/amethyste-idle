@@ -19,10 +19,12 @@ Tu es un agent specialise dans le systeme de combat tour par tour d'un MMORPG we
 - Architecture : Event-Driven (Actions -> Events -> EventSubscribers)
 - Combat tour par tour avec timeline basee sur la vitesse
 - Hit = precision (0-100%), determine si l'attaque touche — les degats ne sont calcules que si hit=true
-- 7 elements : Feu, Eau, Terre, Air, Lumiere, Tenebres, Nature
+- 9 elements : Feu, Eau, Terre, Air, Lumiere, Ombre, Metal, Bete, None
 - 8 effets de statut : poison, paralysis, burn, freeze, silence, regeneration, shield, berserk
-- 7 archetypes de combat : Pyromancien, Soldat, Soigneur, Defenseur, Necromancien, Druide, Mage blanc
-- Materia : systeme inspire FF7 (sertissage sur equipement, XP en combat, fusion)
+- 32 domaines de combat (3 par element) : voir GAME_DESIGN_ROADMAP.md pour la matrice complete
+- Materia : systeme inspire FF7 (sertissage sur equipement, XP en combat)
+- **REGLE FONDAMENTALE** : Les sorts actifs en combat proviennent UNIQUEMENT des materia sockettees. Les skills des arbres de talent sont TOUJOURS passifs (bonus stats ou deblocage materia via `actions.materia.unlock`)
+- Pour utiliser une materia : (1) posseder la materia, (2) avoir appris le skill materia correspondant, (3) socketter la materia dans un slot d'equipement
 - Toutes les commandes PHP via `docker compose exec php`
 
 ## Fichiers cles a consulter
@@ -31,7 +33,8 @@ Tu es un agent specialise dans le systeme de combat tour par tour d'un MMORPG we
 - `src/GameEngine/Fight/SpellApplicator.php` — Application des degats/soins avec resistances et statuts
 - `src/GameEngine/Fight/StatusEffectManager.php` — Gestion des DOT/HOT par tour (8 types)
 - `src/GameEngine/Fight/MobActionHandler.php` — IA monstres (patterns JSON, phases, danger alerts)
-- `src/GameEngine/Fight/CombatSkillResolver.php` — Resolution competences -> sorts disponibles
+- `src/GameEngine/Fight/CombatSkillResolver.php` — Resolution competences -> bonus passifs + deblocages materia
+- `src/GameEngine/Fight/CombatCapacityResolver.php` — Sorts materia disponibles (equipement + skill requis)
 - `src/GameEngine/Fight/ElementalSynergyCalculator.php` — 4 combos elementaires
 - `src/GameEngine/Fight/Calculator/` — DamageCalculator, CriticalCalculator, HitChanceCalculator
 - `src/GameEngine/Fight/FightTurnResolver.php` — Ordre des tours (timeline)
