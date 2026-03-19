@@ -7,6 +7,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
@@ -202,7 +203,7 @@ class FightSpellControllerTest extends TestCase
         $mob = $this->createMobMock(id: 5);
         $fight = $this->createFightMock(mobs: [$mob]);
         $player = $this->createPlayerMock(id: 1, fight: $fight, energy: 50, maxEnergy: 100);
-        $spell = $this->createSpellMock('fireball', element: 'fire', cooldown: 0);
+        $spell = $this->createSpellMock('fireball', element: Element::Fire, cooldown: 0);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
@@ -247,7 +248,7 @@ class FightSpellControllerTest extends TestCase
         $mob = $this->createMobMock(id: 5);
         $fight = $this->createFightMock(mobs: [$mob]);
         $player = $this->createPlayerMock(id: 1, fight: $fight, energy: 50, maxEnergy: 100);
-        $spell = $this->createSpellMock('fireball', element: 'fire');
+        $spell = $this->createSpellMock('fireball', element: Element::Fire);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
@@ -275,7 +276,7 @@ class FightSpellControllerTest extends TestCase
         $mob = $this->createMobMock(id: 5);
         $fight = $this->createFightMock(mobs: [$mob]);
         $player = $this->createPlayerMock(id: 1, fight: $fight, energy: 50, maxEnergy: 100);
-        $spell = $this->createSpellMock('fireball', element: 'none');
+        $spell = $this->createSpellMock('fireball', element: Element::None);
 
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->combatSkillResolver->method('hasSkillWithSpell')->willReturn(true);
@@ -351,7 +352,7 @@ class FightSpellControllerTest extends TestCase
         return $fight;
     }
 
-    private function createSpellMock(string $slug, string $element = 'none', int $cooldown = 0): Spell&MockObject
+    private function createSpellMock(string $slug, Element $element = Element::None, int $cooldown = 0): Spell&MockObject
     {
         $spell = $this->createMock(Spell::class);
         $spell->method('getSlug')->willReturn($slug);
