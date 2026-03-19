@@ -18,6 +18,8 @@ class Spell
     public const ELEMENT_AIR = 'air';
     public const ELEMENT_LIGHT = 'light';
     public const ELEMENT_DARK = 'dark';
+    public const ELEMENT_METAL = 'metal';
+    public const ELEMENT_BEAST = 'beast';
 
     public const ELEMENTS = [
         self::ELEMENT_NONE,
@@ -27,6 +29,8 @@ class Spell
         self::ELEMENT_AIR,
         self::ELEMENT_LIGHT,
         self::ELEMENT_DARK,
+        self::ELEMENT_METAL,
+        self::ELEMENT_BEAST,
     ];
 
     public function __toString(): string

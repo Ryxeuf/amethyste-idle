@@ -49,6 +49,9 @@ class Domain
     #[ORM\Column(name: 'graph_height', type: 'integer')]
     private $graphHeight;
 
+    #[ORM\Column(name: 'element', type: 'string', length: 25, nullable: true)]
+    private ?string $element = null;
+
     #[ORM\OneToMany(targetEntity: DomainExperience::class, mappedBy: 'domain')]
     private $playerExperiences;
 
@@ -200,6 +203,18 @@ class Domain
     public function removePlayerExperience(DomainExperience $playerExperience)
     {
         $this->playerExperiences->removeElement($playerExperience);
+    }
+
+    public function getElement(): ?string
+    {
+        return $this->element;
+    }
+
+    public function setElement(?string $element): self
+    {
+        $this->element = $element;
+
+        return $this;
     }
 
     /**

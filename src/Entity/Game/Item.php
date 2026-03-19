@@ -58,6 +58,8 @@ class Item
     public const ELEMENT_AIR = 'air';
     public const ELEMENT_LIGHT = 'light';
     public const ELEMENT_DARK = 'dark';
+    public const ELEMENT_METAL = 'metal';
+    public const ELEMENT_BEAST = 'beast';
 
     public const GEAR_LOCATIONS = [
         self::GEAR_LOCATION_HEAD,
