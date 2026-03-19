@@ -330,18 +330,18 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.I — Arbres de talent Récolte + Craft (8 domaines) + Skills partagés [M] → PR #6i
+## Phase 6.I — Arbres de talent Récolte + Craft (8 domaines) + Skills partagés [M] ✅ *Terminée* → PR #6i
 
-- [ ] Mineur : étendre de 7 à 15 compétences
-- [ ] Herboriste : étendre de 3 à 15 compétences
-- [ ] Pêcheur : 15 compétences (nouveau)
-- [ ] Dépeceur : 15 compétences (nouveau)
-- [ ] Forgeron : 15 compétences (nouveau)
-- [ ] Tanneur : 15 compétences (nouveau)
-- [ ] Alchimiste : 15 compétences (nouveau)
-- [ ] Joaillier : 15 compétences (nouveau)
-- [ ] Compétences partagées multi-domaines (Premiers soins, Endurance, etc.)
-- [ ] **Materia craft** : Joaillier inclut des compétences liées au sertissage de materia (bonus sockets, qualité materia). Forgeron inclut des compétences pour ajouter des slots materia aux équipements
+- [x] Mineur : étendu de 7 à 15 compétences (rubis/fer/or, progression XS→XL, passifs)
+- [x] Herboriste : étendu de 3 à 15 compétences (pissenlit/menthe/sauge/camomille/lavande)
+- [x] Pêcheur : 15 compétences (truite/carpe/saumon, progression XS→XL, passifs)
+- [x] Dépeceur : 15 compétences (cuir/os/crocs/écailles, progression XS→XL, passifs)
+- [x] Forgeron : 15 compétences (dagues→mithril, slots materia, alliages)
+- [x] Tanneur : 15 compétences (cuir brut→cuir de dragon, accessoires, cuir enchanté)
+- [x] Alchimiste : 15 compétences (potions mineures→légendaires, élixirs, transmutation)
+- [x] Joaillier : 15 compétences (gemmes/anneaux/amulettes, sertissage materia, gemmes prismatiques)
+- [x] Compétences partagées multi-domaines : 8 skills (Premiers soins, Endurance, Sens du terrain, Instinct de survie, Efficacité artisanale, Économie de matériaux, Maître artisan, Savoir arcanique)
+- [x] **Materia craft** : Joaillier = sertissage basique/avancé + qualité materia + maîtrise sertissage. Forgeron = ajout slot materia + double slot materia
 
 ### Tests (à la fin de toutes les sous-phases 6.*)
 - Test fixtures : tous les domaines ont ≥ 15 compétences
@@ -533,7 +533,7 @@ Phase 13 (Documentation finale)
 | 6.F | Arbres de talent Métal (Soldat, Chevalier, Ingénieur) | S | Non | #6f |
 | 6.G | Arbres de talent Bête (Chasseur, Dompteur, Druide) | S | Non | #6g |
 | 6.H | Arbres de talent Lumière + Ombre (6 domaines) | M | Non | #6h |
-| 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i |
+| 6.I | Arbres Récolte + Craft + Skills partagés | M | Non | #6i ✅ |
 | 7 | Tout est un sort + Soulbound | M | Non | #7 |
 | 8 | Materia = Capacités combat | L | Partiel | #8 |
 | 9 | Inventaire groupement UI | S | Non | #9 |

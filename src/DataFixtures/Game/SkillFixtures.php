@@ -104,6 +104,13 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getWandererSkills(),
             $this->getMinerSkills(),
             $this->getHerbalistSkills(),
+            $this->getFishermanSkills(),
+            $this->getSkinnerSkills(),
+            $this->getBlacksmithSkills(),
+            $this->getLeatherworkerSkills(),
+            $this->getAlchimistSkills(),
+            $this->getJewellerSkills(),
+            $this->getSharedSkills(),
         );
     }
 
@@ -1865,106 +1872,1318 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // MINEUR (terre/recolte) — skills existants conserves
+    // MINEUR (terre/recolte) — 15 skills, extraction de minerais
     // =========================================================================
     private function getMinerSkills(): array
     {
+        $d = 'miner';
+
         return [
+            // Rang 1 (0 pts) — 2 skills d'entree
             'miner_ruby_xs' => [
                 'slug' => 'miner-ruby-xs',
-                'title' => 'Minage du ruby debutant',
-                'description' => 'Permet de miner le ruby',
+                'title' => 'Minage du rubis debutant',
+                'description' => 'Permet de miner les filons de rubis basiques',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xs']]],
                 'requiredPoints' => 0,
-                'domain' => 'miner',
-            ],
-            'miner_ruby_s' => [
-                'slug' => 'miner-ruby-s',
-                'title' => 'Minage du ruby apprenti',
-                'description' => 'Permet de miner le ruby',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-s']]],
-                'requiredPoints' => 10,
-                'domain' => 'miner',
-                'requirements' => ['miner_ruby_xs'],
-            ],
-            'miner_ruby_m' => [
-                'slug' => 'miner-ruby-m',
-                'title' => 'Minage du ruby avance',
-                'description' => 'Permet de miner le ruby',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-m']]],
-                'requiredPoints' => 50,
-                'domain' => 'miner',
-                'requirements' => ['miner_ruby_s'],
-            ],
-            'miner_ruby_l' => [
-                'slug' => 'miner-ruby-l',
-                'title' => 'Minage du ruby avance',
-                'description' => 'Permet de miner le ruby',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-l']]],
-                'requiredPoints' => 100,
-                'domain' => 'miner',
-                'requirements' => ['miner_ruby_m'],
-            ],
-            'miner_ruby_xl' => [
-                'slug' => 'miner-ruby-xl',
-                'title' => 'Minage du ruby expert',
-                'description' => 'Permet de miner le ruby',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xl']]],
-                'requiredPoints' => 200,
-                'domain' => 'miner',
-                'requirements' => ['miner_ruby_l'],
+                'domain' => $d,
             ],
             'miner_iron_xs' => [
                 'slug' => 'miner-iron-xs',
                 'title' => 'Minage du fer debutant',
-                'description' => 'Permet de miner le fer',
+                'description' => 'Permet de miner les filons de fer basiques',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-xs']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'miner_ruby_s' => [
+                'slug' => 'miner-ruby-s',
+                'title' => 'Minage du rubis apprenti',
+                'description' => 'Permet de miner les filons de rubis apprenti',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-s']]],
                 'requiredPoints' => 10,
-                'domain' => 'miner',
+                'domain' => $d,
                 'requirements' => ['miner_ruby_xs'],
             ],
             'miner_iron_s' => [
                 'slug' => 'miner-iron-s',
                 'title' => 'Minage du fer apprenti',
-                'description' => 'Permet de miner le fer',
+                'description' => 'Permet de miner les filons de fer apprenti',
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-s']]],
-                'requiredPoints' => 50,
-                'domain' => 'miner',
+                'requiredPoints' => 10,
+                'domain' => $d,
                 'requirements' => ['miner_iron_xs'],
+            ],
+            'miner_efficiency_1' => [
+                'slug' => 'miner-efficiency-1',
+                'title' => 'Pioche affutee',
+                'description' => 'Augmente la vitesse d\'extraction des minerais',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['miner_ruby_xs'],
+            ],
+            'miner_gold_xs' => [
+                'slug' => 'miner-gold-xs',
+                'title' => 'Minage de l\'or debutant',
+                'description' => 'Permet de miner les filons d\'or basiques',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-xs']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['miner_iron_xs'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'miner_ruby_m' => [
+                'slug' => 'miner-ruby-m',
+                'title' => 'Minage du rubis avance',
+                'description' => 'Permet de miner les filons de rubis avances',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-m']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['miner_ruby_s', 'miner_efficiency_1'],
+            ],
+            'miner_iron_m' => [
+                'slug' => 'miner-iron-m',
+                'title' => 'Minage du fer avance',
+                'description' => 'Permet de miner les filons de fer avances',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-m']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['miner_iron_s'],
+            ],
+            'miner_gold_s' => [
+                'slug' => 'miner-gold-s',
+                'title' => 'Minage de l\'or apprenti',
+                'description' => 'Permet de miner les filons d\'or apprenti',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-s']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['miner_gold_xs'],
+            ],
+            'miner_yield_1' => [
+                'slug' => 'miner-yield-1',
+                'title' => 'Filon genereux',
+                'description' => 'Chance de doubler les minerais extraits',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['miner_ruby_m'],
+            ],
+            'miner_iron_l' => [
+                'slug' => 'miner-iron-l',
+                'title' => 'Minage du fer expert',
+                'description' => 'Permet de miner les filons de fer rares',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-l']]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['miner_iron_m'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'miner_ruby_l' => [
+                'slug' => 'miner-ruby-l',
+                'title' => 'Minage du rubis expert',
+                'description' => 'Permet de miner les filons de rubis rares',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-l']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['miner_ruby_m', 'miner_iron_m'],
+            ],
+            'miner_gold_m' => [
+                'slug' => 'miner-gold-m',
+                'title' => 'Minage de l\'or avance',
+                'description' => 'Permet de miner les filons d\'or avances',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-m']]],
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'requirements' => ['miner_gold_s', 'miner_yield_1'],
+            ],
+            'miner_deep_vein' => [
+                'slug' => 'miner-deep-vein',
+                'title' => 'Veines profondes',
+                'description' => 'Augmente la quantite de minerais extraits des filons rares',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['miner_iron_l'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'miner_master' => [
+                'slug' => 'miner-master',
+                'title' => 'Maitre mineur',
+                'description' => 'Maitrise absolue du minage — acces aux filons legendaires',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xl', 'spot-iron-xl', 'spot-gold-xl']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['miner_ruby_l', 'miner_gold_m'],
             ],
         ];
     }
 
     // =========================================================================
-    // HERBORISTE (bete/recolte) — skills existants conserves
+    // HERBORISTE (bete/recolte) — 15 skills, cueillette de plantes
     // =========================================================================
     private function getHerbalistSkills(): array
     {
+        $d = 'herbalist';
+
         return [
+            // Rang 1 (0 pts) — 2 skills d'entree
             'herbalist_dandelion' => [
                 'slug' => 'herbalist-dandelion-xs',
                 'title' => 'Recolte de pissenlit',
-                'description' => 'Permet de recolter les pissenlits',
+                'description' => 'Permet de recolter les pissenlits basiques',
                 'requiredPoints' => 0,
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-dandelion-xs']]],
-                'domain' => 'herbalist',
+                'domain' => $d,
             ],
             'herbalist_mint' => [
                 'slug' => 'herbalist-mint-xs',
                 'title' => 'Recolte de menthe',
-                'description' => 'Permet de recolter la menthe',
+                'description' => 'Permet de recolter la menthe basique',
                 'requiredPoints' => 0,
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-mint-xs']]],
-                'domain' => 'herbalist',
+                'domain' => $d,
             ],
+
+            // Rang 2 (10-20 pts) — 4 skills
             'herbalist_sage' => [
                 'slug' => 'herbalist-sage-xs',
                 'title' => 'Recolte de sauge',
                 'description' => 'Permet de recolter la sauge',
                 'requiredPoints' => 10,
                 'actions' => [['action' => 'harvest', 'spots' => ['spot-sage-xs']]],
-                'domain' => 'herbalist',
+                'domain' => $d,
                 'requirements' => ['herbalist_mint'],
+            ],
+            'herbalist_dandelion_s' => [
+                'slug' => 'herbalist-dandelion-s',
+                'title' => 'Recolte de pissenlit apprenti',
+                'description' => 'Permet de recolter les pissenlits de qualite superieure',
+                'requiredPoints' => 10,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-dandelion-s']]],
+                'domain' => $d,
+                'requirements' => ['herbalist_dandelion'],
+            ],
+            'herbalist_keen_eye' => [
+                'slug' => 'herbalist-keen-eye',
+                'title' => 'Oeil aiguise',
+                'description' => 'Augmente les chances de trouver des plantes rares',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['herbalist_dandelion'],
+            ],
+            'herbalist_chamomile' => [
+                'slug' => 'herbalist-chamomile-xs',
+                'title' => 'Recolte de camomille',
+                'description' => 'Permet de recolter la camomille',
+                'requiredPoints' => 20,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-chamomile-xs']]],
+                'domain' => $d,
+                'requirements' => ['herbalist_mint'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'herbalist_sage_s' => [
+                'slug' => 'herbalist-sage-s',
+                'title' => 'Recolte de sauge apprenti',
+                'description' => 'Permet de recolter la sauge de qualite superieure',
+                'requiredPoints' => 25,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-sage-s']]],
+                'domain' => $d,
+                'requirements' => ['herbalist_sage', 'herbalist_keen_eye'],
+            ],
+            'herbalist_lavender' => [
+                'slug' => 'herbalist-lavender-xs',
+                'title' => 'Recolte de lavande',
+                'description' => 'Permet de recolter la lavande',
+                'requiredPoints' => 30,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-lavender-xs']]],
+                'domain' => $d,
+                'requirements' => ['herbalist_chamomile'],
+            ],
+            'herbalist_gentle_hands' => [
+                'slug' => 'herbalist-gentle-hands',
+                'title' => 'Mains delicates',
+                'description' => 'Ameliore la qualite des plantes recoltees',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['herbalist_dandelion_s'],
+            ],
+            'herbalist_mint_m' => [
+                'slug' => 'herbalist-mint-m',
+                'title' => 'Recolte de menthe avance',
+                'description' => 'Permet de recolter la menthe rare',
+                'requiredPoints' => 40,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-mint-m']]],
+                'domain' => $d,
+                'requirements' => ['herbalist_sage_s'],
+            ],
+            'herbalist_chamomile_s' => [
+                'slug' => 'herbalist-chamomile-s',
+                'title' => 'Recolte de camomille apprenti',
+                'description' => 'Permet de recolter la camomille de qualite superieure',
+                'requiredPoints' => 50,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-chamomile-s']]],
+                'domain' => $d,
+                'requirements' => ['herbalist_lavender'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'herbalist_rare_plants' => [
+                'slug' => 'herbalist-rare-plants',
+                'title' => 'Connaissance des plantes rares',
+                'description' => 'Permet de recolter les plantes rares de toutes les regions',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-sage-m', 'spot-chamomile-m', 'spot-lavender-m']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['herbalist_sage_s', 'herbalist_lavender'],
+            ],
+            'herbalist_bountiful' => [
+                'slug' => 'herbalist-bountiful',
+                'title' => 'Recolte abondante',
+                'description' => 'Chance de doubler la quantite de plantes recoltees',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['herbalist_gentle_hands', 'herbalist_mint_m'],
+            ],
+            'herbalist_preservation' => [
+                'slug' => 'herbalist-preservation',
+                'title' => 'Conservation des plantes',
+                'description' => 'Les plantes recoltees conservent mieux leurs proprietes',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'heal' => 2,
+                'requirements' => ['herbalist_chamomile_s'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'herbalist_master' => [
+                'slug' => 'herbalist-master',
+                'title' => 'Maitre herboriste',
+                'description' => 'Maitrise absolue de l\'herboristerie — acces aux plantes legendaires',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-dandelion-xl', 'spot-mint-xl', 'spot-sage-xl']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['herbalist_rare_plants', 'herbalist_bountiful'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // PECHEUR (eau/recolte) — 15 skills, peche en milieu aquatique
+    // =========================================================================
+    private function getFishermanSkills(): array
+    {
+        $d = 'fisherman';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'fisher_trout_xs' => [
+                'slug' => 'fisher-trout-xs',
+                'title' => 'Peche de la truite debutant',
+                'description' => 'Permet de pecher la truite dans les eaux calmes',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-xs']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'fisher_carp_xs' => [
+                'slug' => 'fisher-carp-xs',
+                'title' => 'Peche de la carpe debutant',
+                'description' => 'Permet de pecher la carpe dans les etangs',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-carp-xs']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'fisher_trout_s' => [
+                'slug' => 'fisher-trout-s',
+                'title' => 'Peche de la truite apprenti',
+                'description' => 'Permet de pecher la truite de qualite superieure',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-s']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['fisher_trout_xs'],
+            ],
+            'fisher_carp_s' => [
+                'slug' => 'fisher-carp-s',
+                'title' => 'Peche de la carpe apprenti',
+                'description' => 'Permet de pecher la carpe de qualite superieure',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-carp-s']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['fisher_carp_xs'],
+            ],
+            'fisher_patience' => [
+                'slug' => 'fisher-patience',
+                'title' => 'Patience du pecheur',
+                'description' => 'Augmente les chances de capture des poissons',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['fisher_trout_xs'],
+            ],
+            'fisher_salmon_xs' => [
+                'slug' => 'fisher-salmon-xs',
+                'title' => 'Peche du saumon debutant',
+                'description' => 'Permet de pecher le saumon dans les rivieres',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-salmon-xs']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['fisher_carp_xs'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'fisher_trout_m' => [
+                'slug' => 'fisher-trout-m',
+                'title' => 'Peche de la truite avance',
+                'description' => 'Permet de pecher la truite rare',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-m']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['fisher_trout_s', 'fisher_patience'],
+            ],
+            'fisher_carp_m' => [
+                'slug' => 'fisher-carp-m',
+                'title' => 'Peche de la carpe avance',
+                'description' => 'Permet de pecher la carpe doree',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-carp-m']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['fisher_carp_s'],
+            ],
+            'fisher_salmon_s' => [
+                'slug' => 'fisher-salmon-s',
+                'title' => 'Peche du saumon apprenti',
+                'description' => 'Permet de pecher le saumon de qualite superieure',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-salmon-s']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['fisher_salmon_xs'],
+            ],
+            'fisher_lucky_catch' => [
+                'slug' => 'fisher-lucky-catch',
+                'title' => 'Prise chanceuse',
+                'description' => 'Chance de pecher un poisson supplementaire',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['fisher_trout_m'],
+            ],
+            'fisher_bait_mastery' => [
+                'slug' => 'fisher-bait-mastery',
+                'title' => 'Maitrise des appats',
+                'description' => 'Les appats sont plus efficaces pour attirer les gros poissons',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['fisher_salmon_s'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'fisher_deep_sea' => [
+                'slug' => 'fisher-deep-sea',
+                'title' => 'Peche en eaux profondes',
+                'description' => 'Permet de pecher dans les eaux profondes et les lacs',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-l', 'spot-carp-l']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['fisher_trout_m', 'fisher_carp_m'],
+            ],
+            'fisher_salmon_m' => [
+                'slug' => 'fisher-salmon-m',
+                'title' => 'Peche du saumon avance',
+                'description' => 'Permet de pecher le saumon royal',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-salmon-m']]],
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'requirements' => ['fisher_salmon_s', 'fisher_lucky_catch'],
+            ],
+            'fisher_ocean' => [
+                'slug' => 'fisher-ocean',
+                'title' => 'Peche en haute mer',
+                'description' => 'Permet de pecher les poissons des eaux oceaniques',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-salmon-l']]],
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'requirements' => ['fisher_bait_mastery'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'fisher_master' => [
+                'slug' => 'fisher-master',
+                'title' => 'Maitre pecheur',
+                'description' => 'Maitrise absolue de la peche — acces aux poissons legendaires',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-xl', 'spot-carp-xl', 'spot-salmon-xl']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['fisher_deep_sea', 'fisher_salmon_m'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // DEPECEUR (bete/recolte) — 15 skills, depecage de creatures
+    // =========================================================================
+    private function getSkinnerSkills(): array
+    {
+        $d = 'skinner';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'skinner_hide_xs' => [
+                'slug' => 'skinner-hide-xs',
+                'title' => 'Depecage de cuir brut',
+                'description' => 'Permet de depecer les creatures basiques pour obtenir du cuir brut',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-xs']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'skinner_bone_xs' => [
+                'slug' => 'skinner-bone-xs',
+                'title' => 'Collecte d\'os',
+                'description' => 'Permet de recuperer les os des creatures vaincues',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-bone-xs']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'skinner_hide_s' => [
+                'slug' => 'skinner-hide-s',
+                'title' => 'Depecage de cuir apprenti',
+                'description' => 'Permet de depecer les creatures pour obtenir du cuir fin',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-s']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['skinner_hide_xs'],
+            ],
+            'skinner_bone_s' => [
+                'slug' => 'skinner-bone-s',
+                'title' => 'Collecte d\'os apprenti',
+                'description' => 'Permet de recuperer des os de qualite superieure',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-bone-s']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['skinner_bone_xs'],
+            ],
+            'skinner_precision' => [
+                'slug' => 'skinner-precision',
+                'title' => 'Lame precise',
+                'description' => 'Augmente la precision du depecage',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['skinner_hide_xs'],
+            ],
+            'skinner_fang_xs' => [
+                'slug' => 'skinner-fang-xs',
+                'title' => 'Extraction de crocs',
+                'description' => 'Permet de recuperer les crocs et griffes des creatures',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-fang-xs']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['skinner_bone_xs'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'skinner_hide_m' => [
+                'slug' => 'skinner-hide-m',
+                'title' => 'Depecage de cuir avance',
+                'description' => 'Permet de depecer les creatures puissantes pour obtenir du cuir epais',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-m']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['skinner_hide_s', 'skinner_precision'],
+            ],
+            'skinner_bone_m' => [
+                'slug' => 'skinner-bone-m',
+                'title' => 'Collecte d\'os avance',
+                'description' => 'Permet de recuperer des os rares',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-bone-m']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['skinner_bone_s'],
+            ],
+            'skinner_fang_s' => [
+                'slug' => 'skinner-fang-s',
+                'title' => 'Extraction de crocs apprenti',
+                'description' => 'Permet de recuperer des crocs de creatures puissantes',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-fang-s']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['skinner_fang_xs'],
+            ],
+            'skinner_yield' => [
+                'slug' => 'skinner-yield',
+                'title' => 'Depecage minutieux',
+                'description' => 'Chance de recuperer des materiaux supplementaires',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['skinner_hide_m'],
+            ],
+            'skinner_scale_xs' => [
+                'slug' => 'skinner-scale-xs',
+                'title' => 'Extraction d\'ecailles',
+                'description' => 'Permet de recuperer les ecailles des creatures reptiliennes',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-scale-xs']]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['skinner_fang_s'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'skinner_exotic' => [
+                'slug' => 'skinner-exotic',
+                'title' => 'Depecage de creatures exotiques',
+                'description' => 'Permet de depecer les creatures rares et exotiques',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-l', 'spot-bone-l']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['skinner_hide_m', 'skinner_bone_m'],
+            ],
+            'skinner_fang_m' => [
+                'slug' => 'skinner-fang-m',
+                'title' => 'Extraction de crocs avance',
+                'description' => 'Permet de recuperer des crocs et griffes rares',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-fang-m']]],
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'requirements' => ['skinner_fang_s', 'skinner_yield'],
+            ],
+            'skinner_scale_s' => [
+                'slug' => 'skinner-scale-s',
+                'title' => 'Extraction d\'ecailles avance',
+                'description' => 'Permet de recuperer des ecailles de creatures puissantes',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-scale-s']]],
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'requirements' => ['skinner_scale_xs'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'skinner_master' => [
+                'slug' => 'skinner-master',
+                'title' => 'Maitre depeceur',
+                'description' => 'Maitrise absolue du depecage — acces aux materiaux legendaires',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-xl', 'spot-bone-xl', 'spot-fang-xl']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['skinner_exotic', 'skinner_fang_m'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // FORGERON (metal/craft) — 15 skills, forge d'armes et armures
+    // =========================================================================
+    private function getBlacksmithSkills(): array
+    {
+        $d = 'blacksmith';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'smith_dagger' => [
+                'slug' => 'smith-dagger',
+                'title' => 'Forge de dagues',
+                'description' => 'Permet de forger des dagues en fer',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'smith_chainmail' => [
+                'slug' => 'smith-chainmail',
+                'title' => 'Forge de cottes de mailles',
+                'description' => 'Permet de forger des cottes de mailles basiques',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-chainmail']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'smith_sword' => [
+                'slug' => 'smith-sword',
+                'title' => 'Forge d\'epees',
+                'description' => 'Permet de forger des epees en fer',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-sword']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['smith_dagger'],
+            ],
+            'smith_shield' => [
+                'slug' => 'smith-shield',
+                'title' => 'Forge de boucliers',
+                'description' => 'Permet de forger des boucliers en fer',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-shield']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['smith_chainmail'],
+            ],
+            'smith_temper' => [
+                'slug' => 'smith-temper',
+                'title' => 'Trempe amelioree',
+                'description' => 'Augmente la qualite des objets forges',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['smith_dagger'],
+            ],
+            'smith_plate' => [
+                'slug' => 'smith-plate',
+                'title' => 'Forge de plaques',
+                'description' => 'Permet de forger des pieces d\'armure en plaques',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-plate']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['smith_chainmail'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'smith_steel_weapons' => [
+                'slug' => 'smith-steel-weapons',
+                'title' => 'Forge d\'acier — armes',
+                'description' => 'Permet de forger des armes en acier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-steel-sword', 'recipe-steel-dagger']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['smith_sword', 'smith_temper'],
+            ],
+            'smith_steel_armor' => [
+                'slug' => 'smith-steel-armor',
+                'title' => 'Forge d\'acier — armures',
+                'description' => 'Permet de forger des armures en acier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-steel-chainmail', 'recipe-steel-plate']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['smith_shield', 'smith_plate'],
+            ],
+            'smith_materia_slot' => [
+                'slug' => 'smith-materia-slot',
+                'title' => 'Ajout de slot materia',
+                'description' => 'Permet d\'ajouter un slot materia supplementaire aux equipements forges',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-add-materia-slot']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['smith_temper'],
+            ],
+            'smith_reinforcement' => [
+                'slug' => 'smith-reinforcement',
+                'title' => 'Renforcement',
+                'description' => 'Augmente la solidite des equipements forges',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['smith_steel_weapons'],
+            ],
+            'smith_axe' => [
+                'slug' => 'smith-axe',
+                'title' => 'Forge de haches',
+                'description' => 'Permet de forger des haches en acier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-steel-axe']]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['smith_steel_armor'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'smith_mithril' => [
+                'slug' => 'smith-mithril',
+                'title' => 'Forge de mithril',
+                'description' => 'Permet de forger des equipements en mithril',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-mithril-sword', 'recipe-mithril-plate']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['smith_steel_weapons', 'smith_steel_armor'],
+            ],
+            'smith_materia_slot_2' => [
+                'slug' => 'smith-materia-slot-2',
+                'title' => 'Double slot materia',
+                'description' => 'Permet d\'ajouter deux slots materia aux equipements forges',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-add-materia-slot-2']]],
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'requirements' => ['smith_materia_slot', 'smith_reinforcement'],
+            ],
+            'smith_alloy' => [
+                'slug' => 'smith-alloy',
+                'title' => 'Alliages speciaux',
+                'description' => 'Permet de creer des alliages aux proprietes uniques',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'damage' => 2,
+                'requirements' => ['smith_axe'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'smith_master' => [
+                'slug' => 'smith-master',
+                'title' => 'Maitre forgeron',
+                'description' => 'Maitrise absolue de la forge — acces aux recettes legendaires',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-legendary-sword', 'recipe-legendary-plate']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['smith_mithril', 'smith_materia_slot_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // TANNEUR (bete/craft) — 15 skills, travail du cuir et des peaux
+    // =========================================================================
+    private function getLeatherworkerSkills(): array
+    {
+        $d = 'leatherworker';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'leather_light_armor' => [
+                'slug' => 'leather-light-armor',
+                'title' => 'Travail du cuir brut',
+                'description' => 'Permet de confectionner des armures legeres en cuir brut',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-vest']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'leather_gloves' => [
+                'slug' => 'leather-gloves',
+                'title' => 'Confection de gants',
+                'description' => 'Permet de confectionner des gants en cuir',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-gloves']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'leather_boots' => [
+                'slug' => 'leather-boots',
+                'title' => 'Confection de bottes',
+                'description' => 'Permet de confectionner des bottes en cuir',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-boots']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['leather_light_armor'],
+            ],
+            'leather_belt' => [
+                'slug' => 'leather-belt',
+                'title' => 'Confection de ceintures',
+                'description' => 'Permet de confectionner des ceintures en cuir',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-belt']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['leather_gloves'],
+            ],
+            'leather_tanning' => [
+                'slug' => 'leather-tanning',
+                'title' => 'Tannage ameliore',
+                'description' => 'Ameliore la qualite du cuir tanne',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 2,
+                'requirements' => ['leather_light_armor'],
+            ],
+            'leather_quiver' => [
+                'slug' => 'leather-quiver',
+                'title' => 'Confection de carquois',
+                'description' => 'Permet de confectionner des carquois en cuir',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-quiver']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['leather_gloves'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'leather_hardened' => [
+                'slug' => 'leather-hardened',
+                'title' => 'Cuir renforce',
+                'description' => 'Permet de confectionner des armures en cuir renforce',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-hardened-vest', 'recipe-hardened-boots']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['leather_boots', 'leather_tanning'],
+            ],
+            'leather_accessories' => [
+                'slug' => 'leather-accessories',
+                'title' => 'Accessoires en cuir',
+                'description' => 'Permet de confectionner des accessoires avances',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-hardened-belt', 'recipe-hardened-gloves']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['leather_belt', 'leather_quiver'],
+            ],
+            'leather_supple' => [
+                'slug' => 'leather-supple',
+                'title' => 'Cuir souple',
+                'description' => 'Augmente la souplesse des equipements en cuir',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['leather_tanning'],
+            ],
+            'leather_exotic_hide' => [
+                'slug' => 'leather-exotic-hide',
+                'title' => 'Travail des peaux exotiques',
+                'description' => 'Permet de travailler les cuirs de creatures rares',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-exotic-leather-vest']]],
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'requirements' => ['leather_hardened'],
+            ],
+            'leather_reinforced_quiver' => [
+                'slug' => 'leather-reinforced-quiver',
+                'title' => 'Carquois renforce',
+                'description' => 'Permet de confectionner des carquois renforces en cuir epais',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-hardened-quiver']]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['leather_accessories'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'leather_dragon_hide' => [
+                'slug' => 'leather-dragon-hide',
+                'title' => 'Travail du cuir de dragon',
+                'description' => 'Permet de confectionner des equipements en cuir de dragon',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-dragon-vest', 'recipe-dragon-boots']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['leather_hardened', 'leather_accessories'],
+            ],
+            'leather_resilience' => [
+                'slug' => 'leather-resilience',
+                'title' => 'Resilience du cuir',
+                'description' => 'Les equipements en cuir conferes accordent des bonus de vie',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['leather_supple', 'leather_exotic_hide'],
+            ],
+            'leather_enchanted' => [
+                'slug' => 'leather-enchanted',
+                'title' => 'Cuir enchante',
+                'description' => 'Permet de travailler des cuirs impregnes de magie',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-enchanted-vest']]],
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'requirements' => ['leather_reinforced_quiver'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'leather_master' => [
+                'slug' => 'leather-master',
+                'title' => 'Maitre tanneur',
+                'description' => 'Maitrise absolue de la tannerie — acces aux recettes legendaires',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-legendary-vest', 'recipe-legendary-boots']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['leather_dragon_hide', 'leather_resilience'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ALCHIMISTE (eau/craft) — 15 skills, potions et elixirs
+    // =========================================================================
+    private function getAlchimistSkills(): array
+    {
+        $d = 'alchimist';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'alchi_health_pot' => [
+                'slug' => 'alchi-health-pot',
+                'title' => 'Potion de soin mineure',
+                'description' => 'Permet de brasser des potions de soin mineures',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-minor']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'alchi_energy_pot' => [
+                'slug' => 'alchi-energy-pot',
+                'title' => 'Potion d\'energie mineure',
+                'description' => 'Permet de brasser des potions d\'energie mineures',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-energy-potion-minor']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'alchi_health_pot_2' => [
+                'slug' => 'alchi-health-pot-2',
+                'title' => 'Potion de soin standard',
+                'description' => 'Permet de brasser des potions de soin standard',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-standard']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['alchi_health_pot'],
+            ],
+            'alchi_energy_pot_2' => [
+                'slug' => 'alchi-energy-pot-2',
+                'title' => 'Potion d\'energie standard',
+                'description' => 'Permet de brasser des potions d\'energie standard',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-energy-potion-standard']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['alchi_energy_pot'],
+            ],
+            'alchi_distillation' => [
+                'slug' => 'alchi-distillation',
+                'title' => 'Distillation amelioree',
+                'description' => 'Augmente l\'efficacite des potions brassees',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['alchi_health_pot'],
+            ],
+            'alchi_antidote' => [
+                'slug' => 'alchi-antidote',
+                'title' => 'Preparation d\'antidotes',
+                'description' => 'Permet de brasser des antidotes contre les poisons',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-antidote']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['alchi_energy_pot'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'alchi_health_pot_3' => [
+                'slug' => 'alchi-health-pot-3',
+                'title' => 'Potion de soin superieure',
+                'description' => 'Permet de brasser des potions de soin superieures',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-superior']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['alchi_health_pot_2', 'alchi_distillation'],
+            ],
+            'alchi_buff_pot' => [
+                'slug' => 'alchi-buff-pot',
+                'title' => 'Elixir de force',
+                'description' => 'Permet de brasser des elixirs augmentant les degats',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-strength-elixir']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['alchi_energy_pot_2'],
+            ],
+            'alchi_resist_pot' => [
+                'slug' => 'alchi-resist-pot',
+                'title' => 'Elixir de resistance',
+                'description' => 'Permet de brasser des elixirs de resistance elementaire',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-resistance-elixir']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['alchi_antidote'],
+            ],
+            'alchi_concentration' => [
+                'slug' => 'alchi-concentration',
+                'title' => 'Concentration alchimique',
+                'description' => 'Chance de brasser une potion bonus',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['alchi_health_pot_3'],
+            ],
+            'alchi_speed_pot' => [
+                'slug' => 'alchi-speed-pot',
+                'title' => 'Elixir de vitesse',
+                'description' => 'Permet de brasser des elixirs augmentant la vitesse',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-speed-elixir']]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['alchi_resist_pot'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'alchi_grand_potions' => [
+                'slug' => 'alchi-grand-potions',
+                'title' => 'Grandes potions',
+                'description' => 'Permet de brasser des potions de grande puissance',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-grand', 'recipe-energy-potion-grand']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['alchi_health_pot_3', 'alchi_buff_pot'],
+            ],
+            'alchi_transmutation' => [
+                'slug' => 'alchi-transmutation',
+                'title' => 'Transmutation',
+                'description' => 'Permet de transmuter des ingredients en materiaux rares',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-transmute-rare']]],
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'requirements' => ['alchi_resist_pot', 'alchi_concentration'],
+            ],
+            'alchi_purity' => [
+                'slug' => 'alchi-purity',
+                'title' => 'Purete alchimique',
+                'description' => 'Augmente la puissance de toutes les potions brassees',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'heal' => 2,
+                'hit' => 1,
+                'requirements' => ['alchi_speed_pot'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'alchi_master' => [
+                'slug' => 'alchi-master',
+                'title' => 'Maitre alchimiste',
+                'description' => 'Maitrise absolue de l\'alchimie — acces aux recettes legendaires',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-legendary-potion', 'recipe-philosophers-stone']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['alchi_grand_potions', 'alchi_transmutation'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // JOAILLIER (terre/craft) — 15 skills, gemmes et sertissage de materia
+    // =========================================================================
+    private function getJewellerSkills(): array
+    {
+        $d = 'jeweller';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'jewel_cut_basic' => [
+                'slug' => 'jewel-cut-basic',
+                'title' => 'Taille de gemmes brutes',
+                'description' => 'Permet de tailler des gemmes brutes en pierres utilisables',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-basic']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+            'jewel_ring_basic' => [
+                'slug' => 'jewel-ring-basic',
+                'title' => 'Fabrication d\'anneaux simples',
+                'description' => 'Permet de fabriquer des anneaux en metal basique',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-ring']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'jewel_amulet_basic' => [
+                'slug' => 'jewel-amulet-basic',
+                'title' => 'Fabrication d\'amulettes',
+                'description' => 'Permet de fabriquer des amulettes basiques',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-amulet']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['jewel_ring_basic'],
+            ],
+            'jewel_cut_fine' => [
+                'slug' => 'jewel-cut-fine',
+                'title' => 'Taille de gemmes fines',
+                'description' => 'Permet de tailler des gemmes de qualite fine',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-fine']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['jewel_cut_basic'],
+            ],
+            'jewel_polish' => [
+                'slug' => 'jewel-polish',
+                'title' => 'Polissage de gemmes',
+                'description' => 'Augmente la qualite des gemmes taillees',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['jewel_cut_basic'],
+            ],
+            'jewel_socket_materia' => [
+                'slug' => 'jewel-socket-materia',
+                'title' => 'Sertissage de materia basique',
+                'description' => 'Permet de sertir des materia dans les slots d\'equipement',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-socket-materia-basic']]],
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'requirements' => ['jewel_ring_basic'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'jewel_cut_rare' => [
+                'slug' => 'jewel-cut-rare',
+                'title' => 'Taille de gemmes rares',
+                'description' => 'Permet de tailler des gemmes rares aux proprietes magiques',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-rare']]],
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'requirements' => ['jewel_cut_fine', 'jewel_polish'],
+            ],
+            'jewel_ring_gold' => [
+                'slug' => 'jewel-ring-gold',
+                'title' => 'Fabrication d\'anneaux en or',
+                'description' => 'Permet de fabriquer des anneaux en or sertis de gemmes',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-gold-ring', 'recipe-gold-amulet']]],
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'requirements' => ['jewel_amulet_basic'],
+            ],
+            'jewel_materia_quality' => [
+                'slug' => 'jewel-materia-quality',
+                'title' => 'Sertissage ameliore',
+                'description' => 'Augmente la puissance des materia serties de 10%',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'heal' => 1,
+                'requirements' => ['jewel_socket_materia'],
+            ],
+            'jewel_socket_materia_2' => [
+                'slug' => 'jewel-socket-materia-2',
+                'title' => 'Sertissage de materia avance',
+                'description' => 'Permet de sertir des materia de rang superieur',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-socket-materia-advanced']]],
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'requirements' => ['jewel_socket_materia'],
+            ],
+            'jewel_enchant' => [
+                'slug' => 'jewel-enchant',
+                'title' => 'Enchantement de gemmes',
+                'description' => 'Permet d\'enchanter les gemmes pour leur conferer des proprietes magiques',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-enchant-gem']]],
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'requirements' => ['jewel_cut_rare'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
+            'jewel_masterwork' => [
+                'slug' => 'jewel-masterwork',
+                'title' => 'Bijoux d\'exception',
+                'description' => 'Permet de creer des bijoux d\'exception aux stats elevees',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-mithril-ring', 'recipe-mithril-amulet']]],
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'requirements' => ['jewel_cut_rare', 'jewel_ring_gold'],
+            ],
+            'jewel_materia_mastery' => [
+                'slug' => 'jewel-materia-mastery',
+                'title' => 'Maitrise du sertissage',
+                'description' => 'Sertissage parfait — bonus de materia augmente de 25%',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'damage' => 2,
+                'heal' => 2,
+                'requirements' => ['jewel_materia_quality', 'jewel_socket_materia_2'],
+            ],
+            'jewel_prismatic' => [
+                'slug' => 'jewel-prismatic',
+                'title' => 'Gemmes prismatiques',
+                'description' => 'Permet de creer des gemmes multi-elementaires',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-prismatic-gem']]],
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'requirements' => ['jewel_enchant'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'jewel_master' => [
+                'slug' => 'jewel-master',
+                'title' => 'Maitre joaillier',
+                'description' => 'Maitrise absolue de la joaillerie — acces aux gemmes et bijoux legendaires',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-legendary-ring', 'recipe-legendary-amulet']]],
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'requirements' => ['jewel_masterwork', 'jewel_materia_mastery'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // COMPETENCES PARTAGEES — multi-domaines (recolte + craft)
+    // =========================================================================
+    private function getSharedSkills(): array
+    {
+        return [
+            // Premiers soins — partage entre tous les domaines de recolte
+            'shared_first_aid' => [
+                'slug' => 'shared-first-aid',
+                'title' => 'Premiers soins',
+                'description' => 'Permet de se soigner legerement pendant les activites de recolte',
+                'requiredPoints' => 10,
+                'domain' => ['miner', 'herbalist', 'fisherman', 'skinner'],
+                'heal' => 1,
+            ],
+            // Endurance — partage entre tous les domaines de recolte
+            'shared_endurance' => [
+                'slug' => 'shared-endurance',
+                'title' => 'Endurance du recolteur',
+                'description' => 'Augmente les points de vie pendant les activites de recolte',
+                'requiredPoints' => 20,
+                'domain' => ['miner', 'herbalist', 'fisherman', 'skinner'],
+                'life' => 3,
+                'requirements' => ['shared_first_aid'],
+            ],
+            // Sens du terrain — partage entre mineur et herboriste
+            'shared_terrain_sense' => [
+                'slug' => 'shared-terrain-sense',
+                'title' => 'Sens du terrain',
+                'description' => 'Augmente les chances de trouver des ressources rares en explorant',
+                'requiredPoints' => 30,
+                'domain' => ['miner', 'herbalist'],
+                'critical' => 1,
+                'requirements' => ['shared_endurance'],
+            ],
+            // Instinct de survie — partage entre depeceur et pecheur
+            'shared_survival' => [
+                'slug' => 'shared-survival',
+                'title' => 'Instinct de survie',
+                'description' => 'Ameliore les chances de recolte dans les zones dangereuses',
+                'requiredPoints' => 30,
+                'domain' => ['skinner', 'fisherman'],
+                'hit' => 2,
+                'requirements' => ['shared_endurance'],
+            ],
+            // Efficacite artisanale — partage entre tous les domaines de craft
+            'shared_craft_efficiency' => [
+                'slug' => 'shared-craft-efficiency',
+                'title' => 'Efficacite artisanale',
+                'description' => 'Reduit les chances d\'echec lors de la fabrication d\'objets',
+                'requiredPoints' => 10,
+                'domain' => ['blacksmith', 'leatherworker', 'alchimist', 'jeweller'],
+                'hit' => 1,
+            ],
+            // Economie de materiaux — partage entre tous les domaines de craft
+            'shared_material_saving' => [
+                'slug' => 'shared-material-saving',
+                'title' => 'Economie de materiaux',
+                'description' => 'Chance de ne pas consommer certains materiaux lors du craft',
+                'requiredPoints' => 20,
+                'domain' => ['blacksmith', 'leatherworker', 'alchimist', 'jeweller'],
+                'critical' => 1,
+                'requirements' => ['shared_craft_efficiency'],
+            ],
+            // Masterwork — partage entre forgeron et tanneur
+            'shared_masterwork' => [
+                'slug' => 'shared-masterwork',
+                'title' => 'Maitre artisan',
+                'description' => 'Augmente la qualite globale des equipements fabriques',
+                'requiredPoints' => 30,
+                'domain' => ['blacksmith', 'leatherworker'],
+                'damage' => 1,
+                'life' => 2,
+                'requirements' => ['shared_material_saving'],
+            ],
+            // Savoir alchimique — partage entre alchimiste et joaillier
+            'shared_arcane_craft' => [
+                'slug' => 'shared-arcane-craft',
+                'title' => 'Savoir arcanique',
+                'description' => 'Augmente la puissance des objets a proprietes magiques fabriques',
+                'requiredPoints' => 30,
+                'domain' => ['alchimist', 'jeweller'],
+                'heal' => 1,
+                'critical' => 1,
+                'requirements' => ['shared_material_saving'],
             ],
         ];
     }
