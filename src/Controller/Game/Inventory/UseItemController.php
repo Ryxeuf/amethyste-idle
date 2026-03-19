@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\PlayerItem;
+use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\InventoryHelper;
 use App\Helper\ItemHelper;
@@ -23,6 +24,7 @@ class UseItemController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly SkillAcquiring $skillAcquiring,
         private readonly PlayerSkillHelper $playerSkillHelper,
+        private readonly SpellApplicator $spellApplicator,
     ) {
     }
 
@@ -68,16 +70,11 @@ class UseItemController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_items_list');
         }
 
-        // Cas 1 : Sort lié (potion de soin, etc.)
+        // Cas 1 : Sort lié (potion de soin, etc.) → déléguer au SpellApplicator
         if ($spell = $this->itemHelper->getItemSpell($item)) {
-            $heal = $spell->getHeal();
-            if ($heal !== null && $heal > 0) {
-                $newLife = min($player->getLife() + $heal, $player->getMaxLife());
-                $player->setLife($newLife);
-                $this->addFlash('success', sprintf('Vous utilisez %s et récupérez %d PV.', $item->getName(), $heal));
-            } else {
-                $this->addFlash('success', sprintf('Vous utilisez %s.', $item->getName()));
-            }
+            $modifiers = $this->itemHelper->getItemSpellModifiers($item, $player);
+            $this->spellApplicator->apply($spell, $player, $player, $modifiers);
+            $this->addFlash('success', sprintf('Vous utilisez %s.', $item->getName()));
         }
         // Cas 2 : Apprentissage de compétence (parchemin)
         elseif ($skill = $this->itemHelper->getItemSkillLearning($item)) {

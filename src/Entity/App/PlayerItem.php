@@ -100,6 +100,9 @@ class PlayerItem
     #[ORM\Column(name: 'experience', type: 'integer', options: ['default' => 0])]
     private int $experience = 0;
 
+    #[ORM\Column(name: 'bound_to_player_id', type: 'integer', nullable: true)]
+    private ?int $boundToPlayerId = null;
+
     public function __construct()
     {
         $this->slots = new ArrayCollection();
@@ -254,6 +257,21 @@ class PlayerItem
     public function addExperience(int $amount): void
     {
         $this->experience += $amount;
+    }
+
+    public function getBoundToPlayerId(): ?int
+    {
+        return $this->boundToPlayerId;
+    }
+
+    public function setBoundToPlayerId(?int $boundToPlayerId): void
+    {
+        $this->boundToPlayerId = $boundToPlayerId;
+    }
+
+    public function isBound(): bool
+    {
+        return $this->boundToPlayerId !== null;
     }
 
     public function getMateriaLevel(): int
