@@ -167,6 +167,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['pyro_apprenti_2'],
             ],
 
+            // Materia — affinite materia feu
+            'pyro_materia_affinity' => [
+                'title' => 'Affinite materia de feu',
+                'slug' => 'pyro-materia-affinity',
+                'description' => 'Les materia de feu equipees gagnent +20% XP et +10% degats',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]],
+                'requirements' => ['pyro_rang2_2'],
+            ],
+
             // Rang 3 (20-50 pts) — 4 skills
             'pyro_rang3_1' => [
                 'title' => 'Pluie de flammes',
@@ -300,6 +311,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'life' => 5,
                 'requirements' => ['berserk_apprenti_2'],
+            ],
+
+            // Materia — affinite materia feu
+            'berserk_materia_affinity' => [
+                'title' => 'Rage materia',
+                'slug' => 'berserk-materia-affinity',
+                'description' => 'La rage canalise les materia de feu : +20% XP et +10% degats',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]],
+                'requirements' => ['berserk_rang2_1'],
             ],
 
             // Rang 3 (25-50 pts) — 4 skills
@@ -436,6 +458,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'life' => 3,
                 'requirements' => ['artif_apprenti_2'],
+            ],
+
+            // Materia — affinite materia feu
+            'artif_materia_affinity' => [
+                'title' => 'Materia explosive',
+                'slug' => 'artif-materia-affinity',
+                'description' => 'L\'expertise en explosifs renforce les materia de feu : +20% XP et +10% degats',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]],
+                'requirements' => ['artif_rang2_2'],
             ],
 
             // Rang 3 (25-50 pts) — 4 skills
@@ -618,6 +651,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['hydro_apprenti_2'],
             ],
 
+            // Materia — affinite materia eau
+            'hydro_materia_affinity' => [
+                'title' => 'Affinite materia d\'eau',
+                'slug' => 'hydro-materia-affinity',
+                'description' => 'Les materia d\'eau equipees gagnent +20% XP et +10% degats',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]],
+                'requirements' => ['hydro_rang2_1'],
+            ],
+
             // Rang 3 (25-50 pts) — 4 skills
             'hydro_rang3_1' => [
                 'title' => 'Tempete de glace',
@@ -753,6 +797,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['healer_apprenti_2'],
             ],
 
+            // Materia — affinite materia eau
+            'healer_materia_affinity' => [
+                'title' => 'Materia de soin',
+                'slug' => 'healer-materia-affinity',
+                'description' => 'Les materia d\'eau equipees gagnent +20% XP et +10% puissance de soin',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]],
+                'requirements' => ['healer_heal_1'],
+            ],
+
             // Rang 3 (25-50 pts) — 4 skills
             'healer_materia_2' => [
                 'title' => 'Regeneration',
@@ -886,6 +941,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'life' => 5,
                 'requirements' => ['tide_apprenti_2'],
+            ],
+
+            // Materia — affinite materia eau
+            'tide_materia_affinity' => [
+                'title' => 'Materia des marees',
+                'slug' => 'tide-materia-affinity',
+                'description' => 'Les marees amplifient les materia d\'eau : +20% XP et +10% degats',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]],
+                'requirements' => ['tide_rang2_1'],
             ],
 
             // Rang 3 (25-50 pts) — 4 skills

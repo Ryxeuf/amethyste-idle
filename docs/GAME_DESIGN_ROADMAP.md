@@ -198,7 +198,7 @@ Le game design d'Amethyste-Idle évolue avec des règles structurantes : 8 élé
 - [x] Normalisation éléments : life→light, death→dark
 - [x] Migration SQL `Version20260319DomainElement.php`
 - [x] Template CSS : couleurs des 32 domaines
-- [x] Pyromancien : arbre modèle complet (15 skills, 5 rangs)
+- [x] Pyromancien : arbre modèle complet (15 skills, 5 rangs) + 1 skill materia feu
 - [x] Stormcaller : remplace white_wizard (4 skills)
 - [x] Domaines existants (soldat, guérisseur, défenseur, nécromancien, druide, mineur, herboriste) adaptés aux nouvelles clés
 
@@ -217,12 +217,32 @@ Chaque domaine combat suit le pattern :
         [Apprenti 2]
 ```
 
+### Compétences materia par domaine
+
+**Chaque domaine de combat** doit inclure **1 compétence materia** (rang 3, ~35 pts) qui renforce l'utilisation des materia de l'élément associé. Ces compétences utilisent le champ `actions.materia` du JSON :
+
+```php
+'actions' => ['materia' => ['xp_bonus' => 0.20, 'damage_bonus' => 0.10]]
+```
+
+| Bonus | Effet | Valeur |
+|-------|-------|--------|
+| `xp_bonus` | Bonus XP materia de cet élément en combat | +20% |
+| `damage_bonus` | Bonus dégâts des sorts lancés via materia de cet élément | +10% |
+
+**Intégration technique** : `CombatSkillResolver` doit lire `actions.materia` pour calculer les bonus. `MateriaXpGranter` et `CombatCapacityResolver` appliquent ces bonus en plus du matching élémentaire existant (+25%).
+
+**Placement dans l'arbre** : rang 3 (25-35 pts requis), prérequis d'un skill de rang 2. Le skill materia n'est pas obligatoire pour progresser vers les rangs supérieurs — c'est une branche optionnelle de spécialisation.
+
+**Convention de nommage** : `{domaine}_materia_affinity` (slug: `{domaine}-materia-affinity`)
+
 ---
 
 ## Phase 6.B — Arbres de talent Feu (Berserker + Artificier) [S] ✅ *Terminée* → PR #6b
 
 - [x] `SkillFixtures::getBerserkerSkills()` — 15 compétences (Rage → Furie sanguinaire)
 - [x] `SkillFixtures::getArtificerSkills()` — 15 compétences (Piège incendiaire → Barrage d'artillerie)
+- [x] **Materia** : 1 skill materia par domaine Feu (Pyromancien, Berserker, Artificier) — affinité materia feu (+20% XP, +10% dégâts)
 
 ---
 
@@ -231,6 +251,7 @@ Chaque domaine combat suit le pattern :
 - [x] `SkillFixtures::getHydromancerSkills()` — 13 compétences (Jet d'eau → Tsunami)
 - [x] `SkillFixtures::getHealerSkills()` — Étendu de 4 à 13 compétences (arbre complet 5 rangs)
 - [x] `SkillFixtures::getTidecallerSkills()` — 13 compétences (Marée montante → Maelström)
+- [x] **Materia** : 1 skill materia par domaine Eau (Hydromancien, Guérisseur, Marémancien) — affinité materia eau (+20% XP, +10% dégâts)
 
 ---
 
@@ -239,6 +260,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getStormcallerSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getArcherSkills()` — 15 compétences (Tir précis → Flèche perforante)
 - [ ] `SkillFixtures::getWandererSkills()` — 15 compétences (Hâte → Zéphyr)
+- [ ] **Materia** : 1 skill materia par domaine Air — affinité materia air (+20% XP, +10% dégâts)
 
 ---
 
@@ -247,6 +269,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getGeomancerSkills()` — 15 compétences (Jet de cailloux → Déplacement tectonique)
 - [ ] `SkillFixtures::getDefenderSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getGuardianSkills()` — 15 compétences (Bouclier partagé → Bastion)
+- [ ] **Materia** : 1 skill materia par domaine Terre — affinité materia terre (+20% XP, +10% dégâts)
 
 ---
 
@@ -255,6 +278,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getSoldierSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getKnightSkills()` — 15 compétences (Provocation → Forteresse d'acier)
 - [ ] `SkillFixtures::getEngineerSkills()` — 15 compétences (Tourelle → Engin de siège)
+- [ ] **Materia** : 1 skill materia par domaine Métal — affinité materia métal (+20% XP, +10% dégâts)
 
 ---
 
@@ -263,6 +287,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getHunterSkills()` — 15 compétences (Appel du faucon → Chasse en meute)
 - [ ] `SkillFixtures::getTamerSkills()` — 15 compétences (Lien bestial → Rugissement alpha)
 - [ ] `SkillFixtures::getDruidSkills()` — Étendre de 4 à 15 compétences
+- [ ] **Materia** : 1 skill materia par domaine Bête — affinité materia bête (+20% XP, +10% dégâts)
 
 ---
 
@@ -274,6 +299,7 @@ Chaque domaine combat suit le pattern :
 - [ ] `SkillFixtures::getAssassinSkills()` — 15 compétences (Embuscade → Danse des ombres)
 - [ ] `SkillFixtures::getNecromancerSkills()` — Étendre de 4 à 15 compétences
 - [ ] `SkillFixtures::getWarlockSkills()` — 15 compétences (Maléfice → Pacte sombre)
+- [ ] **Materia** : 1 skill materia par domaine Lumière + Ombre (6 skills) — affinité materia lumière/ombre (+20% XP, +10% dégâts)
 
 ---
 
@@ -288,6 +314,7 @@ Chaque domaine combat suit le pattern :
 - [ ] Alchimiste : 15 compétences (nouveau)
 - [ ] Joaillier : 15 compétences (nouveau)
 - [ ] Compétences partagées multi-domaines (Premiers soins, Endurance, etc.)
+- [ ] **Materia craft** : Joaillier inclut des compétences liées au sertissage de materia (bonus sockets, qualité materia). Forgeron inclut des compétences pour ajouter des slots materia aux équipements
 
 ### Tests (à la fin de toutes les sous-phases 6.*)
 - Test fixtures : tous les domaines ont ≥ 15 compétences
