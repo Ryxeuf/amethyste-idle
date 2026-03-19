@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\Element;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -77,8 +78,8 @@ class StatusEffect
     #[ORM\Column(name: 'chance', type: 'integer', options: ['default' => 100])]
     private int $chance = 100;
 
-    #[ORM\Column(name: 'element', type: 'string', length: 25, options: ['default' => 'none'])]
-    private string $element = Spell::ELEMENT_NONE;
+    #[ORM\Column(name: 'element', type: 'string', length: 25, enumType: Element::class, options: ['default' => 'none'])]
+    private Element $element = Element::None;
 
     #[ORM\Column(name: 'icon', type: 'string', length: 100, nullable: true)]
     private ?string $icon = null;
@@ -182,12 +183,12 @@ class StatusEffect
         $this->chance = $chance;
     }
 
-    public function getElement(): string
+    public function getElement(): Element
     {
         return $this->element;
     }
 
-    public function setElement(string $element): void
+    public function setElement(Element $element): void
     {
         $this->element = $element;
     }

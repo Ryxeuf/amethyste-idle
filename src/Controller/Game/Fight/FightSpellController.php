@@ -4,6 +4,7 @@ namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\CharacterInterface;
+use App\Enum\Element;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
@@ -139,7 +140,7 @@ class FightSpellController extends AbstractController
         // Check elemental synergy
         $synergyData = null;
         $lastElement = $fight->getLastElementUsed();
-        if ($lastElement && $spell->getElement() !== 'none') {
+        if ($lastElement !== null && $spell->getElement() !== Element::None) {
             $synergyData = $this->synergyCalculator->checkSynergy($lastElement, $spell->getElement());
         }
 

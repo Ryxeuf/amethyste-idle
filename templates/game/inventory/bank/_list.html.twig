@@ -33,7 +33,7 @@
                          data-item-name="{{ gi.name }}"
                          data-item-desc="{{ gi.description }}"
                          data-item-rarity="{{ gi.rarity }}"
-                         data-item-element="{{ gi.element }}">
+                         data-item-element="{{ gi.element.value }}">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0
                             {% if gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
                             {% elseif gi.rarity == 'epic' %}bg-purple-900/40 text-purple-400

@@ -4,7 +4,7 @@ App\Entity\Game\Item:
     name: "Soin"
     type: "materia"
     slug: 'm1-life'
-    element: "life"
+    element: "light"
     description: "Matéria contenant un sort de soin"
     spell: '@life_heal'
     requirements: ['@healer_materia_1']
@@ -62,7 +62,7 @@ App\Entity\Game\Item:
     type: "materia"
     spell: '@wind_lame'
     slug: 'm1-wind'
-    element: "wind"
+    element: "air"
     requirements: ['@white_wizard_materia_1']
     domain: '@white_wizard'
     nbUsages: 20
@@ -86,7 +86,7 @@ App\Entity\Game\Item:
     type: "materia"
     spell: '@punishment'
     slug: 'm1-death'
-    element: "death"
+    element: "dark"
     requirements: ['@necro_materia_1']
     domain: '@necro'
     nbUsages: 8
@@ -98,7 +98,7 @@ App\Entity\Game\Item:
     type: "materia"
     spell: '@liana_whip'
     slug: 'm1-nature'
-    element: "nature"
+    element: "beast"
     requirements: ['@druid_materia_1']
     domain: '@druid'
     nbUsages: 15

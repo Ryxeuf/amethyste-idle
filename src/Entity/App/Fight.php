@@ -2,6 +2,7 @@
 
 namespace App\Entity\App;
 
+use App\Enum\Element;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -38,8 +39,8 @@ class Fight
     #[ORM\Column(name: 'in_progress', type: 'boolean', options: ['default' => 0])]
     private bool $inProgress = false;
 
-    #[ORM\Column(name: 'last_element_used', type: 'string', length: 25, nullable: true)]
-    private ?string $lastElementUsed = null;
+    #[ORM\Column(name: 'last_element_used', type: 'string', length: 25, nullable: true, enumType: Element::class)]
+    private ?Element $lastElementUsed = null;
 
     #[ORM\Column(name: 'cooldowns', type: 'json', nullable: true)]
     private ?array $cooldowns = null;
@@ -146,12 +147,12 @@ class Fight
         })->count() === $this->players->count();
     }
 
-    public function getLastElementUsed(): ?string
+    public function getLastElementUsed(): ?Element
     {
         return $this->lastElementUsed;
     }
 
-    public function setLastElementUsed(?string $lastElementUsed): void
+    public function setLastElementUsed(?Element $lastElementUsed): void
     {
         $this->lastElementUsed = $lastElementUsed;
     }

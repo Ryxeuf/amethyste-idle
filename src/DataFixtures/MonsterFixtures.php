@@ -90,7 +90,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'aiPattern' => [
                     'spell_chance' => 35,
                 ],
-                'elementalResistances' => ['nature' => 0.3, 'fire' => -0.4],
+                'elementalResistances' => ['beast' => 0.3, 'fire' => -0.4],
             ],
             'venom_snake' => [
                 'name' => 'Serpent venimeux',
@@ -103,7 +103,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'aiPattern' => [
                     'spell_chance' => 30,
                 ],
-                'elementalResistances' => ['nature' => 0.2],
+                'elementalResistances' => ['beast' => 0.2],
             ],
             'taiju' => [
                 'name' => 'Taiju',
@@ -130,7 +130,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'aiPattern' => [
                     'spell_chance' => 45,
                 ],
-                'elementalResistances' => ['death' => 0.4, 'life' => -0.4],
+                'elementalResistances' => ['dark' => 0.4, 'light' => -0.4],
             ],
             'banshee' => [
                 'name' => 'Banshee',
@@ -143,7 +143,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'aiPattern' => [
                     'spell_chance' => 50,
                 ],
-                'elementalResistances' => ['death' => 0.5, 'life' => -0.5],
+                'elementalResistances' => ['dark' => 0.5, 'light' => -0.5],
             ],
             'ochu' => [
                 'name' => 'Ochu',
@@ -157,7 +157,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     'spell_chance' => 40,
                     'low_hp_heal' => ['threshold' => 30, 'action' => 'heal'],
                 ],
-                'elementalResistances' => ['nature' => 0.5, 'fire' => -0.5],
+                'elementalResistances' => ['beast' => 0.5, 'fire' => -0.5],
             ],
             'werewolf' => [
                 'name' => 'Loup-garou',
@@ -187,7 +187,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'aiPattern' => [
                     'spell_chance' => 35,
                 ],
-                'elementalResistances' => ['earth' => 0.4, 'wind' => -0.3],
+                'elementalResistances' => ['earth' => 0.4, 'air' => -0.3],
             ],
             'troll' => [
                 'name' => 'Troll',
@@ -233,9 +233,9 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'spells' => ['cyclone', 'air_slash', 'wind_blast'],
                 'aiPattern' => [
                     'spell_chance' => 45,
-                    'preferred_element' => 'wind',
+                    'preferred_element' => 'air',
                 ],
-                'elementalResistances' => ['wind' => 0.4, 'earth' => -0.3],
+                'elementalResistances' => ['air' => 0.4, 'earth' => -0.3],
             ],
             'minotaur' => [
                 'name' => 'Minotaure',
@@ -271,7 +271,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                         'spell' => 'earthquake',
                     ],
                 ],
-                'elementalResistances' => ['earth' => 0.5, 'wind' => -0.4, 'metal' => 0.3],
+                'elementalResistances' => ['earth' => 0.5, 'air' => -0.4, 'metal' => 0.3],
             ],
             'dragon' => [
                 'name' => 'Dragon ancestral',
@@ -295,7 +295,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     'fire' => 0.75,
                     'water' => -0.50,
                     'earth' => 0.25,
-                    'nature' => -0.25,
+                    'beast' => -0.25,
                 ],
                 'bossPhases' => [
                     [

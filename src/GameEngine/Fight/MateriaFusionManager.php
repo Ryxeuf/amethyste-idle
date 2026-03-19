@@ -4,6 +4,7 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
+use App\Enum\Element;
 use Doctrine\ORM\EntityManagerInterface;
 
 class MateriaFusionManager
@@ -19,6 +20,8 @@ class MateriaFusionManager
         'air' => 'materia_air_%d',
         'light' => 'materia_light_%d',
         'dark' => 'materia_dark_%d',
+        'metal' => 'materia_metal_%d',
+        'beast' => 'materia_beast_%d',
     ];
 
     /**
@@ -36,6 +39,10 @@ class MateriaFusionManager
         'light+water' => 'materia_holy_water',
         'air+light' => 'materia_lightning',
         'dark+earth' => 'materia_void',
+        'fire+metal' => 'materia_forge',
+        'light+metal' => 'materia_holy_blade',
+        'beast+earth' => 'materia_primal',
+        'beast+dark' => 'materia_venom',
     ];
 
     public function __construct(
@@ -77,13 +84,13 @@ class MateriaFusionManager
                 return false;
             }
 
-            $resultSlug = $this->getSameElementResultSlug($element1, $newLevel);
+            $resultSlug = $this->getSameElementResultSlug($element1->value, $newLevel);
 
             return $resultSlug !== null && $this->findItemBySlug($resultSlug) !== null;
         }
 
         // Different elements: check if combination exists
-        $comboKey = $this->getCrossElementKey($element1, $element2);
+        $comboKey = $this->getCrossElementKey($element1->value, $element2->value);
         if (!isset(self::CROSS_ELEMENT_FUSIONS[$comboKey])) {
             return false;
         }
@@ -112,9 +119,9 @@ class MateriaFusionManager
             $level1 = $materia1->getMateriaLevel();
             $level2 = $materia2->getMateriaLevel();
             $newLevel = min(5, max($level1, $level2) + 1);
-            $resultSlug = $this->getSameElementResultSlug($element1, $newLevel);
+            $resultSlug = $this->getSameElementResultSlug($element1->value, $newLevel);
         } else {
-            $comboKey = $this->getCrossElementKey($element1, $element2);
+            $comboKey = $this->getCrossElementKey($element1->value, $element2->value);
             $resultSlug = self::CROSS_ELEMENT_FUSIONS[$comboKey];
         }
 

@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
+use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
@@ -64,7 +65,7 @@ class SpellApplicatorTest extends TestCase
         int $heal = 0,
         int $critical = 0,
         int $hit = 100,
-        string $element = Spell::ELEMENT_NONE,
+        Element $element = Element::None,
         ?string $statusEffectSlug = null,
         string $name = 'Sort de test',
         string $valueType = 'fixed',
@@ -198,12 +199,12 @@ class SpellApplicatorTest extends TestCase
     public function testElementalResistanceReducesDamageOnMob(): void
     {
         // Resistance de 50% => degats reduits de moitie
-        $spell = $this->createSpell(damage: 40, critical: 0, element: Spell::ELEMENT_FIRE);
+        $spell = $this->createSpell(damage: 40, critical: 0, element: Element::Fire);
         $sender = $this->createPlayerMock();
         $target = $this->createMobMock(life: 100, maxLife: 100);
 
         $monster = $this->createMock(Monster::class);
-        $monster->method('getElementalResistance')->with(Spell::ELEMENT_FIRE)->willReturn(0.5);
+        $monster->method('getElementalResistance')->with('fire')->willReturn(0.5);
         $target->method('getMonster')->willReturn($monster);
 
         $messages = $this->spellApplicator->apply($spell, $sender, $target);
@@ -220,12 +221,12 @@ class SpellApplicatorTest extends TestCase
     public function testElementalWeaknessIncreasesDamageOnMob(): void
     {
         // Resistance negative = faiblesse => degats augmentes
-        $spell = $this->createSpell(damage: 40, critical: 0, element: Spell::ELEMENT_WATER);
+        $spell = $this->createSpell(damage: 40, critical: 0, element: Element::Water);
         $sender = $this->createPlayerMock();
         $target = $this->createMobMock(life: 100, maxLife: 100);
 
         $monster = $this->createMock(Monster::class);
-        $monster->method('getElementalResistance')->with(Spell::ELEMENT_WATER)->willReturn(-0.5);
+        $monster->method('getElementalResistance')->with('water')->willReturn(-0.5);
         $target->method('getMonster')->willReturn($monster);
 
         $messages = $this->spellApplicator->apply($spell, $sender, $target);

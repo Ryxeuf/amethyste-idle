@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\Slot;
+use App\Enum\Element;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -12,7 +13,7 @@ class SlotFixtures extends Fixture
     {
         // Création du slot de test
         $slot = new Slot();
-        $slot->setElement('Fire');
+        $slot->setElement(Element::Fire);
         $slot->setCreatedAt(new \DateTime());
         $slot->setUpdatedAt(new \DateTime());
 

@@ -3,8 +3,9 @@
 namespace App\Form\Admin;
 
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -24,17 +25,10 @@ class SpellType extends AbstractType
             ->add('hit', IntegerType::class, ['label' => 'Precision'])
             ->add('critical', IntegerType::class, ['label' => 'Critique (%)'])
             ->add('spellRange', IntegerType::class, ['label' => 'Portee', 'required' => false])
-            ->add('element', ChoiceType::class, [
+            ->add('element', EnumType::class, [
                 'label' => 'Element',
-                'choices' => [
-                    'Aucun' => Spell::ELEMENT_NONE,
-                    'Feu' => Spell::ELEMENT_FIRE,
-                    'Eau' => Spell::ELEMENT_WATER,
-                    'Terre' => Spell::ELEMENT_EARTH,
-                    'Air' => Spell::ELEMENT_AIR,
-                    'Lumiere' => Spell::ELEMENT_LIGHT,
-                    'Tenebres' => Spell::ELEMENT_DARK,
-                ],
+                'class' => Element::class,
+                'choice_label' => fn (Element $e) => $e->label(),
             ])
         ;
     }

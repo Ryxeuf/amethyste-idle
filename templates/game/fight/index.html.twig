@@ -346,12 +346,14 @@
 										{% set isDefensive = (spell.heal is not null and spell.heal > 0) and (spell.damage is null or spell.damage == 0) %}
 										<button class="spell-btn fight-action relative px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all touch-target
 											{% if not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
-											{% if spell.element == 'fire' %} ring-1 ring-orange-500/50
-											{% elseif spell.element == 'water' %} ring-1 ring-blue-500/50
-											{% elseif spell.element == 'earth' %} ring-1 ring-amber-500/50
-											{% elseif spell.element == 'air' %} ring-1 ring-teal-500/50
-											{% elseif spell.element == 'light' %} ring-1 ring-yellow-500/50
-											{% elseif spell.element == 'dark' %} ring-1 ring-purple-500/50
+											{% if spell.element.value == 'fire' %} ring-1 ring-orange-500/50
+											{% elseif spell.element.value == 'water' %} ring-1 ring-blue-500/50
+											{% elseif spell.element.value == 'earth' %} ring-1 ring-amber-500/50
+											{% elseif spell.element.value == 'air' %} ring-1 ring-teal-500/50
+											{% elseif spell.element.value == 'light' %} ring-1 ring-yellow-500/50
+											{% elseif spell.element.value == 'dark' %} ring-1 ring-purple-500/50
+											{% elseif spell.element.value == 'metal' %} ring-1 ring-gray-400/50
+											{% elseif spell.element.value == 'beast' %} ring-1 ring-green-500/50
 											{% endif %}"
 											data-href="{{ path("app_game_fight_spell") }}"
 											data-spell-slug="{{ spell.slug }}"

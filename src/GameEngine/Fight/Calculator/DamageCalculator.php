@@ -57,7 +57,7 @@ class DamageCalculator
         $weak = false;
 
         if ($damage > 0 && $target instanceof Mob) {
-            $resistance = $target->getMonster()->getElementalResistance($spell->getElement());
+            $resistance = $target->getMonster()->getElementalResistance($spell->getElement()->value);
             if ($resistance !== 0.0) {
                 $damage = (int) round($damage * (1.0 - $resistance));
                 $damage = max(0, $damage);

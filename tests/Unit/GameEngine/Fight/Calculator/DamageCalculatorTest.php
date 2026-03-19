@@ -5,6 +5,7 @@ namespace App\Tests\Unit\GameEngine\Fight\Calculator;
 use App\Entity\App\Mob;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,7 @@ class DamageCalculatorTest extends TestCase
         $this->calculator = new DamageCalculator();
     }
 
-    private function createSpell(int $damage = 0, int $heal = 0, string $valueType = 'fixed', string $element = 'none'): Spell&MockObject
+    private function createSpell(int $damage = 0, int $heal = 0, string $valueType = 'fixed', Element $element = Element::None): Spell&MockObject
     {
         $spell = $this->createMock(Spell::class);
         $spell->method('getDamage')->willReturn($damage === 0 ? null : $damage);
@@ -103,7 +104,7 @@ class DamageCalculatorTest extends TestCase
 
     public function testApplyElementalResistanceReducesDamage(): void
     {
-        $spell = $this->createSpell(damage: 40, element: 'fire');
+        $spell = $this->createSpell(damage: 40, element: Element::Fire);
         $mob = $this->createTarget();
         $monster = $this->createMock(Monster::class);
         $monster->method('getElementalResistance')->with('fire')->willReturn(0.5);
@@ -118,7 +119,7 @@ class DamageCalculatorTest extends TestCase
 
     public function testApplyElementalWeaknessIncreasesDamage(): void
     {
-        $spell = $this->createSpell(damage: 40, element: 'water');
+        $spell = $this->createSpell(damage: 40, element: Element::Water);
         $mob = $this->createTarget();
         $monster = $this->createMock(Monster::class);
         $monster->method('getElementalResistance')->with('water')->willReturn(-0.5);
@@ -133,7 +134,7 @@ class DamageCalculatorTest extends TestCase
 
     public function testApplyElementalResistanceNoEffect(): void
     {
-        $spell = $this->createSpell(damage: 40, element: 'fire');
+        $spell = $this->createSpell(damage: 40, element: Element::Fire);
         $mob = $this->createTarget();
         $monster = $this->createMock(Monster::class);
         $monster->method('getElementalResistance')->willReturn(0.0);

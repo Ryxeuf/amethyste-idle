@@ -2,8 +2,8 @@
 
 namespace App\DataFixtures\Game;
 
-use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
+use App\Enum\Element;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
@@ -20,7 +20,7 @@ class StatusEffectFixtures extends Fixture
             $effect->setType($data['type']);
             $effect->setDuration($data['duration']);
             $effect->setChance($data['chance'] ?? 100);
-            $effect->setElement($data['element'] ?? Spell::ELEMENT_NONE);
+            $effect->setElement($data['element'] ?? Element::None);
             $effect->setIcon($data['icon'] ?? null);
             $effect->setCategory($data['category'] ?? null);
             $effect->setFrequency($data['frequency'] ?? null);
@@ -60,7 +60,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 3,
                 'damagePerTurn' => 3,
                 'chance' => 100,
-                'element' => Spell::ELEMENT_EARTH,
+                'element' => Element::Earth,
                 'icon' => "\u{2620}",
             ],
             'status_poison_strong' => [
@@ -71,7 +71,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 4,
                 'damagePerTurn' => 5,
                 'chance' => 80,
-                'element' => Spell::ELEMENT_EARTH,
+                'element' => Element::Earth,
                 'icon' => "\u{2620}",
             ],
 
@@ -85,7 +85,7 @@ class StatusEffectFixtures extends Fixture
                 'damagePerTurn' => 2,
                 'statModifier' => ['damage' => -0.25],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_FIRE,
+                'element' => Element::Fire,
                 'icon' => "\u{1F525}",
             ],
 
@@ -99,7 +99,7 @@ class StatusEffectFixtures extends Fixture
                 'frequency' => 2,
                 'damagePerTurn' => 8,
                 'chance' => 100,
-                'element' => Spell::ELEMENT_EARTH,
+                'element' => Element::Earth,
                 'icon' => "\u{2620}",
             ],
 
@@ -113,7 +113,7 @@ class StatusEffectFixtures extends Fixture
                 'category' => StatusEffect::CATEGORY_DEBUFF,
                 'duration' => 2,
                 'chance' => 50,
-                'element' => Spell::ELEMENT_LIGHT,
+                'element' => Element::Light,
                 'icon' => "\u{26A1}",
             ],
 
@@ -126,7 +126,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 2,
                 'statModifier' => ['speed' => -0.50],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_WATER,
+                'element' => Element::Water,
                 'icon' => "\u{2744}",
             ],
 
@@ -138,7 +138,7 @@ class StatusEffectFixtures extends Fixture
                 'category' => StatusEffect::CATEGORY_DEBUFF,
                 'duration' => 3,
                 'chance' => 100,
-                'element' => Spell::ELEMENT_DARK,
+                'element' => Element::Dark,
                 'icon' => "\u{1F910}",
             ],
 
@@ -153,7 +153,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 3,
                 'healPerTurn' => 4,
                 'chance' => 100,
-                'element' => Spell::ELEMENT_LIGHT,
+                'element' => Element::Light,
                 'icon' => "\u{1F49A}",
             ],
             'status_regeneration_strong' => [
@@ -164,7 +164,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 4,
                 'healPerTurn' => 7,
                 'chance' => 100,
-                'element' => Spell::ELEMENT_LIGHT,
+                'element' => Element::Light,
                 'icon' => "\u{1F49A}",
             ],
 
@@ -179,7 +179,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 3,
                 'statModifier' => ['shield_absorb' => 10],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_EARTH,
+                'element' => Element::Earth,
                 'icon' => "\u{1F6E1}",
             ],
             'status_shield_strong' => [
@@ -190,7 +190,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 4,
                 'statModifier' => ['shield_absorb' => 20],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_LIGHT,
+                'element' => Element::Light,
                 'icon' => "\u{1F6E1}",
             ],
 
@@ -203,7 +203,7 @@ class StatusEffectFixtures extends Fixture
                 'duration' => 3,
                 'statModifier' => ['damage' => 0.50, 'defense' => -0.30],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_FIRE,
+                'element' => Element::Fire,
                 'icon' => "\u{1F4A2}",
             ],
 
@@ -219,7 +219,7 @@ class StatusEffectFixtures extends Fixture
                 'realTimeDuration' => 300,
                 'statModifier' => ['max_life' => 0.10],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_NONE,
+                'element' => Element::None,
                 'icon' => "\u{1F356}",
             ],
 
@@ -233,7 +233,7 @@ class StatusEffectFixtures extends Fixture
                 'realTimeDuration' => 600,
                 'statModifier' => ['damage' => 0.15],
                 'chance' => 100,
-                'element' => Spell::ELEMENT_FIRE,
+                'element' => Element::Fire,
                 'icon' => "\u{1F4AA}",
             ],
 
@@ -248,7 +248,7 @@ class StatusEffectFixtures extends Fixture
                 'realTimeDuration' => 180,
                 'healPerTurn' => 5,
                 'chance' => 100,
-                'element' => Spell::ELEMENT_LIGHT,
+                'element' => Element::Light,
                 'icon' => "\u{1F33F}",
             ],
         ];
