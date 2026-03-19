@@ -58,7 +58,9 @@
       "map": "Carte",
       "shop": "Boutique",
       "skills": "Compétences",
-      "settings": "Paramètres"
+      "settings": "Paramètres",
+      "bestiary": "Bestiaire",
+      "craft": "Artisanat"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -406,6 +408,24 @@
         "error_collect": "Une erreur est survenue lors de la récupération des objets."
       },
       "error_action": "Une erreur est survenue lors de l'action."
+    },
+    "bestiary": {
+      "title": "Bestiaire",
+      "subtitle": "Catalogue des monstres rencontrés",
+      "discovered": "%count%/%total% monstres découverts",
+      "total_kills": "%count% éliminations totales",
+      "kills": "%count% élimination(s)",
+      "tier_weaknesses": "Faiblesses révélées",
+      "tier_loot": "Table de butin visible",
+      "tier_title": "Chasseur de %monster%",
+      "weaknesses": "Résistances élémentaires",
+      "loot_table": "Table de butin",
+      "loot_probability": "%percent%% de chance",
+      "next_tier": "Prochain palier : %kills%/%required% kills",
+      "empty": "Aucun monstre rencontré",
+      "empty_hint": "Affrontez des monstres sur la carte pour remplir votre bestiaire",
+      "boss": "Boss",
+      "level": "Niveau %level%"
     }
   },
   "common": {

@@ -31,6 +31,37 @@
         {% endfor %}
     </div>
 
+    {# Répartition par zone #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Répartition par zone</h2>
+        {% if zoneStats|length > 0 %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="py-3 px-4 text-gray-400 font-medium uppercase tracking-wider text-xs">Carte</th>
+                            <th class="py-3 px-4 text-gray-400 font-medium uppercase tracking-wider text-xs text-right">PNJ</th>
+                            <th class="py-3 px-4 text-gray-400 font-medium uppercase tracking-wider text-xs text-right">Mobs vivants</th>
+                            <th class="py-3 px-4 text-gray-400 font-medium uppercase tracking-wider text-xs text-right">Joueurs connectes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for zone in zoneStats %}
+                            <tr class="border-b border-gray-800 hover:bg-gray-800/50">
+                                <td class="py-2.5 px-4 text-gray-200">{{ zone.name }}</td>
+                                <td class="py-2.5 px-4 text-blue-400 text-right">{{ zone.pnjCount }}</td>
+                                <td class="py-2.5 px-4 text-orange-400 text-right">{{ zone.mobCount }}</td>
+                                <td class="py-2.5 px-4 text-green-400 text-right">{{ zone.playerCount }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-sm">Aucune carte configuree.</p>
+        {% endif %}
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {# Maintenance status - Admin only #}
         {% if is_granted('ROLE_ADMIN') %}
