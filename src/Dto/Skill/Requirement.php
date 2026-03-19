@@ -10,10 +10,19 @@ class Requirement extends SkillModelLight
     /** @var DomainModel */
     public $domain;
 
+    /** @var DomainModel[] */
+    public array $domains = [];
+
     public function __construct(Skill $skill)
     {
         parent::__construct($skill);
 
-        $this->domain = new DomainModel($skill->getDomain());
+        $firstDomain = $skill->getDomain();
+        if ($firstDomain !== null) {
+            $this->domain = new DomainModel($firstDomain);
+        }
+        foreach ($skill->getDomains() as $domain) {
+            $this->domains[] = new DomainModel($domain);
+        }
     }
 }

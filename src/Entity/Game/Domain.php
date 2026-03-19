@@ -40,8 +40,8 @@ class Domain
     #[ORM\Column(name: 'title', type: 'string', length: 255)]
     private $title;
 
-    #[ORM\OneToMany(targetEntity: Skill::class, mappedBy: 'domain')]
-    private $skills;
+    #[ORM\ManyToMany(targetEntity: Skill::class, mappedBy: 'domains')]
+    private Collection $skills;
 
     #[ORM\Column(name: 'random_seed', type: 'integer')]
     private $randomSeed;
@@ -89,24 +89,23 @@ class Domain
         return $this->title;
     }
 
-    /**
-     * Add skill.
-     *
-     * @return Domain
-     */
-    public function addSkill(Skill $skill)
+    public function addSkill(Skill $skill): self
     {
-        $this->skills[] = $skill;
+        if (!$this->skills->contains($skill)) {
+            $this->skills[] = $skill;
+            $skill->addDomain($this);
+        }
 
         return $this;
     }
 
-    /**
-     * Remove skill.
-     */
-    public function removeSkill(Skill $skill)
+    public function removeSkill(Skill $skill): self
     {
-        $this->skills->removeElement($skill);
+        if ($this->skills->removeElement($skill)) {
+            $skill->removeDomain($this);
+        }
+
+        return $this;
     }
 
     /**
