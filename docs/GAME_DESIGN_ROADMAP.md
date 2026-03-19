@@ -282,12 +282,12 @@ Chaque domaine combat suit le pattern :
 
 ---
 
-## Phase 6.D — Arbres de talent Air (Foudromancien 15 + Archer + Vagabond) [S] → PR #6d
+## Phase 6.D — Arbres de talent Air (Foudromancien 13 + Archer 13 + Vagabond 13) [S] ✅ *Terminée* → PR #6d
 
-- [ ] `SkillFixtures::getStormcallerSkills()` — Étendre de 4 à 15 compétences
-- [ ] `SkillFixtures::getArcherSkills()` — 15 compétences (Tir précis → Flèche perforante)
-- [ ] `SkillFixtures::getWandererSkills()` — 15 compétences (Hâte → Zéphyr)
-- [ ] **Materia** : 1 skill materia par domaine Air — skills materia avec `actions.materia.unlock` pour chaque sort
+- [x] `SkillFixtures::getStormcallerSkills()` — Étendu de 4 à 13 compétences (Lame d'air → Ouragan)
+- [x] `SkillFixtures::getArcherSkills()` — 13 compétences (Tir précis → Flèche perforante)
+- [x] `SkillFixtures::getWandererSkills()` — 13 compétences (Hâte → Zéphyr)
+- [x] **Materia** : tous les skills de déblocage de sort convertis en `actions.materia.unlock`
 
 ---
 

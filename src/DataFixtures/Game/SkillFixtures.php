@@ -98,6 +98,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             $this->getNecromancerSkills(),
             $this->getDruidSkills(),
             $this->getStormcallerSkills(),
+            $this->getArcherSkills(),
+            $this->getWandererSkills(),
             $this->getMinerSkills(),
             $this->getHerbalistSkills(),
         );
@@ -1092,45 +1094,407 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // FOUDROMANCIEN (air) — remplace white_wizard
+    // FOUDROMANCIEN (air) — 13 skills, mage foudre/vent offensif
     // =========================================================================
     private function getStormcallerSkills(): array
     {
+        $d = 'stormcaller';
+
         return [
+            // Rang 1 (0 pts) — 2 skills d'entree
             'storm_materia_1' => [
                 'title' => 'Materia : Lame d\'air',
                 'slug' => 'storm-materia-1',
                 'description' => 'Permet d\'utiliser la materia Lame d\'air',
                 'requiredPoints' => 0,
-                'domain' => 'stormcaller',
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'wind-lame']],
             ],
+            'storm_apprenti_2' => [
+                'title' => 'Materia : Bourrasque',
+                'slug' => 'storm-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bourrasque',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'gust']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
             'storm_hit_1' => [
                 'title' => 'Precision du vent',
                 'slug' => 'storm-hit-1',
-                'description' => 'Augmente la precision des sorts',
+                'description' => 'Augmente la precision des sorts d\'air',
                 'requiredPoints' => 10,
-                'domain' => 'stormcaller',
+                'domain' => $d,
                 'hit' => 2,
+                'requirements' => ['storm_materia_1'],
+            ],
+            'storm_rang2_2' => [
+                'title' => 'Efficacite de l\'air',
+                'slug' => 'storm-rang2-2',
+                'description' => 'Augmente les degats des sorts d\'air',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
                 'requirements' => ['storm_materia_1'],
             ],
             'storm_materia_2' => [
                 'title' => 'Materia : Tornade',
                 'slug' => 'storm-materia-2',
                 'description' => 'Permet d\'utiliser la materia Tornade',
-                'requiredPoints' => 20,
-                'domain' => 'stormcaller',
+                'requiredPoints' => 15,
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'tornado']],
-                'requirements' => ['storm_hit_1'],
+                'requirements' => ['storm_apprenti_2'],
             ],
+            'storm_rang2_4' => [
+                'title' => 'Materia : Souffle du vent',
+                'slug' => 'storm-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Souffle du vent',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-blast']],
+                'requirements' => ['storm_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'storm_rang3_1' => [
+                'title' => 'Materia : Cyclone',
+                'slug' => 'storm-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Cyclone (AoE)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'cyclone']],
+                'requirements' => ['storm_hit_1', 'storm_rang2_2'],
+            ],
+            'storm_rang3_2' => [
+                'title' => 'Materia : Faux de vent',
+                'slug' => 'storm-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Faux de vent',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-scythe']],
+                'requirements' => ['storm_materia_2'],
+            ],
+            'storm_rang3_3' => [
+                'title' => 'Oeil du cyclone',
+                'slug' => 'storm-rang3-3',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['storm_rang2_4'],
+            ],
+            'storm_rang3_4' => [
+                'title' => 'Materia : Mur de vent',
+                'slug' => 'storm-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Mur de vent (degats + soin)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-wall']],
+                'requirements' => ['storm_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'storm_rang4_1' => [
+                'title' => 'Materia : Tempete',
+                'slug' => 'storm-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Tempete — devastation aerienne',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tempest']],
+                'requirements' => ['storm_rang3_1', 'storm_rang3_2'],
+            ],
+            'storm_rang4_2' => [
+                'title' => 'Materia : Lame de vide',
+                'slug' => 'storm-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lame de vide',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vacuum-blade']],
+                'requirements' => ['storm_rang3_3', 'storm_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
             'storm_materia_3' => [
                 'title' => 'Materia : Ouragan',
                 'slug' => 'storm-materia-3',
-                'description' => 'Permet d\'utiliser la materia Ouragan — sort ultime',
-                'requiredPoints' => 30,
-                'domain' => 'stormcaller',
+                'description' => 'Permet d\'utiliser la materia Ouragan',
+                'requiredPoints' => 150,
+                'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'hurricane']],
-                'requirements' => ['storm_materia_2'],
+                'requirements' => ['storm_rang4_1', 'storm_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // ARCHER (air) — 13 skills, tir a distance et vent
+    // =========================================================================
+    private function getArcherSkills(): array
+    {
+        $d = 'archer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'archer_apprenti_1' => [
+                'title' => 'Materia : Tir precis',
+                'slug' => 'archer-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Tir precis',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'precise-shot']],
+            ],
+            'archer_apprenti_2' => [
+                'title' => 'Materia : Ruee d\'air',
+                'slug' => 'archer-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Ruee d\'air',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-dash']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'archer_rang2_1' => [
+                'title' => 'Oeil de faucon',
+                'slug' => 'archer-rang2-1',
+                'description' => 'Augmente la precision des tirs',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['archer_apprenti_1'],
+            ],
+            'archer_rang2_2' => [
+                'title' => 'Fleche aceree',
+                'slug' => 'archer-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['archer_apprenti_1'],
+            ],
+            'archer_rang2_3' => [
+                'title' => 'Materia : Tranchant aerien',
+                'slug' => 'archer-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Tranchant aerien',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-slash']],
+                'requirements' => ['archer_apprenti_2'],
+            ],
+            'archer_rang2_4' => [
+                'title' => 'Materia : Point de pression',
+                'slug' => 'archer-rang2-4',
+                'description' => 'Permet d\'utiliser la materia Point de pression',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'pressure-point']],
+                'requirements' => ['archer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'archer_rang3_1' => [
+                'title' => 'Materia : Tir critique',
+                'slug' => 'archer-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Tir critique',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'critical-shot']],
+                'requirements' => ['archer_rang2_1', 'archer_rang2_2'],
+            ],
+            'archer_rang3_2' => [
+                'title' => 'Materia : Courant d\'air',
+                'slug' => 'archer-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Courant d\'air (degats + soin)',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-current']],
+                'requirements' => ['archer_rang2_3'],
+            ],
+            'archer_rang3_3' => [
+                'title' => 'Concentration mortelle',
+                'slug' => 'archer-rang3-3',
+                'description' => 'Augmente les degats et le critique',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['archer_rang2_4'],
+            ],
+            'archer_rang3_4' => [
+                'title' => 'Materia : Pluie de fleches',
+                'slug' => 'archer-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Pluie de fleches (AoE)',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'arrow-rain']],
+                'requirements' => ['archer_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'archer_rang4_1' => [
+                'title' => 'Materia : Faux de vent',
+                'slug' => 'archer-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Faux de vent',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-scythe']],
+                'requirements' => ['archer_rang3_1', 'archer_rang3_2'],
+            ],
+            'archer_rang4_2' => [
+                'title' => 'Materia : Lame de vide',
+                'slug' => 'archer-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Lame de vide',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vacuum-blade']],
+                'requirements' => ['archer_rang3_3', 'archer_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'archer_rang5_1' => [
+                'title' => 'Materia : Fleche perforante',
+                'slug' => 'archer-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Fleche perforante',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'piercing-arrow']],
+                'requirements' => ['archer_rang4_1', 'archer_rang4_2'],
+            ],
+        ];
+    }
+
+    // =========================================================================
+    // VAGABOND (air) — 13 skills, support vitesse et evasion
+    // =========================================================================
+    private function getWandererSkills(): array
+    {
+        $d = 'wanderer';
+
+        return [
+            // Rang 1 (0 pts) — 2 skills d'entree
+            'wander_apprenti_1' => [
+                'title' => 'Materia : Hate',
+                'slug' => 'wander-apprenti-1',
+                'description' => 'Permet d\'utiliser la materia Hate',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'haste']],
+            ],
+            'wander_apprenti_2' => [
+                'title' => 'Materia : Bouclier de vent',
+                'slug' => 'wander-apprenti-2',
+                'description' => 'Permet d\'utiliser la materia Bouclier de vent',
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-shield']],
+            ],
+
+            // Rang 2 (10-20 pts) — 4 skills
+            'wander_rang2_1' => [
+                'title' => 'Agilite du vent',
+                'slug' => 'wander-rang2-1',
+                'description' => 'Augmente la precision des attaques',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['wander_apprenti_1'],
+            ],
+            'wander_rang2_2' => [
+                'title' => 'Vitesse du vagabond',
+                'slug' => 'wander-rang2-2',
+                'description' => 'Augmente les chances de coup critique',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['wander_apprenti_1'],
+            ],
+            'wander_rang2_3' => [
+                'title' => 'Materia : Brise guerisseuse',
+                'slug' => 'wander-rang2-3',
+                'description' => 'Permet d\'utiliser la materia Brise guerisseuse',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'healing-breeze']],
+                'requirements' => ['wander_apprenti_2'],
+            ],
+            'wander_rang2_4' => [
+                'title' => 'Endurance du voyageur',
+                'slug' => 'wander-rang2-4',
+                'description' => 'Augmente les points de vie maximum',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['wander_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 4 skills
+            'wander_rang3_1' => [
+                'title' => 'Materia : Mirage',
+                'slug' => 'wander-rang3-1',
+                'description' => 'Permet d\'utiliser la materia Mirage (degats + soin)',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'mirage']],
+                'requirements' => ['wander_rang2_1', 'wander_rang2_2'],
+            ],
+            'wander_rang3_2' => [
+                'title' => 'Materia : Courant d\'air',
+                'slug' => 'wander-rang3-2',
+                'description' => 'Permet d\'utiliser la materia Courant d\'air',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-current']],
+                'requirements' => ['wander_rang2_3'],
+            ],
+            'wander_rang3_3' => [
+                'title' => 'Souffle revitalisant',
+                'slug' => 'wander-rang3-3',
+                'description' => 'Augmente la puissance des soins',
+                'requiredPoints' => 30,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['wander_rang2_4'],
+            ],
+            'wander_rang3_4' => [
+                'title' => 'Materia : Benediction du vent',
+                'slug' => 'wander-rang3-4',
+                'description' => 'Permet d\'utiliser la materia Benediction du vent',
+                'requiredPoints' => 40,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-blessing']],
+                'requirements' => ['wander_rang3_1'],
+            ],
+
+            // Rang 4 (60-100 pts) — 2 skills
+            'wander_rang4_1' => [
+                'title' => 'Materia : Mur de vent',
+                'slug' => 'wander-rang4-1',
+                'description' => 'Permet d\'utiliser la materia Mur de vent (degats + soin)',
+                'requiredPoints' => 60,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wind-wall']],
+                'requirements' => ['wander_rang3_1', 'wander_rang3_2'],
+            ],
+            'wander_rang4_2' => [
+                'title' => 'Materia : Tempete',
+                'slug' => 'wander-rang4-2',
+                'description' => 'Permet d\'utiliser la materia Tempete',
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'tempest']],
+                'requirements' => ['wander_rang3_3', 'wander_rang3_4'],
+            ],
+
+            // Rang 5 (150+ pts) — 1 skill ultime
+            'wander_rang5_1' => [
+                'title' => 'Materia : Zephyr',
+                'slug' => 'wander-rang5-1',
+                'description' => 'Permet d\'utiliser la materia Zephyr',
+                'requiredPoints' => 150,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'zephyr']],
+                'requirements' => ['wander_rang4_1', 'wander_rang4_2'],
             ],
         ];
     }
