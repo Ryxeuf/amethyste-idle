@@ -393,3 +393,21 @@ Phase 26 (Performance)              ← indépendant, fin de release
 | 26 | Performance & monitoring | S | — | v0.6 |
 
 **Total estimé** : 13 phases, 3 releases, progression incrémentale avec valeur jouable à chaque release.
+
+---
+
+## Phases transverses — Pipeline Tiled
+
+> Détail complet dans [TILED_PIPELINE_ROADMAP.md](TILED_PIPELINE_ROADMAP.md)
+
+Ces phases améliorent le pipeline Tiled → Jeu et sont exécutables en parallèle des phases gameplay.
+
+| Phase | Description | Taille | Problèmes résolus | Release |
+|-------|------------|--------|-------------------|---------|
+| T1 | Animations de tiles (eau, lave, fleurs) | M | Monde statique, pas d'anim dans l'API | v0.6 |
+| T2 | Pipeline unifié `app:terrain:sync` | M | 3 étapes manuelles déconnectées | v0.5 |
+| T3 | Zones/biomes depuis Tiled | M | Pas de données biome, pas de zones | v0.6 |
+| T4 | Supprimer commande CSS morte | S | Code mort `tmx:generate-css` | v0.5 |
+| T5 | Dé-hardcoder les map IDs | S | `map_id = 10` hardcodé | v0.5 |
+
+**Recommandation** : T4 + T5 immédiatement, T1 en parallèle de v0.4, T2 + T3 avant Phase 21 (nouvelles zones).
