@@ -1,15 +1,11 @@
 # Roadmap a venir — Amethyste-Idle
 
 > Toutes les taches restantes a implementer.
-> Derniere mise a jour : 2026-03-20
+> Derniere mise a jour : 2026-03-21
 
 ---
 
 ## Reliquats des phases completees
-
-### Phase 1 — Fondations (reste)
-- [ ] Commande de preview : `app:terrain:preview --map=X` genere une image PNG
-- [ ] Templates de cartes Tiled pre-configures (template_outdoor.tmx, template_indoor.tmx, template_dungeon.tmx)
 
 ### Phase 2 — Administration (reste)
 - [ ] Gestion des spawns : placer/deplacer mobs et PNJ sur la carte via interface visuelle

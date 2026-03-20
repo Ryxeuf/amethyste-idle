@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="left-up" width="60" height="30" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="1">
+ <tileset firstgid="1" source="tileset/Terrain.tsx"/>
+ <tileset firstgid="1025" source="tileset/BaseChip_pipo.tsx"/>
+ <tileset firstgid="2089" source="tileset/Collisions.tsx"/>
+ <!-- ============================================================
+      TEMPLATE DUNGEON — Grotte / donjon 60x30
+      ============================================================
+      Layers :
+        1. background  — Sol rocheux de base (pierre sombre)
+        2. ground       — Eau souterraine, lave, chemins
+        3. decoration   — Stalactites, cristaux, debris, torches
+        4. overlay      — Plafond, surplombs
+        5. collision    — Murs de grotte (GID 2090=mur plein)
+      Object groups :
+        - objects       — Portals (entree/sortie), mob_spawn, chest, harvest_spot (filons)
+
+      Conventions :
+        - Sol rocheux : Terrain.tsx (GID 98 = pierre grise)
+        - Murs de grotte : remplir les bords avec des tiles sombres + collision
+        - Collision mur plein : GID 2090 (Collisions.tsx firstgid=2089, id=1)
+        - Format donjon : 60x30 (rectangulaire, plus large que haut)
+        - Prevoir un portail d'entree et optionnellement une sortie
+        - Monstres plus forts que l'exterieur
+
+      Renommer ce fichier : world-{worldId}-cave-{id}.tmx
+      Exemple : world-1-cave-2.tmx
+      ============================================================ -->
+ <layer id="1" name="background" width="60" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="ground" width="60" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="decoration" width="60" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="overlay" width="60" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="5" name="collision" width="60" height="30">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="6" name="objects">
+  <!-- Exemple portail d'entree (obligatoire) :
+  <object id="1" name="dungeon-entrance" type="portal" x="32" y="448" width="32" height="32">
+   <properties>
+    <property name="target_map_id" type="int" value="10"/>
+    <property name="target_x" type="int" value="45"/>
+    <property name="target_y" type="int" value="20"/>
+   </properties>
+  </object>
+  <object id="2" name="bat-spawn-1" type="mob_spawn" x="480" y="256" width="32" height="32">
+   <properties>
+    <property name="monster_slug" value="bat"/>
+    <property name="level" type="int" value="5"/>
+   </properties>
+  </object>
+  <object id="3" name="ore-spot-1" type="harvest_spot" x="640" y="160" width="32" height="32">
+   <properties>
+    <property name="slug" value="iron-ore-spot-1"/>
+    <property name="item_slug" value="iron-ore"/>
+    <property name="item_min" type="int" value="1"/>
+    <property name="item_max" type="int" value="2"/>
+   </properties>
+  </object>
+  <object id="4" name="treasure-chest-1" type="chest" x="1760" y="448" width="32" height="32">
+   <properties>
+    <property name="item_slug" value="iron-sword"/>
+    <property name="item_min" type="int" value="1"/>
+    <property name="item_max" type="int" value="1"/>
+   </properties>
+  </object>
+  -->
+ </objectgroup>
+</map>

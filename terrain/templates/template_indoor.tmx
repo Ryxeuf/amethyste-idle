@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="left-up" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="1">
+ <tileset firstgid="1" source="tileset/Terrain.tsx"/>
+ <tileset firstgid="1025" source="tileset/forest.tsx"/>
+ <tileset firstgid="4097" source="tileset/BaseChip_pipo.tsx"/>
+ <tileset firstgid="5161" source="tileset/Collisions.tsx"/>
+ <!-- ============================================================
+      TEMPLATE INDOOR — Interieur (maison, taverne, magasin) 20x20
+      ============================================================
+      Layers :
+        1. background  — Sol de base (plancher bois, pierre, etc.)
+        2. ground       — Tapis, variations de sol, meubles bas
+        3. decoration   — Meubles, objets decoratifs
+        4. overlay      — Elements au-dessus du joueur (lustres, poutres)
+        5. collision    — Murs et meubles bloquants (GID 5162=mur plein)
+      Object groups :
+        - objects       — Portals (sortie), npc_spawn, chest
+
+      Conventions :
+        - Plancher bois : Terrain.tsx (GID 185-187)
+        - Meubles : BaseChip_pipo.tsx (GID 4097+)
+        - Collision mur plein : GID 5162 (Collisions.tsx firstgid=5161, id=1)
+        - Taille standard interieur : 20x20 tiles
+        - Portail de sortie obligatoire vers la carte exterieure
+
+      Renommer ce fichier : world-{worldId}-house-{id}.tmx
+      Exemple : world-1-house-2.tmx
+      ============================================================ -->
+ <layer id="1" name="background" width="20" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="ground" width="20" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="decoration" width="20" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="overlay" width="20" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="5" name="collision" width="20" height="20">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="7" name="objects">
+  <!-- Exemple portail de sortie (obligatoire) :
+  <object id="1" name="exit-portal" type="portal" x="288" y="608" width="32" height="32">
+   <properties>
+    <property name="target_map_id" type="int" value="10"/>
+    <property name="target_x" type="int" value="25"/>
+    <property name="target_y" type="int" value="30"/>
+   </properties>
+  </object>
+  <object id="2" name="shopkeeper" type="npc_spawn" x="288" y="128" width="32" height="32">
+   <properties>
+    <property name="pnj_slug" value="shopkeeper"/>
+   </properties>
+  </object>
+  -->
+ </objectgroup>
+</map>
