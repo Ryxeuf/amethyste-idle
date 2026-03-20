@@ -151,14 +151,6 @@ VAGUE 6 — Long terme
 
 ## Piste A — Dette technique & performance (‖)
 
-### 02 — Supprimer la commande CSS morte (S | ★★)
-
-> `TmxCssGeneratorCommand` (308 lignes) + `world-1.css` (335 Ko) sont obsoletes. Le rendu passe par PixiJS canvas, pas par CSS. Deja marque "obsolete" dans les docs. Prerequis : ∅
-
-- [ ] Supprimer `src/Command/TmxCssGeneratorCommand.php`
-- [ ] Supprimer le dossier `assets/styles/map/` (world-1.css)
-- [ ] Retirer les imports CSS dans `assets/app.js`
-- [ ] Nettoyer les references dans CLAUDE.md, DOCUMENTATION.md, AGENTS.md, `.claude/commands/import-terrain.md`
 
 ---
 

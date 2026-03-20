@@ -38,7 +38,7 @@
 - Les cartes sont éditées dans Tiled Map Editor et exportées en TMX (orientation orthogonale, 60×60 tuiles)
 - Tilesets : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx` dans `terrain/tileset/`
 - Les règles (collisions, téléportations, bordures) sont dans `terrain/rules/`
-- Le workflow complet : Tiled → TMX → `app:terrain:import` → JSON → `app:tmx:generate-css` → CSS sprites → fixtures areas
+- Le workflow complet : Tiled → TMX → `app:terrain:import` → JSON → fixtures areas
 - Collisions : bitmask directionnel (N/S/E/W), -1 = mur impassable
 
 ## Conventions de rendu (PixiJS)

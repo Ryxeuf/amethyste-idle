@@ -162,10 +162,7 @@ docker compose exec php php bin/console app:terrain:import --sync-entities world
 # 5. Importer toutes les cartes
 docker compose exec php php bin/console app:terrain:import --all
 
-# 6. Régénérer le CSS des sprites
-docker compose exec php php bin/console app:tmx:generate-css
-
-# 7. Recharger les fixtures (recréer la base)
+# 6. Recharger les fixtures (recréer la base) (recréer la base)
 ./scripts/reload-fixtures.sh --dev
 ```
 

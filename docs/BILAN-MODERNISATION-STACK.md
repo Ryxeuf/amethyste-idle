@@ -188,7 +188,7 @@ Clic → Live Component move() → Dispatch PlayerMoveMessage
 
 | Package | Decision | Raison |
 |---|---|---|
-| `symfony/css-selector` | **Conserve** | Utilise dans `TmxCssGeneratorCommand` (parsing de fichiers TMX pour les tilesets) |
+| `symfony/css-selector` | **A réévaluer** | `TmxCssGeneratorCommand` supprimée — vérifier s'il reste un autre usage |
 | `symfony/dom-crawler` | **Conserve** | Utilise dans `TerrainImportCommand` (import de cartes TMX) |
 | `stof/doctrine-extensions-bundle` | **Conserve** | Uniquement `TimestampableEntity` (20 entites), compatible ORM 3, stof v1.15.3 |
 

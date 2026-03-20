@@ -8,7 +8,7 @@ alwaysApply: false
 
 ## Workflow
 
-Tiled Map Editor → TMX → `app:terrain:import` → JSON → `app:tmx:generate-css` → CSS sprites → fixtures areas
+Tiled Map Editor → TMX → `app:terrain:import` → JSON → fixtures areas
 
 ## Conventions TMX
 
