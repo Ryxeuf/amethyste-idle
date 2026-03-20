@@ -285,20 +285,78 @@ Apres contenu :
 
 ## Progression & builds
 
-### Arbres de talent etendus
-- [ ] Chaque domaine combat passe a 10-15 competences en 3 branches
-- [ ] Competence ultime au sommet de chaque arbre
+> Decoupee en sous-phases independantes, classees par priorite (P1=haute, P2=moyenne, P3=basse).
+> Complexite : S=petit, M=moyen, L=gros. Gain = impact gameplay.
 
-### Systeme de build
-- [ ] Multi-domaine avec points limites
-- [ ] Respec payant (prix croissant)
-- [ ] Presets de build (sauvegarder/charger configurations)
-- [ ] Synergies cross-domaine (combos entre domaines differents)
+### PB-1 — Respec basique (P1 | S | Gain: fort)
+> Prerequis : aucun. Debloque l'experimentation de builds.
+- [ ] Service `SkillRespecManager` : retire tous les skills du joueur, rembourse l'XP usee dans chaque `DomainExperience`
+- [ ] Cout en gils (formule : 50 * nombre de skills acquis), prix croissant a chaque respec (+25% par respec, stocke dans Player)
+- [ ] Champ `respecCount` (int, default 0) sur Player + migration
+- [ ] Route POST `/game/skills/respec` + confirmation modale cote template
+- [ ] Bouton "Redistribuer" dans la page /game/skills
+- [ ] Tests unitaires SkillRespecManager (respec OK, fonds insuffisants, prix croissant)
 
-### Equipement et raretes
-- [ ] Systeme de rarete complet (Commun → Peu commun → Rare → Epique → Legendaire → Amethyste)
-- [ ] Enchantement temporaire par alchimiste
-- [ ] Sets d'equipement avec bonus croissants (2/3/4 pieces)
+### PB-2 — Raretes d'equipement (P1 | S | Gain: fort)
+> Le champ `rarity` existe deja sur Item (nullable). Il suffit de normaliser les valeurs et l'afficher.
+- [ ] Enum PHP `ItemRarity` (common, uncommon, rare, epic, legendary, amethyst) avec couleur CSS associee
+- [ ] Migration : mettre a jour les items existants avec rarity = 'common' par defaut
+- [ ] Affichage couleur du nom de l'item selon sa rarete (inventaire, loot, boutique, tooltip)
+- [ ] Mise a jour des fixtures items existants avec des raretes variees
+- [ ] Badge rarete dans la fiche item (inventaire detail)
+
+### PB-3 — Synergies cross-domaine (P2 | M | Gain: fort)
+> Les bonus s'accumulent deja cross-domaine. Il faut des bonus explicites pour encourager le multi-domaine.
+- [ ] Entite `DomainSynergy` (domainA, domainB, bonusType, bonusValue, description)
+- [ ] Migration SQL
+- [ ] Service `SynergyCalculator` : detecte les combos actifs selon les domaines ou le joueur a >= X XP
+- [ ] Seuil d'activation : 50 XP dans chaque domaine du combo
+- [ ] Fixtures ~8 synergies (Feu+Metal=Forge ardente +10% degats physiques, Eau+Lumiere=Purification +15% soin, etc.)
+- [ ] Affichage des synergies actives dans /game/skills (section "Synergies")
+- [ ] Integration dans CombatSkillResolver : appliquer les bonus de synergie aux stats combat
+- [ ] Tests SynergyCalculator
+
+### PB-4 — Presets de build (P2 | M | Gain: moyen)
+> Prerequis : PB-1 (respec). Permet de sauvegarder/charger des configurations de skills.
+- [ ] Entite `BuildPreset` (player, name, skillSlugs JSON, createdAt)
+- [ ] Migration SQL
+- [ ] Service `BuildPresetManager` : save(Player, name), load(Player, presetId), delete(presetId)
+- [ ] `load()` = respec gratuit + acquisition auto des skills du preset (si XP suffisante)
+- [ ] Limite : 3 presets par joueur
+- [ ] Route GET/POST `/game/skills/presets` (liste, sauvegarder, charger, supprimer)
+- [ ] Template : liste des presets avec boutons Charger/Supprimer + formulaire de sauvegarde
+- [ ] Tests BuildPresetManager (save/load OK, limite atteinte, XP insuffisante pour charger)
+
+### PB-5 — Limite de points multi-domaine (P2 | S | Gain: moyen)
+> Empeche de tout maxer, force des choix strategiques.
+- [ ] Constante ou config : `MAX_TOTAL_SKILL_POINTS` (ex: 500 points cumulés sur tous les domaines)
+- [ ] Verification dans `SkillAcquiring::acquire()` : somme des `usedExperience` de tous les domaines < max
+- [ ] Affichage du total utilise / max dans /game/skills (barre de progression globale)
+- [ ] Tests (acquisition OK sous la limite, refus au-dessus)
+
+### PB-6 — Sets d'equipement (P3 | M | Gain: moyen)
+> Bonus progressifs quand on porte plusieurs pieces du meme set.
+- [ ] Entite `EquipmentSet` (slug, name, description)
+- [ ] Entite `EquipmentSetBonus` (set, requiredPieces, bonusType, bonusValue)
+- [ ] Champ `equipmentSet` (ManyToOne, nullable) sur Item + migration
+- [ ] Service `EquipmentSetResolver` : detecte les sets actifs depuis l'equipement du joueur
+- [ ] Bonus appliques dans le combat (CombatSkillResolver) et affiches dans l'inventaire
+- [ ] Fixtures : 2-3 sets de base (Set du Gardien 2/3/4 pieces, Set de l'Ombre 2/3 pieces)
+- [ ] Affichage dans inventaire : pieces du set equipees, bonus actifs/inactifs
+- [ ] Tests EquipmentSetResolver
+
+### PB-7 — Enchantements temporaires (P3 | S | Gain: faible)
+> Alchimiste applique un buff temporaire sur une arme/armure.
+- [ ] Entite `Enchantment` (playerItem, type, value, expiresAt)
+- [ ] Migration SQL
+- [ ] Service `EnchantmentManager` : apply(PlayerItem, enchantType, duration), tick(), remove()
+- [ ] Route POST `/game/craft/enchant` (necessite skill alchimiste + ingredients)
+- [ ] Expiration automatique (verifiee au debut de chaque combat ou via Scheduler)
+- [ ] Fixtures : 3-4 enchantements (Tranchant de feu +5 degats feu 1h, Protection de glace +3 defense 30min, etc.)
+- [ ] Tests EnchantmentManager
+
+### ~~Arbres de talent etendus~~ (RETIRE)
+> Les 32 domaines ont deja 13-24 skills chacun (838 skills total). Les arbres sont deja etendus avec 3-5 tiers et des ultimates. Cette tache est consideree comme completee (Phase GD-6).
 
 ---
 
