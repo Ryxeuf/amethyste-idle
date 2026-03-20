@@ -210,6 +210,45 @@
 
 ---
 
+## Combat enrichi — Elements deja implementes ✅
+
+> Ces fonctionnalites etaient listees dans le TODO mais sont deja presentes dans le code.
+
+### Synergies elementaires ✅
+- 8 combos bidirectionnels dans `ElementalSynergyCalculator` (Eau+Feu=Vapeur, Terre+Air=Tempete, Lumiere+Ombre=Eclipse, Feu+Terre=Explosion florale, Metal+Feu=Forge, Metal+Lumiere=Lame sacree, Bete+Terre=Furie primale, Bete+Ombre=Ombre venimeuse)
+- Multiplicateurs de degats (1.2x a 2.5x), procs de statut, self-damage (Eclipse)
+- Tracking du dernier element utilise dans `Fight.lastElementUsed`
+
+### Materia Fusion ✅
+- `MateriaFusionManager` : upgrade same-element (niveaux 1→5) + 14 fusions cross-element
+- Interface fusion dans l'inventaire
+
+### Materia XP ✅
+- `MateriaXpGranter` : XP sur MobDeadEvent (10 × niveau monstre, ×5 boss, ×1.25 element match)
+
+### Statuts alteres (8/8) ✅
+- `StatusEffectManager` (472 lignes) : poison, paralysie, brulure, gel, silence, regeneration, bouclier, berserk
+- 14 effets dans `StatusEffectFixtures` (variantes normales, fortes, lentes, persistantes hors combat)
+- DoT/HoT avec frequence configurable, stat modifiers JSON, absorption bouclier
+- Effets persistants hors combat (`PlayerStatusEffect`)
+- Badges visuels colores par type dans le template combat (`index.html.twig`)
+
+### Resistances elementaires par monstre ✅
+- Champ `elementalResistances` JSON sur `Monster`
+- Appliquees dans `DamageCalculator.applyElementalResistance()`
+- Renseignees sur les monstres existants (Golem, Dragon, etc.)
+
+### IA monstres — patterns et alertes ✅
+- `MobActionHandler` : sequences d'actions JSON, spell_chance, low_hp_heal, role (healer)
+- Alertes de danger : `danger_alert` dans aiPattern + `danger_message` dans bossPhases
+
+### Boss — phases et cooldown ✅
+- `Monster.bossPhases` JSON : phases par seuil HP, actions specifiques, danger_message
+- `MobDeathQueuing` : respawn boss 3600s (1h), normal 10s
+- Dragon ancestral : 3 phases avec sorts preferes
+
+---
+
 ## Systemes existants fonctionnels
 
 | Systeme | Detail |
