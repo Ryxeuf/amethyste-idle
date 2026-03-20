@@ -1,7 +1,7 @@
 # Roadmap a venir — Amethyste-Idle
 
 > Toutes les taches restantes a implementer.
-> Derniere mise a jour : 2026-03-21
+> Derniere mise a jour : 2026-03-20
 
 ---
 
