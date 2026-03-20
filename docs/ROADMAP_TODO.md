@@ -689,26 +689,111 @@ Apres contenu :
 
 ## Contenu endgame
 
-### Donjons instancies
-- [ ] Donjons par zone (Foret → Racines, Grotte → Mine abandonnee, Montagne → Tour du dragon)
-- [ ] Mecaniques de donjon (pieges, puzzles, salles secretes)
-- [ ] Loot de donjon (epiques/legendaires exclusifs)
-- [ ] Difficulte progressive (Normal → Heroique → Mythique)
+> Infrastructure existante : GameEvent (entity + admin CRUD, types boss_spawn/invasion/xp_bonus/drop_bonus/custom,
+> recurrence, mais aucun executeur backend). Fight supporte multi-mobs en entite (OneToMany) mais
+> MobActionHandler ne traite que le premier mob. LootTable basique (MonsterItem + probabilite).
+> Mercure fonctionne pour map/move, map/respawn, map/spot. Pas de systeme faction/reputation ni donjon/instance.
 
-### World boss
-- [ ] Boss de zone ouvert (horaires fixes, tous les joueurs participent)
-- [ ] Loot base sur la contribution
-- [ ] Annonce serveur via Mercure
+### EG-1 — Executeur GameEvent : activer les evenements planifies (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> GameEvent existe en BDD avec admin CRUD mais rien ne se passe quand un event est ACTIVE.
+> Ce service est le socle de tout le contenu endgame evenementiel (world boss, invasions, bonus XP/drop).
+- [ ] Creer `GameEventExecutor` : service qui lit les GameEvent SCHEDULED dont startsAt <= now, les passe ACTIVE
+- [ ] Traiter les types existants : `xp_bonus` (modifier global XP), `drop_bonus` (modifier global drop rate)
+- [ ] Creer `GameEventSchedulerMessage` + handler Symfony Scheduler (toutes les 60s)
+- [ ] Passer les events expires (endsAt < now) en COMPLETED automatiquement
+- [ ] Gerer la recurrence : si `recurrenceInterval` non null, creer le prochain event a la completion
+- [ ] Tester : creer un event xp_bonus via admin, verifier qu'il s'active et expire correctement
 
-### Reputation et factions
-- [ ] Factions (Marchands, Chevaliers, Mages, Ombres)
-- [ ] Paliers de reputation (Inconnu → Exalte)
-- [ ] Recompenses par palier (recettes, equipements, zones secretes, reductions)
+### EG-2 — Annonces serveur Mercure pour evenements (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Les joueurs n'ont aucun moyen de savoir qu'un evenement est en cours. Prerequis : EG-1.
+- [ ] Nouveau topic Mercure `event/announce` : publier quand un GameEvent passe ACTIVE
+- [ ] Stimulus controller `event-notification` : afficher un toast/banner quand un event demarre
+- [ ] Afficher les events actifs dans le HUD (petite icone avec tooltip)
+- [ ] Tester : activer un event, verifier que tous les joueurs connectes voient la notification
 
-### Evenements temporaires
-- [ ] Invasions (vagues de monstres cooperatives)
-- [ ] Festivals saisonniers (quetes, cosmétiques, mini-jeux)
-- [ ] Tournois PvP
+### EG-3 — Systeme de reputation et factions (Priorite: HAUTE | Complexite: M | Gain: FORT)
+> Systeme autonome sans prerequis technique lourd. Ajoute une boucle de progression endgame
+> et permet de gater du contenu (recettes, equipements, zones) derriere des paliers de reputation.
+- [ ] Entite `Faction` : slug, name, description, icon
+- [ ] Entite `PlayerFaction` : player (ManyToOne), faction (ManyToOne), reputation (int), tier (enum)
+- [ ] Enum `ReputationTier` : Inconnu(0), Hostile(-1), Neutre(1), Ami(2), Honore(3), Revere(4), Exalte(5)
+- [ ] Calcul automatique du tier selon les seuils de reputation (0, 500, 2000, 5000, 10000, 20000)
+- [ ] Migration + fixtures 4 factions (Marchands, Chevaliers, Mages, Ombres) avec description et PNJ associe
+- [ ] Route `/game/factions` : liste des factions, reputation actuelle, palier, barre de progression
+
+### EG-4 — Gains et recompenses de reputation (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Prerequis : EG-3. Sans gains ni recompenses, le systeme de faction est une coquille vide.
+- [ ] `ReputationManager::addReputation(Player, Faction, amount)` : ajouter/retirer de la reputation
+- [ ] Integrer les gains : quetes completees (+rep faction liee), mobs tues (+rep si faction associee)
+- [ ] Entite `FactionReward` : faction, requiredTier, rewardType (recipe_unlock/item/discount/zone_access), rewardData JSON
+- [ ] Fixtures : 2-3 recompenses par palier significatif (Ami, Honore, Exalte) par faction
+- [ ] Afficher les recompenses debloquees/verrouillees sur la page faction
+- [ ] Tester : gagner de la reputation, changer de palier, debloquer une recompense
+
+### EG-5 — Loot exclusif et rarete etendue (Priorite: MOYENNE | Complexite: S | Gain: MOYEN)
+> Enrichir le systeme de loot existant (MonsterItem) pour supporter du contenu endgame.
+> Pas de prerequis technique, ameliore directement la motivation des joueurs.
+- [ ] Ajouter champ `guaranteed` (bool, defaut false) sur MonsterItem : drop garanti (100%) en plus de la proba
+- [ ] Ajouter champ `minDifficulty` (nullable int) sur MonsterItem : drop uniquement si difficulte >= X (pour Heroique/Mythique)
+- [ ] Creer 4-6 items legendaires exclusifs lies aux boss existants dans les fixtures
+- [ ] Configurer les LootTable des boss avec au moins 1 drop garanti legendaire
+- [ ] Badge visuel "Legendaire" dans l'inventaire (couleur doree sur les items rarity=legendary)
+
+### EG-6 — World boss : spawn et combat multi-joueurs (Priorite: MOYENNE | Complexite: L | Gain: FORT)
+> Prerequis : EG-1 (executeur events), EG-2 (annonces Mercure).
+> Necessite de resoudre le combat multi-joueurs (plusieurs joueurs dans un meme Fight).
+> Decoupage en 2 sous-taches si trop volumineux.
+- [ ] **Sous-phase A — Spawn** : GameEventExecutor traite `boss_spawn` → creer un Mob boss sur une map donnee (params JSON)
+- [ ] **Sous-phase A** : Afficher le world boss sur la carte avec un sprite/aura distinctif
+- [ ] **Sous-phase A** : Despawn automatique quand l'event expire (si non vaincu)
+- [ ] **Sous-phase B — Combat multi-joueurs** : Permettre a plusieurs joueurs d'engager le meme Mob (Fight partage)
+- [ ] **Sous-phase B** : `ContributionTracker` : tracker les degats infliges par chaque joueur pendant le combat
+- [ ] **Sous-phase B** : Loot base sur la contribution (top 3 = loot garanti, autres = loot probabiliste)
+- [ ] Tester : spawn world boss via event admin, 2+ joueurs l'engagent, loot distribue
+
+### EG-7 — Donjons : entite et entree (Priorite: MOYENNE | Complexite: M | Gain: FORT)
+> Premier pas vers les donjons instancies. Creer la structure sans les mecaniques complexes.
+> Prerequis : systeme de teleportation entre cartes (section "Nouvelles zones & cartes").
+- [ ] Entite `Dungeon` : slug, name, description, map (ManyToOne vers la carte du donjon), minLevel (int), maxPlayers (int)
+- [ ] Entite `DungeonRun` : dungeon, player(s), startedAt, completedAt, difficulty (enum Normal/Heroique/Mythique)
+- [ ] Enum `DungeonDifficulty` : Normal, Heroique, Mythique (avec multiplicateurs HP/degats mobs)
+- [ ] Migration + fixtures : 1 donjon de test (ex: "Racines de la foret", lie a une carte existante ou nouvelle)
+- [ ] Route `/game/dungeon/{slug}/enter` : creer un DungeonRun, teleporter le joueur dans la carte du donjon
+- [ ] Route `/game/dungeon/{slug}` : fiche du donjon (description, difficulte, loot possible, cooldown)
+- [ ] Cooldown entre runs (ex: 1h Normal, 4h Heroique, 24h Mythique)
+
+### EG-8 — Donjons : mecaniques et loot (Priorite: BASSE | Complexite: L | Gain: FORT)
+> Prerequis : EG-7, EG-5 (loot exclusif). Rend les donjons interessants avec des mecaniques propres.
+> A decouper en sous-phases si necessaire.
+- [ ] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
+- [ ] Boss de fin de donjon avec mecaniques de phase (reutiliser bossPhases existant)
+- [ ] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
+- [ ] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
+- [ ] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
+
+### EG-9 — Evenements temporaires : invasions (Priorite: BASSE | Complexite: M | Gain: MOYEN)
+> Prerequis : EG-1 (executeur), EG-2 (annonces). Vagues de monstres cooperatives.
+- [ ] GameEventExecutor traite `invasion` : spawner N mobs supplementaires sur une zone (params JSON : mobSlugs, count, mapId)
+- [ ] Vagues progressives : 3 vagues espacees de 2 min, difficulte croissante
+- [ ] Tracker les kills de tous les joueurs pendant l'invasion
+- [ ] Recompenses collectives si objectif atteint (X mobs tues avant la fin)
+- [ ] Nettoyer les mobs d'invasion a la fin de l'event
+
+### EG-10 — Evenements temporaires : bonus et festivals (Priorite: BASSE | Complexite: S | Gain: MOYEN)
+> Prerequis : EG-1, EG-2. Les types xp_bonus et drop_bonus sont deja dans GameEvent.
+> Il manque l'integration dans les calculs de jeu.
+- [ ] Integrer `drop_bonus` dans LootGenerator : multiplier les probabilites de drop pendant l'event actif
+- [ ] Integrer `xp_bonus` dans les systemes d'XP (combat, recolte, craft) : multiplier l'XP gagnee
+- [ ] Quetes d'evenement : quetes temporaires liees a un GameEvent (disparaissent a la fin)
+- [ ] Cosmetiques d'evenement : items decoratifs exclusifs comme recompenses
+
+### EG-11 — Tournois PvP (Priorite: BASSE | Complexite: XL | Gain: MOYEN)
+> Prerequis : PvP arene 1v1 (section "Multijoueur & social"). Trop dependant d'autres systemes
+> pour etre implemente a court terme. Garder comme objectif long terme.
+- [ ] Entite `Tournament` : type, bracket, dates, recompenses
+- [ ] Inscription et matchmaking par bracket
+- [ ] Deroulement automatique (ou semi-auto) des rounds
+- [ ] Classement et recompenses saisonnieres
 
 ---
 
