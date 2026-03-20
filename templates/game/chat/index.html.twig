@@ -1,0 +1,101 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Chat - Amethyste{% endblock %}
+
+{% block game_content %}
+{% set mercure_public_url = app.request.schemeAndHttpHost ~ '/.well-known/mercure' %}
+
+<div class="max-w-4xl mx-auto p-2 sm:p-4 h-[calc(100vh-7rem)] md:h-[calc(100vh-4rem)] flex flex-col"
+     data-controller="chat"
+     data-chat-mercure-url-value="{{ mercure_public_url }}"
+     data-chat-player-id-value="{{ player.id }}"
+     data-chat-player-map-id-value="{{ player.map ? player.map.id : 0 }}"
+     data-chat-send-url-value="{{ path('app_game_chat_send') }}"
+     data-chat-history-url-value="{{ path('app_game_chat_history', {channel: 'x'}) | replace({'x': ''}) | trim('/') }}"
+     data-chat-conversations-url-value="{{ path('app_game_chat_conversations') }}"
+     data-chat-search-url-value="{{ path('app_game_chat_players_search') }}">
+
+    {# Tab Navigation #}
+    <div class="flex border-b border-gray-700 mb-2 flex-shrink-0">
+        <button data-chat-target="tab" data-action="chat#switchTab" data-channel="global"
+                class="chat-tab-active px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
+            General
+        </button>
+        <button data-chat-target="tab" data-action="chat#switchTab" data-channel="map"
+                class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
+            Carte{% if player.map %} ({{ player.map.name }}){% endif %}
+        </button>
+        <button data-chat-target="tab" data-action="chat#switchTab" data-channel="private"
+                class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
+            Messages prives
+        </button>
+    </div>
+
+    {# Global Channel Panel #}
+    <div data-chat-target="globalPanel" class="flex-1 flex flex-col min-h-0">
+        <div class="chat-messages flex-1 overflow-y-auto bg-gray-800/50 rounded-lg p-2 space-y-0.5 text-sm scrollbar-thin" data-chat-target="messages">
+            {% for message in globalMessages %}
+                <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
+                    <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
+                    <span class="font-semibold text-sm mr-1 {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</span>
+                    <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Map Channel Panel #}
+    <div data-chat-target="mapPanel" class="flex-1 flex flex-col min-h-0 hidden">
+        <div class="chat-messages flex-1 overflow-y-auto bg-gray-800/50 rounded-lg p-2 space-y-0.5 text-sm scrollbar-thin" data-chat-target="messages">
+            {% for message in mapMessages %}
+                <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
+                    <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
+                    <span class="font-semibold text-sm mr-1 {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</span>
+                    <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# Private Messages Panel #}
+    <div data-chat-target="privatePanel" class="flex-1 flex flex-col min-h-0 hidden">
+        <div class="flex gap-2 mb-2 flex-shrink-0">
+            <div class="relative flex-1">
+                <input type="text"
+                       data-chat-target="playerSearch"
+                       data-action="input->chat#searchPlayers"
+                       placeholder="Rechercher un joueur..."
+                       class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+                <div data-chat-target="playerResults" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-40 overflow-y-auto"></div>
+            </div>
+            <span data-chat-target="privateTo" class="self-center text-sm text-pink-400 font-semibold min-w-0 truncate max-w-[150px]"></span>
+        </div>
+
+        <div data-chat-target="privateMessages" class="chat-messages flex-1 overflow-y-auto bg-gray-800/50 rounded-lg p-2 space-y-0.5 text-sm scrollbar-thin">
+            <div class="text-center text-gray-500 text-sm py-8">Selectionnez un joueur pour commencer une conversation</div>
+        </div>
+    </div>
+
+    {# Input Bar #}
+    <form data-action="submit->chat#send" class="flex gap-2 mt-2 flex-shrink-0">
+        <input type="text"
+               data-chat-target="input"
+               placeholder="Ecrire un message..."
+               maxlength="500"
+               autocomplete="off"
+               class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+            Envoyer
+        </button>
+    </form>
+</div>
+
+<style>
+    .chat-tab-active { background: rgb(88 28 135 / 0.5); color: #c084fc; border-bottom: 2px solid #a855f7; }
+    .chat-tab-inactive { color: #9ca3af; border-bottom: 2px solid transparent; }
+    .chat-tab-inactive:hover { color: #d1d5db; background: rgb(55 65 81 / 0.5); }
+    .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+</style>
+{% endblock %}

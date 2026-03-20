@@ -1,0 +1,130 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block page_title %}Moderation du Chat{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    {# Filters #}
+    <div class="bg-gray-900 rounded-lg border border-gray-800 p-4">
+        <form method="get" action="{{ path('admin_chat_index') }}" class="flex flex-wrap gap-3 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block text-xs text-gray-400 mb-1">Recherche</label>
+                <input type="text" name="q" value="{{ search }}" placeholder="Contenu ou nom de joueur..."
+                       class="w-full bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">Canal</label>
+                <select name="channel" class="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-purple-500">
+                    <option value="">Tous</option>
+                    <option value="global" {% if channel == 'global' %}selected{% endif %}>General</option>
+                    <option value="map" {% if channel == 'map' %}selected{% endif %}>Carte</option>
+                    <option value="private" {% if channel == 'private' %}selected{% endif %}>Prive</option>
+                </select>
+            </div>
+            <div class="flex items-center gap-2">
+                <label class="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                    <input type="checkbox" name="deleted" value="1" {% if showDeleted %}checked{% endif %}
+                           class="rounded border-gray-600 bg-gray-800 text-purple-500 focus:ring-purple-500">
+                    Afficher supprimes
+                </label>
+            </div>
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors">
+                Filtrer
+            </button>
+        </form>
+    </div>
+
+    {# Stats #}
+    <div class="text-sm text-gray-400">
+        {{ total }} message{{ total > 1 ? 's' : '' }} trouve{{ total > 1 ? 's' : '' }}
+    </div>
+
+    {# Messages Table #}
+    <div class="bg-gray-900 rounded-lg border border-gray-800 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="border-b border-gray-800 text-left">
+                        <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Date</th>
+                        <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Canal</th>
+                        <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Expediteur</th>
+                        <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Destinataire</th>
+                        <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Message</th>
+                        <th class="px-4 py-3 text-xs font-semibold text-gray-400 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for message in messages %}
+                        <tr class="{% if message.isDeleted %}opacity-50 bg-red-900/10{% else %}hover:bg-gray-800/50{% endif %} transition-colors">
+                            <td class="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">{{ message.createdAt|date('d/m H:i') }}</td>
+                            <td class="px-4 py-3">
+                                {% if message.channel == 'global' %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-blue-900 text-blue-300">General</span>
+                                {% elseif message.channel == 'map' %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-green-900 text-green-300">Carte{% if message.map %} ({{ message.map.name }}){% endif %}</span>
+                                {% elseif message.channel == 'private' %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-pink-900 text-pink-300">Prive</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3">
+                                <a href="{{ path('admin_chat_player', {id: message.sender.id}) }}" class="text-sm text-purple-400 hover:text-purple-300">
+                                    {{ message.sender.name }}
+                                </a>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-300">
+                                {% if message.recipient %}
+                                    <a href="{{ path('admin_chat_player', {id: message.recipient.id}) }}" class="text-pink-400 hover:text-pink-300">
+                                        {{ message.recipient.name }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-200 max-w-md">
+                                <div class="truncate {% if message.isDeleted %}line-through{% endif %}">
+                                    {{ message.content }}
+                                </div>
+                                {% if message.isDeleted and message.deletedBy %}
+                                    <div class="text-xs text-red-400 mt-0.5">Supprime par {{ message.deletedBy }}</div>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                {% if not message.isDeleted %}
+                                    <form method="post" action="{{ path('admin_chat_delete', {id: message.id}) }}" class="inline"
+                                          onsubmit="return confirm('Supprimer ce message ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_chat' ~ message.id) }}">
+                                        {% for key, value in app.request.query.all %}
+                                            <input type="hidden" name="{{ key }}" value="{{ value }}">
+                                        {% endfor %}
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-sm transition-colors">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="text-gray-600 text-sm">Supprime</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Aucun message trouve</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# Pagination #}
+    {% if totalPages > 1 %}
+        <div class="flex justify-center gap-2">
+            {% for p in range(max(1, currentPage - 3), min(totalPages, currentPage + 3)) %}
+                <a href="{{ path('admin_chat_index', app.request.query.all|merge({page: p})) }}"
+                   class="px-3 py-1.5 rounded text-sm {% if p == currentPage %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-400 hover:bg-gray-700{% endif %} transition-colors">
+                    {{ p }}
+                </a>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
