@@ -223,7 +223,9 @@
 | Monstres | 12 types, tables de loot, respawn par queue |
 | Quetes | 10 quetes (tuer/collecter), recompenses |
 | PNJ & Dialogues | 60 PNJ, dialogues conditionnels, branches |
-| Recolte (basique) | Minage et herboristerie basiques (peche/depecage non actifs) |
+| Recolte | HarvestManager + FishingManager + ButcheringManager, 21 spots, Mercure SSE (harvest/respawn), SpotHarvestEvent |
+| Boutiques (partiel) | ShopController, achat/vente, gils sur Player (manque: fixtures, stock) |
+| Craft (partiel) | CraftManager + CraftRecipe entity, CraftEvent, templates (manque: fixtures, consolidation) |
 | Auth | Login/register, roles USER/PLAYER/ADMIN |
 | Race | Race Humain (stats neutres), extensible |
 | Items soulbound | boundToPlayer, use_spell |
