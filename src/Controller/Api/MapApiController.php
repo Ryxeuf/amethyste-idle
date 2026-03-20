@@ -228,7 +228,7 @@ class MapApiController extends AbstractController
         }
 
         try {
-            $movementCalculator->loadMap(10);
+            $movementCalculator->loadMap($player->getMap()->getId());
             $movements = $movementCalculator->calculateMovement($currentX, $currentY, $targetX, $targetY);
         } catch (\Exception $e) {
             return $this->json(['error' => 'No path found', 'message' => $e->getMessage()], 400);

@@ -274,3 +274,18 @@
 | Administration | Panel admin complet (dashboard enrichi, CRUD, logs, maintenance) |
 | CI/CD | GitHub Actions (lint, PHPStan, PHPUnit, build Docker) + deploy auto sur main |
 | Chat en jeu | Chat global + zone + prive via Mercure SSE, rate limiting, moderation admin, historique, stimulus controller |
+
+---
+
+## Vague 1 — Nettoyage technique (2026-03-20)
+
+### 01 — De-hardcoder les map IDs ✅
+
+> Suppression de tous les map IDs hardcodes (`10`) dans le code. Le contexte Player/Map est utilise a la place.
+
+| Tache | Detail |
+|-------|--------|
+| MapApiController::move() | `loadMap(10)` → `loadMap($player->getMap()->getId())` |
+| Twig/Components/Map::move() | `loadMap(10)` → `loadMap($this->player->getMap()->getId())` |
+| TerrainImportCommand | `find(10)` → option `--map-id` ou auto-detection (premiere map disponible) |
+| DebugMoveCommand | `loadMap(10)` → option `--map-id` configurable (defaut: 10) |
