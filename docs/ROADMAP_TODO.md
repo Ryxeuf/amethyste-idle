@@ -138,34 +138,148 @@
 
 ## Contenu & monde (v0.5)
 
-### Contenu monstres & tables de loot
-- [ ] 8 nouveaux monstres niveaux 1-10 (1 par element)
-- [ ] 8 monstres intermediaires niveaux 10-25
-- [ ] 2 boss de zone avec mecaniques de phases
-- [ ] Tables de loot avec ressources de craft
-- [ ] Mise a jour bestiaire et succes pour les nouveaux monstres
+> Decoupage en 10 sous-phases independantes, classees par priorite.
+> Complexite : S (1-2h), M (2-4h), L (4-8h) — Priorite : P1 critique, P2 important, P3 bonus
+> Prerequis v0.4 indiques quand applicables.
 
-### Equipement & items varies
-- [ ] 3 tiers d'equipement (starter, intermediaire, avance) avec arme, casque, plastron, jambieres, bottes, gants, bouclier
-- [ ] Elements varies sur l'equipement
-- [ ] Slots materia sur l'equipement avance
-- [ ] 16+ materia (2 par element : basique et avancee)
-- [ ] Consommables : potions, nourriture, parchemins
+### C-1 — Consommables de base (P1 | S | Gain: fort)
+> Aucun prerequis v0.4. Utilisable immediatement en combat via use_spell existant.
+- [ ] 5 potions (soin mineur/moyen/majeur, mana, antidote) — fixtures YAML
+- [ ] 3 nourritures (pain, viande grillee, ragoût) — buff temporaire HP regen
+- [ ] 3 parchemins (teleportation spawn, boost XP 10min, identification)
+- [ ] Ajouter les items aux loot tables des monstres existants
 
-### Nouvelles zones & cartes
-- [ ] Systeme de teleportation entre cartes (entite + frontend)
-- [ ] Carte "Foret des murmures" (zone lvl 5-15) avec spots recolte, monstres, PNJ
-- [ ] Carte "Mines profondes" (zone lvl 10-25) avec filons, boss, tresor
-- [ ] Carte "Village central" (hub) avec boutiques, PNJ quetes, banque, forge
+### C-2 — Materia complement (P1 | M | Gain: fort)
+> Aucun prerequis. Enrichit le combat directement (10 existantes → 18).
+- [ ] 8 nouvelles materia (1 par element : basique tier 2)
+  - Feu: Combustion, Eau: Brume glaciale, Air: Eclair en chaine
+  - Terre: Mur de pierre, Metal: Riposte d'acier, Bete: Morsure sauvage
+  - Lumiere: Benediction, Ombre: Drain vital
+- [ ] Sorts associes dans SpellFixtures (si non existants)
+- [ ] Lien materia → skill unlock dans les arbres de talent existants
 
-### Equilibre & balancing
-- [ ] Courbe de progression XP par domaine
-- [ ] Bareme des prix boutique (ratio achat/vente)
-- [ ] Table de drop rates par tier de monstre
-- [ ] Degats/HP des monstres par palier
-- [ ] Cout en XP des competences (calibrage 400+ skills)
-- [ ] Temps de recolte et rendement par skill level
-- [ ] Commande CLI BalanceReportCommand
+### C-3 — Monstres tier 1 (niveaux 1-10) (P1 | M | Gain: fort)
+> Aucun prerequis. 20 monstres existent, on en ajoute 8 pour couvrir chaque element.
+- [ ] 8 monstres elementaires niveaux 1-10 :
+  - Feu: Salamandre (lvl 3), Eau: Ondine (lvl 2), Air: Sylphe (lvl 4)
+  - Terre: Golem d'argile (lvl 5), Metal: Automate rouille (lvl 3)
+  - Bete: Loup alpha (lvl 4), Lumiere: Feu follet (lvl 2), Ombre: Ombre rampante (lvl 5)
+- [ ] Stats, AI patterns, resistances elementaires pour chaque monstre
+- [ ] Tables de loot (drops ressources + consommables C-1)
+- [ ] Succes bestiaire (3 paliers x 8 monstres = 24 achievements)
+- [ ] Placement sur la carte existante (MobFixtures)
+
+### C-4 — Equipement tier 1 Starter (P2 | M | Gain: moyen)
+> Aucun prerequis. Remplace/complete les 5 pieces existantes.
+- [ ] Set complet 7 pieces (arme, casque, plastron, jambieres, bottes, gants, bouclier) — element None, stats basiques
+- [ ] Ajouter aux loot tables des monstres lvl 1-5
+- [ ] Verifier l'affichage dans l'inventaire/equipement
+
+### C-5 — Equipement tier 2 Intermediaire (P2 | M | Gain: moyen)
+> Prerequis : C-4 (conventions de nommage/structure).
+- [ ] Set complet 7 pieces — 4 variantes elementaires (Feu, Eau, Terre, Air)
+  - = 28 items au total (7 pieces x 4 elements)
+- [ ] Bonus elementaire sur chaque piece (+10% degats element)
+- [ ] Ajouter aux loot tables des monstres lvl 5-15
+
+### C-6 — Equipement tier 3 Avance + slots materia (P3 | M | Gain: moyen)
+> Prerequis : C-5, systeme materia fonctionnel (GD-8 complet).
+- [ ] Set complet 7 pieces — 4 variantes elementaires (Metal, Bete, Lumiere, Ombre)
+  - = 28 items au total
+- [ ] 1-2 slots materia sur chaque piece avancee
+- [ ] Ajouter aux loot tables des monstres lvl 15-25 et boss
+
+### C-7 — Monstres tier 2 (niveaux 10-25) + Boss (P2 | L | Gain: fort)
+> Prerequis : C-3 (conventions), idealement C-5 (drops equipement intermediaire).
+> Decouper en 2 sous-parties si trop gros.
+- [ ] **Sous-partie A** : 4 monstres intermediaires (lvl 10-15)
+  - Stats, AI patterns, resistances, loot tables
+  - Succes bestiaire (12 achievements)
+- [ ] **Sous-partie B** : 4 monstres intermediaires (lvl 15-25)
+  - Monstres plus complexes (soigneurs, invocateurs selon combat enrichi)
+  - Stats, AI patterns, resistances, loot tables
+  - Succes bestiaire (12 achievements)
+- [ ] **Sous-partie C** : 2 boss de zone avec mecaniques de phases
+  - Boss Foret (element Bete/Terre, 2 phases)
+  - Boss Mine (element Metal/Ombre, 3 phases)
+  - Loot unique (equipement tier 3, materia rare)
+  - Succes boss (2 achievements)
+
+### C-8 — Teleportation entre cartes (P1 | L | Gain: critique)
+> Prerequis technique pour toute nouvelle carte. Infrastructure portail existe dans Tiled.
+> Dependance : aucune v0.4, mais bloquant pour C-9/C-10.
+- [ ] Entite Portal (sourceMap, sourceCoordinates, targetMap, targetCoordinates, requiredLevel, bidirectional)
+- [ ] Migration SQL
+- [ ] PortalManager : teleport(Player, Portal) — validation + deplacement
+- [ ] Endpoint POST /api/map/teleport/{portalId}
+- [ ] Rendu visuel portail sur la carte PixiJS (sprite anime + particules)
+- [ ] Interaction joueur (clic/touche sur portail → confirmation → teleportation)
+- [ ] Transition visuelle (fade existant)
+- [ ] Topic Mercure map/teleport pour notifier les joueurs
+- [ ] Fixtures portails sur la carte existante (2-3 portails de test)
+- [ ] Tests PortalManager
+
+### C-9 — Carte "Village central" hub (P2 | L | Gain: fort)
+> Prerequis : C-8 (teleportation). Prerequis v0.4 : boutiques PNJ pour etre utile.
+> Peut etre cree "vide" puis peuple incrementalement.
+- [ ] Design carte Tiled (~40x40, interieur/exterieur) avec places, batiments
+- [ ] Import BDD via app:terrain:import
+- [ ] PNJ hub : forgeron, alchimiste, marchand, maitre des quetes, banquier (5-8 PNJ)
+- [ ] Dialogues PNJ (JSON conditions)
+- [ ] Portail bidirectionnel vers carte existante
+- [ ] Aucun monstre (zone safe)
+
+### C-10 — Cartes de contenu : Foret & Mines (P3 | XL → 2 sous-phases | Gain: fort)
+> Prerequis : C-8, C-3/C-7 (monstres), idealement v0.4 (recolte, quetes).
+> Chaque carte = 1 sous-phase independante.
+- [ ] **C-10a — Foret des murmures (lvl 5-15)**
+  - Design Tiled (~60x60), arbres, clairiere, riviere
+  - Import BDD + portails vers hub
+  - Placement 8-10 mobs (monstres C-3 + C-7a)
+  - 3-5 PNJ (garde forestier, herboriste, ermite)
+  - 5-8 spots de recolte (herbes, bois) — si v0.4 recolte pret
+  - 2-3 quetes zone (si v0.4 quetes pret)
+- [ ] **C-10b — Mines profondes (lvl 10-25)**
+  - Design Tiled (~60x30), tunnels, salles, filons
+  - Import BDD + portails vers hub
+  - Placement 8-10 mobs (monstres C-7a + C-7b)
+  - Boss de mine (C-7c)
+  - 3-5 PNJ (mineur, ingenieur, marchand souterrain)
+  - 5-8 spots de recolte (minerais) — si v0.4 recolte pret
+  - Coffre tresor (si systeme implemente)
+
+### C-11 — Equilibrage & rapport (P2 | M | Gain: moyen)
+> Prerequis : au moins C-1 a C-5 implementes pour avoir du contenu a equilibrer.
+> La commande CLI est utile des qu'il y a du contenu.
+- [ ] Commande CLI `app:balance:report` :
+  - Courbe XP par domaine (actuel vs theorique)
+  - Stats monstres par palier (HP, degats, XP donne)
+  - Table de drop rates par tier
+  - Alertes si desequilibre detecte (monstre trop fort/faible, drop rate aberrant)
+- [ ] Document de reference `docs/BALANCE.md` :
+  - Courbe de progression XP cible par domaine
+  - Bareme des prix boutique (ratio achat/vente 30-50%)
+  - Degats/HP attendus par palier de monstre
+  - Temps de recolte et rendement par skill level
+- [ ] Ajustement des stats monstres/items si desequilibre constate
+
+### Ordre d'implementation recommande
+
+```
+Independant (faisable maintenant) :
+  C-1 Consommables ──→ C-3 Monstres T1 (utilise C-1 pour loot)
+  C-2 Materia ─────────┘
+  C-4 Equip T1 ──→ C-5 Equip T2
+
+Bloquant pour les cartes :
+  C-8 Teleportation ──→ C-9 Village hub ──→ C-10a Foret
+                                          ──→ C-10b Mines
+
+Apres contenu :
+  C-7 Monstres T2+Boss (apres C-3, C-5)
+  C-6 Equip T3 (apres C-5, GD-8)
+  C-11 Equilibrage (apres C-1 a C-5 minimum)
+```
 
 ---
 
