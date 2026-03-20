@@ -1,0 +1,170 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Roadmap - Admin{% endblock %}
+{% block page_title %}Roadmap{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        /* Tabs */
+        .roadmap-tab { padding: 0.5rem 1.25rem; font-size: 0.875rem; font-weight: 500; border-radius: 0.5rem 0.5rem 0 0; transition: all 0.15s; }
+        .roadmap-tab.active { background: #1f2937; color: #e5e7eb; border: 1px solid #374151; border-bottom: 1px solid #1f2937; }
+        .roadmap-tab:not(.active) { background: transparent; color: #6b7280; border: 1px solid transparent; border-bottom: 1px solid #374151; }
+        .roadmap-tab:not(.active):hover { color: #9ca3af; background: #111827; }
+
+        /* Content area */
+        .roadmap-content { background: #1f2937; border: 1px solid #374151; border-top: none; border-radius: 0 0 0.75rem 0.75rem; padding: 1.5rem; overflow-x: auto; }
+
+        /* Headings */
+        .roadmap-h1 { font-size: 1.5rem; font-weight: 700; color: #f3f4f6; margin: 1.5rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid #7c3aed; }
+        .roadmap-h2 { font-size: 1.25rem; font-weight: 700; color: #c4b5fd; margin: 1.75rem 0 0.5rem; padding-bottom: 0.375rem; border-bottom: 1px solid #374151; }
+        .roadmap-h3 { font-size: 1.05rem; font-weight: 600; color: #a78bfa; margin: 1.25rem 0 0.375rem; }
+        .roadmap-h4 { font-size: 0.95rem; font-weight: 600; color: #8b5cf6; margin: 1rem 0 0.25rem; }
+        .roadmap-content > .roadmap-h2:first-child,
+        .roadmap-content > .roadmap-h1:first-child { margin-top: 0; }
+
+        /* Blockquotes */
+        .roadmap-blockquote { border-left: 3px solid #6d28d9; background: #111827; padding: 0.625rem 1rem; margin: 0.75rem 0; border-radius: 0 0.375rem 0.375rem 0; color: #9ca3af; font-size: 0.85rem; line-height: 1.5; }
+
+        /* Lists */
+        .roadmap-checklist, .roadmap-list { list-style: none; padding: 0; margin: 0.5rem 0; }
+        .roadmap-checklist li, .roadmap-list li { padding: 0.3rem 0 0.3rem 0.25rem; font-size: 0.875rem; line-height: 1.5; color: #d1d5db; }
+        .roadmap-item { padding-left: 1rem !important; }
+        .roadmap-item::before { content: "\2022"; color: #6b7280; margin-right: 0.5rem; }
+        .roadmap-indent { padding-left: 1.5rem !important; }
+
+        /* Checkboxes */
+        .roadmap-check { display: inline-flex; align-items: center; justify-content: center; width: 1.125rem; height: 1.125rem; border-radius: 0.25rem; font-size: 0.7rem; margin-right: 0.375rem; flex-shrink: 0; vertical-align: middle; }
+        .roadmap-check.done { background: #065f46; color: #6ee7b7; border: 1px solid #059669; }
+        .roadmap-check.pending { background: #1e293b; color: #475569; border: 1px solid #334155; }
+        .roadmap-task.done { color: #6ee7b7; }
+        .roadmap-task.pending { color: #d1d5db; }
+
+        /* Tables */
+        .roadmap-table-wrapper { overflow-x: auto; margin: 0.75rem 0; border-radius: 0.5rem; border: 1px solid #374151; }
+        .roadmap-table { width: 100%; font-size: 0.825rem; border-collapse: collapse; }
+        .roadmap-table th { background: #111827; color: #9ca3af; padding: 0.5rem 0.75rem; text-align: left; font-weight: 600; border-bottom: 1px solid #374151; }
+        .roadmap-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #1f2937; color: #d1d5db; }
+        .roadmap-table tr:last-child td { border-bottom: none; }
+        .roadmap-table tr:hover td { background: #111827; }
+
+        /* Code */
+        .roadmap-inline-code { background: #111827; color: #a78bfa; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.8rem; font-family: ui-monospace, monospace; }
+        pre.roadmap-code { background: #111827; border: 1px solid #374151; border-radius: 0.5rem; padding: 1rem; margin: 0.75rem 0; overflow-x: auto; font-size: 0.8rem; line-height: 1.6; color: #d1d5db; }
+
+        /* Misc */
+        .roadmap-hr { border: none; border-top: 1px solid #374151; margin: 1.5rem 0; }
+        .roadmap-p { font-size: 0.875rem; line-height: 1.6; color: #d1d5db; margin: 0.375rem 0; }
+        .roadmap-link { color: #a78bfa; text-decoration: underline; text-underline-offset: 2px; }
+        .roadmap-link:hover { color: #c4b5fd; }
+        .roadmap-emoji-done { font-size: 0.9rem; }
+        del { color: #6b7280; text-decoration: line-through; }
+        strong { color: #f3f4f6; }
+
+        /* Stats cards */
+        .stat-card { background: #111827; border: 1px solid #374151; border-radius: 0.75rem; padding: 1rem 1.25rem; }
+        .stat-label { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+        .stat-value { font-size: 1.5rem; font-weight: 700; }
+
+        /* Progress bar */
+        .progress-bar-bg { background: #1e293b; border-radius: 9999px; height: 0.5rem; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 9999px; transition: width 0.3s ease; }
+
+        /* Section progress */
+        .section-progress { font-size: 0.8rem; }
+        .section-bar-bg { background: #1e293b; border-radius: 9999px; height: 0.375rem; overflow: hidden; flex: 1; }
+        .section-bar-fill { height: 100%; border-radius: 9999px; }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {# Stats banner for TODO tab #}
+    {% if tab == 'todo' and todoStats.total > 0 %}
+        {% set percent = ((todoStats.done / todoStats.total) * 100)|round %}
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div class="stat-card">
+                <div class="stat-label">Taches totales</div>
+                <div class="stat-value text-gray-100">{{ todoStats.total }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Completees</div>
+                <div class="stat-value text-green-400">{{ todoStats.done }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Restantes</div>
+                <div class="stat-value text-yellow-400">{{ todoStats.total - todoStats.done }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Progression</div>
+                <div class="stat-value text-purple-400">{{ percent }}%</div>
+                <div class="progress-bar-bg mt-2">
+                    <div class="progress-bar-fill" style="width: {{ percent }}%; background: {% if percent >= 75 %}#10b981{% elseif percent >= 50 %}#8b5cf6{% elseif percent >= 25 %}#f59e0b{% else %}#ef4444{% endif %};"></div>
+                </div>
+            </div>
+        </div>
+
+        {# Section-by-section progress #}
+        {% if todoStats.sections|length > 0 %}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 mb-6">
+                <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Progression par section</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {% for section in todoStats.sections %}
+                        {% set sPct = section.total > 0 ? ((section.done / section.total) * 100)|round : 0 %}
+                        <div class="section-progress flex items-center gap-3 px-3 py-2 rounded-lg bg-gray-800 bg-opacity-50">
+                            <span class="text-gray-300 truncate flex-shrink min-w-0" title="{{ section.title }}">{{ section.title|length > 40 ? section.title[:40] ~ '...' : section.title }}</span>
+                            <div class="section-bar-bg min-w-16">
+                                <div class="section-bar-fill" style="width: {{ sPct }}%; background: {% if sPct >= 100 %}#10b981{% elseif sPct >= 50 %}#8b5cf6{% else %}#374151{% endif %};"></div>
+                            </div>
+                            <span class="text-gray-500 flex-shrink-0 whitespace-nowrap">{{ section.done }}/{{ section.total }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    {% endif %}
+
+    {# Done stats banner #}
+    {% if tab == 'done' %}
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="stat-card">
+                <div class="stat-label">Phases completees</div>
+                <div class="stat-value text-green-400">{{ doneSections }}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Derniere mise a jour</div>
+                <div class="stat-value text-gray-300 text-base mt-1">
+                    {% if doneFileDate %}
+                        {{ doneFileDate|date('d/m/Y H:i') }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Tabs #}
+    <div class="flex">
+        <a href="{{ path('admin_roadmap_index', {tab: 'todo'}) }}" class="roadmap-tab {% if tab == 'todo' %}active{% endif %}">
+            A faire
+            {% if todoStats.total > 0 %}
+                <span class="ml-1.5 inline-flex px-1.5 py-0.5 text-xs rounded-full {% if tab == 'todo' %}bg-yellow-900 text-yellow-300{% else %}bg-gray-700 text-gray-400{% endif %}">{{ todoStats.total - todoStats.done }}</span>
+            {% endif %}
+        </a>
+        <a href="{{ path('admin_roadmap_index', {tab: 'done'}) }}" class="roadmap-tab {% if tab == 'done' %}active{% endif %}">
+            Termine
+            {% if doneSections > 0 %}
+                <span class="ml-1.5 inline-flex px-1.5 py-0.5 text-xs rounded-full {% if tab == 'done' %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">{{ doneSections }}</span>
+            {% endif %}
+        </a>
+    </div>
+
+    {# Roadmap content #}
+    <div class="roadmap-content">
+        {% if tab == 'todo' %}
+            {{ todoHtml|raw }}
+        {% else %}
+            {{ doneHtml|raw }}
+        {% endif %}
+    </div>
+{% endblock %}
