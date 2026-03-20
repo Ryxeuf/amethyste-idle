@@ -497,27 +497,78 @@ Apres contenu :
 
 ## Pipeline Tiled (transverse)
 
-### T1 — Animations de tiles
-- [ ] Backend : parser les animations TSX (<tile><animation>)
-- [ ] API : exposer les animations dans /api/map/config
-- [ ] Frontend : PIXI.AnimatedSprite au lieu de PIXI.Sprite pour les tiles animees
+> Infrastructure de cartes Tiled : nettoyage, corrections, et fonctionnalites.
+> Ordre recommande : T5 → T4 → T2a → T2b → T3a → T3b → T1a → T1b
 
-### T2 — Pipeline unifie `app:terrain:sync`
-- [ ] Nouvelle commande unifiee (import + upsert Area + sync objets + Dijkstra + rapport diff)
-- [ ] Extraire TmxParser, AreaSynchronizer, DijkstraTagGenerator en services
-- [ ] Mise a jour de l'agent import-terrain
+### T5 — De-hardcoder les map IDs (P1 | S | Gain: fort)
+> 3 endroits hardcodent `map_id=10`. Bloquant pour le multi-cartes (C-8/C-9).
+> Le contexte Player/Map est deja disponible partout — correction triviale.
+- [ ] `MapApiController::move()` ligne 231 : remplacer `loadMap(10)` par `$player->getMap()->getId()`
+- [ ] `Twig/Components/Map::move()` ligne 101 : remplacer `loadMap(10)` par `$this->player->getMap()->getId()`
+- [ ] `TerrainImportCommand::syncEntitiesFromObjects()` ligne 530 : ajouter option `--map-id` ou deduire depuis le nom du fichier TMX
+- [ ] Tester le deplacement sur la carte existante apres correction
 
-### T3 — Zones/biomes depuis Tiled
-- [ ] Support des zones rectangulaires dans Tiled (biome, ambient, weather, music, light)
-- [ ] API zones dans /api/map/config
-- [ ] Frontend : effets d'ambiance par zone (particules, assombrissement, transitions)
+### T4 — Supprimer la commande CSS morte (P1 | S | Gain: moyen)
+> `TmxCssGeneratorCommand` (308 lignes) + `world-1.css` (335 Ko) sont obsoletes.
+> Le rendu passe par PixiJS canvas, pas par CSS. Deja marque "obsolete" dans les docs.
+- [ ] Supprimer `src/Command/TmxCssGeneratorCommand.php`
+- [ ] Supprimer le dossier `assets/styles/map/` (world-1.css)
+- [ ] Retirer les imports CSS dans `assets/app.js`
+- [ ] Nettoyer les references dans CLAUDE.md, DOCUMENTATION.md, AGENTS.md, `.claude/commands/import-terrain.md`
 
-### T4 — Supprimer la commande CSS morte
-- [ ] Supprimer TmxCssGeneratorCommand
-- [ ] Supprimer assets/styles/map/ (CSS genere)
-- [ ] Nettoyer les references dans CLAUDE.md et DOCUMENTATION.md
+### T2a — Extraction services depuis TerrainImportCommand (P2 | M | Gain: moyen)
+> La commande actuelle fait 663 lignes monolithiques (parsing TMX, sync objets, validation, export).
+> Extraire en services reutilisables avant d'ajouter des fonctionnalites.
+- [ ] Extraire `TmxParser` : parsing TMX/TSX → structure de donnees (layers, tilesets, objets)
+- [ ] Extraire `EntitySynchronizer` : creation/mise a jour des entites (portails, mobs, spots, coffres) depuis les objets TMX
+- [ ] Refactorer `TerrainImportCommand` pour deleguer a ces services
+- [ ] Verifier que `app:terrain:import` fonctionne identiquement apres refactoring
 
-### T5 — De-hardcoder les map IDs
-- [ ] syncEntitiesFromObjects : deduire mapId depuis le TMX
-- [ ] loadMap() : utiliser player->getMap()->getId() au lieu de 10
-- [ ] Endpoint move : utiliser le mapId du joueur courant
+### T2b — Commande unifiee `app:terrain:sync` (P2 | M | Gain: moyen)
+> Prerequis : T2a. Commande unique qui orchestre tout le pipeline d'import.
+- [ ] Creer `TerrainSyncCommand` : import TMX + upsert Area + sync entites + rebuild Dijkstra + rapport diff
+- [ ] Integrer l'appel Dijkstra post-import (regeneration du cache collisions)
+- [ ] Ajouter un rapport diff (entites creees/modifiees/supprimees)
+- [ ] Mettre a jour l'agent `.claude/commands/import-terrain.md`
+
+### T3a — Parsing zones/biomes depuis Tiled (P2 | M | Gain: fort)
+> Prerequis : T2a (TmxParser extrait). Les objets rectangulaires Tiled de type "zone" definissent les biomes.
+> L'entite `Area` existe deja mais n'est pas peuplee a l'import.
+- [ ] Ajouter les champs biome, weather, music, lightLevel sur l'entite `Area` + migration
+- [ ] Parser les objets de type `zone`/`biome` dans TmxParser (rectangles avec proprietes)
+- [ ] Creer `AreaSynchronizer` : upsert des Area depuis les zones Tiled
+- [ ] Exposer les zones dans `/api/map/config` (coordonnees, biome, meteo, musique)
+
+### T3b — Effets d'ambiance par zone en frontend (P3 | M | Gain: fort)
+> Prerequis : T3a. Effets visuels dynamiques quand le joueur entre dans une zone.
+- [ ] Charger les zones depuis l'API au chargement de la carte
+- [ ] Detecter la zone courante du joueur (point-in-rect)
+- [ ] Appliquer les effets par zone : teinte/overlay, particules (pluie, brume, poussiere)
+- [ ] Transition fluide entre zones (fondu des effets)
+
+### T1a — Parsing et API des animations de tiles (P3 | S | Gain: moyen)
+> Les fichiers TSX contiennent deja des `<tile><animation><frame>`. Le backend les ignore.
+- [ ] Etendre le parsing TSX dans TmxParser : extraire les frames d'animation (tileId, duration)
+- [ ] Exposer les animations dans `/api/map/config` (tableau par GID : frames + durations)
+
+### T1b — Rendu des tiles animees en PixiJS (P3 | M | Gain: fort)
+> Prerequis : T1a. Remplacer PIXI.Sprite par PIXI.AnimatedSprite pour les tiles avec animation.
+- [ ] Dans `_renderCell()` : detecter les tiles animees depuis les donnees API
+- [ ] Creer des `PIXI.AnimatedSprite` avec les frames/durations pour ces tiles
+- [ ] Gerer le cycle d'animation (elapsed time, frame index) dans le ticker
+- [ ] Tester visuellement (eau animee, torches, etc.)
+
+### Ordre d'implementation recommande
+
+```
+Quick wins (faisable maintenant, aucun prerequis) :
+  T5 De-hardcoder map IDs ──→ debloque le multi-cartes
+  T4 Supprimer CSS mort ────→ nettoyage dette technique
+
+Refactoring (apres quick wins) :
+  T2a Extraction services ──→ T2b Commande terrain:sync
+
+Fonctionnalites (apres refactoring) :
+  T3a Parsing zones ──→ T3b Effets ambiance frontend
+  T1a Parsing animations ──→ T1b Rendu tiles animees
+```
