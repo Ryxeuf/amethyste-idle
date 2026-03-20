@@ -29,7 +29,15 @@ final class Version20260318Race extends AbstractMigration
         )');
 
         $this->addSql('ALTER TABLE player ADD COLUMN IF NOT EXISTS race_id INT DEFAULT NULL');
-        $this->addSql('ALTER TABLE player ADD CONSTRAINT IF NOT EXISTS fk_player_race FOREIGN KEY (race_id) REFERENCES game_races (id) ON DELETE SET NULL');
+        $this->addSql('DO $$
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_constraint WHERE conname = \'fk_player_race\'
+                ) THEN
+                    ALTER TABLE player ADD CONSTRAINT fk_player_race FOREIGN KEY (race_id) REFERENCES game_races (id) ON DELETE SET NULL;
+                END IF;
+            END
+        $$');
         $this->addSql('CREATE INDEX IF NOT EXISTS idx_player_race ON player (race_id)');
     }
 

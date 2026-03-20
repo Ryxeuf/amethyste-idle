@@ -127,6 +127,7 @@ scripts/                # Scripts deploy, fixtures, etc.
 - Les sprites sont au format RPG Maker VX (3 col x 4 lignes), le `SpriteAnimator` detecte la taille automatiquement depuis la texture
 - En dev, le volume Docker monte `.:/app` -> les fichiers sont partages entre hote et conteneur
 - `tailwind:build` doit tourner avant `asset-map:compile` ou `debug:asset`
+- **Migrations PostgreSQL** : `ADD CONSTRAINT IF NOT EXISTS` n'existe PAS en PostgreSQL. Pour une contrainte idempotente, utiliser un bloc `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'nom') THEN ALTER TABLE ... ADD CONSTRAINT ...; END IF; END $$`. En revanche, `ADD COLUMN IF NOT EXISTS`, `CREATE TABLE IF NOT EXISTS` et `CREATE INDEX IF NOT EXISTS` sont valides.
 
 ## Qualite de code
 
