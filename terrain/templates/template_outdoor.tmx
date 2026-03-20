@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="left-up" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="1">
+ <tileset firstgid="1" source="./tileset/forest.tsx"/>
+ <tileset firstgid="3073" source="./tileset/Terrain.tsx"/>
+ <tileset firstgid="4097" source="./tileset/Collisions.tsx"/>
+ <tileset firstgid="4115" source="./tileset/BaseChip_pipo.tsx"/>
+ <!-- ============================================================
+      TEMPLATE OUTDOOR — Zone exterieure 60x60
+      ============================================================
+      Layers :
+        1. background  — Herbe / sol de base (remplir avec GID 3365-3427 pour herbe)
+        2. ground       — Chemins, eau, sable, variations de terrain
+        3. decoration   — Arbres, rochers, fleurs, details visuels
+        4. overlay      — Toits, ponts, elements au-dessus du joueur
+        5. collision    — Zones bloquantes (GID 4098=mur, 4099-4112=directionnels, 4113=grimpable)
+      Object groups :
+        - objects       — Portals, mob_spawn, npc_spawn, harvest_spot, chest
+
+      Conventions :
+        - Herbe de base : GID 3365, 3425, 3426, 3427 (Terrain.tsx)
+        - Eau : GID 3073+ (Terrain.tsx, tiles animees)
+        - Arbres : forest.tsx (GID 1-3072)
+        - Collision mur plein : GID 4098 (Collisions.tsx, id=1)
+        - Coordonnees objets en pixels (x*32, y*32)
+
+      Renommer ce fichier : world-{worldId}-map-{offsetX}-{offsetY}.tmx
+      Exemple : world-1-map-3-0.tmx pour la zone (3,0)
+      ============================================================ -->
+ <layer id="1" name="background" width="60" height="60">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="2" name="ground" width="60" height="60">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="3" name="decoration" width="60" height="60">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="4" name="overlay" width="60" height="60">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <layer id="5" name="collision" width="60" height="60">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="6" name="objects">
+  <!-- Exemples d'objets (decommenter et adapter) :
+  <object id="1" name="portal-village" type="portal" x="480" y="928" width="32" height="32">
+   <properties>
+    <property name="target_map_id" type="int" value="10"/>
+    <property name="target_x" type="int" value="30"/>
+    <property name="target_y" type="int" value="30"/>
+   </properties>
+  </object>
+  <object id="2" name="slime-spawn-1" type="mob_spawn" x="320" y="640" width="32" height="32">
+   <properties>
+    <property name="monster_slug" value="slime"/>
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+  <object id="3" name="herb-spot-1" type="harvest_spot" x="192" y="384" width="32" height="32">
+   <properties>
+    <property name="slug" value="herb-spot-1"/>
+    <property name="item_slug" value="healing-herb"/>
+    <property name="item_min" type="int" value="1"/>
+    <property name="item_max" type="int" value="3"/>
+   </properties>
+  </object>
+  <object id="4" name="guard-npc" type="npc_spawn" x="640" y="480" width="32" height="32">
+   <properties>
+    <property name="pnj_slug" value="guard"/>
+   </properties>
+  </object>
+  -->
+ </objectgroup>
+</map>

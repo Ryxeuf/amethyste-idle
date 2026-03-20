@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-20
+> Derniere mise a jour : 2026-03-21
 
 ---
 
@@ -89,6 +89,17 @@
 - ARIA attributes (role, aria-label, aria-live)
 - Hints clavier
 - Backdrop blur pour lisibilite
+
+### 1.10 Preview terrain et templates Tiled ✅
+- Commande `app:terrain:preview --map=X` : genere un PNG a partir d'un fichier TMX
+  - Support scale (0.25, 0.5, 1, 2), overlay collisions, overlay objets
+  - Rendu complet multi-layers avec tous les tilesets
+  - Mode `all` pour generer toutes les cartes d'un coup
+- Templates de cartes Tiled pre-configures dans `terrain/templates/` :
+  - `template_outdoor.tmx` — Zone exterieure 60x60 (4 tilesets, 5 layers, object group)
+  - `template_indoor.tmx` — Interieur 20x20 (4 tilesets, 5 layers, object group)
+  - `template_dungeon.tmx` — Grotte/donjon 60x30 (3 tilesets, 5 layers, object group)
+  - Chaque template inclut les conventions de layers, les GID de reference, et des exemples d'objets commentes
 
 ---
 
