@@ -210,29 +210,113 @@
 
 ## Quetes et narration
 
-### Types de quetes varies
-- [ ] Escorte : proteger un PNJ d'un point A a B
-- [ ] Livraison : apporter un item a un PNJ dans une autre zone
-- [ ] Exploration : decouvrir X zones / atteindre un lieu
-- [ ] Craft : fabriquer un item pour un PNJ
-- [ ] Enquete : parler a plusieurs PNJ pour rassembler des indices
-- [ ] Defi de boss : vaincre un boss dans des conditions donnees
+> **Etat actuel** : 10 quetes en base (kill/collect), tracking monster uniquement,
+> journal de quetes basique (actives/terminees), PnjDialogParser avec conditions
+> (quest, quest_not, quest_active, has_item, domain_xp_min).
+> **Prerequis v0.4** : v0.4-D (tracking collect/craft) doit etre fait avant QN-2.
 
-### Chaines de quetes et choix
-- [ ] Chaines de quetes liees (Q1 → Q2 → Q3 → recompense finale)
-- [ ] Quetes a choix (influence recompenses ou suite de l'histoire)
-- [ ] Journal de quetes (actives, terminees, disponibles)
+### QN-1 — Recompenses de quetes completes (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Le controller ne distribue que les gils. Les champs XP et items existent dans les fixtures mais sont ignores.
+- [ ] Appliquer `rewards.xp` dans QuestController::complete() (ajouter XP au domaine ou XP generique)
+- [ ] Appliquer `rewards.items` : creer les PlayerItem a partir de genericItemSlug + quantity
+- [ ] Afficher les recompenses detaillees (XP, items, gils) dans le template journal de quetes
+- [ ] Tester : completer une quete avec recompenses mixtes, verifier inventaire + gils + XP
 
-### Trame principale
-- [ ] Acte 1 — L'Eveil : tutoriel narratif (forgeron, premier combat, premiere recolte, cristal d'amethyste)
-- [ ] Acte 2 — Les Fragments : 4 fragments dans 4 zones (non-lineaire)
-- [ ] Acte 3 — La Convergence : donjon final
-- [ ] Portraits de personnages dans les dialogues
+### QN-2 — Types de quetes : livraison et exploration (Priorite: HAUTE | Complexite: M | Gain: FORT)
+> Prerequis : v0.4-D (tracking collect/craft). Ajoute 2 types de quetes realisables avec l'infra existante.
+- [ ] Ajouter support `requirements.deliver` dans QuestTrackingFormater : {item_slug, pnj_id, quantity}
+- [ ] Tracking livraison : listener sur dialogue PNJ, verifier si le joueur a l'item en inventaire
+- [ ] Ajouter support `requirements.explore` dans QuestTrackingFormater : {map_id} ou {coordinates}
+- [ ] Tracking exploration : listener sur PlayerMoveEvent, verifier si zone/coordonnees atteintes
+- [ ] 2-3 quetes fixtures : 1 livraison (apporter item a un PNJ), 1 exploration (atteindre un lieu)
+- [ ] Tests unitaires : progression livraison, progression exploration
 
-### Quetes secondaires
-- [ ] Quetes de faction (reputation avec guildes)
-- [ ] Quetes quotidiennes (renouvelees chaque jour)
-- [ ] Quetes de decouverte (cachees, declenchees par exploration)
+### QN-3 — Prerequis de quetes et chaines simples (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Permet de creer des chaines Q1→Q2→Q3. Le PnjDialogParser supporte deja `quest` et `quest_not`.
+- [ ] Ajouter champ `prerequisiteQuests` (JSON, nullable) sur l'entite Quest (migration)
+- [ ] Verifier les prerequis dans QuestController::accept() (refuser si prerequis non remplis)
+- [ ] Adapter PnjDialogParser : afficher la quete suivante seulement si prerequis remplis
+- [ ] 1 chaine de 3 quetes dans les fixtures (Q1→Q2→Q3 avec recompense finale)
+- [ ] Afficher les quetes disponibles (prerequis ok, non acceptees, non completees) dans le journal
+
+### QN-4 — Journal de quetes enrichi (Priorite: MOYENNE | Complexite: S | Gain: FORT)
+> Le journal existe mais est basique. Ajout d'un onglet "disponibles" et meilleure UX.
+- [ ] Onglet "Disponibles" : lister les quetes dont les prerequis sont remplis et non encore acceptees
+- [ ] Filtrage par type de quete (kill, collect, deliver, explore)
+- [ ] Afficher le PNJ donneur de quete (nom + localisation) pour chaque quete
+- [ ] Indicateur de chaine : afficher "Quete 2/3" si la quete fait partie d'une chaine
+- [ ] Lien vers la carte pour localiser le PNJ donneur
+
+### QN-5 — Trame principale — Acte 1 : L'Eveil (Priorite: HAUTE | Complexite: M | Gain: TRES FORT)
+> Tutoriel narratif. Chaine de 4-5 quetes guidant le joueur dans ses premieres actions.
+> Utilise les systemes existants (kill, collect, deliver, explore) — pas de nouvelle mecanique.
+- [ ] Quete 1.1 "Reveil" : dialogue d'introduction avec un PNJ guide, explorer le village
+- [ ] Quete 1.2 "Premiers pas" : aller voir le forgeron, recevoir une arme de base
+- [ ] Quete 1.3 "Bapteme du feu" : tuer 2 monstres faibles dans la zone de depart
+- [ ] Quete 1.4 "Recolte" : collecter des ressources de base (herbes ou minerai)
+- [ ] Quete 1.5 "Le cristal d'amethyste" : explorer un lieu specifique, dialogue revelateur
+- [ ] Dialogues narratifs pour chaque PNJ implique (guide, forgeron, ancien du village)
+- [ ] Recompenses progressives (equipement starter, gils, XP, premiere materia)
+
+### QN-6 — Quetes a choix (Priorite: MOYENNE | Complexite: M | Gain: FORT)
+> Ajoute des embranchements narratifs. Le PnjDialogParser supporte deja les choices.
+- [ ] Ajouter champ `choiceOutcome` (JSON, nullable) sur Quest : mapper choix → quete suivante
+- [ ] Adapter QuestController::complete() : si choix fait, orienter vers la branche correspondante
+- [ ] Stocker le choix du joueur dans PlayerQuestCompleted (champ `choiceMade`, JSON nullable)
+- [ ] 1 quete a choix dans les fixtures (2 branches, recompenses differentes)
+- [ ] Condition `quest_choice` dans PnjDialogParser : adapter le dialogue selon le choix passe
+
+### QN-7 — Quetes quotidiennes (Priorite: MOYENNE | Complexite: M | Gain: FORT)
+> Contenu renouvelable qui donne une raison de revenir chaque jour.
+- [ ] Champ `isDaily` (bool) + `dailyPool` (JSON) sur Quest : pool de variantes
+- [ ] DailyQuestScheduler (Symfony Scheduler) : chaque jour, selectionner 3 quetes du pool
+- [ ] Permettre de re-accepter une quete quotidienne (lever la contrainte unique player+quest)
+- [ ] Entite PlayerDailyQuest ou reset du PlayerQuest chaque jour
+- [ ] 5-8 quetes quotidiennes dans les fixtures (kill X, collect Y, variantes simples)
+- [ ] Section "Quotidiennes" dans le journal de quetes
+
+### QN-8 — Trame principale — Acte 2 : Les Fragments (Priorite: BASSE | Complexite: L | Gain: FORT)
+> 4 chaines de quetes dans 4 zones. Prerequis : plusieurs cartes existantes (v0.5 Nouvelles zones).
+> A decouper en 4 sous-phases (1 par fragment/zone) quand les zones seront pretes.
+- [ ] Fragment Foret : chaine de 3-4 quetes (exploration, combat, enigme PNJ)
+- [ ] Fragment Mines : chaine de 3-4 quetes (recolte, craft, boss minier)
+- [ ] Fragment Marais : chaine de 3-4 quetes (enquete, livraison, combat)
+- [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
+- [ ] Chaque fragment donne un item cle collectible
+
+### QN-9 — Types de quetes avances : enquete et defi de boss (Priorite: BASSE | Complexite: M | Gain: MOYEN)
+> Mecaniques plus complexes, a faire quand le contenu de base est solide.
+- [ ] Type `enquete` : requirements.talk_to = [{pnj_id, condition}], tracking sur dialogue PNJ
+- [ ] Type `boss_challenge` : requirements.boss = {monster_slug, conditions: {no_heal, solo, time_limit}}
+- [ ] Conditions de defi trackees dans le combat (FightController enregistre les contraintes)
+- [ ] 2 quetes fixtures : 1 enquete (parler a 3 PNJ), 1 defi de boss
+
+### QN-10 — Quetes de decouverte cachees (Priorite: BASSE | Complexite: S | Gain: MOYEN)
+> Quetes non visibles dans le journal tant que non declenchees. Recompense l'exploration.
+- [ ] Champ `isHidden` (bool) sur Quest + champ `triggerCondition` (JSON)
+- [ ] HiddenQuestTriggerListener : ecoute PlayerMoveEvent, SpotHarvestEvent, MobDeadEvent
+- [ ] Si condition remplie, creer automatiquement le PlayerQuest + notification
+- [ ] 3-4 quetes cachees dans les fixtures (lieu secret, mob rare, action inhabituelle)
+
+### QN-11 — Portraits de personnages (Priorite: BASSE | Complexite: S | Gain: MOYEN)
+> Amelioration visuelle des dialogues. Pas de nouvelle mecanique.
+- [ ] Champ `portrait` (string, nullable) sur Pnj : chemin vers l'image
+- [ ] Afficher le portrait dans le template dialogue (bulle de dialogue + portrait a gauche)
+- [ ] 5-10 portraits pour les PNJ narratifs principaux (guide, forgeron, ancien, boss)
+- [ ] Fallback : icone generique par class_type si pas de portrait
+
+### QN-12 — Trame principale — Acte 3 : La Convergence (Priorite: BASSE | Complexite: L | Gain: FORT)
+> Donjon final. Prerequis : systeme de donjons instancies, Acte 2 complete.
+> A detailler quand les prerequis seront prets.
+- [ ] Donjon final accessible apres les 4 fragments
+- [ ] 3-5 salles avec puzzles, mobs, boss final
+- [ ] Dialogues de conclusion et epilogue
+- [ ] Recompenses de fin de trame (titre, equipement legendaire unique)
+
+### QN-RETIRE — Escorte (reporte indefiniment)
+> Le type "escorte" necessite un systeme de pathfinding PNJ, de combat en temps reel
+> et d'IA de suivi qui n'existent pas. Complexite XL pour un gain faible.
+> Reporte apres les systemes multijoueur/groupes si toujours pertinent.
 
 ---
 
