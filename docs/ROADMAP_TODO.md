@@ -7,10 +7,6 @@
 
 ## Reliquats des phases completees
 
-### Phase 1 — Fondations (reste)
-- [ ] Commande de preview : `app:terrain:preview --map=X` genere une image PNG
-- [ ] Templates de cartes Tiled pre-configures (template_outdoor.tmx, template_indoor.tmx, template_dungeon.tmx)
-
 ### Phase GD-8 — Materia (reste)
 - [ ] Verification `actions.materia.unlock` dans CombatCapacityResolver avant d'autoriser un sort
 - [ ] Methode `getUnlockedMateriaSpellSlugs(Player)` dans CombatSkillResolver
@@ -25,58 +21,63 @@
 
 ---
 
-## Gameplay Core (v0.4)
+## Gameplay Core (v0.4) — Completions & corrections
 
-### Boutiques PNJ & economie de base
-- [ ] Entite Shop (slug, name, pnj ManyToOne)
-- [ ] Entite ShopItem (shop, genericItem, buyPrice, sellPrice, stock, restockInterval)
-- [ ] Champ `gils` sur Player (int, default 0)
-- [ ] Migration SQL
-- [ ] ShopManager : buy(Player, ShopItem, qty), sell(Player, PlayerItem, qty)
-- [ ] ShopController : routes /game/shop/{pnjId}, /game/shop/buy, /game/shop/sell
-- [ ] Template boutique (grille items, prix, stock)
-- [ ] Bouton "Boutique" dans les dialogues PNJ si le PNJ a un shop
-- [ ] Fixtures boutiques : armurier, alchimiste, marchand general
-- [ ] Tests ShopManager (achat OK, fonds insuffisants, stock epuise, item soulbound invendable)
+> Infrastructure existante : ShopController, HarvestManager (21 spots, Mercure),
+> CraftManager + CraftingManager (2 systemes), Quest (10 quetes, tracking monster uniquement).
+> Les sous-phases ci-dessous comblent les lacunes identifiees.
 
-### Systeme de recolte
-- [ ] Entite HarvestSpot (map, coordinates, resource, harvestDomain, requiredSkillSlug, respawnSeconds, harvestedAt, harvestedByPlayer)
-- [ ] Repository HarvestSpotRepository
-- [ ] Migration SQL
-- [ ] Afficher les spots de recolte dans /api/map/entities
-- [ ] Afficher les spots sur la carte PixiJS
-- [ ] HarvestProcessor : harvest(Player, HarvestSpot) — verification skill, cooldown, XP, drop, Mercure
-- [ ] HarvestController : route POST /api/map/harvest/{spotId}
-- [ ] HarvestCompletedEvent + HarvestListener (XP + achievements)
-- [ ] Topic Mercure map/spot pour broadcast recolte/respawn
-- [ ] Items de ressource dans les fixtures (minerai de fer, herbe de soin, poisson, cuir brut)
-- [ ] Fixtures ~20 spots sur la carte existante
-- [ ] Tests HarvestProcessor (recolte OK, skill manquant, cooldown actif)
+### v0.4-A — Fixtures boutiques PNJ (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Le controller et le template existent. Il manque les donnees pour que les joueurs puissent acheter/vendre.
+- [ ] Configurer `shopItems` sur 3-5 PNJ existants dans PnjFixtures (armurier, alchimiste, marchand general)
+- [ ] Verifier que les items references dans shopItems existent dans ItemFixtures
+- [ ] Tester manuellement : ouvrir boutique, acheter, vendre, fonds insuffisants
 
-### Systeme d'artisanat
-- [ ] Entite CraftRecipe (slug, name, craftDomain, resultItem, resultQuantity, requiredSkillSlug, craftTimeSeconds, xpReward)
-- [ ] Entite CraftIngredient (recipe, genericItem, quantity)
-- [ ] Migration SQL
-- [ ] CraftProcessor : craft(Player, CraftRecipe) — verification skill + ingredients, consomme materiaux, cree item, XP
-- [ ] CraftController : routes /game/craft (liste), /game/craft/{recipeSlug} (POST)
-- [ ] Template craft (onglets par domaine, ingredients requis, progression)
-- [ ] CraftCompletedEvent
-- [ ] Fixtures ~15-20 recettes de base (forgeron, tanneur, alchimiste, joaillier)
-- [ ] Tests CraftProcessor (craft OK, ingredients manquants, skill manquant)
+### v0.4-B — Consolidation craft : supprimer le systeme duplique (Priorite: HAUTE | Complexite: S | Gain: MOYEN)
+> Deux systemes concurrents (CraftManager/CraftController + CraftingManager/CraftingController) creent de la confusion.
+> Garder un seul systeme, supprimer l'autre.
+- [ ] Auditer les 2 systemes : identifier lequel est le plus complet (CraftManager vs CraftingManager)
+- [ ] Supprimer le systeme redondant (controller, manager, templates, entity si applicable)
+- [ ] Mettre a jour les references (routes, liens dans templates, DOCUMENTATION.md)
 
-### Systeme de quetes
-- [ ] Entite Quest (slug, title, description, questGiver, questType, minDomainLevel, prerequisites, rewards JSON, repeatable)
-- [ ] Entite QuestObjective (quest, type, targetSlug, targetQuantity, description)
-- [ ] Entite PlayerQuest (player, quest, status, acceptedAt, completedAt)
-- [ ] Entite PlayerQuestProgress (playerQuest, objective, currentQuantity)
-- [ ] Migrations SQL
-- [ ] QuestManager : accept(), checkProgress(), complete(), getAvailableQuests(Player)
-- [ ] QuestProgressTracker : ecoute MobDeadEvent, HarvestCompletedEvent, CraftCompletedEvent
-- [ ] QuestController : routes /game/quests, /game/quest/{id}/accept, /game/quest/{id}/complete
-- [ ] Templates journal de quetes
-- [ ] Indicateur quete (! au-dessus du PNJ)
-- [ ] Fixtures ~10 quetes (tutoriel, combat, recolte, craft, exploration, chaine de 3)
-- [ ] Tests QuestManager + QuestProgressTracker
+### v0.4-C — Fixtures recettes de craft (Priorite: HAUTE | Complexite: M | Gain: FORT)
+> Le systeme de craft existe mais 0 recette en base. Sans donnees, le craft est inutilisable.
+- [ ] Creer CraftRecipeFixtures avec ~10 recettes de base :
+  - Forge : epee en fer, bouclier en fer, casque en fer (ingredients : minerai de fer)
+  - Alchimie : potion de soin, potion de mana (ingredients : herbes)
+  - Tannerie : armure en cuir (ingredients : cuir brut)
+  - Joaillerie : anneau simple (ingredients : minerai d'argent/or)
+- [ ] Verifier que les items ingredients existent dans ItemFixtures (creer si manquants)
+- [ ] Tester manuellement : acceder a un atelier, crafter un item, verifier inventaire
+
+### v0.4-D — Tracking quetes collect/craft (Priorite: HAUTE | Complexite: M | Gain: FORT)
+> PlayerQuestHelper ne traite que les objectifs `monsters`. Les quetes collect et craft ne progressent jamais.
+- [ ] Ajouter le tracking `collect` dans PlayerQuestHelper::getPlayerQuestProgress()
+- [ ] Creer QuestCollectTrackingListener : ecoute SpotHarvestEvent, met a jour les quetes actives
+- [ ] Creer QuestCraftTrackingListener : ecoute CraftEvent, met a jour les quetes actives
+- [ ] Verifier que les 2 quetes existantes avec objectif collect (mushroom, wood) progressent
+- [ ] Tests unitaires : progression collect, progression craft, completion automatique
+
+### v0.4-E — Indicateurs quetes sur PNJ (Priorite: MOYENNE | Complexite: S | Gain: FORT)
+> Aucun indicateur visuel (! ou ?) n'apparait au-dessus des PNJ donneurs de quetes sur la carte.
+- [ ] Ajouter un champ `hasAvailableQuest` dans /api/map/entities pour les PNJ
+- [ ] Afficher une icone (! quete dispo, ? quete en cours) au-dessus du sprite PNJ dans PixiJS
+- [ ] Mettre a jour l'icone dynamiquement quand le joueur accepte/complete une quete
+
+### v0.4-F — Tests unitaires systemes core (Priorite: MOYENNE | Complexite: M | Gain: MOYEN)
+> Aucun test pour shop, harvest, craft ni quest. Fragilise la base de code.
+- [ ] Tests ShopController : achat OK, fonds insuffisants, item soulbound invendable
+- [ ] Tests HarvestManager : recolte OK, skill manquant, cooldown actif, XP accordee
+- [ ] Tests CraftManager : craft OK, ingredients manquants, skill manquant, item cree
+- [ ] Tests QuestProgressTracker : progression monster, collect, craft, completion
+
+### v0.4-G — Stock boutique et restock (Priorite: BASSE | Complexite: M | Gain: FAIBLE)
+> Actuellement les boutiques ont un stock illimite. Le restock ajoute de la profondeur economique
+> mais n'est pas bloquant pour le gameplay de base.
+- [ ] Ajouter champs stock/maxStock/restockInterval dans la structure shopItems (JSON)
+- [ ] ShopRestockScheduler : commande/scheduler qui restock les boutiques periodiquement
+- [ ] Afficher le stock restant dans le template boutique
+- [ ] Bloquer l'achat si stock = 0
 
 ---
 
