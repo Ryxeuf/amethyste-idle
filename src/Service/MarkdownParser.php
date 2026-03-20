@@ -61,7 +61,7 @@ class MarkdownParser
                 continue;
             }
 
-            if ($inBlockquote && !str_starts_with($line, '> ')) {
+            if ($inBlockquote) {
                 $html .= $this->renderBlockquote($blockquoteLines);
                 $blockquoteLines = [];
                 $inBlockquote = false;
@@ -104,7 +104,7 @@ class MarkdownParser
                 $cells = array_map('trim', explode('|', trim(trim($line), '|')));
 
                 // Skip separator rows
-                if (\count($cells) > 0 && preg_match('/^[-:\s]+$/', $cells[0])) {
+                if (preg_match('/^[-:\s]+$/', $cells[0])) {
                     continue;
                 }
 
