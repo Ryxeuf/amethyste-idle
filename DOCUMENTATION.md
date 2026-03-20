@@ -949,9 +949,10 @@ Route `GET /change-locale/{locale}` → `LocaleController` → stocke la locale 
    - `--sync-entities` : créer/mettre à jour les entités en base (Mob, ObjectLayer)
    - `--dry-run` : analyse complète sans écriture de fichiers
    - `--stats` : afficher les statistiques détaillées (cells, layers, tilesets)
-3. **Génération CSS** : `app:tmx:generate-css` → classes CSS sprites
+3. **Génération CSS** : `app:tmx:generate-css` → classes CSS sprites *(obsolète, à supprimer — voir [TILED_PIPELINE_ROADMAP.md](docs/TILED_PIPELINE_ROADMAP.md) Phase T4)*
 4. **Seed Areas** : `php scripts/concat_area_fixtures.php` → `area_data.json`
 5. **Indexation** : `app:index:cell` → Typesense
+6. **Sync unifié** *(futur)* : `app:terrain:sync --all` → import + upsert BDD + tags Dijkstra en une commande
 
 ### Format TMX
 
@@ -978,6 +979,20 @@ Le bitmask de collision gère les directions :
 | `uncollisions.tmx` | Zones accessibles (override) |
 | `post_collisions.tmx` | Ajustements post-traitement |
 | `teleports.tmx` | Portails entre zones |
+
+### Problèmes connus & améliorations planifiées
+
+| # | Problème | Phase |
+|---|----------|-------|
+| 1 | Animations de tiles (eau, lave) ignorées — monde statique | T1 |
+| 2 | Pas de données biome/zone pour effets d'ambiance | T3 |
+| 3 | Commande CSS `tmx:generate-css` obsolète (rendu PixiJS) | T4 |
+| 4 | Pipeline en 3 étapes manuelles déconnectées | T2 |
+| 5 | Map ID hardcodé (`map_id = 10`) | T5 |
+| 6 | Pas d'animations dans `/api/map/config` | T1 |
+| 7 | Object layers sans support zones/régions | T3 |
+
+> Détail complet : [docs/TILED_PIPELINE_ROADMAP.md](docs/TILED_PIPELINE_ROADMAP.md)
 
 ---
 
