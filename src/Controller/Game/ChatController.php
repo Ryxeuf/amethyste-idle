@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\ChatMessage;
 use App\Entity\App\Player;
 use App\GameEngine\Social\ChatManager;
 use App\Helper\PlayerHelper;
@@ -53,7 +54,7 @@ class ChatController extends AbstractController
         }
 
         $content = trim((string) $request->request->get('content', ''));
-        $channel = $request->request->get('channel', 'global');
+        $channel = (string) $request->request->get('channel', 'global');
         $recipientId = $request->request->getInt('recipient_id', 0);
 
         if ($content === '') {
@@ -98,7 +99,7 @@ class ChatController extends AbstractController
             'content' => $m->getContent(),
             'sender' => ['id' => $m->getSender()->getId(), 'name' => $m->getSender()->getName()],
             'recipient' => $m->getRecipient() ? ['id' => $m->getRecipient()->getId(), 'name' => $m->getRecipient()->getName()] : null,
-            'createdAt' => $m->getCreatedAt()->format('H:i'),
+            'createdAt' => $m->getCreatedAt()?->format('H:i') ?? '',
         ], array_reverse($messages));
 
         return new JsonResponse(['messages' => $data]);
@@ -126,7 +127,7 @@ class ChatController extends AbstractController
                     'id' => $other->getId(),
                     'name' => $other->getName(),
                     'lastMessage' => $msg->getContent(),
-                    'lastMessageAt' => $msg->getCreatedAt()->format('H:i'),
+                    'lastMessageAt' => $msg->getCreatedAt()?->format('H:i') ?? '',
                 ];
             }
         }
@@ -165,7 +166,7 @@ class ChatController extends AbstractController
         return new JsonResponse(['players' => $data]);
     }
 
-    private function sendPrivate(Player $sender, int $recipientId, string $content): ?\App\Entity\App\ChatMessage
+    private function sendPrivate(Player $sender, int $recipientId, string $content): ?ChatMessage
     {
         if ($recipientId <= 0) {
             return null;
@@ -180,7 +181,7 @@ class ChatController extends AbstractController
     }
 
     /**
-     * @return \App\Entity\App\ChatMessage[]
+     * @return ChatMessage[]
      */
     private function getPrivateHistory(Player $player, Request $request): array
     {

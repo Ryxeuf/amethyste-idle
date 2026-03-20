@@ -78,7 +78,9 @@ class ChatModerationController extends AbstractController
     public function delete(Request $request, ChatMessage $message): Response
     {
         if ($this->isCsrfTokenValid('delete_chat' . $message->getId(), $request->request->get('_token'))) {
-            $moderator = $this->getUser()->getUsername() ?? $this->getUser()->getUserIdentifier();
+            /** @var \App\Entity\User $user */
+            $user = $this->getUser();
+            $moderator = $user->getUsername() ?? $user->getUserIdentifier();
             $this->chatManager->deleteMessage($message->getId(), $moderator);
             $this->adminLogger->log('chat_delete', 'ChatMessage', $message->getId(), 'Message de ' . $message->getSender()->getName());
             $this->addFlash('success', 'Message supprime.');

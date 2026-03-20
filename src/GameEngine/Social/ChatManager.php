@@ -246,15 +246,18 @@ class ChatManager
     {
         return match ($message->getChannel()) {
             ChatMessage::CHANNEL_GLOBAL => ['chat/global'],
-            ChatMessage::CHANNEL_MAP => ['chat/map/' . $message->getMap()->getId()],
-            ChatMessage::CHANNEL_PRIVATE => [
+            ChatMessage::CHANNEL_MAP => $message->getMap() ? ['chat/map/' . $message->getMap()->getId()] : [],
+            ChatMessage::CHANNEL_PRIVATE => $message->getRecipient() ? [
                 'chat/private/' . $message->getSender()->getId(),
                 'chat/private/' . $message->getRecipient()->getId(),
-            ],
+            ] : [],
             default => [],
         };
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function serializeMessage(ChatMessage $message): array
     {
         $data = [
@@ -266,7 +269,7 @@ class ChatManager
                 'id' => $message->getSender()->getId(),
                 'name' => $message->getSender()->getName(),
             ],
-            'createdAt' => $message->getCreatedAt()->format('H:i'),
+            'createdAt' => $message->getCreatedAt()?->format('H:i') ?? '',
         ];
 
         if ($message->getRecipient()) {
@@ -314,7 +317,12 @@ class ChatManager
             return false;
         }
 
-        $diff = time() - $lastMessage->getCreatedAt()->getTimestamp();
+        $createdAt = $lastMessage->getCreatedAt();
+        if (!$createdAt) {
+            return false;
+        }
+
+        $diff = time() - $createdAt->getTimestamp();
 
         return $diff < self::RATE_LIMIT_SECONDS;
     }
