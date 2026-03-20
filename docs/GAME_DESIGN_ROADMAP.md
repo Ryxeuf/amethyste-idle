@@ -4,7 +4,7 @@
 
 Le game design d'Amethyste-Idle évolue avec des règles structurantes : 8 éléments, 32+ domaines avec archétypes de joueur (tank, DPS, healer, support...), compétences multi-domaines (15+ par domaine), sorts comme base de toute action, materia = capacités de combat, races de personnage, items soulbound, bestiaire et succès.
 
-**État actuel** : 9 éléments (none + 8 éléments), 32 domaines avec 13-24 compétences chacun (combat), race Humain, bestiaire (3 paliers), 34+ succès. Phases 1-7 et 9-13 terminées. Phase 8 partiellement terminée. Phase 6.I (récolte/craft) encore à faire.
+**État actuel** : 9 éléments (none + 8 éléments), 32 domaines avec 13-24 compétences chacun (combat + récolte + craft), race Humain, bestiaire (3 paliers), 34+ succès. Phases 1-13 terminées (Phase 8 partiellement). Prochaines étapes : voir [NEXT_PHASES.md](NEXT_PHASES.md) (Phases 14-26).
 
 **Règles transversales** :
 - **1 PR par phase** — chaque phase produit une pull request distincte
@@ -542,3 +542,23 @@ Phase 13 (Documentation finale)
 | 11 | Bestiaire | M | Non | #11 ✅ |
 | 12 | Succès/Achievements | M | Non | #12 ✅ |
 | 13 | Documentation finale | S | Non | #13 ✅ |
+
+### Phases 14-26 — Prochaines étapes
+
+> Détail complet dans [NEXT_PHASES.md](NEXT_PHASES.md)
+
+| Phase | Description | Taille | Release |
+|-------|------------|--------|---------|
+| 14 | Finalisation materia vérification | S | v0.4 |
+| 15 | Boutiques PNJ & économie | M | v0.4 |
+| 16 | Système de récolte | L | v0.4 |
+| 17 | Système d'artisanat | L | v0.4 |
+| 18 | Système de quêtes | L | v0.4 |
+| 19 | Contenu monstres & loot | M | v0.5 |
+| 20 | Équipement & items variés | M | v0.5 |
+| 21 | Nouvelles zones & cartes | XL | v0.5 |
+| 22 | Équilibre & balancing | M | v0.5 |
+| 23 | Tests fonctionnels & E2E | M | v0.6 |
+| 24 | UX/UI améliorations | M | v0.6 |
+| 25 | Effets visuels & ambiance | M | v0.6 |
+| 26 | Performance & monitoring | S | v0.6 |

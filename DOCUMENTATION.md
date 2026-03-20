@@ -28,6 +28,7 @@
 20. [Terrain & Tiled Map Editor](#20-terrain--tiled-map-editor)
 21. [Bestiaire](#21-bestiaire)
 22. [Système de succès (Achievements)](#22-système-de-succès-achievements)
+23. [Feuille de route (Roadmap)](#23-feuille-de-route-roadmap)
 
 ---
 
@@ -1075,3 +1076,64 @@ Les succès récompensent les joueurs pour leurs accomplissements dans le jeu.
 | GET | `/game/fight/timeline` | `app_game_fight_timeline` | `Game\Fight\FightTimelineController` |
 | GET | `/game/bestiary` | `app_game_bestiary` | `Game\BestiaryController` |
 | GET | `/game/achievements` | `app_game_achievements` | `Game\AchievementController` |
+
+---
+
+## 23. Feuille de route (Roadmap)
+
+### État actuel — Phases 1-13 terminées
+
+Toutes les fondations du jeu sont en place : système élémentaire (8 éléments + none), 32 domaines de talent (400+ compétences), combat tour par tour avec materia, bestiaire, succès, inventaire avec groupement visuel, dashboard enrichi.
+
+**Phase 8 partiellement terminée** : le `CombatCapacityResolver` existe mais la vérification skill materia (`actions.materia.unlock`) n'est pas encore implémentée côté résolution et équipement.
+
+### Prochaines phases — Plan détaillé
+
+Le plan complet des phases 14 à 26 est documenté dans **[docs/NEXT_PHASES.md](docs/NEXT_PHASES.md)**.
+
+#### Release v0.4 — Gameplay Core (Phases 14-18)
+- **Phase 14** : Finalisation materia & vérification skill
+- **Phase 15** : Boutiques PNJ & économie de base (Shop, ShopItem, gils)
+- **Phase 16** : Système de récolte (HarvestSpot, HarvestProcessor, spots sur carte)
+- **Phase 17** : Système d'artisanat (CraftRecipe, CraftIngredient, CraftProcessor)
+- **Phase 18** : Système de quêtes (Quest, QuestObjective, PlayerQuest, QuestManager)
+
+#### Release v0.5 — Monde vivant (Phases 19-22)
+- **Phase 19** : 16+ nouveaux monstres + 2 boss + tables de loot enrichies
+- **Phase 20** : 3 tiers d'équipement + 16+ materia + consommables variés
+- **Phase 21** : 3 nouvelles cartes (Forêt, Mines, Village hub) + téléportation
+- **Phase 22** : Équilibre numérique (XP, prix, drops, stats)
+
+#### Release v0.6 — Polish & Immersion (Phases 23-26)
+- **Phase 23** : Tests fonctionnels & E2E (couverture ≥ 60%)
+- **Phase 24** : UX/UI (minimap, notifications, indicateurs PNJ, mobile)
+- **Phase 25** : Effets visuels (cycle jour/nuit, particules, animations combat)
+- **Phase 26** : Performance & monitoring (cache, index, rate limiting)
+
+### Routes à venir
+
+| Méthode | Route | Description |
+|---------|-------|-------------|
+| GET | `/game/shop/{pnjId}` | Boutique PNJ |
+| POST | `/game/shop/buy` | Acheter un item |
+| POST | `/game/shop/sell` | Vendre un item |
+| POST | `/api/map/harvest/{spotId}` | Récolter une ressource |
+| GET | `/game/craft` | Interface d'artisanat |
+| POST | `/game/craft/{recipeSlug}` | Crafter un item |
+| GET | `/game/quests` | Journal de quêtes |
+| POST | `/game/quest/{id}/accept` | Accepter une quête |
+| POST | `/game/quest/{id}/complete` | Compléter une quête |
+
+### Nouvelles entités planifiées
+
+| Entité | Couche | Description |
+|--------|--------|-------------|
+| `Shop` | Game | Boutique associée à un PNJ |
+| `ShopItem` | Game | Item en vente avec prix et stock |
+| `HarvestSpot` | App | Spot de récolte sur la carte |
+| `CraftRecipe` | Game | Recette d'artisanat |
+| `CraftIngredient` | Game | Ingrédient d'une recette |
+| `Quest` | Game | Définition d'une quête |
+| `QuestObjective` | Game | Objectif d'une quête |
+| `PlayerQuest` | App | Progression quête d'un joueur |
+| `PlayerQuestProgress` | App | Progression par objectif |
