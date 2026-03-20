@@ -1,0 +1,100 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Evenements planifies - Admin{% endblock %}
+{% block page_title %}Planificateur d'evenements{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold">Planificateur d'evenements</h1>
+    <a href="{{ path('admin_event_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">+ Programmer un evenement</a>
+</div>
+
+{# Filters #}
+<div class="flex gap-2 mb-4">
+    <a href="{{ path('admin_event_index') }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == '' %}bg-purple-900 text-purple-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Tous</a>
+    <a href="{{ path('admin_event_index', {status: 'scheduled'}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == 'scheduled' %}bg-blue-900 text-blue-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Programmes</a>
+    <a href="{{ path('admin_event_index', {status: 'active'}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == 'active' %}bg-green-900 text-green-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Actifs</a>
+    <a href="{{ path('admin_event_index', {status: 'completed'}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == 'completed' %}bg-gray-700 text-gray-300{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Termines</a>
+    <a href="{{ path('admin_event_index', {status: 'cancelled'}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == 'cancelled' %}bg-red-900 text-red-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Annules</a>
+</div>
+
+<p class="text-gray-400 text-sm mb-4">{{ total }} evenement(s)</p>
+
+{% if events|length > 0 %}
+<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-800">
+                <tr>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Nom</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Type</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Statut</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Debut</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Fin</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Carte</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Recurrent</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for event in events %}
+                <tr class="hover:bg-gray-800 transition-colors">
+                    <td class="px-4 py-3 text-gray-200 font-medium">{{ event.name }}</td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex px-2 py-0.5 text-xs rounded-full
+                            {% if event.type == 'boss_spawn' %}bg-red-900 text-red-300
+                            {% elseif event.type == 'xp_bonus' %}bg-green-900 text-green-300
+                            {% elseif event.type == 'drop_bonus' %}bg-yellow-900 text-yellow-300
+                            {% elseif event.type == 'invasion' %}bg-purple-900 text-purple-300
+                            {% else %}bg-gray-700 text-gray-300{% endif %}">
+                            {{ event.typeLabel }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex px-2 py-0.5 text-xs rounded-full
+                            {% if event.status == 'active' %}bg-green-900 text-green-300
+                            {% elseif event.status == 'scheduled' %}bg-blue-900 text-blue-300
+                            {% elseif event.status == 'cancelled' %}bg-red-900 text-red-300
+                            {% else %}bg-gray-700 text-gray-300{% endif %}">
+                            {{ event.statusLabel }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.startsAt|date('d/m/Y H:i') }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.endsAt|date('d/m/Y H:i') }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.map ? event.map.name : 'Global' }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.recurring ? 'Oui (' ~ event.recurrenceInterval ~ 'min)' : 'Non' }}</td>
+                    <td class="px-4 py-3 text-right whitespace-nowrap">
+                        {% if event.status in ['scheduled', 'active'] %}
+                            <form method="post" action="{{ path('admin_event_toggle', {id: event.id}) }}" class="inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ event.id) }}">
+                                <button type="submit" class="text-green-400 hover:text-green-300 text-sm mr-2">
+                                    {% if event.status == 'scheduled' %}Activer{% else %}Terminer{% endif %}
+                                </button>
+                            </form>
+                        {% endif %}
+                        <a href="{{ path('admin_event_edit', {id: event.id}) }}" class="text-blue-400 hover:text-blue-300 text-sm mr-2">Modifier</a>
+                        {% if event.status != 'cancelled' %}
+                            <form method="post" action="{{ path('admin_event_cancel', {id: event.id}) }}" class="inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ event.id) }}">
+                                <button type="submit" class="text-yellow-400 hover:text-yellow-300 text-sm mr-2">Annuler</button>
+                            </form>
+                        {% endif %}
+                        <form method="post" action="{{ path('admin_event_delete', {id: event.id}) }}" class="inline" onsubmit="return confirm('Supprimer cet evenement ?')">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ event.id) }}">
+                            <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Suppr.</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if totalPages > 1 %}
+    {% include 'admin/_pagination.html.twig' %}
+{% endif %}
+{% else %}
+<p class="text-gray-500">Aucun evenement programme.</p>
+{% endif %}
+{% endblock %}

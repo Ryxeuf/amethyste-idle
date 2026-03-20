@@ -1,0 +1,110 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ title }} - Admin{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold">{{ title }}</h1>
+    <a href="{{ path('admin_event_index') }}" class="text-gray-400 hover:text-white text-sm">Retour</a>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-2xl">
+    <form method="post">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="sm:col-span-2 mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Nom</label>
+                <input type="text" name="name" value="{{ event.name ?? '' }}" required
+                       class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full"
+                       placeholder="Invasion de golems">
+            </div>
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Type</label>
+                <select name="type" class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+                    <option value="boss_spawn" {% if event is defined and event.type == 'boss_spawn' %}selected{% endif %}>Spawn de boss</option>
+                    <option value="xp_bonus" {% if event is defined and event.type == 'xp_bonus' %}selected{% endif %}>Bonus XP</option>
+                    <option value="drop_bonus" {% if event is defined and event.type == 'drop_bonus' %}selected{% endif %}>Bonus drop</option>
+                    <option value="invasion" {% if event is defined and event.type == 'invasion' %}selected{% endif %}>Invasion</option>
+                    <option value="custom" {% if (event is not defined) or event.type == 'custom' %}selected{% endif %}>Personnalise</option>
+                </select>
+            </div>
+
+            {% if event is defined %}
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Statut</label>
+                <select name="status" class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+                    <option value="scheduled" {% if event.status == 'scheduled' %}selected{% endif %}>Programme</option>
+                    <option value="active" {% if event.status == 'active' %}selected{% endif %}>Actif</option>
+                    <option value="completed" {% if event.status == 'completed' %}selected{% endif %}>Termine</option>
+                    <option value="cancelled" {% if event.status == 'cancelled' %}selected{% endif %}>Annule</option>
+                </select>
+            </div>
+            {% endif %}
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Debut</label>
+                <input type="datetime-local" name="starts_at"
+                       value="{{ event is defined ? event.startsAt|date('Y-m-d\\TH:i') : '' }}"
+                       required class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+            </div>
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Fin</label>
+                <input type="datetime-local" name="ends_at"
+                       value="{{ event is defined ? event.endsAt|date('Y-m-d\\TH:i') : '' }}"
+                       required class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+            </div>
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Carte (optionnel)</label>
+                <select name="map_id" class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+                    <option value="">Global (toutes les cartes)</option>
+                    {% for m in maps %}
+                        <option value="{{ m.id }}" {% if event is defined and event.map and event.map.id == m.id %}selected{% endif %}>{{ m.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-2">
+                <label class="flex items-center gap-2 text-sm text-gray-300 mt-6">
+                    <input type="checkbox" name="recurring" value="1"
+                           {% if event is defined and event.recurring %}checked{% endif %}
+                           class="rounded bg-gray-800 border-gray-700">
+                    Recurrent
+                </label>
+            </div>
+
+            <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Intervalle de recurrence (minutes)</label>
+                <input type="number" name="recurrence_interval" min="1"
+                       value="{{ event is defined ? event.recurrenceInterval ?? '' : '' }}"
+                       class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full"
+                       placeholder="60">
+            </div>
+
+            <div class="sm:col-span-2 mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Description</label>
+                <textarea name="description" rows="2"
+                          class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full"
+                          placeholder="Description optionnelle de l'evenement">{{ event.description ?? '' }}</textarea>
+            </div>
+
+            <div class="sm:col-span-2 mb-4">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Parametres (JSON)</label>
+                <textarea name="parameters" rows="4"
+                          class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full font-mono text-sm"
+                          placeholder='{"monster_slug": "stone_golem", "xp_multiplier": 2}'>{{ event is defined and event.parameters ? event.parameters|json_encode(constant('JSON_PRETTY_PRINT')) : '' }}</textarea>
+                <p class="text-xs text-gray-500 mt-1">
+                    Boss spawn : {"monster_slug": "...", "count": 1} | Bonus XP : {"multiplier": 2} | Bonus drop : {"multiplier": 1.5}
+                </p>
+            </div>
+        </div>
+
+        <div class="flex gap-3">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Enregistrer</button>
+            <a href="{{ path('admin_event_index') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

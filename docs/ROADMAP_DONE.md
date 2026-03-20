@@ -115,9 +115,12 @@
 - Items, Monstres, Sorts, Competences, Domaines
 - Quetes, PNJ, Recettes de craft, Tables de loot
 
-### 2.3 Gestion des cartes (partiel) ✅
+### 2.3 Gestion des cartes ✅
 - Visualisation des maps avec statistiques par zone
 - Monitoring par zone (joueurs, mobs, PNJ)
+- Gestion des spawns : placer/deplacer mobs et PNJ sur la carte via interface admin
+- Gestion des portails : configurer les liens entre zones depuis l'admin (CRUD complet)
+- Import de map : upload d'un fichier TMX depuis l'admin
 
 ### 2.4 Gestion des joueurs ✅
 - Liste joueurs avec recherche et pagination
@@ -125,9 +128,12 @@
 - Actions admin (ban/unban, reset position, donner items/gils)
 - Logs d'actions admin
 
-### 2.5 Outils de maintenance (partiel) ✅
+### 2.5 Outils de maintenance ✅
 - Mode maintenance activable depuis l'admin
 - Logs d'administration
+- Reload des fixtures selectif : commande CLI `app:fixtures:load-selective` (12 groupes : items, monsters, spells, skills, domains, mobs, pnjs, quests, maps, players, achievements, slots)
+- Console Mercure : voir les topics connus, publier des messages de test depuis l'admin
+- Planificateur d'evenements : entite GameEvent (boss_spawn, xp_bonus, drop_bonus, invasion, custom), CRUD admin, recurrence, filtrage par statut
 
 ---
 

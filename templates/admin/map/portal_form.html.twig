@@ -1,0 +1,51 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ title }} - {{ map.name }} - Admin{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold">{{ title }} — {{ map.name }}</h1>
+    <a href="{{ path('admin_map_show', {id: map.id}) }}" class="text-gray-400 hover:text-white text-sm">Retour</a>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-lg">
+    <form method="post">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Nom</label>
+            <input type="text" name="name" value="{{ portal.name ?? '' }}" required
+                   class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full"
+                   placeholder="Portail vers la foret">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Coordonnees (x.y)</label>
+            <input type="text" name="coordinates" value="{{ portal.coordinates ?? '' }}" required
+                   class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full"
+                   placeholder="10.15">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Carte de destination</label>
+            <select name="destination_map_id" class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+                <option value="">-- Aucune --</option>
+                {% for m in maps %}
+                    <option value="{{ m.id }}" {% if portal is defined and portal.destinationMapId == m.id %}selected{% endif %}>{{ m.name }} (ID: {{ m.id }})</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Coordonnees de destination (x.y)</label>
+            <input type="text" name="destination_coordinates" value="{{ portal.destinationCoordinates ?? '' }}"
+                   class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full"
+                   placeholder="5.10">
+        </div>
+
+        <div class="flex gap-3">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Enregistrer</button>
+            <a href="{{ path('admin_map_show', {id: map.id}) }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

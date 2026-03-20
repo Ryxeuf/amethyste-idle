@@ -1,0 +1,39 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Importer une carte TMX - Admin{% endblock %}
+{% block page_title %}Importer une carte TMX{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold">Importer une carte TMX</h1>
+    <a href="{{ path('admin_map_index') }}" class="text-gray-400 hover:text-white text-sm">Retour</a>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-lg">
+    <form method="post" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Fichier TMX</label>
+            <input type="file" name="tmx_file" accept=".tmx" required
+                   class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+            <p class="text-xs text-gray-500 mt-1">Format Tiled Map Editor (.tmx). Le fichier sera place dans le dossier terrain/.</p>
+        </div>
+
+        <div class="mb-6">
+            <label class="flex items-center gap-2 text-sm text-gray-300">
+                <input type="checkbox" name="sync_entities" value="1" class="rounded bg-gray-800 border-gray-700">
+                Synchroniser les entites (mobs, portails, spots) apres import
+            </label>
+        </div>
+
+        <div class="bg-yellow-900 border border-yellow-800 rounded-lg p-3 mb-6 text-sm text-yellow-200">
+            Apres l'upload, executez la commande suivante pour importer la carte :<br>
+            <code class="bg-gray-800 px-2 py-1 rounded mt-1 inline-block">docker compose exec php php bin/console app:terrain:import --all --sync-entities</code>
+        </div>
+
+        <div class="flex gap-3">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Uploader</button>
+            <a href="{{ path('admin_map_index') }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">Annuler</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

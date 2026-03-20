@@ -1,0 +1,74 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Console Mercure - Admin{% endblock %}
+{% block page_title %}Console Mercure{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold mb-2">Console Mercure</h1>
+    <p class="text-gray-400 text-sm">Visualiser les topics connus et publier des messages de test via Mercure SSE.</p>
+</div>
+
+{# Known Topics #}
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
+    <h2 class="text-lg font-bold mb-4">Topics connus</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-800">
+                <tr>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Topic</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Description</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for topic, description in topics %}
+                <tr class="hover:bg-gray-800 transition-colors">
+                    <td class="px-4 py-3">
+                        <code class="text-purple-400 bg-gray-800 px-2 py-0.5 rounded">{{ topic }}</code>
+                    </td>
+                    <td class="px-4 py-3 text-gray-400">{{ description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# Publish Form #}
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+    <h2 class="text-lg font-bold mb-4">Publier un message de test</h2>
+    <form method="post" action="{{ path('admin_mercure_publish') }}">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Topic</label>
+            <div class="flex gap-2">
+                <input type="text" name="topic" id="topic-input" required
+                       class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 flex-1"
+                       placeholder="map/move">
+            </div>
+            <div class="flex flex-wrap gap-2 mt-2">
+                {% for topic, desc in topics %}
+                    <button type="button" onclick="document.getElementById('topic-input').value='{{ topic }}'"
+                            class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-400 px-2 py-1 rounded transition-colors">
+                        {{ topic }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-300 mb-1">Donnees (JSON ou texte)</label>
+            <textarea name="data" rows="6"
+                      class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full font-mono text-sm"
+                      placeholder='{"type": "test", "message": "Hello from admin console"}'></textarea>
+        </div>
+
+        <div class="bg-yellow-900 border border-yellow-800 rounded-lg p-3 mb-4 text-sm text-yellow-200">
+            Attention : les messages publies seront recus par tous les clients abonnes au topic.
+        </div>
+
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">
+            Publier
+        </button>
+    </form>
+</div>
+{% endblock %}
