@@ -144,6 +144,14 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                             Logs
                         </a>
+                        <a href="{{ path('admin_mercure_index') }}" data-action="click->admin-sidebar#close" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {% if app.request.attributes.get('_route') starts with 'admin_mercure' %}bg-purple-900 text-purple-200{% else %}text-gray-400 hover:bg-gray-800 hover:text-gray-200{% endif %} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            Mercure
+                        </a>
+                        <a href="{{ path('admin_event_index') }}" data-action="click->admin-sidebar#close" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {% if app.request.attributes.get('_route') starts with 'admin_event' %}bg-purple-900 text-purple-200{% else %}text-gray-400 hover:bg-gray-800 hover:text-gray-200{% endif %} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Evenements
+                        </a>
                     {% endif %}
                 </nav>
 

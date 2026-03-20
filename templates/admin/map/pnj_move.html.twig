@@ -1,0 +1,34 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Deplacer {{ pnj.name }} - Admin{% endblock %}
+{% block page_title %}Deplacer {{ pnj.name }}{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold">Deplacer "{{ pnj.name }}" — {{ map.name }}</h1>
+    <a href="{{ path('admin_map_show', {id: map.id}) }}" class="text-gray-400 hover:text-white text-sm">Retour</a>
+</div>
+
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-lg">
+    {{ form_start(form) }}
+
+    <div class="mb-4">
+        {{ form_label(form.coordinates, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-300 mb-1'}}) }}
+        {{ form_widget(form.coordinates) }}
+        {{ form_errors(form.coordinates) }}
+    </div>
+
+    <div class="mb-6">
+        {{ form_label(form.map, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-300 mb-1'}}) }}
+        {{ form_widget(form.map) }}
+        {{ form_errors(form.map) }}
+    </div>
+
+    <div class="flex gap-3">
+        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Deplacer</button>
+        <a href="{{ path('admin_map_show', {id: map.id}) }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">Annuler</a>
+    </div>
+
+    {{ form_end(form) }}
+</div>
+{% endblock %}

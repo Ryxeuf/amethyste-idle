@@ -7,13 +7,9 @@
 
 ## Reliquats des phases completees
 
-### Phase 2 — Administration (reste)
-- [ ] Gestion des spawns : placer/deplacer mobs et PNJ sur la carte via interface visuelle
-- [ ] Gestion des portails : configurer les liens entre zones depuis l'admin
-- [ ] Import de map : upload d'un fichier TMX depuis l'admin
-- [ ] Reload des fixtures selectif (items seulement, monstres seulement, etc.)
-- [ ] Console Mercure : voir les topics actifs, publier des messages de test
-- [ ] Planificateur d'evenements : programmer des spawns de boss, des bonus XP temporaires
+### Phase 1 — Fondations (reste)
+- [ ] Commande de preview : `app:terrain:preview --map=X` genere une image PNG
+- [ ] Templates de cartes Tiled pre-configures (template_outdoor.tmx, template_indoor.tmx, template_dungeon.tmx)
 
 ### Phase GD-8 — Materia (reste)
 - [ ] Verification `actions.materia.unlock` dans CombatCapacityResolver avant d'autoriser un sort
