@@ -7,6 +7,7 @@ use App\GameEngine\Map\MovementCalculator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -19,11 +20,16 @@ class DebugMoveCommand extends Command
         parent::__construct();
     }
 
+    protected function configure(): void
+    {
+        $this->addOption('map-id', null, InputOption::VALUE_REQUIRED, 'Map ID to load', 10);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        $this->movementCalculator->loadMap(10);
+        $this->movementCalculator->loadMap((int) $input->getOption('map-id'));
         $moves = $this->movementCalculator->calculateMovement(85, 35, 94, 30);
         dump($moves);
         exit;

@@ -98,7 +98,7 @@ class Map
     #[LiveAction]
     public function move(#[LiveArg] int $x, #[LiveArg] int $y): void
     {
-        $this->movementCalculator->loadMap(10);
+        $this->movementCalculator->loadMap($this->player->getMap()->getId());
         $movements = $this->movementCalculator->calculateMovement($this->x, $this->y, $x, $y);
 
         if (empty($movements)) {

@@ -64,7 +64,8 @@ class TerrainImportCommand extends Command
             ->addOption('all', null, InputOption::VALUE_NONE, 'Import all TMX files in terrain/')
             ->addOption('sync-entities', null, InputOption::VALUE_NONE, 'Create/update database entities from object layers (mobs, portals, spots)')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Parse and report statistics without writing any files or database changes')
-            ->addOption('stats', null, InputOption::VALUE_NONE, 'Show detailed statistics after import (cell counts, layer info, tileset usage)');
+            ->addOption('stats', null, InputOption::VALUE_NONE, 'Show detailed statistics after import (cell counts, layer info, tileset usage)')
+            ->addOption('map-id', null, InputOption::VALUE_REQUIRED, 'Map ID to use for entity sync (default: auto-detect from Map table)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -74,6 +75,7 @@ class TerrainImportCommand extends Command
         $syncEntities = $input->getOption('sync-entities');
         $dryRun = $input->getOption('dry-run');
         $showStats = $input->getOption('stats') || $dryRun;
+        $mapId = $input->getOption('map-id') ? (int) $input->getOption('map-id') : null;
 
         if ($input->getOption('all')) {
             $names = ['*.tmx'];
@@ -422,7 +424,7 @@ class TerrainImportCommand extends Command
 
             // Sync entities from object layers
             if ($syncEntities && !empty($map['objects'])) {
-                $synced = $this->syncEntitiesFromObjects($map['objects'], $io);
+                $synced = $this->syncEntitiesFromObjects($map['objects'], $io, $mapId);
                 $io->info(sprintf('  Synced %d entities to database', $synced));
             }
 
@@ -522,17 +524,26 @@ class TerrainImportCommand extends Command
         return $errors;
     }
 
-    private function syncEntitiesFromObjects(array $objects, SymfonyStyle $io): int
+    private function syncEntitiesFromObjects(array $objects, SymfonyStyle $io, ?int $mapId = null): int
     {
         $synced = 0;
 
-        // Find the default map (map_id = 10 based on fixtures)
-        $map = $this->entityManager->getRepository(Map::class)->find(10);
+        $mapRepository = $this->entityManager->getRepository(Map::class);
+
+        if ($mapId !== null) {
+            $map = $mapRepository->find($mapId);
+        } else {
+            // Auto-detect: use the first available map
+            $map = $mapRepository->findOneBy([], ['id' => 'ASC']);
+        }
+
         if (!$map) {
-            $io->warning('No map found with ID 10 — skipping entity sync');
+            $io->warning('No map found — use --map-id to specify the target map. Skipping entity sync.');
 
             return 0;
         }
+
+        $io->info(sprintf('Using map #%d "%s" for entity sync', $map->getId(), $map->getName()));
 
         foreach ($objects as $obj) {
             $type = $obj['type'] ?? '';

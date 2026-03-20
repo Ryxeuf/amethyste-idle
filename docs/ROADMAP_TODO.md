@@ -24,7 +24,7 @@
 
 ```
 VAGUE 1 (aucun prerequis — tout en parallele)
-  ┌─ 01 De-hardcoder map IDs ─────────────────────────────────────────┐
+  ┌─ ✅ 01 De-hardcoder map IDs (FAIT) ────────────────────────────────┐
   ├─ 02 Supprimer CSS mort                                            │
   ├─ 03 Optimisation queries N+1                                      │
   ├─ 04 Rate limiting API                                             │
@@ -150,17 +150,6 @@ VAGUE 6 — Long terme
 ---
 
 ## Piste A — Dette technique & performance (‖)
-
-### 01 — De-hardcoder les map IDs (S | ★★★)
-
-> 3 endroits hardcodent `map_id=10`. Bloquant pour le multi-cartes (C-8/C-9). Le contexte Player/Map est deja disponible partout — correction triviale. Prerequis : ∅
-
-- [ ] `MapApiController::move()` ligne 231 : remplacer `loadMap(10)` par `$player->getMap()->getId()`
-- [ ] `Twig/Components/Map::move()` ligne 101 : remplacer `loadMap(10)` par `$this->player->getMap()->getId()`
-- [ ] `TerrainImportCommand::syncEntitiesFromObjects()` ligne 530 : ajouter option `--map-id` ou deduire depuis le nom du fichier TMX
-- [ ] Tester le deplacement sur la carte existante apres correction
-
----
 
 ### 02 — Supprimer la commande CSS morte (S | ★★)
 
