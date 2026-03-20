@@ -465,33 +465,163 @@ Apres contenu :
 
 ## Polish & qualite (v0.6)
 
-### Tests fonctionnels & E2E
-- [ ] Tests fonctionnels pour tous les controleurs Game/*
-- [ ] Tests E2E Panther : parcours combat, quete, craft
-- [ ] Tests integration : evenements et listeners
+> Decoupee en sous-phases independantes, classees par priorite.
+> Complexite : S (1-2h), M (2-4h), L (4-8h) — Priorite : P1=haute, P2=moyenne, P3=basse
+>
+> **Deja fait (a ne pas reimplementer) :**
+> - ~~Cycle jour/nuit PixiJS~~ → Phase 1.7 (4 periodes, overlay couleur)
+> - ~~Camera shake~~ → Phase 1.7 (shakeCamera avec decay)
+> - ~~Systeme de particules de base~~ → Phase 1.7 (spawnParticles generique)
+> - ~~Cache Doctrine~~ → Deja configure en prod (query_cache + result_cache)
+> - ~~Optimisation tactile mobile~~ → Phase 1.5 (joystick, responsive)
+> - ~~Indicateurs PNJ quetes~~ → Doublon v0.4-E (traite la-bas)
+
+### P6-1 — Rendu combat log en frontend (P1 | S | Gain: fort)
+> Le CombatLogger ecrit deja tout en BDD (FightLog). Il manque juste l'affichage dans le template combat.
+> Quick win : le backend est pret a 95%.
+- [ ] Template partiel `_combat_log.html.twig` : liste scrollable des messages du tour courant
+- [ ] Couleurs par type d'evenement (degats=rouge, soin=vert, critique=orange, elementaire=couleur element)
+- [ ] Icones par type (epee=attaque, etoile=critique, bouclier=defense, crane=mort)
+- [ ] Auto-scroll vers le dernier message a chaque tour
+
+### P6-2 — Notifications toast in-game (P1 | M | Gain: fort)
+> Aucun systeme de notification generaliste. Seul FightNotification existe (combat only).
+> Impact fort : feedback immediat pour toutes les actions du joueur.
+- [ ] Composant Stimulus `toast_controller.js` : affiche des toasts empiles en bas-droite (auto-dismiss 4s)
+- [ ] 4 types visuels : succes (vert), info (bleu), alerte (orange), erreur (rouge)
+- [ ] Integration dans les evenements existants :
+  - Drop d'item apres combat (ecran loot)
+  - XP gagnee / domaine level-up
+  - Quete completee / objectif progresse
+  - Succes debloque
+- [ ] Helper Twig `toast()` ou data-attribute Stimulus pour declencher depuis le serveur
+
+### P6-3 — Tests fonctionnels controleurs Game (P1 | M | Gain: fort)
+> 0 test fonctionnel pour shop, inventory, skills, bestiary, achievements. Fragilise la base.
+> Prerequis : aucun. Stabilise le code existant.
+- [ ] Test ShopController : achat OK, fonds insuffisants, item inexistant
+- [ ] Test InventoryController : equiper, desequiper, utiliser consommable
+- [ ] Test SkillController : acquerir skill, XP insuffisante, prerequis manquant
+- [ ] Test BestiaryController : acces page, filtres, affichage paliers
+- [ ] Test AchievementController : acces page, succes debloques vs verrouilles
+
+### P6-4 — Tests E2E Panther : parcours joueur (P2 | M | Gain: moyen)
+> Prerequis : P6-3 (les fonctionnels valident les controleurs individuels d'abord).
+> Valide des parcours complets multi-pages.
+- [ ] Parcours combat : carte → engagement mob → combat → victoire → loot → retour carte
+- [ ] Parcours quete : PNJ dialogue → accepter quete → tuer mob → rendre quete → recompense
+- [ ] Parcours craft : inventaire → atelier → crafter → verifier item cree
+
+### P6-5 — Tests integration evenements/listeners (P2 | S | Gain: moyen)
+> 21 evenements domaine existent, mais 0 test d'integration sur les listeners.
+> Valide que les side-effects (XP, achievements, quetes) se declenchent correctement.
+- [ ] Test MobKilledEvent → BestiaryListener + AchievementListener + QuestProgressListener
+- [ ] Test SpotHarvestEvent → XP progression + (futur) QuestCollectListener
+- [ ] Test PlayerLevelUpEvent → AchievementListener
 - [ ] Objectif : couverture >= 60% sur src/GameEngine/
 
-### UX/UI ameliorations
-- [ ] Minimap (position joueur, mobs, PNJ)
-- [ ] Notifications in-game (toast pour drops, level-up, quetes, succes)
-- [ ] Indicateurs PNJ (! quete, $ boutique, ? dialogue)
-- [ ] Barre d'action rapide (raccourcis consommables/sorts)
-- [ ] Journal de combat ameliore (log detaille, couleurs elementaires)
-- [ ] Optimisation tactile mobile
+### P6-6 — Minimap (P2 | M | Gain: fort)
+> L'API /api/map/entities retourne deja toutes les positions. Il faut un rendu en overlay PixiJS.
+- [ ] Container PixiJS fixe en coin haut-droit (150x150px), semi-transparent
+- [ ] Points colores : blanc=joueur, rouge=mobs, bleu=PNJ, jaune=spots recolte, violet=portails
+- [ ] Viewport rectangle (zone visible) affiche en surbrillance
+- [ ] Mise a jour a chaque mouvement joueur
+- [ ] Toggle affichage (touche M ou bouton)
 
-### Effets visuels & ambiance
-- [ ] Cycle jour/nuit PixiJS (filtre teinte chaude → froide)
-- [ ] Particules pour sorts en combat, recolte, level-up
-- [ ] Animations de combat (shake critiques, flash elementaire)
-- [ ] Transitions de zone (fondu au noir)
-- [ ] Sons (optionnel) : Howler.js pour effets sonores de base
+### P6-7 — Barre d'action rapide (P2 | S | Gain: moyen)
+> Raccourcis clavier/boutons pour utiliser consommables et sorts frequents hors combat (carte).
+- [ ] Barre fixe en bas de l'ecran carte (4-6 slots)
+- [ ] Drag & drop items consommables depuis l'inventaire vers les slots
+- [ ] Raccourcis clavier 1-6 pour activer un slot
+- [ ] Persistance des slots en localStorage
 
-### Performance & monitoring
-- [ ] Cache Doctrine (result cache sur requetes frequentes)
-- [ ] Optimisation queries (N+1 detection, eager loading)
-- [ ] Index DB composites sur tables critiques
-- [ ] Monitoring Prometheus/Grafana basiques
-- [ ] Rate limiting API (mouvements, achats, craft)
+### P6-8 — Particules combat et recolte (P2 | S | Gain: moyen)
+> Le systeme spawnParticles() existe deja. Il faut l'appeler aux bons moments.
+> Quick win : juste brancher les appels sur les evenements existants.
+- [ ] Particules sur sort lance en combat (couleur = element du sort)
+- [ ] Particules sur coup critique (explosion doree)
+- [ ] Particules sur recolte reussie (etincelles vertes)
+- [ ] Particules sur level-up domaine (pluie d'etoiles)
+
+### P6-9 — Flash elementaire et animations combat (P2 | S | Gain: moyen)
+> Camera shake existe. Ajouter des effets visuels complementaires au combat.
+- [ ] Flash colore plein ecran sur degats elementaires (rouge=feu, bleu=eau, etc.)
+- [ ] Shake camera sur coups critiques (branche sur evenement critique existant)
+- [ ] Animation de tremblement sur le sprite cible quand il recoit des degats
+- [ ] Fondu progressif du sprite a la mort d'un mob
+
+### P6-10 — Optimisation queries N+1 (P1 | S | Gain: fort)
+> Impact direct sur les temps de chargement. Pas de nouveau code metier, juste du tuning.
+- [ ] Auditer les requetes avec Symfony Profiler (toolbar) sur les pages critiques (carte, combat, inventaire)
+- [ ] Ajouter `fetch: EAGER` ou `->addSelect()->leftJoin()` sur les relations N+1 detectees
+- [ ] Index composites : `(player_id, map_id)` sur positions, `(fight_id, turn)` sur FightLog
+- [ ] Mesurer avant/apres (nombre de queries par page)
+
+### P6-11 — Rate limiting API (P1 | S | Gain: fort)
+> Aucun rate limiting. Risque d'abus sur les endpoints critiques.
+> Symfony RateLimiter est inclus dans le framework, simple a configurer.
+- [ ] Configurer `framework.rate_limiter` dans `config/packages/rate_limiter.yaml`
+- [ ] Limiter `/api/map/move` : 10 req/s par joueur (anti-speedhack)
+- [ ] Limiter `/game/fight/*` : 5 req/s par joueur
+- [ ] Limiter `/game/shop/buy` et `/game/craft` : 3 req/s par joueur
+- [ ] Reponse 429 avec message explicite
+
+### P6-12 — Index DB composites (P3 | S | Gain: moyen)
+> Ameliore les performances sur les tables critiques sans changement de code.
+- [ ] Migration : index composite `(player_id, map_id)` sur table player/position
+- [ ] Migration : index composite `(fight_id, turn)` sur FightLog
+- [ ] Migration : index sur `(player_id, quest_id)` sur PlayerQuest
+- [ ] Migration : index sur `(monster_slug, player_id)` sur BestiaryEntry
+
+### P6-13 — Transitions de zone (P3 | S | Gain: faible)
+> Fondu au noir lors du changement de carte/teleportation.
+- [ ] Overlay noir plein ecran avec alpha 0→1→0 (PIXI.Graphics + GSAP ou requestAnimationFrame)
+- [ ] Declenchement sur teleportation portail
+- [ ] Declenchement sur changement de map
+
+### P6-14 — Sons basiques (P3 | L | Gain: moyen)
+> Optionnel. Ajoute de l'immersion mais necessite des assets sonores.
+> Dependance : trouver/creer des sons libres de droits.
+- [ ] Integrer Howler.js via importmap
+- [ ] Sons d'interface : clic bouton, ouverture menu, notification
+- [ ] Sons de combat : attaque, sort, critique, mort
+- [ ] Sons d'ambiance : loop par biome (foret, grotte, village)
+- [ ] Bouton mute/volume dans les parametres joueur
+- [ ] Persistance preference son en localStorage
+
+### P6-15 — Monitoring basique (P3 | M | Gain: faible)
+> Utile en production pour detecter les problemes, mais pas bloquant pour le gameplay.
+- [ ] Endpoint `/health` (status BDD, Mercure, cache)
+- [ ] Metriques Prometheus via `prometheus-metrics-bundle` (requetes/s, temps reponse, erreurs)
+- [ ] Dashboard Grafana minimal (4-5 panels : requetes, latence, erreurs, joueurs connectes)
+- [ ] Alertes basiques (latence > 2s, erreurs > 5/min)
+
+### Ordre d'implementation recommande
+
+```
+Quick wins immédiats (backend pret, juste brancher) :
+  P6-1 Combat log frontend ──→ P6-8 Particules combat
+  P6-10 Optimisation N+1
+  P6-11 Rate limiting
+
+Stabilisation :
+  P6-3 Tests fonctionnels ──→ P6-4 Tests E2E
+  P6-5 Tests integration    ──→ (objectif 60% couverture)
+
+UX/UI (independants entre eux) :
+  P6-2 Toast notifications
+  P6-6 Minimap
+  P6-7 Barre action rapide
+
+Effets visuels :
+  P6-8 Particules ──→ P6-9 Flash elementaire
+  P6-13 Transitions zone
+
+Infra (basse priorite) :
+  P6-12 Index DB
+  P6-14 Sons
+  P6-15 Monitoring
+```
 
 ---
 
