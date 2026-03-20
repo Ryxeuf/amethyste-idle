@@ -145,13 +145,13 @@
 
     {# Tabs #}
     <div class="flex">
-        <a href="{{ path('admin_roadmap_todo') }}" class="roadmap-tab {% if tab == 'todo' %}active{% endif %}">
+        <a href="{{ path('admin_roadmap_index', {tab: 'todo'}) }}" class="roadmap-tab {% if tab == 'todo' %}active{% endif %}">
             A faire
             {% if todoStats.total > 0 %}
                 <span class="ml-1.5 inline-flex px-1.5 py-0.5 text-xs rounded-full {% if tab == 'todo' %}bg-yellow-900 text-yellow-300{% else %}bg-gray-700 text-gray-400{% endif %}">{{ todoStats.total - todoStats.done }}</span>
             {% endif %}
         </a>
-        <a href="{{ path('admin_roadmap_done') }}" class="roadmap-tab {% if tab == 'done' %}active{% endif %}">
+        <a href="{{ path('admin_roadmap_index', {tab: 'done'}) }}" class="roadmap-tab {% if tab == 'done' %}active{% endif %}">
             Termine
             {% if doneSections > 0 %}
                 <span class="ml-1.5 inline-flex px-1.5 py-0.5 text-xs rounded-full {% if tab == 'done' %}bg-green-900 text-green-300{% else %}bg-gray-700 text-gray-400{% endif %}">{{ doneSections }}</span>

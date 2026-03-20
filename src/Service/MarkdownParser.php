@@ -2,12 +2,7 @@
 
 namespace App\Service;
 
-/**
- * Lightweight Markdown-to-HTML parser for roadmap files.
- * Handles: headings, checkboxes, blockquotes, tables, code blocks,
- * horizontal rules, bold, inline code, links, and lists.
- */
-final class MarkdownParser
+class MarkdownParser
 {
     public function toHtml(string $markdown): string
     {
@@ -17,6 +12,7 @@ final class MarkdownParser
         $inTable = false;
         $inList = false;
         $inBlockquote = false;
+        /** @var list<string> $blockquoteLines */
         $blockquoteLines = [];
 
         foreach ($lines as $line) {
@@ -36,18 +32,20 @@ final class MarkdownParser
                         $inBlockquote = false;
                     }
                     $lang = trim(substr(trim($line), 3));
-                    $html .= '<pre class="roadmap-code"><code' . ($lang ? ' class="language-' . htmlspecialchars($lang) . '"' : '') . '>';
+                    $html .= '<pre class="roadmap-code"><code' . ($lang !== '' ? ' class="language-' . htmlspecialchars($lang) . '"' : '') . '>';
                     $inCodeBlock = true;
                 }
+
                 continue;
             }
 
             if ($inCodeBlock) {
                 $html .= htmlspecialchars($line) . "\n";
+
                 continue;
             }
 
-            // Blockquotes - accumulate lines
+            // Blockquotes
             if (str_starts_with($line, '> ') || $line === '>') {
                 if ($inList) {
                     $html .= '</ul>';
@@ -59,10 +57,10 @@ final class MarkdownParser
                 }
                 $inBlockquote = true;
                 $blockquoteLines[] = ltrim(substr($line, 1));
+
                 continue;
             }
 
-            // End blockquote
             if ($inBlockquote && !str_starts_with($line, '> ')) {
                 $html .= $this->renderBlockquote($blockquoteLines);
                 $blockquoteLines = [];
@@ -80,6 +78,7 @@ final class MarkdownParser
                     $inTable = false;
                 }
                 $html .= '<hr class="roadmap-hr">';
+
                 continue;
             }
 
@@ -96,6 +95,7 @@ final class MarkdownParser
                 $level = strlen($m[1]);
                 $text = $this->inlineFormat($m[2]);
                 $html .= '<h' . $level . ' class="roadmap-h' . $level . '">' . $text . '</h' . $level . '>';
+
                 continue;
             }
 
@@ -104,7 +104,7 @@ final class MarkdownParser
                 $cells = array_map('trim', explode('|', trim(trim($line), '|')));
 
                 // Skip separator rows
-                if (count($cells) > 0 && preg_match('/^[-:\s]+$/', $cells[0])) {
+                if (\count($cells) > 0 && preg_match('/^[-:\s]+$/', $cells[0])) {
                     continue;
                 }
 
@@ -119,6 +119,7 @@ final class MarkdownParser
                         $html .= '<th>' . $this->inlineFormat($cell) . '</th>';
                     }
                     $html .= '</tr></thead><tbody>';
+
                     continue;
                 }
 
@@ -127,10 +128,10 @@ final class MarkdownParser
                     $html .= '<td>' . $this->inlineFormat($cell) . '</td>';
                 }
                 $html .= '</tr>';
+
                 continue;
             }
 
-            // End table if line doesn't contain |
             if ($inTable) {
                 $html .= '</tbody></table></div>';
                 $inTable = false;
@@ -143,12 +144,13 @@ final class MarkdownParser
                     $html .= '<ul class="roadmap-checklist">';
                 }
                 $checked = strtolower($m[2]) === 'x';
-                $indent = strlen($m[1]) >= 2 ? ' roadmap-indent' : '';
+                $indent = \strlen($m[1]) >= 2 ? ' roadmap-indent' : '';
                 $text = $this->inlineFormat($m[3]);
                 $icon = $checked
                     ? '<span class="roadmap-check done">&#10003;</span>'
                     : '<span class="roadmap-check pending">&#9675;</span>';
                 $html .= '<li class="roadmap-task' . ($checked ? ' done' : ' pending') . $indent . '">' . $icon . ' ' . $text . '</li>';
+
                 continue;
             }
 
@@ -158,27 +160,24 @@ final class MarkdownParser
                     $inList = true;
                     $html .= '<ul class="roadmap-list">';
                 }
-                $indent = strlen($m[1]) >= 2 ? ' roadmap-indent' : '';
+                $indent = \strlen($m[1]) >= 2 ? ' roadmap-indent' : '';
                 $html .= '<li class="roadmap-item' . $indent . '">' . $this->inlineFormat($m[2]) . '</li>';
+
                 continue;
             }
 
-            // End list
             if ($inList && trim($line) === '') {
                 $html .= '</ul>';
                 $inList = false;
             }
 
-            // Empty line
             if (trim($line) === '') {
                 continue;
             }
 
-            // Paragraph
             $html .= '<p class="roadmap-p">' . $this->inlineFormat($line) . '</p>';
         }
 
-        // Close open elements
         if ($inList) {
             $html .= '</ul>';
         }
@@ -196,8 +195,6 @@ final class MarkdownParser
     }
 
     /**
-     * Parse roadmap stats: count total tasks, done tasks, sections.
-     *
      * @return array{total: int, done: int, sections: list<array{title: string, total: int, done: int}>}
      */
     public function parseStats(string $markdown): array
@@ -205,11 +202,12 @@ final class MarkdownParser
         $lines = explode("\n", $markdown);
         $totalTasks = 0;
         $doneTasks = 0;
+        /** @var list<array{title: string, total: int, done: int}> $sections */
         $sections = [];
+        /** @var array{title: string, total: int, done: int}|null $currentSection */
         $currentSection = null;
 
         foreach ($lines as $line) {
-            // Track H2/H3 sections
             if (preg_match('/^(#{2,3})\s+(.+)$/', $line, $m)) {
                 if ($currentSection !== null) {
                     $sections[] = $currentSection;
@@ -221,16 +219,15 @@ final class MarkdownParser
                 ];
             }
 
-            // Count checkboxes
             if (preg_match('/^(\s*)- \[([ xX])\]/', $line, $m)) {
-                $totalTasks++;
+                ++$totalTasks;
                 if ($currentSection !== null) {
-                    $currentSection['total']++;
+                    ++$currentSection['total'];
                 }
                 if (strtolower($m[2]) === 'x') {
-                    $doneTasks++;
+                    ++$doneTasks;
                     if ($currentSection !== null) {
-                        $currentSection['done']++;
+                        ++$currentSection['done'];
                     }
                 }
             }
@@ -240,8 +237,7 @@ final class MarkdownParser
             $sections[] = $currentSection;
         }
 
-        // Filter out sections with 0 tasks
-        $sections = array_values(array_filter($sections, fn (array $s) => $s['total'] > 0));
+        $sections = array_values(array_filter($sections, static fn (array $s): bool => $s['total'] > 0));
 
         return [
             'total' => $totalTasks,
@@ -252,22 +248,11 @@ final class MarkdownParser
 
     private function inlineFormat(string $text): string
     {
-        // Inline code
         $text = (string) preg_replace('/`([^`]+)`/', '<code class="roadmap-inline-code">$1</code>', $text);
-
-        // Bold
         $text = (string) preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $text);
-
-        // Italic
         $text = (string) preg_replace('/(?<!\*)\*([^*]+)\*(?!\*)/', '<em>$1</em>', $text);
-
-        // Links
         $text = (string) preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2" class="roadmap-link">$1</a>', $text);
-
-        // Strikethrough
         $text = (string) preg_replace('/~~([^~]+)~~/', '<del>$1</del>', $text);
-
-        // Emoji-like markers
         $text = str_replace('✅', '<span class="roadmap-emoji-done">✅</span>', $text);
 
         return $text;

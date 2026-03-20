@@ -4,31 +4,31 @@ namespace App\Controller\Admin;
 
 use App\Service\MarkdownParser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/roadmap', name: 'admin_roadmap_')]
 #[IsGranted('ROLE_ADMIN')]
-final class RoadmapController extends AbstractController
+class RoadmapController extends AbstractController
 {
-    private readonly string $projectDir;
-
     public function __construct(
         private readonly MarkdownParser $markdownParser,
-        KernelInterface $kernel,
     ) {
-        $this->projectDir = $kernel->getProjectDir();
     }
 
-    #[Route('', name: 'index', defaults: ['tab' => 'todo'])]
-    #[Route('/done', name: 'done', defaults: ['tab' => 'done'])]
-    #[Route('/todo', name: 'todo', defaults: ['tab' => 'todo'])]
-    public function index(string $tab): Response
+    #[Route('', name: 'index')]
+    public function index(Request $request): Response
     {
-        $doneFile = $this->projectDir . '/docs/ROADMAP_DONE.md';
-        $todoFile = $this->projectDir . '/docs/ROADMAP_TODO.md';
+        $tab = $request->query->getString('tab', 'todo');
+        if (!\in_array($tab, ['todo', 'done'], true)) {
+            $tab = 'todo';
+        }
+
+        $projectDir = (string) $this->getParameter('kernel.project_dir');
+        $doneFile = $projectDir . '/docs/ROADMAP_DONE.md';
+        $todoFile = $projectDir . '/docs/ROADMAP_TODO.md';
 
         $doneContent = file_exists($doneFile) ? (string) file_get_contents($doneFile) : '';
         $todoContent = file_exists($todoFile) ? (string) file_get_contents($todoFile) : '';
@@ -37,7 +37,6 @@ final class RoadmapController extends AbstractController
         $todoHtml = $this->markdownParser->toHtml($todoContent);
         $todoStats = $this->markdownParser->parseStats($todoContent);
 
-        // Count completed sections in done file (H2 with ✅)
         $doneSections = (int) preg_match_all('/^## .+✅/m', $doneContent);
 
         $doneFileMtime = file_exists($doneFile) ? filemtime($doneFile) : false;
@@ -52,5 +51,17 @@ final class RoadmapController extends AbstractController
             'doneFileDate' => $doneFileMtime !== false ? $doneFileMtime : null,
             'todoFileDate' => $todoFileMtime !== false ? $todoFileMtime : null,
         ]);
+    }
+
+    #[Route('/done', name: 'done')]
+    public function done(): Response
+    {
+        return $this->redirectToRoute('admin_roadmap_index', ['tab' => 'done']);
+    }
+
+    #[Route('/todo', name: 'todo')]
+    public function todo(): Response
+    {
+        return $this->redirectToRoute('admin_roadmap_index', ['tab' => 'todo']);
     }
 }
