@@ -82,35 +82,56 @@
 
 ## Combat enrichi
 
-### Synergies elementaires et Materia
-- [ ] Combos elementaires (Eau+Feu=Vapeur, Terre+Air=Tempete de sable, etc.)
-- [ ] Materia Fusion : combiner 2 materias au repos
-- [ ] Materia XP : les materias gagnent de l'XP en combat (3 niveaux)
-- [ ] Slots de Materia lies : amplification des materias adjacentes
+> **Note** : De nombreuses fonctionnalites de combat sont deja implementees (voir ROADMAP_DONE.md).
+> Les items ci-dessous sont les **taches restantes reelles**, decoupees en sous-phases.
 
-### Statuts alteres
-- [ ] Poison (X% PV/tour, 3 tours)
-- [ ] Paralysie (50% chance ne pas agir, 2 tours)
-- [ ] Brulure (degats reduits 25% + degats feu/tour)
-- [ ] Gel (vitesse reduite 50%, 2 tours)
-- [ ] Silence (impossible d'utiliser des sorts, 3 tours)
-- [ ] Regeneration (recupere X PV/tour, 3 tours)
-- [ ] Bouclier (absorbe X prochains points de degats)
-- [ ] Berserk (+50% degats, -30% defense, ne peut pas fuir)
-- [ ] Icones visuelles sur la timeline de combat
-- [ ] Resistances elementaires par monstre
+### CE-1 — Icones statuts sur la timeline (Taille S)
+> Complexite: Faible | Priorite: Haute | Gain: Feedback visuel immediat en combat
+- [ ] Ajouter les badges statut actifs sous chaque avatar dans `_timeline.html.twig`
+- [ ] Afficher l'icone emoji + tours restants (tooltip au survol)
+- [ ] Tester visuellement avec poison, bouclier, berserk
 
-### IA monstres amelioree
-- [ ] Patterns d'attaque : sequences d'actions par monstre
-- [ ] Monstres soigneurs (soignent leurs allies)
-- [ ] Monstres invocateurs (appellent des renforts)
-- [ ] Alertes de danger (indicateur visuel attaque puissante)
+### CE-2 — Indicateur de difficulte monstres (Taille S)
+> Complexite: Faible | Priorite: Moyenne | Gain: Lisibilite pour le joueur
+- [ ] Champ `difficulty` (int 1-5) sur l'entite Monster (migration)
+- [ ] Afficher des etoiles dans le template combat (a cote du nom du mob)
+- [ ] Afficher les etoiles dans le bestiaire
+- [ ] Renseigner la difficulte dans MonsterFixtures
 
-### Boss et combats speciaux
-- [ ] Mecaniques de boss : phases multiples, attaques speciales
-- [ ] Recompenses uniques par boss (equipement legendaire)
-- [ ] Cooldown de boss (1h reel)
-- [ ] Indicateur de difficulte (etoiles)
+### CE-3 — Recompenses uniques de boss (Taille S)
+> Complexite: Faible | Priorite: Haute | Gain: Motivation a affronter les boss
+- [ ] Ajouter des items legendaires boss-only dans les ItemFixtures (1-2 items par boss)
+- [ ] Configurer les LootTable des boss existants avec drop garanti d'un item legendaire
+- [ ] Badge "Boss" sur les items dans l'inventaire (via item.rarity ou lootSource)
+
+### CE-4 — Slots de Materia lies (Taille M)
+> Complexite: Moyenne | Priorite: Basse | Gain: Profondeur build, synergie equipement
+> Prerequis: systeme materia deja fonctionnel
+- [ ] Ajouter un champ `linkedSlotId` (nullable) sur l'entite Slot (migration)
+- [ ] Logique `LinkedMateriaResolver` : si 2 slots lies ont des materia du meme element, bonus +15% degats
+- [ ] Integrer le bonus dans CombatCapacityResolver
+- [ ] Afficher le lien entre slots dans le template inventaire (trait visuel)
+- [ ] Ajouter des slots lies sur quelques equipements avances dans les fixtures
+
+### CE-5 — Monstres soigneurs (Taille M)
+> Complexite: Moyenne | Priorite: Moyenne | Gain: Variete tactique des combats
+> Prerequis: necessite des combats multi-mobs (groupes de mobs)
+- [ ] Support multi-mobs dans FightController : engager un groupe de mobs (2-3 mobs)
+- [ ] MobActionHandler : role `healer` cible un allie blesse (mob avec le moins de PV%)
+- [ ] SpellApplicator : supporter les heals mob→mob
+- [ ] Template combat : afficher plusieurs mobs avec barres de vie individuelles
+- [ ] Fixtures : groupe de mobs avec un soigneur (ex: 2 Squelettes + 1 Necromancien soigneur)
+- [ ] Tests : heal mob→mob, ciblage du plus blesse
+
+### CE-6 — Monstres invocateurs (Taille M)
+> Complexite: Moyenne | Priorite: Basse | Gain: Combats dynamiques et imprevisibles
+> Prerequis: CE-5 (multi-mobs)
+- [ ] Nouvelle action IA `summon` dans MobActionHandler
+- [ ] Creer un Mob en cours de combat (ajout a la Fight, insertion dans la timeline)
+- [ ] Limite d'invocation (max 2 renforts par combat)
+- [ ] FightTurnResolver : recalculer la timeline quand un mob est ajoute
+- [ ] Fixtures : monstre invocateur (ex: Necromancien invoque des Squelettes)
+- [ ] Message de log specifique ("X invoque un Y !")
 
 ---
 
