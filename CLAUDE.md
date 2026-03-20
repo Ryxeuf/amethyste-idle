@@ -37,6 +37,13 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 10. **Sorts actifs = UNIQUEMENT via materia** : pour lancer un sort en combat, le joueur doit (1) posseder la materia, (2) avoir appris la competence materia correspondante dans un arbre, (3) avoir sockette la materia dans un slot d'equipement. L'attaque de base de l'arme est toujours disponible gratuitement.
 
+11. **Roadmap a deux fichiers** : la roadmap est separee en deux fichiers dans `docs/` :
+   - `docs/ROADMAP_DONE.md` — Phases completees (historique de ce qui a ete fait)
+   - `docs/ROADMAP_TODO.md` — Taches a venir (tout ce qui reste a faire)
+   - Quand une tache est **implementee**, elle est **retiree** de `ROADMAP_TODO.md` et **ajoutee** a `ROADMAP_DONE.md`
+   - Si une phase est partiellement faite, ce qui est fait va dans `ROADMAP_DONE.md` et ce qui reste dans `ROADMAP_TODO.md`
+   - Toute nouvelle tache planifiee est ajoutee dans `ROADMAP_TODO.md`
+
 ## Stack technique
 
 | Couche | Technologie |
@@ -154,7 +161,8 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 ## Documentation approfondie
 
 - [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (22 sections, modele de donnees, combat, carte, inventaire, quetes, bestiaire, succes, etc.)
-- [docs/GAME_DESIGN_ROADMAP.md](docs/GAME_DESIGN_ROADMAP.md) — Plan d'implementation game design (13 phases, elements, domaines, materia, bestiaire, succes)
+- [docs/ROADMAP_DONE.md](docs/ROADMAP_DONE.md) — Roadmap realisee (historique des phases completees)
+- [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Roadmap a venir (toutes les taches restantes)
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 - [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)
