@@ -273,3 +273,4 @@
 | Inventaire groupe | Groupement par slug, badge "x3" |
 | Administration | Panel admin complet (dashboard enrichi, CRUD, logs, maintenance) |
 | CI/CD | GitHub Actions (lint, PHPStan, PHPUnit, build Docker) + deploy auto sur main |
+| Chat en jeu | Chat global + zone + prive via Mercure SSE, rate limiting, moderation admin, historique, stimulus controller |

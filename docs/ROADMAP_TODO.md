@@ -480,31 +480,126 @@ Apres contenu :
 
 ## Multijoueur & social
 
-### Chat en jeu
-- [ ] Chat global (Mercure SSE)
-- [ ] Chat de zone
-- [ ] Messages prives
-- [ ] Commandes (/whisper, /zone, /global, /emote)
-- [ ] Filtres anti-spam et moderation
+> **Etat des lieux** : le chat en jeu (global, zone, prive) est deja implemente avec Mercure SSE,
+> moderation admin, rate limiting et historique. Voir ROADMAP_DONE.md.
+> Les sous-phases ci-dessous couvrent les fonctionnalites restantes.
 
-### Guildes
-- [ ] Creation de guilde (nom, blason, description)
-- [ ] Rangs (Maitre, Officier, Membre, Recrue)
-- [ ] Chat de guilde
-- [ ] Coffre de guilde (inventaire partage + logs)
-- [ ] Quetes de guilde (objectifs collectifs)
-- [ ] Classement des guildes
+### MS-1 — Commandes chat slash (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Le chat fonctionne mais n'a pas de commandes slash. Amelioration UX immediate.
+- [ ] Parser de commandes dans ChatManager : detecter `/whisper <nom> <msg>`, `/zone <msg>`, `/global <msg>`
+- [ ] Commande `/emote <action>` : afficher "*Joueur danse*" en italique dans le chat
+- [ ] Commande `/who` : lister les joueurs presents sur la meme carte
+- [ ] Feedback d'erreur si commande inconnue ou arguments invalides
+- [ ] Tests unitaires : parsing commandes, cas d'erreur
 
-### Groupes de combat
-- [ ] Formation de groupe (2-4 joueurs)
-- [ ] Combat de groupe
-- [ ] Loot partage (round-robin, besoin/cupidite, free for all)
-- [ ] Synergie de groupe (bonus roles complementaires)
+### MS-2 — Profil joueur public (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Prerequis social de base : voir les infos d'un autre joueur avant toute interaction avancee.
+- [ ] Route `GET /game/player/{id}/profile` : nom, classe, race, succes, domaines principaux
+- [ ] Template profil public (stats non-sensibles, achievements notables, titre)
+- [ ] Lien cliquable sur les noms de joueurs dans le chat et sur la carte
+- [ ] Tests fonctionnels : acces profil, joueur inexistant
 
-### PvP
-- [ ] Arene 1v1 classee avec matchmaking
-- [ ] Saisons PvP avec classements et recompenses
-- [ ] Duels entre joueurs
+### MS-3 — Liste d'amis (Priorite: HAUTE | Complexite: S | Gain: FORT)
+> Base pour toute interaction sociale recurrente (invitations groupe, messages rapides).
+- [ ] Entite `Friendship` (player, friend, status: pending/accepted/blocked, createdAt)
+- [ ] Migration + repository
+- [ ] FriendshipManager : sendRequest, accept, decline, block, unfriend
+- [ ] Route `GET /game/friends` : liste d'amis avec statut en ligne (derniere activite < 5 min)
+- [ ] Route `POST /game/friends/request/{id}` + `POST /game/friends/accept/{id}`
+- [ ] Notification Mercure quand un ami se connecte
+- [ ] Tests unitaires : ajout, acceptation, blocage, suppression
+
+### MS-4 — Guildes : fondation (Priorite: MOYENNE | Complexite: M | Gain: FORT)
+> Premiere brique du systeme de guilde : creation et gestion des membres.
+- [ ] Entite `Guild` (name unique, tag 3-5 chars, description, createdAt, leader: Player)
+- [ ] Entite `GuildMember` (guild, player, rank: enum master/officer/member/recruit, joinedAt)
+- [ ] Migrations + repositories
+- [ ] GuildManager : create (cout en gils), invite, accept, leave, kick, promote, demote
+- [ ] Route `GET /game/guild` : page de guilde (infos, liste membres avec rangs)
+- [ ] Route `POST /game/guild/create` : formulaire creation
+- [ ] Route `POST /game/guild/invite/{playerId}` : invitation (officier+ requis)
+- [ ] Validation : nom unique, max 1 guilde par joueur, cout creation (ex: 5000 gils)
+- [ ] Tests unitaires : creation, invitation, promotion, depart
+
+### MS-5 — Guildes : chat de guilde (Priorite: MOYENNE | Complexite: S | Gain: MOYEN)
+> Prerequis: MS-4. Ajoute un canal de communication dedie a la guilde.
+- [ ] Nouveau channel `CHANNEL_GUILD` dans ChatMessage
+- [ ] Topic Mercure `chat/guild/{guildId}` dans ChatManager
+- [ ] Methodes `sendGuildMessage()` et `getGuildHistory()` dans ChatManager
+- [ ] Onglet "Guilde" dans le chat (stimulus controller)
+- [ ] Verification d'appartenance a la guilde avant envoi
+- [ ] Tests unitaires : envoi, historique, joueur hors guilde refuse
+
+### MS-6 — Guildes : coffre partage (Priorite: BASSE | Complexite: M | Gain: MOYEN)
+> Prerequis: MS-4. Inventaire collectif avec tracabilite.
+- [ ] Entite `GuildVault` (guild, items: Collection, maxSlots: int)
+- [ ] Entite `GuildVaultLog` (guild, player, action: deposit/withdraw, item, quantity, createdAt)
+- [ ] GuildVaultManager : deposit, withdraw (permissions par rang)
+- [ ] Route `GET /game/guild/vault` : affichage coffre + logs recents
+- [ ] Route `POST /game/guild/vault/deposit` et `POST /game/guild/vault/withdraw`
+- [ ] Permissions : recruit = depot seul, member+ = retrait, officier+ = tout
+- [ ] Tests unitaires : depot, retrait, permissions, logs
+
+### MS-7 — Groupes de combat : formation (Priorite: MOYENNE | Complexite: M | Gain: FORT)
+> Systeme de groupe pour jouer ensemble. Base pour le combat coop et donjons futurs.
+- [ ] Entite `Party` (leader: Player, maxSize: 4, createdAt)
+- [ ] Entite `PartyMember` (party, player, joinedAt)
+- [ ] Migration + repository
+- [ ] PartyManager : create, invite, accept, leave, kick, disband, transfer leader
+- [ ] Topic Mercure `party/{partyId}` pour notifications groupe (invite, join, leave)
+- [ ] Route `GET /game/party` : interface du groupe (membres, barres de vie)
+- [ ] Route `POST /game/party/invite/{playerId}` : invitation
+- [ ] Affichage des membres du groupe sur la carte (icone ou bordure coloree)
+- [ ] Dissolution automatique si tous les membres partent
+- [ ] Tests unitaires : creation, invitation, depart, dissolution
+
+### MS-8 — Groupes de combat : combat cooperatif (Priorite: BASSE | Complexite: L | Gain: FORT)
+> Prerequis: MS-7 + CE-5 (multi-mobs). Combat a plusieurs joueurs contre des groupes de monstres.
+> **Attention** : phase large, a re-decouper au moment de l'implementation.
+- [ ] FightController : creer un combat avec plusieurs joueurs du meme groupe
+- [ ] Timeline multi-joueurs dans FightTurnResolver
+- [ ] Chaque joueur joue son tour independamment (Mercure pour notifier le tour actif)
+- [ ] Template combat : afficher tous les joueurs allies avec leurs barres de vie
+- [ ] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
+- [ ] XP partagee (repartition equitable entre participants)
+- [ ] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
+
+### MS-9 — Duels entre joueurs (Priorite: BASSE | Complexite: M | Gain: MOYEN)
+> PvP consensuel simple : defi 1v1 sans classement.
+- [ ] Route `POST /game/duel/challenge/{playerId}` : envoyer un defi
+- [ ] Notification Mercure au joueur defie (accepter/refuser)
+- [ ] Creer un Fight PvP (joueur vs joueur, pas de mob)
+- [ ] Adapter FightTurnResolver pour PvP (2 joueurs alternent)
+- [ ] Pas de perte d'items/gils (combat amical)
+- [ ] Ecran de resultat (victoire/defaite)
+- [ ] Tests : defi, acceptation, combat, resultat
+
+### MS-10 — Arene PvP classee (Priorite: BASSE | Complexite: L | Gain: MOYEN)
+> Prerequis: MS-9. Systeme competitif avec matchmaking et classement.
+> **Attention** : phase large, a re-decouper au moment de l'implementation.
+- [ ] Entite `ArenaRating` (player, rating ELO, wins, losses, season)
+- [ ] Entite `ArenaSeason` (number, startDate, endDate, active)
+- [ ] File d'attente matchmaking (recherche adversaire +/- 200 ELO)
+- [ ] Calcul ELO apres chaque match
+- [ ] Route `GET /game/arena` : classement, stats personnelles, bouton recherche
+- [ ] Recompenses de fin de saison (titres, items cosmetiques)
+- [ ] Tests : matchmaking, calcul ELO, classement
+
+### MS-11 — Classement des guildes (Priorite: BASSE | Complexite: S | Gain: FAIBLE)
+> Prerequis: MS-4. Tableau de classement simple par points de guilde.
+- [ ] Champ `points` sur Guild (incremente par succes membres, quetes, PvP)
+- [ ] Route `GET /game/guilds/ranking` : classement pagine
+- [ ] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent, ArenaDuelEndedEvent
+- [ ] Tests : attribution points, classement ordonne
+
+### MS-12 — Quetes de guilde (Priorite: BASSE | Complexite: M | Gain: MOYEN)
+> Prerequis: MS-4 + MS-11. Objectifs collectifs hebdomadaires.
+- [ ] Entite `GuildQuest` (guild, type: kill/collect/craft, target, progress, goal, reward, expiresAt)
+- [ ] GuildQuestManager : generer 3 quetes hebdomadaires, tracker progression, distribuer recompenses
+- [ ] Listeners sur MobDeadEvent, SpotHarvestEvent, CraftEvent pour progression collective
+- [ ] Route `GET /game/guild/quests` : liste quetes actives avec barres de progression
+- [ ] Recompenses : gils + points de guilde pour tous les membres
+- [ ] Tests : progression, completion, recompenses
 
 ---
 
