@@ -362,21 +362,91 @@ Apres contenu :
 
 ## Monde vivant
 
-### Cycle jour/nuit (gameplay)
-- [ ] Impact gameplay : monstres nocturnes, plantes de nuit, PNJ marchands fermes la nuit
-- [ ] Visibilite reduite la nuit
-- [ ] Cycle 1h reelle = 1 journee in-game (configurable admin)
+> Decoupage en 8 sous-phases independantes, classees par priorite.
+> L'overlay visuel jour/nuit existe deja (Phase 1.4). Le GameEvent admin existe deja (Phase 2.5).
+>
+> **Legende** : Taille S (<50 lignes), M (50-150 lignes), L (150-300 lignes)
 
-### Systeme meteo
-- [ ] Types de meteo : ensoleille, nuageux, pluie, orage, brouillard, neige
-- [ ] Impact gameplay (bonus/malus elementaires, monstres speciaux)
-- [ ] Meteo aleatoire par zone (changement toutes les 15-30 min)
-- [ ] Effets visuels PixiJS (particules pluie, flocons, eclairs)
+### MV-1 — Horloge in-game & API temps [Priorite: HAUTE | Taille: S | Gain: MOYEN]
+> Fondation obligatoire pour toutes les autres sous-phases monde vivant.
+- [ ] `GameTimeService` : convertit le temps reel en temps in-game (1h reelle = 1 journee, ratio configurable)
+- [ ] Methodes `getHour()`, `getMinute()`, `getTimeOfDay()` (dawn/day/dusk/night), `getSeason()`
+- [ ] Parametre Symfony `game.time_ratio` (configurable admin via `parameters.yaml`)
+- [ ] Route API `GET /api/game/time` (heure in-game, periode, saison)
+- [ ] Adapter `_computeTimeOfDay()` dans `map_pixi_controller.js` pour utiliser l'API au lieu du temps reel
+- [ ] Affichage discret de l'heure in-game dans le HUD carte
 
-### Ecosysteme vivant
-- [ ] PNJ avec routines (maison → travail → taverne selon l'heure)
-- [ ] Evenements aleatoires (invasion monstres, marchand itinerant, aurore boreale)
-- [ ] Saisonnalite (festivals lies aux vraies saisons)
+### MV-2 — Impact gameplay jour/nuit [Priorite: HAUTE | Taille: M | Gain: HAUT]
+> Prerequis : MV-1. Donne une raison concrete au cycle jour/nuit.
+- [ ] Champ `nocturnal` (bool) sur l'entite `Mob` — mobs nocturnes n'apparaissent que de nuit
+- [ ] Filtre dans `MobSpawnManager` : exclure mobs nocturnes le jour, mobs diurnes la nuit
+- [ ] Champ `nightOnly` (bool) sur `HarvestSpot` — plantes de nuit recoltables uniquement la nuit
+- [ ] Verification dans `HarvestProcessor`
+- [ ] Champ `opensAt`/`closesAt` (int, heure in-game) sur `Shop` ou `Pnj` — horaires d'ouverture
+- [ ] Verification dans `ShopManager` + message "La boutique est fermee" dans le template
+- [ ] Augmenter l'alpha de l'overlay nuit (0.35 → 0.45) pour renforcer l'effet visuel
+- [ ] Migration SQL (3 champs)
+
+### MV-3 — Meteo : backend & diffusion [Priorite: MOYENNE | Taille: S | Gain: MOYEN]
+> Systeme autonome, pas de prerequis strict (mais MV-1 recommande pour coherence).
+- [ ] Enum PHP `WeatherType` : sunny, cloudy, rain, storm, fog, snow
+- [ ] Champ `currentWeather` (string) + `weatherChangedAt` (datetime) sur l'entite `Map`
+- [ ] Migration SQL
+- [ ] `WeatherService` : `changeWeather(Map)` — tire une meteo aleatoire ponderee par zone/saison
+- [ ] Commande Scheduler `app:weather:tick` (toutes les 15-30 min) qui appelle `WeatherService` sur chaque map
+- [ ] Ajouter au `DefaultScheduleProvider`
+- [ ] Route API `GET /api/map/weather?mapId=X` (ou inclure dans `/api/map/config`)
+- [ ] Topic Mercure `map/weather` pour broadcast changement meteo en temps reel
+
+### MV-4 — Meteo : effets visuels PixiJS [Priorite: MOYENNE | Taille: M | Gain: HAUT]
+> Prerequis : MV-3. Fort impact immersion visuelle.
+- [ ] Ecouter le topic Mercure `map/weather` dans `map_pixi_controller.js`
+- [ ] Container de particules dedie (zIndex au-dessus des entites, sous le HUD)
+- [ ] Effet pluie : particules tombantes bleues semi-transparentes
+- [ ] Effet neige : particules blanches lentes avec oscillation laterale
+- [ ] Effet orage : flash blanc intermittent (alpha spike sur l'overlay) + particules pluie
+- [ ] Effet brouillard : overlay blanc semi-transparent avec alpha pulse doux
+- [ ] Effet nuageux : leger assombrissement (overlay gris alpha 0.08)
+- [ ] Transition douce entre meteos (fade 2 secondes)
+
+### MV-5 — Meteo : impact gameplay [Priorite: BASSE | Taille: S | Gain: MOYEN]
+> Prerequis : MV-3. Ajoute de la profondeur strategique.
+- [ ] Table de bonus/malus par meteo × element dans `WeatherService` (ex: pluie → eau +20%, feu -20%)
+- [ ] Appliquer le modificateur dans `DamageCalculator` via `WeatherService::getElementalModifier(map, element)`
+- [ ] Monstres speciaux par meteo : champ `spawnWeather` (nullable) sur `Mob`
+- [ ] Filtre dans `MobSpawnManager` : certains mobs n'apparaissent que sous orage/brouillard/neige
+- [ ] Migration SQL (1 champ)
+
+### MV-6 — PNJ routines [Priorite: BASSE | Taille: L | Gain: MOYEN]
+> Prerequis : MV-1. Feature ambitieuse, peut etre reportee.
+- [ ] Entite `PnjSchedule` (pnj, hour, coordinates, map) — table horaire du PNJ
+- [ ] Migration SQL
+- [ ] `PnjRoutineService` : deplace les PNJ selon l'heure in-game courante
+- [ ] Commande Scheduler `app:pnj:routine` (toutes les 5 min)
+- [ ] Topic Mercure `map/pnj-move` pour animer le deplacement cote client
+- [ ] Animation de marche du PNJ dans le renderer PixiJS (reutiliser SpriteAnimator)
+- [ ] Fixtures : 3-5 PNJ avec routines simples (maison ↔ travail ↔ taverne)
+- [ ] Gerer le cas ou un joueur parle a un PNJ qui se deplace
+
+### MV-7 — Evenements aleatoires [Priorite: BASSE | Taille: M | Gain: MOYEN]
+> Reutilise l'entite `GameEvent` existante. Ajoute du dynamisme au monde.
+- [ ] `RandomEventGenerator` : selectionne un type d'evenement aleatoire selon des poids configurables
+- [ ] Types : `invasion` (vague de mobs), `merchant` (marchand itinerant temporaire), `aurora` (buff XP zone)
+- [ ] Commande Scheduler `app:events:random` (toutes les 30-60 min, probabilite 30%)
+- [ ] Creer automatiquement un `GameEvent` avec duree limitee (10-30 min)
+- [ ] Pour `invasion` : spawner des mobs temporaires sur la zone ciblee
+- [ ] Pour `merchant` : creer un PNJ temporaire avec boutique speciale
+- [ ] Pour `aurora` : activer un buff XP via Mercure broadcast
+- [ ] Notification Mercure `game/event` pour alerter les joueurs connectes
+- [ ] Bandeau visuel dans le HUD quand un evenement est actif
+
+### MV-8 — Saisonnalite & festivals [Priorite: TRES BASSE | Taille: S | Gain: FAIBLE]
+> Prerequis : MV-1 + MV-7. Contenu evenementiel, a planifier apres le reste.
+- [ ] Detection de la saison reelle (printemps/ete/automne/hiver) dans `GameTimeService`
+- [ ] Poids meteo ajustes par saison (plus de neige en hiver, plus d'orages en ete)
+- [ ] Entite `Festival` (slug, name, season, startDay, endDay, quests, rewards)
+- [ ] 4 festivals de base (1 par saison) — contenu a definir plus tard
+- [ ] Decorations saisonnieres sur la carte (sprites overlays)
 
 ---
 
