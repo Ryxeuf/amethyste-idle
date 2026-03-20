@@ -4,7 +4,6 @@ namespace App\Controller\Admin;
 
 use App\Service\MarkdownParser;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,20 +25,23 @@ final class RoadmapController extends AbstractController
     #[Route('', name: 'index', defaults: ['tab' => 'todo'])]
     #[Route('/done', name: 'done', defaults: ['tab' => 'done'])]
     #[Route('/todo', name: 'todo', defaults: ['tab' => 'todo'])]
-    public function index(Request $request, string $tab): Response
+    public function index(string $tab): Response
     {
         $doneFile = $this->projectDir . '/docs/ROADMAP_DONE.md';
         $todoFile = $this->projectDir . '/docs/ROADMAP_TODO.md';
 
-        $doneContent = file_exists($doneFile) ? file_get_contents($doneFile) : '';
-        $todoContent = file_exists($todoFile) ? file_get_contents($todoFile) : '';
+        $doneContent = file_exists($doneFile) ? (string) file_get_contents($doneFile) : '';
+        $todoContent = file_exists($todoFile) ? (string) file_get_contents($todoFile) : '';
 
         $doneHtml = $this->markdownParser->toHtml($doneContent);
         $todoHtml = $this->markdownParser->toHtml($todoContent);
         $todoStats = $this->markdownParser->parseStats($todoContent);
 
         // Count completed sections in done file (H2 with ✅)
-        $doneSections = preg_match_all('/^## .+✅/m', $doneContent);
+        $doneSections = (int) preg_match_all('/^## .+✅/m', $doneContent);
+
+        $doneFileMtime = file_exists($doneFile) ? filemtime($doneFile) : false;
+        $todoFileMtime = file_exists($todoFile) ? filemtime($todoFile) : false;
 
         return $this->render('admin/roadmap/index.html.twig', [
             'tab' => $tab,
@@ -47,8 +49,8 @@ final class RoadmapController extends AbstractController
             'todoHtml' => $todoHtml,
             'todoStats' => $todoStats,
             'doneSections' => $doneSections,
-            'doneFileDate' => file_exists($doneFile) ? filemtime($doneFile) : null,
-            'todoFileDate' => file_exists($todoFile) ? filemtime($todoFile) : null,
+            'doneFileDate' => $doneFileMtime !== false ? $doneFileMtime : null,
+            'todoFileDate' => $todoFileMtime !== false ? $todoFileMtime : null,
         ]);
     }
 }

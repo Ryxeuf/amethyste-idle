@@ -253,19 +253,19 @@ final class MarkdownParser
     private function inlineFormat(string $text): string
     {
         // Inline code
-        $text = preg_replace('/`([^`]+)`/', '<code class="roadmap-inline-code">$1</code>', $text);
+        $text = (string) preg_replace('/`([^`]+)`/', '<code class="roadmap-inline-code">$1</code>', $text);
 
         // Bold
-        $text = preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $text);
+        $text = (string) preg_replace('/\*\*([^*]+)\*\*/', '<strong>$1</strong>', $text);
 
         // Italic
-        $text = preg_replace('/(?<!\*)\*([^*]+)\*(?!\*)/', '<em>$1</em>', $text);
+        $text = (string) preg_replace('/(?<!\*)\*([^*]+)\*(?!\*)/', '<em>$1</em>', $text);
 
         // Links
-        $text = preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2" class="roadmap-link">$1</a>', $text);
+        $text = (string) preg_replace('/\[([^\]]+)\]\(([^)]+)\)/', '<a href="$2" class="roadmap-link">$1</a>', $text);
 
         // Strikethrough
-        $text = preg_replace('/~~([^~]+)~~/', '<del>$1</del>', $text);
+        $text = (string) preg_replace('/~~([^~]+)~~/', '<del>$1</del>', $text);
 
         // Emoji-like markers
         $text = str_replace('✅', '<span class="roadmap-emoji-done">✅</span>', $text);
@@ -273,6 +273,9 @@ final class MarkdownParser
         return $text;
     }
 
+    /**
+     * @param list<string> $lines
+     */
     private function renderBlockquote(array $lines): string
     {
         $content = implode(' ', array_map('trim', $lines));
