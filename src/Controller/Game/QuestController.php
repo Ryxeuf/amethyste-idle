@@ -38,6 +38,7 @@ class QuestController extends AbstractController
 
         $activeQuests = $this->playerQuestHelper->getCurrentQuests();
         $completedQuests = $this->playerQuestHelper->getCompletedQuests();
+        $availableQuests = $this->playerQuestHelper->getAvailableQuests();
 
         // Calculate progress for each active quest
         $questProgress = [];
@@ -48,6 +49,7 @@ class QuestController extends AbstractController
         return $this->render('game/quest/index.html.twig', [
             'activeQuests' => $activeQuests,
             'completedQuests' => $completedQuests,
+            'availableQuests' => $availableQuests,
             'questProgress' => $questProgress,
             'player' => $this->playerHelper->getPlayer(),
         ]);
@@ -81,6 +83,18 @@ class QuestController extends AbstractController
         ]);
         if ($completed) {
             return new JsonResponse(['error' => 'Quête déjà complétée'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Check prerequisites
+        $prerequisiteIds = $quest->getPrerequisiteQuests();
+        if (!empty($prerequisiteIds)) {
+            $completedPrerequisites = $this->entityManager->getRepository(PlayerQuestCompleted::class)->findBy([
+                'player' => $player,
+                'quest' => $prerequisiteIds,
+            ]);
+            if (\count($completedPrerequisites) < \count($prerequisiteIds)) {
+                return new JsonResponse(['error' => 'Prérequis de quête non remplis'], Response::HTTP_BAD_REQUEST);
+            }
         }
 
         // Create tracking data from requirements
