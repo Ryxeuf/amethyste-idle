@@ -222,3 +222,15 @@
 - [x] Onglet "Disponibles" dans le journal de quetes (affiche les quetes acceptables)
 - [x] Chaine de 3 quetes dans les fixtures : "La Menace Rampante" (gobelins → squelettes → troll)
 - [x] Support admin : champ prerequis dans le formulaire de creation/edition de quetes
+
+---
+
+## 15 — Consommables de base (2026-03-21) ✅
+
+> Potions, nourritures et parchemins utilisables en combat. Gain gameplay : ★★★
+
+- [x] 5 potions : soin mineur/moyen/majeur, mana, antidote — avec sorts lies pour fonctionner en combat
+- [x] 3 nourritures : pain de campagne, viande grillee, ragout copieux — avec buffs temporaires (food-buff, natural-regen)
+- [x] 3 parchemins : teleportation spawn, boost XP 25% 10min, identification
+- [x] Correction des potions existantes (healing_potion_small/medium, energy_potion_small) : ajout de sorts lies et type corrige
+- [x] Ajout des nouveaux consommables aux loot tables de tous les monstres (niveaux 1 a 4 + boss)
