@@ -1640,6 +1640,37 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 15,
                 'nb_usages' => 8,
             ],
+
+            // --- Récompenses uniques de boss ---
+
+            'dragon_fang_blade' => [
+                'name' => 'Lame de croc draconique',
+                'description' => 'Une épée forgée à partir d\'un croc du Dragon ancestral. La lame irradie une chaleur intense.',
+                'type' => 'gear',
+                'element' => Element::Fire,
+                'spell' => 'none_attack_2',
+                'slug' => 'dragon-fang-blade',
+                'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
+                'domain' => 'soldier',
+                'price' => 500,
+                'space' => 3,
+                'energy_cost' => 0,
+                'nb_usages' => 300,
+                'rarity' => ItemRarity::Legendary,
+            ],
+            'dragon_scale_armor' => [
+                'name' => 'Plastron en écailles de dragon',
+                'description' => 'Un plastron taillé dans les écailles du Dragon ancestral. Résiste à la chaleur la plus extrême.',
+                'type' => 'gear',
+                'element' => Element::Fire,
+                'slug' => 'dragon-scale-armor',
+                'gear_location' => Item::GEAR_LOCATION_CHEST,
+                'price' => 600,
+                'space' => 4,
+                'energy_cost' => 0,
+                'nb_usages' => 300,
+                'rarity' => ItemRarity::Legendary,
+            ],
         ];
     }
 
