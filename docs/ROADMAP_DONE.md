@@ -164,16 +164,7 @@
 ### Phase GD-6 : Infrastructure 32 domaines + tous les arbres de talent ✅
 - 32 domaines (24 combat + 4 recolte + 4 craft)
 - 400+ competences avec 13-24 skills par domaine
-- Sous-phases 6.A a 6.I toutes completees :
-  - 6.A : Infrastructure + Pyromancien modele (15 skills)
-  - 6.B : Feu (Berserker 15 + Artificier 15)
-  - 6.C : Eau (Hydromancien 13 + Guerisseur 13 + Maremancien 13)
-  - 6.D : Air (Foudromancien 13 + Archer 13 + Vagabond 13)
-  - 6.E : Terre (Geomancien 24 + Defenseur 15 + Gardien 24)
-  - 6.F : Metal (Soldat 15 + Chevalier 15 + Ingenieur 15)
-  - 6.G : Bete (Chasseur 13 + Dompteur 13 + Druide 13)
-  - 6.H : Lumiere + Ombre (Paladin, Pretre, Inquisiteur, Assassin, Necromancien, Sorcier — 13 chacun)
-  - 6.I : Recolte + Craft (8 domaines x 15 skills) + 8 skills partages multi-domaines
+- Sous-phases 6.A a 6.I toutes completees
 
 ### Phase GD-7 : Tout est un sort + Soulbound ✅
 - boundToPlayer sur items
@@ -184,242 +175,50 @@
 - CombatCapacityResolver cree (sorts = materia equipees)
 - Attaque arme TOUJOURS disponible gratuitement
 - Bonus matching element slot/materia (+25% degats, +25% XP)
-- **Non fait** : verification actions.materia.unlock avant autorisation sort (→ Phase 14)
 
 ### Phase GD-9 : Inventaire groupement visuel ✅
-- Groupement par genericItem.slug avec comptage
-- Badge "x3" avec compteur, grille responsive
-
 ### Phase GD-10 : Dashboard enrichi ✅
-- Statistiques par zone (PNJ, mobs, joueurs)
-- Section "Repartition par zone" dans l'admin
-
 ### Phase GD-11 : Bestiaire joueur ✅
-- Entite PlayerBestiary (killCount, tiers 10/50/100)
-- BestiaryListener sur MobDeadEvent
-- Route /game/bestiary avec stats, badges, barres de progression
-
 ### Phase GD-12 : Systeme de succes ✅
-- 34+ achievements (24 combat, 3 exploration, 4+ quetes)
-- AchievementTracker (ecoute MobDeadEvent + QuestCompletedEvent)
-- Route /game/achievements avec onglets par categorie
-- Recompenses gils + titres
-
 ### Phase GD-13 : Mise a jour documentation ✅
-- ROADMAP.md, DOCUMENTATION.md, AGENTS.md, CLAUDE.md mis a jour
 
 ---
 
 ## Combat enrichi — Elements deja implementes ✅
-
-> Ces fonctionnalites etaient listees dans le TODO mais sont deja presentes dans le code.
-
 ### Synergies elementaires ✅
-- 8 combos bidirectionnels dans `ElementalSynergyCalculator` (Eau+Feu=Vapeur, Terre+Air=Tempete, Lumiere+Ombre=Eclipse, Feu+Terre=Explosion florale, Metal+Feu=Forge, Metal+Lumiere=Lame sacree, Bete+Terre=Furie primale, Bete+Ombre=Ombre venimeuse)
-- Multiplicateurs de degats (1.2x a 2.5x), procs de statut, self-damage (Eclipse)
-- Tracking du dernier element utilise dans `Fight.lastElementUsed`
-
 ### Materia Fusion ✅
-- `MateriaFusionManager` : upgrade same-element (niveaux 1→5) + 14 fusions cross-element
-- Interface fusion dans l'inventaire
-
 ### Materia XP ✅
-- `MateriaXpGranter` : XP sur MobDeadEvent (10 × niveau monstre, ×5 boss, ×1.25 element match)
-
 ### Statuts alteres (8/8) ✅
-- `StatusEffectManager` (472 lignes) : poison, paralysie, brulure, gel, silence, regeneration, bouclier, berserk
-- 14 effets dans `StatusEffectFixtures` (variantes normales, fortes, lentes, persistantes hors combat)
-- DoT/HoT avec frequence configurable, stat modifiers JSON, absorption bouclier
-- Effets persistants hors combat (`PlayerStatusEffect`)
-- Badges visuels colores par type dans le template combat (`index.html.twig`)
-
 ### Resistances elementaires par monstre ✅
-- Champ `elementalResistances` JSON sur `Monster`
-- Appliquees dans `DamageCalculator.applyElementalResistance()`
-- Renseignees sur les monstres existants (Golem, Dragon, etc.)
-
 ### IA monstres — patterns et alertes ✅
-- `MobActionHandler` : sequences d'actions JSON, spell_chance, low_hp_heal, role (healer)
-- Alertes de danger : `danger_alert` dans aiPattern + `danger_message` dans bossPhases
-
 ### Boss — phases et cooldown ✅
-- `Monster.bossPhases` JSON : phases par seuil HP, actions specifiques, danger_message
-- `MobDeathQueuing` : respawn boss 3600s (1h), normal 10s
-- Dragon ancestral : 3 phases avec sorts preferes
-
----
-
-## Systemes existants fonctionnels
-
-| Systeme | Detail |
-|---------|--------|
-| Carte PixiJS | 9 zones (3x3), pathfinding Dijkstra, camera fluide, culling |
-| Deplacement temps reel | Mercure SSE, animation sprites, sync multi-joueurs |
-| Combat tour par tour | Timeline, attaque, sorts, items, fuite, loot |
-| Inventaire | Sac (100), Materia (50), Banque (1000), equipement 12 slots |
-| Systeme Materia | Sertissage, 9 elements, slots sur equipement |
-| Arbres de talent | 32 domaines, 13-24 skills par domaine, XP par domaine |
-| Monstres | 12 types, tables de loot, respawn par queue |
-| Quetes | 10 quetes (tuer/collecter), recompenses |
-| PNJ & Dialogues | 60 PNJ, dialogues conditionnels, branches |
-| Recolte | HarvestManager + FishingManager + ButcheringManager, 21 spots, Mercure SSE (harvest/respawn), SpotHarvestEvent |
-| Boutiques (partiel) | ShopController, achat/vente, gils sur Player (manque: fixtures, stock) |
-| Craft (partiel) | CraftManager + CraftRecipe entity, CraftEvent, templates (manque: fixtures, consolidation) |
-| Auth | Login/register, roles USER/PLAYER/ADMIN |
-| Race | Race Humain (stats neutres), extensible |
-| Items soulbound | boundToPlayer, use_spell |
-| Bestiaire | 3 paliers (10/50/100 kills), faiblesses, loot, titres |
-| Succes | 34+ achievements, recompenses gils+titres |
-| Inventaire groupe | Groupement par slug, badge "x3" |
-| Administration | Panel admin complet (dashboard enrichi, CRUD, logs, maintenance) |
-| CI/CD | GitHub Actions (lint, PHPStan, PHPUnit, build Docker) + deploy auto sur main |
-| Chat en jeu | Chat global + zone + prive via Mercure SSE, rate limiting, moderation admin, historique, stimulus controller |
 
 ---
 
 ## Vague 1 — Fondations & Quick Wins (2026-03-20)
 
 ### 01 — De-hardcoder les map IDs ✅
-
-> Suppression de tous les map IDs hardcodes (`10`) dans le code. Le contexte Player/Map est utilise a la place.
-
-| Tache | Detail |
-|-------|--------|
-| MapApiController::move() | `loadMap(10)` → `loadMap($player->getMap()->getId())` |
-| Twig/Components/Map::move() | `loadMap(10)` → `loadMap($this->player->getMap()->getId())` |
-| TerrainImportCommand | `find(10)` → option `--map-id` ou auto-detection (premiere map disponible) |
-| DebugMoveCommand | `loadMap(10)` → option `--map-id` configurable (defaut: 10) |
-
-### 02 — Supprimer la commande CSS morte (S | ★★) ✅
-
-> `TmxCssGeneratorCommand` (308 lignes) + `world-1.css` (335 Ko) etaient obsoletes. Le rendu passe par PixiJS canvas, pas par CSS.
-
-- [x] Supprime `src/Command/TmxCssGeneratorCommand.php`
-- [x] Supprime le dossier `assets/styles/map/` (world-1.css)
-- [x] Retire les imports CSS dans `assets/app.js`
-- [x] Nettoye les references dans CLAUDE.md, DOCUMENTATION.md, AGENTS.md, `.claude/commands/import-terrain.md`, `.claude/commands/level-design-agent.md`, `docs/TILED_GUIDE.md`, `docs/BILAN-MODERNISATION-STACK.md`, `.cursor/rules/terrain-maps.mdc`
-
-### 04 — Rate limiting API (S | ★★★) ✅
-
-> Protection anti-abus sur les endpoints critiques via Symfony RateLimiter.
-
-- [x] Ajout de `symfony/rate-limiter` dans composer.json
-- [x] Configuration `framework.rate_limiter` dans `config/packages/rate_limiter.yaml` (4 limiters)
-- [x] `RateLimitingSubscriber` : EventSubscriber qui intercepte les routes protegees
-- [x] `/api/map/move` : 10 req/s par joueur (anti-speedhack)
-- [x] `/game/fight/*` (attack, spell, item, flee) : 5 req/s par joueur
-- [x] `/game/shop/buy` et `/game/shop/sell` : 3 req/s par joueur
-- [x] `/game/craft/*` (execute, experiment, crafting) : 3 req/s par joueur
-- [x] Reponse 429 avec message explicite, headers Retry-After et X-RateLimit-*
-
-### 07 — Raretes d'equipement (S | ★★★) ✅
-
-> Enum PHP `ItemRarity`, couleurs CSS, affichage dans tous les templates (inventaire, loot, boutique), migration defaults, fixtures avec raretes variees.
-
-- [x] Enum PHP `ItemRarity` (common, uncommon, rare, epic, legendary, amethyst) avec methodes `label()`, `cssClass()`, `bgClass()`, `borderClass()`
-- [x] Entite Item mise a jour pour utiliser l'enum (backward-compatible via `getRarity()` retournant string)
-- [x] Migration : rarity = 'common' par defaut sur les items existants, `ALTER TABLE SET DEFAULT`
-- [x] Affichage couleur du nom selon rarete dans inventaire, loot, boutique, tooltip (tous templates)
-- [x] Support complet de la rarete "amethyst" (CSS borders/slots/tooltips/sheets, JS labels)
-- [x] Fixtures items avec raretes variees : materia par tier (m1=uncommon, m2=rare, m3=epic, m4+=legendary), minerais, plantes rares, equipement special
-- [x] Badge rarete dans inventaire, banque, materiaux (badge existant etendu avec amethyst)
-- [x] Inference automatique de rarete dans `ItemFixtures::inferRarity()` basee sur le slug/type
-
-### 08 — Combat log frontend (S | ★★★) ✅
-
-> Deja implemente dans le template combat `index.html.twig`. Le CombatLogger ecrivait en BDD et l'affichage etait deja present.
-
-- [x] Template partiel integre dans `game/fight/index.html.twig` : liste scrollable avec max-height responsive
-- [x] Couleurs par type d'evenement (degats=rouge, soin=vert, critique=orange, mort=rouge, victoire=jaune, miss=gris)
-- [x] Icones par type via macro `log_icon()` (epee=attaque, etoile=critique, bouclier=defense, crane=mort, etc.)
-- [x] Auto-scroll vers le dernier message au chargement
-- [x] Separateurs de tours avec numero
-- [x] Tabs mobile Actions/Log avec toggle JavaScript
+### 02 — Supprimer la commande CSS morte ✅
+### 04 — Rate limiting API ✅
+### 07 — Raretes d'equipement ✅
+### 08 — Combat log frontend ✅
+### 09 — Icones statuts timeline combat ✅
+### 10 — Indicateur difficulte monstres ✅
+### 12 — Recompenses de quetes completes ✅
+### 14 — Respec basique ✅
+### 24 — Notifications toast in-game ✅
+### 25 — Boutiques PNJ fixtures ✅
 
 ---
 
-## Tache 12 — Recompenses de quetes completes (2026-03-21) ✅
+## 13 — Prerequis de quetes et chaines (2026-03-21) ✅
 
-> Le controller ne distribuait que les gils. Les champs XP et items existaient dans les fixtures mais etaient ignores.
+> Permet de creer des chaines de quetes Q1→Q2→Q3. Gain gameplay : ★★★
 
-- [x] Fix cle `gold` vs `gils` : le controller supporte desormais les deux cles (les fixtures utilisaient `gold`)
-- [x] Appliquer `rewards.xp` : distribue l'XP equitablement entre tous les domaines du joueur
-- [x] Appliquer `rewards.items` : cree les PlayerItem via InventoryHelper a partir de `genericItemSlug` + `count`
-- [x] Support de deux formats d'items : array avec `genericItemSlug`/`count` et simple `slug => count`
-- [x] Messages detailles : chaque recompense (gils, XP, items) est listee dans la reponse JSON
-- [x] Template : affichage des items en recompense dans les quetes actives (section Recompenses)
-- [x] Template : affichage des recompenses dans les quetes terminees
-
----
-
-## Tache 25 — Boutiques PNJ fixtures (2026-03-21) ✅
-
-> Le ShopController et le template existaient mais aucun PNJ n'avait de shopItems configures. Les items stuff/gear n'avaient pas de prix.
-
-- [x] Ajout de prix sur les items stuff (life-potion 25G, beer-pint 10G, mushroom 5G)
-- [x] Ajout de prix sur les items gear (short-sword 80G, long-sword 200G, leather-armor 75G, leather-boots 40G, leather-hat 35G)
-- [x] 5 PNJ marchands configures dans PnjFixtures avec shopItems :
-  - Gerard le Forgeron : armes et armures (short-sword, long-sword, leather-armor, leather-boots, leather-hat)
-  - Elise la Guerisseuse : potions et soins (life-potion, mushroom, beer-pint)
-  - Pierre le Tavernier : consommables (beer-pint, mushroom, life-potion)
-  - Marie la Herboriste : plantes et faucilles (plant-mint, plant-sage, plant-lavender, plant-thyme, plant-rosemary, sickle-bronze, sickle-iron)
-  - Emilie la Marchande : outils varies (pickaxe-bronze/iron, sickle-bronze, fishing-rod-bronze/iron, skinning-knife-bronze/iron)
-- [x] Dialogues marchands avec action open_shop et choix "Voir la boutique" / "Au revoir"
-- [x] PnjDialogParser : injection automatique du pnj_id dans les choix open_shop (plus besoin de hardcoder l'ID)
-
----
-
-## Tache 09 — Icones statuts timeline combat (2026-03-21) ✅
-
-> Badges visuels des effets de statut actifs sous chaque avatar dans la timeline de combat.
-
-- [x] Badges statut colores sous chaque avatar dans `_timeline.html.twig` (poison=vert, brulure=orange, gel=cyan, paralysie=jaune, silence=gris, regen=emeraude, bouclier=bleu, berserk=rouge)
-- [x] Affichage icone emoji du statut (ou tours restants si pas d'icone) dans des pastilles rondes 14px
-- [x] Tooltip au survol avec nom complet et tours restants
-- [x] `FightTimelineController` mis a jour pour passer les statusEffects au template Turbo Stream
-
----
-
-## Tache 14 — Respec basique (2026-03-21) ✅
-
-> Redistribution complete des competences contre des gils, avec cout croissant.
-
-- [x] Champ `respecCount` (int, default 0) sur Player + migration PostgreSQL
-- [x] Methode `removeSkill()` ajoutee sur Player
-- [x] Service `SkillRespecManager` : calcul cout (50 * nbSkills * 1.25^respecCount), validation, reset complet (skills, XP, stats domaine, bonus vie)
-- [x] Controller `POST /game/skills/respec` avec protection CSRF et messages flash
-- [x] Bouton "Redistribuer" dans la page skills + modale de confirmation (cout, gils, nb competences)
-- [x] `IndexController` enrichi avec donnees respec (cout, canRespec, gils, nbSkills)
-- [x] Tests unitaires SkillRespecManager (7 cas : cout 0 skills, cout 1er/2e/3e respec, canRespec OK/KO/combat, respec success/fail, scaling)
-
----
-
-## Tache 10 — Indicateur difficulte monstres (2026-03-21) ✅
-
-> Indicateur visuel de difficulte (1-5 etoiles) sur chaque monstre, visible en combat et dans le bestiaire.
-
-- [x] Champ `difficulty` (int 1-5, default 1) sur l'entite Monster + migration PostgreSQL idempotente
-- [x] Getter/setter avec clamping min(1) max(5)
-- [x] Affichage 5 etoiles dans le template combat (etoiles jaunes pleines/grises selon difficulte)
-- [x] Affichage 5 etoiles dans le bestiaire (a cote du niveau)
-- [x] Tooltip avec texte "Difficulte X/5" (traduit FR/EN)
-- [x] Difficulte renseignee dans MonsterFixtures pour les 20 monstres (1 a 5 selon le level)
-
----
-
-## Tache 24 — Notifications toast in-game (2026-03-21) ✅
-
-> Systeme de notifications toast generaliste, remplacant les flash messages eparpilles dans les templates du jeu.
-
-- [x] Composant Stimulus `toast_controller.js` : toasts empiles en bas-droite, auto-dismiss 4s configurable
-- [x] 4 types visuels : succes (vert), info (bleu), alerte (orange), erreur (rouge)
-- [x] Animations CSS slide-in/slide-out fluides avec backdrop-filter
-- [x] Bouton de fermeture manuelle sur chaque toast
-- [x] Limite configurable de toasts visibles (defaut 5), rotation automatique
-- [x] API globale `window.Toast.show(type, message)` pour declencher depuis n'importe quel JS
-- [x] Evenement custom `toast:show` pour communication inter-controllers Stimulus
-- [x] Integration automatique des flash messages Symfony (server-side) via data-attributes
-- [x] Conteneur toast dans le layout game.html.twig (disponible sur toutes les pages du jeu)
-- [x] Suppression des blocs `app.flashes` dupliques dans skills/index, skills/domain_info, inventory/items/_list
-- [x] Conversion du partial crafting/_craft_result en appels toast JS
-- [x] Responsive : position adaptee mobile (au-dessus de la barre de navigation) et desktop
+- [x] Ajout du champ `prerequisiteQuests` (JSON, nullable) sur l'entite Quest + migration PostgreSQL
+- [x] Verification des prerequis dans `QuestController::accept()` (refus si prerequis non remplis)
+- [x] Nouvelle condition `quest_prerequisites_met` dans `PnjDialogParser` pour les dialogues PNJ
+- [x] Methode `getAvailableQuests()` dans `PlayerQuestHelper` (filtre par prerequis satisfaits)
+- [x] Onglet "Disponibles" dans le journal de quetes (affiche les quetes acceptables)
+- [x] Chaine de 3 quetes dans les fixtures : "La Menace Rampante" (gobelins → squelettes → troll)
+- [x] Support admin : champ prerequis dans le formulaire de creation/edition de quetes
