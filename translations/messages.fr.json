@@ -381,6 +381,7 @@
       "materia_spells": "Materia",
       "element_match_bonus": "Bonus élémentaire +25%",
       "energy_insufficient": "Énergie insuffisante",
+      "spell_locked": "Compétence requise",
       "cooldown_remaining": "Recharge : %turns% tours",
       "butcher": "Dépecer %name%",
       "butchering": "Dépeçage en cours...",

@@ -10,6 +10,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
 use App\Enum\Element;
 use App\GameEngine\Fight\CombatCapacityResolver;
+use App\GameEngine\Fight\CombatSkillResolver;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -17,10 +18,14 @@ use PHPUnit\Framework\TestCase;
 class CombatCapacityResolverTest extends TestCase
 {
     private CombatCapacityResolver $resolver;
+    private CombatSkillResolver&MockObject $combatSkillResolver;
 
     protected function setUp(): void
     {
-        $this->resolver = new CombatCapacityResolver();
+        $this->combatSkillResolver = $this->createMock(CombatSkillResolver::class);
+        // By default, all spells are unlocked
+        $this->combatSkillResolver->method('getUnlockedMateriaSpellSlugs')->willReturn(['fireball', 'ice_bolt']);
+        $this->resolver = new CombatCapacityResolver($this->combatSkillResolver);
     }
 
     private function createSpell(string $slug, Element $element = Element::Fire): Spell&MockObject
@@ -298,5 +303,63 @@ class CombatCapacityResolverTest extends TestCase
         $this->assertCount(2, $result);
         $this->assertArrayHasKey('fireball', $result);
         $this->assertArrayHasKey('ice_bolt', $result);
+    }
+
+    public function testUnlockedSpellHasLockedFalse(): void
+    {
+        $spell = $this->createSpell('fireball', Element::Fire);
+        $materia = $this->createMateria($spell, Element::Fire);
+        $slot = $this->createSlot($materia, Element::Fire);
+        $equipment = $this->createEquipment([$slot]);
+        $player = $this->createPlayer([$equipment]);
+
+        $result = $this->resolver->getEquippedMateriaSpells($player);
+
+        $this->assertFalse($result['fireball']['locked']);
+    }
+
+    public function testLockedSpellWhenSkillMissing(): void
+    {
+        // Override the default mock to return no unlocked slugs
+        $combatSkillResolver = $this->createMock(CombatSkillResolver::class);
+        $combatSkillResolver->method('getUnlockedMateriaSpellSlugs')->willReturn([]);
+        $resolver = new CombatCapacityResolver($combatSkillResolver);
+
+        $spell = $this->createSpell('fireball', Element::Fire);
+        $materia = $this->createMateria($spell, Element::Fire);
+        $slot = $this->createSlot($materia, Element::Fire);
+        $equipment = $this->createEquipment([$slot]);
+        $player = $this->createPlayer([$equipment]);
+
+        $result = $resolver->getEquippedMateriaSpells($player);
+
+        $this->assertCount(1, $result);
+        $this->assertTrue($result['fireball']['locked']);
+    }
+
+    public function testPartiallyUnlockedSpells(): void
+    {
+        // Only fireball is unlocked, not ice_bolt
+        $combatSkillResolver = $this->createMock(CombatSkillResolver::class);
+        $combatSkillResolver->method('getUnlockedMateriaSpellSlugs')->willReturn(['fireball']);
+        $resolver = new CombatCapacityResolver($combatSkillResolver);
+
+        $spell1 = $this->createSpell('fireball', Element::Fire);
+        $spell2 = $this->createSpell('ice_bolt', Element::Water);
+
+        $materia1 = $this->createMateria($spell1, Element::Fire);
+        $materia2 = $this->createMateria($spell2, Element::Water);
+
+        $slot1 = $this->createSlot($materia1, Element::Fire);
+        $slot2 = $this->createSlot($materia2, Element::Water);
+
+        $equipment = $this->createEquipment([$slot1, $slot2]);
+        $player = $this->createPlayer([$equipment]);
+
+        $result = $resolver->getEquippedMateriaSpells($player);
+
+        $this->assertCount(2, $result);
+        $this->assertFalse($result['fireball']['locked']);
+        $this->assertTrue($result['ice_bolt']['locked']);
     }
 }

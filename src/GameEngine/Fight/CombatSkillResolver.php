@@ -123,6 +123,36 @@ class CombatSkillResolver
     }
 
     /**
+     * Get the spell slugs unlocked by player's materia skills.
+     * Scans skills with actions['materia']['unlock'] pattern.
+     *
+     * @return string[] Spell slugs the player has unlocked via skills
+     */
+    public function getUnlockedMateriaSpellSlugs(Player $player): array
+    {
+        $slugs = [];
+
+        foreach ($player->getSkills() as $skill) {
+            $actions = $skill->getActions();
+            if ($actions === null || !isset($actions['materia']['unlock'])) {
+                continue;
+            }
+
+            $slugs[] = $actions['materia']['unlock'];
+        }
+
+        return array_unique($slugs);
+    }
+
+    /**
+     * Check if a player has unlocked a specific materia spell via skills.
+     */
+    public function hasUnlockedMateriaSpell(Player $player, string $spellSlug): bool
+    {
+        return in_array($spellSlug, $this->getUnlockedMateriaSpellSlugs($player), true);
+    }
+
+    /**
      * Check if a player has a specific combat skill unlocked.
      */
     public function hasSkillWithSpell(Player $player, string $spellSlug): bool

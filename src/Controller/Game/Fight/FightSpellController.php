@@ -101,6 +101,11 @@ class FightSpellController extends AbstractController
             return new JsonResponse(['error' => 'Sort non disponible (materia non équipée)'], Response::HTTP_FORBIDDEN);
         }
 
+        // Verify player has unlocked the materia spell via skills
+        if ($materiaEntry['locked']) {
+            return new JsonResponse(['error' => 'Sort verrouillé (compétence materia requise)'], Response::HTTP_FORBIDDEN);
+        }
+
         $spell = $materiaEntry['spell'];
         $elementMatch = $materiaEntry['elementMatch'];
 
