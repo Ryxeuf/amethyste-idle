@@ -23,6 +23,7 @@
 				{% set prevRound = entry.round %}
 
 				{% set isCurrent = (i == 0) %}
+				{% set entryEffects = (statusEffects is defined and statusEffects[entry.key] is defined) ? statusEffects[entry.key] : [] %}
 				<div class="flex-shrink-0 flex flex-col items-center gap-0.5
 					{% if isCurrent %}scale-110 transform{% endif %}"
 					title="{{ entry.entity.name }} — {{ 'game.fight.timeline.speed'|trans|default('Vitesse') }}: {{ entry.speed }}">
@@ -35,12 +36,29 @@
 							bg-gradient-to-br from-red-600 to-red-800
 							{% if isCurrent %}border-red-300 shadow-lg shadow-red-500/30{% else %}border-red-700/50{% endif %}
 						{% endif %}">
-						{% if entry.type == 'player' %}
-							{{ entry.entity.name|first|upper }}
-						{% else %}
-							{{ entry.entity.name|first|upper }}
-						{% endif %}
+						{{ entry.entity.name|first|upper }}
 					</div>
+					{# Badges statut sous l'avatar #}
+					{% if entryEffects|length > 0 %}
+						<div class="flex items-center gap-px flex-wrap justify-center max-w-[2.5rem]">
+							{% for fse in entryEffects %}
+								<span class="w-3.5 h-3.5 rounded-full flex items-center justify-center text-[7px] leading-none border
+									{% if fse.statusEffect.type == 'poison' %}bg-green-900/70 text-green-300 border-green-700
+									{% elseif fse.statusEffect.type == 'burn' %}bg-orange-900/70 text-orange-300 border-orange-700
+									{% elseif fse.statusEffect.type == 'freeze' %}bg-cyan-900/70 text-cyan-300 border-cyan-700
+									{% elseif fse.statusEffect.type == 'paralysis' %}bg-yellow-900/70 text-yellow-300 border-yellow-700
+									{% elseif fse.statusEffect.type == 'silence' %}bg-gray-700/70 text-gray-300 border-gray-600
+									{% elseif fse.statusEffect.type == 'regeneration' %}bg-emerald-900/70 text-emerald-300 border-emerald-700
+									{% elseif fse.statusEffect.type == 'shield' %}bg-blue-900/70 text-blue-300 border-blue-700
+									{% elseif fse.statusEffect.type == 'berserk' %}bg-red-900/70 text-red-300 border-red-700
+									{% else %}bg-purple-900/70 text-purple-300 border-purple-700
+									{% endif %}"
+									title="{{ fse.statusEffect.name }} ({{ fse.remainingTurns }} {{ 'game.fight.turns'|trans|default('tours') }})">
+									{% if fse.statusEffect.icon %}{{ fse.statusEffect.icon }}{% else %}{{ fse.remainingTurns }}{% endif %}
+								</span>
+							{% endfor %}
+						</div>
+					{% endif %}
 					{# Nom tronque #}
 					<span class="text-[8px] max-w-[2.5rem] truncate
 						{% if isCurrent %}text-white font-semibold{% else %}text-gray-500{% endif %}">

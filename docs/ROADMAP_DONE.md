@@ -366,3 +366,14 @@
   - Emilie la Marchande : outils varies (pickaxe-bronze/iron, sickle-bronze, fishing-rod-bronze/iron, skinning-knife-bronze/iron)
 - [x] Dialogues marchands avec action open_shop et choix "Voir la boutique" / "Au revoir"
 - [x] PnjDialogParser : injection automatique du pnj_id dans les choix open_shop (plus besoin de hardcoder l'ID)
+
+---
+
+## Tache 09 — Icones statuts timeline combat (2026-03-21) ✅
+
+> Badges visuels des effets de statut actifs sous chaque avatar dans la timeline de combat.
+
+- [x] Badges statut colores sous chaque avatar dans `_timeline.html.twig` (poison=vert, brulure=orange, gel=cyan, paralysie=jaune, silence=gris, regen=emeraude, bouclier=bleu, berserk=rouge)
+- [x] Affichage icone emoji du statut (ou tours restants si pas d'icone) dans des pastilles rondes 14px
+- [x] Tooltip au survol avec nom complet et tours restants
+- [x] `FightTimelineController` mis a jour pour passer les statusEffects au template Turbo Stream
