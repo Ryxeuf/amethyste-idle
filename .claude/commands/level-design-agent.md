@@ -70,7 +70,6 @@ TMX (Tiled Editor) → terrain:import → JSON → BDD (Area/ObjectLayer) → AP
 
 ### Pipeline import
 - `src/Command/TerrainImportCommand.php` — Parsing TMX → JSON + sync entites
-- `src/Command/TmxCssGeneratorCommand.php` — (OBSOLETE, a supprimer)
 - `src/Command/MapDumpCommand.php` — Generation tags Dijkstra
 
 ### Donnees carte

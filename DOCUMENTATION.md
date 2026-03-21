@@ -537,7 +537,6 @@ Les boss sont des monstres spéciaux avec des mécaniques avancées :
 2. **Import** : `app:terrain:import` parse les TMX → JSON avec couches, tilesets, collisions, object layers. Options : `--validate`, `--sync-entities`, `--dry-run`, `--stats`
 3. **Indexation** : `app:index:cell` insère les cellules dans Typesense
 4. **Rendu PixiJS** : `map_pixi_controller.js` charge les cellules visibles (rayon 25) via `/api/map/cells` avec rendu GPU
-5. **CSS** : `app:tmx:generate-css` génère les classes CSS pour les sprites (`world-1.css`)
 
 ### Rendu PixiJS (map_pixi_controller.js)
 
@@ -865,7 +864,6 @@ ROLE_USER (base)
 | Commande | Description |
 |----------|-------------|
 | `app:terrain:import` | Importe les fichiers TMX → JSON. Options : `--all`, `--validate`, `--sync-entities`, `--dry-run`, `--stats` |
-| `app:tmx:generate-css` | Génère les classes CSS pour chaque tile (sprites). Options : `--single-file`, `--with-sprites`, `--by-layer`, `--filter` |
 | `app:index:cell` | Parcourt World→Map→Area, indexe les cellules dans Typesense |
 | `app:reset-ts` | Vide la collection Typesense `cells` |
 | `app:map:dump` | Dump JSON d'une map : modèle statique (`-m`) ou tag Dijkstra |
@@ -949,10 +947,9 @@ Route `GET /change-locale/{locale}` → `LocaleController` → stocke la locale 
    - `--sync-entities` : créer/mettre à jour les entités en base (Mob, ObjectLayer)
    - `--dry-run` : analyse complète sans écriture de fichiers
    - `--stats` : afficher les statistiques détaillées (cells, layers, tilesets)
-3. **Génération CSS** : `app:tmx:generate-css` → classes CSS sprites *(obsolète, à supprimer — voir [TILED_PIPELINE_ROADMAP.md](docs/TILED_PIPELINE_ROADMAP.md) Phase T4)*
-4. **Seed Areas** : `php scripts/concat_area_fixtures.php` → `area_data.json`
-5. **Indexation** : `app:index:cell` → Typesense
-6. **Sync unifié** *(futur)* : `app:terrain:sync --all` → import + upsert BDD + tags Dijkstra en une commande
+3. **Seed Areas** : `php scripts/concat_area_fixtures.php` → `area_data.json`
+4. **Indexation** : `app:index:cell` → Typesense
+5. **Sync unifié** *(futur)* : `app:terrain:sync --all` → import + upsert BDD + tags Dijkstra en une commande
 
 ### Format TMX
 
@@ -986,7 +983,6 @@ Le bitmask de collision gère les directions :
 |---|----------|-------|
 | 1 | Animations de tiles (eau, lave) ignorées — monde statique | T1 |
 | 2 | Pas de données biome/zone pour effets d'ambiance | T3 |
-| 3 | Commande CSS `tmx:generate-css` obsolète (rendu PixiJS) | T4 |
 | 4 | Pipeline en 3 étapes manuelles déconnectées | T2 |
 | 5 | Map ID hardcodé (`map_id = 10`) | T5 |
 | 6 | Pas d'animations dans `/api/map/config` | T1 |

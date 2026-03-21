@@ -26,6 +26,4 @@ OPTIONS UTILES :
 - `--dry-run` : analyse sans ecriture
 - `--stats` : statistiques detaillees
 
-NOTE : La commande `app:tmx:generate-css` est obsolete (le rendu est fait en PixiJS, pas en HTML/CSS). Ne pas l'executer.
-
 FUTUR : Une commande unifiee `app:terrain:sync` remplacera ces etapes (voir docs/TILED_PIPELINE_ROADMAP.md Phase T2).

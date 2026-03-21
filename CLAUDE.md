@@ -73,7 +73,6 @@ docker compose exec php php bin/console doctrine:schema:update --force
 
 # Terrain (cartes Tiled)
 docker compose exec php php bin/console app:terrain:import
-docker compose exec php php bin/console app:tmx:generate-css
 
 # Fixtures
 docker compose exec php php bin/console doctrine:fixtures:load

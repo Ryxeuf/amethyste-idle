@@ -277,7 +277,7 @@
 
 ---
 
-## Vague 1 — Nettoyage technique (2026-03-20)
+## Vague 1 — Fondations & Quick Wins (2026-03-20)
 
 ### 01 — De-hardcoder les map IDs ✅
 
@@ -289,3 +289,12 @@
 | Twig/Components/Map::move() | `loadMap(10)` → `loadMap($this->player->getMap()->getId())` |
 | TerrainImportCommand | `find(10)` → option `--map-id` ou auto-detection (premiere map disponible) |
 | DebugMoveCommand | `loadMap(10)` → option `--map-id` configurable (defaut: 10) |
+
+### 02 — Supprimer la commande CSS morte (S | ★★) ✅
+
+> `TmxCssGeneratorCommand` (308 lignes) + `world-1.css` (335 Ko) etaient obsoletes. Le rendu passe par PixiJS canvas, pas par CSS.
+
+- [x] Supprime `src/Command/TmxCssGeneratorCommand.php`
+- [x] Supprime le dossier `assets/styles/map/` (world-1.css)
+- [x] Retire les imports CSS dans `assets/app.js`
+- [x] Nettoye les references dans CLAUDE.md, DOCUMENTATION.md, AGENTS.md, `.claude/commands/import-terrain.md`, `.claude/commands/level-design-agent.md`, `docs/TILED_GUIDE.md`, `docs/BILAN-MODERNISATION-STACK.md`, `.cursor/rules/terrain-maps.mdc`
