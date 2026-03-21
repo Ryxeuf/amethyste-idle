@@ -29,7 +29,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 03 Optimisation queries N+1                                      │
   ├─ ✅ 04 Rate limiting API (FAIT)                                    │
   ├─ 05 Consolidation craft (supprimer doublon)                       │
-  ├─ 06 Materia unlock verification (reliquat GD-8)                   │
+  ├─ ✅ 06 Materia unlock verification (FAIT)                          │
   ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
   ├─ ✅ 08 Combat log frontend (FAIT)                                  │
   ├─ 09 Icones statuts timeline combat                                │
@@ -179,17 +179,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 06 — Materia unlock verification — reliquat GD-8 (S | ★★★)
-
-> Verification `actions.materia.unlock` dans CombatCapacityResolver avant d'autoriser un sort. Prerequis : ∅
-
-- [ ] Verification `actions.materia.unlock` dans CombatCapacityResolver avant d'autoriser un sort
-- [ ] Methode `getUnlockedMateriaSpellSlugs(Player)` dans CombatSkillResolver
-- [ ] `canEquipMateria()` dans PlayerItemHelper : verifier competence requise
-- [ ] Validation cote controleur dans FightSpellController
-- [ ] Griser les sorts sans skill requis dans les templates combat
-
----
+### ~~06 — Materia unlock verification~~ ✅ FAIT
 
 ---
 

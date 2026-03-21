@@ -211,6 +211,20 @@
 
 ---
 
+## Tache 06 — Materia unlock verification (2026-03-21) ✅
+
+> Verification `actions.materia.unlock` avant d'autoriser un sort en combat. Gain gameplay : ★★★
+
+- [x] Methode `getUnlockedMateriaSpellSlugs(Player)` dans CombatSkillResolver (scan skills pour `materia.unlock`)
+- [x] Methode `hasUnlockedMateriaSpell(Player, spellSlug)` dans CombatSkillResolver
+- [x] Flag `locked` dans `CombatCapacityResolver::getEquippedMateriaSpells()` pour chaque sort
+- [x] Validation dans `FightSpellController` : rejet des sorts verrouilles (HTTP 403)
+- [x] `PlayerItemHelper::canEquipMateria()` verifie le skill unlock avant d'autoriser l'equipement
+- [x] Template combat : sorts verrouilles grises (opacity-50, texte "Competence requise")
+- [x] Tests unitaires CombatCapacityResolverTest (flag locked) et CombatSkillResolverMateriaTest
+
+---
+
 ## 13 — Prerequis de quetes et chaines (2026-03-21) ✅
 
 > Permet de creer des chaines de quetes Q1→Q2→Q3. Gain gameplay : ★★★

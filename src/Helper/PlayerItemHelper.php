@@ -3,11 +3,15 @@
 namespace App\Helper;
 
 use App\Entity\App\PlayerItem;
+use App\GameEngine\Fight\CombatSkillResolver;
 
 class PlayerItemHelper
 {
-    public function __construct(private readonly PlayerHelper $playerHelper, private readonly InventoryHelper $inventoryHelper)
-    {
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly InventoryHelper $inventoryHelper,
+        private readonly CombatSkillResolver $combatSkillResolver,
+    ) {
     }
 
     /**
@@ -26,7 +30,7 @@ class PlayerItemHelper
     }
 
     /**
-     * Return if a player can equip a materia (must be a materia + meet skill requirements).
+     * Return if a player can equip a materia (must be a materia + meet skill requirements + have materia unlock skill).
      */
     public function canEquipMateria(PlayerItem $materia): bool
     {
@@ -34,6 +38,21 @@ class PlayerItemHelper
             return false;
         }
 
-        return $this->canBeEquipped($materia);
+        if (!$this->canBeEquipped($materia)) {
+            return false;
+        }
+
+        // Check that the player has the materia.unlock skill for this materia's spell
+        $spell = $materia->getGenericItem()->getSpell();
+        if ($spell === null) {
+            return false;
+        }
+
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return false;
+        }
+
+        return $this->combatSkillResolver->hasUnlockedMateriaSpell($player, $spell->getSlug());
     }
 }

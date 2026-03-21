@@ -342,39 +342,48 @@
 									{% for entry in materiaSpells %}
 										{% set spell = entry.spell %}
 										{% set elementMatch = entry.elementMatch %}
+										{% set isLocked = entry.locked ?? false %}
 										{% set cooldown = playerCooldowns[spell.slug] ?? 0 %}
 										{% set hasEnergy = player.energy >= spell.energyCost %}
-										{% set isAvailable = cooldown == 0 and hasEnergy %}
+										{% set isAvailable = not isLocked and cooldown == 0 and hasEnergy %}
 										{% set isDefensive = (spell.heal is not null and spell.heal > 0) and (spell.damage is null or spell.damage == 0) %}
 										<button class="spell-btn fight-action relative px-1.5 py-1.5 rounded-lg text-[11px] font-medium transition-all touch-target
-											{% if not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
-											{% if elementMatch %} ring-2 ring-yellow-400
-											{% elseif spell.element.value == 'fire' %} ring-1 ring-orange-500/50
-											{% elseif spell.element.value == 'water' %} ring-1 ring-blue-500/50
-											{% elseif spell.element.value == 'earth' %} ring-1 ring-amber-500/50
-											{% elseif spell.element.value == 'air' %} ring-1 ring-teal-500/50
-											{% elseif spell.element.value == 'light' %} ring-1 ring-yellow-500/50
-											{% elseif spell.element.value == 'dark' %} ring-1 ring-purple-500/50
-											{% elseif spell.element.value == 'metal' %} ring-1 ring-gray-400/50
-											{% elseif spell.element.value == 'beast' %} ring-1 ring-green-500/50
+											{% if isLocked %}bg-gray-800 text-gray-600 cursor-not-allowed opacity-50
+											{% elseif not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed
+											{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
+											{% if not isLocked %}
+												{% if elementMatch %} ring-2 ring-yellow-400
+												{% elseif spell.element.value == 'fire' %} ring-1 ring-orange-500/50
+												{% elseif spell.element.value == 'water' %} ring-1 ring-blue-500/50
+												{% elseif spell.element.value == 'earth' %} ring-1 ring-amber-500/50
+												{% elseif spell.element.value == 'air' %} ring-1 ring-teal-500/50
+												{% elseif spell.element.value == 'light' %} ring-1 ring-yellow-500/50
+												{% elseif spell.element.value == 'dark' %} ring-1 ring-purple-500/50
+												{% elseif spell.element.value == 'metal' %} ring-1 ring-gray-400/50
+												{% elseif spell.element.value == 'beast' %} ring-1 ring-green-500/50
+												{% endif %}
 											{% endif %}"
 											data-href="{{ path("app_game_fight_spell") }}"
 											data-spell-slug="{{ spell.slug }}"
 											data-spell-type="{{ isDefensive ? 'defensive' : 'offensive' }}"
 											{% if not isAvailable %}disabled{% endif %}
-											title="{{ spell.description }}{% if elementMatch %} [{{ 'game.fight.element_match_bonus'|trans }}]{% endif %}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
+											title="{% if isLocked %}{{ 'game.fight.spell_locked'|trans }} — {% endif %}{{ spell.description }}{% if elementMatch %} [{{ 'game.fight.element_match_bonus'|trans }}]{% endif %}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
 											<span class="block truncate">{{ spell.name }}</span>
-											<span class="block text-[9px] opacity-75 mt-0.5">
-												{% if spell.energyCost > 0 %}{{ spell.energyCost }} EN{% endif %}
-												{% if spell.damage %} · {{ spell.damage }} DMG{% endif %}
-												{% if spell.heal %} · {{ spell.heal }} HEAL{% endif %}
-												{% if elementMatch %} · <span class="text-yellow-400">+25%</span>{% endif %}
-											</span>
-											{% if cooldown > 0 %}
-												<span class="cooldown-badge">{{ cooldown }}</span>
-											{% endif %}
-											{% if not hasEnergy and cooldown == 0 %}
-												<span class="block text-[9px] text-red-400">{{ 'game.fight.energy_insufficient'|trans }}</span>
+											{% if isLocked %}
+												<span class="block text-[9px] text-red-400 mt-0.5">{{ 'game.fight.spell_locked'|trans }}</span>
+											{% else %}
+												<span class="block text-[9px] opacity-75 mt-0.5">
+													{% if spell.energyCost > 0 %}{{ spell.energyCost }} EN{% endif %}
+													{% if spell.damage %} · {{ spell.damage }} DMG{% endif %}
+													{% if spell.heal %} · {{ spell.heal }} HEAL{% endif %}
+													{% if elementMatch %} · <span class="text-yellow-400">+25%</span>{% endif %}
+												</span>
+												{% if cooldown > 0 %}
+													<span class="cooldown-badge">{{ cooldown }}</span>
+												{% endif %}
+												{% if not hasEnergy and cooldown == 0 %}
+													<span class="block text-[9px] text-red-400">{{ 'game.fight.energy_insufficient'|trans }}</span>
+												{% endif %}
 											{% endif %}
 										</button>
 									{% endfor %}

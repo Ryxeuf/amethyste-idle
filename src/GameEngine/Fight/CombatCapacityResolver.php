@@ -13,15 +13,22 @@ class CombatCapacityResolver
     public const ELEMENT_MATCH_DAMAGE_BONUS = 0.25;
     public const ELEMENT_MATCH_XP_BONUS = 0.25;
 
+    public function __construct(
+        private readonly CombatSkillResolver $combatSkillResolver,
+    ) {
+    }
+
     /**
      * Get available combat spells from equipped materia.
+     * Each entry includes a 'locked' flag indicating if the player lacks the skill unlock.
      *
-     * @return array<string, array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool}>
-     *                                                                                                 Keyed by spell slug, deduplicated (best match wins)
+     * @return array<string, array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, locked: bool}>
+     *                                                                                                               Keyed by spell slug, deduplicated (best match wins)
      */
     public function getEquippedMateriaSpells(Player $player): array
     {
         $materiaSpells = [];
+        $unlockedSlugs = $this->combatSkillResolver->getUnlockedMateriaSpellSlugs($player);
 
         foreach ($player->getInventories() as $inventory) {
             foreach ($inventory->getItems() as $playerItem) {
@@ -42,6 +49,7 @@ class CombatCapacityResolver
 
                     $elementMatch = $this->isElementMatch($slot, $materia);
                     $slug = $spell->getSlug();
+                    $locked = !in_array($slug, $unlockedSlugs, true);
 
                     // Deduplicate: keep the one with element match if possible
                     if (isset($materiaSpells[$slug]) && $materiaSpells[$slug]['elementMatch'] && !$elementMatch) {
@@ -53,6 +61,7 @@ class CombatCapacityResolver
                         'materia' => $materia,
                         'slot' => $slot,
                         'elementMatch' => $elementMatch,
+                        'locked' => $locked,
                     ];
                 }
             }
@@ -74,7 +83,7 @@ class CombatCapacityResolver
     /**
      * Find the spell entry for a given slug from equipped materia.
      *
-     * @return array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool}|null
+     * @return array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, locked: bool}|null
      */
     public function findMateriaSpell(Player $player, string $spellSlug): ?array
     {
