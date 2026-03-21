@@ -33,7 +33,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
   ├─ ✅ 08 Combat log frontend (FAIT)                                  │
   ├─ ✅ 09 Icones statuts timeline combat (FAIT)                        │
-  ├─ 10 Indicateur difficulte monstres                                │
+  ├─ ✅ 10 Indicateur difficulte monstres (FAIT)                        │
   ├─ 11 Recompenses uniques de boss                                   │
   ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
   ├─ 13 Prerequis de quetes et chaines                                │
@@ -225,14 +225,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 10 — Indicateur difficulte monstres (S | ★★)
-
-> Complexite: Faible | Priorite: Moyenne | Gain: Lisibilite pour le joueur. Prerequis : ∅
-
-- [ ] Champ `difficulty` (int 1-5) sur l'entite Monster (migration)
-- [ ] Afficher des etoiles dans le template combat (a cote du nom du mob)
-- [ ] Afficher les etoiles dans le bestiaire
-- [ ] Renseigner la difficulte dans MonsterFixtures
+### ~~10 — Indicateur difficulte monstres~~ ✅ FAIT
 
 ---
 

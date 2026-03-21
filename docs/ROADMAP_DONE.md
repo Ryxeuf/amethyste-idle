@@ -391,3 +391,16 @@
 - [x] Bouton "Redistribuer" dans la page skills + modale de confirmation (cout, gils, nb competences)
 - [x] `IndexController` enrichi avec donnees respec (cout, canRespec, gils, nbSkills)
 - [x] Tests unitaires SkillRespecManager (7 cas : cout 0 skills, cout 1er/2e/3e respec, canRespec OK/KO/combat, respec success/fail, scaling)
+
+---
+
+## Tache 10 — Indicateur difficulte monstres (2026-03-21) ✅
+
+> Indicateur visuel de difficulte (1-5 etoiles) sur chaque monstre, visible en combat et dans le bestiaire.
+
+- [x] Champ `difficulty` (int 1-5, default 1) sur l'entite Monster + migration PostgreSQL idempotente
+- [x] Getter/setter avec clamping min(1) max(5)
+- [x] Affichage 5 etoiles dans le template combat (etoiles jaunes pleines/grises selon difficulte)
+- [x] Affichage 5 etoiles dans le bestiaire (a cote du niveau)
+- [x] Tooltip avec texte "Difficulte X/5" (traduit FR/EN)
+- [x] Difficulte renseignee dans MonsterFixtures pour les 20 monstres (1 a 5 selon le level)

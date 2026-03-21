@@ -407,7 +407,8 @@
         "collect": "Récupérer les objets sélectionnés",
         "error_collect": "Une erreur est survenue lors de la récupération des objets."
       },
-      "error_action": "Une erreur est survenue lors de l'action."
+      "error_action": "Une erreur est survenue lors de l'action.",
+      "difficulty": "Difficulté %level%/5"
     },
     "bestiary": {
       "title": "Bestiaire",
@@ -425,7 +426,8 @@
       "empty": "Aucun monstre rencontré",
       "empty_hint": "Affrontez des monstres sur la carte pour remplir votre bestiaire",
       "boss": "Boss",
-      "level": "Niveau %level%"
+      "level": "Niveau %level%",
+      "difficulty": "Difficulté %level%/5"
     }
   },
   "common": {
