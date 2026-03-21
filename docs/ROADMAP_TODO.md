@@ -47,7 +47,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 21 GameEvent executor                                            │
   ├─ 22 Factions & reputation (entites)                               │
   ├─ 23 Tests fonctionnels controleurs                                │
-  ├─ 24 Notifications toast in-game                                   │
+  ├─ ✅ 24 Notifications toast in-game (FAIT)                           │
   └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
                                                                       │
 VAGUE 2 (depend de Vague 1)                                           │
@@ -351,19 +351,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 24 — Notifications toast in-game (M | ★★★)
-
-> Aucun systeme de notification generaliste. Seul FightNotification existe (combat only). Impact fort : feedback immediat pour toutes les actions du joueur. Prerequis : ∅
-
-- [ ] Composant Stimulus `toast_controller.js` : affiche des toasts empiles en bas-droite (auto-dismiss 4s)
-- [ ] 4 types visuels : succes (vert), info (bleu), alerte (orange), erreur (rouge)
-- [ ] Integration dans les evenements existants :
-  - Drop d'item apres combat (ecran loot)
-  - XP gagnee / domaine level-up
-  - Quete completee / objectif progresse
-  - Succes debloque
-- [ ] Helper Twig `toast()` ou data-attribute Stimulus pour declencher depuis le serveur
-
+### ~~24 — Notifications toast in-game~~ ✅ FAIT
 
 ---
 

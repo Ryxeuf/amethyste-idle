@@ -4,17 +4,6 @@
 
 {% block game_content %}
     <div class="game-page">
-        {# Flash messages #}
-        {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="mb-3 p-3 rounded-lg text-sm
-                    {% if label == 'success' %}bg-green-900/50 border border-green-700 text-green-300
-                    {% else %}bg-red-900/50 border border-red-700 text-red-300{% endif %}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-
         {# Page header #}
         <div class="mb-4 sm:mb-6 flex items-start justify-between">
             <div>
