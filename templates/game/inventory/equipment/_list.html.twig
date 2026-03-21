@@ -217,7 +217,8 @@
 {# ===== MACROS: Rarity helpers ===== #}
 {% macro rarity_bg_class(rarity) %}
 {% apply spaceless %}
-{% if rarity == 'legendary' %}bg-yellow-900/50 text-yellow-400
+{% if rarity == 'amethyst' %}bg-fuchsia-900/50 text-fuchsia-400
+{% elseif rarity == 'legendary' %}bg-yellow-900/50 text-yellow-400
 {% elseif rarity == 'epic' %}bg-purple-900/50 text-purple-400
 {% elseif rarity == 'rare' %}bg-blue-900/50 text-blue-400
 {% elseif rarity == 'uncommon' %}bg-green-900/50 text-green-400
@@ -227,7 +228,8 @@
 
 {% macro rarity_text_class(rarity) %}
 {% apply spaceless %}
-{% if rarity == 'legendary' %}text-yellow-400
+{% if rarity == 'amethyst' %}text-fuchsia-400
+{% elseif rarity == 'legendary' %}text-yellow-400
 {% elseif rarity == 'epic' %}text-purple-300
 {% elseif rarity == 'rare' %}text-blue-300
 {% elseif rarity == 'uncommon' %}text-green-300
@@ -237,7 +239,8 @@
 
 {% macro rarity_border_class(rarity) %}
 {% apply spaceless %}
-{% if rarity == 'legendary' %}equip-rarity-legendary
+{% if rarity == 'amethyst' %}equip-rarity-amethyst
+{% elseif rarity == 'legendary' %}equip-rarity-legendary
 {% elseif rarity == 'epic' %}equip-rarity-epic
 {% elseif rarity == 'rare' %}equip-rarity-rare
 {% elseif rarity == 'uncommon' %}equip-rarity-uncommon
@@ -247,7 +250,8 @@
 
 {% macro rarity_slot_class(rarity) %}
 {% apply spaceless %}
-{% if rarity == 'legendary' %}equip-slot-legendary
+{% if rarity == 'amethyst' %}equip-slot-amethyst
+{% elseif rarity == 'legendary' %}equip-slot-legendary
 {% elseif rarity == 'epic' %}equip-slot-epic
 {% elseif rarity == 'rare' %}equip-slot-rare
 {% elseif rarity == 'uncommon' %}equip-slot-uncommon

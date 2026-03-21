@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-20
+> Derniere mise a jour : 2026-03-21
 
 ---
 
@@ -311,3 +311,27 @@
 - [x] `/game/shop/buy` et `/game/shop/sell` : 3 req/s par joueur
 - [x] `/game/craft/*` (execute, experiment, crafting) : 3 req/s par joueur
 - [x] Reponse 429 avec message explicite, headers Retry-After et X-RateLimit-*
+
+### 07 — Raretes d'equipement (S | ★★★) ✅
+
+> Enum PHP `ItemRarity`, couleurs CSS, affichage dans tous les templates (inventaire, loot, boutique), migration defaults, fixtures avec raretes variees.
+
+- [x] Enum PHP `ItemRarity` (common, uncommon, rare, epic, legendary, amethyst) avec methodes `label()`, `cssClass()`, `bgClass()`, `borderClass()`
+- [x] Entite Item mise a jour pour utiliser l'enum (backward-compatible via `getRarity()` retournant string)
+- [x] Migration : rarity = 'common' par defaut sur les items existants, `ALTER TABLE SET DEFAULT`
+- [x] Affichage couleur du nom selon rarete dans inventaire, loot, boutique, tooltip (tous templates)
+- [x] Support complet de la rarete "amethyst" (CSS borders/slots/tooltips/sheets, JS labels)
+- [x] Fixtures items avec raretes variees : materia par tier (m1=uncommon, m2=rare, m3=epic, m4+=legendary), minerais, plantes rares, equipement special
+- [x] Badge rarete dans inventaire, banque, materiaux (badge existant etendu avec amethyst)
+- [x] Inference automatique de rarete dans `ItemFixtures::inferRarity()` basee sur le slug/type
+
+### 08 — Combat log frontend (S | ★★★) ✅
+
+> Deja implemente dans le template combat `index.html.twig`. Le CombatLogger ecrivait en BDD et l'affichage etait deja present.
+
+- [x] Template partiel integre dans `game/fight/index.html.twig` : liste scrollable avec max-height responsive
+- [x] Couleurs par type d'evenement (degats=rouge, soin=vert, critique=orange, mort=rouge, victoire=jaune, miss=gris)
+- [x] Icones par type via macro `log_icon()` (epee=attaque, etoile=critique, bouclier=defense, crane=mort, etc.)
+- [x] Auto-scroll vers le dernier message au chargement
+- [x] Separateurs de tours avec numero
+- [x] Tabs mobile Actions/Log avec toggle JavaScript

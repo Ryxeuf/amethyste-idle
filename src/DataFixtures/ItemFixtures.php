@@ -6,6 +6,7 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
 use App\Enum\Element;
+use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -79,6 +80,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 $item->setEffect($data['effect']);
             }
 
+            $item->setRarity($data['rarity'] ?? $this->inferRarity($data));
+
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());
 
@@ -105,6 +108,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 10,
                 'nb_usages' => 10,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'materia_fire_ball' => [
                 'name' => 'Boule de feu',
@@ -118,6 +122,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 10,
                 'nb_usages' => 10,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'materia_flame' => [
                 'name' => 'Flamme',
@@ -131,6 +136,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 8,
                 'nb_usages' => 25,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'materia_flamer' => [
                 'name' => 'Feu',
@@ -144,6 +150,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 15,
                 'nb_usages' => 15,
+                'rarity' => ItemRarity::Rare,
             ],
             'materia_flame_rain' => [
                 'name' => 'Pluie de feu',
@@ -157,6 +164,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 25,
                 'nb_usages' => 5,
+                'rarity' => ItemRarity::Epic,
             ],
             'materia_stone_throw' => [
                 'name' => 'Jet de cailloux',
@@ -170,6 +178,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 5,
                 'nb_usages' => 20,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'materia_punishment' => [
                 'name' => 'Châtiment',
@@ -183,6 +192,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 15,
                 'nb_usages' => 8,
+                'rarity' => ItemRarity::Rare,
             ],
             'materia_wind_lame' => [
                 'name' => "Lame d'air",
@@ -196,6 +206,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 10,
                 'nb_usages' => 20,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'materia_sharp_blade' => [
                 'name' => 'Lame tranchante',
@@ -209,6 +220,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 8,
                 'nb_usages' => 25,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'materia_liana_whip' => [
                 'name' => 'Fouet de liane',
@@ -222,6 +234,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 12,
                 'nb_usages' => 15,
+                'rarity' => ItemRarity::Uncommon,
             ],
 
             // Équipements
@@ -250,6 +263,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 3,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'rarity' => ItemRarity::Uncommon,
             ],
             'leather_boots' => [
                 'name' => 'Bottes en cuir',
@@ -403,6 +417,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"random_spell_knowledge", "chance":0.5}',
+                'rarity' => ItemRarity::Rare,
             ],
             'healing_potion_small' => [
                 'name' => 'Potion de soin mineure',
@@ -448,6 +463,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 5,
                 'nb_usages' => 200,
                 'effect' => '{"action":"damage", "amount":15}',
+                'rarity' => ItemRarity::Uncommon,
             ],
             'wooden_shield' => [
                 'name' => 'Bouclier en bois',
@@ -484,6 +500,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100,
                 'effect' => '{"action":"magic_boost", "amount":15}',
+                'rarity' => ItemRarity::Rare,
             ],
             'magic_ring' => [
                 'name' => 'Anneau magique',
@@ -496,6 +513,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100,
                 'effect' => '{"action":"magic_boost", "amount":10}',
+                'rarity' => ItemRarity::Rare,
             ],
             'bow' => [
                 'name' => 'Arc',
@@ -563,6 +581,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 5,
                 'effect' => '{"action":"random_element_boost", "amount":10}',
+                'rarity' => ItemRarity::Epic,
             ],
             'herbalist_domain_parchment' => [
                 'name' => "Découverte de l'herborisme",
@@ -604,6 +623,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'ore-gold',
                 'price' => 30,
                 'space' => 1,
+                'rarity' => ItemRarity::Uncommon,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
             ],
@@ -616,6 +636,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
+                'rarity' => ItemRarity::Rare,
             ],
             'ore_emerald' => [
                 'name' => 'Émeraude',
@@ -626,6 +647,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 1,
+                'rarity' => ItemRarity::Rare,
             ],
             'crafted_iron_ingot' => [
                 'name' => 'Lingot de fer',
@@ -788,6 +810,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["invisibility_potion", "transformation_potion"]}',
+                'rarity' => ItemRarity::Rare,
             ],
             'plant_nightshade' => [
                 'name' => 'Belladone',
@@ -855,6 +878,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["night_vision_potion", "lunar_blessing_potion"]}',
+                'rarity' => ItemRarity::Uncommon,
             ],
             'plant_sunblossom' => [
                 'name' => 'Fleur Solaire',
@@ -877,6 +901,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["fire_breath_potion", "dragon_scale_potion"]}',
+                'rarity' => ItemRarity::Rare,
             ],
             'plant_frostcap' => [
                 'name' => 'Chapeau de Givre',
@@ -932,6 +957,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["dream_walking_potion", "prophetic_vision_potion"]}',
+                'rarity' => ItemRarity::Epic,
             ],
             'plant_voidfruit' => [
                 'name' => 'Fruit du Néant',
@@ -943,6 +969,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["void_protection_potion", "shadow_form_potion"]}',
+                'rarity' => ItemRarity::Epic,
             ],
             'plant_phoenixflower' => [
                 'name' => 'Fleur de Phénix',
@@ -954,6 +981,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'effect' => '{"action":"crafting_ingredient", "potions":["resurrection_potion", "eternal_flame_potion"]}',
+                'rarity' => ItemRarity::Legendary,
             ],
             'food_bread' => [
                 'name' => 'Pain',
@@ -1510,6 +1538,37 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 8,
             ],
         ];
+    }
+
+    /**
+     * Infère la rareté d'un item à partir de son slug/type quand non spécifiée explicitement.
+     */
+    private function inferRarity(array $data): ItemRarity
+    {
+        $slug = $data['slug'] ?? '';
+        $type = $data['type'] ?? '';
+
+        // Matérias : rareté basée sur le tier (m1=uncommon, m2=rare, m3=epic, m4+=legendary)
+        if ($type === 'materia') {
+            if (str_starts_with($slug, 'm5-') || str_starts_with($slug, 'm4-')) {
+                return ItemRarity::Legendary;
+            }
+            if (str_starts_with($slug, 'm3-')) {
+                return ItemRarity::Epic;
+            }
+            if (str_starts_with($slug, 'm2-')) {
+                return ItemRarity::Rare;
+            }
+
+            return ItemRarity::Uncommon;
+        }
+
+        // Objets de quête sont toujours rares
+        if ($type === 'quest') {
+            return ItemRarity::Rare;
+        }
+
+        return ItemRarity::Common;
     }
 
     public function getDependencies(): array

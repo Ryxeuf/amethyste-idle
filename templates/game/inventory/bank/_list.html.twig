@@ -35,7 +35,8 @@
                          data-item-rarity="{{ gi.rarity }}"
                          data-item-element="{{ gi.element.value }}">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0
-                            {% if gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
+                            {% if gi.rarity == 'amethyst' %}bg-fuchsia-900/40 text-fuchsia-400
+                            {% elseif gi.rarity == 'legendary' %}bg-yellow-900/40 text-yellow-400
                             {% elseif gi.rarity == 'epic' %}bg-purple-900/40 text-purple-400
                             {% elseif gi.rarity == 'rare' %}bg-blue-900/40 text-blue-400
                             {% elseif gi.rarity == 'uncommon' %}bg-green-900/40 text-green-400
@@ -56,7 +57,8 @@
                                 <span class="text-[10px] text-gray-500 capitalize">{{ gi.type }}</span>
                                 {% if gi.rarity %}
                                     <span class="text-[9px] font-medium uppercase px-1 py-0.5 rounded
-                                        {% if gi.rarity == 'legendary' %}bg-yellow-900/30 text-yellow-400
+                                        {% if gi.rarity == 'amethyst' %}bg-fuchsia-900/30 text-fuchsia-400
+                                        {% elseif gi.rarity == 'legendary' %}bg-yellow-900/30 text-yellow-400
                                         {% elseif gi.rarity == 'epic' %}bg-purple-900/30 text-purple-400
                                         {% elseif gi.rarity == 'rare' %}bg-blue-900/30 text-blue-400
                                         {% elseif gi.rarity == 'uncommon' %}bg-green-900/30 text-green-400
