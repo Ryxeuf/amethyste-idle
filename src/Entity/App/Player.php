@@ -108,6 +108,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'gils', type: 'integer', options: ['default' => 0])]
     private int $gils = 0;
 
+    #[ORM\Column(name: 'respec_count', type: 'integer', options: ['default' => 0])]
+    private int $respecCount = 0;
+
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
 
@@ -325,6 +328,11 @@ class Player implements CharacterInterface
         $this->skills->add($skill);
     }
 
+    public function removeSkill(Skill $skill): void
+    {
+        $this->skills->removeElement($skill);
+    }
+
     public function getFight(): ?Fight
     {
         return $this->fight;
@@ -415,6 +423,21 @@ class Player implements CharacterInterface
         $this->gils -= $amount;
 
         return true;
+    }
+
+    public function getRespecCount(): int
+    {
+        return $this->respecCount;
+    }
+
+    public function setRespecCount(int $respecCount): void
+    {
+        $this->respecCount = $respecCount;
+    }
+
+    public function incrementRespecCount(): void
+    {
+        ++$this->respecCount;
     }
 
     public function getRace(): ?Race
