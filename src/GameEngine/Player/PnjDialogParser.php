@@ -64,11 +64,15 @@ class PnjDialogParser
                 $dialog[$idx]['text'] = $this->substituteVariables($dialog[$idx]['text']);
             }
 
-            // Variable substitution in choice labels
+            // Variable substitution in choice labels + inject pnj_id for open_shop
             if (isset($dialog[$idx]['choices'])) {
                 foreach ($dialog[$idx]['choices'] as $ci => $choice) {
                     if (isset($choice['text'])) {
                         $dialog[$idx]['choices'][$ci]['text'] = $this->substituteVariables($choice['text']);
+                    }
+                    // Auto-inject pnj_id for open_shop actions
+                    if (isset($choice['action']) && $choice['action'] === 'open_shop' && $this->pnj) {
+                        $dialog[$idx]['choices'][$ci]['datas']['pnj_id'] = $this->pnj->getId();
                     }
                 }
             }

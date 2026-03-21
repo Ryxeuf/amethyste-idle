@@ -10,6 +10,45 @@ use Doctrine\Persistence\ObjectManager;
 
 class PnjFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * Configuration des boutiques PNJ : index PNJ => liste de slugs items.
+     */
+    private function getShopConfigs(): array
+    {
+        return [
+            // Gérard le Forgeron — armes et armures
+            0 => [
+                'items' => ['short-sword', 'long-sword', 'leather-armor', 'leather-boots', 'leather-hat'],
+                'greeting' => 'Bienvenue dans ma forge ! J\'ai les meilleures armes et armures de la région.',
+                'shop_prompt' => 'Voyons ce que j\'ai en stock pour vous.',
+            ],
+            // Élise la Guérisseuse — potions et soins
+            1 => [
+                'items' => ['life-potion', 'mushroom', 'beer-pint'],
+                'greeting' => 'Bonjour, voyageur. Vous avez l\'air fatigué... J\'ai ce qu\'il vous faut pour reprendre des forces.',
+                'shop_prompt' => 'Voici mes remèdes et potions.',
+            ],
+            // Pierre le Tavernier — consommables et boissons
+            4 => [
+                'items' => ['beer-pint', 'mushroom', 'life-potion'],
+                'greeting' => 'Holà, aventurier ! Installez-vous au comptoir. Qu\'est-ce que je vous sers ?',
+                'shop_prompt' => 'Voici la carte de ma taverne.',
+            ],
+            // Marie la Herboriste — plantes et outils herboristerie
+            7 => [
+                'items' => ['plant-mint', 'plant-sage', 'plant-lavender', 'plant-thyme', 'plant-rosemary', 'sickle-bronze', 'sickle-iron'],
+                'greeting' => 'Bonjour ! Mon jardin regorge de plantes médicinales. Vous en cherchez ?',
+                'shop_prompt' => 'Regardez mes herbes et mes outils de récolte.',
+            ],
+            // Émilie la Marchande — outils variés et ressources de base
+            13 => [
+                'items' => ['pickaxe-bronze', 'pickaxe-iron', 'sickle-bronze', 'fishing-rod-bronze', 'fishing-rod-iron', 'skinning-knife-bronze', 'skinning-knife-iron'],
+                'greeting' => 'Bienvenue chez moi ! J\'ai tout ce dont un aventurier a besoin pour ses expéditions.',
+                'shop_prompt' => 'Voici mon inventaire d\'outils et de matériel.',
+            ],
+        ];
+    }
+
     public function load(ObjectManager $manager): void
     {
         // Liste des quêtes disponibles dans QuestFixtures
@@ -54,6 +93,8 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             '11.2', '12.7', '13.4', '14.8', '15.3', '16.9', '17.5', '18.2', '19.7', '20.1',
         ];
 
+        $shopConfigs = $this->getShopConfigs();
+
         // Création de 60 PNJ
         for ($i = 0; $i < 60; ++$i) {
             $pnj = new Pnj();
@@ -64,8 +105,13 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             $pnj->setCoordinates($coordinates[$i % count($coordinates)]);
             $pnj->setClassType($classTypes[$i % count($classTypes)]);
 
+            // Configurer la boutique si ce PNJ est un marchand
+            if (isset($shopConfigs[$i])) {
+                $pnj->setShopItems($shopConfigs[$i]['items']);
+            }
+
             // Création d'un dialogue unique pour chaque PNJ
-            $dialog = $this->createDialog($i, $i < count($questReferences) ? $i + 1 : null);
+            $dialog = $this->createDialog($i, $i < count($questReferences) ? $i + 1 : null, $shopConfigs[$i] ?? null);
             $pnj->setDialog($dialog);
 
             $pnj->setCreatedAt(new \DateTime());
@@ -81,12 +127,13 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
     /**
      * Crée un dialogue unique pour un PNJ.
      *
-     * @param int      $pnjIndex L'index du PNJ
-     * @param int|null $questId  L'ID de la quête à proposer (null si pas de quête)
+     * @param int        $pnjIndex   L'index du PNJ
+     * @param int|null   $questId    L'ID de la quête à proposer (null si pas de quête)
+     * @param array|null $shopConfig Config boutique (items, greeting, shop_prompt)
      *
      * @return array Le dialogue formaté
      */
-    private function createDialog(int $pnjIndex, ?int $questId): array
+    private function createDialog(int $pnjIndex, ?int $questId, ?array $shopConfig = null): array
     {
         // Phrases d'accueil variées
         $greetings = [
@@ -139,6 +186,89 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'J\'ai une proposition qui pourrait vous rapporter gros, si vous êtes à la hauteur.',
             'Notre village a besoin d\'un héros, et vous semblez être la personne idéale.',
         ];
+
+        // Dialogue marchand (sans quête)
+        if ($shopConfig !== null && $questId === null) {
+            return [
+                [
+                    'text' => $shopConfig['greeting'],
+                    'choices' => [
+                        [
+                            'text' => 'Voir la boutique',
+                            'action' => 'open_shop',
+                            'datas' => [],
+                        ],
+                        [
+                            'text' => 'Au revoir',
+                            'action' => 'close',
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        // Dialogue marchand + quête
+        if ($shopConfig !== null && $questId !== null) {
+            return [
+                [
+                    'next' => 1,
+                    'text' => $shopConfig['greeting'],
+                ],
+                [
+                    'conditional_next' => [
+                        [
+                            'next' => 4,
+                            'next_condition' => [
+                                'quest_not' => [$questId],
+                            ],
+                        ],
+                        [
+                            'next' => 2,
+                            'next_condition' => [
+                                'quest' => [$questId],
+                            ],
+                        ],
+                        [
+                            'next' => 3,
+                        ],
+                    ],
+                    'text' => $shopConfig['shop_prompt'],
+                    'choices' => [
+                        [
+                            'text' => 'Voir la boutique',
+                            'action' => 'open_shop',
+                            'datas' => [],
+                        ],
+                        [
+                            'text' => 'Autre chose...',
+                            'action' => 'next',
+                        ],
+                    ],
+                ],
+                [
+                    'text' => 'Merci d\'avoir accepté de m\'aider. Revenez me voir quand vous aurez terminé.',
+                ],
+                [
+                    'text' => 'Avez-vous terminé la mission que je vous ai confiée ?',
+                ],
+                [
+                    'text' => $questDescriptions[$pnjIndex % count($questDescriptions)],
+                    'choices' => [
+                        [
+                            'text' => 'Oui, je vais vous aider',
+                            'data' => [
+                                'quest' => $questId,
+                            ],
+                            'action' => 'quest_offer',
+                        ],
+                        [
+                            'text' => 'Non, pas maintenant',
+                            'action' => 'close',
+                        ],
+                    ],
+                ],
+            ];
+        }
 
         // Dialogue de base pour tous les PNJ
         $dialog = [
