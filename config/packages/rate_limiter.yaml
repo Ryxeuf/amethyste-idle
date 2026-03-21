@@ -1,0 +1,29 @@
+framework:
+    rate_limiter:
+        # Movement API: 10 req/s per player (anti-speedhack)
+        api_move:
+            policy: 'sliding_window'
+            limit: 10
+            interval: '1 second'
+            lock_factory: null
+
+        # Combat actions: 5 req/s per player
+        game_fight:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '1 second'
+            lock_factory: null
+
+        # Shop transactions: 3 req/s per player
+        game_shop:
+            policy: 'sliding_window'
+            limit: 3
+            interval: '1 second'
+            lock_factory: null
+
+        # Craft actions: 3 req/s per player
+        game_craft:
+            policy: 'sliding_window'
+            limit: 3
+            interval: '1 second'
+            lock_factory: null

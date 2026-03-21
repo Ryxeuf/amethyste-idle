@@ -25,9 +25,9 @@
 ```
 VAGUE 1 (aucun prerequis — tout en parallele)
   ┌─ ✅ 01 De-hardcoder map IDs (FAIT) ────────────────────────────────┐
-  ├─ 02 Supprimer CSS mort                                            │
+  ├─ ✅ 02 Supprimer CSS mort (FAIT)                                    │
   ├─ 03 Optimisation queries N+1                                      │
-  ├─ 04 Rate limiting API                                             │
+  ├─ ✅ 04 Rate limiting API (FAIT)                                    │
   ├─ 05 Consolidation craft (supprimer doublon)                       │
   ├─ 06 Materia unlock verification (reliquat GD-8)                   │
   ├─ 07 Raretes d'equipement (enum + affichage)                       │
@@ -164,16 +164,6 @@ VAGUE 6 — Long terme
 - [ ] Mesurer avant/apres (nombre de queries par page)
 
 ---
-
-### 04 — Rate limiting API (S | ★★★)
-
-> Aucun rate limiting. Risque d'abus sur les endpoints critiques. Symfony RateLimiter est inclus dans le framework, simple a configurer. Prerequis : ∅
-
-- [ ] Configurer `framework.rate_limiter` dans `config/packages/rate_limiter.yaml`
-- [ ] Limiter `/api/map/move` : 10 req/s par joueur (anti-speedhack)
-- [ ] Limiter `/game/fight/*` : 5 req/s par joueur
-- [ ] Limiter `/game/shop/buy` et `/game/craft` : 3 req/s par joueur
-- [ ] Reponse 429 avec message explicite
 
 ---
 
