@@ -349,3 +349,20 @@
 - [x] Messages detailles : chaque recompense (gils, XP, items) est listee dans la reponse JSON
 - [x] Template : affichage des items en recompense dans les quetes actives (section Recompenses)
 - [x] Template : affichage des recompenses dans les quetes terminees
+
+---
+
+## Tache 25 — Boutiques PNJ fixtures (2026-03-21) ✅
+
+> Le ShopController et le template existaient mais aucun PNJ n'avait de shopItems configures. Les items stuff/gear n'avaient pas de prix.
+
+- [x] Ajout de prix sur les items stuff (life-potion 25G, beer-pint 10G, mushroom 5G)
+- [x] Ajout de prix sur les items gear (short-sword 80G, long-sword 200G, leather-armor 75G, leather-boots 40G, leather-hat 35G)
+- [x] 5 PNJ marchands configures dans PnjFixtures avec shopItems :
+  - Gerard le Forgeron : armes et armures (short-sword, long-sword, leather-armor, leather-boots, leather-hat)
+  - Elise la Guerisseuse : potions et soins (life-potion, mushroom, beer-pint)
+  - Pierre le Tavernier : consommables (beer-pint, mushroom, life-potion)
+  - Marie la Herboriste : plantes et faucilles (plant-mint, plant-sage, plant-lavender, plant-thyme, plant-rosemary, sickle-bronze, sickle-iron)
+  - Emilie la Marchande : outils varies (pickaxe-bronze/iron, sickle-bronze, fishing-rod-bronze/iron, skinning-knife-bronze/iron)
+- [x] Dialogues marchands avec action open_shop et choix "Voir la boutique" / "Au revoir"
+- [x] PnjDialogParser : injection automatique du pnj_id dans les choix open_shop (plus besoin de hardcoder l'ID)

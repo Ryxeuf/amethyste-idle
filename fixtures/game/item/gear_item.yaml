@@ -5,6 +5,7 @@ App\Entity\Game\Item:
     type: 'gear'
     spell: '@none_attack_1'
     slug: 'short-sword'
+    price: 80
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
     requirements: ['@soldier_apprentice']
     domain: '@soldier'
@@ -15,6 +16,7 @@ App\Entity\Game\Item:
     type: 'gear'
     spell: '@none_attack_2'
     slug: 'long-sword'
+    price: 200
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
     requirements: ['@soldier_apprentice']
     domain: '@soldier'
@@ -24,6 +26,7 @@ App\Entity\Game\Item:
     description: "Ca évite de marcher pieds nus"
     type: "gear"
     slug: 'leather-boots'
+    price: 40
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_FOOT )>
     nbUsages: 100
   leather_armor (extends item):
@@ -31,6 +34,7 @@ App\Entity\Game\Item:
     description: "Une armure de cuir de vache simple"
     type: "gear"
     slug: 'leather-armor'
+    price: 75
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_CHEST )>
     nbUsages: 100
   leather_hat (extends item):
@@ -38,5 +42,6 @@ App\Entity\Game\Item:
     description: "Un chapeau de cuir standard de manufacture classique"
     type: "gear"
     slug: 'leather-hat'
+    price: 35
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_HEAD )>
     nbUsages: 100

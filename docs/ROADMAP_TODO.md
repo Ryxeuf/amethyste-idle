@@ -48,7 +48,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 22 Factions & reputation (entites)                               │
   ├─ 23 Tests fonctionnels controleurs                                │
   ├─ 24 Notifications toast in-game                                   │
-  └─ 25 Boutiques PNJ fixtures                                        │
+  └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
                                                                       │
 VAGUE 2 (depend de Vague 1)                                           │
   ┌─ 26 Recettes de craft fixtures ← 05                               │
@@ -222,13 +222,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 25 — Boutiques PNJ fixtures (S | ★★★)
-
-> Le controller et le template existent. Il manque les donnees pour que les joueurs puissent acheter/vendre. Prerequis : ∅
-
-- [ ] Configurer `shopItems` sur 3-5 PNJ existants dans PnjFixtures (armurier, alchimiste, marchand general)
-- [ ] Verifier que les items references dans shopItems existent dans ItemFixtures
-- [ ] Tester manuellement : ouvrir boutique, acheter, vendre, fonds insuffisants
+### ~~25 — Boutiques PNJ fixtures~~ ✅ FAIT
 
 ---
 

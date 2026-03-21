@@ -6,6 +6,7 @@ App\Entity\Game\Item:
     type: 'stuff'
     spell: '@none_heal_2'
     slug: 'life-potion'
+    price: 25
     effect: '{"action":"use_spell", "slug":"life-heal" }'
     nbUsages: 1
   fishing_rod (extends item):
@@ -22,6 +23,7 @@ App\Entity\Game\Item:
     description: 'Une chope de bière pour boire'
     type: 'stuff'
     slug: 'beer-pint'
+    price: 10
     spell: '@beer_heal'
     effect: '{"action":"use_spell", "slug":"beer-heal"}'
     nbUsages: 1
@@ -31,6 +33,7 @@ App\Entity\Game\Item:
     description: 'Un champignon, mais est-il comestible ?'
     type: 'stuff'
     slug: 'mushroom'
+    price: 5
     spell: '@mushroom_heal'
     effect: '{"action":"use_spell", "slug":"mushroom-heal"}'
     nbUsages: 1
