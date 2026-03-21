@@ -138,7 +138,7 @@ class CombatSkillResolver
                 continue;
             }
 
-            $slugs[] = $actions['materia']['unlock'];
+            $slugs[] = (string) $actions['materia']['unlock'];
         }
 
         return array_unique($slugs);

@@ -49,6 +49,9 @@ class PlayerItemHelper
         }
 
         $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return false;
+        }
 
         return $this->combatSkillResolver->hasUnlockedMateriaSpell($player, $spell->getSlug());
     }
