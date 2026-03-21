@@ -124,6 +124,9 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'dragon', 'item' => 'stew', 'probability' => 30],
             ['monster' => 'dragon', 'item' => 'scroll_xp_boost', 'probability' => 10],
             ['monster' => 'dragon', 'item' => 'scroll_teleport', 'probability' => 20],
+            // Récompenses légendaires boss-only
+            ['monster' => 'dragon', 'item' => 'dragon_fang_blade', 'probability' => 15],
+            ['monster' => 'dragon', 'item' => 'dragon_scale_armor', 'probability' => 10],
         ];
 
         foreach ($monsterItems as $data) {

@@ -319,3 +319,11 @@
 - [x] API globale `window.Toast.show(type, message)` pour JS
 - [x] Integration flash messages Symfony (`addFlash`) → toasts automatiques
 - [x] Container dans `game.html.twig` avec support safe-area mobile
+
+## Tache 11 — Recompenses uniques de boss (2026-03-21) ✅
+
+> Items legendaires exclusifs au boss Dragon ancestral, avec drop garanti dans la loot table.
+
+- [x] 2 items legendaires boss-only dans ItemFixtures : Lame de croc draconique (arme feu), Plastron en ecailles de dragon (armure feu)
+- [x] Loot table du Dragon configuree : epee a 15%, plastron a 10% de drop
+- [x] Badge rarity Legendary (jaune dore) automatique dans inventaire et ecran de loot

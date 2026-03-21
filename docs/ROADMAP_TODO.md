@@ -34,7 +34,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 08 Combat log frontend (FAIT)                                  │
   ├─ ✅ 09 Icones statuts timeline combat (FAIT)                        │
   ├─ ✅ 10 Indicateur difficulte monstres (FAIT)                       │
-  ├─ 11 Recompenses uniques de boss                                   │
+  ├─ ✅ 11 Recompenses uniques de boss (FAIT)                           │
   ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
   ├─ ✅ 13 Prerequis de quetes et chaines (FAIT)                          │
   ├─ ✅ 14 Respec basique (FAIT)                                       │
@@ -212,13 +212,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 11 — Recompenses uniques de boss (S | ★★★)
-
-> Complexite: Faible | Priorite: Haute | Gain: Motivation a affronter les boss. Prerequis : ∅
-
-- [ ] Ajouter des items legendaires boss-only dans les ItemFixtures (1-2 items par boss)
-- [ ] Configurer les LootTable des boss existants avec drop garanti d'un item legendaire
-- [ ] Badge "Boss" sur les items dans l'inventaire (via item.rarity ou lootSource)
+### ~~11 — Recompenses uniques de boss~~ ✅ FAIT
 
 ---
 
