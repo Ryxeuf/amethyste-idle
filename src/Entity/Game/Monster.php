@@ -69,6 +69,9 @@ class Monster
     #[ORM\Column(name: 'boss_phases', type: 'json', nullable: true)]
     private ?array $bossPhases = null;
 
+    #[ORM\Column(name: 'difficulty', type: 'integer', options: ['default' => 1])]
+    private int $difficulty = 1;
+
     public function getSpeed(): int
     {
         return $this->speed;
@@ -270,6 +273,16 @@ class Monster
     public function setBossPhases(?array $bossPhases): void
     {
         $this->bossPhases = $bossPhases;
+    }
+
+    public function getDifficulty(): int
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(int $difficulty): void
+    {
+        $this->difficulty = max(1, min(5, $difficulty));
     }
 
     public function getCurrentBossPhase(int $currentHpPercent): ?array

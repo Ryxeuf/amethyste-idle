@@ -405,7 +405,8 @@
         "collect": "Collect selected items",
         "error_collect": "An error occurred while collecting the items."
       },
-      "error_action": "An error occurred while performing the action."
+      "error_action": "An error occurred while performing the action.",
+      "difficulty": "Difficulty %level%/5"
     }
   },
   "common": {
