@@ -61,10 +61,11 @@ export default class extends Controller {
         this._shakeDuration = 0;
         this._shakeElapsed = 0;
 
-        // Day/night ambient overlay
+        // Day/night ambient overlay (driven by server GameTimeService)
         this._dayNightEnabled = true;
         this._ambientOverlay = null;
-        this._timeOfDay = this._computeTimeOfDay();
+        this._timeOfDay = 'day';
+        this._gameTimeData = null; // { hour, minute, timeOfDay, season, day, timeRatio }
 
         // Particle system for environmental effects
         this._particles = [];
@@ -75,7 +76,9 @@ export default class extends Controller {
         await this._loadCells(this._playerX, this._playerY);
         await this._loadEntities();
         this._setupMercure();
+        await this._fetchGameTime();
         this._initDayNight();
+        this._initTimeHud();
         this._updateCamera(true);
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
@@ -119,6 +122,10 @@ export default class extends Controller {
         this._entitySpatialHash.clear();
         this._animatedEntities = [];
         this._particles = [];
+        if (this._timeHudText) {
+            this._timeHudText.destroy();
+            this._timeHudText = null;
+        }
 
         if (this._tooltipEl && this._tooltipEl.parentNode) {
             this._tooltipEl.parentNode.removeChild(this._tooltipEl);
@@ -726,9 +733,41 @@ export default class extends Controller {
 
     // --- Day/Night Cycle ---
 
+    async _fetchGameTime() {
+        try {
+            const resp = await fetch('/api/game/time');
+            if (resp.ok) {
+                this._gameTimeData = await resp.json();
+                this._timeOfDay = this._gameTimeData.timeOfDay;
+                this._gameTimeFetchedAt = Date.now();
+            }
+        } catch (e) {
+            console.warn('[map_pixi] Failed to fetch game time, using fallback');
+        }
+    }
+
     _computeTimeOfDay() {
+        if (this._gameTimeData && this._gameTimeFetchedAt) {
+            // Extrapolate from last fetch using timeRatio
+            const elapsed = (Date.now() - this._gameTimeFetchedAt) / 1000; // real seconds since fetch
+            const ratio = this._gameTimeData.timeRatio || 24;
+            const inGameSecondsSinceFetch = elapsed * ratio;
+            const baseInGameSeconds = this._gameTimeData.hour * 3600 + this._gameTimeData.minute * 60;
+            const totalInGameSeconds = baseInGameSeconds + inGameSecondsSinceFetch;
+            const hour = Math.floor(totalInGameSeconds / 3600) % 24;
+            const minute = Math.floor(totalInGameSeconds / 60) % 60;
+
+            // Update cached display values
+            this._gameTimeData.hour = hour;
+            this._gameTimeData.minute = minute;
+
+            if (hour >= 8 && hour < 18) return 'day';
+            if (hour >= 6 && hour < 8) return 'dawn';
+            if (hour >= 18 && hour < 20) return 'dusk';
+            return 'night';
+        }
+        // Fallback to local time
         const hour = new Date().getHours();
-        // 0-5: night, 6-7: dawn, 8-17: day, 18-19: dusk, 20-23: night
         if (hour >= 8 && hour < 18) return 'day';
         if (hour >= 6 && hour < 8) return 'dawn';
         if (hour >= 18 && hour < 20) return 'dusk';
@@ -745,12 +784,55 @@ export default class extends Controller {
         this._applyTimeOfDay(this._timeOfDay);
     }
 
+    _initTimeHud() {
+        if (!this._app) return;
+        this._timeHudText = new PIXI.Text({
+            text: '',
+            style: {
+                fontFamily: 'monospace',
+                fontSize: 11,
+                fill: 0xd4d4d8,
+                dropShadow: true,
+                dropShadowColor: 0x000000,
+                dropShadowDistance: 1,
+                dropShadowAlpha: 0.8,
+            },
+        });
+        this._timeHudText.zIndex = 600;
+        this._timeHudText.position.set(6, 4);
+        this._app.stage.addChild(this._timeHudText);
+        this._updateTimeHud();
+    }
+
+    _updateTimeHud() {
+        if (!this._timeHudText) return;
+        const data = this._gameTimeData;
+        if (!data) {
+            this._timeHudText.text = '';
+            return;
+        }
+        const h = String(data.hour).padStart(2, '0');
+        const m = String(data.minute).padStart(2, '0');
+        const seasonIcons = { spring: '\u2741', summer: '\u2600', autumn: '\u2618', winter: '\u2744' };
+        const icon = seasonIcons[data.season] || '';
+        this._timeHudText.text = `${h}:${m} ${icon}`;
+    }
+
     _updateDayNight(dt) {
         this._dayNightCheckTimer = (this._dayNightCheckTimer || 0) + dt;
-        if (this._dayNightCheckTimer < 60000) return; // Check every 60s
+
+        // Re-fetch from server every 5 minutes to stay in sync
+        this._gameTimeRefetchTimer = (this._gameTimeRefetchTimer || 0) + dt;
+        if (this._gameTimeRefetchTimer >= 300000) {
+            this._gameTimeRefetchTimer = 0;
+            this._fetchGameTime().then(() => this._updateTimeHud());
+        }
+
+        if (this._dayNightCheckTimer < 10000) return; // Recompute every 10s for smoother HUD
         this._dayNightCheckTimer = 0;
 
         const newTime = this._computeTimeOfDay();
+        this._updateTimeHud();
         if (newTime !== this._timeOfDay) {
             this._timeOfDay = newTime;
             this._applyTimeOfDay(newTime);

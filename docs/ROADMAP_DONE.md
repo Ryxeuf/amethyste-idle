@@ -259,3 +259,63 @@
 - [x] Route `GET /game/player/{id}/profile` : nom, classe, race, stats, domaines, succes, bestiaire
 - [x] Template profil public avec stats (vie, energie, vitesse, precision), domaines et bonus, succes obtenus, titres de chasseur
 - [x] Lien cliquable sur les noms de joueurs dans le chat (global, carte, messages prives) — Twig et Stimulus.js
+
+---
+
+## Tache 09 — Icones statuts timeline combat (2026-03-21) ✅
+
+> Badges statut actifs sous chaque avatar dans la timeline combat.
+
+- [x] Badges statut color-codes sous chaque avatar dans `_timeline.html.twig`
+- [x] Icone emoji + tours restants (tooltip au survol)
+- [x] 8 types supportes : poison, burn, freeze, paralysis, silence, regeneration, shield, berserk
+
+---
+
+## Tache 10 — Indicateur difficulte monstres (2026-03-21) ✅
+
+> Affichage de la difficulte des monstres en etoiles.
+
+- [x] Champ `difficulty` (int 1-5) sur l'entite Monster
+- [x] Affichage en etoiles dans le template combat et le bestiaire
+- [x] Difficulte renseignee dans MonsterFixtures pour les 25 monstres
+
+---
+
+## Tache 14 — Respec basique (2026-03-21) ✅
+
+> Redistribution de tous les points de talent avec cout croissant.
+
+- [x] Service `SkillRespecManager` : retire tous les skills, rembourse l'XP usee
+- [x] Cout en gils (50 * nb skills * 1.25^respecCount), prix croissant
+- [x] Champ `respecCount` sur Player + migration
+- [x] Route POST `/game/skills/respec` + RespecController avec CSRF
+- [x] Modale de confirmation dans la page /game/skills
+- [x] Tests unitaires SkillRespecManagerTest
+
+---
+
+## Tache 20 — Horloge in-game & API temps (2026-03-21) ✅
+
+> Systeme de temps in-game avec ratio configurable (1h reelle = 1 jour in-game).
+
+- [x] `GameTimeService` : conversion temps reel → in-game (ratio configurable via `game.time_ratio`)
+- [x] Methodes `getHour()`, `getMinute()`, `getTimeOfDay()` (dawn/day/dusk/night), `getSeason()`, `getDay()`
+- [x] Parametre Symfony `game.time_ratio` dans `services.yaml`
+- [x] Route API `GET /api/game/time` (heure, minute, periode, saison, jour, ratio)
+- [x] `map_pixi_controller.js` utilise l'API au lieu du temps reel local
+- [x] HUD discret sur la carte : heure in-game + icone saison (PixiJS Text overlay)
+- [x] Extrapolation client-side entre les fetches API (re-sync toutes les 5 min)
+- [x] 12 tests unitaires GameTimeServiceTest
+
+---
+
+## Tache 24 — Notifications toast in-game (2026-03-21) ✅
+
+> Systeme de notifications toast generaliste pour toutes les actions du joueur.
+
+- [x] Stimulus controller `toast_controller.js` : toasts empiles en bas-droite, auto-dismiss 4s
+- [x] 4 types visuels : success (vert), error (rouge), warning (orange), info (bleu)
+- [x] API globale `window.Toast.show(type, message)` pour JS
+- [x] Integration flash messages Symfony (`addFlash`) → toasts automatiques
+- [x] Container dans `game.html.twig` avec support safe-area mobile

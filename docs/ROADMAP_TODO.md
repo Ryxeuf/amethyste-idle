@@ -2,7 +2,7 @@
 
 > Toutes les taches restantes a implementer, organisees en 6 vagues de priorite.
 > Numerotation unifiee : chaque tache a un identifiant unique (01 a 77).
-> Derniere mise a jour : 2026-03-20
+> Derniere mise a jour : 2026-03-21
 
 ---
 
@@ -32,22 +32,23 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 06 Materia unlock verification (FAIT)                          │
   ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
   ├─ ✅ 08 Combat log frontend (FAIT)                                  │
-  ├─ 09 Icones statuts timeline combat                                │
-  ├─ 10 Indicateur difficulte monstres                                │
+  ├─ ✅ 09 Icones statuts timeline combat (FAIT)                        │
+  ├─ ✅ 10 Indicateur difficulte monstres (FAIT)                       │
   ├─ 11 Recompenses uniques de boss                                   │
   ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
   ├─ ✅ 13 Prerequis de quetes et chaines (FAIT)                          │
-  ├─ 14 Respec basique                                                │
+  ├─ ✅ 14 Respec basique (FAIT)                                       │
   ├─ ✅ 15 Consommables de base (FAIT)                                  │
   ├─ 16 Materia complement (8 nouvelles)                              │
   ├─ 17 Equipement tier 1 Starter                                     │
   ├─ 18 Commandes chat slash                                          │
   ├─ ✅ 19 Profil joueur public (FAIT)                                          │
-  ├─ 20 Horloge in-game & API temps                                   │
+  ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
   ├─ 21 GameEvent executor                                            │
   ├─ 22 Factions & reputation (entites)                               │
   ├─ 23 Tests fonctionnels controleurs                                │
   ├─ 24 Notifications toast in-game                                   │
+  ├─ ✅ 24 Notifications toast in-game (FAIT)                           │
   └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
                                                                       │
 VAGUE 2 (depend de Vague 1)                                           │
@@ -191,16 +192,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 14 — Respec basique (S | ★★★)
-
-> Prerequis : aucun. Debloque l'experimentation de builds. Prerequis : ∅
-
-- [ ] Service `SkillRespecManager` : retire tous les skills du joueur, rembourse l'XP usee dans chaque `DomainExperience`
-- [ ] Cout en gils (formule : 50 * nombre de skills acquis), prix croissant a chaque respec (+25% par respec, stocke dans Player)
-- [ ] Champ `respecCount` (int, default 0) sur Player + migration
-- [ ] Route POST `/game/skills/respec` + confirmation modale cote template
-- [ ] Bouton "Redistribuer" dans la page /game/skills
-- [ ] Tests unitaires SkillRespecManager (respec OK, fonds insuffisants, prix croissant)
+### ~~14 — Respec basique~~ ✅ FAIT
 
 ---
 
@@ -212,24 +204,11 @@ VAGUE 6 — Long terme
 
 ---
 
-### 09 — Icones statuts timeline combat (S | ★★★)
-
-> Complexite: Faible | Priorite: Haute | Gain: Feedback visuel immediat en combat. Prerequis : ∅
-
-- [ ] Ajouter les badges statut actifs sous chaque avatar dans `_timeline.html.twig`
-- [ ] Afficher l'icone emoji + tours restants (tooltip au survol)
-- [ ] Tester visuellement avec poison, bouclier, berserk
+### ~~09 — Icones statuts timeline combat~~ ✅ FAIT
 
 ---
 
-### 10 — Indicateur difficulte monstres (S | ★★)
-
-> Complexite: Faible | Priorite: Moyenne | Gain: Lisibilite pour le joueur. Prerequis : ∅
-
-- [ ] Champ `difficulty` (int 1-5) sur l'entite Monster (migration)
-- [ ] Afficher des etoiles dans le template combat (a cote du nom du mob)
-- [ ] Afficher les etoiles dans le bestiaire
-- [ ] Renseigner la difficulte dans MonsterFixtures
+### ~~10 — Indicateur difficulte monstres~~ ✅ FAIT
 
 ---
 
@@ -290,16 +269,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 20 — Horloge in-game & API temps (S | ★★)
-
-> Fondation obligatoire pour toutes les autres sous-phases monde vivant. Prerequis : ∅
-
-- [ ] `GameTimeService` : convertit le temps reel en temps in-game (1h reelle = 1 journee, ratio configurable)
-- [ ] Methodes `getHour()`, `getMinute()`, `getTimeOfDay()` (dawn/day/dusk/night), `getSeason()`
-- [ ] Parametre Symfony `game.time_ratio` (configurable admin via `parameters.yaml`)
-- [ ] Route API `GET /api/game/time` (heure in-game, periode, saison)
-- [ ] Adapter `_computeTimeOfDay()` dans `map_pixi_controller.js` pour utiliser l'API au lieu du temps reel
-- [ ] Affichage discret de l'heure in-game dans le HUD carte
+### ~~20 — Horloge in-game & API temps~~ ✅ FAIT
 
 ---
 
@@ -341,18 +311,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 24 — Notifications toast in-game (M | ★★★)
-
-> Aucun systeme de notification generaliste. Seul FightNotification existe (combat only). Impact fort : feedback immediat pour toutes les actions du joueur. Prerequis : ∅
-
-- [ ] Composant Stimulus `toast_controller.js` : affiche des toasts empiles en bas-droite (auto-dismiss 4s)
-- [ ] 4 types visuels : succes (vert), info (bleu), alerte (orange), erreur (rouge)
-- [ ] Integration dans les evenements existants :
-  - Drop d'item apres combat (ecran loot)
-  - XP gagnee / domaine level-up
-  - Quete completee / objectif progresse
-  - Succes debloque
-- [ ] Helper Twig `toast()` ou data-attribute Stimulus pour declencher depuis le serveur
+### ~~24 — Notifications toast in-game~~ ✅ FAIT
 
 
 ---
