@@ -7,6 +7,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\App\Pnj;
+use App\Entity\Game\Quest;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -87,6 +88,7 @@ class PnjDialogParser
             'quest_not' => $this->questNot($value),
             'quest' => $this->quest($value),
             'quest_active' => $this->questActive($value),
+            'quest_prerequisites_met' => $this->questPrerequisitesMet($value),
             'has_item' => $this->hasItem($value),
             'domain_xp_min' => $this->domainXpMin($value),
             default => true,
@@ -129,6 +131,39 @@ class PnjDialogParser
         $activeQuests = $this->entityManager->getRepository(PlayerQuest::class)->findBy(['player' => $player, 'quest' => $ids]);
 
         return count($activeQuests) >= count($ids);
+    }
+
+    /**
+     * Check that all prerequisite quests for the given quest IDs are completed.
+     */
+    private function questPrerequisitesMet(array $questIds): bool
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return false;
+        }
+
+        foreach ($questIds as $questId) {
+            $quest = $this->entityManager->getRepository(Quest::class)->find($questId);
+            if (!$quest) {
+                continue;
+            }
+
+            $prerequisites = $quest->getPrerequisiteQuests();
+            if (empty($prerequisites)) {
+                continue;
+            }
+
+            $completedPrereqs = $this->entityManager->getRepository(PlayerQuestCompleted::class)->findBy([
+                'player' => $player,
+                'quest' => $prerequisites,
+            ]);
+            if (\count($completedPrereqs) < \count($prerequisites)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function hasItem(array $slugs): bool
