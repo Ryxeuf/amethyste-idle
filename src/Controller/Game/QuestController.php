@@ -4,10 +4,12 @@ namespace App\Controller\Game;
 
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
+use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\QuestTrackingFormater;
+use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,6 +27,7 @@ class QuestController extends AbstractController
         private readonly PlayerQuestHelper $playerQuestHelper,
         private readonly QuestTrackingFormater $questTrackingFormater,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly InventoryHelper $inventoryHelper,
     ) {
     }
 
@@ -141,10 +144,58 @@ class QuestController extends AbstractController
         $rewards = $quest->getRewards();
         $messages = [sprintf('Quête "%s" complétée !', $quest->getName())];
 
-        // Apply rewards
-        if (isset($rewards['gils'])) {
-            $player->addGils((int) $rewards['gils']);
-            $messages[] = sprintf('+%d Gils', $rewards['gils']);
+        // Apply gold/gils rewards (fixtures use 'gold', support both keys)
+        $gils = (int) ($rewards['gils'] ?? $rewards['gold'] ?? 0);
+        if ($gils > 0) {
+            $player->addGils($gils);
+            $messages[] = sprintf('+%d Gils', $gils);
+        }
+
+        // Apply XP rewards — distribute evenly across all player domains
+        $xp = (int) ($rewards['xp'] ?? 0);
+        if ($xp > 0) {
+            $domainExperiences = $player->getDomainExperiences();
+            $domainCount = count($domainExperiences);
+            if ($domainCount > 0) {
+                $xpPerDomain = max(1, intdiv($xp, $domainCount));
+                foreach ($domainExperiences as $domainExperience) {
+                    $domainExperience->setTotalExperience(
+                        $domainExperience->getTotalExperience() + $xpPerDomain
+                    );
+                }
+            }
+            $messages[] = sprintf('+%d XP', $xp);
+        }
+
+        // Apply item rewards
+        $items = $rewards['items'] ?? [];
+        $itemRepository = $this->entityManager->getRepository(Item::class);
+        foreach ($items as $key => $itemData) {
+            // Support two formats:
+            // 1. Array with genericItemSlug + count: ['genericItemSlug' => 'beer-pint', 'count' => 1]
+            // 2. Simple key-value: 'slug' => count
+            if (\is_array($itemData) && isset($itemData['genericItemSlug'])) {
+                $slug = $itemData['genericItemSlug'];
+                $count = (int) ($itemData['count'] ?? 1);
+            } elseif (\is_string($key)) {
+                $slug = $key;
+                $count = (int) $itemData;
+            } else {
+                continue;
+            }
+
+            $item = $itemRepository->findOneBy(['slug' => $slug]);
+            if (!$item) {
+                continue;
+            }
+
+            for ($i = 0; $i < $count; ++$i) {
+                $this->inventoryHelper->addItemId($item->getId(), false);
+            }
+            $itemName = $item->getName();
+            $messages[] = $count > 1
+                ? sprintf('+%d %s', $count, $itemName)
+                : sprintf('+%s', $itemName);
         }
 
         // Create completed record

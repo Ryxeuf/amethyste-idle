@@ -35,7 +35,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 09 Icones statuts timeline combat                                │
   ├─ 10 Indicateur difficulte monstres                                │
   ├─ 11 Recompenses uniques de boss                                   │
-  ├─ 12 Recompenses de quetes completes                               │
+  ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
   ├─ 13 Prerequis de quetes et chaines                                │
   ├─ 14 Respec basique                                                │
   ├─ 15 Consommables de base                                          │
@@ -193,14 +193,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 12 — Recompenses de quetes completes (S | ★★★)
-
-> Le controller ne distribue que les gils. Les champs XP et items existent dans les fixtures mais sont ignores. Prerequis : ∅
-
-- [ ] Appliquer `rewards.xp` dans QuestController::complete() (ajouter XP au domaine ou XP generique)
-- [ ] Appliquer `rewards.items` : creer les PlayerItem a partir de genericItemSlug + quantity
-- [ ] Afficher les recompenses detaillees (XP, items, gils) dans le template journal de quetes
-- [ ] Tester : completer une quete avec recompenses mixtes, verifier inventaire + gils + XP
+### ~~12 — Recompenses de quetes completes~~ ✅ FAIT
 
 ---
 

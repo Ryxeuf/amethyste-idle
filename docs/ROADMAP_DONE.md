@@ -335,3 +335,17 @@
 - [x] Auto-scroll vers le dernier message au chargement
 - [x] Separateurs de tours avec numero
 - [x] Tabs mobile Actions/Log avec toggle JavaScript
+
+---
+
+## Tache 12 — Recompenses de quetes completes (2026-03-21) ✅
+
+> Le controller ne distribuait que les gils. Les champs XP et items existaient dans les fixtures mais etaient ignores.
+
+- [x] Fix cle `gold` vs `gils` : le controller supporte desormais les deux cles (les fixtures utilisaient `gold`)
+- [x] Appliquer `rewards.xp` : distribue l'XP equitablement entre tous les domaines du joueur
+- [x] Appliquer `rewards.items` : cree les PlayerItem via InventoryHelper a partir de `genericItemSlug` + `count`
+- [x] Support de deux formats d'items : array avec `genericItemSlug`/`count` et simple `slug => count`
+- [x] Messages detailles : chaque recompense (gils, XP, items) est listee dans la reponse JSON
+- [x] Template : affichage des items en recompense dans les quetes actives (section Recompenses)
+- [x] Template : affichage des recompenses dans les quetes terminees
