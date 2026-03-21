@@ -37,7 +37,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 11 Recompenses uniques de boss                                   │
   ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
   ├─ 13 Prerequis de quetes et chaines                                │
-  ├─ 14 Respec basique                                                │
+  ├─ ✅ 14 Respec basique (FAIT)                                       │
   ├─ 15 Consommables de base                                          │
   ├─ 16 Materia complement (8 nouvelles)                              │
   ├─ 17 Equipement tier 1 Starter                                     │
@@ -209,16 +209,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 14 — Respec basique (S | ★★★)
-
-> Prerequis : aucun. Debloque l'experimentation de builds. Prerequis : ∅
-
-- [ ] Service `SkillRespecManager` : retire tous les skills du joueur, rembourse l'XP usee dans chaque `DomainExperience`
-- [ ] Cout en gils (formule : 50 * nombre de skills acquis), prix croissant a chaque respec (+25% par respec, stocke dans Player)
-- [ ] Champ `respecCount` (int, default 0) sur Player + migration
-- [ ] Route POST `/game/skills/respec` + confirmation modale cote template
-- [ ] Bouton "Redistribuer" dans la page /game/skills
-- [ ] Tests unitaires SkillRespecManager (respec OK, fonds insuffisants, prix croissant)
+### ~~14 — Respec basique~~ ✅ FAIT
 
 ---
 

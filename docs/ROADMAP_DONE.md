@@ -377,3 +377,17 @@
 - [x] Affichage icone emoji du statut (ou tours restants si pas d'icone) dans des pastilles rondes 14px
 - [x] Tooltip au survol avec nom complet et tours restants
 - [x] `FightTimelineController` mis a jour pour passer les statusEffects au template Turbo Stream
+
+---
+
+## Tache 14 — Respec basique (2026-03-21) ✅
+
+> Redistribution complete des competences contre des gils, avec cout croissant.
+
+- [x] Champ `respecCount` (int, default 0) sur Player + migration PostgreSQL
+- [x] Methode `removeSkill()` ajoutee sur Player
+- [x] Service `SkillRespecManager` : calcul cout (50 * nbSkills * 1.25^respecCount), validation, reset complet (skills, XP, stats domaine, bonus vie)
+- [x] Controller `POST /game/skills/respec` avec protection CSRF et messages flash
+- [x] Bouton "Redistribuer" dans la page skills + modale de confirmation (cout, gils, nb competences)
+- [x] `IndexController` enrichi avec donnees respec (cout, canRespec, gils, nbSkills)
+- [x] Tests unitaires SkillRespecManager (7 cas : cout 0 skills, cout 1er/2e/3e respec, canRespec OK/KO/combat, respec success/fail, scaling)

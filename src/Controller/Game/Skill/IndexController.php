@@ -5,7 +5,9 @@ namespace App\Controller\Game\Skill;
 use App\Dto\Domain\DomainModel;
 use App\Dto\Domain\PlayerDomain;
 use App\Entity\Game\Domain;
+use App\GameEngine\Progression\SkillRespecManager;
 use App\Helper\PlayerDomainHelper;
+use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
 use App\Transformer\PlayerSkillTransformer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -16,8 +18,14 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/game/skills', name: 'app_game_skills')]
 class IndexController extends AbstractController
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly PlayerDomainHelper $playerDomainHelper, private readonly PlayerSkillTransformer $playerSkillDataTransformer, private readonly PlayerSkillHelper $skillHelper)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerDomainHelper $playerDomainHelper,
+        private readonly PlayerSkillTransformer $playerSkillDataTransformer,
+        private readonly PlayerSkillHelper $skillHelper,
+        private readonly PlayerHelper $playerHelper,
+        private readonly SkillRespecManager $respecManager,
+    ) {
     }
 
     public function __invoke(): Response
@@ -27,8 +35,14 @@ class IndexController extends AbstractController
 
         $domainsModels = array_map($this->transformDomain(...), $domains);
 
+        $player = $this->playerHelper->getPlayer();
+
         return $this->render('game/skills/index.html.twig', [
             'domains' => $domainsModels,
+            'respecCost' => $player ? $this->respecManager->getRespecCost($player) : 0,
+            'canRespec' => $player ? $this->respecManager->canRespec($player) : false,
+            'playerGils' => $player ? $player->getGils() : 0,
+            'skillCount' => $player ? $player->getSkills()->count() : 0,
         ]);
     }
 
