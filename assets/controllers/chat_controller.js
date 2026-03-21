@@ -15,6 +15,7 @@ export default class extends Controller {
         historyUrl: String,
         conversationsUrl: String,
         searchUrl: String,
+        profileUrl: String,
     };
 
     connect() {
@@ -243,13 +244,14 @@ export default class extends Controller {
         time.className = 'text-gray-500 text-xs mr-1';
         time.textContent = `[${data.createdAt}]`;
 
-        const name = document.createElement('span');
-        name.className = `font-semibold text-sm mr-1 ${isSelf ? 'text-purple-400' : 'text-blue-400'}`;
+        const name = document.createElement('a');
+        name.href = this.profileUrlValue.replace('__ID__', data.sender.id);
+        name.className = `font-semibold text-sm mr-1 hover:underline ${isSelf ? 'text-purple-400' : 'text-blue-400'}`;
 
         if (data.channel === 'private') {
             const prefix = isSelf ? `[MP -> ${this._escapeHtml(data.recipient?.name || '?')}]` : `[MP de ${this._escapeHtml(data.sender.name)}]`;
             name.textContent = prefix;
-            name.className = 'font-semibold text-sm mr-1 text-pink-400';
+            name.className = 'font-semibold text-sm mr-1 hover:underline text-pink-400';
         } else {
             name.textContent = `${this._escapeHtml(data.sender.name)}:`;
         }
