@@ -298,3 +298,16 @@
 - [x] Supprime le dossier `assets/styles/map/` (world-1.css)
 - [x] Retire les imports CSS dans `assets/app.js`
 - [x] Nettoye les references dans CLAUDE.md, DOCUMENTATION.md, AGENTS.md, `.claude/commands/import-terrain.md`, `.claude/commands/level-design-agent.md`, `docs/TILED_GUIDE.md`, `docs/BILAN-MODERNISATION-STACK.md`, `.cursor/rules/terrain-maps.mdc`
+
+### 04 — Rate limiting API (S | ★★★) ✅
+
+> Protection anti-abus sur les endpoints critiques via Symfony RateLimiter.
+
+- [x] Ajout de `symfony/rate-limiter` dans composer.json
+- [x] Configuration `framework.rate_limiter` dans `config/packages/rate_limiter.yaml` (4 limiters)
+- [x] `RateLimitingSubscriber` : EventSubscriber qui intercepte les routes protegees
+- [x] `/api/map/move` : 10 req/s par joueur (anti-speedhack)
+- [x] `/game/fight/*` (attack, spell, item, flee) : 5 req/s par joueur
+- [x] `/game/shop/buy` et `/game/shop/sell` : 3 req/s par joueur
+- [x] `/game/craft/*` (execute, experiment, crafting) : 3 req/s par joueur
+- [x] Reponse 429 avec message explicite, headers Retry-After et X-RateLimit-*
