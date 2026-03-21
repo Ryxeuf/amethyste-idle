@@ -1,0 +1,154 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Profil de {{ targetPlayer.name }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page max-w-3xl mx-auto">
+
+    {# En-tete du profil #}
+    <div class="game-card mb-4">
+        <div class="game-card-body">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center text-2xl font-bold text-white border-2 border-purple-400/50 shadow-lg shadow-purple-500/20">
+                    {{ targetPlayer.name|first|upper }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <h2 class="text-lg font-bold text-white">{{ targetPlayer.name }}</h2>
+                        {% if isOwnProfile %}
+                            <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30">Vous</span>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
+                        {% if targetPlayer.race %}
+                            <span>{{ targetPlayer.race.name }}</span>
+                            <span class="text-gray-600">·</span>
+                        {% endif %}
+                        <span>{{ targetPlayer.classType }}</span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                        Membre depuis {{ targetPlayer.createdAt|date('d/m/Y') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Statistiques generales #}
+    <div class="game-card mb-4">
+        <div class="game-card-header">
+            <h3 class="text-sm font-semibold text-white">Statistiques</h3>
+        </div>
+        <div class="game-card-body">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Vie max</div>
+                    <div class="text-lg font-bold text-red-400">{{ targetPlayer.maxLife }}</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Energie max</div>
+                    <div class="text-lg font-bold text-blue-400">{{ targetPlayer.maxEnergy }}</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Vitesse</div>
+                    <div class="text-lg font-bold text-yellow-400">{{ targetPlayer.speed }}</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Precision</div>
+                    <div class="text-lg font-bold text-green-400">{{ targetPlayer.hit }}%</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mt-3">
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Competences</div>
+                    <div class="text-lg font-bold text-purple-400">{{ skillCount }}</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Monstres vaincus</div>
+                    <div class="text-lg font-bold text-red-400">{{ totalKills }}</div>
+                </div>
+                <div class="bg-gray-800/50 rounded-lg p-3 text-center">
+                    <div class="text-xs text-gray-400 mb-1">Succes</div>
+                    <div class="text-lg font-bold text-amber-400">{{ completedAchievements|length }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Domaines principaux #}
+    {% if domainExperiences|length > 0 %}
+    <div class="game-card mb-4">
+        <div class="game-card-header">
+            <h3 class="text-sm font-semibold text-white">Domaines</h3>
+        </div>
+        <div class="game-card-body space-y-2">
+            {% for de in domainExperiences %}
+                <div class="flex items-center gap-3 bg-gray-800/50 rounded-lg p-2.5">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-200 truncate">{{ de.domain.title }}</span>
+                            <span class="text-xs text-gray-400 ml-2 flex-shrink-0">{{ de.totalExperience }} XP</span>
+                        </div>
+                        <div class="flex gap-3 text-[10px] text-gray-500">
+                            {% if de.damage > 0 %}<span class="text-red-400">+{{ de.damage }} Deg</span>{% endif %}
+                            {% if de.heal > 0 %}<span class="text-emerald-400">+{{ de.heal }} Soin</span>{% endif %}
+                            {% if de.hit > 0 %}<span class="text-green-400">+{{ de.hit }} Prec</span>{% endif %}
+                            {% if de.critical > 0 %}<span class="text-yellow-400">+{{ de.critical }} Crit</span>{% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Succes notables #}
+    {% if completedAchievements|length > 0 %}
+    <div class="game-card mb-4">
+        <div class="game-card-header flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-white">Succes obtenus</h3>
+            <span class="text-xs text-gray-400">{{ completedAchievements|length }}</span>
+        </div>
+        <div class="game-card-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {% for pa in completedAchievements %}
+                    <div class="flex items-center gap-2 bg-gray-800/50 rounded-lg p-2.5">
+                        <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('🏆') }}</span>
+                        <div class="min-w-0">
+                            <div class="text-sm font-medium text-amber-400 truncate">{{ pa.achievement.title }}</div>
+                            <div class="text-[10px] text-gray-500 truncate">{{ pa.achievement.description }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Bestiaire — monstres avec titre chasseur #}
+    {% set hunterEntries = [] %}
+    {% for entry in bestiaryEntries %}
+        {% if entry.killCount >= 100 %}
+            {% set hunterEntries = hunterEntries|merge([entry]) %}
+        {% endif %}
+    {% endfor %}
+    {% if hunterEntries|length > 0 %}
+    <div class="game-card mb-4">
+        <div class="game-card-header">
+            <h3 class="text-sm font-semibold text-white">Titres de chasseur</h3>
+        </div>
+        <div class="game-card-body">
+            <div class="flex flex-wrap gap-2">
+                {% for entry in hunterEntries %}
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-900/30 text-red-400 text-xs rounded-full border border-red-700/30">
+                        {{ entry.monster.name }} ({{ entry.killCount }})
+                    </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

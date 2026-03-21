@@ -42,7 +42,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 16 Materia complement (8 nouvelles)                              │
   ├─ 17 Equipement tier 1 Starter                                     │
   ├─ 18 Commandes chat slash                                          │
-  ├─ 19 Profil joueur public                                          │
+  ├─ ✅ 19 Profil joueur public (FAIT)                                          │
   ├─ 20 Horloge in-game & API temps                                   │
   ├─ 21 GameEvent executor                                            │
   ├─ 22 Factions & reputation (entites)                               │
@@ -296,14 +296,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 19 — Profil joueur public (S | ★★★)
-
-> Prerequis social de base : voir les infos d'un autre joueur avant toute interaction avancee. Prerequis : ∅
-
-- [ ] Route `GET /game/player/{id}/profile` : nom, classe, race, succes, domaines principaux
-- [ ] Template profil public (stats non-sensibles, achievements notables, titre)
-- [ ] Lien cliquable sur les noms de joueurs dans le chat et sur la carte
-- [ ] Tests fonctionnels : acces profil, joueur inexistant
+### ~~19 — Profil joueur public~~ ✅ FAIT
 
 ---
 

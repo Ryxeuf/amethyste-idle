@@ -235,3 +235,13 @@
 - [x] 3 parchemins : teleportation (150G), savoir/XP boost (300G), identification (100G)
 - [x] Tous les consommables fonctionnels ajoutes aux loot tables des monstres (par tier de difficulte)
 - [x] Boutiques PNJ enrichies : Elise vend potions + antidote, Pierre vend nourritures
+
+---
+
+## Tache 19 — Profil joueur public (2026-03-21) ✅
+
+> Page de profil public pour consulter les infos d'un autre joueur.
+
+- [x] Route `GET /game/player/{id}/profile` : nom, classe, race, stats, domaines, succes, bestiaire
+- [x] Template profil public avec stats (vie, energie, vitesse, precision), domaines et bonus, succes obtenus, titres de chasseur
+- [x] Lien cliquable sur les noms de joueurs dans le chat (global, carte, messages prives) — Twig et Stimulus.js

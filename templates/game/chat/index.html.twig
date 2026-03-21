@@ -13,7 +13,8 @@
      data-chat-send-url-value="{{ path('app_game_chat_send') }}"
      data-chat-history-url-value="{{ path('app_game_chat_history', {channel: 'x'}) | replace({'x': ''}) | trim('/') }}"
      data-chat-conversations-url-value="{{ path('app_game_chat_conversations') }}"
-     data-chat-search-url-value="{{ path('app_game_chat_players_search') }}">
+     data-chat-search-url-value="{{ path('app_game_chat_players_search') }}"
+     data-chat-profile-url-value="{{ path('app_game_player_profile', {id: '__ID__'}) }}">
 
     {# Tab Navigation #}
     <div class="flex border-b border-gray-700 mb-2 flex-shrink-0">
@@ -37,7 +38,7 @@
             {% for message in globalMessages %}
                 <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
-                    <span class="font-semibold text-sm mr-1 {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</span>
+                    <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
                 </div>
             {% endfor %}
@@ -50,7 +51,7 @@
             {% for message in mapMessages %}
                 <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
-                    <span class="font-semibold text-sm mr-1 {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</span>
+                    <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
                 </div>
             {% endfor %}
