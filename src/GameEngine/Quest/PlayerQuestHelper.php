@@ -4,6 +4,7 @@ namespace App\GameEngine\Quest;
 
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
+use App\Entity\Game\Quest;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -79,6 +80,49 @@ class PlayerQuestHelper
             ->setParameter('player', $this->playerHelper->getPlayer());
 
         return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
+     * @return Quest[]
+     */
+    public function getAvailableQuests(): array
+    {
+        $player = $this->playerHelper->getPlayer();
+
+        // Get IDs of active and completed quests
+        $activeQuestIds = array_map(
+            fn (PlayerQuest $pq) => $pq->getQuest()->getId(),
+            $this->getCurrentQuests()
+        );
+        $completedQuestIds = array_map(
+            fn (PlayerQuestCompleted $pqc) => $pqc->getQuest()->getId(),
+            $this->getCompletedQuests()
+        );
+        $excludeIds = array_merge($activeQuestIds, $completedQuestIds);
+
+        // Get all quests not already active or completed
+        $qb = $this->entityManager->getRepository(Quest::class)->createQueryBuilder('q');
+        if (!empty($excludeIds)) {
+            $qb->where('q.id NOT IN (:excludeIds)')
+               ->setParameter('excludeIds', $excludeIds);
+        }
+        $allQuests = $qb->orderBy('q.name', 'ASC')->getQuery()->getResult();
+
+        // Filter by prerequisites
+        return array_values(array_filter($allQuests, function (Quest $quest) use ($completedQuestIds) {
+            $prerequisites = $quest->getPrerequisiteQuests();
+            if (empty($prerequisites)) {
+                return true;
+            }
+
+            foreach ($prerequisites as $prereqId) {
+                if (!\in_array($prereqId, $completedQuestIds, true)) {
+                    return false;
+                }
+            }
+
+            return true;
+        }));
     }
 
     public function isPlayerQuestCompleted(PlayerQuest $playerQuest): bool

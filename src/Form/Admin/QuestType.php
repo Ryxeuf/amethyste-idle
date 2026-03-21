@@ -28,6 +28,12 @@ class QuestType extends AbstractType
                 'required' => false,
                 'attr' => ['rows' => 6, 'class' => 'font-mono'],
             ])
+            ->add('prerequisiteQuestsJson', TextareaType::class, [
+                'label' => 'Prerequis (IDs JSON, ex: [1, 2])',
+                'mapped' => false,
+                'required' => false,
+                'attr' => ['rows' => 2, 'class' => 'font-mono'],
+            ])
         ;
     }
 

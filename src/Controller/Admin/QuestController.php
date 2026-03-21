@@ -66,6 +66,9 @@ class QuestController extends AbstractController
             $quest->setRequirements($requirementsJson ? json_decode($requirementsJson, true) ?? [] : []);
             $quest->setRewards($rewardsJson ? json_decode($rewardsJson, true) ?? [] : []);
 
+            $prerequisiteQuestsJson = $form->get('prerequisiteQuestsJson')->getData();
+            $quest->setPrerequisiteQuests($prerequisiteQuestsJson ? json_decode($prerequisiteQuestsJson, true) : null);
+
             $this->em->persist($quest);
             $this->em->flush();
             $this->adminLogger->log('create', 'Quest', $quest->getId(), $quest->getName());
@@ -90,6 +93,9 @@ class QuestController extends AbstractController
         $form->get('rewardsJson')->setData(
             json_encode($quest->getRewards(), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
+        $form->get('prerequisiteQuestsJson')->setData(
+            $quest->getPrerequisiteQuests() ? json_encode($quest->getPrerequisiteQuests()) : ''
+        );
 
         $form->handleRequest($request);
 
@@ -99,6 +105,9 @@ class QuestController extends AbstractController
 
             $quest->setRequirements($requirementsJson ? json_decode($requirementsJson, true) ?? [] : []);
             $quest->setRewards($rewardsJson ? json_decode($rewardsJson, true) ?? [] : []);
+
+            $prerequisiteQuestsJson = $form->get('prerequisiteQuestsJson')->getData();
+            $quest->setPrerequisiteQuests($prerequisiteQuestsJson ? json_decode($prerequisiteQuestsJson, true) : null);
 
             $this->em->flush();
             $this->adminLogger->log('update', 'Quest', $quest->getId(), $quest->getName());

@@ -255,6 +255,75 @@ class QuestFixtures extends Fixture
                     ],
                 ],
             ],
+            // --- Chaine de quetes : La Menace Rampante (3 quetes) ---
+            'quest_chain_guard_1' => [
+                'name' => 'La Menace Rampante - Partie 1',
+                'description' => 'Le capitaine de la garde a remarqué une activité inhabituelle de gobelins près du village. Éliminez-en quelques-uns pour évaluer la menace.',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Gobelin',
+                            'slug' => 'goblin',
+                            'count' => 2,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 50,
+                    'gold' => 25,
+                ],
+                'prerequisiteQuests' => null,
+            ],
+            'quest_chain_guard_2' => [
+                'name' => 'La Menace Rampante - Partie 2',
+                'description' => 'Les gobelins étaient des éclaireurs ! Le capitaine vous envoie éliminer les squelettes qu\'ils ont réveillés dans les ruines voisines.',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Squelette',
+                            'slug' => 'skeleton',
+                            'count' => 3,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 100,
+                    'gold' => 50,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 2,
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush (needs ID of quest_chain_guard_1)
+            ],
+            'quest_chain_guard_3' => [
+                'name' => 'La Menace Rampante - Partie 3',
+                'description' => 'Le vrai meneur est un troll qui contrôlait les gobelins et les squelettes. Mettez fin à cette menace une bonne fois pour toutes !',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Troll',
+                            'slug' => 'troll',
+                            'count' => 1,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        [
+                            'type' => 'gear',
+                            'count' => 1,
+                            'genericItemSlug' => 'wooden-shield',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush (needs ID of quest_chain_guard_2)
+            ],
         ];
 
         foreach ($quests as $key => $data) {
@@ -263,12 +332,28 @@ class QuestFixtures extends Fixture
             $quest->setDescription($data['description']);
             $quest->setRequirements($data['requirements']);
             $quest->setRewards($data['rewards']);
+            if (isset($data['prerequisiteQuests'])) {
+                $quest->setPrerequisiteQuests($data['prerequisiteQuests']);
+            }
             $quest->setCreatedAt(new \DateTime());
             $quest->setUpdatedAt(new \DateTime());
 
             $manager->persist($quest);
             $this->addReference($key, $quest);
         }
+
+        $manager->flush();
+
+        // Set prerequisite quest IDs (needs IDs from flush)
+        /** @var Quest $chainGuard1 */
+        $chainGuard1 = $this->getReference('quest_chain_guard_1', Quest::class);
+        /** @var Quest $chainGuard2 */
+        $chainGuard2 = $this->getReference('quest_chain_guard_2', Quest::class);
+        /** @var Quest $chainGuard3 */
+        $chainGuard3 = $this->getReference('quest_chain_guard_3', Quest::class);
+
+        $chainGuard2->setPrerequisiteQuests([$chainGuard1->getId()]);
+        $chainGuard3->setPrerequisiteQuests([$chainGuard2->getId()]);
 
         $manager->flush();
     }
