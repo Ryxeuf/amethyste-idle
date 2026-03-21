@@ -573,6 +573,10 @@ html, body {
   border-color: rgba(34, 197, 94, 0.35) !important;
   box-shadow: inset 0 0 16px rgba(34, 197, 94, 0.06);
 }
+.equip-slot-amethyst {
+  border-color: rgba(217, 70, 239, 0.35) !important;
+  box-shadow: inset 0 0 16px rgba(217, 70, 239, 0.06);
+}
 
 /* Available equipment item card */
 .equip-available-item {
@@ -601,6 +605,8 @@ html, body {
 .equip-rarity-uncommon { border-color: rgba(34, 197, 94, 0.25); }
 .equip-rarity-uncommon:hover { border-color: rgba(34, 197, 94, 0.5); }
 .equip-rarity-common { border-color: rgba(75, 85, 99, 0.3); }
+.equip-rarity-amethyst { border-color: rgba(217, 70, 239, 0.25); }
+.equip-rarity-amethyst:hover { border-color: rgba(217, 70, 239, 0.5); }
 
 /* ===== INVENTORY: Materia orb effects ===== */
 .materia-orb {
@@ -706,6 +712,7 @@ html, body {
 .inv-tooltip-rarity--rare { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
 .inv-tooltip-rarity--uncommon { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 .inv-tooltip-rarity--common { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+.inv-tooltip-rarity--amethyst { background: rgba(217, 70, 239, 0.2); color: #e879f9; }
 
 .inv-tooltip-slot {
   font-size: 0.6875rem;
@@ -825,6 +832,7 @@ html, body {
 .inv-sheet-rarity--rare { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
 .inv-sheet-rarity--uncommon { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 .inv-sheet-rarity--common { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+.inv-sheet-rarity--amethyst { background: rgba(217, 70, 239, 0.2); color: #e879f9; }
 
 .inv-sheet-slot {
   font-size: 0.75rem;

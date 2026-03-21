@@ -317,7 +317,7 @@ export default class extends Controller {
     }
 
     _rarityLabel(r) {
-        const map = { legendary: 'Légendaire', epic: 'Épique', rare: 'Rare', uncommon: 'Peu commun', common: 'Commun' };
+        const map = { amethyst: 'Améthyste', legendary: 'Légendaire', epic: 'Épique', rare: 'Rare', uncommon: 'Peu commun', common: 'Commun' };
         return map[r] || r;
     }
 

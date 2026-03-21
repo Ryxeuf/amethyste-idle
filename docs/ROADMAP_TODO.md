@@ -30,8 +30,8 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 04 Rate limiting API (FAIT)                                    │
   ├─ 05 Consolidation craft (supprimer doublon)                       │
   ├─ 06 Materia unlock verification (reliquat GD-8)                   │
-  ├─ 07 Raretes d'equipement (enum + affichage)                       │
-  ├─ 08 Combat log frontend                                           │
+  ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
+  ├─ ✅ 08 Combat log frontend (FAIT)                                  │
   ├─ 09 Icones statuts timeline combat                                │
   ├─ 10 Indicateur difficulte monstres                                │
   ├─ 11 Recompenses uniques de boss                                   │
@@ -191,16 +191,6 @@ VAGUE 6 — Long terme
 
 ---
 
-### 07 — Raretes d'equipement (S | ★★★)
-
-> Le champ `rarity` existe deja sur Item (nullable). Il suffit de normaliser les valeurs et l'afficher. Prerequis : ∅
-
-- [ ] Enum PHP `ItemRarity` (common, uncommon, rare, epic, legendary, amethyst) avec couleur CSS associee
-- [ ] Migration : mettre a jour les items existants avec rarity = 'common' par defaut
-- [ ] Affichage couleur du nom de l'item selon sa rarete (inventaire, loot, boutique, tooltip)
-- [ ] Mise a jour des fixtures items existants avec des raretes variees
-- [ ] Badge rarete dans la fiche item (inventaire detail)
-
 ---
 
 ### 12 — Recompenses de quetes completes (S | ★★★)
@@ -250,15 +240,6 @@ VAGUE 6 — Long terme
 ---
 
 ## Piste C — Combat polish (‖)
-
-### 08 — Combat log frontend (S | ★★★)
-
-> Le CombatLogger ecrit deja tout en BDD (FightLog). Il manque juste l'affichage dans le template combat. Quick win : le backend est pret a 95%. Prerequis : ∅
-
-- [ ] Template partiel `_combat_log.html.twig` : liste scrollable des messages du tour courant
-- [ ] Couleurs par type d'evenement (degats=rouge, soin=vert, critique=orange, elementaire=couleur element)
-- [ ] Icones par type (epee=attaque, etoile=critique, bouclier=defense, crane=mort)
-- [ ] Auto-scroll vers le dernier message a chaque tour
 
 ---
 

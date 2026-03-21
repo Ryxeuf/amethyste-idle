@@ -3,6 +3,7 @@
 namespace App\Entity\Game;
 
 use App\Enum\Element;
+use App\Enum\ItemRarity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -173,8 +174,8 @@ class Item
     #[ORM\Column(name: 'value', type: 'integer', nullable: true)]
     private ?int $value = null;
 
-    #[ORM\Column(name: 'rarity', type: 'string', length: 50, nullable: true)]
-    private ?string $rarity = null;
+    #[ORM\Column(name: 'rarity', type: 'string', length: 50, nullable: true, enumType: ItemRarity::class)]
+    private ?ItemRarity $rarity = null;
 
     #[ORM\Column(name: 'bound_to_player', type: 'boolean', options: ['default' => false])]
     private bool $boundToPlayer = false;
@@ -498,11 +499,19 @@ class Item
 
     public function getRarity(): ?string
     {
+        return $this->rarity?->value;
+    }
+
+    public function getRarityEnum(): ?ItemRarity
+    {
         return $this->rarity;
     }
 
-    public function setRarity(?string $rarity): void
+    public function setRarity(ItemRarity|string|null $rarity): void
     {
+        if (\is_string($rarity)) {
+            $rarity = ItemRarity::tryFrom($rarity);
+        }
         $this->rarity = $rarity;
     }
 
