@@ -120,4 +120,15 @@
     <div class="game-shell game-page-enter">
         {% block game_content %}{% endblock %}
     </div>
+
+    {# ===== TOAST NOTIFICATION SYSTEM ===== #}
+    <div data-controller="toast" data-toast-duration-value="4000" data-toast-max-visible-value="5">
+        <div data-toast-target="container" class="toast-container"></div>
+        {# Convert server-side flash messages to toasts #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div data-toast-target="flash" data-toast-type="{{ type }}" data-toast-message="{{ message }}"></div>
+            {% endfor %}
+        {% endfor %}
+    </div>
 {% endblock %}

@@ -404,3 +404,22 @@
 - [x] Affichage 5 etoiles dans le bestiaire (a cote du niveau)
 - [x] Tooltip avec texte "Difficulte X/5" (traduit FR/EN)
 - [x] Difficulte renseignee dans MonsterFixtures pour les 20 monstres (1 a 5 selon le level)
+
+---
+
+## Tache 24 — Notifications toast in-game (2026-03-21) ✅
+
+> Systeme de notifications toast generaliste, remplacant les flash messages eparpilles dans les templates du jeu.
+
+- [x] Composant Stimulus `toast_controller.js` : toasts empiles en bas-droite, auto-dismiss 4s configurable
+- [x] 4 types visuels : succes (vert), info (bleu), alerte (orange), erreur (rouge)
+- [x] Animations CSS slide-in/slide-out fluides avec backdrop-filter
+- [x] Bouton de fermeture manuelle sur chaque toast
+- [x] Limite configurable de toasts visibles (defaut 5), rotation automatique
+- [x] API globale `window.Toast.show(type, message)` pour declencher depuis n'importe quel JS
+- [x] Evenement custom `toast:show` pour communication inter-controllers Stimulus
+- [x] Integration automatique des flash messages Symfony (server-side) via data-attributes
+- [x] Conteneur toast dans le layout game.html.twig (disponible sur toutes les pages du jeu)
+- [x] Suppression des blocs `app.flashes` dupliques dans skills/index, skills/domain_info, inventory/items/_list
+- [x] Conversion du partial crafting/_craft_result en appels toast JS
+- [x] Responsive : position adaptee mobile (au-dessus de la barre de navigation) et desktop

@@ -1009,6 +1009,113 @@ html, body {
   overflow: hidden;
 }
 
+/* ===== TOAST NOTIFICATIONS ===== */
+.toast-container {
+  position: fixed;
+  bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 0.5rem);
+  right: 0.75rem;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+  pointer-events: none;
+  max-width: 22rem;
+}
+
+@media (min-width: 768px) {
+  .toast-container {
+    bottom: 1rem;
+    right: 1rem;
+    max-width: 24rem;
+  }
+}
+
+.toast-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateX(100%);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.toast-enter {
+  animation: toast-slide-in 0.3s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+.toast-exit {
+  animation: toast-slide-out 0.3s ease-in forwards;
+}
+
+@keyframes toast-slide-in {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toast-slide-out {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(100%); }
+}
+
+.toast-success {
+  background: rgba(20, 83, 45, 0.9);
+  border-color: rgba(34, 197, 94, 0.4);
+  color: #bbf7d0;
+}
+.toast-success .toast-icon { color: #4ade80; }
+
+.toast-error {
+  background: rgba(127, 29, 29, 0.9);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+}
+.toast-error .toast-icon { color: #f87171; }
+
+.toast-warning {
+  background: rgba(120, 53, 15, 0.9);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fde68a;
+}
+.toast-warning .toast-icon { color: #fbbf24; }
+
+.toast-info {
+  background: rgba(30, 58, 138, 0.9);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #bfdbfe;
+}
+.toast-info .toast-icon { color: #60a5fa; }
+
+.toast-icon {
+  flex-shrink: 0;
+  margin-top: 0.0625rem;
+}
+
+.toast-message {
+  flex: 1;
+  font-weight: 500;
+}
+
+.toast-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  font-size: 1.125rem;
+  line-height: 1;
+  padding: 0;
+  margin-left: 0.25rem;
+}
+.toast-close:hover { opacity: 1; }
+
 /* Landscape orientation compact mode */
 @media (max-height: 500px) and (orientation: landscape) {
   .game-bottom-nav {
