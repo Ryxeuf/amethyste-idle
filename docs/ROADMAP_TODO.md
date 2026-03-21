@@ -32,7 +32,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 06 Materia unlock verification (reliquat GD-8)                   │
   ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
   ├─ ✅ 08 Combat log frontend (FAIT)                                  │
-  ├─ 09 Icones statuts timeline combat                                │
+  ├─ ✅ 09 Icones statuts timeline combat (FAIT)                        │
   ├─ 10 Indicateur difficulte monstres                                │
   ├─ 11 Recompenses uniques de boss                                   │
   ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
@@ -230,13 +230,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 09 — Icones statuts timeline combat (S | ★★★)
-
-> Complexite: Faible | Priorite: Haute | Gain: Feedback visuel immediat en combat. Prerequis : ∅
-
-- [ ] Ajouter les badges statut actifs sous chaque avatar dans `_timeline.html.twig`
-- [ ] Afficher l'icone emoji + tours restants (tooltip au survol)
-- [ ] Tester visuellement avec poison, bouclier, berserk
+### ~~09 — Icones statuts timeline combat~~ ✅ FAIT
 
 ---
 
