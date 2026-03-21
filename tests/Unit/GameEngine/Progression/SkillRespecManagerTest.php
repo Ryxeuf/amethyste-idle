@@ -79,9 +79,19 @@ class SkillRespecManagerTest extends TestCase
 
     public function testCanRespecReturnsFalseWhenInFight(): void
     {
-        $player = $this->createPlayerWithSkills(5, 1000, 0);
+        $skills = new ArrayCollection();
+        for ($i = 0; $i < 5; ++$i) {
+            $skills->add($this->createSkill("skill-$i", 10, 0, 0, 0, 0, 0));
+        }
+
         $fight = $this->createMock(\App\Entity\App\Fight::class);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getSkills')->willReturn($skills);
+        $player->method('getGils')->willReturn(1000);
+        $player->method('getRespecCount')->willReturn(0);
         $player->method('getFight')->willReturn($fight);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
 
         $this->assertFalse($this->manager->canRespec($player));
     }
@@ -146,7 +156,7 @@ class SkillRespecManagerTest extends TestCase
     }
 
     /**
-     * @param Skill[] $skills
+     * @param Skill[]            $skills
      * @param DomainExperience[] $domainExps
      */
     private function createRealPlayer(array $skills, int $gils, int $respecCount, array $domainExps, int $maxLife): Player
