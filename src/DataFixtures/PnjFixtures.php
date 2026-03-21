@@ -24,13 +24,13 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // Élise la Guérisseuse — potions et soins
             1 => [
-                'items' => ['life-potion', 'mushroom', 'beer-pint'],
+                'items' => ['life-potion', 'healing-potion-major', 'antidote', 'mushroom', 'beer-pint'],
                 'greeting' => 'Bonjour, voyageur. Vous avez l\'air fatigué... J\'ai ce qu\'il vous faut pour reprendre des forces.',
                 'shop_prompt' => 'Voici mes remèdes et potions.',
             ],
             // Pierre le Tavernier — consommables et boissons
             4 => [
-                'items' => ['beer-pint', 'mushroom', 'life-potion'],
+                'items' => ['beer-pint', 'bread', 'grilled-meat', 'stew', 'mushroom', 'life-potion'],
                 'greeting' => 'Holà, aventurier ! Installez-vous au comptoir. Qu\'est-ce que je vous sers ?',
                 'shop_prompt' => 'Voici la carte de ma taverne.',
             ],

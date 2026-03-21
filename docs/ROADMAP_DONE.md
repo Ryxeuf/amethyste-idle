@@ -222,3 +222,16 @@
 - [x] Onglet "Disponibles" dans le journal de quetes (affiche les quetes acceptables)
 - [x] Chaine de 3 quetes dans les fixtures : "La Menace Rampante" (gobelins → squelettes → troll)
 - [x] Support admin : champ prerequis dans le formulaire de creation/edition de quetes
+
+---
+
+## Tache 15 — Consommables de base (2026-03-21) ✅
+
+> Ajout de consommables fonctionnels : potions, nourritures et parchemins. Tous utilisables en combat et hors combat via le systeme de sorts existant.
+
+- [x] 6 nouveaux sorts de consommables dans SpellFixtures (potion-heal-major, antidote-heal, bread-heal, grilled-meat-heal, stew-heal)
+- [x] 5 potions/remedes : potion de soin majeure (heal 15, 200G), antidote (heal 3, 75G) + existants (mineure, moyenne, energie)
+- [x] 3 nourritures : pain (heal 4, 15G), viande grillee (heal 8, 40G), ragout (heal 12, 80G)
+- [x] 3 parchemins : teleportation (150G), savoir/XP boost (300G), identification (100G)
+- [x] Tous les consommables fonctionnels ajoutes aux loot tables des monstres (par tier de difficulte)
+- [x] Boutiques PNJ enrichies : Elise vend potions + antidote, Pierre vend nourritures
