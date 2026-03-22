@@ -1,0 +1,69 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.factions.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.factions.title'|trans }}</h2>
+        </div>
+
+        <div class="game-card-body">
+            {% if factions is empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 text-sm">{{ 'game.factions.empty'|trans }}</p>
+                </div>
+            {% else %}
+                <div class="space-y-3">
+                    {% for faction in factions %}
+                        {% set pf = playerFactionMap[faction.id]|default(null) %}
+                        {% set reputation = pf ? pf.reputation : 0 %}
+                        {% set tier = pf ? pf.tier : constant('App\\Enum\\ReputationTier::Inconnu') %}
+                        {% set nextTier = tier.nextTier %}
+                        {% set progressPercent = pf ? pf.progressPercent : 0 %}
+
+                        <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
+                            <div class="flex items-start justify-between gap-3 mb-2">
+                                <div class="min-w-0">
+                                    <h3 class="text-white font-semibold text-sm sm:text-base">{{ faction.name }}</h3>
+                                    <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ faction.description }}</p>
+                                </div>
+                                <span class="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium {{ tier.cssClass }}">
+                                    {{ tier.label }}
+                                </span>
+                            </div>
+
+                            {# Reputation bar #}
+                            <div class="mt-3">
+                                <div class="flex justify-between text-[10px] sm:text-xs text-gray-400 mb-1">
+                                    <span>{{ 'game.factions.reputation'|trans }}</span>
+                                    <span>
+                                        {{ reputation }}
+                                        {% if nextTier %}
+                                            / {{ nextTier.threshold }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-bar-fill bg-purple-500"
+                                         style="width: {{ progressPercent }}%"></div>
+                                </div>
+                                {% if nextTier %}
+                                    <div class="text-[10px] text-gray-500 mt-1">
+                                        {{ 'game.factions.next_tier'|trans({'%tier%': nextTier.label}) }}
+                                    </div>
+                                {% else %}
+                                    <div class="text-[10px] text-yellow-500 mt-1">
+                                        {{ 'game.factions.max_tier'|trans }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
