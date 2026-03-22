@@ -8,6 +8,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
 use App\GameEngine\Quest\PlayerQuestHelper;
+use App\GameEngine\Quest\QuestGiverResolver;
 use App\GameEngine\Quest\QuestTrackingFormater;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
@@ -28,6 +29,7 @@ class QuestController extends AbstractController
         private readonly QuestTrackingFormater $questTrackingFormater,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly InventoryHelper $inventoryHelper,
+        private readonly QuestGiverResolver $questGiverResolver,
     ) {
     }
 
@@ -46,11 +48,27 @@ class QuestController extends AbstractController
             $questProgress[$playerQuest->getId()] = $this->playerQuestHelper->getPlayerQuestProgress($playerQuest);
         }
 
+        // Resolve quest givers, types and chain info for all quests
+        $allQuests = array_merge(
+            $availableQuests,
+            array_map(fn ($pq) => $pq->getQuest(), $activeQuests),
+        );
+        $questGivers = $this->questGiverResolver->getQuestGivers($allQuests);
+        $questTypes = [];
+        $questChains = [];
+        foreach ($allQuests as $quest) {
+            $questTypes[$quest->getId()] = $this->questGiverResolver->getQuestType($quest);
+            $questChains[$quest->getId()] = $this->questGiverResolver->getChainInfo($quest);
+        }
+
         return $this->render('game/quest/index.html.twig', [
             'activeQuests' => $activeQuests,
             'completedQuests' => $completedQuests,
             'availableQuests' => $availableQuests,
             'questProgress' => $questProgress,
+            'questGivers' => $questGivers,
+            'questTypes' => $questTypes,
+            'questChains' => $questChains,
             'player' => $this->playerHelper->getPlayer(),
         ]);
     }
