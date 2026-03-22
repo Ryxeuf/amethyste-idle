@@ -5,10 +5,12 @@ namespace App\GameEngine\Crafting;
 use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\Event\CraftEvent;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CraftingManager
 {
@@ -18,6 +20,7 @@ class CraftingManager
         private readonly InventoryHelper $inventoryHelper,
         private readonly PlayerHelper $playerHelper,
         private readonly QualityCalculator $qualityCalculator,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -114,6 +117,11 @@ class CraftingManager
         $this->grantCraftingXp($player, $recipe->getCraft(), $recipe->getXpReward());
 
         $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(
+            new CraftEvent($player, $recipe, $resultItem, $recipe->getResultQuantity()),
+            CraftEvent::NAME
+        );
 
         $qualityLabel = QualityCalculator::getQualityLabel($finalQuality);
 

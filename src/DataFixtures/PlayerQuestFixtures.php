@@ -29,7 +29,7 @@ class PlayerQuestFixtures extends Fixture implements DependentFixtureInterface
                 'quest' => 'quest_mushroom_1',
                 'tracking' => [
                     'collect' => [
-                        'mushroom' => 3,
+                        ['count' => 3, 'necessary' => 5, 'slug' => 'mushroom'],
                     ],
                 ],
             ],

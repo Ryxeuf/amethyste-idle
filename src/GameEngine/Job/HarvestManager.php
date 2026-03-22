@@ -102,7 +102,7 @@ class HarvestManager
             $this->entityManager->flush();
         }
 
-        $this->eventDispatcher->dispatch(new SpotHarvestEvent($objectLayer), SpotHarvestEvent::NAME);
+        $this->eventDispatcher->dispatch(new SpotHarvestEvent($objectLayer, $items), SpotHarvestEvent::NAME);
 
         return [
             'objectLayer' => $objectLayer,

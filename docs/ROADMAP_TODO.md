@@ -45,7 +45,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 19 Profil joueur public (FAIT)                                          │
   ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
   ├─ ✅ 21 GameEvent executor (FAIT)                                    │
-  ├─ 22 Factions & reputation (entites)                               │
+  ├─ ✅ 22 Factions & reputation (FAIT)                               │
   ├─ 23 Tests fonctionnels controleurs                                │
   ├─ 24 Notifications toast in-game                                   │
   ├─ ✅ 24 Notifications toast in-game (FAIT)                           │
@@ -53,7 +53,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
                                                                       │
 VAGUE 2 (depend de Vague 1)                                           │
   ┌─ 26 Recettes de craft fixtures ← 05                               │
-  ├─ 27 Tracking quetes collect/craft ← 05                            │
+  ├─ ✅ 27 Tracking quetes collect/craft (FAIT)                        │
   ├─ 28 Monstres tier 1 (8 mobs) ← 15                                │
   ├─ 29 Equipement tier 2 ← 17                                        │
   ├─ 30 Teleportation entre cartes ← 01 ─────────────────────────────┘
@@ -64,7 +64,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ ✅ 35 Annonces Mercure evenements (FAIT) ← 21
   ├─ 36 Gains et recompenses reputation ← 22
   ├─ ✅ 37 Loot exclusif et rarete etendue (FAIT) ← 07
-  ├─ 38 Liste d'amis ← 19
+  ├─ ✅ 38 Liste d'amis (FAIT) ← 19
   ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
   ├─ 40 Synergies cross-domaine (∅ strict mais logique apres 14)
   ├─ 41 Indicateurs quetes sur PNJ ← 27
@@ -233,16 +233,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 22 — Factions & reputation — entites (M | ★★★)
-
-> Systeme autonome sans prerequis technique lourd. Ajoute une boucle de progression endgame et permet de gater du contenu (recettes, equipements, zones) derriere des paliers de reputation. Prerequis : ∅
-
-- [ ] Entite `Faction` : slug, name, description, icon
-- [ ] Entite `PlayerFaction` : player (ManyToOne), faction (ManyToOne), reputation (int), tier (enum)
-- [ ] Enum `ReputationTier` : Inconnu(0), Hostile(-1), Neutre(1), Ami(2), Honore(3), Revere(4), Exalte(5)
-- [ ] Calcul automatique du tier selon les seuils de reputation (0, 500, 2000, 5000, 10000, 20000)
-- [ ] Migration + fixtures 4 factions (Marchands, Chevaliers, Mages, Ombres) avec description et PNJ associe
-- [ ] Route `/game/factions` : liste des factions, reputation actuelle, palier, barre de progression
+### ~~22 — Factions & reputation — entites~~ ✅ FAIT
 
 ---
 
@@ -283,13 +274,7 @@ VAGUE 6 — Long terme
 - [ ] Verifier que les items ingredients existent dans ItemFixtures (creer si manquants)
 - [ ] Tester manuellement : acceder a un atelier, crafter un item, verifier inventaire
 
-### 27 — Tracking quetes collect/craft (M | ★★★)
-> PlayerQuestHelper ne traite que les objectifs `monsters`. Les quetes collect et craft ne progressent jamais. Prerequis : ← 05
-- [ ] Ajouter le tracking `collect` dans PlayerQuestHelper::getPlayerQuestProgress()
-- [ ] Creer QuestCollectTrackingListener : ecoute SpotHarvestEvent, met a jour les quetes actives
-- [ ] Creer QuestCraftTrackingListener : ecoute CraftEvent, met a jour les quetes actives
-- [ ] Verifier que les 2 quetes existantes avec objectif collect (mushroom, wood) progressent
-- [ ] Tests unitaires : progression collect, progression craft, completion automatique
+### ~~27 — Tracking quetes collect/craft~~ ✅ FAIT
 
 ### 28 — Monstres tier 1 — 8 mobs elementaires (M | ★★★)
 > 20 monstres existent, on en ajoute 8 pour couvrir chaque element. Prerequis : ← 15

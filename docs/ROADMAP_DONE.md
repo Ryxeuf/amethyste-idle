@@ -438,3 +438,38 @@
 - [x] Drops legendaires garantis sur le boss Dragon (dragon_fang_blade, dragon_scale_armor)
 - [x] Drops legendaires rares (3%) sur monstres haut niveau (griffon, minotaure, golem, troll) avec minDifficulty=3
 - [x] Badge visuel legendaire deja operationnel (fond dore, bordure doree via inv-tooltip-rarity--legendary)
+
+## 38 — Liste d'amis (2026-03-22) ✅
+
+> Systeme complet de liste d'amis avec statut en ligne.
+
+- [x] Entite Friendship (player, friend, status: pending/accepted/blocked, createdAt)
+- [x] FriendshipManager : sendRequest, accept, decline, block, unfriend
+- [x] Routes GET/POST /game/friends
+- [x] Notification Mercure quand un ami se connecte
+
+## 22 — Factions & reputation (2026-03-22) ✅
+
+> Systeme de factions avec reputation et paliers.
+
+- [x] Entite Faction : slug, name, description, icon
+- [x] Entite PlayerFaction : player (ManyToOne), faction (ManyToOne), reputation (int)
+- [x] Enum ReputationTier : Hostile, Inconnu, Neutre, Ami, Honore, Revere, Exalte
+- [x] Calcul automatique du tier selon les seuils de reputation (0, 500, 2000, 5000, 10000, 20000)
+- [x] Migration + fixtures 4 factions (Marchands, Chevaliers, Mages, Ombres)
+- [x] Route /game/factions : liste des factions, reputation actuelle, palier, barre de progression
+- [x] Traductions FR/EN completes
+
+## 27 — Tracking quetes collect/craft (2026-03-22) ✅
+
+> Correction du tracking des quetes de type collect et craft qui ne progressaient jamais.
+
+- [x] QuestTrackingFormater : ajout formatCollect() et formatCraft() pour initialiser le tracking
+- [x] PlayerQuestHelper::getPlayerQuestProgress() etendu pour traiter collect et craft
+- [x] PlayerQuestUpdater : ajout updateItemCollected() et updateItemCrafted()
+- [x] QuestCollectTrackingListener : ecoute SpotHarvestEvent et GatheringEvent
+- [x] QuestCraftTrackingListener : ecoute CraftEvent
+- [x] CraftEvent cree et dispatche dans CraftingManager apres craft reussi
+- [x] SpotHarvestEvent enrichi avec les items recoltes (harvestedItems)
+- [x] Templates quest/index et game/index mis a jour pour afficher progression collect/craft
+- [x] Fixtures PlayerQuest mises a jour au nouveau format de tracking
