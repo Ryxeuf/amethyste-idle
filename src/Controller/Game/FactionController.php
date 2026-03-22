@@ -4,6 +4,7 @@ namespace App\Controller\Game;
 
 use App\Entity\App\PlayerFaction;
 use App\Entity\Game\Faction;
+use App\Entity\Game\FactionReward;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -37,9 +38,17 @@ class FactionController extends AbstractController
             $playerFactionMap[$pf->getFaction()->getId()] = $pf;
         }
 
+        // Load faction rewards grouped by faction ID
+        $allRewards = $this->entityManager->getRepository(FactionReward::class)->findAll();
+        $rewardsByFaction = [];
+        foreach ($allRewards as $reward) {
+            $rewardsByFaction[$reward->getFaction()->getId()][] = $reward;
+        }
+
         return $this->render('game/factions/index.html.twig', [
             'factions' => $factions,
             'playerFactionMap' => $playerFactionMap,
+            'rewardsByFaction' => $rewardsByFaction,
             'player' => $player,
         ]);
     }

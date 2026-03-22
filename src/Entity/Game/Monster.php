@@ -72,6 +72,13 @@ class Monster
     #[ORM\Column(name: 'difficulty', type: 'integer', options: ['default' => 1])]
     private int $difficulty = 1;
 
+    #[ORM\ManyToOne(targetEntity: Faction::class)]
+    #[ORM\JoinColumn(name: 'faction_id', referencedColumnName: 'id', nullable: true)]
+    private ?Faction $faction = null;
+
+    #[ORM\Column(name: 'faction_reputation_reward', type: 'integer', nullable: true)]
+    private ?int $factionReputationReward = null;
+
     public function getSpeed(): int
     {
         return $this->speed;
@@ -300,5 +307,25 @@ class Monster
         }
 
         return $activePhase;
+    }
+
+    public function getFaction(): ?Faction
+    {
+        return $this->faction;
+    }
+
+    public function setFaction(?Faction $faction): void
+    {
+        $this->faction = $faction;
+    }
+
+    public function getFactionReputationReward(): ?int
+    {
+        return $this->factionReputationReward;
+    }
+
+    public function setFactionReputationReward(?int $factionReputationReward): void
+    {
+        $this->factionReputationReward = $factionReputationReward;
     }
 }
