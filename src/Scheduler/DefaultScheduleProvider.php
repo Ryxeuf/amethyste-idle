@@ -20,7 +20,9 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
         return (new Schedule())
             ->with(
                 // MobMove : déplace les mobs sur la carte (anciennement api:mob:move via cron)
-                RecurringMessage::cron('* * * * *', new RunCommandMessage('api:mob:move'))
+                RecurringMessage::cron('* * * * *', new RunCommandMessage('api:mob:move')),
+                // GameEvent : active/complète les événements planifiés (toutes les 60s)
+                RecurringMessage::cron('* * * * *', new RunCommandMessage('app:game-event:execute')),
             );
     }
 }

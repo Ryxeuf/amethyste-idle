@@ -12,6 +12,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Fight\MateriaXpGranter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,9 +34,13 @@ class MateriaXpGranterTest extends TestCase
         $this->entityManager->method('persist');
         $this->entityManager->method('flush');
 
+        $bonusProvider = $this->createMock(GameEventBonusProvider::class);
+        $bonusProvider->method('getXpMultiplier')->willReturn(1.0);
+
         $this->granter = new MateriaXpGranter(
             $this->entityManager,
             $this->logger,
+            $bonusProvider,
         );
     }
 

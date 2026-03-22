@@ -5,13 +5,16 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\PlayerItem;
 use App\Event\Fight\MobDeadEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LootGenerator implements EventSubscriberInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -28,9 +31,12 @@ class LootGenerator implements EventSubscriberInterface
 
     protected function generateLoot(Mob $mob)
     {
+        $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
+
         $items = [];
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
-            if (random_int(0, 99) < $monsterItem->getProbability()) {
+            $adjustedProbability = min(100, (int) round($monsterItem->getProbability() * $dropMultiplier));
+            if (random_int(0, 99) < $adjustedProbability) {
                 $item = new PlayerItem();
                 $item->setMob($mob);
                 $item->setGenericItem($monsterItem->getItem());
