@@ -60,7 +60,8 @@
       "skills": "Compétences",
       "settings": "Paramètres",
       "bestiary": "Bestiaire",
-      "craft": "Artisanat"
+      "craft": "Artisanat",
+      "factions": "Factions"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -429,6 +430,13 @@
       "boss": "Boss",
       "level": "Niveau %level%",
       "difficulty": "Difficulté %level%/5"
+    },
+    "factions": {
+      "title": "Factions",
+      "empty": "Aucune faction disponible.",
+      "reputation": "Réputation",
+      "next_tier": "Prochain palier : %tier%",
+      "max_tier": "Palier maximum atteint !"
     }
   },
   "common": {
@@ -455,4 +463,4 @@
       }
     }
   }
-} 
+}
