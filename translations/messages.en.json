@@ -58,7 +58,8 @@
       "map": "Map",
       "shop": "Shop",
       "skills": "Skills",
-      "settings": "Settings"
+      "settings": "Settings",
+      "factions": "Factions"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -408,6 +409,13 @@
       },
       "error_action": "An error occurred while performing the action.",
       "difficulty": "Difficulty %level%/5"
+    },
+    "factions": {
+      "title": "Factions",
+      "empty": "No factions available.",
+      "reputation": "Reputation",
+      "next_tier": "Next tier: %tier%",
+      "max_tier": "Maximum tier reached!"
     }
   },
   "common": {
@@ -434,4 +442,4 @@
       }
     }
   }
-} 
+}
