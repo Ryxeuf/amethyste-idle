@@ -379,3 +379,11 @@
 - [x] FightChecker : utilise FightRepository.findWithRelations au lieu de find()
 - [x] Index composites : idx_mob_map (mob.map_id), idx_player_map (player.map_id)
 - [x] PHPStan OK, PHP-CS-Fixer OK
+
+## 17 — Equipement tier 1 Starter (2026-03-22) ✅
+
+> Set complet 7 pieces d'equipement starter (element None, rarete Common, sans prerequis de skill).
+
+- [x] 7 pieces d'equipement : epee en bois, casque rouille, tunique rembourrée, jambieres en tissu, sandales usees, gants de travail, bouclier en bois
+- [x] Prix bas (8-20 or), duree de vie 60 utilisations, aucun prerequis de competence
+- [x] Ajout aux loot tables des monstres lvl 1 (slime, goblin, bat, giant_rat, zombie) avec probabilites 2-6%

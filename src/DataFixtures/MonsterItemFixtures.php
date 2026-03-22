@@ -18,24 +18,34 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'slime', 'item' => 'mushroom', 'probability' => 60],
             ['monster' => 'slime', 'item' => 'healing_potion_small', 'probability' => 10],
             ['monster' => 'slime', 'item' => 'bread', 'probability' => 20],
+            ['monster' => 'slime', 'item' => 'starter_gloves', 'probability' => 4],
+            ['monster' => 'slime', 'item' => 'starter_boots', 'probability' => 3],
 
             ['monster' => 'goblin', 'item' => 'mushroom', 'probability' => 50],
             ['monster' => 'goblin', 'item' => 'beer_pint', 'probability' => 30],
             ['monster' => 'goblin', 'item' => 'healing_potion_small', 'probability' => 15],
             ['monster' => 'goblin', 'item' => 'bread', 'probability' => 25],
+            ['monster' => 'goblin', 'item' => 'wooden_sword', 'probability' => 5],
+            ['monster' => 'goblin', 'item' => 'starter_helmet', 'probability' => 4],
 
             ['monster' => 'bat', 'item' => 'leather_skin_1', 'probability' => 40],
             ['monster' => 'bat', 'item' => 'mushroom', 'probability' => 25],
+            ['monster' => 'bat', 'item' => 'starter_legs', 'probability' => 3],
 
             ['monster' => 'giant_rat', 'item' => 'leather_skin_1', 'probability' => 60],
             ['monster' => 'giant_rat', 'item' => 'mushroom', 'probability' => 35],
             ['monster' => 'giant_rat', 'item' => 'healing_potion_small', 'probability' => 10],
             ['monster' => 'giant_rat', 'item' => 'bread', 'probability' => 15],
+            ['monster' => 'giant_rat', 'item' => 'starter_chest', 'probability' => 3],
+            ['monster' => 'giant_rat', 'item' => 'starter_shield', 'probability' => 2],
 
             ['monster' => 'zombie', 'item' => 'mushroom', 'probability' => 75],
             ['monster' => 'zombie', 'item' => 'leather_skin_1', 'probability' => 90],
             ['monster' => 'zombie', 'item' => 'pickaxe', 'probability' => 10],
             ['monster' => 'zombie', 'item' => 'antidote', 'probability' => 12],
+            ['monster' => 'zombie', 'item' => 'wooden_sword', 'probability' => 6],
+            ['monster' => 'zombie', 'item' => 'starter_helmet', 'probability' => 5],
+            ['monster' => 'zombie', 'item' => 'starter_chest', 'probability' => 4],
 
             // --- Niveau 2 : Squelette, Araignée, Serpent, Taiju, Spectre, Banshee ---
             ['monster' => 'skeleton', 'item' => 'leather_skin_2', 'probability' => 50],
