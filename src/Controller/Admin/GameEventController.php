@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\App\GameEvent;
 use App\Entity\App\Map;
+use App\Event\Game\GameEventActivatedEvent;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -11,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/admin/events', name: 'admin_event_')]
 #[IsGranted('ROLE_ADMIN')]
@@ -19,6 +21,7 @@ class GameEventController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -179,6 +182,13 @@ class GameEventController extends AbstractController
             $event->setStatus($newStatus);
             $event->setUpdatedAt(new \DateTime());
             $this->em->flush();
+
+            if ($newStatus === GameEvent::STATUS_ACTIVE) {
+                $this->eventDispatcher->dispatch(
+                    new GameEventActivatedEvent($event),
+                    GameEventActivatedEvent::NAME,
+                );
+            }
 
             $this->adminLogger->log('toggle', 'GameEvent', $event->getId(), $event->getName() . ' → ' . $newStatus);
             $this->addFlash('success', 'Evenement "' . $event->getName() . '" passe en : ' . $event->getStatusLabel());

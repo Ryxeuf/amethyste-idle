@@ -3,17 +3,20 @@
 namespace App\Tests\Unit\GameEngine\Event;
 
 use App\Entity\App\GameEvent;
+use App\Event\Game\GameEventActivatedEvent;
 use App\GameEngine\Event\GameEventExecutor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class GameEventExecutorTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
     private EntityRepository&MockObject $repository;
+    private EventDispatcherInterface&MockObject $eventDispatcher;
     private GameEventExecutor $executor;
 
     protected function setUp(): void
@@ -21,8 +24,9 @@ class GameEventExecutorTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->repository = $this->createMock(EntityRepository::class);
         $this->em->method('getRepository')->with(GameEvent::class)->willReturn($this->repository);
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $this->executor = new GameEventExecutor($this->em, new NullLogger());
+        $this->executor = new GameEventExecutor($this->em, new NullLogger(), $this->eventDispatcher);
     }
 
     public function testActivatesScheduledEventWhenStartTimeReached(): void
@@ -42,6 +46,12 @@ class GameEventExecutorTest extends TestCase
         );
 
         $this->em->expects($this->once())->method('flush');
+        $this->eventDispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->isInstanceOf(GameEventActivatedEvent::class),
+                GameEventActivatedEvent::NAME,
+            );
 
         $result = $this->executor->execute();
 

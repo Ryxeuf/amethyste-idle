@@ -3,8 +3,10 @@
 namespace App\GameEngine\Event;
 
 use App\Entity\App\GameEvent;
+use App\Event\Game\GameEventActivatedEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Scans GameEvents and transitions their status:
@@ -17,6 +19,7 @@ class GameEventExecutor
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -29,31 +32,43 @@ class GameEventExecutor
     {
         $now = new \DateTime();
 
-        $activated = $this->activateScheduledEvents($now);
+        [$activatedEvents, $scheduledChanges] = $this->activateScheduledEvents($now);
         [$completed, $recurring] = $this->completeExpiredEvents($now);
 
-        if ($activated > 0 || $completed > 0) {
+        if ($scheduledChanges > 0 || $completed > 0) {
             $this->entityManager->flush();
         }
 
+        foreach ($activatedEvents as $gameEvent) {
+            $this->eventDispatcher->dispatch(
+                new GameEventActivatedEvent($gameEvent),
+                GameEventActivatedEvent::NAME,
+            );
+        }
+
         return [
-            'activated' => $activated,
+            'activated' => \count($activatedEvents),
             'completed' => $completed,
             'recurring' => $recurring,
         ];
     }
 
-    private function activateScheduledEvents(\DateTime $now): int
+    /**
+     * @return array{GameEvent[], int} [activated events, total changes count]
+     */
+    private function activateScheduledEvents(\DateTime $now): array
     {
         $scheduled = $this->entityManager->getRepository(GameEvent::class)->findBy([
             'status' => GameEvent::STATUS_SCHEDULED,
         ]);
 
-        $count = 0;
+        $activated = [];
+        $changes = 0;
         foreach ($scheduled as $event) {
             if ($event->getStartsAt() <= $now && $event->getEndsAt() > $now) {
                 $event->setStatus(GameEvent::STATUS_ACTIVE);
-                ++$count;
+                $activated[] = $event;
+                ++$changes;
 
                 $this->logger->info(sprintf(
                     '[GameEventExecutor] Activated event "%s" (type: %s)',
@@ -63,7 +78,7 @@ class GameEventExecutor
             } elseif ($event->getEndsAt() <= $now) {
                 // Event was scheduled but already past its end — mark completed directly
                 $event->setStatus(GameEvent::STATUS_COMPLETED);
-                ++$count;
+                ++$changes;
 
                 $this->logger->info(sprintf(
                     '[GameEventExecutor] Completed (skipped) event "%s" — already past end time',
@@ -72,7 +87,7 @@ class GameEventExecutor
             }
         }
 
-        return $count;
+        return [$activated, $changes];
     }
 
     /**

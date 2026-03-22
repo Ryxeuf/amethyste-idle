@@ -409,3 +409,19 @@
 - [x] 7 nouveaux skill unlock dans SkillFixtures : hydromancer, stormcaller, geomancer, soldier, hunter, paladin, assassin (berserker existait deja pour Combustion)
 - [x] YAML materia.yaml mis a jour pour coherence
 - [x] PHPStan OK, PHP-CS-Fixer OK
+
+---
+
+## 35 — Annonces Mercure evenements (2026-03-22) ✅
+
+> Notification temps reel quand un GameEvent passe ACTIVE via Mercure SSE + affichage HUD.
+
+- [x] Domain event `GameEventActivatedEvent` dispatche quand un GameEvent passe ACTIVE
+- [x] Publisher Mercure `GameEventAnnouncementHandler` publie sur topic `event/announce`
+- [x] `GameEventExecutor` dispatche l'event apres flush (activation automatique)
+- [x] Admin toggle dispatche aussi l'event lors d'activation manuelle
+- [x] API `GET /api/game/events/active` : liste les events actuellement actifs
+- [x] Stimulus controller `event-notification` : souscrit Mercure, affiche toast, HUD badge avec dropdown
+- [x] HUD dans `game.html.twig` : badge "Events" avec compteur et liste hover des events actifs
+- [x] Tests unitaires : GameEventAnnouncementHandler, GameEventExecutor (dispatch event)
+- [x] PHPStan OK, PHP-CS-Fixer OK, PHPUnit 318 tests OK
