@@ -3,7 +3,6 @@
 namespace App\Controller\Api;
 
 use App\Entity\App\Map;
-use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
@@ -13,6 +12,7 @@ use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\GameEngine\Player\PnjDialogParser;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
+use App\Repository\MobRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Asset\Packages;
@@ -28,6 +28,7 @@ class MapApiController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly Packages $packages,
         private readonly SpriteConfigProvider $spriteConfigProvider,
+        private readonly MobRepository $mobRepository,
     ) {
     }
 
@@ -101,7 +102,7 @@ class MapApiController extends AbstractController
         }
 
         $mobs = [];
-        foreach ($this->entityManager->getRepository(Mob::class)->findBy(['map' => $map]) as $mob) {
+        foreach ($this->mobRepository->findByMapWithMonster($map) as $mob) {
             $coords = explode('.', $mob->getCoordinates() ?? '0.0');
             $ex = (int) ($coords[0] ?? 0);
             $ey = (int) ($coords[1] ?? 0);

@@ -4,17 +4,16 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\App\Fight;
 use App\Helper\PlayerHelper;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\FightRepository;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class FightChecker
 {
-    /**
-     * FightChecker constructor.
-     */
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly PlayerHelper $playerHelper)
-    {
+    public function __construct(
+        private readonly FightRepository $fightRepository,
+        private readonly PlayerHelper $playerHelper,
+    ) {
     }
 
     /**
@@ -24,8 +23,7 @@ class FightChecker
     public function checkFight(Fight|int $fight, int $targetId, string $targetType): Fight
     {
         if (is_int($fight)) {
-            /** @var Fight $fight */
-            $fight = $this->entityManager->getRepository(Fight::class)->find($fight);
+            $fight = $this->fightRepository->findWithRelations($fight);
         }
         if ($fight === null) {
             throw new EntityNotFoundException();

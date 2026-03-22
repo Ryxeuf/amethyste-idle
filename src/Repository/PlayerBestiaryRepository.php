@@ -22,6 +22,9 @@ class PlayerBestiaryRepository extends ServiceEntityRepository
     public function findByPlayer(Player $player): array
     {
         return $this->createQueryBuilder('pb')
+            ->join('pb.monster', 'm')->addSelect('m')
+            ->leftJoin('m.monsterItems', 'mi')->addSelect('mi')
+            ->leftJoin('mi.item', 'i')->addSelect('i')
             ->andWhere('pb.player = :player')
             ->setParameter('player', $player)
             ->orderBy('pb.killCount', 'DESC')

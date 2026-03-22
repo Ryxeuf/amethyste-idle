@@ -365,3 +365,17 @@
 - [x] Renommage routes CraftingController : game_crafting → app_game_craft (convention unifiee)
 - [x] Migration pour supprimer la table game_craft_recipes
 - [x] PHPStan OK, PHP-CS-Fixer OK
+
+---
+
+## 03 — Optimisation queries N+1 (2026-03-22) ✅
+
+> Eager loading des relations Doctrine et index composites pour reduire les requetes N+1 sur les pages critiques.
+
+- [x] MobRepository : eager load Monster+Spells+Attack+MonsterItems pour /api/map/entities
+- [x] FightRepository : eager load Mob→Monster→Spells+MonsterItems pour le combat
+- [x] PlayerBestiaryRepository : eager load Monster+MonsterItems+Item pour /game/bestiary
+- [x] MapApiController : utilise MobRepository au lieu de findBy generique
+- [x] FightChecker : utilise FightRepository.findWithRelations au lieu de find()
+- [x] Index composites : idx_mob_map (mob.map_id), idx_player_map (player.map_id)
+- [x] PHPStan OK, PHP-CS-Fixer OK

@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'player')]
+#[ORM\Index(columns: ['map_id'], name: 'idx_player_map')]
 #[ORM\Entity()]
 class Player implements CharacterInterface
 {
