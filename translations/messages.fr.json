@@ -61,7 +61,8 @@
       "settings": "Paramètres",
       "bestiary": "Bestiaire",
       "craft": "Artisanat",
-      "factions": "Factions"
+      "factions": "Factions",
+      "friends": "Amis"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -437,6 +438,20 @@
       "reputation": "Réputation",
       "next_tier": "Prochain palier : %tier%",
       "max_tier": "Palier maximum atteint !"
+    },
+    "friends": {
+      "title": "Amis",
+      "empty": "Vous n'avez pas encore d'amis. Visitez le profil d'un joueur pour lui envoyer une demande !",
+      "pending_received": "Demandes reçues",
+      "pending_sent": "Demandes envoyées",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "remove": "Retirer",
+      "block": "Bloquer",
+      "online": "En ligne",
+      "offline": "Hors ligne",
+      "waiting": "En attente",
+      "add_friend": "Ajouter en ami"
     }
   },
   "common": {
