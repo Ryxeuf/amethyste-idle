@@ -23,6 +23,12 @@ class MonsterItem
     #[ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     private $item;
 
+    #[ORM\Column(name: 'guaranteed', type: 'boolean', options: ['default' => false])]
+    private bool $guaranteed = false;
+
+    #[ORM\Column(name: 'min_difficulty', type: 'integer', nullable: true)]
+    private ?int $minDifficulty = null;
+
     #[ORM\ManyToOne(targetEntity: Monster::class, inversedBy: 'monsterItems')]
     #[ORM\JoinColumn(name: 'monster_id', referencedColumnName: 'id')]
     private $monster;
@@ -103,5 +109,29 @@ class MonsterItem
     public function getMonster()
     {
         return $this->monster;
+    }
+
+    public function isGuaranteed(): bool
+    {
+        return $this->guaranteed;
+    }
+
+    public function setGuaranteed(bool $guaranteed): self
+    {
+        $this->guaranteed = $guaranteed;
+
+        return $this;
+    }
+
+    public function getMinDifficulty(): ?int
+    {
+        return $this->minDifficulty;
+    }
+
+    public function setMinDifficulty(?int $minDifficulty): self
+    {
+        $this->minDifficulty = $minDifficulty;
+
+        return $this;
     }
 }
