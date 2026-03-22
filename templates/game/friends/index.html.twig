@@ -1,0 +1,132 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.friends.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    {# Flash messages #}
+    {% for type in ['success', 'error'] %}
+        {% for message in app.flashes(type) %}
+            <div class="mb-3 px-4 py-2 rounded text-sm {{ type == 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# Pending received requests #}
+    {% if pendingReceived is not empty %}
+        <div class="game-card mb-4">
+            <div class="game-card-header">
+                <h2 class="text-base sm:text-lg font-semibold text-white">
+                    {{ 'game.friends.pending_received'|trans }}
+                    <span class="text-xs text-yellow-400 ml-1">({{ pendingReceived|length }})</span>
+                </h2>
+            </div>
+            <div class="game-card-body">
+                <div class="space-y-2">
+                    {% for friendship in pendingReceived %}
+                        <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-yellow-500/30">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-400 text-sm font-bold flex-shrink-0">
+                                    {{ friendship.player.name|first|upper }}
+                                </div>
+                                <a href="{{ path('app_game_player_profile', {id: friendship.player.id}) }}" class="text-white text-sm font-medium hover:text-purple-400 truncate">
+                                    {{ friendship.player.name }}
+                                </a>
+                            </div>
+                            <div class="flex gap-2 flex-shrink-0">
+                                <form action="{{ path('app_game_friends_accept', {id: friendship.id}) }}" method="post">
+                                    <button type="submit" class="px-3 py-1 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors">
+                                        {{ 'game.friends.accept'|trans }}
+                                    </button>
+                                </form>
+                                <form action="{{ path('app_game_friends_decline', {id: friendship.id}) }}" method="post">
+                                    <button type="submit" class="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
+                                        {{ 'game.friends.decline'|trans }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Friends list #}
+    <div class="game-card mb-4">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">
+                {{ 'game.friends.title'|trans }}
+                <span class="text-xs text-gray-400 ml-1">({{ friends|length }})</span>
+            </h2>
+        </div>
+        <div class="game-card-body">
+            {% if friends is empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 text-sm">{{ 'game.friends.empty'|trans }}</p>
+                </div>
+            {% else %}
+                <div class="space-y-2">
+                    {% for entry in friends %}
+                        <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="relative">
+                                    <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold">
+                                        {{ entry.player.name|first|upper }}
+                                    </div>
+                                    <div class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-gray-800 {{ entry.online ? 'bg-green-500' : 'bg-gray-500' }}"></div>
+                                </div>
+                                <div class="min-w-0">
+                                    <a href="{{ path('app_game_player_profile', {id: entry.player.id}) }}" class="text-white text-sm font-medium hover:text-purple-400 truncate block">
+                                        {{ entry.player.name }}
+                                    </a>
+                                    <span class="text-[10px] {{ entry.online ? 'text-green-400' : 'text-gray-500' }}">
+                                        {{ entry.online ? 'game.friends.online'|trans : 'game.friends.offline'|trans }}
+                                    </span>
+                                </div>
+                            </div>
+                            <form action="{{ path('app_game_friends_remove', {id: entry.friendship.id}) }}" method="post">
+                                <button type="submit" class="px-2 py-1 text-gray-400 hover:text-red-400 text-xs transition-colors" title="{{ 'game.friends.remove'|trans }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Pending sent requests #}
+    {% if pendingSent is not empty %}
+        <div class="game-card">
+            <div class="game-card-header">
+                <h2 class="text-base sm:text-lg font-semibold text-white">
+                    {{ 'game.friends.pending_sent'|trans }}
+                    <span class="text-xs text-gray-400 ml-1">({{ pendingSent|length }})</span>
+                </h2>
+            </div>
+            <div class="game-card-body">
+                <div class="space-y-2">
+                    {% for friendship in pendingSent %}
+                        <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-gray-600">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-8 h-8 rounded-full bg-gray-500/20 flex items-center justify-center text-gray-400 text-sm font-bold flex-shrink-0">
+                                    {{ friendship.friend.name|first|upper }}
+                                </div>
+                                <a href="{{ path('app_game_player_profile', {id: friendship.friend.id}) }}" class="text-gray-300 text-sm hover:text-purple-400 truncate">
+                                    {{ friendship.friend.name }}
+                                </a>
+                            </div>
+                            <span class="text-yellow-400/60 text-xs">{{ 'game.friends.waiting'|trans }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
