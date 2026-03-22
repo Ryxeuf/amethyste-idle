@@ -4,6 +4,7 @@ namespace App\Controller\Game;
 
 use App\Entity\App\ChatMessage;
 use App\Entity\App\Player;
+use App\GameEngine\Social\ChatCommandHandler;
 use App\GameEngine\Social\ChatManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ class ChatController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly ChatManager $chatManager,
+        private readonly ChatCommandHandler $commandHandler,
         private readonly EntityManagerInterface $em,
     ) {
     }
@@ -59,6 +61,25 @@ class ChatController extends AbstractController
 
         if ($content === '') {
             return new JsonResponse(['error' => 'Message vide'], 400);
+        }
+
+        if ($this->commandHandler->isCommand($content)) {
+            $result = $this->commandHandler->handle($player, $content);
+
+            if (!$result['success']) {
+                return new JsonResponse(['error' => $result['message']], 400);
+            }
+
+            $response = ['success' => true];
+            if (\array_key_exists('messageId', $result)) {
+                $response['messageId'] = $result['messageId'];
+            }
+            if (($result['system'] ?? false) === true) {
+                $response['system'] = true;
+                $response['systemMessage'] = $result['message'] ?? '';
+            }
+
+            return new JsonResponse($response);
         }
 
         $message = match ($channel) {
