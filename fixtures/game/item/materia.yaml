@@ -114,3 +114,109 @@ App\Entity\Game\Item:
     requirements: ['@soldier_materia_1']
     domain: '@soldier'
     nbUsages: 25
+
+# === TIER 2 — 1 par element ===
+
+# FIRE T2
+  materia_combustion (extends item):
+    name: "Combustion"
+    description: "Matéria contenant un sort de combustion instantanée"
+    type: "materia"
+    element: "fire"
+    spell: '@combustion'
+    slug: 'm2-combustion'
+    level: 2
+    requirements: ['@berserk_materia_2']
+    domain: '@berserker'
+    nbUsages: 15
+
+# WATER T2
+  materia_frost_mist (extends item):
+    name: "Brume glaciale"
+    description: "Matéria contenant un sort de brume de givre paralysante"
+    type: "materia"
+    element: "water"
+    spell: '@frost_mist'
+    slug: 'm2-water'
+    level: 2
+    requirements: ['@hydro_materia_t2']
+    domain: '@hydromancer'
+    nbUsages: 12
+
+# AIR T2
+  materia_air_chain_lightning (extends item):
+    name: "Éclair en chaîne"
+    description: "Matéria contenant un sort d'éclairs rebondissants"
+    type: "materia"
+    element: "air"
+    spell: '@air_chain_lightning'
+    slug: 'm2-air'
+    level: 2
+    requirements: ['@storm_materia_t2']
+    domain: '@stormcaller'
+    nbUsages: 10
+
+# EARTH T2
+  materia_stone_shield (extends item):
+    name: "Mur de pierre"
+    description: "Matéria érigeant un mur de pierre protecteur"
+    type: "materia"
+    element: "earth"
+    spell: '@stone_shield'
+    slug: 'm2-earth'
+    level: 2
+    requirements: ['@geo_materia_t2']
+    domain: '@geomancer'
+    nbUsages: 10
+
+# METAL T2
+  materia_steel_riposte (extends item):
+    name: "Riposte d'acier"
+    description: "Matéria contenant une contre-attaque métallique"
+    type: "materia"
+    element: "metal"
+    spell: '@steel_riposte'
+    slug: 'm2-metal'
+    level: 2
+    requirements: ['@soldier_materia_t2']
+    domain: '@soldier'
+    nbUsages: 12
+
+# BEAST T2
+  materia_savage_bite (extends item):
+    name: "Morsure sauvage"
+    description: "Matéria contenant un sort de morsure féroce"
+    type: "materia"
+    element: "beast"
+    spell: '@savage_bite'
+    slug: 'm2-beast'
+    level: 2
+    requirements: ['@hunter_materia_t2']
+    domain: '@hunter'
+    nbUsages: 12
+
+# LIGHT T2
+  materia_light_blessing (extends item):
+    name: "Bénédiction"
+    description: "Matéria contenant un sort de bénédiction de lumière"
+    type: "materia"
+    element: "light"
+    spell: '@light_blessing'
+    slug: 'm2-light'
+    level: 2
+    requirements: ['@paladin_materia_t2']
+    domain: '@paladin'
+    nbUsages: 10
+
+# DARK T2
+  materia_vital_drain (extends item):
+    name: "Drain vital"
+    description: "Matéria contenant un sort d'absorption de force vitale"
+    type: "materia"
+    element: "dark"
+    spell: '@vital_drain'
+    slug: 'm2-dark'
+    level: 2
+    requirements: ['@assassin_materia_t2']
+    domain: '@assassin'
+    nbUsages: 12

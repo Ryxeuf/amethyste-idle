@@ -2109,6 +2109,98 @@ class SpellFixtures extends Fixture
                 'hit' => 90,
                 'level' => 1,
             ],
+
+            // === Materia Tier 2 — 1 par élément ===
+
+            // Eau — Brume glaciale
+            'frost_mist' => [
+                'slug' => 'frost-mist',
+                'damage' => 2,
+                'element' => Element::Water,
+                'heal' => null,
+                'name' => 'Brume glaciale',
+                'description' => 'Un brouillard de givre qui engourdit la cible',
+                'hit' => 85,
+                'energyCost' => 8,
+                'statusEffectSlug' => 'paralysis',
+                'level' => 2,
+            ],
+            // Air — Éclair en chaîne
+            'air_chain_lightning' => [
+                'slug' => 'air-chain-lightning',
+                'damage' => 4,
+                'element' => Element::Air,
+                'heal' => null,
+                'name' => 'Éclair en chaîne',
+                'description' => 'Des éclairs qui rebondissent entre les ennemis',
+                'hit' => 85,
+                'energyCost' => 10,
+                'aoeTargets' => 0,
+                'level' => 2,
+            ],
+            // Terre — Mur de pierre
+            'stone_shield' => [
+                'slug' => 'stone-shield',
+                'damage' => 0,
+                'element' => Element::Earth,
+                'heal' => 5,
+                'name' => 'Mur de pierre',
+                'description' => 'Érige un mur de pierre qui protège des attaques',
+                'hit' => 100,
+                'energyCost' => 10,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'shield',
+                'level' => 2,
+            ],
+            // Métal — Riposte d'acier
+            'steel_riposte' => [
+                'slug' => 'steel-riposte',
+                'damage' => 3,
+                'element' => Element::Metal,
+                'heal' => 2,
+                'name' => 'Riposte d\'acier',
+                'description' => 'Une contre-attaque métallique qui blesse et protège',
+                'hit' => 95,
+                'energyCost' => 8,
+                'level' => 2,
+            ],
+            // Bête — Morsure sauvage
+            'savage_bite' => [
+                'slug' => 'savage-bite',
+                'damage' => 4,
+                'element' => Element::Beast,
+                'heal' => null,
+                'name' => 'Morsure sauvage',
+                'description' => 'Une morsure féroce qui déchire la cible',
+                'hit' => 90,
+                'critical' => 12,
+                'energyCost' => 7,
+                'level' => 2,
+            ],
+            // Lumière — Bénédiction
+            'light_blessing' => [
+                'slug' => 'light-blessing',
+                'damage' => null,
+                'element' => Element::Light,
+                'heal' => 8,
+                'name' => 'Bénédiction',
+                'description' => 'Une bénédiction de lumière qui restaure la santé',
+                'hit' => 100,
+                'energyCost' => 10,
+                'level' => 2,
+            ],
+            // Ombre — Drain vital
+            'vital_drain' => [
+                'slug' => 'vital-drain',
+                'damage' => 3,
+                'element' => Element::Dark,
+                'heal' => 2,
+                'name' => 'Drain vital',
+                'description' => 'Aspire la force vitale de l\'ennemi',
+                'hit' => 85,
+                'energyCost' => 8,
+                'level' => 2,
+            ],
         ];
     }
 }

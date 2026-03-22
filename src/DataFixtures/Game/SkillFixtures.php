@@ -593,6 +593,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'shrapnel-burst']],
                 'requirements' => ['soldier_apprenti_2'],
             ],
+            'soldier_materia_t2' => [
+                'title' => 'Materia : Riposte d\'acier',
+                'slug' => 'soldier-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Riposte d\'acier (contre-attaque)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-riposte']],
+                'requirements' => ['soldier_apprenti_1'],
+            ],
 
             // Rang 3 (25-50 pts) — 4 skills
             'soldier_rang3_1' => [
@@ -1000,6 +1009,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'ice-lance']],
                 'requirements' => ['hydro_apprenti_2'],
             ],
+            'hydro_materia_t2' => [
+                'title' => 'Materia : Brume glaciale',
+                'slug' => 'hydro-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Brume glaciale (paralysie)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'frost-mist']],
+                'requirements' => ['hydro_apprenti_1'],
+            ],
 
             // Rang 3 (25-50 pts) — 4 skills
             'hydro_rang3_1' => [
@@ -1404,6 +1422,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'stone-spikes']],
                 'requirements' => ['geo_apprenti_2'],
+            ],
+            'geo_materia_t2' => [
+                'title' => 'Materia : Mur de pierre',
+                'slug' => 'geo-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Mur de pierre (protection)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stone-shield']],
+                'requirements' => ['geo_apprenti_1'],
             ],
 
             // Rang 3 (25-50 pts) — 4 skills
@@ -2083,6 +2110,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'vine-snare']],
                 'requirements' => ['hunter_apprenti_2'],
             ],
+            'hunter_materia_t2' => [
+                'title' => 'Materia : Morsure sauvage',
+                'slug' => 'hunter-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Morsure sauvage',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'savage-bite']],
+                'requirements' => ['hunter_apprenti_2'],
+            ],
 
             // Rang 3 (25-50 pts) — 4 skills
             'hunter_rang3_1' => [
@@ -2354,6 +2390,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'wind-blast']],
                 'requirements' => ['storm_apprenti_2'],
+            ],
+            'storm_materia_t2' => [
+                'title' => 'Materia : Éclair en chaîne',
+                'slug' => 'storm-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Éclair en chaîne (AoE)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'air-chain-lightning']],
+                'requirements' => ['storm_materia_1'],
             ],
 
             // Rang 3 (25-50 pts) — 4 skills
@@ -2761,6 +2806,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'healing-touch']],
                 'requirements' => ['paladin_apprenti_2'],
             ],
+            'paladin_materia_t2' => [
+                'title' => 'Materia : Benediction',
+                'slug' => 'paladin-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Benediction (soin)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'light-blessing']],
+                'requirements' => ['paladin_apprenti_2'],
+            ],
 
             // Rang 3 (25-50 pts) — 4 skills
             'paladin_rang3_1' => [
@@ -3164,6 +3218,15 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 15,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'life-leech']],
+                'requirements' => ['assassin_apprenti_2'],
+            ],
+            'assassin_materia_t2' => [
+                'title' => 'Materia : Drain vital',
+                'slug' => 'assassin-materia-t2',
+                'description' => 'Permet d\'utiliser la materia Drain vital (absorption)',
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'vital-drain']],
                 'requirements' => ['assassin_apprenti_2'],
             ],
 
