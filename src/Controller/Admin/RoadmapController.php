@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/admin/roadmap', name: 'admin_roadmap_')]
-#[IsGranted('ROLE_ADMIN')]
+#[IsGranted('ROLE_GAME_DESIGNER')]
 class RoadmapController extends AbstractController
 {
     public function __construct(
