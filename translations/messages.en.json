@@ -59,7 +59,8 @@
       "shop": "Shop",
       "skills": "Skills",
       "settings": "Settings",
-      "factions": "Factions"
+      "factions": "Factions",
+      "friends": "Friends"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -416,6 +417,20 @@
       "reputation": "Reputation",
       "next_tier": "Next tier: %tier%",
       "max_tier": "Maximum tier reached!"
+    },
+    "friends": {
+      "title": "Friends",
+      "empty": "You don't have any friends yet. Visit a player's profile to send a request!",
+      "pending_received": "Received requests",
+      "pending_sent": "Sent requests",
+      "accept": "Accept",
+      "decline": "Decline",
+      "remove": "Remove",
+      "block": "Block",
+      "online": "Online",
+      "offline": "Offline",
+      "waiting": "Pending",
+      "add_friend": "Add friend"
     }
   },
   "common": {
