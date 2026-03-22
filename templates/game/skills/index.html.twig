@@ -64,6 +64,26 @@
             </div>
         {% endif %}
 
+        {# Global skill points limit #}
+        <div class="mb-4 sm:mb-6 game-card p-4">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-sm font-medium text-gray-300">Points de competence utilises</span>
+                <span class="text-sm font-bold {% if totalUsedPoints >= maxTotalPoints %}text-red-400{% else %}text-white{% endif %}">
+                    {{ totalUsedPoints }} / {{ maxTotalPoints }}
+                </span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                {% set percentage = maxTotalPoints > 0 ? (totalUsedPoints / maxTotalPoints * 100) : 0 %}
+                <div class="{% if percentage >= 100 %}bg-red-500{% elseif percentage >= 80 %}bg-amber-500{% else %}bg-purple-600{% endif %} h-2.5 rounded-full transition-all duration-300"
+                     style="width: {{ percentage > 100 ? 100 : percentage }}%"></div>
+            </div>
+            {% if totalUsedPoints >= maxTotalPoints %}
+                <p class="text-xs text-red-400 mt-1.5">Limite atteinte — redistribuez vos competences pour en apprendre de nouvelles.</p>
+            {% elseif totalUsedPoints >= maxTotalPoints * 0.8 %}
+                <p class="text-xs text-amber-400 mt-1.5">{{ maxTotalPoints - totalUsedPoints }} points restants avant la limite.</p>
+            {% endif %}
+        </div>
+
         {# Domain sections #}
         {% for domain in domains %}
             <div class="mb-4 sm:mb-6 game-card overflow-hidden">

@@ -387,3 +387,15 @@
 - [x] 7 pieces d'equipement : epee en bois, casque rouille, tunique rembourrée, jambieres en tissu, sandales usees, gants de travail, bouclier en bois
 - [x] Prix bas (8-20 or), duree de vie 60 utilisations, aucun prerequis de competence
 - [x] Ajout aux loot tables des monstres lvl 1 (slime, goblin, bat, giant_rat, zombie) avec probabilites 2-6%
+
+## 39 — Limite points multi-domaine (2026-03-22) ✅
+
+> Empeche de tout maxer, force des choix strategiques de build.
+
+- [x] Constante `MAX_TOTAL_SKILL_POINTS = 500` dans `PlayerSkillHelper`
+- [x] Verification dans `canAcquireSkill()` : somme des `usedExperience` de tous les domaines + cout du skill <= max
+- [x] Methode `getTotalUsedPoints()` pour calculer le total utilise cross-domaine
+- [x] Affichage barre de progression globale dans `/game/skills` (couleur adaptative : violet/orange/rouge)
+- [x] Messages contextuels (alerte quand >= 80%, erreur quand limite atteinte)
+- [x] 7 tests unitaires (sous la limite, a la limite exacte, au-dessus, deja acquis, constante)
+- [x] PHPStan OK, PHP-CS-Fixer OK, 323 tests OK

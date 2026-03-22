@@ -43,6 +43,8 @@ class IndexController extends AbstractController
             'canRespec' => $player ? $this->respecManager->canRespec($player) : false,
             'playerGils' => $player ? $player->getGils() : 0,
             'skillCount' => $player ? $player->getSkills()->count() : 0,
+            'totalUsedPoints' => $player ? $this->skillHelper->getTotalUsedPoints($player) : 0,
+            'maxTotalPoints' => PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS,
         ]);
     }
 
