@@ -90,7 +90,7 @@
     </div>
 
     {# Bouton de fabrication #}
-    <form method="post" action="{{ path('game_crafting_craft', {slug: recipe.slug}) }}">
+    <form method="post" action="{{ path('app_game_craft_execute', {slug: recipe.slug}) }}">
         <button type="submit"
                 class="w-full py-2 px-4 rounded-md text-sm font-medium transition-colors
                     {% if canCraftRecipe %}

@@ -28,7 +28,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 02 Supprimer CSS mort (FAIT)                                    │
   ├─ 03 Optimisation queries N+1                                      │
   ├─ ✅ 04 Rate limiting API (FAIT)                                    │
-  ├─ 05 Consolidation craft (supprimer doublon)                       │
+  ├─ ✅ 05 Consolidation craft (FAIT)                                  │
   ├─ ✅ 06 Materia unlock verification (FAIT)                          │
   ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
   ├─ ✅ 08 Combat log frontend (FAIT)                                  │
@@ -41,7 +41,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 15 Consommables de base (FAIT)                                  │
   ├─ 16 Materia complement (8 nouvelles)                              │
   ├─ 17 Equipement tier 1 Starter                                     │
-  ├─ 18 Commandes chat slash                                          │
+  ├─ ✅ 18 Commandes chat slash (FAIT)                                  │
   ├─ ✅ 19 Profil joueur public (FAIT)                                          │
   ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
   ├─ ✅ 21 GameEvent executor (FAIT)                                    │
@@ -170,13 +170,7 @@ VAGUE 6 — Long terme
 
 ## Piste B — Corrections gameplay core (‖)
 
-### 05 — Consolidation craft : supprimer le systeme duplique (S | ★★)
-
-> Deux systemes concurrents (CraftManager/CraftController + CraftingManager/CraftingController) creent de la confusion. Garder un seul systeme, supprimer l'autre. Prerequis : ∅
-
-- [ ] Auditer les 2 systemes : identifier lequel est le plus complet (CraftManager vs CraftingManager)
-- [ ] Supprimer le systeme redondant (controller, manager, templates, entity si applicable)
-- [ ] Mettre a jour les references (routes, liens dans templates, DOCUMENTATION.md)
+### ~~05 — Consolidation craft~~ ✅ FAIT
 
 ---
 
@@ -247,15 +241,7 @@ VAGUE 6 — Long terme
 
 ## Piste E — Social & systemes transverses (‖)
 
-### 18 — Commandes chat slash (S | ★★★)
-
-> Le chat fonctionne mais n'a pas de commandes slash. Amelioration UX immediate. Prerequis : ∅
-
-- [ ] Parser de commandes dans ChatManager : detecter `/whisper <nom> <msg>`, `/zone <msg>`, `/global <msg>`
-- [ ] Commande `/emote <action>` : afficher "*Joueur danse*" en italique dans le chat
-- [ ] Commande `/who` : lister les joueurs presents sur la meme carte
-- [ ] Feedback d'erreur si commande inconnue ou arguments invalides
-- [ ] Tests unitaires : parsing commandes, cas d'erreur
+### ~~18 — Commandes chat slash~~ ✅ FAIT
 
 ---
 
