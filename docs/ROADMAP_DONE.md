@@ -352,3 +352,16 @@
 - [x] Recurrence : creation automatique du prochain event a la completion
 - [x] Events schedules deja expires → marques COMPLETED directement
 - [x] Tests unitaires : GameEventExecutorTest (5 tests), GameEventBonusProviderTest (6 tests)
+
+---
+
+## 05 — Consolidation craft : supprimer le systeme duplique (2026-03-22) ✅
+
+> Deux systemes concurrents (CraftManager/CraftController + CraftingManager/CraftingController). CraftingManager conserve (plus complet : experimentation avec hints, 5 niveaux de qualite, decouverte par joueur). CraftManager supprime.
+
+- [x] Audit des 2 systemes : CraftingManager retenu (meilleure experimentation, qualite 5 tiers, decouverte par joueur)
+- [x] Suppression systeme redondant : CraftController, CraftManager, CraftQuality, CraftResult, CraftRecipe, CraftEvent, CraftRecipeController, CraftRecipeType, templates game/craft/ et admin/craft_recipe/
+- [x] Mise a jour references : DashboardController (Recipe au lieu de CraftRecipe), DomainExperienceEvolver (retrait CraftEvent), RateLimitingSubscriber (routes unifiees), templates nav
+- [x] Renommage routes CraftingController : game_crafting → app_game_craft (convention unifiee)
+- [x] Migration pour supprimer la table game_craft_recipes
+- [x] PHPStan OK, PHP-CS-Fixer OK

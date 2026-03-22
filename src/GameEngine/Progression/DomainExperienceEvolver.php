@@ -4,7 +4,6 @@ namespace App\GameEngine\Progression;
 
 use App\Entity\Game\Domain;
 use App\Event\Fight\ItemUsedEvent;
-use App\Event\Game\CraftEvent;
 use App\Event\Map\ButcheringEvent;
 use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
@@ -25,7 +24,6 @@ class DomainExperienceEvolver implements EventSubscriberInterface
             SpotHarvestEvent::NAME => 'experienceFromHarvesting',
             FishingEvent::NAME => 'experienceFromFishing',
             ButcheringEvent::NAME => 'experienceFromButchering',
-            CraftEvent::NAME => 'experienceFromCrafting',
         ];
     }
 
@@ -70,14 +68,6 @@ class DomainExperienceEvolver implements EventSubscriberInterface
         // Chercher un domaine lié au butchering via les skills du joueur
         if ($domain = $this->playerDomainHelper->getDomainBySkillAction('butcher')) {
             $this->increaseDomainExperience($domain);
-        }
-    }
-
-    public function experienceFromCrafting(CraftEvent $event): void
-    {
-        $profession = $event->getRecipe()->getProfession();
-        if ($domain = $this->playerDomainHelper->getDomainBySkillAction('craft', ['profession' => $profession])) {
-            $this->increaseDomainExperience($domain, $event->getExperienceGained());
         }
     }
 

@@ -7,10 +7,10 @@ use App\Entity\App\Fight;
 use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
-use App\Entity\Game\CraftRecipe;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Quest;
+use App\Entity\Game\Recipe;
 use App\Entity\Game\Spell;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
@@ -68,9 +68,9 @@ class DashboardController extends AbstractController
             ],
             [
                 'label' => 'Recettes',
-                'count' => $this->em->getRepository(CraftRecipe::class)->count([]),
+                'count' => $this->em->getRepository(Recipe::class)->count([]),
                 'color' => 'orange',
-                'route' => 'admin_craft_recipe_index',
+                'route' => 'admin_dashboard',
             ],
             [
                 'label' => 'Utilisateurs',

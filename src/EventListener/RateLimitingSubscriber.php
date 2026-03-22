@@ -48,8 +48,6 @@ class RateLimitingSubscriber implements EventSubscriberInterface
                 'routes' => [
                     'app_game_craft_execute',
                     'app_game_craft_experiment',
-                    'game_crafting_craft',
-                    'game_crafting_experiment',
                 ],
             ],
         ];

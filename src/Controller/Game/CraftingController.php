@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/game/crafting')]
+#[Route('/game/craft')]
 #[IsGranted('ROLE_USER')]
 class CraftingController extends AbstractController
 {
@@ -25,7 +25,7 @@ class CraftingController extends AbstractController
     ) {
     }
 
-    #[Route('', name: 'game_crafting')]
+    #[Route('', name: 'app_game_craft')]
     public function index(): Response
     {
         $player = $this->playerHelper->getPlayer();
@@ -77,7 +77,7 @@ class CraftingController extends AbstractController
         ]);
     }
 
-    #[Route('/craft/{slug}', name: 'game_crafting_craft', methods: ['POST'])]
+    #[Route('/craft/{slug}', name: 'app_game_craft_execute', methods: ['POST'])]
     public function craft(string $slug): Response
     {
         $player = $this->playerHelper->getPlayer();
@@ -93,10 +93,10 @@ class CraftingController extends AbstractController
         $result = $this->craftingManager->craft($player, $recipe);
         $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
 
-        return $this->redirectToRoute('game_crafting');
+        return $this->redirectToRoute('app_game_craft');
     }
 
-    #[Route('/experiment', name: 'game_crafting_experiment', methods: ['POST'])]
+    #[Route('/experiment', name: 'app_game_craft_experiment', methods: ['POST'])]
     public function experiment(Request $request): Response
     {
         $player = $this->playerHelper->getPlayer();
@@ -109,6 +109,6 @@ class CraftingController extends AbstractController
         $result = $this->experimentationManager->experiment($player, $itemSlugs);
         $this->addFlash($result['success'] ? 'success' : 'info', $result['message']);
 
-        return $this->redirectToRoute('game_crafting');
+        return $this->redirectToRoute('app_game_craft');
     }
 }
