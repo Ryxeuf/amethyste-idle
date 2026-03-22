@@ -79,9 +79,12 @@ export default class extends Controller {
                 body: formData,
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const data = await response.json();
-                console.warn('Chat send error:', data.error);
+                this._appendSystemMessage(data.error || 'Erreur lors de l\'envoi.');
+            } else if (data.system && data.systemMessage) {
+                this._appendSystemMessage(data.systemMessage);
             }
         } catch (err) {
             console.error('Chat send failed:', err);
@@ -272,6 +275,41 @@ export default class extends Controller {
 
     _scrollToBottom(el) {
         if (el) el.scrollTop = el.scrollHeight;
+    }
+
+    _appendSystemMessage(text) {
+        const container = this._getActiveContainer();
+        if (!container) return;
+
+        const lines = text.split('\n');
+        lines.forEach(line => {
+            const div = document.createElement('div');
+            div.className = 'chat-line py-0.5 px-2';
+
+            const content = document.createElement('span');
+            content.className = 'text-sm text-yellow-400 italic';
+            content.textContent = line;
+
+            div.appendChild(content);
+            container.appendChild(div);
+        });
+
+        this._scrollToBottom(container);
+    }
+
+    _getActiveContainer() {
+        const panelMap = {
+            global: this.hasGlobalPanelTarget ? this.globalPanelTarget : null,
+            map: this.hasMapPanelTarget ? this.mapPanelTarget : null,
+            private: this.hasPrivateMessagesTarget ? this.privateMessagesTarget : null,
+        };
+
+        const panel = panelMap[this._activeChannel];
+        if (!panel) return null;
+
+        if (this._activeChannel === 'private') return panel;
+        return panel.querySelector('[data-chat-target="messages"]')
+            || panel.querySelector('.chat-messages');
     }
 
     _escapeHtml(str) {
