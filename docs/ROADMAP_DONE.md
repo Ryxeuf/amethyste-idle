@@ -327,3 +327,12 @@
 - [x] 2 items legendaires boss-only dans ItemFixtures : Lame de croc draconique (arme feu), Plastron en ecailles de dragon (armure feu)
 - [x] Loot table du Dragon configuree : epee a 15%, plastron a 10% de drop
 - [x] Badge rarity Legendary (jaune dore) automatique dans inventaire et ecran de loot
+
+## Tache 32 — Journal de quetes enrichi (2026-03-22) ✅
+
+> Journal de quetes ameliore avec filtrage par type, PNJ donneur, et indicateurs de chaines.
+
+- [x] Onglet "Disponibles" avec bouton "Accepter" et filtrage par type (combat, recolte, livraison, exploration)
+- [x] Affichage du PNJ donneur de quete (nom + lien carte) pour chaque quete active/disponible
+- [x] Indicateur de chaine "Quete X/Y" pour les quetes faisant partie d'une serie
+- [x] Service QuestGiverResolver : resolution PNJ donneur via scan dialog JSON, detection type de quete, calcul position dans chaine
