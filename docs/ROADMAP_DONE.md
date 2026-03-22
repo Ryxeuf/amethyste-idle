@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-21
+> Derniere mise a jour : 2026-03-22
 
 ---
 
@@ -336,3 +336,19 @@
 - [x] Affichage du PNJ donneur de quete (nom + lien carte) pour chaque quete active/disponible
 - [x] Indicateur de chaine "Quete X/Y" pour les quetes faisant partie d'une serie
 - [x] Service QuestGiverResolver : resolution PNJ donneur via scan dialog JSON, detection type de quete, calcul position dans chaine
+
+---
+
+## 21 — GameEvent executor (2026-03-22) ✅
+
+> Service d'execution automatique des GameEvent planifies. Socle de tout le contenu evenementiel (bonus XP/drop, world boss, invasions).
+
+- [x] `GameEventExecutor` : scanne les SCHEDULED dont startsAt <= now, les passe ACTIVE
+- [x] `GameEventBonusProvider` : expose les multiplicateurs XP et drop actifs (global ou par map)
+- [x] Integration `MateriaXpGranter` : applique le bonus XP des events actifs
+- [x] Integration `LootGenerator` : applique le bonus drop des events actifs
+- [x] Commande `app:game-event:execute` + tache Scheduler (toutes les 60s)
+- [x] Passage ACTIVE → COMPLETED quand endsAt < now
+- [x] Recurrence : creation automatique du prochain event a la completion
+- [x] Events schedules deja expires → marques COMPLETED directement
+- [x] Tests unitaires : GameEventExecutorTest (5 tests), GameEventBonusProviderTest (6 tests)

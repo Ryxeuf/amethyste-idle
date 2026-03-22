@@ -4,6 +4,7 @@ namespace App\GameEngine\Fight;
 
 use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -16,6 +17,7 @@ class MateriaXpGranter implements EventSubscriberInterface
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -41,6 +43,9 @@ class MateriaXpGranter implements EventSubscriberInterface
         if ($monster->isBoss()) {
             $xpGain *= self::BOSS_XP_MULTIPLIER;
         }
+
+        $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($mob->getMap());
+        $xpGain = (int) round($xpGain * $xpMultiplier);
 
         foreach ($fight->getPlayers() as $player) {
             if ($player->isDead()) {

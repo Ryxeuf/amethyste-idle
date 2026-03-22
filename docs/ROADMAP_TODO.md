@@ -44,7 +44,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ 18 Commandes chat slash                                          │
   ├─ ✅ 19 Profil joueur public (FAIT)                                          │
   ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
-  ├─ 21 GameEvent executor                                            │
+  ├─ ✅ 21 GameEvent executor (FAIT)                                    │
   ├─ 22 Factions & reputation (entites)                               │
   ├─ 23 Tests fonctionnels controleurs                                │
   ├─ 24 Notifications toast in-game                                   │
@@ -267,16 +267,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 21 — GameEvent executor (S | ★★★)
-
-> GameEvent existe en BDD avec admin CRUD mais rien ne se passe quand un event est ACTIVE. Ce service est le socle de tout le contenu endgame evenementiel (world boss, invasions, bonus XP/drop). Prerequis : ∅
-
-- [ ] Creer `GameEventExecutor` : service qui lit les GameEvent SCHEDULED dont startsAt <= now, les passe ACTIVE
-- [ ] Traiter les types existants : `xp_bonus` (modifier global XP), `drop_bonus` (modifier global drop rate)
-- [ ] Creer `GameEventSchedulerMessage` + handler Symfony Scheduler (toutes les 60s)
-- [ ] Passer les events expires (endsAt < now) en COMPLETED automatiquement
-- [ ] Gerer la recurrence : si `recurrenceInterval` non null, creer le prochain event a la completion
-- [ ] Tester : creer un event xp_bonus via admin, verifier qu'il s'active et expire correctement
+### ~~21 — GameEvent executor~~ ✅ FAIT
 
 ---
 
