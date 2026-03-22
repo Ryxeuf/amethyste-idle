@@ -61,7 +61,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ ✅ 32 Journal de quetes enrichi (FAIT) ← 13
   ├─ 33 Impact gameplay jour/nuit ← 20
   ├─ 34 Meteo backend & diffusion ← 20
-  ├─ 35 Annonces Mercure evenements ← 21
+  ├─ ✅ 35 Annonces Mercure evenements (FAIT) ← 21
   ├─ 36 Gains et recompenses reputation ← 22
   ├─ 37 Loot exclusif et rarete etendue ← 07
   ├─ 38 Liste d'amis ← 19
@@ -369,12 +369,7 @@ VAGUE 6 — Long terme
 - [ ] Route API `GET /api/map/weather?mapId=X` (ou inclure dans `/api/map/config`)
 - [ ] Topic Mercure `map/weather` pour broadcast changement meteo en temps reel
 
-### 35 — Annonces Mercure evenements (S | ★★★)
-> Les joueurs n'ont aucun moyen de savoir qu'un evenement est en cours. Prerequis : EG-1. Prerequis : ← 21
-- [ ] Nouveau topic Mercure `event/announce` : publier quand un GameEvent passe ACTIVE
-- [ ] Stimulus controller `event-notification` : afficher un toast/banner quand un event demarre
-- [ ] Afficher les events actifs dans le HUD (petite icone avec tooltip)
-- [ ] Tester : activer un event, verifier que tous les joueurs connectes voient la notification
+### ~~35 — Annonces Mercure evenements~~ ✅ FAIT
 
 ### 36 — Gains et recompenses reputation (S | ★★★)
 > Prerequis : EG-3. Sans gains ni recompenses, le systeme de faction est une coquille vide. Prerequis : ← 22
