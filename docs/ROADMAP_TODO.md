@@ -26,7 +26,7 @@
 VAGUE 1 (aucun prerequis — tout en parallele)
   ┌─ ✅ 01 De-hardcoder map IDs (FAIT) ────────────────────────────────┐
   ├─ ✅ 02 Supprimer CSS mort (FAIT)                                    │
-  ├─ 03 Optimisation queries N+1                                      │
+  ├─ ✅ 03 Optimisation queries N+1 (FAIT)                              │
   ├─ ✅ 04 Rate limiting API (FAIT)                                    │
   ├─ ✅ 05 Consolidation craft (FAIT)                                  │
   ├─ ✅ 06 Materia unlock verification (FAIT)                          │
@@ -155,16 +155,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 03 — Optimisation queries N+1 (S | ★★★)
-
-> Impact direct sur les temps de chargement. Pas de nouveau code metier, juste du tuning. Prerequis : ∅
-
-- [ ] Auditer les requetes avec Symfony Profiler (toolbar) sur les pages critiques (carte, combat, inventaire)
-- [ ] Ajouter `fetch: EAGER` ou `->addSelect()->leftJoin()` sur les relations N+1 detectees
-- [ ] Index composites : `(player_id, map_id)` sur positions, `(fight_id, turn)` sur FightLog
-- [ ] Mesurer avant/apres (nombre de queries par page)
-
----
+### ~~03 — Optimisation queries N+1~~ ✅ FAIT
 
 ---
 
