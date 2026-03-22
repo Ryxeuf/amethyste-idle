@@ -83,7 +83,7 @@ class FriendController extends AbstractController
 
         try {
             $this->friendshipManager->sendRequest($player, $targetPlayer);
-            $this->addFlash('success', 'Demande d\'ami envoy\u00e9e \u00e0 ' . $targetPlayer->getName() . '.');
+            $this->addFlash('success', 'Demande d\'ami envoyée à ' . $targetPlayer->getName() . '.');
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
         }
@@ -142,7 +142,7 @@ class FriendController extends AbstractController
 
         try {
             $this->friendshipManager->decline($friendship, $player);
-            $this->addFlash('success', 'Demande refus\u00e9e.');
+            $this->addFlash('success', 'Demande refusée.');
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
         }
@@ -169,7 +169,7 @@ class FriendController extends AbstractController
 
         try {
             $this->friendshipManager->unfriend($friendship, $player);
-            $this->addFlash('success', 'Ami retir\u00e9.');
+            $this->addFlash('success', 'Ami retiré.');
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
         }
@@ -195,7 +195,7 @@ class FriendController extends AbstractController
         }
 
         $this->friendshipManager->block($player, $targetPlayer);
-        $this->addFlash('success', $targetPlayer->getName() . ' a \u00e9t\u00e9 bloqu\u00e9.');
+        $this->addFlash('success', $targetPlayer->getName() . ' a été bloqué.');
 
         return $this->redirectToRoute('app_game_friends');
     }
