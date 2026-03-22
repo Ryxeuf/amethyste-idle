@@ -40,7 +40,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 14 Respec basique (FAIT)                                       │
   ├─ ✅ 15 Consommables de base (FAIT)                                  │
   ├─ 16 Materia complement (8 nouvelles)                              │
-  ├─ 17 Equipement tier 1 Starter                                     │
+  ├─ ✅ 17 Equipement tier 1 Starter (FAIT)                             │
   ├─ ✅ 18 Commandes chat slash (FAIT)                                  │
   ├─ ✅ 19 Profil joueur public (FAIT)                                          │
   ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
@@ -220,13 +220,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 17 — Equipement tier 1 Starter (M | ★★)
-
-> Aucun prerequis. Remplace/complete les 5 pieces existantes. Prerequis : ∅
-
-- [ ] Set complet 7 pieces (arme, casque, plastron, jambieres, bottes, gants, bouclier) — element None, stats basiques
-- [ ] Ajouter aux loot tables des monstres lvl 1-5
-- [ ] Verifier l'affichage dans l'inventaire/equipement
+### ~~17 — Equipement tier 1 Starter~~ ✅ FAIT
 
 ---
 
