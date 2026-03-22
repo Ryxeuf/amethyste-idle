@@ -2,10 +2,13 @@
 
 namespace App\Helper;
 
+use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 
 class PlayerSkillHelper
 {
+    public const int MAX_TOTAL_SKILL_POINTS = 500;
+
     public function __construct(private readonly PlayerHelper $playerHelper, private readonly PlayerDomainHelper $playerDomainHelper)
     {
     }
@@ -18,6 +21,11 @@ class PlayerSkillHelper
 
         $player = $this->playerHelper->getPlayer();
         $requirements = $skill->getRequirements()->toArray();
+
+        // Limite globale multi-domaine
+        if ($this->getTotalUsedPoints($player) + $skill->getRequiredPoints() > self::MAX_TOTAL_SKILL_POINTS) {
+            return false;
+        }
 
         // Multi-domaine : il faut assez de points dans AU MOINS UN des domaines
         $hasEnoughPoints = false;
@@ -32,6 +40,17 @@ class PlayerSkillHelper
         $playerMeetsRequirements = count($requirements) === count($playerRequirementsMatching);
 
         return $hasEnoughPoints && $playerMeetsRequirements;
+    }
+
+    public function getTotalUsedPoints(?Player $player = null): int
+    {
+        $player = $player ?? $this->playerHelper->getPlayer();
+        $total = 0;
+        foreach ($player->getDomainExperiences() as $domainExperience) {
+            $total += $domainExperience->getUsedExperience();
+        }
+
+        return $total;
     }
 
     public function hasSkill(Skill $skill): bool

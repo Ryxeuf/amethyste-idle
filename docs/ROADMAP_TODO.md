@@ -65,7 +65,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 36 Gains et recompenses reputation ← 22
   ├─ 37 Loot exclusif et rarete etendue ← 07
   ├─ 38 Liste d'amis ← 19
-  ├─ 39 Limite points multi-domaine ← 14
+  ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
   ├─ 40 Synergies cross-domaine (∅ strict mais logique apres 14)
   ├─ 41 Indicateurs quetes sur PNJ ← 27
   ├─ 42 Tests unitaires systemes core ← 25, 26, 27
@@ -416,12 +416,7 @@ VAGUE 6 — Long terme
 - [ ] Notification Mercure quand un ami se connecte
 - [ ] Tests unitaires : ajout, acceptation, blocage, suppression
 
-### 39 — Limite points multi-domaine (S | ★★)
-> Empeche de tout maxer, force des choix strategiques. Prerequis : ← 14
-- [ ] Constante ou config : `MAX_TOTAL_SKILL_POINTS` (ex: 500 points cumulés sur tous les domaines)
-- [ ] Verification dans `SkillAcquiring::acquire()` : somme des `usedExperience` de tous les domaines < max
-- [ ] Affichage du total utilise / max dans /game/skills (barre de progression globale)
-- [ ] Tests (acquisition OK sous la limite, refus au-dessus)
+### ~~39 — Limite points multi-domaine~~ ✅ FAIT
 
 ### 40 — Synergies cross-domaine (M | ★★★)
 > Les bonus s'accumulent deja cross-domaine. Il faut des bonus explicites pour encourager le multi-domaine.
