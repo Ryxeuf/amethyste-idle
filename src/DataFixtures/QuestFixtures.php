@@ -63,6 +63,7 @@ class QuestFixtures extends Fixture
                             'genericItemSlug' => 'beer-pint',
                         ],
                     ],
+                    'faction_reputation' => ['ombres' => 50],
                 ],
             ],
             'quest_taiju_1' => [
@@ -151,6 +152,7 @@ class QuestFixtures extends Fixture
                             'genericItemSlug' => 'wooden-shield',
                         ],
                     ],
+                    'faction_reputation' => ['marchands' => 100, 'chevaliers' => 50],
                 ],
             ],
             'quest_werewolf_1' => [
@@ -253,6 +255,7 @@ class QuestFixtures extends Fixture
                             'genericItemSlug' => 'iron-armor',
                         ],
                     ],
+                    'faction_reputation' => ['chevaliers' => 200, 'mages' => 100],
                 ],
             ],
             // --- Chaine de quetes : La Menace Rampante (3 quetes) ---

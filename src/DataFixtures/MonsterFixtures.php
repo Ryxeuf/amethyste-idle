@@ -2,6 +2,8 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Game\FactionFixtures;
+use App\Entity\Game\Faction;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -84,6 +86,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'aiPattern' => [
                     'spell_chance' => 25,
                 ],
+                'faction' => 'faction_ombres',
+                'factionReputationReward' => 5,
             ],
             'spider' => [
                 'name' => 'Araignée',
@@ -141,6 +145,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     'spell_chance' => 45,
                 ],
                 'elementalResistances' => ['dark' => 0.4, 'light' => -0.4],
+                'faction' => 'faction_ombres',
+                'factionReputationReward' => 8,
             ],
             'banshee' => [
                 'name' => 'Banshee',
@@ -238,6 +244,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     'preferred_element' => 'fire',
                 ],
                 'elementalResistances' => ['fire' => 0.6, 'water' => -0.5],
+                'faction' => 'faction_mages',
+                'factionReputationReward' => 10,
             ],
             'griffin' => [
                 'name' => 'Griffon',
@@ -271,6 +279,8 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                         'message' => 'Le Minotaure baisse ses cornes !',
                     ],
                 ],
+                'faction' => 'faction_chevaliers',
+                'factionReputationReward' => 15,
             ],
             'stone_golem' => [
                 'name' => 'Golem de pierre',
@@ -384,6 +394,14 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 $monster->setBossPhases($data['bossPhases']);
             }
 
+            // Faction reputation
+            if (isset($data['faction'])) {
+                $monster->setFaction($this->getReference($data['faction'], Faction::class));
+            }
+            if (isset($data['factionReputationReward'])) {
+                $monster->setFactionReputationReward($data['factionReputationReward']);
+            }
+
             $monster->setCreatedAt(new \DateTime());
             $monster->setUpdatedAt(new \DateTime());
 
@@ -398,6 +416,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             SpellFixtures::class,
+            FactionFixtures::class,
         ];
     }
 }
