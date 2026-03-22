@@ -23,7 +23,7 @@ class MonsterItem
     #[ORM\JoinColumn(name: 'item_id', referencedColumnName: 'id')]
     private $item;
 
-    #[ORM\ManyToOne(targetEntity: Monster::class, inversedBy: 'monster_items')]
+    #[ORM\ManyToOne(targetEntity: Monster::class, inversedBy: 'monsterItems')]
     #[ORM\JoinColumn(name: 'monster_id', referencedColumnName: 'id')]
     private $monster;
 
