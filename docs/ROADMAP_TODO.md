@@ -58,7 +58,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 29 Equipement tier 2 ← 17                                        │
   ├─ 30 Teleportation entre cartes ← 01 ─────────────────────────────┘
   ├─ 31 Types quetes livraison/exploration ← 27
-  ├─ 32 Journal de quetes enrichi ← 13
+  ├─ ✅ 32 Journal de quetes enrichi (FAIT) ← 13
   ├─ 33 Impact gameplay jour/nuit ← 20
   ├─ 34 Meteo backend & diffusion ← 20
   ├─ 35 Annonces Mercure evenements ← 21
@@ -382,13 +382,7 @@ VAGUE 6 — Long terme
 - [ ] 2-3 quetes fixtures : 1 livraison (apporter item a un PNJ), 1 exploration (atteindre un lieu)
 - [ ] Tests unitaires : progression livraison, progression exploration
 
-### 32 — Journal de quetes enrichi (S | ★★★)
-> Le journal existe mais est basique. Ajout d'un onglet "disponibles" et meilleure UX. Prerequis : ← 13
-- [ ] Onglet "Disponibles" : lister les quetes dont les prerequis sont remplis et non encore acceptees
-- [ ] Filtrage par type de quete (kill, collect, deliver, explore)
-- [ ] Afficher le PNJ donneur de quete (nom + localisation) pour chaque quete
-- [ ] Indicateur de chaine : afficher "Quete 2/3" si la quete fait partie d'une chaine
-- [ ] Lien vers la carte pour localiser le PNJ donneur
+### ~~32 — Journal de quetes enrichi~~ ✅ FAIT
 
 ### 41 — Indicateurs quetes sur PNJ (S | ★★★)
 > Aucun indicateur visuel (! ou ?) n'apparait au-dessus des PNJ donneurs de quetes sur la carte. Prerequis : ← 27
