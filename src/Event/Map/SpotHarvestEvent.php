@@ -11,8 +11,7 @@ class SpotHarvestEvent extends Event
     final public const NAME = 'event.map.spot.harvest';
 
     /**
-     * @param ObjectLayer    $objectLayer    The harvested spot
-     * @param PlayerItem[]   $harvestedItems The items actually harvested
+     * @param PlayerItem[] $harvestedItems
      */
     public function __construct(
         private readonly ObjectLayer $objectLayer,
