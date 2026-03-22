@@ -134,9 +134,15 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'dragon', 'item' => 'stew', 'probability' => 30],
             ['monster' => 'dragon', 'item' => 'scroll_xp_boost', 'probability' => 10],
             ['monster' => 'dragon', 'item' => 'scroll_teleport', 'probability' => 20],
-            // Récompenses légendaires boss-only
-            ['monster' => 'dragon', 'item' => 'dragon_fang_blade', 'probability' => 15],
-            ['monster' => 'dragon', 'item' => 'dragon_scale_armor', 'probability' => 10],
+            // Récompenses légendaires boss-only (drop garanti)
+            ['monster' => 'dragon', 'item' => 'dragon_fang_blade', 'probability' => 15, 'guaranteed' => true],
+            ['monster' => 'dragon', 'item' => 'dragon_scale_armor', 'probability' => 10, 'guaranteed' => true],
+
+            // --- Drops légendaires rares sur monstres de haut niveau ---
+            ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minDifficulty' => 3],
+            ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],
+            ['monster' => 'stone_golem', 'item' => 'golem_heart_shield', 'probability' => 3, 'minDifficulty' => 3],
+            ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3, 'minDifficulty' => 3],
         ];
 
         foreach ($monsterItems as $data) {
@@ -144,6 +150,8 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             $monsterItem->setMonster($this->getReference($data['monster'], Monster::class));
             $monsterItem->setItem($this->getReference($data['item'], Item::class));
             $monsterItem->setProbability($data['probability']);
+            $monsterItem->setGuaranteed($data['guaranteed'] ?? false);
+            $monsterItem->setMinDifficulty($data['minDifficulty'] ?? null);
             $monsterItem->setCreatedAt(new \DateTime());
             $monsterItem->setUpdatedAt(new \DateTime());
 

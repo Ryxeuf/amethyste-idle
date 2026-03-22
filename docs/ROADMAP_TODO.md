@@ -63,7 +63,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 34 Meteo backend & diffusion ← 20
   ├─ ✅ 35 Annonces Mercure evenements (FAIT) ← 21
   ├─ 36 Gains et recompenses reputation ← 22
-  ├─ 37 Loot exclusif et rarete etendue ← 07
+  ├─ ✅ 37 Loot exclusif et rarete etendue (FAIT) ← 07
   ├─ 38 Liste d'amis ← 19
   ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
   ├─ 40 Synergies cross-domaine (∅ strict mais logique apres 14)
@@ -380,13 +380,7 @@ VAGUE 6 — Long terme
 - [ ] Afficher les recompenses debloquees/verrouillees sur la page faction
 - [ ] Tester : gagner de la reputation, changer de palier, debloquer une recompense
 
-### 37 — Loot exclusif et rarete etendue (S | ★★)
-> Enrichir le systeme de loot existant (MonsterItem) pour supporter du contenu endgame. Prerequis : ← 07
-- [ ] Ajouter champ `guaranteed` (bool, defaut false) sur MonsterItem : drop garanti (100%) en plus de la proba
-- [ ] Ajouter champ `minDifficulty` (nullable int) sur MonsterItem : drop uniquement si difficulte >= X (pour Heroique/Mythique)
-- [ ] Creer 4-6 items legendaires exclusifs lies aux boss existants dans les fixtures
-- [ ] Configurer les LootTable des boss avec au moins 1 drop garanti legendaire
-- [ ] Badge visuel "Legendaire" dans l'inventaire (couleur doree sur les items rarity=legendary)
+### ~~37 — Loot exclusif et rarete etendue~~ ✅ FAIT
 
 ---
 

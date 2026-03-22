@@ -29,20 +29,33 @@ class LootGenerator implements EventSubscriberInterface
         $this->generateLoot($event->getMob());
     }
 
-    protected function generateLoot(Mob $mob)
+    protected function generateLoot(Mob $mob): void
     {
         $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
+        $monsterDifficulty = $mob->getMonster()->getDifficulty();
 
         $items = [];
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
+            if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
+                continue;
+            }
+
+            if ($monsterItem->isGuaranteed()) {
+                $item = new PlayerItem();
+                $item->setMob($mob);
+                $item->setGenericItem($monsterItem->getItem());
+                $mob->addItem($item);
+                $this->entityManager->persist($item);
+
+                continue;
+            }
+
             $adjustedProbability = min(100, (int) round($monsterItem->getProbability() * $dropMultiplier));
             if (random_int(0, 99) < $adjustedProbability) {
                 $item = new PlayerItem();
                 $item->setMob($mob);
                 $item->setGenericItem($monsterItem->getItem());
-
                 $mob->addItem($item);
-
                 $this->entityManager->persist($item);
             }
         }

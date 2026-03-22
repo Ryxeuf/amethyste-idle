@@ -425,3 +425,16 @@
 - [x] HUD dans `game.html.twig` : badge "Events" avec compteur et liste hover des events actifs
 - [x] Tests unitaires : GameEventAnnouncementHandler, GameEventExecutor (dispatch event)
 - [x] PHPStan OK, PHP-CS-Fixer OK, PHPUnit 318 tests OK
+
+## 37 — Loot exclusif et rarete etendue (2026-03-22) ✅
+
+> Enrichissement du systeme de loot : drops garantis, filtrage par difficulte, items legendaires exclusifs.
+
+- [x] Champ `guaranteed` (bool) sur MonsterItem : drop garanti (100%) independamment de la probabilite
+- [x] Champ `minDifficulty` (nullable int) sur MonsterItem : drop uniquement si difficulte monstre >= seuil
+- [x] Migration SQL (ALTER TABLE game_monster_items ADD COLUMN guaranteed, min_difficulty)
+- [x] LootGenerator mis a jour : gestion guaranteed (skip roll) + filtrage minDifficulty
+- [x] 4 items legendaires crees : Anneau de serre de griffon, Heaume cornu du minotaure, Bouclier coeur de golem, Ceinture du roi troll
+- [x] Drops legendaires garantis sur le boss Dragon (dragon_fang_blade, dragon_scale_armor)
+- [x] Drops legendaires rares (3%) sur monstres haut niveau (griffon, minotaure, golem, troll) avec minDifficulty=3
+- [x] Badge visuel legendaire deja operationnel (fond dore, bordure doree via inv-tooltip-rarity--legendary)
