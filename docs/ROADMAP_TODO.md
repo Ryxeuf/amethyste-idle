@@ -39,7 +39,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 13 Prerequis de quetes et chaines (FAIT)                          │
   ├─ ✅ 14 Respec basique (FAIT)                                       │
   ├─ ✅ 15 Consommables de base (FAIT)                                  │
-  ├─ 16 Materia complement (8 nouvelles)                              │
+  ├─ ✅ 16 Materia complement (8 nouvelles) (FAIT)                     │
   ├─ ✅ 17 Equipement tier 1 Starter (FAIT)                             │
   ├─ ✅ 18 Commandes chat slash (FAIT)                                  │
   ├─ ✅ 19 Profil joueur public (FAIT)                                          │
@@ -207,16 +207,7 @@ VAGUE 6 — Long terme
 
 ---
 
-### 16 — Materia complement — 8 nouvelles (M | ★★★)
-
-> Aucun prerequis. Enrichit le combat directement (10 existantes → 18). Prerequis : ∅
-
-- [ ] 8 nouvelles materia (1 par element : basique tier 2)
-  - Feu: Combustion, Eau: Brume glaciale, Air: Eclair en chaine
-  - Terre: Mur de pierre, Metal: Riposte d'acier, Bete: Morsure sauvage
-  - Lumiere: Benediction, Ombre: Drain vital
-- [ ] Sorts associes dans SpellFixtures (si non existants)
-- [ ] Lien materia → skill unlock dans les arbres de talent existants
+### ~~16 — Materia complement — 8 nouvelles~~ ✅ FAIT
 
 ---
 

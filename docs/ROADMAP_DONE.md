@@ -399,3 +399,13 @@
 - [x] Messages contextuels (alerte quand >= 80%, erreur quand limite atteinte)
 - [x] 7 tests unitaires (sous la limite, a la limite exacte, au-dessus, deja acquis, constante)
 - [x] PHPStan OK, PHP-CS-Fixer OK, 323 tests OK
+
+## 16 — Materia complement — 8 nouvelles (2026-03-22) ✅
+
+> 8 nouvelles materias tier 2 (1 par element), enrichit le combat de 10 → 18 materias.
+
+- [x] 7 nouveaux sorts dans SpellFixtures : Brume glaciale (eau), Eclair en chaine (air), Mur de pierre (terre), Riposte d'acier (metal), Morsure sauvage (bete), Benediction (lumiere), Drain vital (ombre) + Combustion (feu, existait deja)
+- [x] 8 nouveaux items materia tier 2 dans ItemFixtures (rarete Rare, level 2, prix 150-180 or, 10-15 utilisations)
+- [x] 7 nouveaux skill unlock dans SkillFixtures : hydromancer, stormcaller, geomancer, soldier, hunter, paladin, assassin (berserker existait deja pour Combustion)
+- [x] YAML materia.yaml mis a jour pour coherence
+- [x] PHPStan OK, PHP-CS-Fixer OK
