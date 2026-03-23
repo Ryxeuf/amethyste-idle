@@ -10,6 +10,7 @@ use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Map\SpriteConfigProvider;
 use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\GameEngine\Player\PnjDialogParser;
+use App\GameEngine\Quest\PnjQuestIndicatorResolver;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
@@ -29,6 +30,7 @@ class MapApiController extends AbstractController
         private readonly Packages $packages,
         private readonly SpriteConfigProvider $spriteConfigProvider,
         private readonly MobRepository $mobRepository,
+        private readonly PnjQuestIndicatorResolver $pnjQuestIndicatorResolver,
     ) {
     }
 
@@ -126,8 +128,11 @@ class MapApiController extends AbstractController
             ];
         }
 
+        $pnjEntities = $this->entityManager->getRepository(Pnj::class)->findBy(['map' => $map]);
+        $questIndicators = $this->pnjQuestIndicatorResolver->resolveIndicators($pnjEntities, $player);
+
         $pnjs = [];
-        foreach ($this->entityManager->getRepository(Pnj::class)->findBy(['map' => $map]) as $pnj) {
+        foreach ($pnjEntities as $pnj) {
             $coords = explode('.', $pnj->getCoordinates() ?? '0.0');
             $ex = (int) ($coords[0] ?? 0);
             $ey = (int) ($coords[1] ?? 0);
@@ -147,6 +152,7 @@ class MapApiController extends AbstractController
                 'x' => $ex,
                 'y' => $ey,
                 'spriteKey' => $spriteKey,
+                'questIndicator' => $questIndicators[$pnj->getId()] ?? null,
             ];
         }
 
