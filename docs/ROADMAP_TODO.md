@@ -1,7 +1,7 @@
 # Roadmap a venir — Amethyste-Idle
 
 > Toutes les taches restantes a implementer, organisees en 6 vagues de priorite.
-> Numerotation unifiee : chaque tache a un identifiant unique (01 a 77).
+> Numerotation unifiee : chaque tache a un identifiant unique (01 a 103).
 > Derniere mise a jour : 2026-03-23
 
 ---
@@ -143,96 +143,7 @@ VAGUE 6 — Long terme
 
 ## Vague 1 — Fondations & Quick Wins
 
-> **25 taches** sans aucun prerequis, toutes realisables immediatement.
-> Organisees en 5 pistes paralleles. Toutes les pistes sont independantes entre elles.
-> Toutes les taches au sein d'une meme piste sont aussi independantes entre elles (sauf mention contraire).
-
----
-
-## Piste A — Dette technique & performance (‖)
-
-
----
-
-### ~~03 — Optimisation queries N+1~~ ✅ FAIT
-
----
-
-## Piste B — Corrections gameplay core (‖)
-
-### ~~05 — Consolidation craft~~ ✅ FAIT
-
----
-
-### ~~06 — Materia unlock verification~~ ✅ FAIT
-
----
-
-### ~~12 — Recompenses de quetes completes~~ ✅ FAIT
-
----
-
-### ~~13 — Prerequis de quetes et chaines~~ ✅ FAIT
-
----
-
-### ~~14 — Respec basique~~ ✅ FAIT
-
----
-
-### ~~25 — Boutiques PNJ fixtures~~ ✅ FAIT
-
----
-
-## Piste C — Combat polish (‖)
-
----
-
-### ~~09 — Icones statuts timeline combat~~ ✅ FAIT
-
----
-
-### ~~10 — Indicateur difficulte monstres~~ ✅ FAIT
-
----
-
-### ~~11 — Recompenses uniques de boss~~ ✅ FAIT
-
----
-
-## Piste D — Contenu de base (‖)
-
-### ~~15 — Consommables de base~~ ✅ FAIT
-
----
-
-### ~~16 — Materia complement — 8 nouvelles~~ ✅ FAIT
-
----
-
-### ~~17 — Equipement tier 1 Starter~~ ✅ FAIT
-
----
-
-## Piste E — Social & systemes transverses (‖)
-
-### ~~18 — Commandes chat slash~~ ✅ FAIT
-
----
-
-### ~~19 — Profil joueur public~~ ✅ FAIT
-
----
-
-### ~~20 — Horloge in-game & API temps~~ ✅ FAIT
-
----
-
-### ~~21 — GameEvent executor~~ ✅ FAIT
-
----
-
-### ~~22 — Factions & reputation — entites~~ ✅ FAIT
+> **25 taches** initiales, **24 completees**, 1 restante.
 
 ---
 
@@ -248,24 +159,15 @@ VAGUE 6 — Long terme
 
 ---
 
-### ~~24 — Notifications toast in-game~~ ✅ FAIT
-
-
----
-
 ## Vague 2 — Systemes core completes
 
-> **20 taches** qui dependent de la Vague 1.
+> **20 taches** initiales, **10 completees**, 10 restantes.
 > Organisees en 5 pistes paralleles.
 > Les pistes sont independantes entre elles. Les dependances intra-piste sont indiquees.
 
 ---
 
 ## Piste A — Donnees & fixtures (‖)
-
-### ~~26 — Recettes de craft fixtures~~ ✅ FAIT
-
-### ~~27 — Tracking quetes collect/craft~~ ✅ FAIT
 
 ### 28 — Monstres tier 1 — 8 mobs elementaires (M | ★★★)
 > 20 monstres existent, on en ajoute 8 pour couvrir chaque element. Prerequis : ← 15
@@ -311,10 +213,6 @@ VAGUE 6 — Long terme
 - [ ] 2-3 quetes fixtures : 1 livraison (apporter item a un PNJ), 1 exploration (atteindre un lieu)
 - [ ] Tests unitaires : progression livraison, progression exploration
 
-### ~~32 — Journal de quetes enrichi~~ ✅ FAIT
-
-### ~~41 — Indicateurs quetes sur PNJ~~ ✅ FAIT
-
 ---
 
 ## Piste C — Monde vivant & events (‖)
@@ -341,19 +239,9 @@ VAGUE 6 — Long terme
 - [ ] Route API `GET /api/map/weather?mapId=X` (ou inclure dans `/api/map/config`)
 - [ ] Topic Mercure `map/weather` pour broadcast changement meteo en temps reel
 
-### ~~35 — Annonces Mercure evenements~~ ✅ FAIT
-
-### ~~36 — Gains et recompenses reputation~~ ✅ FAIT
-
-### ~~37 — Loot exclusif et rarete etendue~~ ✅ FAIT
-
 ---
 
 ## Piste D — Social & progression (‖)
-
-### ~~38 — Liste d'amis~~ ✅ FAIT
-
-### ~~39 — Limite points multi-domaine~~ ✅ FAIT
 
 ### 40 — Synergies cross-domaine (M | ★★★)
 > Les bonus s'accumulent deja cross-domaine. Il faut des bonus explicites pour encourager le multi-domaine.
@@ -390,8 +278,6 @@ VAGUE 6 — Long terme
 - [ ] Extraire `EntitySynchronizer` : creation/mise a jour des entites (portails, mobs, spots, coffres) depuis les objets TMX
 - [ ] Refactorer `TerrainImportCommand` pour deleguer a ces services
 - [ ] Verifier que `app:terrain:import` fonctionne identiquement apres refactoring
-
-### ~~45 — Portraits de personnages~~ ✅ FAIT
 
 ---
 
