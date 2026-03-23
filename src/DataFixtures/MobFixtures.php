@@ -55,10 +55,12 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             'werewolf_1' => [
                 'coordinates' => '18.12',
                 'monster' => 'werewolf',
+                'nocturnal' => true,
             ],
             'banshee_1' => [
                 'coordinates' => '22.8',
                 'monster' => 'banshee',
+                'nocturnal' => true,
             ],
             'griffin_1' => [
                 'coordinates' => '28.18',
@@ -122,10 +124,12 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             'specter_1' => [
                 'coordinates' => '80.40',
                 'monster' => 'specter',
+                'nocturnal' => true,
             ],
             'banshee_2' => [
                 'coordinates' => '93.32',
                 'monster' => 'banshee',
+                'nocturnal' => true,
             ],
             // Niveau 3 — distance éloignée (15-20 cases)
             'fire_elemental_1' => [
@@ -139,6 +143,7 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             'werewolf_2' => [
                 'coordinates' => '72.42',
                 'monster' => 'werewolf',
+                'nocturnal' => true,
             ],
             'troll_2' => [
                 'coordinates' => '98.25',
@@ -176,6 +181,7 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             $mob->setMonster($monster);
             $mob->setLife($monster->getLife());
             $mob->setLevel($monster->getLevel());
+            $mob->setNocturnal($data['nocturnal'] ?? false);
             $mob->setCreatedAt(new \DateTime());
             $mob->setUpdatedAt(new \DateTime());
 

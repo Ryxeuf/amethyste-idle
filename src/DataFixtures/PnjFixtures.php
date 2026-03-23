@@ -16,35 +16,43 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
     private function getShopConfigs(): array
     {
         return [
-            // Gérard le Forgeron — armes et armures
+            // Gérard le Forgeron — armes et armures (ouvert de 8h à 20h)
             0 => [
                 'items' => ['short-sword', 'long-sword', 'leather-armor', 'leather-boots', 'leather-hat'],
                 'greeting' => 'Bienvenue dans ma forge ! J\'ai les meilleures armes et armures de la région.',
                 'shop_prompt' => 'Voyons ce que j\'ai en stock pour vous.',
+                'opensAt' => 8,
+                'closesAt' => 20,
             ],
-            // Élise la Guérisseuse — potions et soins
+            // Élise la Guérisseuse — potions et soins (toujours ouverte)
             1 => [
                 'items' => ['life-potion', 'healing-potion-major', 'antidote', 'mushroom', 'beer-pint'],
                 'greeting' => 'Bonjour, voyageur. Vous avez l\'air fatigué... J\'ai ce qu\'il vous faut pour reprendre des forces.',
                 'shop_prompt' => 'Voici mes remèdes et potions.',
             ],
-            // Pierre le Tavernier — consommables et boissons
+            // Pierre le Tavernier — consommables et boissons (ouvert de 10h à 2h)
             4 => [
                 'items' => ['beer-pint', 'bread', 'grilled-meat', 'stew', 'mushroom', 'life-potion'],
                 'greeting' => 'Holà, aventurier ! Installez-vous au comptoir. Qu\'est-ce que je vous sers ?',
                 'shop_prompt' => 'Voici la carte de ma taverne.',
+                'opensAt' => 10,
+                'closesAt' => 2,
             ],
-            // Marie la Herboriste — plantes et outils herboristerie
+            // Marie la Herboriste — plantes et outils herboristerie (ouverte de 6h à 18h)
             7 => [
                 'items' => ['plant-mint', 'plant-sage', 'plant-lavender', 'plant-thyme', 'plant-rosemary', 'sickle-bronze', 'sickle-iron'],
                 'greeting' => 'Bonjour ! Mon jardin regorge de plantes médicinales. Vous en cherchez ?',
                 'shop_prompt' => 'Regardez mes herbes et mes outils de récolte.',
+                'opensAt' => 6,
+                'closesAt' => 18,
             ],
-            // Émilie la Marchande — outils variés et ressources de base
+            // Émilie la Marchande — outils variés et ressources de base (ouverte de 8h à 22h)
             13 => [
                 'items' => ['pickaxe-bronze', 'pickaxe-iron', 'sickle-bronze', 'fishing-rod-bronze', 'fishing-rod-iron', 'skinning-knife-bronze', 'skinning-knife-iron'],
                 'greeting' => 'Bienvenue chez moi ! J\'ai tout ce dont un aventurier a besoin pour ses expéditions.',
                 'shop_prompt' => 'Voici mon inventaire d\'outils et de matériel.',
+                'opensAt' => 8,
+                'closesAt' => 22,
             ],
         ];
     }
@@ -108,6 +116,12 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             // Configurer la boutique si ce PNJ est un marchand
             if (isset($shopConfigs[$i])) {
                 $pnj->setShopItems($shopConfigs[$i]['items']);
+                if (isset($shopConfigs[$i]['opensAt'])) {
+                    $pnj->setOpensAt($shopConfigs[$i]['opensAt']);
+                }
+                if (isset($shopConfigs[$i]['closesAt'])) {
+                    $pnj->setClosesAt($shopConfigs[$i]['closesAt']);
+                }
             }
 
             // Création d'un dialogue unique pour chaque PNJ

@@ -11,6 +11,7 @@ use App\GameEngine\Map\SpriteConfigProvider;
 use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\GameEngine\Player\PnjDialogParser;
 use App\GameEngine\Quest\PnjQuestIndicatorResolver;
+use App\GameEngine\World\GameTimeService;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
@@ -31,6 +32,7 @@ class MapApiController extends AbstractController
         private readonly SpriteConfigProvider $spriteConfigProvider,
         private readonly MobRepository $mobRepository,
         private readonly PnjQuestIndicatorResolver $pnjQuestIndicatorResolver,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -111,8 +113,17 @@ class MapApiController extends AbstractController
             ];
         }
 
+        $timeOfDay = $this->gameTimeService->getTimeOfDay();
+        $isNight = $timeOfDay === 'night';
+        $gameHour = $this->gameTimeService->getHour();
+
         $mobs = [];
         foreach ($this->mobRepository->findByMapWithMonster($map) as $mob) {
+            // Filtrer les mobs nocturnes le jour et les mobs diurnes la nuit
+            if ($mob->isNocturnal() && !$isNight) {
+                continue;
+            }
+
             $coords = explode('.', $mob->getCoordinates() ?? '0.0');
             $ex = (int) ($coords[0] ?? 0);
             $ey = (int) ($coords[1] ?? 0);
@@ -154,7 +165,7 @@ class MapApiController extends AbstractController
                 $spriteKey = 'pnj_default';
             }
 
-            $pnjs[] = [
+            $pnjData = [
                 'id' => $pnj->getId(),
                 'name' => $pnj->getName(),
                 'x' => $ex,
@@ -162,6 +173,12 @@ class MapApiController extends AbstractController
                 'spriteKey' => $spriteKey,
                 'questIndicator' => $questIndicators[$pnj->getId()] ?? null,
             ];
+
+            if ($pnj->isMerchant()) {
+                $pnjData['shopOpen'] = $pnj->isShopOpen($gameHour);
+            }
+
+            $pnjs[] = $pnjData;
         }
 
         $portals = [];
@@ -188,6 +205,11 @@ class MapApiController extends AbstractController
             'map' => $map,
             'type' => ObjectLayer::TYPE_HARVEST_SPOT,
         ]) as $spot) {
+            // Filtrer les spots de nuit pendant le jour
+            if ($spot->isNightOnly() && !$isNight) {
+                continue;
+            }
+
             $coords = explode('.', $spot->getCoordinates() ?? '0.0');
             $ex = (int) ($coords[0] ?? 0);
             $ey = (int) ($coords[1] ?? 0);
@@ -201,6 +223,7 @@ class MapApiController extends AbstractController
                 'x' => $ex,
                 'y' => $ey,
                 'available' => $spot->isAvailable(),
+                'nightOnly' => $spot->isNightOnly(),
                 'toolType' => $spot->getRequiredToolType(),
                 'respawnDelay' => $spot->getRespawnDelay(),
                 'remainingSeconds' => $spot->getRemainingRespawnSeconds(),

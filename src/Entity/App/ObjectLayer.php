@@ -96,6 +96,12 @@ class ObjectLayer
     #[ORM\Column(name: 'required_tool_type', type: 'string', length: 50, nullable: true)]
     private ?string $requiredToolType = null;
 
+    /**
+     * Si true, le spot de récolte n'est disponible que la nuit (20h-6h in-game).
+     */
+    #[ORM\Column(name: 'night_only', type: 'boolean', options: ['default' => false])]
+    private bool $nightOnly = false;
+
     public function getId(): int
     {
         return $this->id;
@@ -305,5 +311,15 @@ class ObjectLayer
     public function setRequiredToolType(?string $requiredToolType): void
     {
         $this->requiredToolType = $requiredToolType;
+    }
+
+    public function isNightOnly(): bool
+    {
+        return $this->nightOnly;
+    }
+
+    public function setNightOnly(bool $nightOnly): void
+    {
+        $this->nightOnly = $nightOnly;
     }
 }
