@@ -8,6 +8,7 @@ use App\GameEngine\Job\ButcheringManager;
 use App\GameEngine\Job\FishingManager;
 use App\GameEngine\Job\HarvestManager;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,6 +26,7 @@ class HarvestController extends AbstractController
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -55,6 +57,17 @@ class HarvestController extends AbstractController
                 'error' => 'Ce spot n\'est pas encore disponible.',
                 'remainingSeconds' => $remainingSeconds,
             ], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Vérifier si le spot est réservé à la nuit
+        if ($spot->isNightOnly()) {
+            $timeOfDay = $this->gameTimeService->getTimeOfDay();
+            if ($timeOfDay !== 'night') {
+                return $this->json(
+                    ['error' => 'Ce spot n\'est récoltable que la nuit.'],
+                    Response::HTTP_BAD_REQUEST
+                );
+            }
         }
 
         // Vérifier que le joueur possède la compétence pour ce spot
