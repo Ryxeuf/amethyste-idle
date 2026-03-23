@@ -2,7 +2,7 @@
 
 > Toutes les taches restantes a implementer, organisees en 6 vagues de priorite.
 > Numerotation unifiee : chaque tache a un identifiant unique (01 a 77).
-> Derniere mise a jour : 2026-03-21
+> Derniere mise a jour : 2026-03-23
 
 ---
 
@@ -47,7 +47,6 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 21 GameEvent executor (FAIT)                                    │
   ├─ ✅ 22 Factions & reputation (FAIT)                               │
   ├─ 23 Tests fonctionnels controleurs                                │
-  ├─ 24 Notifications toast in-game                                   │
   ├─ ✅ 24 Notifications toast in-game (FAIT)                           │
   └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
                                                                       │
@@ -352,15 +351,7 @@ VAGUE 6 — Long terme
 
 ## Piste D — Social & progression (‖)
 
-### 38 — Liste d'amis (S | ★★★)
-> Base pour toute interaction sociale recurrente (invitations groupe, messages rapides). Prerequis : ← 19
-- [ ] Entite `Friendship` (player, friend, status: pending/accepted/blocked, createdAt)
-- [ ] Migration + repository
-- [ ] FriendshipManager : sendRequest, accept, decline, block, unfriend
-- [ ] Route `GET /game/friends` : liste d'amis avec statut en ligne (derniere activite < 5 min)
-- [ ] Route `POST /game/friends/request/{id}` + `POST /game/friends/accept/{id}`
-- [ ] Notification Mercure quand un ami se connecte
-- [ ] Tests unitaires : ajout, acceptation, blocage, suppression
+### ~~38 — Liste d'amis~~ ✅ FAIT
 
 ### ~~39 — Limite points multi-domaine~~ ✅ FAIT
 

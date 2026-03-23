@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-22
+> Derniere mise a jour : 2026-03-23
 
 ---
 
@@ -497,6 +497,19 @@
 - [x] Fixtures : 3 recompenses par faction (Ami, Honore, Exalte) — remises, bonus stats, bonus combat
 - [x] Affichage recompenses debloquees/verrouillees sur la page factions
 - [x] Migration SQL : table `game_faction_rewards` + colonne `faction_id` sur `game_monsters`
+
+---
+
+## 18 — Commandes chat slash (2026-03-19) ✅
+
+> Systeme de chat avec commandes slash pour la communication entre joueurs.
+
+- [x] `ChatCommandHandler` : detection et routage de 8 commandes (/whisper, /zone, /global, /emote, /who, /help + aliases)
+- [x] `ChatManager` : envoi de messages sur 3 canaux (global, map, prive), rate limiting, sanitisation
+- [x] `ChatController` : route POST `/game/chat/send`, delegation aux handlers
+- [x] Stimulus controller `chat_controller.js` : UI multi-onglets, Mercure SSE temps reel, recherche joueur
+- [x] Entite `ChatMessage` : channel, content, sender, recipient, soft delete pour moderation
+- [x] 27 tests unitaires ChatCommandHandlerTest
 
 ---
 
