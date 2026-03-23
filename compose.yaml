@@ -77,6 +77,6 @@ volumes:
 networks:
   traefik-network:
     name: traefik-network
-    external: false
+    external: true
   internal:
     driver: bridge

@@ -32,8 +32,8 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setRace($this->getReference('race_human', Race::class));
         $playerRemy->setCreatedAt(new \DateTime());
         $playerRemy->setUpdatedAt(new \DateTime());
-        $playerRemy->addSkill($this->getReference('pyro_materia_1', Skill::class));
-        $playerRemy->addSkill($this->getReference('soldier_apprentice', Skill::class));
+        $playerRemy->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
+        $playerRemy->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
         $manager->persist($playerRemy);
         $this->addReference('player_remy', $playerRemy);
 
@@ -54,8 +54,8 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo->setUpdatedAt(new \DateTime());
 
         // Ajout des compétences
-        $playerDemo->addSkill($this->getReference('pyro_materia_1', Skill::class));
-        $playerDemo->addSkill($this->getReference('soldier_apprentice', Skill::class));
+        $playerDemo->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
+        $playerDemo->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
 
         $manager->persist($playerDemo);
         $this->addReference('player_demo', $playerDemo);
@@ -77,8 +77,8 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo2->setUpdatedAt(new \DateTime());
 
         // Ajout des compétences
-        $playerDemo2->addSkill($this->getReference('pyro_materia_1', Skill::class));
-        $playerDemo2->addSkill($this->getReference('soldier_apprentice', Skill::class));
+        $playerDemo2->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
+        $playerDemo2->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
 
         $manager->persist($playerDemo2);
         $this->addReference('player_demo_2', $playerDemo2);

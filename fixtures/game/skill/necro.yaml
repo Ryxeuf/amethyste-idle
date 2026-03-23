@@ -1,7 +1,7 @@
 App\Entity\Game\Skill:
-  necro_materia_1 (extends skill):
-    title: "Apprenti nécro"
-    slug: necro-materia-1
+  necromancer_materia_1 (extends skill):
+    title: "Apprenti nécromancien"
+    slug: necromancer-materia-1
     description: "Permet d'utiliser les matéria de nécro de niveau 1"
     requiredPoints: 0
-    domain: '@necro'
+    domain: '@necromancer'

@@ -19,7 +19,7 @@ App\Entity\Game\Item:
     element: "fire"
     spell: '@fire_ball'
     slug: 'm1-fire'
-    requirements: ['@pyro_materia_1']
+    requirements: ['@pyro_apprenti_1']
     domain: '@pyromancy'
     nbUsages: 20
   materia_flame (extends item):
@@ -29,7 +29,7 @@ App\Entity\Game\Item:
     element: "fire"
     spell: '@flame'
     slug: 'm1-fire'
-    requirements: ['@pyro_materia_1']
+    requirements: ['@pyro_apprenti_2']
     domain: '@pyromancy'
     nbUsages: 25
   materia_flamer (extends item):
@@ -40,7 +40,7 @@ App\Entity\Game\Item:
     spell: '@flamer'
     slug: 'm1-fire'
     level: 2
-    requirements: ['@pyro_materia_2']
+    requirements: ['@pyro_rang2_3']
     domain: '@pyromancy'
     nbUsages: 15
   materia_flame_rain (extends item):
@@ -51,7 +51,7 @@ App\Entity\Game\Item:
     spell: '@flame_rain'
     slug: 'm1-fire'
     level: 3
-    requirements: ['@pyro_materia_3']
+    requirements: ['@pyro_rang3_1']
     domain: '@pyromancy'
     nbUsages: 5
 
@@ -63,8 +63,8 @@ App\Entity\Game\Item:
     spell: '@wind_lame'
     slug: 'm1-wind'
     element: "air"
-    requirements: ['@white_wizard_materia_1']
-    domain: '@white_wizard'
+    requirements: ['@storm_materia_1']
+    domain: '@stormcaller'
     nbUsages: 20
 
 # EARTH
@@ -75,7 +75,7 @@ App\Entity\Game\Item:
     spell: '@stone_throw'
     slug: 'm1-earth'
     element: "earth"
-    requirements: ['@defender_materia_1']
+    requirements: ['@defender_apprenti_1']
     domain: '@defender'
     nbUsages: 20
 
@@ -88,7 +88,7 @@ App\Entity\Game\Item:
     slug: 'm1-death'
     element: "dark"
     requirements: ['@necro_materia_1']
-    domain: '@necro'
+    domain: '@necromancer'
     nbUsages: 8
 
 # NATURE
@@ -99,7 +99,7 @@ App\Entity\Game\Item:
     spell: '@liana_whip'
     slug: 'm1-nature'
     element: "beast"
-    requirements: ['@druid_materia_1']
+    requirements: ['@druid_apprenti_1']
     domain: '@druid'
     nbUsages: 15
 
@@ -111,7 +111,7 @@ App\Entity\Game\Item:
     spell: '@sharp_blade'
     slug: 'm1-metal'
     element: "metal"
-    requirements: ['@soldier_materia_1']
+    requirements: ['@soldier_apprenti_1']
     domain: '@soldier'
     nbUsages: 25
 
@@ -126,7 +126,7 @@ App\Entity\Game\Item:
     spell: '@combustion'
     slug: 'm2-combustion'
     level: 2
-    requirements: ['@berserk_materia_2']
+    requirements: ['@berserk_rang3_2']
     domain: '@berserker'
     nbUsages: 15
 

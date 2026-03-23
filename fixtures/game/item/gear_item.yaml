@@ -7,7 +7,7 @@ App\Entity\Game\Item:
     slug: 'short-sword'
     price: 80
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
-    requirements: ['@soldier_apprentice']
+    requirements: ['@soldier_apprenti_1']
     domain: '@soldier'
     nbUsages: 100
   long_sword (extends item):
@@ -18,7 +18,7 @@ App\Entity\Game\Item:
     slug: 'long-sword'
     price: 200
     gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
-    requirements: ['@soldier_apprentice']
+    requirements: ['@soldier_apprenti_1']
     domain: '@soldier'
     nbUsages: 100
   leather_boots (extends item):

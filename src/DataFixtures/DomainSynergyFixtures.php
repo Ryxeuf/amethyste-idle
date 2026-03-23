@@ -81,9 +81,9 @@ class DomainSynergyFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($synergies as $data) {
             /** @var Domain $domainA */
-            $domainA = $this->getReference($data['domainA']);
+            $domainA = $this->getReference($data['domainA'], Domain::class);
             /** @var Domain $domainB */
-            $domainB = $this->getReference($data['domainB']);
+            $domainB = $this->getReference($data['domainB'], Domain::class);
 
             $synergy = new DomainSynergy();
             $synergy->setDomainA($domainA);

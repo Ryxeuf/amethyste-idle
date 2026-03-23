@@ -10,7 +10,7 @@ App\Entity\App\Player:
     lastCoordinates: '4.7' # '85.35'
     isMoving: false
     user: '@user_demo'
-    skills: [ '@pyro_materia_1', '@soldier_apprentice' ]
+    skills: [ '@pyro_apprenti_1', '@soldier_apprenti_1' ]
     classType: 'demo'
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>
@@ -24,7 +24,7 @@ App\Entity\App\Player:
     coordinates: '85.36'
     lastCoordinates: '85.36'
     user: '@user_demo_2'
-    skills: [ '@pyro_materia_1', '@soldier_apprentice' ]
+    skills: [ '@pyro_apprenti_1', '@soldier_apprenti_1' ]
     classType: 'demo-2'
     createdAt: <( new DateTime() )>
     updatedAt: <( new DateTime() )>

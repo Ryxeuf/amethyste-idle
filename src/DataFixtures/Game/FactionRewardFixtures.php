@@ -43,7 +43,7 @@ class FactionRewardFixtures extends Fixture implements DependentFixtureInterface
 
         foreach ($rewards as $data) {
             $reward = new FactionReward();
-            $reward->setFaction($this->getReference($data['faction']));
+            $reward->setFaction($this->getReference($data['faction'], \App\Entity\Game\Faction::class));
             $reward->setRequiredTier($data['tier']);
             $reward->setRewardType($data['type']);
             $reward->setLabel($data['label']);
