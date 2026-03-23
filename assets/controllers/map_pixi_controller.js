@@ -401,7 +401,7 @@ export default class extends Controller {
         }
 
         for (const pnj of data.pnjs) {
-            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N', { name: pnj.name });
+            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N', { name: pnj.name, questIndicator: pnj.questIndicator });
         }
 
         for (const portal of (data.portals || [])) {
@@ -447,6 +447,11 @@ export default class extends Controller {
             this._entitySprites[key] = { container, x, y, type, animator: null, meta };
         }
 
+        // Quest indicator for PNJs
+        if (type === 'pnj' && meta.questIndicator) {
+            this._addQuestIndicator(container, meta.questIndicator);
+        }
+
         // Spatial hash registration
         this._addToSpatialHash(key, x, y);
     }
@@ -484,6 +489,45 @@ export default class extends Controller {
         }
 
         return PIXI.Texture.from(canvas);
+    }
+
+    _addQuestIndicator(container, indicatorType) {
+        const texture = this._getQuestIndicatorTexture(indicatorType);
+        const indicator = new PIXI.Sprite(texture);
+        indicator.anchor.set(0.5, 1);
+        indicator.position.set(this._tileSize / 2, -2);
+        container.addChild(indicator);
+    }
+
+    _getQuestIndicatorTexture(indicatorType) {
+        const cacheKey = `quest_indicator_${indicatorType}`;
+        if (this._markerTextureCache.has(cacheKey)) {
+            return this._markerTextureCache.get(cacheKey);
+        }
+
+        const size = 16;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        const symbol = indicatorType === 'available' ? '!' : '?';
+        const color = indicatorType === 'available' ? '#FFD700' : '#C0C0C0';
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 1, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = color;
+        ctx.font = 'bold 12px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(symbol, size / 2, size / 2);
+
+        const texture = PIXI.Texture.from(canvas);
+        this._markerTextureCache.set(cacheKey, texture);
+        return texture;
     }
 
     _createPlayerMarker() {
