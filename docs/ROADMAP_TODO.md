@@ -46,7 +46,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
   ├─ ✅ 21 GameEvent executor (FAIT)                                    │
   ├─ ✅ 22 Factions & reputation (FAIT)                               │
-  ├─ 23 Tests fonctionnels controleurs                                │
+  ├─ ✅ 23 Tests fonctionnels controleurs (FAIT)                       │
   ├─ ✅ 24 Notifications toast in-game (FAIT)                           │
   └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
                                                                       │
@@ -141,21 +141,9 @@ VAGUE 6 — Long terme
 
 ---
 
-## Vague 1 — Fondations & Quick Wins
+## Vague 1 — Fondations & Quick Wins ✅
 
-> **25 taches** initiales, **24 completees**, 1 restante.
-
----
-
-### 23 — Tests fonctionnels controleurs (M | ★★★)
-
-> 0 test fonctionnel pour shop, inventory, skills, bestiary, achievements. Fragilise la base. Prerequis : ∅
-
-- [ ] Test ShopController : achat OK, fonds insuffisants, item inexistant
-- [ ] Test InventoryController : equiper, desequiper, utiliser consommable
-- [ ] Test SkillController : acquerir skill, XP insuffisante, prerequis manquant
-- [ ] Test BestiaryController : acces page, filtres, affichage paliers
-- [ ] Test AchievementController : acces page, succes debloque vs verrouilles
+> **25 taches** initiales, **25 completees**. Vague terminee.
 
 ---
 

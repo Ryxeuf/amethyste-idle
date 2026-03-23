@@ -536,3 +536,16 @@
 - [x] 10 portraits configures dans PnjFixtures pour les PNJ narratifs principaux
 - [x] Formulaire admin PNJ : champ portrait ajoute
 - [x] Fallback : 10 icones emoji par class_type (villager, merchant, guard, noble, warrior, mage, healer, blacksmith, farmer, hunter)
+
+---
+
+## 23 — Tests fonctionnels controleurs (2026-03-23) ✅
+
+> 18 tests fonctionnels couvrant les 5 controleurs gameplay sans couverture.
+
+- [x] ShopControllerTest (5 tests) : achat OK, fonds insuffisants, item pas en boutique, boutique introuvable, vente soulbound refusee
+- [x] InventoryControllerTest (5 tests) : equiper OK, equiper item introuvable, desequiper OK, desequiper introuvable, utiliser consommable (spell + decrementation usages)
+- [x] AcquireControllerTest (3 tests) : acquisition OK, skill introuvable, domaine introuvable
+- [x] BestiaryControllerTest (3 tests) : rendu avec donnees correctes, redirection sans joueur, zero decouvertes
+- [x] AchievementControllerTest (2 tests) : rendu avec categories, comptage succes completes
+- [x] Tous les tests existants (342 unit + 51 functional) toujours verts
