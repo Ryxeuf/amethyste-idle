@@ -549,3 +549,12 @@
 - [x] BestiaryControllerTest (3 tests) : rendu avec donnees correctes, redirection sans joueur, zero decouvertes
 - [x] AchievementControllerTest (2 tests) : rendu avec categories, comptage succes completes
 - [x] Tous les tests existants (342 unit + 51 functional) toujours verts
+
+## 43 — Tests integration events (2026-03-23) ✅
+
+> 19 tests d'integration verifiant que les events declenchent correctement tous les listeners concernes.
+
+- [x] MobDeadEventIntegrationTest (7 tests) : BestiaryListener + AchievementTracker + QuestMonsterTrackingListener + ReputationListener — triggers simultanes, joueurs morts ignores, pas de fight → early return, progression/completion succes, gain reputation
+- [x] SpotHarvestEventIntegrationTest (5 tests) : DomainExperienceEvolver + QuestCollectTrackingListener — XP domaine + tracking quete, pas de domaine → skip XP, items vides, items multiples
+- [x] QuestCompletedEventIntegrationTest (7 tests) : AchievementTracker + ReputationListener — progression succes + gain reputation, pas de recompense rep, faction inconnue, completion succes avec gils, succes deja complete, reputations multiples
+- [x] PHPStan OK, PHP-CS-Fixer OK, 430 tests OK (hors E2E)
