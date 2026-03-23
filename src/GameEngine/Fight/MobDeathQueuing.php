@@ -33,6 +33,8 @@ class MobDeathQueuing implements EventSubscriberInterface
         $respawn->setCoordinates($mob->getCoordinates());
         $respawn->setMap($mob->getMap());
         $respawn->setMonster($monster);
+        $respawn->setNocturnal($mob->isNocturnal());
+        $respawn->setSpawnWeather($mob->getSpawnWeather());
 
         $this->entityManager->persist($respawn);
         $this->entityManager->flush();

@@ -7,6 +7,7 @@ use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
+use App\Enum\WeatherType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -70,6 +71,12 @@ class Mob implements CharacterInterface
      */
     #[ORM\Column(name: 'nocturnal', type: 'boolean', options: ['default' => false])]
     private bool $nocturnal = false;
+
+    /**
+     * Si non-null, le mob n'apparait que sous cette condition météo.
+     */
+    #[ORM\Column(name: 'spawn_weather', type: 'string', length: 20, nullable: true, enumType: WeatherType::class)]
+    private ?WeatherType $spawnWeather = null;
 
     public function getName(): string
     {
@@ -181,5 +188,15 @@ class Mob implements CharacterInterface
     public function setNocturnal(bool $nocturnal): void
     {
         $this->nocturnal = $nocturnal;
+    }
+
+    public function getSpawnWeather(): ?WeatherType
+    {
+        return $this->spawnWeather;
+    }
+
+    public function setSpawnWeather(?WeatherType $spawnWeather): void
+    {
+        $this->spawnWeather = $spawnWeather;
     }
 }

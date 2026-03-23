@@ -70,6 +70,18 @@ class DamageCalculator
     }
 
     /**
+     * Applique le modificateur météo-élémentaire.
+     */
+    public function applyWeatherModifier(int $damage, float $modifier): int
+    {
+        if ($modifier === 1.0 || $damage <= 0) {
+            return $damage;
+        }
+
+        return max(0, (int) round($damage * $modifier));
+    }
+
+    /**
      * Applique le multiplicateur berserk.
      */
     public function applyBerserkModifier(int $damage): int

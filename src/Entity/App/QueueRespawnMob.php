@@ -4,6 +4,7 @@ namespace App\Entity\App;
 
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\Game\Monster;
+use App\Enum\WeatherType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -29,6 +30,12 @@ class QueueRespawnMob
     #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'queueRespawnMobs')]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
     private ?Map $map;
+
+    #[ORM\Column(name: 'nocturnal', type: 'boolean', options: ['default' => false])]
+    private bool $nocturnal = false;
+
+    #[ORM\Column(name: 'spawn_weather', type: 'string', length: 20, nullable: true, enumType: WeatherType::class)]
+    private ?WeatherType $spawnWeather = null;
 
     public function getId(): int
     {
@@ -68,5 +75,25 @@ class QueueRespawnMob
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function isNocturnal(): bool
+    {
+        return $this->nocturnal;
+    }
+
+    public function setNocturnal(bool $nocturnal): void
+    {
+        $this->nocturnal = $nocturnal;
+    }
+
+    public function getSpawnWeather(): ?WeatherType
+    {
+        return $this->spawnWeather;
+    }
+
+    public function setSpawnWeather(?WeatherType $spawnWeather): void
+    {
+        $this->spawnWeather = $spawnWeather;
     }
 }
