@@ -33,7 +33,7 @@ class CraftingController extends AbstractController
             return $this->redirectToRoute('app_game');
         }
 
-        $crafts = ['alchemy', 'blacksmithing', 'cooking', 'enchanting'];
+        $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier'];
         $recipesByCraft = [];
         $canCraftByCraft = [];
         $craftLevels = [];

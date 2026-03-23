@@ -52,7 +52,7 @@ VAGUE 1 (aucun prerequis — tout en parallele)
   └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
                                                                       │
 VAGUE 2 (depend de Vague 1)                                           │
-  ┌─ 26 Recettes de craft fixtures ← 05                               │
+  ┌─ ✅ 26 Recettes de craft fixtures (FAIT) ← 05                      │
   ├─ ✅ 27 Tracking quetes collect/craft (FAIT)                        │
   ├─ 28 Monstres tier 1 (8 mobs) ← 15                                │
   ├─ 29 Equipement tier 2 ← 17                                        │
@@ -264,15 +264,7 @@ VAGUE 6 — Long terme
 
 ## Piste A — Donnees & fixtures (‖)
 
-### 26 — Recettes de craft fixtures (M | ★★★)
-> Le systeme de craft existe mais 0 recette en base. Sans donnees, le craft est inutilisable. Prerequis : ← 05
-- [ ] Creer CraftRecipeFixtures avec ~10 recettes de base :
-  - Forge : epee en fer, bouclier en fer, casque en fer (ingredients : minerai de fer)
-  - Alchimie : potion de soin, potion de mana (ingredients : herbes)
-  - Tannerie : armure en cuir (ingredients : cuir brut)
-  - Joaillerie : anneau simple (ingredients : minerai d'argent/or)
-- [ ] Verifier que les items ingredients existent dans ItemFixtures (creer si manquants)
-- [ ] Tester manuellement : acceder a un atelier, crafter un item, verifier inventaire
+### ~~26 — Recettes de craft fixtures~~ ✅ FAIT
 
 ### ~~27 — Tracking quetes collect/craft~~ ✅ FAIT
 
