@@ -10,6 +10,7 @@ use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Map\SpriteConfigProvider;
 use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\GameEngine\Player\PnjDialogParser;
+use App\GameEngine\World\WeatherService;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
@@ -29,6 +30,7 @@ class MapApiController extends AbstractController
         private readonly Packages $packages,
         private readonly SpriteConfigProvider $spriteConfigProvider,
         private readonly MobRepository $mobRepository,
+        private readonly WeatherService $weatherService,
     ) {
     }
 
@@ -41,12 +43,18 @@ class MapApiController extends AbstractController
 
         $tilesets = $this->extractTilesets($map);
 
+        $weather = $this->weatherService->getCurrentWeather($map);
+
         return $this->json([
             'tileSize' => 32,
             'viewRadius' => 15,
             'mapId' => $map->getId(),
             'tilesets' => $tilesets,
             'sprites' => $this->spriteConfigProvider->getFullConfig(),
+            'weather' => [
+                'type' => $weather->value,
+                'label' => $weather->label(),
+            ],
         ]);
     }
 

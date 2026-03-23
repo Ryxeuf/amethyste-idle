@@ -2,6 +2,7 @@
 
 namespace App\Entity\App;
 
+use App\Enum\WeatherType;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -76,6 +77,12 @@ class Map
     /** @var Collection<int, Pnj> */
     #[ORM\OneToMany(targetEntity: Pnj::class, mappedBy: 'map')]
     private Collection $pnjs;
+
+    #[ORM\Column(type: 'string', length: 20, nullable: true, enumType: WeatherType::class)]
+    private ?WeatherType $currentWeather = null;
+
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $weatherChangedAt = null;
 
     public function getAreaByCoordinates(int $x, int $y): ?Area
     {
@@ -176,5 +183,25 @@ class Map
     public function getPnjs(): Collection
     {
         return $this->pnjs;
+    }
+
+    public function getCurrentWeather(): ?WeatherType
+    {
+        return $this->currentWeather;
+    }
+
+    public function setCurrentWeather(?WeatherType $currentWeather): void
+    {
+        $this->currentWeather = $currentWeather;
+    }
+
+    public function getWeatherChangedAt(): ?\DateTimeImmutable
+    {
+        return $this->weatherChangedAt;
+    }
+
+    public function setWeatherChangedAt(?\DateTimeImmutable $weatherChangedAt): void
+    {
+        $this->weatherChangedAt = $weatherChangedAt;
     }
 }

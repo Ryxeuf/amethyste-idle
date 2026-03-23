@@ -387,3 +387,16 @@
 - [x] 7 pieces d'equipement : epee en bois, casque rouille, tunique rembourrée, jambieres en tissu, sandales usees, gants de travail, bouclier en bois
 - [x] Prix bas (8-20 or), duree de vie 60 utilisations, aucun prerequis de competence
 - [x] Ajout aux loot tables des monstres lvl 1 (slime, goblin, bat, giant_rat, zombie) avec probabilites 2-6%
+
+## 34 — Meteo backend & diffusion (2026-03-23) ✅
+
+> Systeme meteo aleatoire pondere par saison, diffuse en temps reel via Mercure.
+
+- [x] Enum PHP `WeatherType` : sunny, cloudy, rain, storm, fog, snow (avec labels FR)
+- [x] Champs `currentWeather` (WeatherType) + `weatherChangedAt` (datetime_immutable) sur l'entite `Map`
+- [x] Migration SQL (ALTER TABLE map ADD COLUMN)
+- [x] `WeatherService` : `changeWeather(Map)` avec probabilites ponderees par saison (spring/summer/autumn/winter)
+- [x] Commande `app:weather:tick` qui change la meteo sur toutes les cartes + broadcast Mercure
+- [x] Ajout au `DefaultScheduleProvider` (cron `*/15 * * * *`)
+- [x] Meteo incluse dans `/api/map/config` (champ `weather: {type, label}`)
+- [x] Topic Mercure `map/weather` pour broadcast changement meteo en temps reel

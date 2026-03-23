@@ -60,7 +60,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 31 Types quetes livraison/exploration ← 27
   ├─ ✅ 32 Journal de quetes enrichi (FAIT) ← 13
   ├─ 33 Impact gameplay jour/nuit ← 20
-  ├─ 34 Meteo backend & diffusion ← 20
+  ├─ ✅ 34 Meteo backend & diffusion (FAIT) ← 20
   ├─ 35 Annonces Mercure evenements ← 21
   ├─ 36 Gains et recompenses reputation ← 22
   ├─ 37 Loot exclusif et rarete etendue ← 07
@@ -367,16 +367,7 @@ VAGUE 6 — Long terme
 - [ ] Augmenter l'alpha de l'overlay nuit (0.35 → 0.45) pour renforcer l'effet visuel
 - [ ] Migration SQL (3 champs)
 
-### 34 — Meteo backend & diffusion (S | ★★)
-> Systeme autonome, pas de prerequis strict (mais MV-1 recommande pour coherence). Prerequis : ← 20
-- [ ] Enum PHP `WeatherType` : sunny, cloudy, rain, storm, fog, snow
-- [ ] Champ `currentWeather` (string) + `weatherChangedAt` (datetime) sur l'entite `Map`
-- [ ] Migration SQL
-- [ ] `WeatherService` : `changeWeather(Map)` — tire une meteo aleatoire ponderee par zone/saison
-- [ ] Commande Scheduler `app:weather:tick` (toutes les 15-30 min) qui appelle `WeatherService` sur chaque map
-- [ ] Ajouter au `DefaultScheduleProvider`
-- [ ] Route API `GET /api/map/weather?mapId=X` (ou inclure dans `/api/map/config`)
-- [ ] Topic Mercure `map/weather` pour broadcast changement meteo en temps reel
+### ~~34 — Meteo backend & diffusion~~ ✅ FAIT
 
 ### 35 — Annonces Mercure evenements (S | ★★★)
 > Les joueurs n'ont aucun moyen de savoir qu'un evenement est en cours. Prerequis : EG-1. Prerequis : ← 21

@@ -23,6 +23,8 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 RecurringMessage::cron('* * * * *', new RunCommandMessage('api:mob:move')),
                 // GameEvent : active/complète les événements planifiés (toutes les 60s)
                 RecurringMessage::cron('* * * * *', new RunCommandMessage('app:game-event:execute')),
+                // Weather : change la météo sur chaque carte (toutes les 15 minutes)
+                RecurringMessage::cron('*/15 * * * *', new RunCommandMessage('app:weather:tick')),
             );
     }
 }
