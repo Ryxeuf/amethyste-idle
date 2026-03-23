@@ -87,6 +87,34 @@ class InventoryHelper
         return false;
     }
 
+    /**
+     * Remove up to $quantity items matching the given slug from the bag inventory.
+     *
+     * @return int The number of items actually removed
+     */
+    public function removeItemBySlug(string $slug, int $quantity = 1): int
+    {
+        $bag = $this->playerHelper->getBagInventory();
+        $removed = 0;
+
+        foreach ($bag->getItems()->toArray() as $item) {
+            if ($removed >= $quantity) {
+                break;
+            }
+            if ($item->getGenericItem()->getSlug() === $slug) {
+                $bag->removeItem($item);
+                $this->entityManager->remove($item);
+                ++$removed;
+            }
+        }
+
+        if ($removed > 0) {
+            $this->entityManager->flush();
+        }
+
+        return $removed;
+    }
+
     private function hasItemInInventory(Inventory $inventory, PlayerItem $playerItem): bool
     {
         foreach ($inventory->getItems() as $inventoryItem) {

@@ -255,6 +255,50 @@ class QuestFixtures extends Fixture
                     ],
                 ],
             ],
+            // --- Quete de livraison ---
+            'quest_deliver_mushroom' => [
+                'name' => 'Livraison de champignons',
+                'description' => 'L\'herboriste a besoin de champignons frais pour ses remèdes. Récoltez-en et apportez-les-lui.',
+                'requirements' => [
+                    'deliver' => [
+                        [
+                            'item_slug' => 'mushroom',
+                            'pnj_id' => 8,
+                            'quantity' => 3,
+                            'name' => 'Champignon',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 2,
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
+            ],
+            // --- Quete d'exploration ---
+            'quest_explore_forest' => [
+                'name' => 'Cartographier la forêt',
+                'description' => 'La cartographe du village a besoin que quelqu\'un explore la forêt pour compléter ses cartes. Rendez-vous aux coordonnées indiquées.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '15.20',
+                            'name' => 'Clairière de la forêt',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 35,
+                ],
+            ],
             // --- Chaine de quetes : La Menace Rampante (3 quetes) ---
             'quest_chain_guard_1' => [
                 'name' => 'La Menace Rampante - Partie 1',

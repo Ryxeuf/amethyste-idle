@@ -71,8 +71,8 @@ class PnjDialogParser
                     if (isset($choice['text'])) {
                         $dialog[$idx]['choices'][$ci]['text'] = $this->substituteVariables($choice['text']);
                     }
-                    // Auto-inject pnj_id for open_shop actions
-                    if (isset($choice['action']) && $choice['action'] === 'open_shop' && $this->pnj) {
+                    // Auto-inject pnj_id for open_shop and quest_deliver actions
+                    if (isset($choice['action']) && \in_array($choice['action'], ['open_shop', 'quest_deliver'], true) && $this->pnj) {
                         $dialog[$idx]['choices'][$ci]['datas']['pnj_id'] = $this->pnj->getId();
                     }
                 }

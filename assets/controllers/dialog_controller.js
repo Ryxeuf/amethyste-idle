@@ -142,6 +142,12 @@ export default class extends Controller {
             return;
         }
 
+        if (choice.action === 'quest_deliver' && choice.datas?.pnj_id) {
+            this._deliverQuest(choice.datas.pnj_id);
+            this.close();
+            return;
+        }
+
         if (choice.action === 'open_shop' && choice.datas?.pnj_id) {
             window.location.href = `/game/shop/${choice.datas.pnj_id}`;
             return;
@@ -261,6 +267,18 @@ export default class extends Controller {
         if (this._typewriterTimer) {
             clearInterval(this._typewriterTimer);
             this._typewriterTimer = null;
+        }
+    }
+
+    async _deliverQuest(pnjId) {
+        try {
+            const resp = await fetch(`/game/quests/deliver/${pnjId}`, { method: 'POST' });
+            const data = await resp.json();
+            if (data.success) {
+                console.debug('[dialog] Quest delivery:', data.message);
+            }
+        } catch (err) {
+            console.error('[dialog] Quest deliver error:', err);
         }
     }
 

@@ -134,6 +134,30 @@
                                         {% endfor %}
                                     </div>
                                 {% endif %}
+                                {% if tracking.deliver is defined and tracking.deliver is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.deliver %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Livrer {{ entry.name|default(entry.item_slug)|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count }}/{{ entry.necessary }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if tracking.explore is defined and tracking.explore is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.explore %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Explorer {{ entry.name|default('Zone inconnue') }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count >= entry.necessary ? 'Decouvert' : 'Non decouvert' }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
 
                                 {# Rewards #}
                                 {% set rewards = quest.rewards %}
@@ -252,6 +276,26 @@
                                             <div class="flex items-center justify-between text-xs">
                                                 <span class="text-gray-300">Recolter {{ itemSlug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
                                                 <span class="text-gray-400">0/{{ count }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if requirements.deliver is defined and requirements.deliver is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in requirements.deliver %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Livrer {{ entry.name|default(entry.item_slug)|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                                                <span class="text-gray-400">0/{{ entry.quantity|default(1) }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if requirements.explore is defined and requirements.explore is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in requirements.explore %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Explorer {{ entry.name|default('Zone inconnue') }}</span>
+                                                <span class="text-gray-400">Non decouvert</span>
                                             </div>
                                         {% endfor %}
                                     </div>

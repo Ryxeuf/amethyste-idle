@@ -191,6 +191,121 @@ class PlayerQuestUpdaterTest extends TestCase
         $this->assertEquals(1, $quest2->getTracking()['monsters'][0]['count']);
     }
 
+    public function testUpdateDeliveredIncrementsMatchingEntry(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'deliver' => [
+                ['item_slug' => 'mushroom', 'pnj_id' => 5, 'count' => 1, 'necessary' => 3, 'name' => 'Champignon'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->updater->updateDelivered('mushroom', 5, 2);
+
+        $tracking = $quest->getTracking();
+        $this->assertEquals(3, $tracking['deliver'][0]['count']);
+    }
+
+    public function testUpdateDeliveredWrongPnjNoChange(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'deliver' => [
+                ['item_slug' => 'mushroom', 'pnj_id' => 5, 'count' => 0, 'necessary' => 3, 'name' => 'Champignon'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->updater->updateDelivered('mushroom', 99, 1);
+
+        $this->assertEquals(0, $quest->getTracking()['deliver'][0]['count']);
+    }
+
+    public function testUpdateExploredMatchesCoordinates(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'explore' => [
+                ['map_id' => 1, 'coordinates' => '15.20', 'count' => 0, 'necessary' => 1, 'name' => 'Clairière'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->updater->updateExplored(1, '15.20');
+
+        $this->assertEquals(1, $quest->getTracking()['explore'][0]['count']);
+    }
+
+    public function testUpdateExploredWrongCoordinatesNoChange(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'explore' => [
+                ['map_id' => 1, 'coordinates' => '15.20', 'count' => 0, 'necessary' => 1, 'name' => 'Clairière'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->updater->updateExplored(1, '10.10');
+
+        $this->assertEquals(0, $quest->getTracking()['explore'][0]['count']);
+    }
+
+    public function testUpdateExploredNullCoordinatesMatchesAnyOnMap(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'explore' => [
+                ['map_id' => 1, 'coordinates' => null, 'count' => 0, 'necessary' => 1, 'name' => 'Carte entière'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->updater->updateExplored(1, '5.5');
+
+        $this->assertEquals(1, $quest->getTracking()['explore'][0]['count']);
+    }
+
+    public function testUpdateExploredWrongMapNoChange(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'explore' => [
+                ['map_id' => 1, 'coordinates' => null, 'count' => 0, 'necessary' => 1, 'name' => 'Carte 1'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->updater->updateExplored(2, '5.5');
+
+        $this->assertEquals(0, $quest->getTracking()['explore'][0]['count']);
+    }
+
     public function testUpdateItemCollectedSkipsQuestWithoutCollectType(): void
     {
         $quest = new PlayerQuest();

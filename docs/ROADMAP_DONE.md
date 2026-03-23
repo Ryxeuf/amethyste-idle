@@ -567,3 +567,24 @@
 - [x] Extraction `EntitySynchronizer` (`src/GameEngine/Terrain/EntitySynchronizer.php`) : creation/mise a jour des entites (portails, mobs, spots, coffres) depuis les objets parses
 - [x] Refactoring `TerrainImportCommand` pour deleguer entierement a `TmxParser` et `EntitySynchronizer`
 - [x] PHPStan OK, PHP-CS-Fixer OK, 367 tests unitaires OK
+
+## 31 — Types quetes livraison/exploration (2026-03-23) ✅
+
+> Ajout de 2 nouveaux types de quetes : livraison (deliver) et exploration (explore).
+
+- [x] Support `requirements.deliver` dans QuestTrackingFormater : {item_slug, pnj_id, quantity, name}
+- [x] Support `requirements.explore` dans QuestTrackingFormater : {map_id, coordinates, name}
+- [x] PlayerQuestUpdater : methodes updateDelivered() et updateExplored()
+- [x] PlayerQuestHelper : calcul de progression incluant deliver et explore
+- [x] QuestExploreTrackingListener : ecoute PlayerMovedEvent pour tracker l'exploration
+- [x] Dispatch de PlayerMovedEvent dans PlayerMoveProcessor
+- [x] Endpoint POST /game/quests/deliver/{pnjId} pour la livraison d'items
+- [x] Action dialog quest_deliver : retrait items inventaire + maj tracking
+- [x] Auto-injection pnj_id pour quest_deliver dans PnjDialogParser
+- [x] Frontend dialog_controller.js : support action quest_deliver
+- [x] InventoryHelper::removeItemBySlug() pour retirer items par slug
+- [x] Template Twig : affichage tracking deliver et explore (quetes actives + disponibles)
+- [x] 2 quetes fixtures : "Livraison de champignons" (deliver) + "Cartographier la foret" (explore)
+- [x] Dialogs PNJ fixtures pour les 2 nouvelles quetes (Henri le Fermier, Mathilde la Cartographe)
+- [x] 7 tests unitaires : deliver/explore dans PlayerQuestUpdater + QuestTrackingFormater
+- [x] PHPStan OK, PHP-CS-Fixer OK, 379 tests OK

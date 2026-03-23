@@ -16,6 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class PlayerMoveProcessorTest extends TestCase
 {
@@ -38,6 +39,7 @@ class PlayerMoveProcessorTest extends TestCase
             $this->movedPlayerHandler,
             $this->fightHandler,
             $this->portalDetector,
+            $this->createMock(EventDispatcherInterface::class),
         );
     }
 
