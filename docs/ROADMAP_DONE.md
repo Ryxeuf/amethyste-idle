@@ -676,3 +676,14 @@
 - [x] Bonus elementaire sur chaque piece (+10% degats de l'element via effet JSON)
 - [x] Mecanique combat : GearHelper calcule le bonus elementaire de l'equipement porte, applique dans FightSpellController
 - [x] Tables de loot : drops sur monstres Niveau 2-4 et elementaires tier 1 (probas 2-5%)
+
+## 62 — Particules combat et recolte (2026-03-24) ✅
+
+> Effets de particules visuels branches sur les evenements de combat et de recolte.
+
+- [x] Particules DOM sur sort lance en combat (couleur selon l'element du sort)
+- [x] Particules dorees sur coup critique (explosion avec particules blanches)
+- [x] Champs `spellElement` et `critical` ajoutes a la reponse JSON de FightSpellController
+- [x] Delai de 500ms avant rechargement pour laisser les particules visibles
+- [x] Particules vertes PixiJS sur recolte reussie (dispatch event Stimulus harvest→map_pixi)
+- [x] Particules dorees (etoiles XP) en complement de la recolte pour le gain de domaine

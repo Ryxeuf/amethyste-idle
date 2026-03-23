@@ -179,9 +179,12 @@ class FightSpellController extends AbstractController
         $hit = FightCalculator::hasAttackHit($spell->getHit() + $bonuses['hit']);
         $messages = $statusMessages;
 
+        $isCritical = false;
         if ($hit) {
-            $this->spellApplicator->apply($spell, $player, $target, $options);
+            $spellMessages = $this->spellApplicator->apply($spell, $player, $target, $options);
+            $isCritical = in_array('Coup critique !', $spellMessages, true);
             $messages[] = sprintf('%s lance %s !', $player->getName(), $spell->getName());
+            $messages = array_merge($messages, $spellMessages);
             $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), true);
             if ($synergyData) {
                 $messages[] = sprintf('Synergie %s activée !', $synergyData['label']);
@@ -235,6 +238,8 @@ class FightSpellController extends AbstractController
                 : array_merge($messages, $mobResult['messages']),
             'dangerAlert' => $mobResult['dangerAlert'],
             'synergy' => $synergyData ? $synergyData['label'] : null,
+            'spellElement' => $spell->getElement()->value,
+            'critical' => $isCritical,
             'fight' => [
                 'step' => $fight->getStep(),
                 'terminated' => $fight->isTerminated(),

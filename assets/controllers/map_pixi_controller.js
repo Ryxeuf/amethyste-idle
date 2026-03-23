@@ -945,6 +945,19 @@ export default class extends Controller {
         }
     }
 
+    /**
+     * Called when harvest controller reports a successful harvest.
+     * Spawns green sparkle particles + gold XP stars at the player's position.
+     */
+    onHarvestSuccess() {
+        const cx = this._playerX * this._tileSize + this._tileSize / 2;
+        const cy = this._playerY * this._tileSize + this._tileSize / 2;
+        // Green sparkles for harvest
+        this.spawnParticles(cx, cy, { count: 10, color: 0x22c55e, life: 900, spread: 20 });
+        // Gold stars for domain XP gain
+        this.spawnParticles(cx, cy, { count: 5, color: 0xfbbf24, life: 1200, spread: 12 });
+    }
+
     // --- Spatial Hash for Entity Lookup ---
 
     _spatialHashKey(x, y) {

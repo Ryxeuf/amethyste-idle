@@ -89,6 +89,9 @@ export default class extends Controller {
                 this.messageTarget.textContent = 'Récolte réussie !';
                 this.messageTarget.className = 'text-green-400 text-sm mt-2';
 
+                // Notify map controller to spawn green particles
+                this.dispatch('harvestSuccess', { detail: { items: result.items || [] } });
+
                 // Show harvested items
                 for (const item of (result.items || [])) {
                     const li = document.createElement('div');

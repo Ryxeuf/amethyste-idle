@@ -89,7 +89,7 @@ VAGUE 3 (depend de Vague 2)
   ├─ 59 Tests E2E Panther ← 23, 42
   ├─ 60 Minimap PixiJS (∅)
   ├─ 61 Barre d'action rapide (∅)
-  ├─ 62 Particules combat/recolte (∅)
+  ├─ ✅ 62 Particules combat/recolte (FAIT)
   └─ 63 Flash elementaire combat (∅)
 ```
 
