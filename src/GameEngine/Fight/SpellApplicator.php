@@ -8,10 +8,12 @@ use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Spell;
 use App\Entity\Game\StatusEffect;
+use App\Enum\Element;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
+use App\GameEngine\World\WeatherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -24,6 +26,7 @@ class SpellApplicator
         private readonly CombatLogger $combatLogger,
         private readonly DamageCalculator $damageCalculator,
         private readonly CriticalCalculator $criticalCalculator,
+        private readonly WeatherService $weatherService,
     ) {
     }
 
@@ -60,6 +63,22 @@ class SpellApplicator
                 }
             } elseif ($result['weak']) {
                 $messages[] = sprintf('%s est faible face a %s !', $target->getName(), $spell->getElement()->value);
+            }
+        }
+
+        // Weather elemental modifier
+        if ($damage > 0 && $fight !== null && $spell->getElement() !== Element::None) {
+            $weather = $this->resolveWeather($fight);
+            if ($weather !== null) {
+                $modifier = $this->weatherService->getElementalModifier($weather, $spell->getElement());
+                if ($modifier !== 1.0) {
+                    $damage = $this->damageCalculator->applyWeatherModifier($damage, $modifier);
+                    if ($modifier > 1.0) {
+                        $messages[] = sprintf('La meteo renforce %s !', $spell->getElement()->label());
+                    } else {
+                        $messages[] = sprintf('La meteo affaiblit %s !', $spell->getElement()->label());
+                    }
+                }
             }
         }
 
@@ -151,6 +170,21 @@ class SpellApplicator
         }
 
         return false;
+    }
+
+    /**
+     * Resolve the current weather from the fight's map.
+     */
+    private function resolveWeather(Fight $fight): ?\App\Enum\WeatherType
+    {
+        $player = $fight->getPlayers()->first();
+        if ($player === false) {
+            return null;
+        }
+
+        $map = $player->getMap();
+
+        return $map?->getCurrentWeather();
     }
 
     /**

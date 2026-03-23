@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\Game\Monster;
+use App\Enum\WeatherType;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -170,6 +171,27 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '55.34',
                 'monster' => 'dragon',
             ],
+            // === Mobs météo-spécifiques ===
+            'storm_elemental_1' => [
+                'coordinates' => '75.36',
+                'monster' => 'fire_elemental',
+                'spawnWeather' => WeatherType::Storm,
+            ],
+            'fog_specter_1' => [
+                'coordinates' => '88.40',
+                'monster' => 'specter',
+                'spawnWeather' => WeatherType::Fog,
+            ],
+            'rain_venom_snake_1' => [
+                'coordinates' => '82.28',
+                'monster' => 'venom_snake',
+                'spawnWeather' => WeatherType::Rain,
+            ],
+            'snow_stone_golem_1' => [
+                'coordinates' => '90.35',
+                'monster' => 'stone_golem',
+                'spawnWeather' => WeatherType::Snow,
+            ],
         ];
 
         foreach ($mobs as $key => $data) {
@@ -182,6 +204,7 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             $mob->setLife($monster->getLife());
             $mob->setLevel($monster->getLevel());
             $mob->setNocturnal($data['nocturnal'] ?? false);
+            $mob->setSpawnWeather($data['spawnWeather'] ?? null);
             $mob->setCreatedAt(new \DateTime());
             $mob->setUpdatedAt(new \DateTime());
 
