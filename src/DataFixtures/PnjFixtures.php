@@ -73,6 +73,12 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'quest_dragon_1',
         ];
 
+        // Delivery/Exploration quests mapped to specific PNJ indices
+        $specialQuests = [
+            10 => 'quest_deliver_mushroom',   // Henri le Fermier
+            21 => 'quest_explore_forest',     // Mathilde la Cartographe
+        ];
+
         // Noms de PNJ français
         $pnjNames = [
             'Gérard le Forgeron', 'Élise la Guérisseuse', 'Martin le Bûcheron', 'Jeanne la Tisserande',
@@ -144,7 +150,15 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             }
 
             // Création d'un dialogue unique pour chaque PNJ
-            $dialog = $this->createDialog($i, $i < count($questReferences) ? $i + 1 : null, $shopConfigs[$i] ?? null);
+            $questId = $i < count($questReferences) ? $i + 1 : null;
+            $specialQuestRef = $specialQuests[$i] ?? null;
+            if ($specialQuestRef) {
+                /** @var \App\Entity\Game\Quest $specialQuest */
+                $specialQuest = $this->getReference($specialQuestRef, \App\Entity\Game\Quest::class);
+                $dialog = $this->createSpecialQuestDialog($i, $specialQuest->getId(), $specialQuestRef);
+            } else {
+                $dialog = $this->createDialog($i, $questId, $shopConfigs[$i] ?? null);
+            }
             $pnj->setDialog($dialog);
 
             $pnj->setCreatedAt(new \DateTime());
@@ -366,6 +380,100 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ];
         }
+
+        return $dialog;
+    }
+
+    /**
+     * Creates a dialog for delivery/exploration quest PNJs.
+     */
+    private function createSpecialQuestDialog(int $pnjIndex, int $questId, string $questRef): array
+    {
+        $isDeliver = str_contains($questRef, 'deliver');
+
+        $greetings = [
+            'quest_deliver_mushroom' => 'Bonjour voyageur ! J\'ai besoin d\'aide pour une livraison importante.',
+            'quest_explore_forest' => 'Salutations, aventurier ! J\'aurais besoin de vos talents d\'explorateur.',
+        ];
+        $descriptions = [
+            'quest_deliver_mushroom' => 'J\'ai besoin que quelqu\'un m\'apporte des champignons frais. Marie l\'herboriste en a besoin pour ses remèdes. Pouvez-vous m\'aider ?',
+            'quest_explore_forest' => 'Je travaille sur une carte de la région mais il me manque des données sur la forêt. Pourriez-vous vous rendre à la clairière et confirmer ce que j\'y ai noté ?',
+        ];
+
+        $greeting = $greetings[$questRef] ?? 'Bonjour, aventurier !';
+        $description = $descriptions[$questRef] ?? 'J\'ai une mission pour vous.';
+
+        $dialog = [
+            [
+                'next' => 1,
+                'text' => $greeting,
+            ],
+            [
+                'conditional_next' => [
+                    [
+                        'next' => 4,
+                        'next_condition' => [
+                            'quest_not' => [$questId],
+                        ],
+                    ],
+                    [
+                        'next' => 2,
+                        'next_condition' => [
+                            'quest' => [$questId],
+                        ],
+                    ],
+                    [
+                        'next' => 3,
+                    ],
+                ],
+                'text' => 'Que puis-je faire pour vous ?',
+            ],
+            // Quest completed
+            [
+                'text' => 'Merci pour votre aide ! La mission est accomplie.',
+            ],
+        ];
+
+        if ($isDeliver) {
+            // In-progress: offer delivery action
+            $dialog[] = [
+                'text' => 'Avez-vous les items demandés ? Donnez-les-moi !',
+                'choices' => [
+                    [
+                        'text' => 'Livrer les items',
+                        'action' => 'quest_deliver',
+                        'datas' => [],
+                    ],
+                    [
+                        'text' => 'Pas encore...',
+                        'action' => 'close',
+                    ],
+                ],
+            ];
+        } else {
+            // In-progress: exploration reminder
+            $dialog[] = [
+                'text' => 'Avez-vous exploré la zone indiquée ? Revenez quand ce sera fait !',
+            ];
+        }
+
+        // Quest offer (index 4)
+        $dialog[] = [
+            'text' => $description,
+            'choices' => [
+                [
+                    'text' => 'D\'accord, je m\'en occupe',
+                    'data' => [
+                        'quest' => $questId,
+                    ],
+                    'action' => 'quest_offer',
+                ],
+                [
+                    'text' => 'Non merci',
+                    'action' => 'close',
+                ],
+            ],
+        ];
 
         return $dialog;
     }

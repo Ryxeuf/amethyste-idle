@@ -56,7 +56,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 28 Monstres tier 1 (8 mobs) ← 15                                │
   ├─ 29 Equipement tier 2 ← 17                                        │
   ├─ ✅ 30 Teleportation entre cartes (FAIT) ← 01 ────────────────────┘
-  ├─ 31 Types quetes livraison/exploration ← 27
+  ├─ ✅ 31 Types quetes livraison/exploration (FAIT) ← 27
   ├─ ✅ 32 Journal de quetes enrichi (FAIT) ← 13
   ├─ ✅ 33 Impact gameplay jour/nuit (FAIT) ← 20
   ├─ ✅ 34 Meteo backend & diffusion (FAIT) ← 20
@@ -135,14 +135,7 @@ VAGUE 3 (depend de Vague 2)
 
 ### ~~30 — Teleportation entre cartes~~ ✅ FAIT
 
-### 31 — Types quetes livraison/exploration (M | ★★★)
-> Prerequis : v0.4-D (tracking collect/craft). Ajoute 2 types de quetes realisables avec l'infra existante. Prerequis : ← 27
-- [ ] Ajouter support `requirements.deliver` dans QuestTrackingFormater : {item_slug, pnj_id, quantity}
-- [ ] Tracking livraison : listener sur dialogue PNJ, verifier si le joueur a l'item en inventaire
-- [ ] Ajouter support `requirements.explore` dans QuestTrackingFormater : {map_id} ou {coordinates}
-- [ ] Tracking exploration : listener sur PlayerMoveEvent, verifier si zone/coordonnees atteintes
-- [ ] 2-3 quetes fixtures : 1 livraison (apporter item a un PNJ), 1 exploration (atteindre un lieu)
-- [ ] Tests unitaires : progression livraison, progression exploration
+### ~~31 — Types quetes livraison/exploration~~ ✅ FAIT
 
 ---
 

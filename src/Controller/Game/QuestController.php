@@ -8,6 +8,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
 use App\GameEngine\Quest\PlayerQuestHelper;
+use App\GameEngine\Quest\PlayerQuestUpdater;
 use App\GameEngine\Quest\QuestGiverResolver;
 use App\GameEngine\Quest\QuestTrackingFormater;
 use App\Helper\InventoryHelper;
@@ -149,6 +150,48 @@ class QuestController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'message' => sprintf('Quête "%s" abandonnée.', $questName),
+        ]);
+    }
+
+    #[Route('/deliver/{pnjId}', name: 'app_game_quest_deliver', methods: ['POST'])]
+    public function deliver(int $pnjId, PlayerQuestUpdater $playerQuestUpdater): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $delivered = [];
+
+        foreach ($quests as $playerQuest) {
+            $tracking = $playerQuest->getTracking();
+            if (!isset($tracking['deliver'])) {
+                continue;
+            }
+            foreach ($tracking['deliver'] as $entry) {
+                if ($entry['pnj_id'] !== $pnjId || $entry['count'] >= $entry['necessary']) {
+                    continue;
+                }
+                // Check if player has the required item
+                $itemSlug = $entry['item_slug'];
+                $needed = $entry['necessary'] - ($entry['count'] ?? 0);
+                $removed = $this->inventoryHelper->removeItemBySlug($itemSlug, $needed);
+                if ($removed > 0) {
+                    $playerQuestUpdater->updateDelivered($itemSlug, $pnjId, $removed);
+                    $delivered[] = sprintf('%d x %s', $removed, $entry['name'] ?? $itemSlug);
+                }
+            }
+        }
+
+        if (empty($delivered)) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Vous n\'avez rien a livrer a ce PNJ.',
+            ]);
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => sprintf('Livre : %s', implode(', ', $delivered)),
         ]);
     }
 

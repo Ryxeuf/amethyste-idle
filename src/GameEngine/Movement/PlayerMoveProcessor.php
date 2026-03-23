@@ -6,12 +6,14 @@ use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
+use App\Event\Map\PlayerMovedEvent;
 use App\GameEngine\Fight\Handler\FightHandler;
 use App\GameEngine\Map\PortalDetector;
 use App\GameEngine\Realtime\Map\MovedPlayerHandler;
 use App\Helper\CellHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class PlayerMoveProcessor
 {
@@ -24,6 +26,7 @@ class PlayerMoveProcessor
         private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly FightHandler $fightHandler,
         private readonly PortalDetector $portalDetector,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -81,6 +84,7 @@ class PlayerMoveProcessor
         $this->entityManager->flush();
 
         $this->movedPlayerHandler->movePlayerPath($player, $traversedPath);
+        $this->eventDispatcher->dispatch(new PlayerMovedEvent($player), PlayerMovedEvent::NAME);
 
         if ($encounterMob) {
             $this->logger->info('Mob found at {cell}, starting fight', ['cell' => $encounterMob->getCoordinates()]);
