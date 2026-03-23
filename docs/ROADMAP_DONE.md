@@ -667,3 +667,12 @@
 - [x] Tables de loot (5 drops par monstre, materia elementaire incluse)
 - [x] 24 succes bestiaire (3 paliers × 8 monstres)
 - [x] 16 mobs places sur la carte (2 par monstre, distances adaptees au niveau)
+
+## 29 — Equipement tier 2 Intermediaire (2026-03-23) ✅
+
+> Set complet 7 pieces × 4 variantes elementaires (Feu, Eau, Terre, Air) = 28 items, avec bonus +10% degats elementaires et loot tables.
+
+- [x] 28 items : Epee, Bouclier, Casque, Plastron, Jambieres, Bottes, Gantelets × 4 elements
+- [x] Bonus elementaire sur chaque piece (+10% degats de l'element via effet JSON)
+- [x] Mecanique combat : GearHelper calcule le bonus elementaire de l'equipement porte, applique dans FightSpellController
+- [x] Tables de loot : drops sur monstres Niveau 2-4 et elementaires tier 1 (probas 2-5%)

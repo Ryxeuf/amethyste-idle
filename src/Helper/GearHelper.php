@@ -4,11 +4,49 @@ namespace App\Helper;
 
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
+use App\Enum\Element;
 
 class GearHelper
 {
     public function __construct(private readonly PlayerHelper $playerHelper)
     {
+    }
+
+    /**
+     * Calcule le bonus de dégâts élémentaires (%) accordé par l'équipement porté.
+     * Chaque pièce d'équipement dont l'élément correspond ajoute son bonus (typiquement +10%).
+     */
+    public function getEquippedElementalDamageBonus(Element $element): float
+    {
+        if ($element === Element::None) {
+            return 0.0;
+        }
+
+        $bonus = 0.0;
+        $inventory = $this->playerHelper->getInventory();
+
+        foreach ($inventory->getItems() as $playerItem) {
+            if (!$this->isEquipped($playerItem)) {
+                continue;
+            }
+
+            $genericItem = $playerItem->getGenericItem();
+            if ($genericItem->getElement() !== $element) {
+                continue;
+            }
+
+            $effect = $genericItem->getEffect();
+            if ($effect === null) {
+                continue;
+            }
+
+            $decoded = json_decode($effect, true);
+            if (($decoded['action'] ?? null) === 'elemental_damage_boost' && isset($decoded['amount'])) {
+                $bonus += (float) $decoded['amount'] / 100.0;
+            }
+        }
+
+        return $bonus;
     }
 
     public function isEquipped(PlayerItem $item): bool

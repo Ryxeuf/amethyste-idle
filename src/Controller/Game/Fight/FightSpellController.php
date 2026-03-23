@@ -14,6 +14,7 @@ use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,6 +37,7 @@ class FightSpellController extends AbstractController
         private readonly MobActionHandler $mobActionHandler,
         private readonly CombatLogger $combatLogger,
         private readonly FightTurnResolver $turnResolver,
+        private readonly GearHelper $gearHelper,
     ) {
     }
 
@@ -137,6 +139,12 @@ class FightSpellController extends AbstractController
         // Apply element match bonus from materia/slot matching (+25% damage)
         if ($elementMatch) {
             $bonuses['damage'] += (int) round($bonuses['damage'] * CombatCapacityResolver::ELEMENT_MATCH_DAMAGE_BONUS);
+        }
+
+        // Apply equipped gear elemental damage bonus (+10% per matching piece)
+        $gearElementalBonus = $this->gearHelper->getEquippedElementalDamageBonus($spell->getElement());
+        if ($gearElementalBonus > 0.0) {
+            $bonuses['damage'] += max(1, (int) round($bonuses['damage'] * $gearElementalBonus));
         }
 
         // Check elemental synergy
