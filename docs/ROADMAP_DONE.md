@@ -473,3 +473,14 @@
 - [x] SpotHarvestEvent enrichi avec les items recoltes (harvestedItems)
 - [x] Templates quest/index et game/index mis a jour pour afficher progression collect/craft
 - [x] Fixtures PlayerQuest mises a jour au nouveau format de tracking
+
+---
+
+### 41 — Indicateurs quetes sur PNJ (2026-03-23) ✅
+
+> Indicateurs visuels (! ou ?) au-dessus des PNJ donneurs de quetes sur la carte PixiJS.
+
+- [x] Service `PnjQuestIndicatorResolver` : resout l'indicateur (available/in_progress/null) par PNJ pour un joueur
+- [x] Champ `questIndicator` ajoute dans `/api/map/entities` pour chaque PNJ
+- [x] Rendu PixiJS : icone `!` jaune (quete disponible) ou `?` grise (quete en cours) au-dessus du sprite PNJ
+- [x] Mise a jour dynamique a chaque rechargement des entites (acceptation/completion de quete)

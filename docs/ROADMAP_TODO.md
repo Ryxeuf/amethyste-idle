@@ -67,7 +67,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ ✅ 38 Liste d'amis (FAIT) ← 19
   ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
   ├─ 40 Synergies cross-domaine (∅ strict mais logique apres 14)
-  ├─ 41 Indicateurs quetes sur PNJ ← 27
+  ├─ ✅ 41 Indicateurs quetes sur PNJ (FAIT) ← 27
   ├─ 42 Tests unitaires systemes core ← 25, 26, 27
   ├─ 43 Tests integration events ← 23
   ├─ 44 Extraction services TerrainImport ← 01
@@ -322,11 +322,7 @@ VAGUE 6 — Long terme
 
 ### ~~32 — Journal de quetes enrichi~~ ✅ FAIT
 
-### 41 — Indicateurs quetes sur PNJ (S | ★★★)
-> Aucun indicateur visuel (! ou ?) n'apparait au-dessus des PNJ donneurs de quetes sur la carte. Prerequis : ← 27
-- [ ] Ajouter un champ `hasAvailableQuest` dans /api/map/entities pour les PNJ
-- [ ] Afficher une icone (! quete dispo, ? quete en cours) au-dessus du sprite PNJ dans PixiJS
-- [ ] Mettre a jour l'icone dynamiquement quand le joueur accepte/complete une quete
+### ~~41 — Indicateurs quetes sur PNJ~~ ✅ FAIT
 
 ---
 
