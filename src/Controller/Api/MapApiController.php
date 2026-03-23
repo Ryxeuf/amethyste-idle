@@ -43,12 +43,20 @@ class MapApiController extends AbstractController
 
         $tilesets = $this->extractTilesets($map);
 
+        $weather = $map->getCurrentWeather();
+
         return $this->json([
             'tileSize' => 32,
             'viewRadius' => 15,
             'mapId' => $map->getId(),
             'tilesets' => $tilesets,
             'sprites' => $this->spriteConfigProvider->getFullConfig(),
+            'weather' => [
+                'type' => $weather->value,
+                'label' => $weather->label(),
+                'icon' => $weather->icon(),
+                'changedAt' => $map->getWeatherChangedAt()?->format('c'),
+            ],
         ]);
     }
 
