@@ -1,0 +1,16 @@
+# Ne pas ecraser vendor/ installe dans l'image par le vendor incomplet de l'hote
+/vendor/
+/var/
+.git/
+.gitignore
+.dockerignore
+**/.DS_Store
+.idea/
+.phpunit.cache
+.php-cs-fixer.cache
+phpstan.cache
+.env.local
+.env.*.local
+node_modules/
+/public/bundles/
+/public/assets/

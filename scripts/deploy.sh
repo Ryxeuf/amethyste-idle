@@ -3,8 +3,9 @@ set -euo pipefail
 
 # Deploiement amethyste-idle
 # Toutes les commandes applicables sont executees dans le conteneur php.
-# Usage: ./scripts/deploy.sh [--prod|--dev] [--composer-update]
+# Usage: ./scripts/deploy.sh [--prod|--dev] [--composer-update] [--no-pull]
 #   --composer-update : met a jour composer.lock dans le conteneur avant le build (necessite une image existante).
+#   --no-pull         : en prod, ne pas faire docker compose pull (image deja build localement ou deja presente).
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -12,13 +13,15 @@ COMPOSE_ARGS=(-f "$PROJECT_DIR/compose.yaml")
 MODE="prod"
 MAINTENANCE_ON=0
 COMPOSER_UPDATE=0
+NO_PULL=0
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --prod) MODE="prod"; shift ;;
     --dev)  MODE="dev"; shift ;;
     --composer-update) COMPOSER_UPDATE=1; shift ;;
-    *) echo "Usage: $0 [--prod|--dev] [--composer-update]"; exit 1 ;;
+    --no-pull) NO_PULL=1; shift ;;
+    *) echo "Usage: $0 [--prod|--dev] [--composer-update] [--no-pull]"; exit 1 ;;
   esac
 done
 
@@ -58,8 +61,12 @@ if [[ "$COMPOSER_UPDATE" -eq 1 ]]; then
 fi
 
 if [[ "$MODE" == "prod" ]]; then
-  echo "==> 1/5 Pull de l'image de production et demarrage des services..."
-  docker compose "${COMPOSE_ARGS[@]}" pull php
+  if [[ "$NO_PULL" -eq 1 ]]; then
+    echo "==> 1/5 Demarrage des services (sans pull GHCR)..."
+  else
+    echo "==> 1/5 Pull de l'image de production et demarrage des services..."
+    docker compose "${COMPOSE_ARGS[@]}" pull php
+  fi
   docker compose "${COMPOSE_ARGS[@]}" up -d --wait
 else
   echo "==> 1/5 Construction et demarrage des services..."
