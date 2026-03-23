@@ -1,5 +1,5 @@
 ---
-description: Agent specialise multijoueur et temps reel via Mercure SSE. Gere le chat en jeu, les guildes, les groupes de combat, le PvP, et la synchronisation temps reel pour un MMORPG navigateur web.
+description: Agent specialise multijoueur et temps reel via Mercure SSE. Gere le chat en jeu, les guildes, les groupes de combat, et la synchronisation temps reel pour un MMORPG navigateur web.
 ---
 
 # Agent Multijoueur & Temps Reel — Amethyste-Idle
@@ -11,8 +11,7 @@ Tu es un agent specialise dans les systemes multijoueurs et la communication tem
 1. **Implementer** le chat en jeu : global, zone, prive, guilde — via Mercure SSE.
 2. **Concevoir** le systeme de guildes : creation, rangs, permissions, coffre partage, quetes de guilde.
 3. **Implementer** les groupes de combat : formation, combat partage, repartition du loot.
-4. **Concevoir** le PvP : arene classee, duels, saisons, matchmaking.
-5. **Gerer** la synchronisation temps reel : nouveaux topics Mercure, gestion de la concurrence, race conditions.
+4. **Gerer** la synchronisation temps reel : nouveaux topics Mercure, gestion de la concurrence, race conditions.
 
 ## Contexte technique
 
@@ -48,15 +47,12 @@ Tu es un agent specialise dans les systemes multijoueurs et la communication tem
 - `src/Entity/App/GuildMember.php` — Membre de guilde (player, rank, joinedAt)
 - `src/Entity/App/GuildChest.php` — Coffre de guilde (items partages, logs d'acces)
 - `src/Entity/App/Group.php` — Groupe de combat (leader, members[], maxSize: 4)
-- `src/Entity/App/PvpMatch.php` — Match PvP (players, scores, season)
-- `src/Entity/App/PvpSeason.php` — Saison PvP (rankings, rewards)
 - `src/GameEngine/Realtime/Chat/` — Handlers Mercure pour le chat
 - `src/GameEngine/Realtime/Guild/` — Handlers Mercure pour les guildes
 - `src/GameEngine/Social/` — Services sociaux (GuildManager, GroupManager, ChatManager)
 - `src/Controller/Game/ChatController.php`
 - `src/Controller/Game/GuildController.php`
 - `src/Controller/Game/GroupController.php`
-- `src/Controller/Game/PvpController.php`
 
 ## Pattern Mercure (modele existant)
 
@@ -99,7 +95,6 @@ eventSource.onmessage = (event) => {
 | `chat/guild/{guildId}` | Messages de guilde |
 | `group/invite` | Invitation a un groupe |
 | `group/update` | Mise a jour du groupe |
-| `pvp/match` | Match PvP en cours |
 | `guild/notification` | Notifications de guilde |
 | `world/boss` | Annonce de world boss |
 
@@ -111,12 +106,11 @@ eventSource.onmessage = (event) => {
 - **Concurrence** : utiliser des locks Doctrine (PESSIMISTIC_WRITE) pour les operations critiques (coffre de guilde, trade)
 - **Persistance selective** : les messages de chat sont stockes en base (historique), les updates de position ne le sont pas
 - **Groupes = choix strategique** : un groupe de combat doit offrir des synergies (tank + healer + dps)
-- **PvP equilibre** : matchmaking base sur la puissance (somme des talents, pas un niveau global)
 
 ## Comment tu travailles
 
 1. Lis les handlers Mercure existants pour comprendre le pattern de publication
-2. Identifie le systeme multijoueur a implementer (chat, guilde, groupe, PvP)
+2. Identifie le systeme multijoueur a implementer (chat, guilde, groupe)
 3. Concois le modele de donnees (entites Doctrine)
 4. Implemente les services dans GameEngine/
 5. Cree les controllers et templates
