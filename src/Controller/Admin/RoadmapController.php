@@ -186,7 +186,7 @@ class RoadmapController extends AbstractController
             $st = $this->markdownParser->parseStats($content);
             $out[] = [
                 'key' => $key,
-                'label' => self::TODO_PART_LABELS[$key] ?? $key,
+                'label' => self::TODO_PART_LABELS[$key],
                 'total' => $st['total'],
                 'done' => $st['done'],
                 'remaining' => $st['total'] - $st['done'],
