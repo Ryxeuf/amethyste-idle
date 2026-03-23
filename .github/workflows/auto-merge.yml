@@ -34,7 +34,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      actions: write
 
     steps:
       - name: Find associated PR
@@ -85,16 +84,6 @@ jobs:
               core.setFailed(`Impossible de merger la PR #${prNumber}: ${error.message}`);
             }
 
-      - name: Trigger Release workflow
-        if: steps.merge-pr.outputs.merged == 'true'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.PAT_AUTO_MERGE || github.token }}
-          script: |
-            await github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'release.yml',
-              ref: 'main',
-            });
-            console.log('Workflow Release déclenché sur main');
+      # Le merge squash dans main déclenche automatiquement release.yml
+      # via son trigger `on: push: branches: [main]`. Pas besoin de
+      # workflow_dispatch (qui nécessiterait un PAT avec actions:write).
