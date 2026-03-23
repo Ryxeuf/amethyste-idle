@@ -67,9 +67,9 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
   ├─ ✅ 40 Synergies cross-domaine (FAIT)
   ├─ ✅ 41 Indicateurs quetes sur PNJ (FAIT) ← 27
-  ├─ 42 Tests unitaires systemes core ← 25, 26, 27
+  ├─ ✅ 42 Tests unitaires systemes core (FAIT) ← 25, 26, 27
   ├─ ✅ 43 Tests integration events (FAIT) ← 23
-  ├─ 44 Extraction services TerrainImport ← 01
+  ├─ ✅ 44 Extraction services TerrainImport (FAIT) ← 01
   └─ ✅ 45 Portraits de personnages (FAIT)
 
 VAGUE 3 (depend de Vague 2)
@@ -162,21 +162,11 @@ VAGUE 3 (depend de Vague 2)
 
 ## Piste E — Qualite & pipeline (‖)
 
-### 42 — Tests unitaires systemes core (M | ★★)
-> Aucun test pour shop, harvest, craft ni quest. Fragilise la base de code. Prerequis : ← 25, 26, 27
-- [ ] Tests ShopController : achat OK, fonds insuffisants, item soulbound invendable
-- [ ] Tests HarvestManager : recolte OK, skill manquant, cooldown actif, XP accordee
-- [ ] Tests CraftManager : craft OK, ingredients manquants, skill manquant, item cree
-- [ ] Tests QuestProgressTracker : progression monster, collect, craft, completion
+### ~~42 — Tests unitaires systemes core~~ ✅ FAIT
 
 ### ~~43 — Tests integration events~~ ✅ FAIT
 
-### 44 — Extraction services TerrainImport (M | ★★)
-> La commande actuelle fait 663 lignes monolithiques (parsing TMX, sync objets, validation, export). Prerequis : ← 01
-- [ ] Extraire `TmxParser` : parsing TMX/TSX → structure de donnees (layers, tilesets, objets)
-- [ ] Extraire `EntitySynchronizer` : creation/mise a jour des entites (portails, mobs, spots, coffres) depuis les objets TMX
-- [ ] Refactorer `TerrainImportCommand` pour deleguer a ces services
-- [ ] Verifier que `app:terrain:import` fonctionne identiquement apres refactoring
+### ~~44 — Extraction services TerrainImport~~ ✅ FAIT
 
 ---
 
