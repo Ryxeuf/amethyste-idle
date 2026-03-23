@@ -588,3 +588,72 @@
 - [x] Dialogs PNJ fixtures pour les 2 nouvelles quetes (Henri le Fermier, Mathilde la Cartographe)
 - [x] 7 tests unitaires : deliver/explore dans PlayerQuestUpdater + QuestTrackingFormater
 - [x] PHPStan OK, PHP-CS-Fixer OK, 379 tests OK
+
+---
+
+## 30 — Teleportation entre cartes (2026-03-23) ✅
+
+> Infrastructure de portails pour voyager entre zones.
+
+- [x] Entite Portal enrichie (sourceMap, targetMap, coordonnees, bidirectionnel)
+- [x] PortalManager : teleport(Player, Portal) avec validation
+- [x] Endpoint POST /api/map/teleport/{portalId}
+- [x] Rendu visuel portails sur la carte PixiJS (cercles violets lumineux)
+- [x] Transition visuelle (fade noir existant)
+- [x] Topic Mercure map/teleport
+- [x] Fixtures portails de test
+
+## 33 — Impact gameplay jour/nuit (2026-03-23) ✅
+
+> Donne une raison concrete au cycle jour/nuit : mobs nocturnes, spots de nuit, horaires boutiques.
+
+- [x] Champ `nocturnal` (bool) sur Mob — mobs nocturnes n'apparaissent que de nuit
+- [x] Filtre dans MobSpawnManager : exclure mobs nocturnes le jour, diurnes la nuit
+- [x] Champ `nightOnly` (bool) sur HarvestSpot — plantes recoltables uniquement la nuit
+- [x] Validation dans HarvestController
+- [x] Champs `opensAt`/`closesAt` sur Pnj — horaires d'ouverture boutiques
+- [x] Verification dans ShopController + message "La boutique est fermee"
+- [x] Migration SQL (3 champs)
+
+## 34 — Meteo backend & diffusion (2026-03-23) ✅
+
+> Systeme meteo aleatoire pondere par saison, diffuse en temps reel via Mercure.
+
+- [x] Enum PHP `WeatherType` : sunny, cloudy, rain, storm, fog, snow
+- [x] Champ `currentWeather` + `weatherChangedAt` sur Map
+- [x] `WeatherService` : changeWeather(Map) — tirage aleatoire pondere par saison
+- [x] Commande Scheduler `app:weather:tick` (toutes les 15 min)
+- [x] Route API `GET /api/map/weather`
+- [x] Topic Mercure `map/weather` pour broadcast en temps reel
+- [x] Migration SQL
+
+## 40 — Synergies cross-domaine (2026-03-23) ✅
+
+> Bonus explicites pour encourager le multi-domaine : combos actifs selon les domaines maitrises.
+
+- [x] Entite `DomainSynergy` (domainA, domainB, bonusType, bonusValue, description)
+- [x] Service `SynergyCalculator` : detecte les combos actifs (seuil 50 XP par domaine)
+- [x] ~8 synergies fixtures (Feu+Metal=Forge ardente, Eau+Lumiere=Purification, etc.)
+- [x] Affichage synergies actives dans /game/skills
+- [x] Integration CombatSkillResolver : bonus de synergie appliques aux stats combat
+- [x] Tests SynergyCalculator
+- [x] Migration SQL
+
+## 42 — Tests unitaires systemes core (2026-03-23) ✅
+
+> Tests unitaires pour les systemes critiques sans couverture : shop, harvest, craft, quest progress.
+
+- [x] Tests HarvestManager : recolte OK, skill manquant, cooldown actif, XP accordee
+- [x] Tests CraftingManager : craft OK, ingredients manquants, skill manquant, item cree
+- [x] Tests PlayerQuestUpdater : progression monster, collect, craft, completion
+- [x] PHPStan OK, PHP-CS-Fixer OK
+
+## 51 — Meteo impact gameplay (2026-03-23) ✅
+
+> Bonus/malus elementaires selon la meteo active et monstres exclusifs par condition meteorologique.
+
+- [x] Table de bonus/malus par meteo × element dans WeatherService
+- [x] Modificateur applique dans DamageCalculator via WeatherService::getElementalModifier()
+- [x] Champ `spawnWeather` (nullable) sur Mob — mobs exclusifs par meteo
+- [x] Filtre dans MapApiController : mobs meteo-specifiques
+- [x] Migration SQL (1 champ)

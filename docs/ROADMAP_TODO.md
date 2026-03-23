@@ -101,15 +101,12 @@ VAGUE 3 (depend de Vague 2)
 
 ---
 
-## Vague 2 — Systemes core completes
 
-> **20 taches** initiales, **15 completees**, 5 restantes.
-> Organisees en 5 pistes paralleles.
-> Les pistes sont independantes entre elles. Les dependances intra-piste sont indiquees.
+## Vague 2 — Systemes core completes ✅ (partiel)
+
+> **20 taches** initiales, **18 completees**, 2 restantes.
 
 ---
-
-## Piste A — Donnees & fixtures (‖)
 
 ### 28 — Monstres tier 1 — 8 mobs elementaires (M | ★★★)
 > 20 monstres existent, on en ajoute 8 pour couvrir chaque element. Prerequis : ← 15
@@ -131,49 +128,606 @@ VAGUE 3 (depend de Vague 2)
 
 ---
 
-## Piste B — Systemes quetes & carte (‖)
-
-### ~~30 — Teleportation entre cartes~~ ✅ FAIT
-
-### ~~31 — Types quetes livraison/exploration~~ ✅ FAIT
-
----
-
-## Piste C — Monde vivant & events (‖)
-
-### ~~33 — Impact gameplay jour/nuit~~ ✅ FAIT
-
-### ~~34 — Meteo backend & diffusion~~ ✅ FAIT
-
----
-
-## Piste D — Social & progression (‖)
-
-### ~~40 — Synergies cross-domaine~~ ✅ FAIT
-
----
-
-## Piste E — Qualite & pipeline (‖)
-
-### ~~42 — Tests unitaires systemes core~~ ✅ FAIT
-
-### ~~43 — Tests integration events~~ ✅ FAIT
-
-### ~~44 — Extraction services TerrainImport~~ ✅ FAIT
-
----
-
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** qui dependent de la Vague 2.
+> **18 taches** initiales, **1 completee**, 17 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
 
 ### Piste A — Narration & quetes (‖)
+### 46 — Trame Acte 1 : L'Eveil (M | ★★★)
+> Tutoriel narratif. Chaine de 4-5 quetes guidant le joueur dans ses premieres actions. Utilise les systemes existants (kill, collect, deliver, explore) — pas de nouvelle mecanique. Prerequis : ← 12 (QN-3 prerequis quetes), 13 (QN-4 journal enrichi), 31 (QN-1 recompenses quetes)
+- [ ] Quete 1.1 "Reveil" : dialogue d'introduction avec un PNJ guide, explorer le village
+- [ ] Quete 1.2 "Premiers pas" : aller voir le forgeron, recevoir une arme de base
+- [ ] Quete 1.3 "Bapteme du feu" : tuer 2 monstres faibles dans la zone de depart
+- [ ] Quete 1.4 "Recolte" : collecter des ressources de base (herbes ou minerai)
+- [ ] Quete 1.5 "Le cristal d'amethyste" : explorer un lieu specifique, dialogue revelateur
+- [ ] Dialogues narratifs pour chaque PNJ implique (guide, forgeron, ancien du village)
+- [ ] Recompenses progressives (equipement starter, gils, XP, premiere materia)
 
-(contenu inchange — voir fichier complet)
+### 54 — Quetes a choix (M | ★★★)
+> Ajoute des embranchements narratifs. Le PnjDialogParser supporte deja les choices. Prerequis : ← 13 (QN-4 journal enrichi), 31 (QN-1 recompenses quetes)
+- [ ] Ajouter champ `choiceOutcome` (JSON, nullable) sur Quest : mapper choix → quete suivante
+- [ ] Adapter QuestController::complete() : si choix fait, orienter vers la branche correspondante
+- [ ] Stocker le choix du joueur dans PlayerQuestCompleted (champ `choiceMade`, JSON nullable)
+- [ ] 1 quete a choix dans les fixtures (2 branches, recompenses differentes)
+- [ ] Condition `quest_choice` dans PnjDialogParser : adapter le dialogue selon le choix passe
 
-### ~~51 — Meteo impact gameplay~~ ✅ FAIT
+### 55 — Quetes quotidiennes (M | ★★★)
+> Contenu renouvelable qui donne une raison de revenir chaque jour. Prerequis : ← 12 (QN-3 prerequis quetes), 27 (systeme de scheduling)
+- [ ] Champ `isDaily` (bool) + `dailyPool` (JSON) sur Quest : pool de variantes
+- [ ] DailyQuestScheduler (Symfony Scheduler) : chaque jour, selectionner 3 quetes du pool
+- [ ] Permettre de re-accepter une quete quotidienne (lever la contrainte unique player+quest)
+- [ ] Entite PlayerDailyQuest ou reset du PlayerQuest chaque jour
+- [ ] 5-8 quetes quotidiennes dans les fixtures (kill X, collect Y, variantes simples)
+- [ ] Section "Quotidiennes" dans le journal de quetes
 
-(reste de la Vague 3+ inchange)
+---
+
+### Piste B — Contenu monde (‖)
+
+### 47 — Monstres tier 2 lvl 10-15 (M | ★★★)
+> Sous-partie A des monstres tier 2 : 4 monstres intermediaires (lvl 10-15). Prerequis : ← 28 (C-3 monstres tier 1), 29 (C-5 equipement tier 2)
+- [ ] **Sous-partie A** : 4 monstres intermediaires (lvl 10-15)
+  - Stats, AI patterns, resistances, loot tables
+  - Succes bestiaire (12 achievements)
+
+### 48 — Village central hub (L | ★★★)
+> Nouvelle carte "Village central" servant de hub principal entre les zones. Prerequis : ← 30 (C-8 teleportation entre cartes), 25 (v0.4-A boutiques PNJ)
+- [ ] Design carte Tiled (~40x40, interieur/exterieur) avec places, batiments
+- [ ] Import BDD via app:terrain:import
+- [ ] PNJ hub : forgeron, alchimiste, marchand, maitre des quetes, banquier (5-8 PNJ)
+- [ ] Dialogues PNJ (JSON conditions)
+- [ ] Portail bidirectionnel vers carte existante
+- [ ] Aucun monstre (zone safe)
+
+### 49 — Monstres soigneurs / multi-mobs (M | ★★★)
+> Support du combat multi-mobs avec role soigneur pour les monstres. Prerequis : ← 28 (C-3 monstres tier 1)
+- [ ] Support multi-mobs dans FightController : engager un groupe de mobs (2-3 mobs)
+- [ ] MobActionHandler : role `healer` cible un allie blesse (mob avec le moins de PV%)
+- [ ] SpellApplicator : supporter les heals mob→mob
+- [ ] Template combat : afficher plusieurs mobs avec barres de vie individuelles
+- [ ] Fixtures : groupe de mobs avec un soigneur (ex: 2 Squelettes + 1 Necromancien soigneur)
+- [ ] Tests : heal mob→mob, ciblage du plus blesse
+
+---
+
+### Piste C — Meteo & visuels (‖)
+
+### 50 — Meteo effets visuels PixiJS (M | ★★★)
+> Effets visuels de meteo dans le renderer PixiJS (pluie, neige, orage, brouillard). Prerequis : ← 34 (MV-3 meteo backend & diffusion)
+- [ ] Ecouter le topic Mercure `map/weather` dans `map_pixi_controller.js`
+- [ ] Container de particules dedie (zIndex au-dessus des entites, sous le HUD)
+- [ ] Effet pluie : particules tombantes bleues semi-transparentes
+- [ ] Effet neige : particules blanches lentes avec oscillation laterale
+- [ ] Effet orage : flash blanc intermittent (alpha spike sur l'overlay) + particules pluie
+- [ ] Effet brouillard : overlay blanc semi-transparent avec alpha pulse doux
+- [ ] Effet nuageux : leger assombrissement (overlay gris alpha 0.08)
+- [ ] Transition douce entre meteos (fade 2 secondes)
+
+### 62 — Particules combat et recolte (S | ★★)
+> Branchement des appels spawnParticles() sur les evenements de combat et de recolte existants. Le systeme spawnParticles() existe deja.
+- [ ] Particules sur sort lance en combat (couleur = element du sort)
+- [ ] Particules sur coup critique (explosion doree)
+- [ ] Particules sur recolte reussie (etincelles vertes)
+- [ ] Particules sur level-up domaine (pluie d'etoiles)
+
+### 63 — Flash elementaire et animations combat (S | ★★)
+> Effets visuels complementaires au combat : flash colore, shake camera, animations sprites.
+- [ ] Flash colore plein ecran sur degats elementaires (rouge=feu, bleu=eau, etc.)
+- [ ] Shake camera sur coups critiques (branche sur evenement critique existant)
+- [ ] Animation de tremblement sur le sprite cible quand il recoit des degats
+- [ ] Fondu progressif du sprite a la mort d'un mob
+
+---
+
+### Piste D — Social & builds (‖)
+
+### 52 — Guildes fondation (M | ★★★)
+> Premiere brique du systeme de guilde : creation et gestion des membres. Prerequis : ← 38 (MS-3 liste d'amis)
+- [ ] Entite `Guild` (name unique, tag 3-5 chars, description, createdAt, leader: Player)
+- [ ] Entite `GuildMember` (guild, player, rank: enum master/officer/member/recruit, joinedAt)
+- [ ] Migrations + repositories
+- [ ] GuildManager : create (cout en gils), invite, accept, leave, kick, promote, demote
+- [ ] Route `GET /game/guild` : page de guilde (infos, liste membres avec rangs)
+- [ ] Route `POST /game/guild/create` : formulaire creation
+- [ ] Route `POST /game/guild/invite/{playerId}` : invitation (officier+ requis)
+- [ ] Validation : nom unique, max 1 guilde par joueur, cout creation (ex: 5000 gils)
+- [ ] Tests unitaires : creation, invitation, promotion, depart
+
+### 53 — Groupes de combat formation (M | ★★★)
+> Systeme de groupe pour jouer ensemble. Base pour le combat coop et donjons futurs. Prerequis : ← 38 (MS-3 liste d'amis)
+- [ ] Entite `Party` (leader: Player, maxSize: 4, createdAt)
+- [ ] Entite `PartyMember` (party, player, joinedAt)
+- [ ] Migration + repository
+- [ ] PartyManager : create, invite, accept, leave, kick, disband, transfer leader
+- [ ] Topic Mercure `party/{partyId}` pour notifications groupe (invite, join, leave)
+- [ ] Route `GET /game/party` : interface du groupe (membres, barres de vie)
+- [ ] Route `POST /game/party/invite/{playerId}` : invitation
+- [ ] Affichage des membres du groupe sur la carte (icone ou bordure coloree)
+- [ ] Dissolution automatique si tous les membres partent
+- [ ] Tests unitaires : creation, invitation, depart, dissolution
+
+### 56 — Presets de build (M | ★★)
+> Sauvegarde et chargement de configurations de skills. Prerequis : ← 14 (PB-1 respec basique)
+- [ ] Entite `BuildPreset` (player, name, skillSlugs JSON, createdAt)
+- [ ] Migration SQL
+- [ ] Service `BuildPresetManager` : save(Player, name), load(Player, presetId), delete(presetId)
+- [ ] `load()` = respec gratuit + acquisition auto des skills du preset (si XP suffisante)
+- [ ] Limite : 3 presets par joueur
+- [ ] Route GET/POST `/game/skills/presets` (liste, sauvegarder, charger, supprimer)
+- [ ] Template : liste des presets avec boutons Charger/Supprimer + formulaire de sauvegarde
+- [ ] Tests BuildPresetManager (save/load OK, limite atteinte, XP insuffisante pour charger)
+
+---
+
+### Piste E — Infra & qualite (‖)
+
+### 57 — Commande terrain:sync (M | ★★)
+> Commande unifiee qui orchestre tout le pipeline d'import Tiled. Prerequis : ← 44 (T2a extraction services depuis TerrainImportCommand)
+- [ ] Creer `TerrainSyncCommand` : import TMX + upsert Area + sync entites + rebuild Dijkstra + rapport diff
+- [ ] Integrer l'appel Dijkstra post-import (regeneration du cache collisions)
+- [ ] Ajouter un rapport diff (entites creees/modifiees/supprimees)
+- [ ] Mettre a jour l'agent `.claude/commands/import-terrain.md`
+
+### 58 — Parsing zones/biomes Tiled (M | ★★★)
+> Peuplement de l'entite Area depuis les objets rectangulaires de type "zone" dans Tiled. Prerequis : ← 44 (T2a extraction services)
+- [ ] Ajouter les champs biome, weather, music, lightLevel sur l'entite `Area` + migration
+- [ ] Parser les objets de type `zone`/`biome` dans TmxParser (rectangles avec proprietes)
+- [ ] Creer `AreaSynchronizer` : upsert des Area depuis les zones Tiled
+- [ ] Exposer les zones dans `/api/map/config` (coordonnees, biome, meteo, musique)
+
+### 59 — Tests E2E Panther (M | ★★)
+> Tests de parcours complets multi-pages valides via Panther. Prerequis : ← 23 (P6-3 tests fonctionnels controleurs), 42 (P6-5 tests integration evenements)
+- [ ] Parcours combat : carte → engagement mob → combat → victoire → loot → retour carte
+- [ ] Parcours quete : PNJ dialogue → accepter quete → tuer mob → rendre quete → recompense
+- [ ] Parcours craft : inventaire → atelier → crafter → verifier item cree
+
+### 60 — Minimap PixiJS (M | ★★★)
+> Overlay minimap en coin haut-droit avec points colores representant les entites. L'API /api/map/entities retourne deja toutes les positions.
+- [ ] Container PixiJS fixe en coin haut-droit (150x150px), semi-transparent
+- [ ] Points colores : blanc=joueur, rouge=mobs, bleu=PNJ, jaune=spots recolte, violet=portails
+- [ ] Viewport rectangle (zone visible) affiche en surbrillance
+- [ ] Mise a jour a chaque mouvement joueur
+- [ ] Toggle affichage (touche M ou bouton)
+
+### 61 — Barre d'action rapide (S | ★★)
+> Raccourcis clavier/boutons en bas de l'ecran carte pour utiliser consommables et sorts frequents.
+- [ ] Barre fixe en bas de l'ecran carte (4-6 slots)
+- [ ] Drag & drop items consommables depuis l'inventaire vers les slots
+- [ ] Raccourcis clavier 1-6 pour activer un slot
+- [ ] Persistance des slots en localStorage
+
+---
+
+## Vague 4 — Monde & systemes avances
+
+> **16 taches** qui dependent des Vagues 2-3.
+> Organisees en 5 pistes paralleles.
+
+---
+
+### Piste A — Contenu avance (‖)
+
+### 64 — Equipement tier 3 + slots materia (M | ★★)
+> Set avance avec slots materia integres pour les builds endgame. Prerequis : ← 29 (Equipement tier 2), 06 (Systeme materia fonctionnel)
+- [ ] Set complet 7 pieces — 4 variantes elementaires (Metal, Bete, Lumiere, Ombre)
+  - = 28 items au total
+- [ ] 1-2 slots materia sur chaque piece avancee
+- [ ] Ajouter aux loot tables des monstres lvl 15-25 et boss
+
+---
+
+### 65 — Monstres tier 2 avances lvl 15-25 (M | ★★★)
+> Monstres complexes (soigneurs, invocateurs) pour les zones de contenu avance. Prerequis : ← 47 (Monstres tier 2 sous-partie A)
+- [ ] **Sous-partie B** : 4 monstres intermediaires (lvl 15-25)
+  - Monstres plus complexes (soigneurs, invocateurs selon combat enrichi)
+  - Stats, AI patterns, resistances, loot tables
+  - Succes bestiaire (12 achievements)
+
+---
+
+### 66 — Boss de zone (M | ★★★)
+> Deux boss avec mecaniques de phases, loot unique et succes associes. Prerequis : ← 65 (Monstres tier 2 avances)
+- [ ] **Sous-partie C** : 2 boss de zone avec mecaniques de phases
+  - Boss Foret (element Bete/Terre, 2 phases)
+  - Boss Mine (element Metal/Ombre, 3 phases)
+  - Loot unique (equipement tier 3, materia rare)
+  - Succes boss (2 achievements)
+
+---
+
+### 67 — Foret des murmures (L | ★★★)
+> Carte de contenu lvl 5-15 avec monstres, PNJ, spots de recolte et quetes de zone. Prerequis : ← 30 (Teleportation entre cartes), 28 (Village central hub), 47 (Monstres tier 1)
+- [ ] **C-10a — Foret des murmures (lvl 5-15)**
+  - Design Tiled (~60x60), arbres, clairiere, riviere
+  - Import BDD + portails vers hub
+  - Placement 8-10 mobs (monstres C-3 + C-7a)
+  - 3-5 PNJ (garde forestier, herboriste, ermite)
+  - 5-8 spots de recolte (herbes, bois) — si v0.4 recolte pret
+  - 2-3 quetes zone (si v0.4 quetes pret)
+
+---
+
+### 68 — Mines profondes (L | ★★★)
+> Carte de contenu lvl 10-25 avec tunnels, boss de mine et filons a exploiter. Prerequis : ← 30 (Teleportation entre cartes), 47 (Monstres tier 1), 66 (Boss de zone)
+- [ ] **C-10b — Mines profondes (lvl 10-25)**
+  - Design Tiled (~60x30), tunnels, salles, filons
+  - Import BDD + portails vers hub
+  - Placement 8-10 mobs (monstres C-7a + C-7b)
+  - Boss de mine (C-7c)
+  - 3-5 PNJ (mineur, ingenieur, marchand souterrain)
+  - 5-8 spots de recolte (minerais) — si v0.4 recolte pret
+  - Coffre tresor (si systeme implemente)
+
+---
+
+### Piste B — Combat avance (‖)
+
+### 69 — Monstres invocateurs (M | ★★)
+> Monstres capables d'invoquer des renforts en cours de combat, rendant les combats dynamiques. Prerequis : ← 49 (Monstres soigneurs / multi-mobs)
+- [ ] Nouvelle action IA `summon` dans MobActionHandler
+- [ ] Creer un Mob en cours de combat (ajout a la Fight, insertion dans la timeline)
+- [ ] Limite d'invocation (max 2 renforts par combat)
+- [ ] FightTurnResolver : recalculer la timeline quand un mob est ajoute
+- [ ] Fixtures : monstre invocateur (ex: Necromancien invoque des Squelettes)
+- [ ] Message de log specifique ("X invoque un Y !")
+
+---
+
+### 70 — Slots materia lies (M | ★★)
+> Synergie entre slots adjacents : bonus elementaire si les materia sockettees partagent le meme element. Prerequis : ← 06 (Systeme materia fonctionnel)
+- [ ] Ajouter un champ `linkedSlotId` (nullable) sur l'entite Slot (migration)
+- [ ] Logique `LinkedMateriaResolver` : si 2 slots lies ont des materia du meme element, bonus +15% degats
+- [ ] Integrer le bonus dans CombatCapacityResolver
+- [ ] Afficher le lien entre slots dans le template inventaire (trait visuel)
+- [ ] Ajouter des slots lies sur quelques equipements avances dans les fixtures
+
+---
+
+### 71 — World boss spawn & combat (L | ★★★)
+> Boss mondial spawn via evenements, visible sur la carte, combat multi-joueurs avec loot a contribution. Prerequis : ← 21 (Executeur GameEvent), 35 (Annonces Mercure evenements)
+- [ ] **Sous-phase A — Spawn** : GameEventExecutor traite `boss_spawn` → creer un Mob boss sur une map donnee (params JSON)
+- [ ] **Sous-phase A** : Afficher le world boss sur la carte avec un sprite/aura distinctif
+- [ ] **Sous-phase A** : Despawn automatique quand l'event expire (si non vaincu)
+- [ ] **Sous-phase B — Combat multi-joueurs** : Permettre a plusieurs joueurs d'engager le meme Mob (Fight partage)
+- [ ] **Sous-phase B** : `ContributionTracker` : tracker les degats infliges par chaque joueur pendant le combat
+- [ ] **Sous-phase B** : Loot base sur la contribution (top 3 = loot garanti, autres = loot probabiliste)
+- [ ] Tester : spawn world boss via event admin, 2+ joueurs l'engagent, loot distribue
+
+---
+
+### Piste C — Donjons & events (‖)
+
+### 72 — Donjons entite & entree (M | ★★★)
+> Structure de donjon instancie : entite, difficultes, cooldown et point d'entree. Prerequis : ← 30 (Teleportation entre cartes)
+- [ ] Entite `Dungeon` : slug, name, description, map (ManyToOne vers la carte du donjon), minLevel (int), maxPlayers (int)
+- [ ] Entite `DungeonRun` : dungeon, player(s), startedAt, completedAt, difficulty (enum Normal/Heroique/Mythique)
+- [ ] Enum `DungeonDifficulty` : Normal, Heroique, Mythique (avec multiplicateurs HP/degats mobs)
+- [ ] Migration + fixtures : 1 donjon de test (ex: "Racines de la foret", lie a une carte existante ou nouvelle)
+- [ ] Route `/game/dungeon/{slug}/enter` : creer un DungeonRun, teleporter le joueur dans la carte du donjon
+- [ ] Route `/game/dungeon/{slug}` : fiche du donjon (description, difficulte, loot possible, cooldown)
+- [ ] Cooldown entre runs (ex: 1h Normal, 4h Heroique, 24h Mythique)
+
+---
+
+### 79 — Evenements bonus/festivals (S | ★★)
+> Integration des types xp_bonus et drop_bonus dans les calculs de jeu, plus quetes et cosmetiques d'evenement. Prerequis : ← 21 (Executeur GameEvent), 35 (Annonces Mercure evenements)
+- [ ] Integrer `drop_bonus` dans LootGenerator : multiplier les probabilites de drop pendant l'event actif
+- [ ] Integrer `xp_bonus` dans les systemes d'XP (combat, recolte, craft) : multiplier l'XP gagnee
+- [ ] Quetes d'evenement : quetes temporaires liees a un GameEvent (disparaissent a la fin)
+- [ ] Cosmetiques d'evenement : items decoratifs exclusifs comme recompenses
+
+---
+
+### Piste D — Social avance (‖)
+
+### 73 — Guildes chat (S | ★★)
+> Canal de communication dedie a la guilde via un nouveau topic Mercure. Prerequis : ← 52 (Guildes fondation)
+- [ ] Nouveau channel `CHANNEL_GUILD` dans ChatMessage
+- [ ] Topic Mercure `chat/guild/{guildId}` dans ChatManager
+- [ ] Methodes `sendGuildMessage()` et `getGuildHistory()` dans ChatManager
+- [ ] Onglet "Guilde" dans le chat (stimulus controller)
+- [ ] Verification d'appartenance a la guilde avant envoi
+- [ ] Tests unitaires : envoi, historique, joueur hors guilde refuse
+
+---
+
+### 74 — Guildes coffre partage (M | ★★)
+> Inventaire collectif de guilde avec systeme de permissions par rang et tracabilite des actions. Prerequis : ← 52 (Guildes fondation)
+- [ ] Entite `GuildVault` (guild, items: Collection, maxSlots: int)
+- [ ] Entite `GuildVaultLog` (guild, player, action: deposit/withdraw, item, quantity, createdAt)
+- [ ] GuildVaultManager : deposit, withdraw (permissions par rang)
+- [ ] Route `GET /game/guild/vault` : affichage coffre + logs recents
+- [ ] Route `POST /game/guild/vault/deposit` et `POST /game/guild/vault/withdraw`
+- [ ] Permissions : recruit = depot seul, member+ = retrait, officier+ = tout
+- [ ] Tests unitaires : depot, retrait, permissions, logs
+
+---
+
+### 75 — PNJ routines (L | ★★)
+> Les PNJ se deplacent selon un horaire in-game, animes sur la carte via Mercure. Prerequis : ← 20 (Horloge in-game & API temps)
+- [ ] Entite `PnjSchedule` (pnj, hour, coordinates, map) — table horaire du PNJ
+- [ ] Migration SQL
+- [ ] `PnjRoutineService` : deplace les PNJ selon l'heure in-game courante
+- [ ] Commande Scheduler `app:pnj:routine` (toutes les 5 min)
+- [ ] Topic Mercure `map/pnj-move` pour animer le deplacement cote client
+- [ ] Animation de marche du PNJ dans le renderer PixiJS (reutiliser SpriteAnimator)
+- [ ] Fixtures : 3-5 PNJ avec routines simples (maison ↔ travail ↔ taverne)
+- [ ] Gerer le cas ou un joueur parle a un PNJ qui se deplace
+
+---
+
+### Piste E — Progression & equilibrage (‖)
+
+### 76 — Sets d'equipement (M | ★★)
+> Bonus progressifs quand plusieurs pieces du meme set sont portees simultanement. Prerequis : ← 17 (Raretes d'equipement), 29 (Equipement tier 2)
+- [ ] Entite `EquipmentSet` (slug, name, description)
+- [ ] Entite `EquipmentSetBonus` (set, requiredPieces, bonusType, bonusValue)
+- [ ] Champ `equipmentSet` (ManyToOne, nullable) sur Item + migration
+- [ ] Service `EquipmentSetResolver` : detecte les sets actifs depuis l'equipement du joueur
+- [ ] Bonus appliques dans le combat (CombatSkillResolver) et affiches dans l'inventaire
+- [ ] Fixtures : 2-3 sets de base (Set du Gardien 2/3/4 pieces, Set de l'Ombre 2/3 pieces)
+- [ ] Affichage dans inventaire : pieces du set equipees, bonus actifs/inactifs
+- [ ] Tests EquipmentSetResolver
+
+---
+
+### 77 — Effets ambiance par zone (M | ★★★)
+> Detection de la zone courante du joueur et application d'effets visuels dynamiques en frontend. Prerequis : ← 58 (Parsing zones/biomes depuis Tiled)
+- [ ] Charger les zones depuis l'API au chargement de la carte
+- [ ] Detecter la zone courante du joueur (point-in-rect)
+- [ ] Appliquer les effets par zone : teinte/overlay, particules (pluie, brume, poussiere)
+- [ ] Transition fluide entre zones (fondu des effets)
+
+---
+
+### 78 — Equilibrage & rapport (M | ★★)
+> Commande CLI de rapport d'equilibrage et document de reference pour ajuster les stats du jeu. Prerequis : ← 15 (Consommables de base), 17 (Raretes d'equipement), 28 (Monstres tier 2 sous-partie A), 29 (Equipement tier 2)
+- [ ] Commande CLI `app:balance:report` :
+  - Courbe XP par domaine (actuel vs theorique)
+  - Stats monstres par palier (HP, degats, XP donne)
+  - Table de drop rates par tier
+  - Alertes si desequilibre detecte (monstre trop fort/faible, drop rate aberrant)
+- [ ] Document de reference `docs/BALANCE.md` :
+  - Courbe de progression XP cible par domaine
+  - Bareme des prix boutique (ratio achat/vente 30-50%)
+  - Degats/HP attendus par palier de monstre
+  - Temps de recolte et rendement par skill level
+- [ ] Ajustement des stats monstres/items si desequilibre constate
+
+
+---
+
+## Vague 5 — Endgame & contenu avance
+
+> **11 taches** de contenu endgame et systemes avances.
+> Organisees en 4 pistes paralleles.
+
+---
+
+### Piste A — Narration avancee (‖)
+
+### 80 — Trame Acte 2 : Les Fragments (L | ★★★)
+> 4 chaines de quetes dans 4 zones. Prerequis : ← 46, 67, 68
+> A decouper en 4 sous-phases (1 par fragment/zone) quand les zones seront pretes.
+- [ ] Fragment Foret : chaine de 3-4 quetes (exploration, combat, enigme PNJ)
+- [ ] Fragment Mines : chaine de 3-4 quetes (recolte, craft, boss minier)
+- [ ] Fragment Marais : chaine de 3-4 quetes (enquete, livraison, combat)
+- [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
+- [ ] Chaque fragment donne un item cle collectible
+
+### 86 — Quetes de decouverte cachees (S | ★★)
+> Quetes non visibles dans le journal tant que non declenchees. Recompense l'exploration. Prerequis : ← 13
+- [ ] Champ `isHidden` (bool) sur Quest + champ `triggerCondition` (JSON)
+- [ ] HiddenQuestTriggerListener : ecoute PlayerMoveEvent, SpotHarvestEvent, MobDeadEvent
+- [ ] Si condition remplie, creer automatiquement le PlayerQuest + notification
+- [ ] 3-4 quetes cachees dans les fixtures (lieu secret, mob rare, action inhabituelle)
+
+### 87 — Types quetes avances : enquete et defi boss (M | ★★)
+> Mecaniques plus complexes, a faire quand le contenu de base est solide. Prerequis : ← 31, 13
+- [ ] Type `enquete` : requirements.talk_to = [{pnj_id, condition}], tracking sur dialogue PNJ
+- [ ] Type `boss_challenge` : requirements.boss = {monster_slug, conditions: {no_heal, solo, time_limit}}
+- [ ] Conditions de defi trackees dans le combat (FightController enregistre les contraintes)
+- [ ] 2 quetes fixtures : 1 enquete (parler a 3 PNJ), 1 defi de boss
+
+---
+
+### Piste B — Combat & PvP (‖)
+
+### 81 — Combat cooperatif (L | ★★★)
+> Combat a plusieurs joueurs contre des groupes de monstres. Prerequis : ← 53, 49
+> **Attention** : phase large, a re-decouper au moment de l'implementation.
+- [ ] FightController : creer un combat avec plusieurs joueurs du meme groupe
+- [ ] Timeline multi-joueurs dans FightTurnResolver
+- [ ] Chaque joueur joue son tour independamment (Mercure pour notifier le tour actif)
+- [ ] Template combat : afficher tous les joueurs allies avec leurs barres de vie
+- [ ] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
+- [ ] XP partagee (repartition equitable entre participants)
+- [ ] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
+
+### 82 — Duels PvP (M | ★★)
+> PvP consensuel simple : defi 1v1 sans classement. Prerequis : ← 38
+- [ ] Route `POST /game/duel/challenge/{playerId}` : envoyer un defi
+- [ ] Notification Mercure au joueur defie (accepter/refuser)
+- [ ] Creer un Fight PvP (joueur vs joueur, pas de mob)
+- [ ] Adapter FightTurnResolver pour PvP (2 joueurs alternent)
+- [ ] Pas de perte d'items/gils (combat amical)
+- [ ] Ecran de resultat (victoire/defaite)
+- [ ] Tests : defi, acceptation, combat, resultat
+
+### 83 — Invasions (M | ★★)
+> Vagues de monstres cooperatives via GameEvent. Prerequis : ← 21, 35
+- [ ] GameEventExecutor traite `invasion` : spawner N mobs supplementaires sur une zone (params JSON : mobSlugs, count, mapId)
+- [ ] Vagues progressives : 3 vagues espacees de 2 min, difficulte croissante
+- [ ] Tracker les kills de tous les joueurs pendant l'invasion
+- [ ] Recompenses collectives si objectif atteint (X mobs tues avant la fin)
+- [ ] Nettoyer les mobs d'invasion a la fin de l'event
+
+---
+
+### Piste C — Donjons & events (‖)
+
+### 84 — Donjons mecaniques & loot (L | ★★★)
+> Rend les donjons interessants avec des mecaniques propres. Prerequis : ← 72, 37
+> A decouper en sous-phases si necessaire.
+- [ ] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
+- [ ] Boss de fin de donjon avec mecaniques de phase (reutiliser bossPhases existant)
+- [ ] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
+- [ ] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
+- [ ] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
+
+### 85 — Evenements aleatoires (M | ★★)
+> Reutilise l'entite `GameEvent` existante. Ajoute du dynamisme au monde. Prerequis : ← 21
+- [ ] `RandomEventGenerator` : selectionne un type d'evenement aleatoire selon des poids configurables
+- [ ] Types : `invasion` (vague de mobs), `merchant` (marchand itinerant temporaire), `aurora` (buff XP zone)
+- [ ] Commande Scheduler `app:events:random` (toutes les 30-60 min, probabilite 30%)
+- [ ] Creer automatiquement un `GameEvent` avec duree limitee (10-30 min)
+- [ ] Pour `invasion` : spawner des mobs temporaires sur la zone ciblee
+- [ ] Pour `merchant` : creer un PNJ temporaire avec boutique speciale
+- [ ] Pour `aurora` : activer un buff XP via Mercure broadcast
+- [ ] Notification Mercure `game/event` pour alerter les joueurs connectes
+- [ ] Bandeau visuel dans le HUD quand un evenement est actif
+
+---
+
+### Piste D — Divers (‖)
+
+### 88 — Stock boutique & restock (M | ★)
+> Actuellement les boutiques ont un stock illimite. Prerequis : ← 25
+- [ ] Ajouter champs stock/maxStock/restockInterval dans la structure shopItems (JSON)
+- [ ] ShopRestockScheduler : commande/scheduler qui restock les boutiques periodiquement
+- [ ] Afficher le stock restant dans le template boutique
+- [ ] Bloquer l'achat si stock = 0
+
+### 89 — Enchantements temporaires (S | ★)
+> Alchimiste applique un buff temporaire sur une arme/armure. Prerequis : ← 26
+- [ ] Entite `Enchantment` (playerItem, type, value, expiresAt)
+- [ ] Migration SQL
+- [ ] Service `EnchantmentManager` : apply(PlayerItem, enchantType, duration), tick(), remove()
+- [ ] Route POST `/game/craft/enchant` (necessite skill alchimiste + ingredients)
+- [ ] Expiration automatique (verifiee au debut de chaque combat ou via Scheduler)
+- [ ] Fixtures : 3-4 enchantements (Tranchant de feu +5 degats feu 1h, Protection de glace +3 defense 30min, etc.)
+- [ ] Tests EnchantmentManager
+
+### 90 — Herbier & catalogue minier (S | ★★)
+> Fiche par ressource, premiere decouverte, completion. Prerequis : ← 28
+- [ ] Herbier & catalogue minier : fiche par ressource, premiere decouverte, completion
+
+
+---
+
+## Vague 6 — Long terme & polish final
+
+> **13 taches** a planifier quand le contenu de base est solide.
+> Aucune urgence — objectifs long terme.
+
+---
+
+### 91 — Arene PvP classee (L | ★★)
+> Systeme competitif avec matchmaking et classement. Prerequis : ← 82
+> **Attention** : phase large, a re-decouper au moment de l'implementation.
+- [ ] Entite `ArenaRating` (player, rating ELO, wins, losses, season)
+- [ ] Entite `ArenaSeason` (number, startDate, endDate, active)
+- [ ] File d'attente matchmaking (recherche adversaire +/- 200 ELO)
+- [ ] Calcul ELO apres chaque match
+- [ ] Route `GET /game/arena` : classement, stats personnelles, bouton recherche
+- [ ] Recompenses de fin de saison (titres, items cosmetiques)
+- [ ] Tests : matchmaking, calcul ELO, classement
+
+### 92 — Classement guildes (S | ★)
+> Tableau de classement simple par points de guilde. Prerequis : ← 52
+- [ ] Champ `points` sur Guild (incremente par succes membres, quetes, PvP)
+- [ ] Route `GET /game/guilds/ranking` : classement pagine
+- [ ] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent, ArenaDuelEndedEvent
+- [ ] Tests : attribution points, classement ordonne
+
+### 93 — Quetes de guilde (M | ★★)
+> Objectifs collectifs hebdomadaires. Prerequis : ← 52, 92
+- [ ] Entite `GuildQuest` (guild, type: kill/collect/craft, target, progress, goal, reward, expiresAt)
+- [ ] GuildQuestManager : generer 3 quetes hebdomadaires, tracker progression, distribuer recompenses
+- [ ] Listeners sur MobDeadEvent, SpotHarvestEvent, CraftEvent pour progression collective
+- [ ] Route `GET /game/guild/quests` : liste quetes actives avec barres de progression
+- [ ] Recompenses : gils + points de guilde pour tous les membres
+- [ ] Tests : progression, completion, recompenses
+
+### 94 — Trame Acte 3 : La Convergence (L | ★★★)
+> Donjon final. Prerequis : ← 80, 72
+> A detailler quand les prerequis seront prets.
+- [ ] Donjon final accessible apres les 4 fragments
+- [ ] 3-5 salles avec puzzles, mobs, boss final
+- [ ] Dialogues de conclusion et epilogue
+- [ ] Recompenses de fin de trame (titre, equipement legendaire unique)
+
+### 95 — Saisonnalite & festivals (S | ★)
+> Contenu evenementiel saisonnier. Prerequis : ← 20, 85
+- [ ] Detection de la saison reelle (printemps/ete/automne/hiver) dans `GameTimeService`
+- [ ] Poids meteo ajustes par saison (plus de neige en hiver, plus d'orages en ete)
+- [ ] Entite `Festival` (slug, name, season, startDay, endDay, quests, rewards)
+- [ ] 4 festivals de base (1 par saison) — contenu a definir plus tard
+- [ ] Decorations saisonnieres sur la carte (sprites overlays)
+
+### 96 — Tournois PvP (XL | ★★)
+> Prerequis : ← 91. Trop dependant d'autres systemes pour le court terme.
+- [ ] Entite `Tournament` : type, bracket, dates, recompenses
+- [ ] Inscription et matchmaking par bracket
+- [ ] Deroulement automatique (ou semi-auto) des rounds
+- [ ] Classement et recompenses saisonnieres
+
+### 97 — Parsing animations tiles (S | ★★)
+> Les fichiers TSX contiennent des animations. Le backend les ignore. Prerequis : ← 44
+- [ ] Etendre le parsing TSX dans TmxParser : extraire les frames d'animation (tileId, duration)
+- [ ] Exposer les animations dans `/api/map/config` (tableau par GID : frames + durations)
+
+### 98 — Rendu tiles animees PixiJS (M | ★★★)
+> Remplacer PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees. Prerequis : ← 97
+- [ ] Dans `_renderCell()` : detecter les tiles animees depuis les donnees API
+- [ ] Creer des `PIXI.AnimatedSprite` avec les frames/durations pour ces tiles
+- [ ] Gerer le cycle d'animation (elapsed time, frame index) dans le ticker
+- [ ] Tester visuellement (eau animee, torches, etc.)
+
+### 99 — Transitions de zone (S | ★)
+> Fondu au noir lors du changement de carte/teleportation. Prerequis : ← 30
+- [ ] Overlay noir plein ecran avec alpha 0→1→0 (PIXI.Graphics + GSAP ou requestAnimationFrame)
+- [ ] Declenchement sur teleportation portail
+- [ ] Declenchement sur changement de map
+
+### 100 — Sons basiques (L | ★★)
+> Optionnel. Ajoute de l'immersion mais necessite des assets sonores.
+- [ ] Integrer Howler.js via importmap
+- [ ] Sons d'interface : clic bouton, ouverture menu, notification
+- [ ] Sons de combat : attaque, sort, critique, mort
+- [ ] Sons d'ambiance : loop par biome (foret, grotte, village)
+- [ ] Bouton mute/volume dans les parametres joueur
+- [ ] Persistance preference son en localStorage
+
+### 101 — Monitoring basique (M | ★)
+> Utile en production pour detecter les problemes, mais pas bloquant pour le gameplay.
+- [ ] Endpoint `/health` (status BDD, Mercure, cache)
+- [ ] Metriques Prometheus via `prometheus-metrics-bundle` (requetes/s, temps reponse, erreurs)
+- [ ] Dashboard Grafana minimal (4-5 panels : requetes, latence, erreurs, joueurs connectes)
+- [ ] Alertes basiques (latence > 2s, erreurs > 5/min)
+
+### 102 — Index DB composites (S | ★★)
+> Ameliore les performances sur les tables critiques sans changement de code.
+- [ ] Migration : index composite `(player_id, map_id)` sur table player/position
+- [ ] Migration : index composite `(fight_id, turn)` sur FightLog
+- [ ] Migration : index sur `(player_id, quest_id)` sur PlayerQuest
+- [ ] Migration : index sur `(monster_slug, player_id)` sur BestiaryEntry
+
+### 103 — Achievements caches & categories succes (S | ★★)
+> Enrichissement du systeme de succes existant.
+- [ ] Achievements caches : decouverts par des actions inhabituelles
+- [ ] Categories de succes additionnelles : Recolte, Craft, Social, Secrets
+
+---
+
+### ~~Escorte~~ (RETIRE)
+> Le type "escorte" necessite un systeme de pathfinding PNJ, de combat en temps reel
+> et d'IA de suivi qui n'existent pas. Complexite XL pour un gain faible.
+> Reporte apres les systemes multijoueur/groupes si toujours pertinent.
+
+### ~~Arbres de talent etendus~~ (RETIRE)
+> Les 32 domaines ont deja 13-24 skills chacun (838 skills total). Les arbres sont deja
+> etendus avec 3-5 tiers et des ultimates. Considere comme complete (Phase GD-6).
