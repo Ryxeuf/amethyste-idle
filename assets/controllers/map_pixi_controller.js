@@ -895,7 +895,7 @@ export default class extends Controller {
             day:   { color: 0x000000, alpha: 0 },
             dawn:  { color: 0xff8c42, alpha: 0.12 },
             dusk:  { color: 0x1a0533, alpha: 0.2 },
-            night: { color: 0x0a0a2e, alpha: 0.35 },
+            night: { color: 0x0a0a2e, alpha: 0.45 },
         };
         const c = colors[time] || colors.day;
         this._ambientOverlay.fill({ color: c.color, alpha: c.alpha });

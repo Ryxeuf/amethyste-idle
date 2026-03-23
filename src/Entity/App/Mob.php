@@ -65,6 +65,12 @@ class Mob implements CharacterInterface
     #[ORM\Column(name: 'level', type: 'integer')]
     protected int $level;
 
+    /**
+     * Si true, le mob n'apparait que la nuit (20h-6h in-game).
+     */
+    #[ORM\Column(name: 'nocturnal', type: 'boolean', options: ['default' => false])]
+    private bool $nocturnal = false;
+
     public function getName(): string
     {
         return $this->getMonster()->getName();
@@ -165,5 +171,15 @@ class Mob implements CharacterInterface
     public function setLevel(int $level): void
     {
         $this->level = $level;
+    }
+
+    public function isNocturnal(): bool
+    {
+        return $this->nocturnal;
+    }
+
+    public function setNocturnal(bool $nocturnal): void
+    {
+        $this->nocturnal = $nocturnal;
     }
 }

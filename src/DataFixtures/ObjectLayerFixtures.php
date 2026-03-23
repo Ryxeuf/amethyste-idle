@@ -86,6 +86,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '108.34',
                 'requiredToolType' => 'pickaxe',
                 'respawnDelay' => 300,
+                'nightOnly' => true,
                 'items' => [['slug' => 'ore-silver', 'min' => 1, 'max' => 2]],
             ],
             'spot-gold-xs' => [
@@ -154,6 +155,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '74.9',
                 'requiredToolType' => 'sickle',
                 'respawnDelay' => 1800,
+                'nightOnly' => true,
                 'items' => [['slug' => 'plant-mandrake', 'min' => 1, 'max' => 1]],
             ],
 
@@ -216,6 +218,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             $objectLayer->setItems($data['items']);
             $objectLayer->setRespawnDelay($data['respawnDelay']);
             $objectLayer->setRequiredToolType($data['requiredToolType']);
+            $objectLayer->setNightOnly($data['nightOnly'] ?? false);
             $objectLayer->setCreatedAt(new \DateTime());
             $objectLayer->setUpdatedAt(new \DateTime());
 

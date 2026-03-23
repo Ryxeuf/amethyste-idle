@@ -11,6 +11,7 @@ use App\GameEngine\Job\ButcheringManager;
 use App\GameEngine\Job\FishingManager;
 use App\GameEngine\Job\HarvestManager;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,6 +31,7 @@ class GatheringController extends AbstractController
         private readonly ButcheringManager $butcheringManager,
         private readonly HarvestManager $harvestManager,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -60,6 +62,10 @@ class GatheringController extends AbstractController
                 'error' => 'Spot indisponible.',
                 'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
             ], 400);
+        }
+
+        if ($spot->isNightOnly() && $this->gameTimeService->getTimeOfDay() !== 'night') {
+            return $this->json(['error' => 'Ce spot n\'est accessible que la nuit.'], 400);
         }
 
         if (!$this->playerActionHelper->canHarvest($spot->getSlug())) {

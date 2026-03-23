@@ -45,6 +45,18 @@ class Pnj
     protected string $coordinates;
 
     /**
+     * Heure d'ouverture de la boutique (0-23 in-game). Null = toujours ouvert.
+     */
+    #[ORM\Column(name: 'opens_at', type: 'integer', nullable: true)]
+    private ?int $opensAt = null;
+
+    /**
+     * Heure de fermeture de la boutique (0-23 in-game). Null = toujours ouvert.
+     */
+    #[ORM\Column(name: 'closes_at', type: 'integer', nullable: true)]
+    private ?int $closesAt = null;
+
+    /**
      * Get id.
      *
      * @return int
@@ -179,5 +191,44 @@ class Pnj
     public function isMerchant(): bool
     {
         return $this->shopItems !== null && count($this->shopItems) > 0;
+    }
+
+    public function getOpensAt(): ?int
+    {
+        return $this->opensAt;
+    }
+
+    public function setOpensAt(?int $opensAt): void
+    {
+        $this->opensAt = $opensAt;
+    }
+
+    public function getClosesAt(): ?int
+    {
+        return $this->closesAt;
+    }
+
+    public function setClosesAt(?int $closesAt): void
+    {
+        $this->closesAt = $closesAt;
+    }
+
+    /**
+     * Vérifie si la boutique est ouverte à l'heure in-game donnée.
+     * Si opensAt/closesAt sont null, la boutique est toujours ouverte.
+     */
+    public function isShopOpen(int $gameHour): bool
+    {
+        if ($this->opensAt === null || $this->closesAt === null) {
+            return true;
+        }
+
+        // Cas normal : opensAt < closesAt (ex: 8h-18h)
+        if ($this->opensAt < $this->closesAt) {
+            return $gameHour >= $this->opensAt && $gameHour < $this->closesAt;
+        }
+
+        // Cas nuit : opensAt > closesAt (ex: 20h-6h)
+        return $gameHour >= $this->opensAt || $gameHour < $this->closesAt;
     }
 }

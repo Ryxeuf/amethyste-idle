@@ -9,7 +9,15 @@
         <div class="game-card-header flex items-center justify-between">
             <div>
                 <h2 class="text-base sm:text-lg font-semibold text-white">{{ pnj.name }}</h2>
-                <p class="text-purple-200/70 text-xs">Marchand</p>
+                <p class="text-purple-200/70 text-xs">
+                    Marchand
+                    {% if opensAt is not null and closesAt is not null %}
+                        <span class="ml-1">({{ opensAt }}h - {{ closesAt }}h)</span>
+                    {% endif %}
+                    {% if not isOpen %}
+                        <span class="ml-1 text-red-400 font-semibold">— Fermé</span>
+                    {% endif %}
+                </p>
             </div>
             <div class="flex items-center gap-3">
                 <span class="text-yellow-400 font-bold text-sm sm:text-base" id="player-gils">{{ player.gils }} Gils</span>
@@ -17,6 +25,12 @@
             </div>
         </div>
         <div class="game-card-body">
+
+        {% if not isOpen %}
+            <div class="bg-red-900/30 border border-red-700/50 rounded-lg p-4 mb-4 text-center">
+                <p class="text-red-300 text-sm">La boutique est fermée. Revenez entre {{ opensAt }}h et {{ closesAt }}h.</p>
+            </div>
+        {% endif %}
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {# Buy section #}

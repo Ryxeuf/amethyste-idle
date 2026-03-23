@@ -5,6 +5,7 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
+use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +20,7 @@ class ShopController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -32,6 +34,9 @@ class ShopController extends AbstractController
             throw $this->createNotFoundException('Boutique introuvable');
         }
 
+        $gameHour = $this->gameTimeService->getHour();
+        $isOpen = $pnj->isShopOpen($gameHour);
+
         $player = $this->playerHelper->getPlayer();
         $shopItems = $this->getShopItems($pnj);
 
@@ -39,6 +44,9 @@ class ShopController extends AbstractController
             'pnj' => $pnj,
             'shopItems' => $shopItems,
             'player' => $player,
+            'isOpen' => $isOpen,
+            'opensAt' => $pnj->getOpensAt(),
+            'closesAt' => $pnj->getClosesAt(),
         ]);
     }
 
@@ -50,6 +58,10 @@ class ShopController extends AbstractController
         $pnj = $this->entityManager->getRepository(Pnj::class)->find($id);
         if (!$pnj || !$pnj->isMerchant()) {
             return new JsonResponse(['error' => 'Boutique introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!$pnj->isShopOpen($this->gameTimeService->getHour())) {
+            return new JsonResponse(['error' => 'La boutique est fermée.'], Response::HTTP_BAD_REQUEST);
         }
 
         $data = json_decode($request->getContent(), true);
