@@ -5,12 +5,14 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\GameEngine\Progression\SynergyCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CombatSkillResolver
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly SynergyCalculator $synergyCalculator,
     ) {
     }
 
@@ -117,6 +119,12 @@ class CombatSkillResolver
             $bonuses['hit'] += $skill->getHit();
             $bonuses['critical'] += $skill->getCritical();
             $bonuses['life'] += $skill->getLife();
+        }
+
+        // Ajouter les bonus de synergies cross-domaine
+        $synergyBonuses = $this->synergyCalculator->getSynergyBonuses($player);
+        foreach ($synergyBonuses as $stat => $value) {
+            $bonuses[$stat] += $value;
         }
 
         return $bonuses;

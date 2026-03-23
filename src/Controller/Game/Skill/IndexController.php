@@ -6,6 +6,7 @@ use App\Dto\Domain\DomainModel;
 use App\Dto\Domain\PlayerDomain;
 use App\Entity\Game\Domain;
 use App\GameEngine\Progression\SkillRespecManager;
+use App\GameEngine\Progression\SynergyCalculator;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
@@ -25,6 +26,7 @@ class IndexController extends AbstractController
         private readonly PlayerSkillHelper $skillHelper,
         private readonly PlayerHelper $playerHelper,
         private readonly SkillRespecManager $respecManager,
+        private readonly SynergyCalculator $synergyCalculator,
     ) {
     }
 
@@ -45,6 +47,7 @@ class IndexController extends AbstractController
             'skillCount' => $player ? $player->getSkills()->count() : 0,
             'totalUsedPoints' => $player ? $this->skillHelper->getTotalUsedPoints($player) : 0,
             'maxTotalPoints' => PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS,
+            'synergies' => $player ? $this->synergyCalculator->getAllSynergiesWithStatus($player) : [],
         ]);
     }
 

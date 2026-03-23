@@ -84,6 +84,50 @@
             {% endif %}
         </div>
 
+        {# Synergies cross-domaine #}
+        {% if synergies is not empty %}
+            <div class="mb-4 sm:mb-6 game-card overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-800 to-indigo-800 px-4 py-3 flex items-center justify-between">
+                    <h2 class="text-base sm:text-lg font-bold text-white">Synergies cross-domaine</h2>
+                    <span class="text-xs text-white/70">
+                        {% set activeCount = synergies|filter(s => s.active)|length %}
+                        {{ activeCount }}/{{ synergies|length }} actives
+                    </span>
+                </div>
+                <div class="p-3 sm:p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {% for entry in synergies %}
+                        {% set synergy = entry.synergy %}
+                        <div class="rounded-lg border p-3 transition-all {{ entry.active ? 'border-purple-500/50 bg-purple-900/20' : 'border-gray-700 bg-gray-800/50 opacity-60' }}">
+                            <div class="flex items-center justify-between mb-1.5">
+                                <h3 class="text-sm font-semibold {{ entry.active ? 'text-purple-300' : 'text-gray-400' }}">{{ synergy.name }}</h3>
+                                {% if entry.active %}
+                                    <span class="text-xs bg-purple-600/50 text-purple-200 px-2 py-0.5 rounded-full">Active</span>
+                                {% else %}
+                                    <span class="text-xs bg-gray-700 text-gray-500 px-2 py-0.5 rounded-full">Inactive</span>
+                                {% endif %}
+                            </div>
+                            <p class="text-xs text-gray-400 mb-2">{{ synergy.description }}</p>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-500">
+                                    {{ synergy.domainA.title }} + {{ synergy.domainB.title }}
+                                </span>
+                                <span class="{{ entry.active ? 'text-green-400' : 'text-gray-500' }} font-medium">
+                                    +{{ synergy.bonusValue }} {{ synergy.bonusType }}
+                                </span>
+                            </div>
+                            {% if not entry.active %}
+                                <div class="mt-2 text-xs text-gray-600">
+                                    {{ entry.xpA }}/{{ synergy.activationThreshold }} XP {{ synergy.domainA.title }}
+                                    &middot;
+                                    {{ entry.xpB }}/{{ synergy.activationThreshold }} XP {{ synergy.domainB.title }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
         {# Domain sections #}
         {% for domain in domains %}
             <div class="mb-4 sm:mb-6 game-card overflow-hidden">
