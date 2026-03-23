@@ -497,3 +497,15 @@
 - [x] Fixtures : 3 recompenses par faction (Ami, Honore, Exalte) — remises, bonus stats, bonus combat
 - [x] Affichage recompenses debloquees/verrouillees sur la page factions
 - [x] Migration SQL : table `game_faction_rewards` + colonne `faction_id` sur `game_monsters`
+
+---
+
+## 26 — Recettes de craft fixtures (2026-03-23) ✅
+
+> 10 recettes de craft couvrant les 4 professions d'artisanat : forge, tannerie, alchimie, joaillerie.
+
+- [x] `RecipeFixtures` : 10 recettes de base (4 forge, 3 tannerie, 2 alchimie, 1 joaillerie)
+- [x] 4 nouveaux items craftables : dague en fer, bouclier en fer, casque en fer, anneau de cuivre
+- [x] Correction `CraftingController` : types de craft alignes sur les slugs de domaine (forgeron, tanneur, alchimiste, joaillier)
+- [x] Correction template artisanat : labels francais corrects pour les onglets
+- [x] Ingredients utilises : minerais (fer, cuivre), cuirs (brut, epais), plantes (menthe, sauge, lavande)
