@@ -90,7 +90,7 @@ VAGUE 3 (depend de Vague 2)
   ├─ ✅ 60 Minimap PixiJS (FAIT)
   ├─ 61 Barre d'action rapide (∅)
   ├─ ✅ 62 Particules combat/recolte (FAIT)
-  └─ 63 Flash elementaire combat (∅)
+  └─ ✅ 63 Flash elementaire combat (FAIT)
 ```
 
 ---
