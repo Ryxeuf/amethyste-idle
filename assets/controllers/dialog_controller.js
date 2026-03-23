@@ -14,7 +14,7 @@ import { Controller } from '@hotwired/stimulus';
  * Listens for 'map_pixi:pnjDialog' Stimulus events from the map controller.
  */
 export default class extends Controller {
-    static targets = ['box', 'name', 'text', 'choices', 'nextBtn'];
+    static targets = ['box', 'name', 'text', 'choices', 'nextBtn', 'portrait'];
     static values = {
         typeSpeed: { type: Number, default: 25 },
     };
@@ -41,7 +41,7 @@ export default class extends Controller {
 
     // Called from map controller via Stimulus dispatch
     open(event) {
-        const { sentences, pnjName } = event.detail;
+        const { sentences, pnjName, portrait, classType } = event.detail;
         if (!sentences || sentences.length === 0) return;
 
         this._sentences = sentences;
@@ -49,6 +49,7 @@ export default class extends Controller {
         this._sentenceHistory = [];
 
         this.nameTarget.textContent = pnjName || 'PNJ';
+        this._updatePortrait(portrait, classType);
         this.boxTarget.classList.remove('hidden');
 
         // Slide-up animation
@@ -285,6 +286,33 @@ export default class extends Controller {
             this._renderChoices(choices);
         };
         checkReady();
+    }
+
+    /** Class type to fallback icon mapping */
+    static _classTypeIcons = {
+        villager: '\u{1F9D1}',
+        merchant: '\u{1F4B0}',
+        guard: '\u{1F6E1}',
+        noble: '\u{1F451}',
+        warrior: '\u2694\uFE0F',
+        mage: '\u{1F9D9}',
+        healer: '\u{1FA7A}',
+        blacksmith: '\u{1F528}',
+        farmer: '\u{1F33E}',
+        hunter: '\u{1F3F9}',
+    };
+
+    _updatePortrait(portrait, classType) {
+        if (!this.hasPortraitTarget) return;
+
+        if (portrait) {
+            this.portraitTarget.innerHTML = `<img src="${portrait}" alt="" class="w-12 h-12 rounded-lg border border-purple-500/50 object-cover">`;
+            this.portraitTarget.classList.remove('hidden');
+        } else {
+            const icon = this.constructor._classTypeIcons[classType] || '\u{1F9D1}';
+            this.portraitTarget.innerHTML = `<span class="w-12 h-12 rounded-lg border border-purple-500/50 bg-gray-800 flex items-center justify-center text-2xl">${icon}</span>`;
+            this.portraitTarget.classList.remove('hidden');
+        }
     }
 
     /** Render choice buttons with staggered animation */

@@ -70,7 +70,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 42 Tests unitaires systemes core ← 25, 26, 27
   ├─ 43 Tests integration events ← 23
   ├─ 44 Extraction services TerrainImport ← 01
-  └─ 45 Portraits de personnages (∅ strict)
+  └─ ✅ 45 Portraits de personnages (FAIT)
 
 VAGUE 3 (depend de Vague 2)
   ┌─ 46 Trame Acte 1 : L'Eveil ← 12, 13, 31
@@ -391,13 +391,7 @@ VAGUE 6 — Long terme
 - [ ] Refactorer `TerrainImportCommand` pour deleguer a ces services
 - [ ] Verifier que `app:terrain:import` fonctionne identiquement apres refactoring
 
-### 45 — Portraits de personnages (S | ★★)
-> Amelioration visuelle des dialogues. Pas de nouvelle mecanique.
-- [ ] Champ `portrait` (string, nullable) sur Pnj : chemin vers l'image
-- [ ] Afficher le portrait dans le template dialogue (bulle de dialogue + portrait a gauche)
-- [ ] 5-10 portraits pour les PNJ narratifs principaux (guide, forgeron, ancien, boss)
-- [ ] Fallback : icone generique par class_type si pas de portrait
-
+### ~~45 — Portraits de personnages~~ ✅ FAIT
 
 ---
 

@@ -101,6 +101,20 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             '11.2', '12.7', '13.4', '14.8', '15.3', '16.9', '17.5', '18.2', '19.7', '20.1',
         ];
 
+        // Portraits pour les PNJ narratifs principaux
+        $portraits = [
+            0 => '/styles/images/portraits/blacksmith.png',    // Gérard le Forgeron
+            1 => '/styles/images/portraits/healer.png',        // Élise la Guérisseuse
+            4 => '/styles/images/portraits/tavern.png',        // Pierre le Tavernier
+            7 => '/styles/images/portraits/herbalist.png',     // Marie la Herboriste
+            13 => '/styles/images/portraits/merchant.png',     // Émilie la Marchande
+            15 => '/styles/images/portraits/sage.png',         // Claire la Sage
+            16 => '/styles/images/portraits/guard.png',        // Michel le Garde
+            18 => '/styles/images/portraits/mage.png',         // Antoine le Mage
+            19 => '/styles/images/portraits/priestess.png',    // Céline la Prêtresse
+            24 => '/styles/images/portraits/knight.png',       // Sébastien le Chevalier
+        ];
+
         $shopConfigs = $this->getShopConfigs();
 
         // Création de 60 PNJ
@@ -112,6 +126,11 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             $pnj->setMap($this->getReference('map_1', Map::class));
             $pnj->setCoordinates($coordinates[$i % count($coordinates)]);
             $pnj->setClassType($classTypes[$i % count($classTypes)]);
+
+            // Configurer le portrait si défini
+            if (isset($portraits[$i])) {
+                $pnj->setPortrait($portraits[$i]);
+            }
 
             // Configurer la boutique si ce PNJ est un marchand
             if (isset($shopConfigs[$i])) {

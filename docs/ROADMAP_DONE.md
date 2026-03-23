@@ -522,3 +522,17 @@
 - [x] Correction `CraftingController` : types de craft alignes sur les slugs de domaine (forgeron, tanneur, alchimiste, joaillier)
 - [x] Correction template artisanat : labels francais corrects pour les onglets
 - [x] Ingredients utilises : minerais (fer, cuivre), cuirs (brut, epais), plantes (menthe, sauge, lavande)
+
+---
+
+## 45 — Portraits de personnages (2026-03-23) ✅
+
+> Amelioration visuelle des dialogues PNJ avec portraits et icones fallback par class_type.
+
+- [x] Champ `portrait` (string, nullable) sur entite Pnj + migration PostgreSQL
+- [x] API `/api/map/pnj/{id}/dialog` retourne `portrait` et `classType` dans la reponse JSON
+- [x] Template dialogue Twig : element portrait a gauche du nom du PNJ
+- [x] Stimulus `dialog_controller.js` : affichage portrait image ou icone fallback par class_type
+- [x] 10 portraits configures dans PnjFixtures pour les PNJ narratifs principaux
+- [x] Formulaire admin PNJ : champ portrait ajoute
+- [x] Fallback : 10 icones emoji par class_type (villager, merchant, guard, noble, warrior, mage, healer, blacksmith, farmer, hunter)
