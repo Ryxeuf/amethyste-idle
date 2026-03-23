@@ -558,3 +558,12 @@
 - [x] SpotHarvestEventIntegrationTest (5 tests) : DomainExperienceEvolver + QuestCollectTrackingListener — XP domaine + tracking quete, pas de domaine → skip XP, items vides, items multiples
 - [x] QuestCompletedEventIntegrationTest (7 tests) : AchievementTracker + ReputationListener — progression succes + gain reputation, pas de recompense rep, faction inconnue, completion succes avec gils, succes deja complete, reputations multiples
 - [x] PHPStan OK, PHP-CS-Fixer OK, 430 tests OK (hors E2E)
+
+## 44 — Extraction services TerrainImport (2026-03-23) ✅
+
+> Refactoring de `TerrainImportCommand` (674 lignes monolithiques) en 2 services reutilisables + commande legere.
+
+- [x] Extraction `TmxParser` (`src/GameEngine/Terrain/TmxParser.php`) : parsing TMX/TSX → tilesets, layers, collision slugs, object groups
+- [x] Extraction `EntitySynchronizer` (`src/GameEngine/Terrain/EntitySynchronizer.php`) : creation/mise a jour des entites (portails, mobs, spots, coffres) depuis les objets parses
+- [x] Refactoring `TerrainImportCommand` pour deleguer entierement a `TmxParser` et `EntitySynchronizer`
+- [x] PHPStan OK, PHP-CS-Fixer OK, 367 tests unitaires OK
