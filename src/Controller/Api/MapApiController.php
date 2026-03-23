@@ -124,7 +124,7 @@ class MapApiController extends AbstractController
                 continue;
             }
 
-            // Filtrer les mobs m\u00e9t\u00e9o-sp\u00e9cifiques si la m\u00e9t\u00e9o ne correspond pas
+            // Filtrer les mobs meteo-specifiques si la meteo ne correspond pas
             if ($mob->getSpawnWeather() !== null && $mob->getSpawnWeather() !== $map->getCurrentWeather()) {
                 continue;
             }
