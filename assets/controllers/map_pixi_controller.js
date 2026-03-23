@@ -1578,7 +1578,7 @@ export default class extends Controller {
             const data = await resp.json();
             if (data.sentences && data.sentences.length > 0) {
                 this._dialogOpen = true;
-                this.dispatch('pnjDialog', { detail: { sentences: data.sentences, pnjName: data.pnjName } });
+                this.dispatch('pnjDialog', { detail: { sentences: data.sentences, pnjName: data.pnjName, portrait: data.portrait || null, classType: data.classType || null } });
             }
         } catch (err) {
             console.error('[map_pixi] Dialog fetch error:', err);

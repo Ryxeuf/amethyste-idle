@@ -374,6 +374,8 @@ class MapApiController extends AbstractController
         return $this->json([
             'sentences' => $parsedDialog,
             'pnjName' => $pnj->getName(),
+            'portrait' => $pnj->getPortrait(),
+            'classType' => $pnj->getClassType(),
         ]);
     }
 

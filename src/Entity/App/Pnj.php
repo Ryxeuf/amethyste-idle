@@ -56,6 +56,9 @@ class Pnj
     #[ORM\Column(name: 'closes_at', type: 'integer', nullable: true)]
     private ?int $closesAt = null;
 
+    #[ORM\Column(name: 'portrait', type: 'string', length: 255, nullable: true)]
+    private ?string $portrait = null;
+
     /**
      * Get id.
      *
@@ -211,6 +214,16 @@ class Pnj
     public function setClosesAt(?int $closesAt): void
     {
         $this->closesAt = $closesAt;
+    }
+
+    public function getPortrait(): ?string
+    {
+        return $this->portrait;
+    }
+
+    public function setPortrait(?string $portrait): void
+    {
+        $this->portrait = $portrait;
     }
 
     /**

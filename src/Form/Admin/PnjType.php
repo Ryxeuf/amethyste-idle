@@ -19,6 +19,10 @@ class PnjType extends AbstractType
         $builder
             ->add('name', TextType::class, ['label' => 'Nom'])
             ->add('classType', TextType::class, ['label' => 'Type de classe (sprite)'])
+            ->add('portrait', TextType::class, [
+                'label' => 'Portrait (chemin image)',
+                'required' => false,
+            ])
             ->add('life', IntegerType::class, ['label' => 'Vie'])
             ->add('maxLife', IntegerType::class, ['label' => 'Vie max'])
             ->add('coordinates', TextType::class, ['label' => 'Coordonnees (x.y)'])
