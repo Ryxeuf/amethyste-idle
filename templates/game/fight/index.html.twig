@@ -579,6 +579,42 @@
 				return { resolved: false };
 			}
 
+			// ===== COMBAT PARTICLES =====
+			const ELEMENT_COLORS = {
+				fire: '#ef4444', water: '#3b82f6', earth: '#a16207',
+				air: '#67e8f9', light: '#fde68a', dark: '#7c3aed',
+				metal: '#94a3b8', beast: '#22c55e', none: '#a855f7'
+			};
+
+			function spawnCombatParticles(targetEl, { count = 8, color = '#a855f7', life = 600, spread = 40, size = 4 } = {}) {
+				if (!targetEl) return;
+				const rect = targetEl.getBoundingClientRect();
+				const cx = rect.left + rect.width / 2;
+				const cy = rect.top + rect.height / 2;
+
+				for (let i = 0; i < count; i++) {
+					const p = document.createElement('div');
+					p.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;border-radius:50%;background:${color};pointer-events:none;z-index:9999;opacity:0.9;`;
+					document.body.appendChild(p);
+
+					const angle = Math.random() * Math.PI * 2;
+					const dist = spread * (0.3 + Math.random() * 0.7);
+					const dx = Math.cos(angle) * dist;
+					const dy = Math.sin(angle) * dist - 20;
+
+					p.animate([
+						{ transform: 'translate(0,0) scale(1)', opacity: 0.9 },
+						{ transform: `translate(${dx}px,${dy}px) scale(0.2)`, opacity: 0 }
+					], { duration: life, easing: 'ease-out', fill: 'forwards' })
+					.onfinish = () => p.remove();
+				}
+			}
+
+			function spawnCriticalParticles(targetEl) {
+				spawnCombatParticles(targetEl, { count: 14, color: '#fbbf24', life: 800, spread: 60, size: 5 });
+				spawnCombatParticles(targetEl, { count: 6, color: '#ffffff', life: 500, spread: 30, size: 3 });
+			}
+
 			// ===== ACTION HANDLING =====
 			actionButtons.forEach(button => {
 				button.addEventListener('click', async function(e) {
@@ -619,21 +655,42 @@
 							return;
 						}
 
-						if (data.fight && data.fight.terminated) {
-							if (data.fight.victory) {
-								window.location.href = '{{ path("app_game_fight_loot") }}';
-							} else {
-								window.location.href = '{{ path("app_game_fight") }}';
+						// Spawn combat particles on hit
+						if (data.hit && target) {
+							const element = data.spellElement || 'none';
+							const color = ELEMENT_COLORS[element] || ELEMENT_COLORS.none;
+							spawnCombatParticles(target, { color });
+
+							if (data.critical) {
+								spawnCriticalParticles(target);
 							}
-							return;
 						}
 
-						if (data.fled) {
-							window.location.href = '{{ path("app_game_map") }}';
-							return;
-						}
+						// Small delay to show particles before navigation
+						const hasParticles = data.hit && target;
+						const navigate = () => {
+							if (data.fight && data.fight.terminated) {
+								if (data.fight.victory) {
+									window.location.href = '{{ path("app_game_fight_loot") }}';
+								} else {
+									window.location.href = '{{ path("app_game_fight") }}';
+								}
+								return;
+							}
 
-						window.location.reload();
+							if (data.fled) {
+								window.location.href = '{{ path("app_game_map") }}';
+								return;
+							}
+
+							window.location.reload();
+						};
+
+						if (hasParticles) {
+							setTimeout(navigate, 500);
+						} else {
+							navigate();
+						}
 					} catch (error) {
 						console.error('Error:', error);
 						alert("{{ 'game.fight.error_action'|trans|e('js') }}");

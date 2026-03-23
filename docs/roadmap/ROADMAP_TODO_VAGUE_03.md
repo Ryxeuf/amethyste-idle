@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **1 completee**, 17 restantes.
+> **18 taches** initiales, **2 completees**, 16 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -76,12 +76,8 @@
 - [ ] Effet nuageux : leger assombrissement (overlay gris alpha 0.08)
 - [ ] Transition douce entre meteos (fade 2 secondes)
 
-### 62 — Particules combat et recolte (S | ★★)
-> Branchement des appels spawnParticles() sur les evenements de combat et de recolte existants. Le systeme spawnParticles() existe deja.
-- [ ] Particules sur sort lance en combat (couleur = element du sort)
-- [ ] Particules sur coup critique (explosion doree)
-- [ ] Particules sur recolte reussie (etincelles vertes)
-- [ ] Particules sur level-up domaine (pluie d'etoiles)
+### ~~62 — Particules combat et recolte (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 63 — Flash elementaire et animations combat (S | ★★)
 > Effets visuels complementaires au combat : flash colore, shake camera, animations sprites.
