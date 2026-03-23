@@ -22,6 +22,7 @@
                         {% set tier = pf ? pf.tier : constant('App\\Enum\\ReputationTier::Inconnu') %}
                         {% set nextTier = tier.nextTier %}
                         {% set progressPercent = pf ? pf.progressPercent : 0 %}
+                        {% set rewards = rewardsByFaction[faction.id]|default([]) %}
 
                         <div class="bg-gray-700/50 rounded-lg p-4 border border-gray-600">
                             <div class="flex items-start justify-between gap-3 mb-2">
@@ -59,6 +60,24 @@
                                     </div>
                                 {% endif %}
                             </div>
+
+                            {# Rewards #}
+                            {% if rewards is not empty %}
+                                <div class="mt-3 border-t border-gray-600 pt-3">
+                                    <h4 class="text-xs font-semibold text-gray-300 mb-2">{{ 'game.factions.rewards_title'|trans }}</h4>
+                                    <div class="space-y-1.5">
+                                        {% for reward in rewards %}
+                                            {% set rewardTier = reward.requiredTier %}
+                                            {% set unlocked = reputation >= rewardTier.threshold %}
+                                            <div class="flex items-center gap-2 text-xs {{ unlocked ? 'text-gray-200' : 'text-gray-500' }}">
+                                                <span class="flex-shrink-0 w-4 text-center">{{ unlocked ? '&#10003;' : '&#128274;' }}</span>
+                                                <span class="flex-shrink-0 px-1.5 py-0.5 rounded text-[10px] {{ rewardTier.cssClass }} bg-gray-800/50">{{ rewardTier.label }}</span>
+                                                <span class="truncate" title="{{ reward.description }}">{{ reward.label }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>

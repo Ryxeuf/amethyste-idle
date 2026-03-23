@@ -437,7 +437,8 @@
       "empty": "Aucune faction disponible.",
       "reputation": "Réputation",
       "next_tier": "Prochain palier : %tier%",
-      "max_tier": "Palier maximum atteint !"
+      "max_tier": "Palier maximum atteint !",
+      "rewards_title": "Récompenses"
     },
     "friends": {
       "title": "Amis",

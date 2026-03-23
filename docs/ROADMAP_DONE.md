@@ -484,3 +484,16 @@
 - [x] Champ `questIndicator` ajoute dans `/api/map/entities` pour chaque PNJ
 - [x] Rendu PixiJS : icone `!` jaune (quete disponible) ou `?` grise (quete en cours) au-dessus du sprite PNJ
 - [x] Mise a jour dynamique a chaque rechargement des entites (acceptation/completion de quete)
+
+### 36 — Gains et recompenses reputation (2026-03-23) ✅
+
+> Systeme de gains de reputation (mobs tues, quetes completees) et recompenses par palier pour chaque faction.
+
+- [x] `ReputationManager::addReputation(Player, Faction, amount)` : service core de gestion de reputation
+- [x] `ReputationListener` : event subscriber sur `MobDeadEvent` et `QuestCompletedEvent`
+- [x] Champ `faction` nullable sur `Monster` : monstres associes a une faction donnent de la rep
+- [x] Support `rewards.reputation` JSON dans les quetes : gain de reputation configurable par quete
+- [x] Entite `FactionReward` : faction, requiredTier, rewardType, rewardData JSON, label, description
+- [x] Fixtures : 3 recompenses par faction (Ami, Honore, Exalte) — remises, bonus stats, bonus combat
+- [x] Affichage recompenses debloquees/verrouillees sur la page factions
+- [x] Migration SQL : table `game_faction_rewards` + colonne `faction_id` sur `game_monsters`

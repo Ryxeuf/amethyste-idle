@@ -416,7 +416,8 @@
       "empty": "No factions available.",
       "reputation": "Reputation",
       "next_tier": "Next tier: %tier%",
-      "max_tier": "Maximum tier reached!"
+      "max_tier": "Maximum tier reached!",
+      "rewards_title": "Rewards"
     },
     "friends": {
       "title": "Friends",

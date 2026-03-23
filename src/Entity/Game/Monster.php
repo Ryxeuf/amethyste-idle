@@ -72,6 +72,10 @@ class Monster
     #[ORM\Column(name: 'difficulty', type: 'integer', options: ['default' => 1])]
     private int $difficulty = 1;
 
+    #[ORM\ManyToOne(targetEntity: Faction::class)]
+    #[ORM\JoinColumn(name: 'faction_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Faction $faction = null;
+
     public function getSpeed(): int
     {
         return $this->speed;
@@ -273,6 +277,16 @@ class Monster
     public function setBossPhases(?array $bossPhases): void
     {
         $this->bossPhases = $bossPhases;
+    }
+
+    public function getFaction(): ?Faction
+    {
+        return $this->faction;
+    }
+
+    public function setFaction(?Faction $faction): void
+    {
+        $this->faction = $faction;
     }
 
     public function getDifficulty(): int

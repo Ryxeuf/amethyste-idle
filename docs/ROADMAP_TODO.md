@@ -62,7 +62,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 33 Impact gameplay jour/nuit ← 20
   ├─ 34 Meteo backend & diffusion ← 20
   ├─ ✅ 35 Annonces Mercure evenements (FAIT) ← 21
-  ├─ 36 Gains et recompenses reputation ← 22
+  ├─ ✅ 36 Gains et recompenses reputation (FAIT) ← 22
   ├─ ✅ 37 Loot exclusif et rarete etendue (FAIT) ← 07
   ├─ ✅ 38 Liste d'amis (FAIT) ← 19
   ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
@@ -352,14 +352,7 @@ VAGUE 6 — Long terme
 
 ### ~~35 — Annonces Mercure evenements~~ ✅ FAIT
 
-### 36 — Gains et recompenses reputation (S | ★★★)
-> Prerequis : EG-3. Sans gains ni recompenses, le systeme de faction est une coquille vide. Prerequis : ← 22
-- [ ] `ReputationManager::addReputation(Player, Faction, amount)` : ajouter/retirer de la reputation
-- [ ] Integrer les gains : quetes completees (+rep faction liee), mobs tues (+rep si faction associee)
-- [ ] Entite `FactionReward` : faction, requiredTier, rewardType (recipe_unlock/item/discount/zone_access), rewardData JSON
-- [ ] Fixtures : 2-3 recompenses par palier significatif (Ami, Honore, Exalte) par faction
-- [ ] Afficher les recompenses debloquees/verrouillees sur la page faction
-- [ ] Tester : gagner de la reputation, changer de palier, debloquer une recompense
+### ~~36 — Gains et recompenses reputation~~ ✅ FAIT
 
 ### ~~37 — Loot exclusif et rarete etendue~~ ✅ FAIT
 
