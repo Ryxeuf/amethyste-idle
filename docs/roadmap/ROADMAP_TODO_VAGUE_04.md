@@ -6,7 +6,7 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 **Prerequis roadmap globale :** **38** (liste d'amis), **48** (village central hub), **52** (guildes fondation — detail en Vague 3). La tache **52** couvre le socle minimal ; le plan dedie decrit entites fines, saisons, moteur d'influence et benefices economiques.
 
-**Documentation :** [PLAN_GUILD_CITY_CONTROL.md](PLAN_GUILD_CITY_CONTROL.md) — *les numeros **64 a 82** (et les numeros de sections **67-69** pour regions/saisons) dans ce plan sont des **jalons internes** au fichier ; ils ne correspondent pas aux taches du meme numero dans la roadmap globale (ex. tache globale **64** = equipement tier 3, **67-68** = cartes Foret / Mines). Le jalon **52** du plan prolonge la tache globale **52**.*
+**Documentation :** [PLAN_GUILD_CITY_CONTROL.md](PLAN_GUILD_CITY_CONTROL.md) — *jalons internes **GCC-01** a **GCC-20** (sans collision avec les numeros de la roadmap globale). **GCC-01** prolonge la tache globale **52** (guildes fondation).*
 
 ---
 
