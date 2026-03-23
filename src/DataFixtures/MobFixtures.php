@@ -171,6 +171,84 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '55.34',
                 'monster' => 'dragon',
             ],
+            // === Monstres élémentaires tier 1 (tâche 28) ===
+            // Ondine (Eau, lvl 2) — distance moyenne du spawn
+            'undine_1' => [
+                'coordinates' => '79.38',
+                'monster' => 'undine',
+            ],
+            'undine_2' => [
+                'coordinates' => '91.30',
+                'monster' => 'undine',
+            ],
+            // Feu follet (Lumière, lvl 2) — distance moyenne, nocturne
+            'will_o_wisp_1' => [
+                'coordinates' => '81.30',
+                'monster' => 'will_o_wisp',
+                'nocturnal' => true,
+            ],
+            'will_o_wisp_2' => [
+                'coordinates' => '90.39',
+                'monster' => 'will_o_wisp',
+                'nocturnal' => true,
+            ],
+            // Salamandre (Feu, lvl 3) — distance éloignée
+            'salamander_1' => [
+                'coordinates' => '72.30',
+                'monster' => 'salamander',
+            ],
+            'salamander_2' => [
+                'coordinates' => '98.38',
+                'monster' => 'salamander',
+            ],
+            // Automate rouillé (Métal, lvl 3) — distance éloignée
+            'rusty_automaton_1' => [
+                'coordinates' => '69.38',
+                'monster' => 'rusty_automaton',
+            ],
+            'rusty_automaton_2' => [
+                'coordinates' => '101.30',
+                'monster' => 'rusty_automaton',
+            ],
+            // Sylphe (Air, lvl 4) — loin du spawn
+            'sylph_1' => [
+                'coordinates' => '63.32',
+                'monster' => 'sylph',
+            ],
+            'sylph_2' => [
+                'coordinates' => '107.36',
+                'monster' => 'sylph',
+            ],
+            // Loup alpha (Bête, lvl 4) — loin du spawn, nocturne
+            'alpha_wolf_1' => [
+                'coordinates' => '62.40',
+                'monster' => 'alpha_wolf',
+                'nocturnal' => true,
+            ],
+            'alpha_wolf_2' => [
+                'coordinates' => '108.28',
+                'monster' => 'alpha_wolf',
+            ],
+            // Golem d'argile (Terre, lvl 5) — très loin du spawn
+            'clay_golem_1' => [
+                'coordinates' => '57.32',
+                'monster' => 'clay_golem',
+            ],
+            'clay_golem_2' => [
+                'coordinates' => '112.36',
+                'monster' => 'clay_golem',
+            ],
+            // Ombre rampante (Ombre, lvl 5) — très loin du spawn, nocturne
+            'creeping_shadow_1' => [
+                'coordinates' => '56.40',
+                'monster' => 'creeping_shadow',
+                'nocturnal' => true,
+            ],
+            'creeping_shadow_2' => [
+                'coordinates' => '113.28',
+                'monster' => 'creeping_shadow',
+                'nocturnal' => true,
+            ],
             // === Mobs météo-spécifiques ===
             'storm_elemental_1' => [
                 'coordinates' => '75.36',

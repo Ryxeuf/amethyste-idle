@@ -138,6 +138,63 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'dragon', 'item' => 'dragon_fang_blade', 'probability' => 15, 'guaranteed' => true],
             ['monster' => 'dragon', 'item' => 'dragon_scale_armor', 'probability' => 10, 'guaranteed' => true],
 
+            // --- Monstres élémentaires tier 1 (tâche 28) ---
+            // Salamandre (Feu, lvl 3)
+            ['monster' => 'salamander', 'item' => 'mushroom', 'probability' => 40],
+            ['monster' => 'salamander', 'item' => 'healing_potion_small', 'probability' => 20],
+            ['monster' => 'salamander', 'item' => 'grilled_meat', 'probability' => 15],
+            ['monster' => 'salamander', 'item' => 'materia_fire_ball', 'probability' => 6],
+            ['monster' => 'salamander', 'item' => 'energy_potion_small', 'probability' => 15],
+
+            // Ondine (Eau, lvl 2)
+            ['monster' => 'undine', 'item' => 'mushroom', 'probability' => 50],
+            ['monster' => 'undine', 'item' => 'healing_potion_small', 'probability' => 25],
+            ['monster' => 'undine', 'item' => 'antidote', 'probability' => 20],
+            ['monster' => 'undine', 'item' => 'materia_frost_mist', 'probability' => 6],
+            ['monster' => 'undine', 'item' => 'energy_potion_small', 'probability' => 12],
+
+            // Sylphe (Air, lvl 4)
+            ['monster' => 'sylph', 'item' => 'leather_skin_2', 'probability' => 50],
+            ['monster' => 'sylph', 'item' => 'healing_potion_medium', 'probability' => 15],
+            ['monster' => 'sylph', 'item' => 'ancient_scroll', 'probability' => 8],
+            ['monster' => 'sylph', 'item' => 'materia_wind_lame', 'probability' => 5],
+            ['monster' => 'sylph', 'item' => 'scroll_teleport', 'probability' => 6],
+
+            // Golem d'argile (Terre, lvl 5)
+            ['monster' => 'clay_golem', 'item' => 'leather_skin_2', 'probability' => 60],
+            ['monster' => 'clay_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
+            ['monster' => 'clay_golem', 'item' => 'pickaxe', 'probability' => 25],
+            ['monster' => 'clay_golem', 'item' => 'materia_stone_throw', 'probability' => 8],
+            ['monster' => 'clay_golem', 'item' => 'stew', 'probability' => 10],
+
+            // Automate rouillé (Métal, lvl 3)
+            ['monster' => 'rusty_automaton', 'item' => 'leather_skin_2', 'probability' => 45],
+            ['monster' => 'rusty_automaton', 'item' => 'healing_potion_small', 'probability' => 20],
+            ['monster' => 'rusty_automaton', 'item' => 'short_sword', 'probability' => 8],
+            ['monster' => 'rusty_automaton', 'item' => 'materia_steel_riposte', 'probability' => 5],
+            ['monster' => 'rusty_automaton', 'item' => 'energy_potion_small', 'probability' => 18],
+
+            // Loup alpha (Bête, lvl 4)
+            ['monster' => 'alpha_wolf', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'alpha_wolf', 'item' => 'grilled_meat', 'probability' => 30],
+            ['monster' => 'alpha_wolf', 'item' => 'healing_potion_small', 'probability' => 20],
+            ['monster' => 'alpha_wolf', 'item' => 'materia_savage_bite', 'probability' => 5],
+            ['monster' => 'alpha_wolf', 'item' => 'healing_potion_medium', 'probability' => 10],
+
+            // Feu follet (Lumière, lvl 2)
+            ['monster' => 'will_o_wisp', 'item' => 'mushroom', 'probability' => 45],
+            ['monster' => 'will_o_wisp', 'item' => 'energy_potion_small', 'probability' => 30],
+            ['monster' => 'will_o_wisp', 'item' => 'healing_potion_small', 'probability' => 15],
+            ['monster' => 'will_o_wisp', 'item' => 'materia_light_blessing', 'probability' => 6],
+            ['monster' => 'will_o_wisp', 'item' => 'scroll_identification', 'probability' => 8],
+
+            // Ombre rampante (Ombre, lvl 5)
+            ['monster' => 'creeping_shadow', 'item' => 'ancient_scroll', 'probability' => 15],
+            ['monster' => 'creeping_shadow', 'item' => 'healing_potion_medium', 'probability' => 20],
+            ['monster' => 'creeping_shadow', 'item' => 'energy_potion_small', 'probability' => 25],
+            ['monster' => 'creeping_shadow', 'item' => 'materia_vital_drain', 'probability' => 6],
+            ['monster' => 'creeping_shadow', 'item' => 'scroll_xp_boost', 'probability' => 4],
+
             // --- Drops légendaires rares sur monstres de haut niveau ---
             ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],

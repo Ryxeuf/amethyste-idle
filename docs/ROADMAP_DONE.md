@@ -657,3 +657,13 @@
 - [x] Champ `spawnWeather` (nullable) sur Mob — mobs exclusifs par meteo
 - [x] Filtre dans MapApiController : mobs meteo-specifiques
 - [x] Migration SQL (1 champ)
+
+## 28 — Monstres tier 1 — 8 mobs elementaires (2026-03-23) ✅
+
+> 8 monstres elementaires (un par element) niveaux 1-10, avec stats, AI, resistances, loot et succes.
+
+- [x] 8 monstres : Salamandre (Feu/3), Ondine (Eau/2), Sylphe (Air/4), Golem d'argile (Terre/5), Automate rouille (Metal/3), Loup alpha (Bete/4), Feu follet (Lumiere/2), Ombre rampante (Ombre/5)
+- [x] Stats, AI patterns et resistances elementaires pour chaque monstre
+- [x] Tables de loot (5 drops par monstre, materia elementaire incluse)
+- [x] 24 succes bestiaire (3 paliers × 8 monstres)
+- [x] 16 mobs places sur la carte (2 par monstre, distances adaptees au niveau)
