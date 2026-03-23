@@ -54,7 +54,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ┌─ ✅ 26 Recettes de craft fixtures (FAIT) ← 05                      │
   ├─ ✅ 27 Tracking quetes collect/craft (FAIT)                        │
   ├─ ✅ 28 Monstres tier 1 (8 mobs) (FAIT) ← 15                       │
-  ├─ 29 Equipement tier 2 ← 17                                        │
+  ├─ ✅ 29 Equipement tier 2 (FAIT) ← 17                                │
   ├─ ✅ 30 Teleportation entre cartes (FAIT) ← 01 ────────────────────┘
   ├─ ✅ 31 Types quetes livraison/exploration (FAIT) ← 27
   ├─ ✅ 32 Journal de quetes enrichi (FAIT) ← 13

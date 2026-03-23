@@ -18,6 +18,7 @@ use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -52,6 +53,8 @@ class FightSpellControllerTest extends TestCase
         $this->combatLogger = $this->createMock(CombatLogger::class);
         $this->turnResolver = $this->createMock(FightTurnResolver::class);
         $this->turnResolver->method('isMobFirst')->willReturn(false);
+        $gearHelper = $this->createMock(GearHelper::class);
+        $gearHelper->method('getEquippedElementalDamageBonus')->willReturn(0.0);
 
         $this->controller = new FightSpellController(
             $this->playerHelper,
@@ -64,6 +67,7 @@ class FightSpellControllerTest extends TestCase
             $this->mobActionHandler,
             $this->combatLogger,
             $this->turnResolver,
+            $gearHelper,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
