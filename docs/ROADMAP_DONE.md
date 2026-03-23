@@ -698,3 +698,12 @@
 - [x] Viewport rectangle (zone visible) affiche en surbrillance blanche
 - [x] Mise a jour throttlee (500ms) pour la performance
 - [x] Toggle affichage avec la touche M
+
+## 63 — Flash elementaire et animations combat (2026-03-23) ✅
+
+> Effets visuels complementaires au combat : flash colore, shake camera, animations sprites.
+
+- [x] Flash colore plein ecran sur degats elementaires (rouge=feu, bleu=eau, vert=bete, etc.)
+- [x] Shake camera sur coups critiques (animation CSS sur le conteneur .game-page)
+- [x] Animation de tremblement sur le sprite cible quand il recoit des degats
+- [x] Fondu progressif du sprite a la mort d'un mob (desaturation + opacite reduite)

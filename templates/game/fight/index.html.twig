@@ -141,6 +141,47 @@
 			from { opacity: 0; transform: translateX(-4px); }
 			to { opacity: 1; transform: translateX(0); }
 		}
+		/* Elemental flash overlay */
+		.elemental-flash {
+			position: fixed; inset: 0; pointer-events: none; z-index: 9998;
+			animation: elementalFlash 0.35s ease-out forwards;
+		}
+		@keyframes elementalFlash {
+			0% { opacity: 0.35; }
+			100% { opacity: 0; }
+		}
+		/* Camera shake on critical */
+		@keyframes combatShake {
+			0%, 100% { transform: translateX(0) translateY(0); }
+			10% { transform: translateX(-4px) translateY(2px); }
+			20% { transform: translateX(3px) translateY(-3px); }
+			30% { transform: translateX(-3px) translateY(1px); }
+			40% { transform: translateX(2px) translateY(-2px); }
+			50% { transform: translateX(-2px) translateY(2px); }
+			60% { transform: translateX(3px) translateY(-1px); }
+			70% { transform: translateX(-1px) translateY(1px); }
+			80% { transform: translateX(1px) translateY(-1px); }
+			90% { transform: translateX(-1px) translateY(0); }
+		}
+		.combat-shake { animation: combatShake 0.4s ease-out; }
+		/* Target hit shake */
+		@keyframes targetHitShake {
+			0%, 100% { transform: translateX(0); }
+			15% { transform: translateX(-3px); }
+			30% { transform: translateX(3px); }
+			45% { transform: translateX(-2px); }
+			60% { transform: translateX(2px); }
+			75% { transform: translateX(-1px); }
+			90% { transform: translateX(1px); }
+		}
+		.target-hit-shake { animation: targetHitShake 0.3s ease-out; }
+		/* Death fade */
+		@keyframes deathFade {
+			0% { opacity: 1; filter: saturate(1); }
+			50% { opacity: 0.6; filter: saturate(0.3); }
+			100% { opacity: 0.25; filter: saturate(0) brightness(0.7); }
+		}
+		.death-fade { animation: deathFade 0.8s ease-out forwards; }
 	</style>
 
 	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
@@ -615,6 +656,43 @@
 				spawnCombatParticles(targetEl, { count: 6, color: '#ffffff', life: 500, spread: 30, size: 3 });
 			}
 
+			// ===== VISUAL EFFECTS =====
+
+			/** Flash coloré plein écran sur dégâts élémentaires */
+			function flashElemental(element) {
+				const color = ELEMENT_COLORS[element] || ELEMENT_COLORS.none;
+				const overlay = document.createElement('div');
+				overlay.className = 'elemental-flash';
+				overlay.style.backgroundColor = color;
+				document.body.appendChild(overlay);
+				overlay.addEventListener('animationend', () => overlay.remove());
+			}
+
+			/** Shake camera sur coup critique */
+			function shakeCombat() {
+				const page = document.querySelector('.game-page');
+				if (!page) return;
+				page.classList.remove('combat-shake');
+				void page.offsetWidth; // force reflow
+				page.classList.add('combat-shake');
+				page.addEventListener('animationend', () => page.classList.remove('combat-shake'), { once: true });
+			}
+
+			/** Tremblement du sprite cible quand il reçoit des dégâts */
+			function shakeTarget(targetEl) {
+				if (!targetEl) return;
+				targetEl.classList.remove('target-hit-shake');
+				void targetEl.offsetWidth;
+				targetEl.classList.add('target-hit-shake');
+				targetEl.addEventListener('animationend', () => targetEl.classList.remove('target-hit-shake'), { once: true });
+			}
+
+			/** Fondu progressif à la mort d'un mob/joueur */
+			function fadeOnDeath(targetEl) {
+				if (!targetEl) return;
+				targetEl.classList.add('death-fade');
+			}
+
 			// ===== ACTION HANDLING =====
 			actionButtons.forEach(button => {
 				button.addEventListener('click', async function(e) {
@@ -655,19 +733,42 @@
 							return;
 						}
 
-						// Spawn combat particles on hit
+						// Visual effects on hit
 						if (data.hit && target) {
 							const element = data.spellElement || 'none';
 							const color = ELEMENT_COLORS[element] || ELEMENT_COLORS.none;
 							spawnCombatParticles(target, { color });
+							shakeTarget(target);
+
+							// Flash élémentaire (seulement si élément != none)
+							if (element !== 'none') {
+								flashElemental(element);
+							}
 
 							if (data.critical) {
 								spawnCriticalParticles(target);
+								shakeCombat();
 							}
 						}
 
-						// Small delay to show particles before navigation
-						const hasParticles = data.hit && target;
+						// Fondu sur mort de la cible
+						if (data.hit && target && data.fight) {
+							const isMobTarget = target.dataset.targetType === 'mob';
+							const isPlayerTarget = target.dataset.targetType === 'player';
+							// Vérifier si le combat est terminé avec un mort
+							if (data.fight.terminated || data.messages?.some(m => m.includes('vaincu'))) {
+								if (isMobTarget && (data.fight.victory || data.messages?.some(m => m.includes('vaincu')))) {
+									fadeOnDeath(target);
+								}
+								if (isPlayerTarget && !data.fight.victory && data.fight.terminated) {
+									fadeOnDeath(target);
+								}
+							}
+						}
+
+						// Delay to show visual effects before navigation
+						const hasEffects = data.hit && target;
+						const hasDeath = hasEffects && data.fight?.terminated;
 						const navigate = () => {
 							if (data.fight && data.fight.terminated) {
 								if (data.fight.victory) {
@@ -686,7 +787,9 @@
 							window.location.reload();
 						};
 
-						if (hasParticles) {
+						if (hasDeath) {
+							setTimeout(navigate, 900);
+						} else if (hasEffects) {
 							setTimeout(navigate, 500);
 						} else {
 							navigate();

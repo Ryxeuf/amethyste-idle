@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **3 completees**, 15 restantes.
+> **18 taches** initiales, **4 completees**, 14 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -79,12 +79,8 @@
 ### ~~62 — Particules combat et recolte (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 63 — Flash elementaire et animations combat (S | ★★)
-> Effets visuels complementaires au combat : flash colore, shake camera, animations sprites.
-- [ ] Flash colore plein ecran sur degats elementaires (rouge=feu, bleu=eau, etc.)
-- [ ] Shake camera sur coups critiques (branche sur evenement critique existant)
-- [ ] Animation de tremblement sur le sprite cible quand il recoit des degats
-- [ ] Fondu progressif du sprite a la mort d'un mob
+### ~~63 — Flash elementaire et animations combat (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
