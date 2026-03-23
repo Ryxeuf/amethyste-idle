@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **2 completees**, 16 restantes.
+> **18 taches** initiales, **3 completees**, 15 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -152,13 +152,8 @@
 - [ ] Parcours quete : PNJ dialogue → accepter quete → tuer mob → rendre quete → recompense
 - [ ] Parcours craft : inventaire → atelier → crafter → verifier item cree
 
-### 60 — Minimap PixiJS (M | ★★★)
-> Overlay minimap en coin haut-droit avec points colores representant les entites. L'API /api/map/entities retourne deja toutes les positions.
-- [ ] Container PixiJS fixe en coin haut-droit (150x150px), semi-transparent
-- [ ] Points colores : blanc=joueur, rouge=mobs, bleu=PNJ, jaune=spots recolte, violet=portails
-- [ ] Viewport rectangle (zone visible) affiche en surbrillance
-- [ ] Mise a jour a chaque mouvement joueur
-- [ ] Toggle affichage (touche M ou bouton)
+### ~~60 — Minimap PixiJS (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 61 — Barre d'action rapide (S | ★★)
 > Raccourcis clavier/boutons en bas de l'ecran carte pour utiliser consommables et sorts frequents.

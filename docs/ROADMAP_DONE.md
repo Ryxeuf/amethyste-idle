@@ -687,3 +687,14 @@
 - [x] Delai de 500ms avant rechargement pour laisser les particules visibles
 - [x] Particules vertes PixiJS sur recolte reussie (dispatch event Stimulus harvest→map_pixi)
 - [x] Particules dorees (etoiles XP) en complement de la recolte pour le gain de domaine
+
+## 60 — Minimap PixiJS (2026-03-23) ✅
+
+> Overlay minimap en coin haut-droit avec points colores representant les entites.
+
+- [x] Container PixiJS fixe en coin haut-droit (150x150px), fond semi-transparent avec coins arrondis
+- [x] Points colores : blanc=joueur, rouge=mobs, bleu=PNJ, jaune=spots recolte, violet=portails
+- [x] Fond de terrain vert subtil depuis les cellules en cache
+- [x] Viewport rectangle (zone visible) affiche en surbrillance blanche
+- [x] Mise a jour throttlee (500ms) pour la performance
+- [x] Toggle affichage avec la touche M

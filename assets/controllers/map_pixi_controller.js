@@ -71,6 +71,12 @@ export default class extends Controller {
         this._particles = [];
         this._particleContainer = null;
 
+        // Minimap state
+        this._minimapVisible = true;
+        this._minimapSize = 150;
+        this._minimapPadding = 8;
+        this._minimapContainer = null;
+
         await this._initPixi();
         await this._loadConfig();
         await this._loadCells(this._playerX, this._playerY);
@@ -79,6 +85,7 @@ export default class extends Controller {
         await this._fetchGameTime();
         this._initDayNight();
         this._initTimeHud();
+        this._initMinimap();
         this._updateCamera(true);
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
@@ -122,6 +129,10 @@ export default class extends Controller {
         this._entitySpatialHash.clear();
         this._animatedEntities = [];
         this._particles = [];
+        if (this._minimapContainer) {
+            this._minimapContainer.destroy({ children: true });
+            this._minimapContainer = null;
+        }
         if (this._timeHudText) {
             this._timeHudText.destroy();
             this._timeHudText = null;
@@ -758,6 +769,16 @@ export default class extends Controller {
             this._updateDayNight(dt);
         }
 
+        // Update minimap (throttled to every 500ms)
+        if (this._minimapVisible && this._minimapContainer) {
+            this._minimapTimer = (this._minimapTimer || 0) + dt;
+            if (this._minimapTimer >= 500 || this._minimapDirty) {
+                this._minimapTimer = 0;
+                this._minimapDirty = false;
+                this._updateMinimap();
+            }
+        }
+
         // Update particles
         this._updateParticles(dt);
     }
@@ -1175,6 +1196,12 @@ export default class extends Controller {
     // --- Keyboard Movement ---
 
     _handleKeyDown(e) {
+        // Toggle minimap with M key (works even during animation)
+        if (e.key === 'm' || e.key === 'M') {
+            this._toggleMinimap();
+            return;
+        }
+
         if (this._animating || this._dialogOpen) return;
         const dir = {
             ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
@@ -1767,6 +1794,123 @@ export default class extends Controller {
         entity.container.zIndex = finalY * this._tileSize;
         entity.x = finalX;
         entity.y = finalY;
+    }
+
+    // --- Minimap ---
+
+    _initMinimap() {
+        if (!this._app) return;
+
+        const size = this._minimapSize;
+        const pad = this._minimapPadding;
+
+        this._minimapContainer = new PIXI.Container();
+        this._minimapContainer.zIndex = 700;
+        this._minimapContainer.visible = this._minimapVisible;
+
+        // Position top-right
+        const viewW = this._currentWidth || this._viewportPx;
+        this._minimapContainer.position.set(viewW - size - pad, pad);
+
+        // Background (dark semi-transparent)
+        this._minimapBg = new PIXI.Graphics();
+        this._minimapBg.roundRect(0, 0, size, size, 4);
+        this._minimapBg.fill({ color: 0x111111, alpha: 0.7 });
+        this._minimapBg.stroke({ color: 0x555555, width: 1, alpha: 0.8 });
+        this._minimapContainer.addChild(this._minimapBg);
+
+        // Entity dots layer
+        this._minimapDots = new PIXI.Graphics();
+        this._minimapContainer.addChild(this._minimapDots);
+
+        // Viewport rectangle
+        this._minimapViewport = new PIXI.Graphics();
+        this._minimapContainer.addChild(this._minimapViewport);
+
+        this._app.stage.addChild(this._minimapContainer);
+
+        this._updateMinimap();
+    }
+
+    _toggleMinimap() {
+        this._minimapVisible = !this._minimapVisible;
+        if (this._minimapContainer) {
+            this._minimapContainer.visible = this._minimapVisible;
+        }
+    }
+
+    _updateMinimap() {
+        if (!this._minimapContainer || !this._minimapDots) return;
+
+        const size = this._minimapSize;
+        const pad = this._minimapPadding;
+
+        // Reposition on resize
+        const viewW = this._currentWidth || this._viewportPx;
+        this._minimapContainer.position.set(viewW - size - pad, pad);
+
+        // Determine the world extent from cached cells + entities
+        const radius = this._viewRadius;
+        const px = Math.floor(this._playerX);
+        const py = Math.floor(this._playerY);
+
+        // Map area to display: centered on player, covering loaded area
+        const mapMinX = px - radius;
+        const mapMinY = py - radius;
+        const mapRange = radius * 2 + 1;
+        const scale = size / mapRange; // pixels per tile on minimap
+
+        // Clear dots
+        this._minimapDots.clear();
+
+        // Draw terrain background dots for cached cells (subtle)
+        for (const [, cell] of this._cellCache) {
+            const cx = (cell.x - mapMinX) * scale;
+            const cy = (cell.y - mapMinY) * scale;
+            if (cx < 0 || cx >= size || cy < 0 || cy >= size) continue;
+            this._minimapDots.rect(cx, cy, Math.max(scale, 1), Math.max(scale, 1));
+        }
+        this._minimapDots.fill({ color: 0x2d5a1b, alpha: 0.5 });
+
+        // Entity colors
+        const entityColors = {
+            mob: 0xff4444,     // red
+            player: 0xffffff,  // white
+            pnj: 0x4488ff,    // blue
+            portal: 0xaa55ff,  // violet
+            harvest: 0xffbb33, // yellow
+        };
+
+        // Draw entity dots
+        for (const [, entity] of Object.entries(this._entitySprites)) {
+            const ex = (entity.x - mapMinX) * scale;
+            const ey = (entity.y - mapMinY) * scale;
+            if (ex < -2 || ex >= size + 2 || ey < -2 || ey >= size + 2) continue;
+
+            const color = entityColors[entity.type] || 0x888888;
+            const dotSize = entity.type === 'mob' ? 2 : 2.5;
+
+            this._minimapDots.circle(ex + scale / 2, ey + scale / 2, dotSize);
+            this._minimapDots.fill({ color, alpha: 0.9 });
+        }
+
+        // Draw current player (larger, bright white)
+        const playerMX = (px - mapMinX) * scale + scale / 2;
+        const playerMY = (py - mapMinY) * scale + scale / 2;
+        this._minimapDots.circle(playerMX, playerMY, 3.5);
+        this._minimapDots.fill({ color: 0xffffff, alpha: 1 });
+        this._minimapDots.circle(playerMX, playerMY, 3.5);
+        this._minimapDots.stroke({ color: 0x000000, width: 0.8, alpha: 0.6 });
+
+        // Viewport rectangle (visible area)
+        this._minimapViewport.clear();
+        const vpTiles = this._viewportTiles;
+        const vpW = vpTiles * scale;
+        const vpH = vpTiles * scale;
+        const vpX = (px - mapMinX - vpTiles / 2) * scale;
+        const vpY = (py - mapMinY - vpTiles / 2) * scale;
+        this._minimapViewport.rect(vpX, vpY, vpW, vpH);
+        this._minimapViewport.stroke({ color: 0xffffff, width: 1, alpha: 0.5 });
     }
 
     _wait(ms) {

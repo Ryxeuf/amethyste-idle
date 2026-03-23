@@ -87,7 +87,7 @@ VAGUE 3 (depend de Vague 2)
   ├─ 57 Commande terrain:sync ← 44
   ├─ 58 Parsing zones/biomes Tiled ← 44
   ├─ 59 Tests E2E Panther ← 23, 42
-  ├─ 60 Minimap PixiJS (∅)
+  ├─ ✅ 60 Minimap PixiJS (FAIT)
   ├─ 61 Barre d'action rapide (∅)
   ├─ ✅ 62 Particules combat/recolte (FAIT)
   └─ 63 Flash elementaire combat (∅)
