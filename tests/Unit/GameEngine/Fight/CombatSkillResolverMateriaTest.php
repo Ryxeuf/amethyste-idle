@@ -5,6 +5,7 @@ namespace App\Tests\Unit\GameEngine\Fight;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Progression\SynergyCalculator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,7 +19,8 @@ class CombatSkillResolverMateriaTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->resolver = new CombatSkillResolver($this->entityManager);
+        $synergyCalculator = $this->createMock(SynergyCalculator::class);
+        $this->resolver = new CombatSkillResolver($this->entityManager, $synergyCalculator);
     }
 
     private function createSkillWithMateriaUnlock(string $spellSlug): Skill&MockObject
