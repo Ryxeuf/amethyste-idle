@@ -2110,6 +2110,48 @@ class SpellFixtures extends Fixture
                 'level' => 1,
             ],
 
+            // Attaques élémentaires tier 2 (armes)
+            'fire_attack_2' => [
+                'slug' => 'fire-attack-2',
+                'damage' => 2,
+                'element' => Element::Fire,
+                'heal' => null,
+                'name' => 'Frappe enflammée',
+                'description' => 'Une attaque imprégnée de flammes',
+                'hit' => 90,
+                'level' => 1,
+            ],
+            'water_attack_2' => [
+                'slug' => 'water-attack-2',
+                'damage' => 2,
+                'element' => Element::Water,
+                'heal' => null,
+                'name' => 'Frappe glaciale',
+                'description' => 'Une attaque imprégnée de givre',
+                'hit' => 90,
+                'level' => 1,
+            ],
+            'earth_attack_2' => [
+                'slug' => 'earth-attack-2',
+                'damage' => 2,
+                'element' => Element::Earth,
+                'heal' => null,
+                'name' => 'Frappe tellurique',
+                'description' => 'Une attaque imprégnée de la force de la terre',
+                'hit' => 90,
+                'level' => 1,
+            ],
+            'air_attack_2' => [
+                'slug' => 'air-attack-2',
+                'damage' => 2,
+                'element' => Element::Air,
+                'heal' => null,
+                'name' => 'Frappe du vent',
+                'description' => 'Une attaque imprégnée de la puissance du vent',
+                'hit' => 90,
+                'level' => 1,
+            ],
+
             // === Materia Tier 2 — 1 par élément ===
 
             // Eau — Brume glaciale

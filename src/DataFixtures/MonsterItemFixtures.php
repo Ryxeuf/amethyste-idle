@@ -195,6 +195,44 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'creeping_shadow', 'item' => 'materia_vital_drain', 'probability' => 6],
             ['monster' => 'creeping_shadow', 'item' => 'scroll_xp_boost', 'probability' => 4],
 
+            // --- Équipement tier 2 élémentaire (tâche 29) ---
+
+            // Feu — Salamandre (lvl 3) et Élémentaire de feu (lvl 3)
+            ['monster' => 'salamander', 'item' => 'fire_helmet_t2', 'probability' => 3],
+            ['monster' => 'salamander', 'item' => 'fire_gloves_t2', 'probability' => 3],
+            ['monster' => 'salamander', 'item' => 'fire_boots_t2', 'probability' => 3],
+            ['monster' => 'fire_elemental', 'item' => 'fire_sword_t2', 'probability' => 3],
+            ['monster' => 'fire_elemental', 'item' => 'fire_shield_t2', 'probability' => 3],
+            ['monster' => 'fire_elemental', 'item' => 'fire_chest_t2', 'probability' => 2],
+            ['monster' => 'fire_elemental', 'item' => 'fire_legs_t2', 'probability' => 3],
+
+            // Eau — Ondine (lvl 2) et Banshee (lvl 2)
+            ['monster' => 'undine', 'item' => 'water_helmet_t2', 'probability' => 3],
+            ['monster' => 'undine', 'item' => 'water_gloves_t2', 'probability' => 3],
+            ['monster' => 'undine', 'item' => 'water_boots_t2', 'probability' => 3],
+            ['monster' => 'undine', 'item' => 'water_sword_t2', 'probability' => 2],
+            ['monster' => 'banshee', 'item' => 'water_shield_t2', 'probability' => 3],
+            ['monster' => 'banshee', 'item' => 'water_chest_t2', 'probability' => 2],
+            ['monster' => 'banshee', 'item' => 'water_legs_t2', 'probability' => 3],
+
+            // Terre — Golem d'argile (lvl 5) et Gargouille (lvl 3)
+            ['monster' => 'clay_golem', 'item' => 'earth_sword_t2', 'probability' => 3],
+            ['monster' => 'clay_golem', 'item' => 'earth_shield_t2', 'probability' => 3],
+            ['monster' => 'clay_golem', 'item' => 'earth_chest_t2', 'probability' => 2],
+            ['monster' => 'clay_golem', 'item' => 'earth_legs_t2', 'probability' => 3],
+            ['monster' => 'gargoyle', 'item' => 'earth_helmet_t2', 'probability' => 3],
+            ['monster' => 'gargoyle', 'item' => 'earth_gloves_t2', 'probability' => 3],
+            ['monster' => 'gargoyle', 'item' => 'earth_boots_t2', 'probability' => 3],
+
+            // Air — Sylphe (lvl 4) et Griffon (lvl 4)
+            ['monster' => 'sylph', 'item' => 'air_helmet_t2', 'probability' => 3],
+            ['monster' => 'sylph', 'item' => 'air_gloves_t2', 'probability' => 3],
+            ['monster' => 'sylph', 'item' => 'air_boots_t2', 'probability' => 3],
+            ['monster' => 'sylph', 'item' => 'air_legs_t2', 'probability' => 3],
+            ['monster' => 'griffin', 'item' => 'air_sword_t2', 'probability' => 3],
+            ['monster' => 'griffin', 'item' => 'air_shield_t2', 'probability' => 3],
+            ['monster' => 'griffin', 'item' => 'air_chest_t2', 'probability' => 2],
+
             // --- Drops légendaires rares sur monstres de haut niveau ---
             ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-23
+> Derniere mise a jour : 2026-03-24
 
 ---
 
@@ -667,3 +667,14 @@
 - [x] Tables de loot (5 drops par monstre, materia elementaire incluse)
 - [x] 24 succes bestiaire (3 paliers × 8 monstres)
 - [x] 16 mobs places sur la carte (2 par monstre, distances adaptees au niveau)
+
+## 29 — Equipement tier 2 Intermediaire (2026-03-24) ✅
+
+> Set complet d'equipement intermediaire avec 4 variantes elementaires (Feu, Eau, Terre, Air) et bonus de degats.
+
+- [x] 4 sorts d'attaque elementaire pour armes tier 2 (fire/water/earth/air_attack_2)
+- [x] 28 items d'equipement (7 pieces × 4 elements) : epee, bouclier, casque, plastron, jambieres, bottes, gantelets
+- [x] Rarete Uncommon, niveau 5, durabilite 120 utilisations
+- [x] Bonus +10% degats elementaire par piece equipee (GearBonusResolver)
+- [x] Integration du bonus dans FightSpellController (applique apres les bonus de skills)
+- [x] Tables de loot sur monstres elementaires (salamandre, ondine, sylphe, golem d'argile, griffon, gargouille, elementaire de feu, banshee)

@@ -11,6 +11,7 @@ use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
+use App\GameEngine\Fight\GearBonusResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -36,6 +37,7 @@ class FightSpellController extends AbstractController
         private readonly MobActionHandler $mobActionHandler,
         private readonly CombatLogger $combatLogger,
         private readonly FightTurnResolver $turnResolver,
+        private readonly GearBonusResolver $gearBonusResolver,
     ) {
     }
 
@@ -137,6 +139,12 @@ class FightSpellController extends AbstractController
         // Apply element match bonus from materia/slot matching (+25% damage)
         if ($elementMatch) {
             $bonuses['damage'] += (int) round($bonuses['damage'] * CombatCapacityResolver::ELEMENT_MATCH_DAMAGE_BONUS);
+        }
+
+        // Apply gear element damage boost (e.g. +10% per tier 2 elemental piece)
+        $gearElementBoost = $this->gearBonusResolver->getBoostForElement($player, $spell->getElement());
+        if ($gearElementBoost > 0) {
+            $bonuses['damage'] += (int) round($bonuses['damage'] * $gearElementBoost / 100);
         }
 
         // Check elemental synergy
