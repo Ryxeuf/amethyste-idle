@@ -68,7 +68,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   ├─ 40 Synergies cross-domaine (∅ strict mais logique apres 14)
   ├─ ✅ 41 Indicateurs quetes sur PNJ (FAIT) ← 27
   ├─ 42 Tests unitaires systemes core ← 25, 26, 27
-  ├─ 43 Tests integration events ← 23
+  ├─ ✅ 43 Tests integration events (FAIT) ← 23
   ├─ 44 Extraction services TerrainImport ← 01
   └─ ✅ 45 Portraits de personnages (FAIT)
 
@@ -253,12 +253,7 @@ VAGUE 6 — Long terme
 - [ ] Tests CraftManager : craft OK, ingredients manquants, skill manquant, item cree
 - [ ] Tests QuestProgressTracker : progression monster, collect, craft, completion
 
-### 43 — Tests integration events (S | ★★)
-> 21 evenements domaine existent, mais 0 test d'integration sur les listeners. Prerequis : ← 23
-- [ ] Test MobKilledEvent → BestiaryListener + AchievementListener + QuestProgressListener
-- [ ] Test SpotHarvestEvent → XP progression + (futur) QuestCollectListener
-- [ ] Test PlayerLevelUpEvent → AchievementListener
-- [ ] Objectif : couverture >= 60% sur src/GameEngine/
+### ~~43 — Tests integration events~~ ✅ FAIT
 
 ### 44 — Extraction services TerrainImport (M | ★★)
 > La commande actuelle fait 663 lignes monolithiques (parsing TMX, sync objets, validation, export). Prerequis : ← 01
