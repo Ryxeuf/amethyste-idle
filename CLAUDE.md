@@ -37,12 +37,12 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 10. **Sorts actifs = UNIQUEMENT via materia** : pour lancer un sort en combat, le joueur doit (1) posseder la materia, (2) avoir appris la competence materia correspondante dans un arbre, (3) avoir sockette la materia dans un slot d'equipement. L'attaque de base de l'arme est toujours disponible gratuitement.
 
-11. **Roadmap a deux fichiers** : la roadmap est separee en deux fichiers dans `docs/` :
-   - `docs/ROADMAP_DONE.md` — Phases completees (historique de ce qui a ete fait)
-   - `docs/ROADMAP_TODO.md` — Taches a venir (tout ce qui reste a faire)
-   - Quand une tache est **implementee**, elle est **retiree** de `ROADMAP_TODO.md` et **ajoutee** a `ROADMAP_DONE.md`
-   - Si une phase est partiellement faite, ce qui est fait va dans `ROADMAP_DONE.md` et ce qui reste dans `ROADMAP_TODO.md`
-   - Toute nouvelle tache planifiee est ajoutee dans `ROADMAP_TODO.md`
+11. **Roadmap** : realise dans `docs/ROADMAP_DONE.md` ; a venir reparti par vague dans `docs/roadmap/` :
+   - `docs/roadmap/ROADMAP_TODO_INDEX.md` — Legende, graphe de dependances, liens vers les vagues
+   - `docs/roadmap/ROADMAP_TODO_VAGUE_01.md` … `ROADMAP_TODO_VAGUE_06.md` — Taches par priorite (vague 1 = la plus urgente)
+   - `docs/ROADMAP_TODO.md` — Point d'entree (liens vers l'index et les vagues) ; l'admin `/admin/roadmap` **agrege** automatiquement index + 6 vagues pour l'affichage et les stats
+   - Quand une tache est **implementee**, elle est **retiree** du fichier de vague concerne et **ajoutee** a `ROADMAP_DONE.md`
+   - Plan annexe controle de cite : `docs/roadmap/PLAN_GUILD_CITY_CONTROL.md` (ancre Vague 4 dans `ROADMAP_TODO_VAGUE_04.md`)
 
 ## Stack technique
 
@@ -161,7 +161,7 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 
 - [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (22 sections, modele de donnees, combat, carte, inventaire, quetes, bestiaire, succes, etc.)
 - [docs/ROADMAP_DONE.md](docs/ROADMAP_DONE.md) — Roadmap realisee (historique des phases completees)
-- [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Roadmap a venir (toutes les taches restantes)
+- [docs/roadmap/ROADMAP_TODO_INDEX.md](docs/roadmap/ROADMAP_TODO_INDEX.md) — Roadmap a venir (index + liens par vague) ; [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Point d'entree
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 - [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)

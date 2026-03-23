@@ -28,10 +28,9 @@ class RoadmapController extends AbstractController
 
         $projectDir = (string) $this->getParameter('kernel.project_dir');
         $doneFile = $projectDir . '/docs/ROADMAP_DONE.md';
-        $todoFile = $projectDir . '/docs/ROADMAP_TODO.md';
 
         $doneContent = file_exists($doneFile) ? (string) file_get_contents($doneFile) : '';
-        $todoContent = file_exists($todoFile) ? (string) file_get_contents($todoFile) : '';
+        [$todoContent, $todoFileMtime] = $this->loadAggregatedRoadmapTodo($projectDir);
 
         $doneHtml = $this->markdownParser->toHtml($doneContent);
         $todoHtml = $this->markdownParser->toHtml($todoContent);
@@ -40,7 +39,6 @@ class RoadmapController extends AbstractController
         $doneSections = (int) preg_match_all('/^## .+✅/m', $doneContent);
 
         $doneFileMtime = file_exists($doneFile) ? filemtime($doneFile) : false;
-        $todoFileMtime = file_exists($todoFile) ? filemtime($todoFile) : false;
 
         return $this->render('admin/roadmap/index.html.twig', [
             'tab' => $tab,
@@ -63,5 +61,46 @@ class RoadmapController extends AbstractController
     public function todo(): Response
     {
         return $this->redirectToRoute('admin_roadmap_index', ['tab' => 'todo']);
+    }
+
+    /**
+     * @return array{0: string, 1: int|false} [markdown, max mtime of parts]
+     */
+    private function loadAggregatedRoadmapTodo(string $projectDir): array
+    {
+        $roadmapDir = $projectDir . '/docs/roadmap';
+        $parts = [
+            $roadmapDir . '/ROADMAP_TODO_INDEX.md',
+            $roadmapDir . '/ROADMAP_TODO_VAGUE_01.md',
+            $roadmapDir . '/ROADMAP_TODO_VAGUE_02.md',
+            $roadmapDir . '/ROADMAP_TODO_VAGUE_03.md',
+            $roadmapDir . '/ROADMAP_TODO_VAGUE_04.md',
+            $roadmapDir . '/ROADMAP_TODO_VAGUE_05.md',
+            $roadmapDir . '/ROADMAP_TODO_VAGUE_06.md',
+        ];
+
+        $chunks = [];
+        $maxMtime = false;
+        foreach ($parts as $path) {
+            if (!is_readable($path)) {
+                continue;
+            }
+            $chunks[] = (string) file_get_contents($path);
+            $mt = filemtime($path);
+            if ($mt !== false && ($maxMtime === false || $mt > $maxMtime)) {
+                $maxMtime = $mt;
+            }
+        }
+
+        if ($chunks !== []) {
+            return [implode("\n\n---\n\n", $chunks), $maxMtime];
+        }
+
+        $fallback = $projectDir . '/docs/ROADMAP_TODO.md';
+
+        return [
+            file_exists($fallback) ? (string) file_get_contents($fallback) : '',
+            file_exists($fallback) ? filemtime($fallback) : false,
+        ];
     }
 }
