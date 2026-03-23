@@ -17,6 +17,7 @@ use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\World\WeatherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -54,6 +55,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
+            new WeatherService(),
         );
     }
 
@@ -265,6 +267,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
+            new WeatherService(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -311,6 +314,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
+            new WeatherService(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -357,6 +361,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
+            new WeatherService(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -401,6 +406,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
+            new WeatherService(),
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);

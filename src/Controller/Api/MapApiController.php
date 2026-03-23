@@ -124,6 +124,11 @@ class MapApiController extends AbstractController
                 continue;
             }
 
+            // Filtrer les mobs meteo-specifiques si la meteo ne correspond pas
+            if ($mob->getSpawnWeather() !== null && $mob->getSpawnWeather() !== $map->getCurrentWeather()) {
+                continue;
+            }
+
             $coords = explode('.', $mob->getCoordinates() ?? '0.0');
             $ex = (int) ($coords[0] ?? 0);
             $ey = (int) ($coords[1] ?? 0);

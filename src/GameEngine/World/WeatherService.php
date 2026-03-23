@@ -3,10 +3,53 @@
 namespace App\GameEngine\World;
 
 use App\Entity\App\Map;
+use App\Enum\Element;
 use App\Enum\WeatherType;
 
 class WeatherService
 {
+    /**
+     * Table des modificateurs élémentaires par météo.
+     * Clé = weather.value, sous-clé = element.value, valeur = multiplicateur (1.0 = neutre).
+     *
+     * @var array<string, array<string, float>>
+     */
+    private const WEATHER_ELEMENT_MODIFIERS = [
+        'rain' => [
+            'water' => 1.20,
+            'fire' => 0.80,
+        ],
+        'storm' => [
+            'water' => 1.20,
+            'air' => 1.20,
+            'fire' => 0.80,
+            'metal' => 0.90,
+        ],
+        'snow' => [
+            'water' => 1.10,
+            'fire' => 0.80,
+        ],
+        'fog' => [
+            'dark' => 1.20,
+            'light' => 0.80,
+        ],
+        'sunny' => [
+            'fire' => 1.20,
+            'light' => 1.10,
+            'water' => 0.90,
+        ],
+    ];
+
+    /**
+     * Retourne le multiplicateur de dégâts élémentaire en fonction de la météo.
+     *
+     * @return float 1.0 = neutre, > 1.0 = bonus, < 1.0 = malus
+     */
+    public function getElementalModifier(WeatherType $weather, Element $element): float
+    {
+        return self::WEATHER_ELEMENT_MODIFIERS[$weather->value][$element->value] ?? 1.0;
+    }
+
     /**
      * Tire une météo aléatoire pondérée et l'applique à la carte.
      *
