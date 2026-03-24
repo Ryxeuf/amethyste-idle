@@ -34,6 +34,12 @@ class QuestType extends AbstractType
                 'required' => false,
                 'attr' => ['rows' => 2, 'class' => 'font-mono'],
             ])
+            ->add('choiceOutcomeJson', TextareaType::class, [
+                'label' => 'Choix (JSON, ex: [{"key":"a","label":"Option A","bonusRewards":{}}])',
+                'mapped' => false,
+                'required' => false,
+                'attr' => ['rows' => 4, 'class' => 'font-mono'],
+            ])
         ;
     }
 

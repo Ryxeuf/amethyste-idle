@@ -299,6 +299,46 @@ class QuestFixtures extends Fixture
                     'gold' => 35,
                 ],
             ],
+            // --- Quete a choix ---
+            'quest_choice_alliance' => [
+                'name' => 'Allégeance contestée',
+                'description' => 'Vous avez découvert un convoi abandonné contenant des ressources précieuses. Le garde et le marchand du village vous demandent chacun de leur remettre. À vous de choisir.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '10.6',
+                            'name' => 'Convoi abandonné',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 100,
+                    'gold' => 30,
+                ],
+                'choiceOutcome' => [
+                    [
+                        'key' => 'help_guard',
+                        'label' => 'Remettre au garde',
+                        'bonusRewards' => [
+                            'gold' => 20,
+                            'items' => [
+                                ['genericItemSlug' => 'wooden-shield', 'count' => 1],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'help_merchant',
+                        'label' => 'Remettre au marchand',
+                        'bonusRewards' => [
+                            'gold' => 80,
+                            'items' => [
+                                ['genericItemSlug' => 'life-potion', 'count' => 3],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
             // --- Chaine de quetes : La Menace Rampante (3 quetes) ---
             'quest_chain_guard_1' => [
                 'name' => 'La Menace Rampante - Partie 1',
@@ -378,6 +418,9 @@ class QuestFixtures extends Fixture
             $quest->setRewards($data['rewards']);
             if (isset($data['prerequisiteQuests'])) {
                 $quest->setPrerequisiteQuests($data['prerequisiteQuests']);
+            }
+            if (isset($data['choiceOutcome'])) {
+                $quest->setChoiceOutcome($data['choiceOutcome']);
             }
             $quest->setCreatedAt(new \DateTime());
             $quest->setUpdatedAt(new \DateTime());

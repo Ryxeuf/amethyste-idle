@@ -31,6 +31,9 @@ class PlayerQuestCompleted
     #[ORM\JoinColumn(name: 'quest_id', referencedColumnName: 'id')]
     private $quest;
 
+    #[ORM\Column(name: 'choice_made', type: 'string', length: 100, nullable: true)]
+    private ?string $choiceMade = null;
+
     /**
      * Get id.
      */
@@ -57,5 +60,15 @@ class PlayerQuestCompleted
     public function setQuest(Quest $quest): void
     {
         $this->quest = $quest;
+    }
+
+    public function getChoiceMade(): ?string
+    {
+        return $this->choiceMade;
+    }
+
+    public function setChoiceMade(?string $choiceMade): void
+    {
+        $this->choiceMade = $choiceMade;
     }
 }

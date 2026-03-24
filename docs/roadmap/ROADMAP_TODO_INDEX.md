@@ -81,7 +81,7 @@ VAGUE 3 (depend de Vague 2)
   ├─ ✅ 51 Meteo impact gameplay (FAIT) ← 34
   ├─ 52 Guildes fondation ← 38
   ├─ 53 Groupes de combat formation ← 38
-  ├─ 54 Quetes a choix ← 13, 31
+  ├─ ✅ 54 Quetes a choix (FAIT) ← 13, 31
   ├─ 55 Quetes quotidiennes ← 12, 27
   ├─ ✅ 56 Presets de build (FAIT) ← 14
   ├─ 57 Commande terrain:sync ← 44

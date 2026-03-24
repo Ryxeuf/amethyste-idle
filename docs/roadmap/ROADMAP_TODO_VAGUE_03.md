@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **6 completees**, 12 restantes.
+> **18 taches** initiales, **7 completees**, 11 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -16,13 +16,8 @@
 - [ ] Dialogues narratifs pour chaque PNJ implique (guide, forgeron, ancien du village)
 - [ ] Recompenses progressives (equipement starter, gils, XP, premiere materia)
 
-### 54 — Quetes a choix (M | ★★★)
-> Ajoute des embranchements narratifs. Le PnjDialogParser supporte deja les choices. Prerequis : ← 13 (QN-4 journal enrichi), 31 (QN-1 recompenses quetes)
-- [ ] Ajouter champ `choiceOutcome` (JSON, nullable) sur Quest : mapper choix → quete suivante
-- [ ] Adapter QuestController::complete() : si choix fait, orienter vers la branche correspondante
-- [ ] Stocker le choix du joueur dans PlayerQuestCompleted (champ `choiceMade`, JSON nullable)
-- [ ] 1 quete a choix dans les fixtures (2 branches, recompenses differentes)
-- [ ] Condition `quest_choice` dans PnjDialogParser : adapter le dialogue selon le choix passe
+### ~~54 — Quetes a choix (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 55 — Quetes quotidiennes (M | ★★★)
 > Contenu renouvelable qui donne une raison de revenir chaque jour. Prerequis : ← 12 (QN-3 prerequis quetes), 27 (systeme de scheduling)

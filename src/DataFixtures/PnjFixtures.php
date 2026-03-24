@@ -73,9 +73,10 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             'quest_dragon_1',
         ];
 
-        // Delivery/Exploration quests mapped to specific PNJ indices
+        // Delivery/Exploration/Choice quests mapped to specific PNJ indices
         $specialQuests = [
             10 => 'quest_deliver_mushroom',   // Henri le Fermier
+            16 => 'quest_choice_alliance',    // Michel le Garde
             21 => 'quest_explore_forest',     // Mathilde la Cartographe
         ];
 
@@ -390,18 +391,89 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
     private function createSpecialQuestDialog(int $pnjIndex, int $questId, string $questRef): array
     {
         $isDeliver = str_contains($questRef, 'deliver');
+        $isChoice = str_contains($questRef, 'choice');
 
         $greetings = [
             'quest_deliver_mushroom' => 'Bonjour voyageur ! J\'ai besoin d\'aide pour une livraison importante.',
             'quest_explore_forest' => 'Salutations, aventurier ! J\'aurais besoin de vos talents d\'explorateur.',
+            'quest_choice_alliance' => 'Halte, aventurier ! J\'ai une affaire délicate à vous confier.',
         ];
         $descriptions = [
             'quest_deliver_mushroom' => 'J\'ai besoin que quelqu\'un m\'apporte des champignons frais. Marie l\'herboriste en a besoin pour ses remèdes. Pouvez-vous m\'aider ?',
             'quest_explore_forest' => 'Je travaille sur une carte de la région mais il me manque des données sur la forêt. Pourriez-vous vous rendre à la clairière et confirmer ce que j\'y ai noté ?',
+            'quest_choice_alliance' => 'Un convoi de ressources a été abandonné sur la route. Allez le trouver et revenez me voir — mais sachez que le marchand le convoite aussi. Vous devrez choisir à qui les remettre.',
         ];
 
         $greeting = $greetings[$questRef] ?? 'Bonjour, aventurier !';
         $description = $descriptions[$questRef] ?? 'J\'ai une mission pour vous.';
+
+        if ($isChoice) {
+            // Choice quest: different completion dialogs based on player choice
+            $dialog = [
+                [
+                    'next' => 1,
+                    'text' => $greeting,
+                ],
+                [
+                    'conditional_next' => [
+                        [
+                            'next' => 5,
+                            'next_condition' => [
+                                'quest_not' => [$questId],
+                            ],
+                        ],
+                        [
+                            'next' => 2,
+                            'next_condition' => [
+                                'quest' => [$questId],
+                                'quest_choice' => [$questId => 'help_guard'],
+                            ],
+                        ],
+                        [
+                            'next' => 3,
+                            'next_condition' => [
+                                'quest' => [$questId],
+                            ],
+                        ],
+                        [
+                            'next' => 4,
+                        ],
+                    ],
+                    'text' => 'Que puis-je faire pour vous ?',
+                ],
+                // Quest completed — chose guard (index 2)
+                [
+                    'text' => 'Vous avez fait le bon choix en remettant ces ressources à la garde. Le village vous en est reconnaissant, soldat !',
+                ],
+                // Quest completed — chose merchant (index 3)
+                [
+                    'text' => 'Je vois que vous avez préféré remettre les ressources au marchand... C\'est votre droit, mais la garde n\'oublie pas.',
+                ],
+                // In-progress (index 4)
+                [
+                    'text' => 'Avez-vous trouvé le convoi ? Revenez quand vous l\'aurez localisé, et vous devrez faire votre choix.',
+                ],
+                // Quest offer (index 5)
+                [
+                    'text' => $description,
+                    'choices' => [
+                        [
+                            'text' => 'D\'accord, je m\'en occupe',
+                            'data' => [
+                                'quest' => $questId,
+                            ],
+                            'action' => 'quest_offer',
+                        ],
+                        [
+                            'text' => 'Non merci',
+                            'action' => 'close',
+                        ],
+                    ],
+                ],
+            ];
+
+            return $dialog;
+        }
 
         $dialog = [
             [

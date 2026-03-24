@@ -69,6 +69,9 @@ class QuestController extends AbstractController
             $prerequisiteQuestsJson = $form->get('prerequisiteQuestsJson')->getData();
             $quest->setPrerequisiteQuests($prerequisiteQuestsJson ? json_decode($prerequisiteQuestsJson, true) : null);
 
+            $choiceOutcomeJson = $form->get('choiceOutcomeJson')->getData();
+            $quest->setChoiceOutcome($choiceOutcomeJson ? json_decode($choiceOutcomeJson, true) : null);
+
             $this->em->persist($quest);
             $this->em->flush();
             $this->adminLogger->log('create', 'Quest', $quest->getId(), $quest->getName());
@@ -96,6 +99,9 @@ class QuestController extends AbstractController
         $form->get('prerequisiteQuestsJson')->setData(
             $quest->getPrerequisiteQuests() ? json_encode($quest->getPrerequisiteQuests()) : ''
         );
+        $form->get('choiceOutcomeJson')->setData(
+            $quest->getChoiceOutcome() ? json_encode($quest->getChoiceOutcome(), \JSON_PRETTY_PRINT | \JSON_UNESCAPED_UNICODE) : ''
+        );
 
         $form->handleRequest($request);
 
@@ -108,6 +114,9 @@ class QuestController extends AbstractController
 
             $prerequisiteQuestsJson = $form->get('prerequisiteQuestsJson')->getData();
             $quest->setPrerequisiteQuests($prerequisiteQuestsJson ? json_decode($prerequisiteQuestsJson, true) : null);
+
+            $choiceOutcomeJson = $form->get('choiceOutcomeJson')->getData();
+            $quest->setChoiceOutcome($choiceOutcomeJson ? json_decode($choiceOutcomeJson, true) : null);
 
             $this->em->flush();
             $this->adminLogger->log('update', 'Quest', $quest->getId(), $quest->getName());

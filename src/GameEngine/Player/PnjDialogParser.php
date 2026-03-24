@@ -18,6 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
  *   - quest:          [ids] — player has completed these quests
  *   - quest_not:      [ids] — player has NOT started/completed these quests
  *   - quest_active:   [ids] — player has these quests in progress (not completed)
+ *   - quest_choice:   {"questId": "choiceKey"} — player made this choice on completed quest
  *   - has_item:       [slugs] — player owns at least one of these items
  *   - domain_xp_min:  {"domain_id": min_xp} — player has enough XP in domain
  *
@@ -89,6 +90,7 @@ class PnjDialogParser
             'quest' => $this->quest($value),
             'quest_active' => $this->questActive($value),
             'quest_prerequisites_met' => $this->questPrerequisitesMet($value),
+            'quest_choice' => $this->questChoice($value),
             'has_item' => $this->hasItem($value),
             'domain_xp_min' => $this->domainXpMin($value),
             default => true,
@@ -159,6 +161,32 @@ class PnjDialogParser
                 'quest' => $prerequisites,
             ]);
             if (\count($completedPrereqs) < \count($prerequisites)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Check that the player made a specific choice on a completed quest.
+     *
+     * @param array<int|string, string> $questChoices map of questId => choiceKey
+     */
+    private function questChoice(array $questChoices): bool
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return false;
+        }
+
+        foreach ($questChoices as $questId => $expectedChoice) {
+            $completed = $this->entityManager->getRepository(PlayerQuestCompleted::class)->findOneBy([
+                'player' => $player,
+                'quest' => (int) $questId,
+            ]);
+
+            if (!$completed || $completed->getChoiceMade() !== $expectedChoice) {
                 return false;
             }
         }
