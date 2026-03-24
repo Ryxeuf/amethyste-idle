@@ -5,8 +5,10 @@ namespace App\Tests\Unit\GameEngine\Quest;
 use App\Entity\App\Mob;
 use App\Entity\App\PlayerQuest;
 use App\Entity\Game\Monster;
+use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\PlayerQuestUpdater;
+use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -15,16 +17,25 @@ class PlayerQuestUpdaterTest extends TestCase
 {
     private PlayerQuestHelper&MockObject $playerQuestHelper;
     private EntityManagerInterface&MockObject $entityManager;
+    private PlayerHelper&MockObject $playerHelper;
+    private DailyQuestService&MockObject $dailyQuestService;
     private PlayerQuestUpdater $updater;
 
     protected function setUp(): void
     {
         $this->playerQuestHelper = $this->createMock(PlayerQuestHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->playerHelper = $this->createMock(PlayerHelper::class);
+        $this->dailyQuestService = $this->createMock(DailyQuestService::class);
+
+        // Daily quest tracking returns empty by default in tests
+        $this->dailyQuestService->method('getActiveDailyQuests')->willReturn([]);
 
         $this->updater = new PlayerQuestUpdater(
             $this->playerQuestHelper,
             $this->entityManager,
+            $this->playerHelper,
+            $this->dailyQuestService,
         );
     }
 

@@ -8,6 +8,7 @@ use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
+use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\PlayerQuestUpdater;
 use App\GameEngine\Quest\QuestGiverResolver;
@@ -33,6 +34,7 @@ class QuestController extends AbstractController
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly InventoryHelper $inventoryHelper,
         private readonly QuestGiverResolver $questGiverResolver,
+        private readonly DailyQuestService $dailyQuestService,
     ) {
     }
 
@@ -41,6 +43,7 @@ class QuestController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
+        $player = $this->playerHelper->getPlayer();
         $activeQuests = $this->playerQuestHelper->getCurrentQuests();
         $completedQuests = $this->playerQuestHelper->getCompletedQuests();
         $availableQuests = $this->playerQuestHelper->getAvailableQuests();
@@ -49,6 +52,23 @@ class QuestController extends AbstractController
         $questProgress = [];
         foreach ($activeQuests as $playerQuest) {
             $questProgress[$playerQuest->getId()] = $this->playerQuestHelper->getPlayerQuestProgress($playerQuest);
+        }
+
+        // Daily quests
+        $activeDailyQuests = $this->dailyQuestService->getActiveDailyQuests($player);
+        $completedDailyQuests = $this->dailyQuestService->getCompletedDailyQuests($player);
+        $todayQuests = $this->dailyQuestService->getTodayQuests();
+
+        // Filter available daily quests (not accepted or completed today)
+        $dailyBusyQuestIds = array_merge(
+            array_map(fn ($dq) => $dq->getQuest()->getId(), $activeDailyQuests),
+            array_map(fn ($dq) => $dq->getQuest()->getId(), $completedDailyQuests),
+        );
+        $availableDailyQuests = array_filter($todayQuests, fn (Quest $q) => !\in_array($q->getId(), $dailyBusyQuestIds, true));
+
+        $dailyQuestProgress = [];
+        foreach ($activeDailyQuests as $dq) {
+            $dailyQuestProgress[$dq->getId()] = $this->dailyQuestService->getProgress($dq);
         }
 
         // Resolve quest givers, types and chain info for all quests
@@ -72,7 +92,11 @@ class QuestController extends AbstractController
             'questGivers' => $questGivers,
             'questTypes' => $questTypes,
             'questChains' => $questChains,
-            'player' => $this->playerHelper->getPlayer(),
+            'player' => $player,
+            'activeDailyQuests' => $activeDailyQuests,
+            'completedDailyQuests' => $completedDailyQuests,
+            'availableDailyQuests' => $availableDailyQuests,
+            'dailyQuestProgress' => $dailyQuestProgress,
         ]);
     }
 
@@ -274,6 +298,86 @@ class QuestController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'messages' => $messages,
+        ]);
+    }
+
+    #[Route('/daily/accept/{id}', name: 'app_game_quest_daily_accept', methods: ['POST'])]
+    public function dailyAccept(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $quest = $this->entityManager->getRepository(Quest::class)->find($id);
+        if (!$quest || !$quest->isDaily()) {
+            return new JsonResponse(['error' => 'Quête quotidienne introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $player = $this->playerHelper->getPlayer();
+
+        if ($this->dailyQuestService->hasPlayerDailyQuestToday($player, $quest)) {
+            return new JsonResponse(['error' => 'Quête quotidienne déjà acceptée ou complétée aujourd\'hui'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $this->dailyQuestService->acceptDailyQuest($player, $quest);
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => sprintf('Quête quotidienne "%s" acceptée !', $quest->getName()),
+        ]);
+    }
+
+    #[Route('/daily/complete/{id}', name: 'app_game_quest_daily_complete', methods: ['POST'])]
+    public function dailyComplete(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        $dailyQuest = $this->dailyQuestService->getActivePlayerDailyQuest($player, $id);
+        if (!$dailyQuest) {
+            return new JsonResponse(['error' => 'Quête quotidienne introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        if (!$this->dailyQuestService->isCompleted($dailyQuest)) {
+            $progress = $this->dailyQuestService->getProgress($dailyQuest);
+
+            return new JsonResponse([
+                'error' => sprintf('Quête non terminée (%d%%)', $progress),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
+        $quest = $dailyQuest->getQuest();
+        $rewards = $quest->getRewards();
+        $messages = [sprintf('Quête quotidienne "%s" complétée !', $quest->getName())];
+
+        $this->applyRewards($rewards, $player, $messages);
+
+        $dailyQuest->setCompletedAt(new \DateTime());
+        $this->entityManager->persist($player);
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'messages' => $messages,
+        ]);
+    }
+
+    #[Route('/daily/abandon/{id}', name: 'app_game_quest_daily_abandon', methods: ['POST'])]
+    public function dailyAbandon(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        $dailyQuest = $this->dailyQuestService->getActivePlayerDailyQuest($player, $id);
+        if (!$dailyQuest) {
+            return new JsonResponse(['error' => 'Quête quotidienne introuvable'], Response::HTTP_NOT_FOUND);
+        }
+
+        $questName = $dailyQuest->getQuest()->getName();
+        $this->entityManager->remove($dailyQuest);
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => sprintf('Quête quotidienne "%s" abandonnée.', $questName),
         ]);
     }
 
