@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Event\CraftEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
@@ -21,6 +22,7 @@ class CraftingManager
         private readonly PlayerHelper $playerHelper,
         private readonly QualityCalculator $qualityCalculator,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -163,6 +165,9 @@ class CraftingManager
      */
     private function grantCraftingXp(Player $player, string $craft, int $xpAmount): void
     {
+        $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($player->getMap());
+        $xpAmount = (int) round($xpAmount * $xpMultiplier);
+
         foreach ($player->getDomainExperiences() as $domainExperience) {
             $domain = $domainExperience->getDomain();
             $domainSlug = strtolower(str_replace(' ', '-', $domain->getTitle()));

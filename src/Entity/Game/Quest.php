@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Entity\App\GameEvent;
 use App\Entity\App\PlayerQuest;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
@@ -41,6 +42,10 @@ class Quest
 
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $dailyPool = null;
+
+    #[ORM\ManyToOne(targetEntity: GameEvent::class)]
+    #[ORM\JoinColumn(name: 'game_event_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?GameEvent $gameEvent = null;
 
     #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'quest')]
     private $players;
@@ -190,6 +195,23 @@ class Quest
         $this->dailyPool = $dailyPool;
 
         return $this;
+    }
+
+    public function getGameEvent(): ?GameEvent
+    {
+        return $this->gameEvent;
+    }
+
+    public function setGameEvent(?GameEvent $gameEvent): Quest
+    {
+        $this->gameEvent = $gameEvent;
+
+        return $this;
+    }
+
+    public function isEventQuest(): bool
+    {
+        return $this->gameEvent !== null;
     }
 
     public function __toString(): string

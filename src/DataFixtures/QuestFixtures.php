@@ -2,11 +2,13 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\App\GameEvent;
 use App\Entity\Game\Quest;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class QuestFixtures extends Fixture
+class QuestFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -614,6 +616,43 @@ class QuestFixtures extends Fixture
                 ],
                 // prerequisiteQuests set after flush
             ],
+            // --- Quêtes d'événement ---
+            'quest_event_lunar_hunt' => [
+                'name' => 'Chasse sous la Lune',
+                'description' => 'Pendant le Festival de la Lune, les creatures nocturnes sont plus agitees. Eliminez des monstres pour gagner une recompense exclusive du festival.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 3],
+                        ['name' => 'Squelette', 'slug' => 'skeleton', 'count' => 3],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 75,
+                    'items' => [
+                        ['genericItemSlug' => 'cosmetic-lunar-crown', 'count' => 1],
+                    ],
+                ],
+                'gameEvent' => 'event_festival_lune',
+            ],
+            'quest_event_shadow_purge' => [
+                'name' => 'Purge des Ombres',
+                'description' => 'La Nuit des Ombres attire des creatures malfaisantes. Repoussez-les et reclamez votre recompense.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
+                        ['name' => 'Troll', 'slug' => 'troll', 'count' => 1],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['genericItemSlug' => 'cosmetic-shadow-cloak', 'count' => 1],
+                    ],
+                ],
+                'gameEvent' => 'event_nuit_ombres',
+            ],
         ];
 
         foreach ($quests as $key => $data) {
@@ -633,6 +672,9 @@ class QuestFixtures extends Fixture
             }
             if (isset($data['dailyPool'])) {
                 $quest->setDailyPool($data['dailyPool']);
+            }
+            if (isset($data['gameEvent'])) {
+                $quest->setGameEvent($this->getReference($data['gameEvent'], GameEvent::class));
             }
             $quest->setCreatedAt(new \DateTime());
             $quest->setUpdatedAt(new \DateTime());
@@ -672,5 +714,12 @@ class QuestFixtures extends Fixture
         $acte1Cristal->setPrerequisiteQuests([$acte1Recolte->getId()]);
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            GameEventFixtures::class,
+        ];
     }
 }

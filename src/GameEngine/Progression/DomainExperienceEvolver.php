@@ -7,14 +7,20 @@ use App\Event\Fight\ItemUsedEvent;
 use App\Event\Map\ButcheringEvent;
 use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\Helper\PlayerDomainHelper;
+use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class DomainExperienceEvolver implements EventSubscriberInterface
 {
-    public function __construct(private readonly PlayerDomainHelper $playerDomainHelper, private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly PlayerDomainHelper $playerDomainHelper,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
+        private readonly PlayerHelper $playerHelper,
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -74,6 +80,11 @@ class DomainExperienceEvolver implements EventSubscriberInterface
     private function increaseDomainExperience(Domain $domain, int $amount = 1): void
     {
         if ($domainExperience = $this->playerDomainHelper->getDomainExperience($domain)) {
+            $player = $this->playerHelper->getPlayer();
+            $map = $player?->getMap();
+            $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($map);
+            $amount = (int) round($amount * $xpMultiplier);
+
             $newExperience = $domainExperience->getTotalExperience() + $amount;
             $domainExperience->setTotalExperience($newExperience);
             $this->entityManager->persist($domainExperience);

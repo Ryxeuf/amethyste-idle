@@ -112,6 +112,11 @@ class QuestController extends AbstractController
 
         $player = $this->playerHelper->getPlayer();
 
+        // Check if event quest is still active
+        if ($quest->isEventQuest() && !$quest->getGameEvent()->isActive()) {
+            return new JsonResponse(['error' => 'Cet événement est terminé'], Response::HTTP_BAD_REQUEST);
+        }
+
         // Check if already accepted
         $existing = $this->entityManager->getRepository(PlayerQuest::class)->findOneBy([
             'player' => $player,
