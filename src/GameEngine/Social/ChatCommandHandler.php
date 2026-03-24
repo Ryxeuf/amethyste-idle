@@ -108,9 +108,6 @@ class ChatCommandHandler
     /**
      * @param string[] $parts
      */
-    /**
-     * @param string[] $parts
-     */
     private function handleGuild(Player $sender, array $parts): array
     {
         $message = trim(implode(' ', \array_slice($parts, 1)));

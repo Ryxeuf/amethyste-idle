@@ -5,6 +5,7 @@ namespace App\Tests\Unit\GameEngine\Social;
 use App\Entity\App\ChatMessage;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
+use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Social\ChatCommandHandler;
 use App\GameEngine\Social\ChatManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,14 +16,16 @@ use PHPUnit\Framework\TestCase;
 class ChatCommandHandlerTest extends TestCase
 {
     private ChatManager&MockObject $chatManager;
+    private GuildManager&MockObject $guildManager;
     private EntityManagerInterface&MockObject $em;
     private ChatCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->chatManager = $this->createMock(ChatManager::class);
+        $this->guildManager = $this->createMock(GuildManager::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->handler = new ChatCommandHandler($this->chatManager, $this->em);
+        $this->handler = new ChatCommandHandler($this->chatManager, $this->guildManager, $this->em);
     }
 
     public function testIsCommandReturnsTrueForSlashPrefix(): void
