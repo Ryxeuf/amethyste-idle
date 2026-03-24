@@ -8,19 +8,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\RateLimiter\RateLimiterFactory;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 
 class RateLimitingSubscriber implements EventSubscriberInterface
 {
-    /** @var array<string, array{limiter: RateLimiterFactory, routes: list<string>}> */
+    /** @var array<string, array{limiter: RateLimiterFactoryInterface, routes: list<string>}> */
     private readonly array $limiterMap;
 
     public function __construct(
         private readonly Security $security,
-        private readonly RateLimiterFactory $apiMoveLimiter,
-        private readonly RateLimiterFactory $gameFightLimiter,
-        private readonly RateLimiterFactory $gameShopLimiter,
-        private readonly RateLimiterFactory $gameCraftLimiter,
+        private readonly RateLimiterFactoryInterface $apiMoveLimiter,
+        private readonly RateLimiterFactoryInterface $gameFightLimiter,
+        private readonly RateLimiterFactoryInterface $gameShopLimiter,
+        private readonly RateLimiterFactoryInterface $gameCraftLimiter,
     ) {
         $this->limiterMap = [
             'api_move' => [

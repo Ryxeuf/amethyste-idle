@@ -64,6 +64,13 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	php bin/console cache:clear --no-warmup || true
 	php bin/console cache:warmup
 
+	# var/ est un volume Docker : le CSS Tailwind compile (var/tailwind/*.built.css) n'est pas
+	# conserve depuis l'image. On le regenere si absent pour eviter les erreurs asset() / importmap.
+	if [ ! -f var/tailwind/app.built.css ]; then
+		echo 'Building Tailwind CSS (var/tailwind/app.built.css missing)...'
+		php bin/console tailwind:build --no-interaction || true
+	fi
+
 	echo 'PHP app ready!'
 fi
 

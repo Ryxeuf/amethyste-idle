@@ -617,7 +617,7 @@ html, body {
   justify-content: center;
   position: relative;
   flex-shrink: 0;
-  background-image: url('../images/materias_32.png');
+  background-image: url('images/materias_32.png');
   background-size: 512px 512px;
   background-repeat: no-repeat;
   image-rendering: pixelated;
