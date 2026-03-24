@@ -47,6 +47,7 @@ php_exec php /app/bin/console doctrine:schema:create --no-interaction
 
 echo ""
 echo "==> [3/7] Synchronisation des migrations (marquer toutes comme executees)..."
+php_exec php /app/bin/console doctrine:migrations:sync-metadata-storage --no-interaction
 php_exec php /app/bin/console doctrine:migrations:version --add --all --no-interaction
 
 echo ""
