@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-23
+> Derniere mise a jour : 2026-03-24
 
 ---
 
@@ -730,3 +730,19 @@
 - [x] Raccourcis clavier 1-6 pour activer un slot
 - [x] Persistance des slots en localStorage
 - [x] API `/api/quickbar/items` et `/api/quickbar/use/{id}` avec cooldown 1s
+
+## 54 — Quetes a choix (2026-03-24) ✅
+
+> Embranchements narratifs : le joueur fait un choix en rendant une quete, ce qui influence les recompenses et les dialogues futurs.
+
+- [x] Champ `choiceOutcome` (JSON, nullable) sur entite Quest : liste de choix possibles avec cle, label et bonus rewards
+- [x] Champ `choiceMade` (string, nullable) sur entite PlayerQuestCompleted : stocke la cle du choix fait
+- [x] Migration SQL (2 colonnes)
+- [x] QuestController::complete() adapte : validation du choix, application des bonus rewards specifiques au choix
+- [x] Methode privee `applyRewards()` extraite pour reutilisation (base + bonus)
+- [x] Condition `quest_choice` dans PnjDialogParser : conditionner le dialogue selon le choix passe (format `{"questId": "choiceKey"}`)
+- [x] Modal de choix dans le journal de quetes (bouton "Choisir & Rendre" au lieu de "Rendre")
+- [x] Affichage du choix fait dans l'onglet "Terminees" du journal
+- [x] Formulaire admin : champ `choiceOutcomeJson` pour editer les choix
+- [x] 1 quete fixture "Allegeance contestee" : 2 branches (aide garde = bouclier, aide marchand = or + potions)
+- [x] Dialogue PNJ conditionnel post-choix (Michel le Garde reagit differemment selon le choix)

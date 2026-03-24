@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Item;
@@ -16,6 +17,7 @@ use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -196,7 +198,7 @@ class QuestController extends AbstractController
     }
 
     #[Route('/complete/{id}', name: 'app_game_quest_complete', methods: ['POST'])]
-    public function complete(int $id): Response
+    public function complete(int $id, Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -219,6 +221,68 @@ class QuestController extends AbstractController
         $rewards = $quest->getRewards();
         $messages = [sprintf('Quête "%s" complétée !', $quest->getName())];
 
+        // Handle quest with choices
+        $choiceMade = null;
+        $choiceOutcome = $quest->getChoiceOutcome();
+        if (!empty($choiceOutcome)) {
+            $body = json_decode($request->getContent(), true) ?? [];
+            $choiceKey = $request->request->get('choice') ?? $body['choice'] ?? null;
+            if (!$choiceKey) {
+                return new JsonResponse([
+                    'error' => 'Cette quête nécessite un choix.',
+                    'choices' => $choiceOutcome,
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Validate the choice exists
+            $validChoice = null;
+            foreach ($choiceOutcome as $outcome) {
+                if ($outcome['key'] === $choiceKey) {
+                    $validChoice = $outcome;
+                    break;
+                }
+            }
+            if (!$validChoice) {
+                return new JsonResponse(['error' => 'Choix invalide.'], Response::HTTP_BAD_REQUEST);
+            }
+
+            $choiceMade = $choiceKey;
+            $messages[] = sprintf('Choix : %s', $validChoice['label']);
+
+            // Apply bonus rewards from choice
+            $bonusRewards = $validChoice['bonusRewards'] ?? [];
+            $this->applyRewards($bonusRewards, $player, $messages);
+        }
+
+        // Apply base rewards
+        $this->applyRewards($rewards, $player, $messages);
+
+        // Create completed record
+        $completedQuest = new PlayerQuestCompleted();
+        $completedQuest->setPlayer($player);
+        $completedQuest->setQuest($quest);
+        $completedQuest->setChoiceMade($choiceMade);
+
+        // Remove active quest
+        $this->entityManager->remove($playerQuest);
+        $this->entityManager->persist($completedQuest);
+        $this->entityManager->persist($player);
+        $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(new QuestCompletedEvent($player, $quest), QuestCompletedEvent::NAME);
+
+        return new JsonResponse([
+            'success' => true,
+            'messages' => $messages,
+        ]);
+    }
+
+    /**
+     * @param array<string, mixed> $rewards
+     * @param string[]             $messages
+     */
+    private function applyRewards(array $rewards, Player $player, array &$messages): void
+    {
         // Apply gold/gils rewards (fixtures use 'gold', support both keys)
         $gils = (int) ($rewards['gils'] ?? $rewards['gold'] ?? 0);
         if ($gils > 0) {
@@ -272,23 +336,5 @@ class QuestController extends AbstractController
                 ? sprintf('+%d %s', $count, $itemName)
                 : sprintf('+%s', $itemName);
         }
-
-        // Create completed record
-        $completedQuest = new PlayerQuestCompleted();
-        $completedQuest->setPlayer($player);
-        $completedQuest->setQuest($quest);
-
-        // Remove active quest
-        $this->entityManager->remove($playerQuest);
-        $this->entityManager->persist($completedQuest);
-        $this->entityManager->persist($player);
-        $this->entityManager->flush();
-
-        $this->eventDispatcher->dispatch(new QuestCompletedEvent($player, $quest), QuestCompletedEvent::NAME);
-
-        return new JsonResponse([
-            'success' => true,
-            'messages' => $messages,
-        ]);
     }
 }

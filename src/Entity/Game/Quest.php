@@ -33,6 +33,9 @@ class Quest
     #[ORM\Column(name: 'prerequisite_quests', type: 'json', nullable: true)]
     private ?array $prerequisiteQuests = null;
 
+    #[ORM\Column(name: 'choice_outcome', type: 'json', nullable: true)]
+    private ?array $choiceOutcome = null;
+
     #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'quest')]
     private $players;
 
@@ -140,6 +143,23 @@ class Quest
     public function hasPrerequisites(): bool
     {
         return !empty($this->prerequisiteQuests);
+    }
+
+    public function getChoiceOutcome(): ?array
+    {
+        return $this->choiceOutcome;
+    }
+
+    public function setChoiceOutcome(?array $choiceOutcome): Quest
+    {
+        $this->choiceOutcome = $choiceOutcome;
+
+        return $this;
+    }
+
+    public function hasChoices(): bool
+    {
+        return !empty($this->choiceOutcome);
     }
 
     public function __toString(): string
