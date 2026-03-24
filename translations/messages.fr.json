@@ -62,7 +62,12 @@
       "bestiary": "Bestiaire",
       "craft": "Artisanat",
       "factions": "Factions",
-      "friends": "Amis"
+      "friends": "Amis",
+      "menu": {
+        "adventure": "Aventure",
+        "character": "Personnage",
+        "social": "Social"
+      }
     },
     "currency": "Or",
     "energy": "Énergie",
