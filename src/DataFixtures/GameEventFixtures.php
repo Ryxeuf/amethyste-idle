@@ -3,13 +3,18 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\GameEvent;
+use App\Entity\Game\Item;
+use App\Entity\Game\Quest;
+use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class GameEventFixtures extends Fixture
+class GameEventFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
+        // --- Base game events (bonus, festivals) ---
         $events = $this->getEventsData();
 
         foreach ($events as $key => $data) {
@@ -28,6 +33,103 @@ class GameEventFixtures extends Fixture
 
             $manager->persist($event);
             $this->addReference($key, $event);
+        }
+
+        // --- Cosmetic items for the festival ---
+        $cosmeticItems = [
+            'cosmetic-festival-crown' => [
+                'name' => 'Couronne du Festival',
+                'slug' => 'cosmetic-festival-crown',
+                'description' => 'Une couronne dorée ornée de fleurs, symbole du Festival de la Lune.',
+                'type' => Item::TYPE_STUFF,
+                'rarity' => ItemRarity::Rare,
+                'price' => 0,
+                'level' => 1,
+                'is_cosmetic' => true,
+                'bound_to_player' => true,
+            ],
+            'cosmetic-festival-cape' => [
+                'name' => 'Cape Stellaire',
+                'slug' => 'cosmetic-festival-cape',
+                'description' => 'Une cape scintillante aux reflets d\'étoiles, récompense exclusive du Festival.',
+                'type' => Item::TYPE_STUFF,
+                'rarity' => ItemRarity::Epic,
+                'price' => 0,
+                'level' => 1,
+                'is_cosmetic' => true,
+                'bound_to_player' => true,
+            ],
+        ];
+
+        foreach ($cosmeticItems as $key => $data) {
+            $item = new Item();
+            $item->setName($data['name']);
+            $item->setSlug($data['slug']);
+            $item->setDescription($data['description']);
+            $item->setType($data['type']);
+            $item->setRarity($data['rarity']);
+            $item->setPrice($data['price']);
+            $item->setLevel($data['level']);
+            $item->setIsCosmetic($data['is_cosmetic']);
+            $item->setBoundToPlayer($data['bound_to_player']);
+            $item->setSpace(1);
+            $item->setCreatedAt(new \DateTime());
+            $item->setUpdatedAt(new \DateTime());
+            $manager->persist($item);
+            $this->addReference($key, $item);
+        }
+
+        $manager->flush();
+
+        // --- Event Quests (linked to Festival de la Lune) ---
+        $eventQuests = [
+            'quest_festival_hunt' => [
+                'name' => 'Chasse aux Etoiles',
+                'description' => 'Pendant le Festival de la Lune, les monstres libèrent de l\'énergie stellaire. Eliminez 5 monstres pour collecter cette énergie.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 3],
+                        ['name' => 'Squelette', 'slug' => 'skeleton', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 50,
+                    'xp' => 100,
+                    'items' => [
+                        ['genericItemSlug' => 'cosmetic-festival-crown', 'count' => 1],
+                    ],
+                ],
+            ],
+            'quest_festival_collect' => [
+                'name' => 'Offrande Stellaire',
+                'description' => 'Récoltez des herbes rares pour préparer l\'offrande du Festival. Collectez 3 champignons et 2 herbes.',
+                'requirements' => [
+                    'collect' => [
+                        ['name' => 'Champignon', 'slug' => 'mushroom', 'count' => 3],
+                        ['name' => 'Herbe médicinale', 'slug' => 'medicinal-herb', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 75,
+                    'xp' => 150,
+                    'items' => [
+                        ['genericItemSlug' => 'cosmetic-festival-cape', 'count' => 1],
+                    ],
+                ],
+            ],
+        ];
+
+        foreach ($eventQuests as $key => $data) {
+            $quest = new Quest();
+            $quest->setName($data['name']);
+            $quest->setDescription($data['description']);
+            $quest->setRequirements($data['requirements']);
+            $quest->setRewards($data['rewards']);
+            $quest->setGameEvent($this->getReference('event_festival_lune', GameEvent::class));
+            $quest->setCreatedAt(new \DateTime());
+            $quest->setUpdatedAt(new \DateTime());
+            $manager->persist($quest);
+            $this->addReference($key, $quest);
         }
 
         $manager->flush();
@@ -68,6 +170,13 @@ class GameEventFixtures extends Fixture
                 'ends_at' => '+5 days',
                 'parameters' => ['multiplier' => 1.75],
             ],
+        ];
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            QuestFixtures::class,
         ];
     }
 }

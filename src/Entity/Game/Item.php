@@ -183,6 +183,9 @@ class Item
     #[ORM\Column(name: 'materia_slots', type: 'integer', options: ['default' => 0])]
     private int $materiaSlots = 0;
 
+    #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
+    private bool $isCosmetic = false;
+
     /**
      * Get id.
      */
@@ -536,5 +539,15 @@ class Item
     public function setMateriaSlots(int $materiaSlots): void
     {
         $this->materiaSlots = $materiaSlots;
+    }
+
+    public function isCosmetic(): bool
+    {
+        return $this->isCosmetic;
+    }
+
+    public function setIsCosmetic(bool $isCosmetic): void
+    {
+        $this->isCosmetic = $isCosmetic;
     }
 }

@@ -911,3 +911,18 @@
 - [x] Dialogues PNJ avec boutiques, horaires d'ouverture, et substitution {{player_name}}
 - [x] Portails bidirectionnels : carte principale (30.30) ↔ village (19.39/20.39)
 - [x] Données d'area générées pour le rendu PixiJS (area_data.json + world-1-village-1.json)
+
+---
+
+## 79 — Événements bonus/festivals (2026-03-24) ✅
+
+> Intégration des bonus xp_bonus et drop_bonus dans tous les systèmes de jeu, quêtes d'événement temporaires, et cosmétiques d'événement.
+
+- [x] Intégrer `drop_bonus` dans LootGenerator (déjà fait en tâche 21)
+- [x] Intégrer `xp_bonus` dans CraftingManager (multiplicateur sur l'XP de craft)
+- [x] Intégrer `xp_bonus` dans DomainExperienceEvolver (gathering, fishing, butchering)
+- [x] Quêtes d'événement : champ `gameEvent` sur Quest, filtrage automatique des quêtes expirées
+- [x] Cosmétiques d'événement : flag `isCosmetic` sur Item, items décoratifs exclusifs
+- [x] Fixtures : Festival des Étoiles (bonus XP x2, bonus drop x1.5, 2 quêtes, 2 cosmétiques)
+- [x] Migration PostgreSQL idempotente
+- [x] Tests unitaires : bonus XP crafting, quêtes d'événement actives/inactives, flag cosmétique

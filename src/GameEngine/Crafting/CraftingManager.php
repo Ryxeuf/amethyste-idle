@@ -115,8 +115,8 @@ class CraftingManager
             $lastPlayerItem = $playerItem;
         }
 
-        // Accorder l'XP de domaine
-        $this->grantCraftingXp($player, $recipe->getCraft(), $recipe->getXpReward());
+        // Accorder l'XP de domaine (avec bonus evenement)
+        $grantedXp = $this->grantCraftingXp($player, $recipe->getCraft(), $recipe->getXpReward());
 
         $this->entityManager->flush();
 
@@ -136,7 +136,7 @@ class CraftingManager
                 $resultItem->getName(),
                 $recipe->getResultQuantity(),
                 $qualityLabel,
-                $recipe->getXpReward()
+                $grantedXp
             ),
         ];
     }
@@ -163,10 +163,10 @@ class CraftingManager
     /**
      * Accorde de l'XP de craft au joueur dans le domaine correspondant.
      */
-    private function grantCraftingXp(Player $player, string $craft, int $xpAmount): void
+    private function grantCraftingXp(Player $player, string $craft, int $xpAmount): int
     {
         $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($player->getMap());
-        $xpAmount = (int) round($xpAmount * $xpMultiplier);
+        $finalXp = (int) round($xpAmount * $xpMultiplier);
 
         foreach ($player->getDomainExperiences() as $domainExperience) {
             $domain = $domainExperience->getDomain();
@@ -174,13 +174,15 @@ class CraftingManager
 
             if ($domainSlug === $craft) {
                 $domainExperience->setTotalExperience(
-                    $domainExperience->getTotalExperience() + $xpAmount
+                    $domainExperience->getTotalExperience() + $finalXp
                 );
                 $this->entityManager->persist($domainExperience);
 
-                return;
+                return $finalXp;
             }
         }
+
+        return $finalXp;
     }
 
     /**

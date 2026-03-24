@@ -111,8 +111,8 @@ class PlayerQuestHelper
 
         // Filter by prerequisites and event availability
         return array_values(array_filter($allQuests, function (Quest $quest) use ($completedQuestIds) {
-            // Event quests: only show if linked GameEvent is active
-            if ($quest->isEventQuest() && !$quest->getGameEvent()->isActive()) {
+            // Hide event quests whose event is no longer active
+            if ($quest->isEventQuest() && !$quest->isEventActive()) {
                 return false;
             }
 

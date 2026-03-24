@@ -214,6 +214,11 @@ class Quest
         return $this->gameEvent !== null;
     }
 
+    public function isEventActive(): bool
+    {
+        return $this->gameEvent === null || $this->gameEvent->isActive();
+    }
+
     public function __toString(): string
     {
         return $this->name;
