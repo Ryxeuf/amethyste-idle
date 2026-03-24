@@ -63,10 +63,10 @@ class MovementCalculator
                     if (isset($objectLayers[$targetCoords])) {
                         // If the cell is a target cell, but becomes unreachable due to the object, we remove it from tree
                         if ($objectLayers[$targetCoords] === CellHelper::MOVE_UNREACHABLE) {
-                            unset($this->map[$coords]);
+                            unset($this->map[$coords][$targetCoords]);
                         } else {
                             // Update target movement considering the object movement property
-                            $this->map[$coords] = $objectLayers[$targetCoords] === 0 ? 1 : $objectLayers[$targetCoords];
+                            $this->map[$coords][$targetCoords] = $objectLayers[$targetCoords] === 0 ? 1 : $objectLayers[$targetCoords];
                         }
                     }
                 }
