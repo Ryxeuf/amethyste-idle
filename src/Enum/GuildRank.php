@@ -43,4 +43,19 @@ enum GuildRank: string
     {
         return $this === self::Master;
     }
+
+    public function isAbove(self $other): bool
+    {
+        return $this->weight() > $other->weight();
+    }
+
+    private function weight(): int
+    {
+        return match ($this) {
+            self::Master => 4,
+            self::Officer => 3,
+            self::Member => 2,
+            self::Recruit => 1,
+        };
+    }
 }

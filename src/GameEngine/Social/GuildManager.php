@@ -8,6 +8,9 @@ use App\Entity\App\GuildMember;
 use App\Entity\App\Player;
 use App\Enum\GuildRank;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 class GuildManager
 {
@@ -20,6 +23,8 @@ class GuildManager
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly HubInterface $hub,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -89,6 +94,12 @@ class GuildManager
 
         $this->entityManager->persist($invitation);
         $this->entityManager->flush();
+
+        $this->publishNotification($target, 'guild_invite', [
+            'guildId' => $guild->getId(),
+            'guildName' => $guild->getName(),
+            'inviterName' => $inviter->getName(),
+        ]);
 
         return $invitation;
     }
@@ -165,6 +176,10 @@ class GuildManager
 
         $this->entityManager->remove($targetMember);
         $this->entityManager->flush();
+
+        $this->publishNotification($target, 'guild_kick', [
+            'guildName' => $guild->getName(),
+        ]);
     }
 
     public function promote(Guild $guild, Player $promoter, Player $target, GuildRank $newRank): void
@@ -184,6 +199,28 @@ class GuildManager
         }
 
         $targetMember->setRank($newRank);
+        $this->entityManager->flush();
+    }
+
+    public function transferLeadership(Guild $guild, Player $currentLeader, Player $newLeader): void
+    {
+        if ($guild->getLeader()->getId() !== $currentLeader->getId()) {
+            throw new \InvalidArgumentException('Seul le maître de guilde peut transférer le leadership.');
+        }
+
+        $newLeaderMember = $this->getMembership($guild, $newLeader);
+        if (!$newLeaderMember) {
+            throw new \InvalidArgumentException('Ce joueur n\'est pas membre de la guilde.');
+        }
+
+        $currentLeaderMember = $this->getMembership($guild, $currentLeader);
+        if ($currentLeaderMember) {
+            $currentLeaderMember->setRank(GuildRank::Officer);
+        }
+
+        $newLeaderMember->setRank(GuildRank::Master);
+        $guild->setLeader($newLeader);
+
         $this->entityManager->flush();
     }
 
@@ -255,6 +292,26 @@ class GuildManager
         $existing = $this->entityManager->getRepository(Guild::class)->findOneBy(['tag' => $tag]);
         if ($existing) {
             throw new \InvalidArgumentException('Ce tag de guilde est déjà pris.');
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    private function publishNotification(Player $recipient, string $type, array $data): void
+    {
+        try {
+            $update = new Update(
+                'chat/private/' . $recipient->getId(),
+                json_encode([
+                    'topic' => 'guild/notification',
+                    'type' => $type,
+                    'data' => $data,
+                ], JSON_THROW_ON_ERROR)
+            );
+            $this->hub->publish($update);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Failed to publish guild notification: ' . $e->getMessage());
         }
     }
 }

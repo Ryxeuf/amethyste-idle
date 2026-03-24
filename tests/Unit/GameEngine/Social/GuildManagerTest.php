@@ -13,10 +13,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Mercure\HubInterface;
 
 class GuildManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
+    private HubInterface&MockObject $hub;
+    private LoggerInterface&MockObject $logger;
     private GuildManager $manager;
     private EntityRepository&MockObject $guildRepo;
     private EntityRepository&MockObject $memberRepo;
@@ -25,6 +29,8 @@ class GuildManagerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->hub = $this->createMock(HubInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->guildRepo = $this->createMock(EntityRepository::class);
         $this->memberRepo = $this->createMock(EntityRepository::class);
         $this->invitationRepo = $this->createMock(EntityRepository::class);
@@ -38,7 +44,7 @@ class GuildManagerTest extends TestCase
                 };
             });
 
-        $this->manager = new GuildManager($this->em);
+        $this->manager = new GuildManager($this->em, $this->hub, $this->logger);
     }
 
     public function testCreateGuild(): void
@@ -328,6 +334,55 @@ class GuildManagerTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('transfert de leadership');
         $this->manager->promote($guild, $leader, $target, GuildRank::Master);
+    }
+
+    public function testTransferLeadership(): void
+    {
+        $currentLeader = $this->createPlayer(1, 0);
+        $newLeader = $this->createPlayer(2, 0);
+
+        $guild = $this->createMock(Guild::class);
+        $guild->method('getLeader')->willReturn($currentLeader);
+        $guild->expects($this->once())->method('setLeader')->with($newLeader);
+
+        $currentMember = new GuildMember();
+        $currentMember->setRank(GuildRank::Master);
+
+        $newMember = new GuildMember();
+        $newMember->setRank(GuildRank::Officer);
+
+        $this->memberRepo->method('findOneBy')
+            ->willReturnCallback(function (array $criteria) use ($currentMember, $newMember, $currentLeader, $newLeader) {
+                if ($criteria['player'] === $newLeader) {
+                    return $newMember;
+                }
+                if ($criteria['player'] === $currentLeader) {
+                    return $currentMember;
+                }
+
+                return null;
+            });
+
+        $this->em->expects($this->once())->method('flush');
+
+        $this->manager->transferLeadership($guild, $currentLeader, $newLeader);
+
+        $this->assertSame(GuildRank::Officer, $currentMember->getRank());
+        $this->assertSame(GuildRank::Master, $newMember->getRank());
+    }
+
+    public function testTransferByNonLeaderThrows(): void
+    {
+        $leader = $this->createPlayer(1, 0);
+        $other = $this->createPlayer(2, 0);
+        $target = $this->createPlayer(3, 0);
+
+        $guild = $this->createMock(Guild::class);
+        $guild->method('getLeader')->willReturn($leader);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('maître de guilde');
+        $this->manager->transferLeadership($guild, $other, $target);
     }
 
     public function testDisbandGuild(): void

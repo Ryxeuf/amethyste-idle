@@ -799,10 +799,12 @@
 - [x] Entite `GuildMember` (guild, player unique, rank enum, joinedAt)
 - [x] Entite `GuildInvitation` (guild, player, invitedBy, unique guild+player)
 - [x] Migration PostgreSQL (3 tables : guilds, guild_members, guild_invitations)
-- [x] `GuildManager` : create (5000 gils), invite (officier+), accept/decline invitation, leave, kick, promote/demote, disband
-- [x] `GuildController` : 9 routes (/game/guild, create, invite, accept, decline, leave, kick, promote, disband)
-- [x] Templates Twig : page sans guilde (formulaire creation + invitations recues), page guilde (infos, membres, actions)
+- [x] `GuildManager` : create (5000 gils), invite (officier+), accept/decline invitation, leave, kick, promote/demote, transferLeadership, disband
+- [x] `GuildController` : 10 routes (/game/guild, create, invite, accept, decline, leave, kick, promote, transfer, disband)
+- [x] Templates Twig : page sans guilde (formulaire creation + invitations recues), page guilde (infos, membres, actions, transfert leadership)
+- [x] Notifications Mercure temps reel (invitation, exclusion)
 - [x] Traductions FR + EN completes
 - [x] Navigation : lien "Guilde" dans la barre de jeu
-- [x] Tests unitaires GuildManager (14 tests : creation, validation, invitation, leave, kick, promote, disband)
+- [x] Tests unitaires GuildManager (16 tests : creation, validation, invitation, leave, kick, promote, transfer leadership, disband)
 - [x] Validations : nom unique, tag unique, max 1 guilde/joueur, cout creation, permissions par rang
+- [x] `GuildRank::isAbove()` pour comparaison de rang hierarchique

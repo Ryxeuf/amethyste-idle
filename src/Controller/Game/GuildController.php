@@ -264,6 +264,40 @@ class GuildController extends AbstractController
         return $this->redirectToRoute('app_game_guild');
     }
 
+    #[Route('/transfer/{id}', name: 'app_game_guild_transfer', methods: ['POST'])]
+    public function transfer(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $guild = $this->guildManager->getPlayerGuild($player);
+        if (!$guild) {
+            $this->addFlash('error', 'Vous n\'êtes pas dans une guilde.');
+
+            return $this->redirectToRoute('app_game_guild');
+        }
+
+        $targetPlayer = $this->entityManager->getRepository(Player::class)->find($id);
+        if (!$targetPlayer) {
+            $this->addFlash('error', 'Joueur introuvable.');
+
+            return $this->redirectToRoute('app_game_guild');
+        }
+
+        try {
+            $this->guildManager->transferLeadership($guild, $player, $targetPlayer);
+            $this->addFlash('success', $targetPlayer->getName() . ' est le nouveau maître de guilde.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_guild');
+    }
+
     #[Route('/disband', name: 'app_game_guild_disband', methods: ['POST'])]
     public function disband(): Response
     {
