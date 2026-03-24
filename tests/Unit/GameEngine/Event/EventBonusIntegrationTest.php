@@ -193,9 +193,6 @@ class EventBonusIntegrationTest extends TestCase
         $this->assertTrue($item->isCosmetic());
     }
 
-    /**
-     * @return Player&MockObject
-     */
     private function createPlayerWithBagItems(array $itemCounts): Player&MockObject
     {
         $items = [];
