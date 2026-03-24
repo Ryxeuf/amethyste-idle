@@ -1,0 +1,146 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Editeur - {{ map.name }} - Admin{% endblock %}
+{% block page_title %}Editeur de carte : {{ map.name }}{% endblock %}
+
+{% block body %}
+<div data-controller="admin-map-editor"
+     data-admin-map-editor-map-id-value="{{ map.id }}"
+     data-admin-map-editor-cells-url-value="{{ path('admin_map_editor_cells', {id: map.id}) }}"
+     data-admin-map-editor-tilesets-url-value="{{ path('admin_map_editor_tilesets', {id: map.id}) }}"
+     data-admin-map-editor-entities-url-value="{{ path('admin_map_editor_entities', {id: map.id}) }}"
+     data-admin-map-editor-update-cell-url-value="{{ path('admin_map_editor_update_cell', {id: map.id}) }}"
+     data-admin-map-editor-update-cells-url-value="{{ path('admin_map_editor_update_cells', {id: map.id}) }}"
+     class="flex flex-col h-[calc(100vh-130px)]">
+
+    {# Toolbar #}
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+        {# Navigation #}
+        <a href="{{ path('admin_map_show', {id: map.id}) }}" class="text-gray-400 hover:text-white text-sm mr-2">← Retour</a>
+
+        <div class="h-6 border-r border-gray-700 mx-1"></div>
+
+        {# Tools #}
+        <span class="text-xs text-gray-500 uppercase mr-1">Outil:</span>
+        <button data-tool="select" data-action="admin-map-editor#setToolSelect"
+                class="px-2 py-1 rounded text-xs bg-purple-700 text-white transition-colors">Selection</button>
+        <button data-tool="block" data-action="admin-map-editor#setToolBlock"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Bloquer</button>
+        <button data-tool="unblock" data-action="admin-map-editor#setToolUnblock"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Debloquer</button>
+        <button data-tool="water" data-action="admin-map-editor#setToolWater"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Eau</button>
+
+        <div class="h-6 border-r border-gray-700 mx-1"></div>
+
+        {# View toggles #}
+        <span class="text-xs text-gray-500 uppercase mr-1">Affichage:</span>
+        <button data-action="admin-map-editor#toggleCollisions"
+                class="px-2 py-1 rounded text-xs bg-red-900 text-red-300 hover:bg-red-800 transition-colors">Collisions</button>
+        <button data-action="admin-map-editor#toggleEntities"
+                class="px-2 py-1 rounded text-xs bg-green-900 text-green-300 hover:bg-green-800 transition-colors">Entites</button>
+        <button data-action="admin-map-editor#toggleGrid"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Grille</button>
+        <button data-action="admin-map-editor#toggleTiles"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Tiles</button>
+
+        <div class="h-6 border-r border-gray-700 mx-1"></div>
+
+        {# Zoom #}
+        <button data-action="admin-map-editor#zoomOut"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600">-</button>
+        <button data-action="admin-map-editor#fitView"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600">Ajuster</button>
+        <button data-action="admin-map-editor#zoomIn"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600">+</button>
+
+        <div class="flex-1"></div>
+
+        {# Save #}
+        <div id="editor-flash" class="inline-block mr-2"></div>
+        <button data-action="admin-map-editor#discardChanges"
+                class="px-3 py-1.5 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Annuler</button>
+        <button id="save-btn" data-action="admin-map-editor#saveChanges" disabled
+                class="px-3 py-1.5 rounded text-xs bg-purple-600 hover:bg-purple-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            Sauvegarder <span id="pending-badge" class="ml-1 text-yellow-300"></span>
+        </button>
+    </div>
+
+    {# Main area #}
+    <div class="flex flex-1 gap-3 min-h-0">
+        {# Canvas #}
+        <div class="flex-1 bg-gray-900 border border-gray-800 rounded-xl overflow-hidden relative">
+            <canvas data-admin-map-editor-target="canvas" class="block w-full h-full"></canvas>
+
+            {# Coords overlay #}
+            <div class="absolute bottom-2 left-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-gray-400">
+                <span data-admin-map-editor-target="coords">—</span>
+            </div>
+            <div class="absolute bottom-2 right-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-gray-400">
+                <span data-admin-map-editor-target="stats">Chargement...</span>
+            </div>
+        </div>
+
+        {# Side panel #}
+        <div class="w-72 flex-shrink-0 flex flex-col gap-3">
+            {# Cell info #}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <h3 class="text-sm font-semibold text-gray-300 mb-2">Cellule selectionnee</h3>
+                <div data-admin-map-editor-target="info">
+                    <p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>
+                </div>
+            </div>
+
+            {# Legend #}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <h3 class="text-sm font-semibold text-gray-300 mb-2">Legende</h3>
+                <div class="space-y-1.5 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded bg-red-500/50 border border-red-500 inline-block"></span>
+                        <span class="text-gray-400">Case bloquee (mur)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded bg-blue-500/30 border border-blue-500 inline-block"></span>
+                        <span class="text-gray-400">Eau</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded bg-yellow-400/30 border border-yellow-500 inline-block"></span>
+                        <span class="text-gray-400">Modification en attente</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-red-500 inline-block"></span>
+                        <span class="text-gray-400">Mob</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-green-500" viewBox="0 0 16 16"><polygon points="8,2 14,8 8,14 2,8" fill="currentColor"/></svg>
+                        <span class="text-gray-400">PNJ</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-500" viewBox="0 0 16 16"><polygon points="8,2 14,12 2,12" fill="currentColor"/></svg>
+                        <span class="text-gray-400">Portail</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-yellow-500 inline-block"></span>
+                        <span class="text-gray-400">Spot de recolte</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-orange-500" viewBox="0 0 16 16"><polygon points="8,2 14,8 8,14 2,8" fill="currentColor"/></svg>
+                        <span class="text-gray-400">Station d'artisanat</span>
+                    </div>
+                </div>
+            </div>
+
+            {# Shortcuts #}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                <h3 class="text-sm font-semibold text-gray-300 mb-2">Raccourcis</h3>
+                <div class="space-y-1 text-xs text-gray-400">
+                    <p><kbd class="bg-gray-700 px-1 rounded">Molette</kbd> Zoom</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Deplacer</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Clic</kbd> Selectionner / Peindre</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
