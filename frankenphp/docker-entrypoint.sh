@@ -78,6 +78,31 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 		php bin/console asset-map:compile --no-interaction || true
 	fi
 
+	# Carte id 1 (fixtures map_1) : tag_1_* et map_1_* sont nécessaires pour le déplacement.
+	# Les images anciennes n'ont souvent que tag_10_* (même graphe). Dupliquer si manquant.
+	DATA_MAP="data/map"
+	if [ -d "$DATA_MAP" ]; then
+		for prefix in tag map; do
+			has_id1=""
+			for f in "$DATA_MAP/${prefix}_1_"*; do
+				[ -f "$f" ] && has_id1=1 && break
+			done
+			if [ -z "$has_id1" ]; then
+				for src in "$DATA_MAP/${prefix}_10_"*; do
+					[ -f "$src" ] || continue
+					base="${src##*/}"
+					suffix="${base#"${prefix}_10_"}"
+					dest="$DATA_MAP/${prefix}_1_$suffix"
+					if [ ! -f "$dest" ]; then
+						cp "$src" "$dest"
+						echo "Created $dest for map id 1 (copied from $base)"
+					fi
+					break
+				done
+			fi
+		done
+	fi
+
 	echo 'PHP app ready!'
 fi
 
