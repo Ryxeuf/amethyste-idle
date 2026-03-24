@@ -3,7 +3,7 @@ import { Controller } from '@hotwired/stimulus';
 export default class extends Controller {
     static targets = [
         'messages', 'input', 'form', 'tab',
-        'globalPanel', 'mapPanel', 'privatePanel',
+        'globalPanel', 'mapPanel', 'guildPanel', 'privatePanel',
         'conversationList', 'privateMessages', 'privateTo',
         'playerSearch', 'playerResults', 'badge',
     ];
@@ -11,6 +11,7 @@ export default class extends Controller {
         mercureUrl: String,
         playerId: Number,
         playerMapId: Number,
+        guildId: { type: Number, default: 0 },
         sendUrl: String,
         historyUrl: String,
         conversationsUrl: String,
@@ -47,6 +48,7 @@ export default class extends Controller {
 
         if (this.hasGlobalPanelTarget) this.globalPanelTarget.classList.toggle('hidden', channel !== 'global');
         if (this.hasMapPanelTarget) this.mapPanelTarget.classList.toggle('hidden', channel !== 'map');
+        if (this.hasGuildPanelTarget) this.guildPanelTarget.classList.toggle('hidden', channel !== 'guild');
         if (this.hasPrivatePanelTarget) this.privatePanelTarget.classList.toggle('hidden', channel !== 'private');
 
         if (channel !== 'private') {
@@ -174,6 +176,9 @@ export default class extends Controller {
         if (this.playerMapIdValue) {
             url.searchParams.append('topic', `chat/map/${this.playerMapIdValue}`);
         }
+        if (this.guildIdValue) {
+            url.searchParams.append('topic', `chat/guild/${this.guildIdValue}`);
+        }
         url.searchParams.append('topic', `chat/private/${this.playerIdValue}`);
 
         this._eventSource = new EventSource(url);
@@ -206,6 +211,15 @@ export default class extends Controller {
         if (channel === 'map' && this.hasMapPanelTarget) {
             const container = this.mapPanelTarget.querySelector('[data-chat-target="messages"]')
                 || this.mapPanelTarget.querySelector('.chat-messages');
+            if (container) {
+                this._appendMessage(container, data);
+                this._scrollToBottom(container);
+            }
+        }
+
+        if (channel === 'guild' && this.hasGuildPanelTarget) {
+            const container = this.guildPanelTarget.querySelector('[data-chat-target="messages"]')
+                || this.guildPanelTarget.querySelector('.chat-messages');
             if (container) {
                 this._appendMessage(container, data);
                 this._scrollToBottom(container);
@@ -255,6 +269,9 @@ export default class extends Controller {
             const prefix = isSelf ? `[MP -> ${this._escapeHtml(data.recipient?.name || '?')}]` : `[MP de ${this._escapeHtml(data.sender.name)}]`;
             name.textContent = prefix;
             name.className = 'font-semibold text-sm mr-1 hover:underline text-pink-400';
+        } else if (data.channel === 'guild') {
+            name.textContent = `${this._escapeHtml(data.sender.name)}:`;
+            name.className = `font-semibold text-sm mr-1 hover:underline ${isSelf ? 'text-purple-400' : 'text-emerald-400'}`;
         } else {
             name.textContent = `${this._escapeHtml(data.sender.name)}:`;
         }
@@ -301,6 +318,7 @@ export default class extends Controller {
         const panelMap = {
             global: this.hasGlobalPanelTarget ? this.globalPanelTarget : null,
             map: this.hasMapPanelTarget ? this.mapPanelTarget : null,
+            guild: this.hasGuildPanelTarget ? this.guildPanelTarget : null,
             private: this.hasPrivateMessagesTarget ? this.privateMessagesTarget : null,
         };
 

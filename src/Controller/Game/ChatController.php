@@ -4,6 +4,7 @@ namespace App\Controller\Game;
 
 use App\Entity\App\ChatMessage;
 use App\Entity\App\Player;
+use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Social\ChatCommandHandler;
 use App\GameEngine\Social\ChatManager;
 use App\Helper\PlayerHelper;
@@ -21,6 +22,7 @@ class ChatController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly ChatManager $chatManager,
         private readonly ChatCommandHandler $commandHandler,
+        private readonly GuildManager $guildManager,
         private readonly EntityManagerInterface $em,
     ) {
     }
@@ -39,10 +41,17 @@ class ChatController extends AbstractController
             ? array_reverse($this->chatManager->getMapHistory($player->getMap(), 50))
             : [];
 
+        $guild = $this->guildManager->getPlayerGuild($player);
+        $guildMessages = $guild
+            ? array_reverse($this->chatManager->getGuildHistory($guild, 50))
+            : [];
+
         return $this->render('game/chat/index.html.twig', [
             'player' => $player,
             'globalMessages' => $globalMessages,
             'mapMessages' => $mapMessages,
+            'guild' => $guild,
+            'guildMessages' => $guildMessages,
         ]);
     }
 
@@ -86,6 +95,7 @@ class ChatController extends AbstractController
             'global' => $this->chatManager->sendGlobalMessage($player, $content),
             'map' => $this->chatManager->sendMapMessage($player, $content),
             'private' => $this->sendPrivate($player, $recipientId, $content),
+            'guild' => $this->sendGuild($player, $content),
             default => null,
         };
 
@@ -111,6 +121,7 @@ class ChatController extends AbstractController
                 ? $this->chatManager->getMapHistory($player->getMap(), 50)
                 : [],
             'private' => $this->getPrivateHistory($player, $request),
+            'guild' => $this->getGuildHistory($player),
             default => [],
         };
 
@@ -217,5 +228,28 @@ class ChatController extends AbstractController
         }
 
         return $this->chatManager->getPrivateHistory($player, $other, 50);
+    }
+
+    private function sendGuild(Player $sender, string $content): ?ChatMessage
+    {
+        $guild = $this->guildManager->getPlayerGuild($sender);
+        if (!$guild) {
+            return null;
+        }
+
+        return $this->chatManager->sendGuildMessage($sender, $guild, $content);
+    }
+
+    /**
+     * @return ChatMessage[]
+     */
+    private function getGuildHistory(Player $player): array
+    {
+        $guild = $this->guildManager->getPlayerGuild($player);
+        if (!$guild) {
+            return [];
+        }
+
+        return $this->chatManager->getGuildHistory($guild, 50);
     }
 }

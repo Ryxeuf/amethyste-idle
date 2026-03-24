@@ -10,6 +10,7 @@
      data-chat-mercure-url-value="{{ mercure_public_url }}"
      data-chat-player-id-value="{{ player.id }}"
      data-chat-player-map-id-value="{{ player.map ? player.map.id : 0 }}"
+     data-chat-guild-id-value="{{ guild ? guild.id : 0 }}"
      data-chat-send-url-value="{{ path('app_game_chat_send') }}"
      data-chat-history-url-value="{{ path('app_game_chat_history', {channel: 'x'}) | replace({'x': ''}) | trim('/') }}"
      data-chat-conversations-url-value="{{ path('app_game_chat_conversations') }}"
@@ -26,6 +27,12 @@
                 class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
             Carte{% if player.map %} ({{ player.map.name }}){% endif %}
         </button>
+        {% if guild %}
+        <button data-chat-target="tab" data-action="chat#switchTab" data-channel="guild"
+                class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
+            Guilde [{{ guild.tag }}]
+        </button>
+        {% endif %}
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="private"
                 class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
             Messages prives
@@ -57,6 +64,21 @@
             {% endfor %}
         </div>
     </div>
+
+    {# Guild Channel Panel #}
+    {% if guild %}
+    <div data-chat-target="guildPanel" class="flex-1 flex flex-col min-h-0 hidden">
+        <div class="chat-messages flex-1 overflow-y-auto bg-gray-800/50 rounded-lg p-2 space-y-0.5 text-sm scrollbar-thin" data-chat-target="messages">
+            {% for message in guildMessages %}
+                <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
+                    <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
+                    <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline text-emerald-400">{{ message.sender.name }}:</a>
+                    <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     {# Private Messages Panel #}
     <div data-chat-target="privatePanel" class="flex-1 flex flex-col min-h-0 hidden">
