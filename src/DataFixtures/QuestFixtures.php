@@ -499,6 +499,121 @@ class QuestFixtures extends Fixture
                 ],
                 // prerequisiteQuests set after flush (needs ID of quest_chain_guard_2)
             ],
+            // --- Chaîne narrative Acte 1 : L'Éveil (5 quêtes tutoriel) ---
+            'quest_acte1_reveil' => [
+                'name' => 'L\'Éveil — Réveil',
+                'description' => 'Vous ouvrez les yeux dans un lieu inconnu, sans aucun souvenir. Une femme sage se tient devant vous. Explorez les alentours du village pour retrouver vos esprits.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '80.34',
+                            'name' => 'Place du village',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 20,
+                    'gold' => 10,
+                ],
+                'prerequisiteQuests' => null,
+            ],
+            'quest_acte1_premiers_pas' => [
+                'name' => 'L\'Éveil — Premiers pas',
+                'description' => 'Claire vous conseille d\'aller voir Gérard le Forgeron pour vous équiper. Rendez-vous à sa forge et recevez votre première arme.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '1.5',
+                            'name' => 'Forge de Gérard',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 30,
+                    'gold' => 15,
+                    'items' => [
+                        [
+                            'type' => 'gear',
+                            'count' => 1,
+                            'genericItemSlug' => 'short-sword',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte1_bapteme_du_feu' => [
+                'name' => 'L\'Éveil — Baptême du feu',
+                'description' => 'Gérard vous a remis une épée. Il est temps de prouver votre valeur ! Éliminez deux slimes qui rôdent aux abords du village.',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Slime',
+                            'slug' => 'slime',
+                            'count' => 2,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 40,
+                    'gold' => 20,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 2,
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte1_recolte' => [
+                'name' => 'L\'Éveil — Récolte',
+                'description' => 'Marie la Herboriste a besoin de champignons pour préparer des remèdes. Récoltez-en dans les environs et rapportez-les-lui.',
+                'requirements' => [
+                    'collect' => [
+                        'mushroom' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 35,
+                    'gold' => 25,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 1,
+                            'genericItemSlug' => 'herbalist-domain-parchment',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte1_cristal' => [
+                'name' => 'L\'Éveil — Le Cristal d\'Améthyste',
+                'description' => 'Claire la Sage vous parle d\'un cristal mystérieux caché dans une clairière au sud. Trouvez-le : il pourrait détenir la clé de vos souvenirs perdus.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '85.50',
+                            'name' => 'Clairière du Cristal',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 30,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 1,
+                            'genericItemSlug' => 'm1-life',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
         ];
 
         foreach ($quests as $key => $data) {
@@ -538,6 +653,23 @@ class QuestFixtures extends Fixture
 
         $chainGuard2->setPrerequisiteQuests([$chainGuard1->getId()]);
         $chainGuard3->setPrerequisiteQuests([$chainGuard2->getId()]);
+
+        // Chaîne Acte 1 : L'Éveil (5 quêtes séquentielles)
+        /** @var Quest $acte1Reveil */
+        $acte1Reveil = $this->getReference('quest_acte1_reveil', Quest::class);
+        /** @var Quest $acte1PremiersPas */
+        $acte1PremiersPas = $this->getReference('quest_acte1_premiers_pas', Quest::class);
+        /** @var Quest $acte1Bapteme */
+        $acte1Bapteme = $this->getReference('quest_acte1_bapteme_du_feu', Quest::class);
+        /** @var Quest $acte1Recolte */
+        $acte1Recolte = $this->getReference('quest_acte1_recolte', Quest::class);
+        /** @var Quest $acte1Cristal */
+        $acte1Cristal = $this->getReference('quest_acte1_cristal', Quest::class);
+
+        $acte1PremiersPas->setPrerequisiteQuests([$acte1Reveil->getId()]);
+        $acte1Bapteme->setPrerequisiteQuests([$acte1PremiersPas->getId()]);
+        $acte1Recolte->setPrerequisiteQuests([$acte1Bapteme->getId()]);
+        $acte1Cristal->setPrerequisiteQuests([$acte1Recolte->getId()]);
 
         $manager->flush();
     }
