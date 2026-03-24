@@ -38,15 +38,19 @@ db_exec() {
   docker compose "${COMPOSE_ARGS[@]}" exec -T database "$@"
 }
 
-echo "==> [1/5] Suppression du schema..."
+echo "==> [1/7] Suppression du schema..."
 php_exec php /app/bin/console doctrine:schema:drop --full-database --force --no-interaction 2>/dev/null || true
 
 echo ""
-echo "==> [2/5] Recreation du schema..."
+echo "==> [2/7] Recreation du schema..."
 php_exec php /app/bin/console doctrine:schema:create --no-interaction
 
 echo ""
-echo "==> [3/5] Correction des sequences PostgreSQL (DEFAULT nextval)..."
+echo "==> [3/7] Synchronisation des migrations (marquer toutes comme executees)..."
+php_exec php /app/bin/console doctrine:migrations:version --add --all --no-interaction
+
+echo ""
+echo "==> [4/7] Correction des sequences PostgreSQL (DEFAULT nextval)..."
 db_exec psql -U "$DB_USER" -d "$DB_NAME" << 'SQL'
 DO $$
 DECLARE
@@ -87,7 +91,7 @@ END $$;
 SQL
 
 echo ""
-echo "==> [4/5] Chargement des fixtures (conteneur temporaire avec deps dev)..."
+echo "==> [5/7] Chargement des fixtures (conteneur temporaire avec deps dev)..."
 # On utilise un conteneur temporaire avec le code monte en volume
 # pour ne PAS polluer le conteneur prod avec les deps dev.
 docker compose "${COMPOSE_ARGS[@]}" run --rm \
@@ -100,7 +104,7 @@ docker compose "${COMPOSE_ARGS[@]}" run --rm \
   "
 
 echo ""
-echo "==> [5/5] Restauration des deps dans le conteneur principal..."
+echo "==> [6/7] Restauration des deps dans le conteneur principal..."
 if [[ "$MODE" == "prod" ]]; then
   php_exec composer install --no-dev --optimize-autoloader --no-interaction --quiet 2>/dev/null || true
 else
@@ -109,4 +113,9 @@ fi
 php_exec php /app/bin/console cache:clear --no-warmup 2>/dev/null || true
 
 echo ""
-echo "Done. Schema reinitialise, fixtures chargees, deps restaurees ($MODE)."
+echo ""
+echo "==> [7/7] Verification du status des migrations..."
+php_exec php /app/bin/console doctrine:migrations:status --no-interaction
+
+echo ""
+echo "Done. Schema reinitialise, migrations synchronisees, fixtures chargees, deps restaurees ($MODE)."
