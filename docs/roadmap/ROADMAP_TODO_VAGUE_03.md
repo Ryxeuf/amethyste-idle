@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **7 completees**, 11 restantes.
+> **18 taches** initiales, **8 completees**, 10 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -32,11 +32,8 @@
 
 ### Piste B — Contenu monde (‖)
 
-### 47 — Monstres tier 2 lvl 10-15 (M | ★★★)
-> Sous-partie A des monstres tier 2 : 4 monstres intermediaires (lvl 10-15). Prerequis : ← 28 (C-3 monstres tier 1), 29 (C-5 equipement tier 2)
-- [ ] **Sous-partie A** : 4 monstres intermediaires (lvl 10-15)
-  - Stats, AI patterns, resistances, loot tables
-  - Succes bestiaire (12 achievements)
+### ~~47 — Monstres tier 2 lvl 10-15 (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 48 — Village central hub (L | ★★★)
 > Nouvelle carte "Village central" servant de hub principal entre les zones. Prerequis : ← 30 (C-8 teleportation entre cartes), 25 (v0.4-A boutiques PNJ)

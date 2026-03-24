@@ -731,6 +731,16 @@
 - [x] Persistance des slots en localStorage
 - [x] API `/api/quickbar/items` et `/api/quickbar/use/{id}` avec cooldown 1s
 
+## 47 — Monstres tier 2 lvl 10-15 (2026-03-24) ✅
+
+> 4 monstres intermediaires (lvl 10-15) avec stats, AI patterns, resistances, loot tables et succes bestiaire.
+
+- [x] 4 monstres : Wyverne (Air/Feu/10), Chevalier maudit (Dark/Metal/12), Naga (Eau/Bete/13), Golem de cristal (Terre/Lumiere/15)
+- [x] Stats, AI patterns et resistances elementaires pour chaque monstre
+- [x] Tables de loot (8 drops par monstre, materia et equipement T2 inclus)
+- [x] 12 succes bestiaire (3 paliers × 4 monstres)
+- [x] 8 mobs places sur la carte (2 par monstre, zones eloignees du spawn)
+
 ## 54 — Quetes a choix (2026-03-24) ✅
 
 > Embranchements narratifs : le joueur fait un choix en rendant une quete, ce qui influence les recompenses et les dialogues futurs.
