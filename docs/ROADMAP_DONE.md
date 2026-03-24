@@ -820,3 +820,15 @@
 - [x] Template Twig avec interface de groupe (membres, invitations, actions)
 - [x] Lien "Groupe" dans la navigation du jeu
 - [x] 13 tests unitaires : creation, invitation, depart, dissolution, transfert leadership
+
+---
+
+## 58 — Parsing zones/biomes Tiled (2026-03-24) ✅
+
+> Peuplement de l'entite Area depuis les objets rectangulaires de type "zone"/"biome" dans Tiled.
+- [x] Champs `biome`, `weather`, `music`, `light_level` sur l'entite `Area` + migration PostgreSQL
+- [x] Champs bornes de zone `zone_x`, `zone_y`, `zone_width`, `zone_height` sur `Area`
+- [x] `AreaSynchronizer` : filtre les objets zone/biome et upsert les Area en BDD
+- [x] Exposition des zones dans `/api/map/config` (coordonnees, biome, meteo, musique)
+- [x] Option `--sync-zones` dans `app:terrain:import`
+- [x] 7 tests unitaires (AreaSynchronizer + TmxParser zones)

@@ -181,7 +181,19 @@ class TmxParser
     }
 
     /**
-     * Parse object groups (NPC spawns, mob spawns, portals, chests, harvest spots).
+     * Parse object groups from Tiled Map Editor object layers.
+     *
+     * Supports the following object types (set via the "Type" / "Class" field in Tiled):
+     *
+     * - `portal`       — Teleportation point (properties: target_map_id, target_x, target_y)
+     * - `mob_spawn`    — Monster spawn point (properties: monster_slug)
+     * - `harvest_spot` — Gathering node (properties: slug, item_slug, item_min, item_max)
+     * - `chest`        — Loot container (properties: item_slug, item_min, item_max)
+     * - `zone`/`biome` — Rectangular region with biome metadata (properties: biome, weather,
+     *                     music, light_level). Used by AreaSynchronizer to enrich Area entities.
+     *
+     * Pixel positions are converted to tile coordinates using tileWidth/tileHeight,
+     * and offset by the chunk position (offsetX * mapWidth, offsetY * mapHeight).
      *
      * @return array<int, array>
      */

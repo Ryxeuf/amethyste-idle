@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **12 completees**, 6 restantes.
+> **18 taches** initiales, **13 completees**, 5 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -86,12 +86,8 @@
 - [ ] Ajouter un rapport diff (entites creees/modifiees/supprimees)
 - [ ] Mettre a jour l'agent `.claude/commands/import-terrain.md`
 
-### 58 — Parsing zones/biomes Tiled (M | ★★★)
-> Peuplement de l'entite Area depuis les objets rectangulaires de type "zone" dans Tiled. Prerequis : ← 44 (T2a extraction services)
-- [ ] Ajouter les champs biome, weather, music, lightLevel sur l'entite `Area` + migration
-- [ ] Parser les objets de type `zone`/`biome` dans TmxParser (rectangles avec proprietes)
-- [ ] Creer `AreaSynchronizer` : upsert des Area depuis les zones Tiled
-- [ ] Exposer les zones dans `/api/map/config` (coordonnees, biome, meteo, musique)
+### ~~58 — Parsing zones/biomes Tiled (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 59 — Tests E2E Panther (M | ★★)
 > Tests de parcours complets multi-pages valides via Panther. Prerequis : ← 23 (P6-3 tests fonctionnels controleurs), 42 (P6-5 tests integration evenements)

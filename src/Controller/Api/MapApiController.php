@@ -47,6 +47,8 @@ class MapApiController extends AbstractController
 
         $weather = $map->getCurrentWeather();
 
+        $zones = $this->extractZones($map);
+
         return $this->json([
             'tileSize' => 32,
             'viewRadius' => 15,
@@ -59,6 +61,7 @@ class MapApiController extends AbstractController
                 'icon' => $weather->icon(),
                 'changedAt' => $map->getWeatherChangedAt()?->format('c'),
             ],
+            'zones' => $zones,
         ]);
     }
 
@@ -428,6 +431,19 @@ class MapApiController extends AbstractController
         usort($tilesets, fn ($a, $b) => $a['firstGid'] - $b['firstGid']);
 
         return $tilesets;
+    }
+
+    private function extractZones(Map $map): array
+    {
+        $zones = [];
+        foreach ($map->getAreas() as $area) {
+            $zoneData = $area->getZoneData();
+            if ($zoneData !== null) {
+                $zones[] = $zoneData;
+            }
+        }
+
+        return $zones;
     }
 
     private function loadRawCells(Map $map, int $centerX, int $centerY, int $radius): array

@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\GameEngine\Terrain\AreaSynchronizer;
 use App\GameEngine\Terrain\EntitySynchronizer;
 use App\GameEngine\Terrain\TmxParser;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -26,6 +27,7 @@ class TerrainImportCommand extends Command
         private readonly string $projectDir,
         private readonly TmxParser $tmxParser,
         private readonly EntitySynchronizer $entitySynchronizer,
+        private readonly AreaSynchronizer $areaSynchronizer,
     ) {
         parent::__construct();
     }
@@ -39,7 +41,8 @@ class TerrainImportCommand extends Command
             ->addOption('sync-entities', null, InputOption::VALUE_NONE, 'Create/update database entities from object layers (mobs, portals, spots)')
             ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Parse and report statistics without writing any files or database changes')
             ->addOption('stats', null, InputOption::VALUE_NONE, 'Show detailed statistics after import (cell counts, layer info, tileset usage)')
-            ->addOption('map-id', null, InputOption::VALUE_REQUIRED, 'Map ID to use for entity sync (default: auto-detect from Map table)');
+            ->addOption('map-id', null, InputOption::VALUE_REQUIRED, 'Map ID to use for entity sync (default: auto-detect from Map table)')
+            ->addOption('sync-zones', null, InputOption::VALUE_NONE, 'Sync zone/biome objects to Area entities (biome, weather, music, light_level)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -47,6 +50,7 @@ class TerrainImportCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $validateOnly = $input->getOption('validate');
         $syncEntities = $input->getOption('sync-entities');
+        $syncZones = $input->getOption('sync-zones');
         $dryRun = $input->getOption('dry-run');
         $showStats = $input->getOption('stats') || $dryRun;
         $mapId = $input->getOption('map-id') ? (int) $input->getOption('map-id') : null;
@@ -129,6 +133,17 @@ class TerrainImportCommand extends Command
                     $io->info($message);
                 }
                 $io->info(sprintf('  Synced %d entities to database', $syncResult['synced']));
+            }
+
+            // Sync zone/biome objects to Area entities
+            if ($syncZones && !empty($map['objects'])) {
+                $zoneResult = $this->areaSynchronizer->syncZonesFromObjects($map['objects'], $mapId);
+                foreach ($zoneResult['messages'] as $message) {
+                    $io->info($message);
+                }
+                if ($zoneResult['synced'] > 0) {
+                    $io->info(sprintf('  Synced %d zone(s) to Area entities', $zoneResult['synced']));
+                }
             }
 
             $io->success($fileName . ' imported');
