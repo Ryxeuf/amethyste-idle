@@ -2,24 +2,70 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
-use App\Enum\Element;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class SlotFixtures extends Fixture
+class SlotFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        // Création du slot de test
-        $slot = new Slot();
-        $slot->setElement(Element::Fire);
-        $slot->setCreatedAt(new \DateTime());
-        $slot->setUpdatedAt(new \DateTime());
+        $gearReferences = [
+            'player_short_sword',
+            'player_long_sword_2',
+            'player_leather_boots',
+            'player_leather_armor',
+            'player_leather_hat',
+            'player_iron_shield',
+            'player_leather_gloves',
+            'player_bronze_ring',
+            'player_silver_amulet',
+            'player_leather_shoulders',
+            'player_leather_pants',
+            'remy_short_sword',
+            'remy_long_sword',
+            'remy_leather_boots',
+            'remy_leather_armor',
+            'remy_leather_hat',
+            'remy_iron_shield',
+            'remy_leather_gloves',
+            'remy_leather_belt',
+            'remy_bronze_ring',
+            'remy_silver_amulet',
+            'remy_leather_shoulders',
+            'remy_leather_pants',
+        ];
 
-        $manager->persist($slot);
-        $this->addReference('slot_1', $slot);
+        $slotIndex = 1;
+        foreach ($gearReferences as $gearRef) {
+            if (!$this->hasReference($gearRef, PlayerItem::class)) {
+                continue;
+            }
+
+            $playerItem = $this->getReference($gearRef, PlayerItem::class);
+            $nbSlots = $playerItem->getGenericItem()->getMateriaSlots();
+
+            for ($i = 0; $i < $nbSlots; ++$i) {
+                $slot = new Slot();
+                $slot->setItem($playerItem);
+                $slot->setCreatedAt(new \DateTime());
+                $slot->setUpdatedAt(new \DateTime());
+
+                $manager->persist($slot);
+                $this->addReference('slot_' . $slotIndex, $slot);
+                ++$slotIndex;
+            }
+        }
 
         $manager->flush();
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            PlayerItemFixtures::class,
+        ];
     }
 }

@@ -8,6 +8,8 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\Enum\Element;
+use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -91,6 +93,57 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
                 if (isset($data['boundToPlayer'])) {
                     $item->setBoundToPlayer((bool) $data['boundToPlayer']);
+                }
+
+                if (isset($data['gear_location'])) {
+                    $item->setGearLocation((string) $data['gear_location']);
+                }
+
+                if (isset($data['price'])) {
+                    $item->setPrice((int) $data['price']);
+                }
+
+                if (isset($data['protection'])) {
+                    $item->setProtection((int) $data['protection']);
+                }
+
+                if (isset($data['element'])) {
+                    $elementEnum = Element::tryFrom((string) $data['element']);
+                    if ($elementEnum !== null) {
+                        $item->setElement($elementEnum);
+                    }
+                }
+
+                if (isset($data['rarity'])) {
+                    $item->setRarity(ItemRarity::tryFrom((string) $data['rarity']));
+                }
+
+                if (isset($data['space'])) {
+                    $item->setSpace((int) $data['space']);
+                }
+
+                if (isset($data['energyCost'])) {
+                    $item->setEnergyCost((int) $data['energyCost']);
+                }
+
+                if (isset($data['value'])) {
+                    $item->setValue((int) $data['value']);
+                }
+
+                if (isset($data['toolType'])) {
+                    $item->setToolType((string) $data['toolType']);
+                }
+
+                if (isset($data['toolTier'])) {
+                    $item->setToolTier((int) $data['toolTier']);
+                }
+
+                if (isset($data['durability'])) {
+                    $item->setDurability((int) $data['durability']);
+                }
+
+                if (isset($data['materia_slots'])) {
+                    $item->setMateriaSlots((int) $data['materia_slots']);
                 }
 
                 $manager->persist($item);

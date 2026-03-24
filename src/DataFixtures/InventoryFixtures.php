@@ -80,6 +80,40 @@ class InventoryFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($inventoryBank2);
         $this->addReference('inventory_bank_2', $inventoryBank2);
 
+        // Inventaire sac du joueur Remy
+        $inventoryBagRemy = new Inventory();
+        $inventoryBagRemy->setPlayer($this->getReference('player_remy', Player::class));
+        $inventoryBagRemy->setGold(0);
+        $inventoryBagRemy->setType(1);
+        $inventoryBagRemy->setSize(100000);
+        $inventoryBagRemy->setCreatedAt(new \DateTime());
+        $inventoryBagRemy->setUpdatedAt(new \DateTime());
+
+        $manager->persist($inventoryBagRemy);
+        $this->addReference('inventory_bag_remy', $inventoryBagRemy);
+
+        // Inventaire materia du joueur Remy
+        $inventoryMateriaRemy = new Inventory();
+        $inventoryMateriaRemy->setPlayer($this->getReference('player_remy', Player::class));
+        $inventoryMateriaRemy->setType(2);
+        $inventoryMateriaRemy->setSize(100000);
+        $inventoryMateriaRemy->setCreatedAt(new \DateTime());
+        $inventoryMateriaRemy->setUpdatedAt(new \DateTime());
+
+        $manager->persist($inventoryMateriaRemy);
+        $this->addReference('inventory_materia_remy', $inventoryMateriaRemy);
+
+        // Inventaire banque du joueur Remy
+        $inventoryBankRemy = new Inventory();
+        $inventoryBankRemy->setPlayer($this->getReference('player_remy', Player::class));
+        $inventoryBankRemy->setType(3);
+        $inventoryBankRemy->setSize(100000);
+        $inventoryBankRemy->setCreatedAt(new \DateTime());
+        $inventoryBankRemy->setUpdatedAt(new \DateTime());
+
+        $manager->persist($inventoryBankRemy);
+        $this->addReference('inventory_bank_remy', $inventoryBankRemy);
+
         $manager->flush();
     }
 
