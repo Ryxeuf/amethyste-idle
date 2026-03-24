@@ -36,6 +36,12 @@ class Quest
     #[ORM\Column(name: 'choice_outcome', type: 'json', nullable: true)]
     private ?array $choiceOutcome = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isDaily = false;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $dailyPool = null;
+
     #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'quest')]
     private $players;
 
@@ -160,6 +166,30 @@ class Quest
     public function hasChoices(): bool
     {
         return !empty($this->choiceOutcome);
+    }
+
+    public function isDaily(): bool
+    {
+        return $this->isDaily;
+    }
+
+    public function setIsDaily(bool $isDaily): Quest
+    {
+        $this->isDaily = $isDaily;
+
+        return $this;
+    }
+
+    public function getDailyPool(): ?string
+    {
+        return $this->dailyPool;
+    }
+
+    public function setDailyPool(?string $dailyPool): Quest
+    {
+        $this->dailyPool = $dailyPool;
+
+        return $this;
     }
 
     public function __toString(): string

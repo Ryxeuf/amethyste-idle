@@ -16,17 +16,21 @@
             </div>
 
             {# Tabs #}
-            <div class="flex border-b border-gray-700 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div class="flex border-b border-gray-700 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0 overflow-x-auto">
                 <button onclick="showTab('active')" id="tab-active"
-                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-purple-500 text-purple-400 touch-target">
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-purple-500 text-purple-400 touch-target whitespace-nowrap">
                     En cours ({{ activeQuests|length }})
                 </button>
+                <button onclick="showTab('daily')" id="tab-daily"
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target whitespace-nowrap">
+                    Quotidiennes ({{ activeDailyQuests|length + availableDailyQuests|length }})
+                </button>
                 <button onclick="showTab('available')" id="tab-available"
-                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target">
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target whitespace-nowrap">
                     Disponibles ({{ availableQuests|length }})
                 </button>
                 <button onclick="showTab('completed')" id="tab-completed"
-                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target">
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target whitespace-nowrap">
                     Terminees ({{ completedQuests|length }})
                 </button>
             </div>
@@ -193,6 +197,213 @@
                             </div>
                         {% endfor %}
                     </div>
+                {% endif %}
+            </div>
+
+            {# Daily quests #}
+            <div id="panel-daily" class="hidden">
+                {% if activeDailyQuests is empty and availableDailyQuests is empty %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-500 text-sm">Aucune quete quotidienne disponible aujourd'hui.</p>
+                        <p class="text-gray-600 text-xs mt-1">Les quetes quotidiennes changent chaque jour a minuit.</p>
+                    </div>
+                {% else %}
+                    {# Active daily quests #}
+                    {% if activeDailyQuests is not empty %}
+                        <div class="space-y-2 sm:space-y-3 mb-4">
+                            {% for dailyQuest in activeDailyQuests %}
+                                {% set quest = dailyQuest.quest %}
+                                {% set progress = dailyQuestProgress[dailyQuest.id] %}
+                                <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border border-amber-600/50" id="daily-quest-{{ dailyQuest.id }}">
+                                    <div class="flex items-start justify-between gap-2 mb-2">
+                                        <div class="min-w-0">
+                                            <div class="flex items-center gap-2 flex-wrap">
+                                                <h3 class="text-white font-semibold text-sm sm:text-base">{{ quest.name }}</h3>
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 text-amber-300 border border-amber-700/50">
+                                                    Quotidienne
+                                                </span>
+                                                {% if quest.dailyPool %}
+                                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800/50 text-gray-300 border border-gray-600/50">
+                                                        {{ quest.dailyPool|capitalize }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
+                                        </div>
+                                        <div class="flex gap-1.5 flex-shrink-0">
+                                            {% if progress >= 100 %}
+                                                <button onclick="completeDailyQuest({{ dailyQuest.id }})"
+                                                        class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white text-xs rounded transition-colors touch-target">
+                                                    Rendre
+                                                </button>
+                                            {% endif %}
+                                            <button onclick="abandonDailyQuest({{ dailyQuest.id }})"
+                                                    class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 active:bg-red-700 text-white text-xs rounded transition-colors touch-target">
+                                                Abandonner
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {# Progress bar #}
+                                    <div class="mt-2">
+                                        <div class="flex justify-between text-[10px] sm:text-xs text-gray-400 mb-1">
+                                            <span>Progression</span>
+                                            <span>{{ progress }}%</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-bar-fill {% if progress >= 100 %}bg-green-500{% else %}bg-amber-500{% endif %}"
+                                                 style="width: {{ progress }}%"></div>
+                                        </div>
+                                    </div>
+
+                                    {# Tracking details #}
+                                    {% set tracking = dailyQuest.tracking %}
+                                    {% if tracking.monsters is defined and tracking.monsters is not empty %}
+                                        <div class="mt-2 space-y-0.5">
+                                            {% for monster in tracking.monsters %}
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-300">Tuer {{ monster.name }}</span>
+                                                    <span class="{% if monster.count >= monster.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                        {{ monster.count }}/{{ monster.necessary }}
+                                                    </span>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    {% if tracking.collect is defined and tracking.collect is not empty %}
+                                        <div class="mt-2 space-y-0.5">
+                                            {% for item in tracking.collect %}
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="text-gray-300">Recolter {{ item.slug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                                                    <span class="{% if item.count >= item.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                        {{ item.count }}/{{ item.necessary }}
+                                                    </span>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+
+                                    {# Rewards #}
+                                    {% set rewards = quest.rewards %}
+                                    {% if rewards is not empty %}
+                                        <div class="mt-2 pt-2 border-t border-gray-600">
+                                            <span class="text-[10px] text-gray-500">Recompenses :</span>
+                                            <div class="flex flex-wrap gap-3 mt-0.5">
+                                                {% if rewards.gils is defined %}
+                                                    <span class="text-yellow-400 text-xs">{{ rewards.gils }} Gils</span>
+                                                {% elseif rewards.gold is defined %}
+                                                    <span class="text-yellow-400 text-xs">{{ rewards.gold }} Gils</span>
+                                                {% endif %}
+                                                {% if rewards.xp is defined %}
+                                                    <span class="text-blue-400 text-xs">{{ rewards.xp }} XP</span>
+                                                {% endif %}
+                                                {% if rewards.items is defined %}
+                                                    {% for itemData in rewards.items %}
+                                                        {% if itemData is iterable and itemData.genericItemSlug is defined %}
+                                                            <span class="text-green-400 text-xs">{{ itemData.count|default(1) }}x {{ itemData.genericItemSlug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {# Completed daily quests #}
+                    {% if completedDailyQuests is not empty %}
+                        <div class="mb-4">
+                            <h4 class="text-xs text-gray-500 uppercase tracking-wider mb-2">Completees aujourd'hui</h4>
+                            <div class="space-y-1.5">
+                                {% for dq in completedDailyQuests %}
+                                    <div class="bg-gray-700/30 rounded-lg p-3 border border-gray-700 opacity-75">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-gray-300 font-medium text-sm">{{ dq.quest.name }}</h3>
+                                            <span class="text-green-500 text-xs font-mono flex-shrink-0 ml-2">Terminee</span>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    {# Available daily quests #}
+                    {% if availableDailyQuests is not empty %}
+                        <div>
+                            <h4 class="text-xs text-gray-500 uppercase tracking-wider mb-2">Disponibles</h4>
+                            <div class="space-y-2 sm:space-y-3">
+                                {% for quest in availableDailyQuests %}
+                                    <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border border-gray-600" id="daily-available-{{ quest.id }}">
+                                        <div class="flex items-start justify-between gap-2 mb-2">
+                                            <div class="min-w-0">
+                                                <div class="flex items-center gap-2 flex-wrap">
+                                                    <h3 class="text-white font-semibold text-sm sm:text-base">{{ quest.name }}</h3>
+                                                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 text-amber-300 border border-amber-700/50">
+                                                        Quotidienne
+                                                    </span>
+                                                </div>
+                                                <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
+                                            </div>
+                                            <button onclick="acceptDailyQuest({{ quest.id }})"
+                                                    class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white text-xs rounded transition-colors touch-target flex-shrink-0">
+                                                Accepter
+                                            </button>
+                                        </div>
+
+                                        {# Requirements preview #}
+                                        {% set requirements = quest.requirements %}
+                                        {% if requirements.monsters is defined and requirements.monsters is not empty %}
+                                            <div class="mt-2 space-y-0.5">
+                                                {% for monster in requirements.monsters %}
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-gray-300">Tuer {{ monster.name }}</span>
+                                                        <span class="text-gray-400">0/{{ monster.count }}</span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        {% if requirements.collect is defined and requirements.collect is not empty %}
+                                            <div class="mt-2 space-y-0.5">
+                                                {% for itemSlug, count in requirements.collect %}
+                                                    <div class="flex items-center justify-between text-xs">
+                                                        <span class="text-gray-300">Recolter {{ itemSlug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                                                        <span class="text-gray-400">0/{{ count }}</span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+
+                                        {# Rewards #}
+                                        {% set rewards = quest.rewards %}
+                                        {% if rewards is not empty %}
+                                            <div class="mt-2 pt-2 border-t border-gray-600">
+                                                <span class="text-[10px] text-gray-500">Recompenses :</span>
+                                                <div class="flex flex-wrap gap-3 mt-0.5">
+                                                    {% if rewards.gils is defined %}
+                                                        <span class="text-yellow-400 text-xs">{{ rewards.gils }} Gils</span>
+                                                    {% elseif rewards.gold is defined %}
+                                                        <span class="text-yellow-400 text-xs">{{ rewards.gold }} Gils</span>
+                                                    {% endif %}
+                                                    {% if rewards.xp is defined %}
+                                                        <span class="text-blue-400 text-xs">{{ rewards.xp }} XP</span>
+                                                    {% endif %}
+                                                    {% if rewards.items is defined %}
+                                                        {% for itemData in rewards.items %}
+                                                            {% if itemData is iterable and itemData.genericItemSlug is defined %}
+                                                                <span class="text-green-400 text-xs">{{ itemData.count|default(1) }}x {{ itemData.genericItemSlug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
 
@@ -400,12 +611,12 @@
 
 <script>
 function showTab(tab) {
-    const tabs = ['active', 'available', 'completed'];
+    const tabs = ['active', 'daily', 'available', 'completed'];
     tabs.forEach(t => {
         document.getElementById('panel-' + t).classList.toggle('hidden', tab !== t);
         document.getElementById('tab-' + t).className = tab === t
-            ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-purple-500 text-purple-400 touch-target'
-            : 'px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target';
+            ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-purple-500 text-purple-400 touch-target whitespace-nowrap'
+            : 'px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target whitespace-nowrap';
     });
 }
 
@@ -497,6 +708,57 @@ async function abandonQuest(id) {
         if (data.success) {
             showMessage(data.message);
             const el = document.getElementById(`quest-${id}`);
+            if (el) el.remove();
+        } else {
+            showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+async function acceptDailyQuest(id) {
+    try {
+        const resp = await fetch(`/game/quests/daily/accept/${id}`, { method: 'POST' });
+        const data = await resp.json();
+        if (data.success) {
+            showMessage(data.message);
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+async function completeDailyQuest(id) {
+    try {
+        const resp = await fetch(`/game/quests/daily/complete/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: '{}'
+        });
+        const data = await resp.json();
+        if (data.success) {
+            showMessage(data.messages.join(' '));
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+async function abandonDailyQuest(id) {
+    if (!confirm('Abandonner cette quete quotidienne ?')) return;
+    try {
+        const resp = await fetch(`/game/quests/daily/abandon/${id}`, { method: 'POST' });
+        const data = await resp.json();
+        if (data.success) {
+            showMessage(data.message);
+            const el = document.getElementById(`daily-quest-${id}`);
             if (el) el.remove();
         } else {
             showMessage(data.error || 'Erreur', true);

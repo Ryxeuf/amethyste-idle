@@ -339,6 +339,97 @@ class QuestFixtures extends Fixture
                     ],
                 ],
             ],
+            // --- Quetes quotidiennes ---
+            'daily_kill_slimes' => [
+                'name' => 'Purge de slimes',
+                'description' => 'Les slimes prolifèrent ! Éliminez-en quelques-uns pour garder les alentours propres.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Slime', 'slug' => 'slime', 'count' => 3],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 30,
+                    'gold' => 20,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'combat',
+            ],
+            'daily_kill_bats' => [
+                'name' => 'Chasse aux chauve-souris',
+                'description' => 'Les chauve-souris gênent les mineurs dans les grottes. Chassez-en quelques-unes.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Chauve-souris', 'slug' => 'bat', 'count' => 3],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 30,
+                    'gold' => 20,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'combat',
+            ],
+            'daily_kill_spiders' => [
+                'name' => 'Toiles indésirables',
+                'description' => 'Les araignées bloquent les sentiers forestiers. Nettoyez le passage.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Araignée', 'slug' => 'spider', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 35,
+                    'gold' => 25,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'combat',
+            ],
+            'daily_collect_herbs' => [
+                'name' => 'Cueillette du jour',
+                'description' => 'L\'herboriste a besoin de plantes fraîches pour ses potions quotidiennes.',
+                'requirements' => [
+                    'collect' => [
+                        'plant-mint' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 25,
+                    'gold' => 15,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'recolte',
+            ],
+            'daily_collect_ore' => [
+                'name' => 'Minerai pour la forge',
+                'description' => 'Le forgeron a toujours besoin de minerai de cuivre. Rapportez-en de la mine.',
+                'requirements' => [
+                    'collect' => [
+                        'ore-copper' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 25,
+                    'gold' => 15,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'recolte',
+            ],
+            'daily_kill_rats' => [
+                'name' => 'Rats des champs',
+                'description' => 'Les rats géants envahissent les réserves. Éliminez-en avant qu\'ils ne dévorent tout.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Rat géant', 'slug' => 'giant_rat', 'count' => 3],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 30,
+                    'gold' => 20,
+                ],
+                'isDaily' => true,
+                'dailyPool' => 'combat',
+            ],
             // --- Chaine de quetes : La Menace Rampante (3 quetes) ---
             'quest_chain_guard_1' => [
                 'name' => 'La Menace Rampante - Partie 1',
@@ -421,6 +512,12 @@ class QuestFixtures extends Fixture
             }
             if (isset($data['choiceOutcome'])) {
                 $quest->setChoiceOutcome($data['choiceOutcome']);
+            }
+            if (isset($data['isDaily'])) {
+                $quest->setIsDaily($data['isDaily']);
+            }
+            if (isset($data['dailyPool'])) {
+                $quest->setDailyPool($data['dailyPool']);
             }
             $quest->setCreatedAt(new \DateTime());
             $quest->setUpdatedAt(new \DateTime());

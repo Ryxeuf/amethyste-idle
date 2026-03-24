@@ -100,10 +100,11 @@ class PlayerQuestHelper
         );
         $excludeIds = array_merge($activeQuestIds, $completedQuestIds);
 
-        // Get all quests not already active or completed
+        // Get all quests not already active or completed (exclude daily quests — shown in separate tab)
         $qb = $this->entityManager->getRepository(Quest::class)->createQueryBuilder('q');
+        $qb->where('q.isDaily = false');
         if (!empty($excludeIds)) {
-            $qb->where('q.id NOT IN (:excludeIds)')
+            $qb->andWhere('q.id NOT IN (:excludeIds)')
                ->setParameter('excludeIds', $excludeIds);
         }
         $allQuests = $qb->orderBy('q.name', 'ASC')->getQuery()->getResult();
