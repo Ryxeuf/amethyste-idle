@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
+use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -70,6 +71,10 @@ class PlayerController extends AbstractController
             ->orderBy('i.name', 'ASC')
             ->getQuery()
             ->getResult();
+        $domains = $this->em->getRepository(Domain::class)->createQueryBuilder('d')
+            ->orderBy('d.title', 'ASC')
+            ->getQuery()
+            ->getResult();
 
         return $this->render('admin/player/show.html.twig', [
             'player' => $player,
@@ -78,6 +83,7 @@ class PlayerController extends AbstractController
             'completedQuests' => $completedQuests,
             'domainXp' => $domainXp,
             'items' => $items,
+            'domains' => $domains,
         ]);
     }
 
@@ -168,6 +174,48 @@ class PlayerController extends AbstractController
             $this->em->flush();
             $this->adminLogger->log('give_item', 'Player', $player->getId(), $player->getName(), ['item' => $item->getName(), 'quantity' => $quantity]);
             $this->addFlash('success', $quantity . 'x "' . $item->getName() . '" donne a "' . $player->getName() . '".');
+        }
+
+        return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+    }
+
+    #[Route('/{id}/set-domain-xp', name: 'set_domain_xp', methods: ['POST'])]
+    public function setDomainXp(Request $request, Player $player): Response
+    {
+        if ($this->isCsrfTokenValid('set_domain_xp' . $player->getId(), $request->request->get('_token'))) {
+            $domainId = $request->request->getInt('domain_id');
+            $xpValue = $request->request->getInt('xp_value', 0);
+
+            $domain = $this->em->getRepository(Domain::class)->find($domainId);
+            if (!$domain) {
+                $this->addFlash('error', 'Domaine introuvable.');
+
+                return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+            }
+
+            // Find existing domain experience or create a new one
+            $domainExp = $this->em->getRepository(DomainExperience::class)->findOneBy([
+                'player' => $player,
+                'domain' => $domain,
+            ]);
+
+            if (!$domainExp) {
+                $domainExp = new DomainExperience();
+                $domainExp->setPlayer($player);
+                $domainExp->setDomain($domain);
+                $domainExp->setCreatedAt(new \DateTime());
+                $domainExp->setUpdatedAt(new \DateTime());
+                $this->em->persist($domainExp);
+            }
+
+            $domainExp->setTotalExperience($xpValue);
+            $this->em->flush();
+
+            $this->adminLogger->log('set_domain_xp', 'Player', $player->getId(), $player->getName(), [
+                'domain' => $domain->getTitle(),
+                'xp' => $xpValue,
+            ]);
+            $this->addFlash('success', 'XP du domaine "' . $domain->getTitle() . '" mis a ' . number_format($xpValue, 0, ',', ' ') . ' pour "' . $player->getName() . '".');
         }
 
         return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);

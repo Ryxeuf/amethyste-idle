@@ -1,0 +1,125 @@
+{% extends 'turbo_stream.html.twig' %}
+
+{% block turbo_stream_content %}
+<turbo-frame id="inventory-content">
+    {# ===== HEADER: Back + Context ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 mb-4 border border-gray-700/30">
+        <div class="flex items-center justify-between mb-3">
+            <a href="{{ path('app_game_inventory_equipment_list') }}" data-turbo-frame="inventory-content"
+               class="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-purple-400 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                Retour à l'équipement
+            </a>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-purple-900/50 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            </div>
+            <div>
+                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wide">Sertir une Materia</h2>
+                <p class="text-xs text-gray-500 mt-0.5">
+                    {{ gearItem.genericItem.name }}
+                    {% if slot.element is not null and slot.element.value != 'none' %}
+                        — Slot {{ slot.element.label }}
+                        <span class="w-2 h-2 rounded-full {{ _self.element_dot_class(slot.element) }} inline-block ml-0.5"></span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+
+        {% if slot.element is not null and slot.element.value != 'none' %}
+            <div class="mt-2 px-2 py-1.5 rounded-lg bg-yellow-900/20 border border-yellow-800/30 text-[10px] text-yellow-400/80">
+                Sertir une materia {{ slot.element.label }} dans ce slot accordera un bonus élémentaire.
+            </div>
+        {% endif %}
+    </div>
+
+    {# ===== MATERIA LIST ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
+        <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            Materia disponibles
+            {% if availableMateria|length > 0 %}
+                <span class="text-[10px] bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full">{{ availableMateria|length }}</span>
+            {% endif %}
+        </h3>
+
+        {% if availableMateria is empty %}
+            <div class="text-center text-gray-600 py-8">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-gray-800/50 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                </div>
+                <p class="text-xs sm:text-sm">Aucune materia disponible</p>
+                <p class="text-[10px] text-gray-700 mt-1">Obtenez des materia en combat ou via des quêtes</p>
+            </div>
+        {% else %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {% for materia in availableMateria %}
+                    {% set gi = materia.genericItem %}
+                    {% set isElementMatch = slot.element is not null and slot.element.value != 'none' and gi.element.value != 'none' and slot.element == gi.element %}
+                    <form method="post" action="{{ path('app_game_inventory_materia_set', {slotId: slot.id, materiaId: materia.id}) }}"
+                          data-turbo-frame="inventory-content">
+                        <button type="submit"
+                                class="w-full flex items-center gap-3 p-2.5 rounded-lg border transition-all text-left
+                                    {% if isElementMatch %}
+                                        border-yellow-700/50 bg-yellow-900/10 hover:bg-yellow-900/30 hover:border-yellow-600/60
+                                    {% else %}
+                                        border-gray-700/30 bg-gray-800/30 hover:bg-gray-700/30 hover:border-purple-600/50
+                                    {% endif %}">
+                            <div class="materia-orb materia-orb-{{ gi.element.value }} shrink-0"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-xs sm:text-sm text-white font-medium truncate">{{ gi.name }}</span>
+                                    <span class="text-[10px] bg-gray-700/60 text-gray-400 px-1.5 py-0.5 rounded shrink-0">Niv.{{ materia.materiaLevel }}</span>
+                                </div>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    {% if gi.spell %}
+                                        <span class="text-[10px] text-gray-500">{{ gi.spell.name }}</span>
+                                    {% endif %}
+                                    {% if materia.nbUsages > 0 %}
+                                        <span class="text-[10px] text-gray-600">{{ materia.nbUsages }} utilisations</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                {% if isElementMatch %}
+                                    <span class="text-[9px] font-medium uppercase px-1.5 py-0.5 rounded bg-yellow-900/30 text-yellow-400">Bonus</span>
+                                {% endif %}
+                                <span class="text-[9px] font-medium uppercase px-1.5 py-0.5 rounded shrink-0
+                                    {% if gi.element.value == 'fire' %}bg-red-900/30 text-red-400
+                                    {% elseif gi.element.value == 'water' %}bg-blue-900/30 text-blue-400
+                                    {% elseif gi.element.value == 'earth' %}bg-amber-900/30 text-amber-400
+                                    {% elseif gi.element.value == 'air' %}bg-cyan-900/30 text-cyan-400
+                                    {% elseif gi.element.value == 'light' %}bg-yellow-900/30 text-yellow-300
+                                    {% elseif gi.element.value == 'dark' %}bg-violet-900/30 text-violet-400
+                                    {% elseif gi.element.value == 'metal' %}bg-gray-700/30 text-gray-300
+                                    {% elseif gi.element.value == 'beast' %}bg-green-900/30 text-green-400
+                                    {% else %}bg-gray-800/30 text-gray-500{% endif %}">
+                                    {{ gi.element.value }}
+                                </span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                            </div>
+                        </button>
+                    </form>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</turbo-frame>
+
+{# ===== MACRO: Element dot color ===== #}
+{% macro element_dot_class(element) %}
+{% apply spaceless %}
+{% if element.value == 'fire' %}bg-orange-500
+{% elseif element.value == 'water' %}bg-blue-500
+{% elseif element.value == 'earth' %}bg-amber-600
+{% elseif element.value == 'air' %}bg-teal-400
+{% elseif element.value == 'light' %}bg-yellow-400
+{% elseif element.value == 'dark' %}bg-purple-500
+{% elseif element.value == 'metal' %}bg-gray-400
+{% elseif element.value == 'beast' %}bg-green-500
+{% else %}bg-gray-500{% endif %}
+{% endapply %}
+{% endmacro %}
+{% endblock %}

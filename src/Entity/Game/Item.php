@@ -180,6 +180,9 @@ class Item
     #[ORM\Column(name: 'bound_to_player', type: 'boolean', options: ['default' => false])]
     private bool $boundToPlayer = false;
 
+    #[ORM\Column(name: 'materia_slots', type: 'integer', options: ['default' => 0])]
+    private int $materiaSlots = 0;
+
     /**
      * Get id.
      */
@@ -523,5 +526,15 @@ class Item
     public function setBoundToPlayer(bool $boundToPlayer): void
     {
         $this->boundToPlayer = $boundToPlayer;
+    }
+
+    public function getMateriaSlots(): int
+    {
+        return $this->materiaSlots;
+    }
+
+    public function setMateriaSlots(int $materiaSlots): void
+    {
+        $this->materiaSlots = $materiaSlots;
     }
 }

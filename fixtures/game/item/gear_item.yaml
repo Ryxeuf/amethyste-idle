@@ -6,10 +6,12 @@ App\Entity\Game\Item:
     spell: '@none_attack_1'
     slug: 'short-sword'
     price: 80
-    gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
+    gear_location: 'main_weapon'
     requirements: ['@soldier_apprenti_1']
     domain: '@soldier'
     nbUsages: 100
+    rarity: 'common'
+    materia_slots: 1
   long_sword (extends item):
     name: 'Epée longue'
     description: 'Une épée longue de bonne facture'
@@ -17,31 +19,119 @@ App\Entity\Game\Item:
     spell: '@none_attack_2'
     slug: 'long-sword'
     price: 200
-    gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_MAIN_WEAPON )>
+    gear_location: 'main_weapon'
     requirements: ['@soldier_apprenti_1']
     domain: '@soldier'
     nbUsages: 100
+    rarity: 'uncommon'
+    materia_slots: 2
   leather_boots (extends item):
     name: "Bottes de cuir"
     description: "Ca évite de marcher pieds nus"
     type: "gear"
     slug: 'leather-boots'
     price: 40
-    gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_FOOT )>
+    gear_location: 'foot'
     nbUsages: 100
+    rarity: 'common'
+    protection: 2
+    materia_slots: 1
   leather_armor (extends item):
     name: "Armure de cuir"
     description: "Une armure de cuir de vache simple"
     type: "gear"
     slug: 'leather-armor'
     price: 75
-    gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_CHEST )>
+    gear_location: 'chest'
     nbUsages: 100
+    rarity: 'common'
+    protection: 5
+    materia_slots: 2
   leather_hat (extends item):
     name: "Chapeau de cuir"
     description: "Un chapeau de cuir standard de manufacture classique"
     type: "gear"
     slug: 'leather-hat'
     price: 35
-    gear_location: <( App\Entity\Game\Item::GEAR_LOCATION_HEAD )>
+    gear_location: 'head'
     nbUsages: 100
+    rarity: 'common'
+    protection: 3
+    materia_slots: 1
+  iron_shield (extends item):
+    name: "Bouclier de fer"
+    description: "Un bouclier de fer solide forgé dans les ateliers du royaume"
+    type: "gear"
+    slug: 'iron-shield'
+    price: 120
+    gear_location: 'side_weapon'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 8
+    element: 'metal'
+    materia_slots: 1
+  leather_gloves (extends item):
+    name: "Gants de cuir"
+    description: "Des gants de cuir souples offrant une bonne prise"
+    type: "gear"
+    slug: 'leather-gloves'
+    price: 30
+    gear_location: 'hand'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 2
+    materia_slots: 1
+  leather_belt (extends item):
+    name: "Ceinture de cuir"
+    description: "Une ceinture de cuir renforcée avec boucle en bronze"
+    type: "gear"
+    slug: 'leather-belt'
+    price: 25
+    gear_location: 'belt'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 1
+    materia_slots: 0
+  bronze_ring (extends item):
+    name: "Anneau de bronze"
+    description: "Un anneau simple mais résistant, forgé en bronze"
+    type: "gear"
+    slug: 'bronze-ring'
+    price: 50
+    gear_location: 'ring_1'
+    nbUsages: -1
+    rarity: 'common'
+    materia_slots: 1
+  silver_amulet (extends item):
+    name: "Amulette d'argent"
+    description: "Une amulette finement ciselée qui brille d'un éclat lunaire"
+    type: "gear"
+    slug: 'silver-amulet'
+    price: 90
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'uncommon'
+    element: 'light'
+    materia_slots: 1
+  leather_shoulders (extends item):
+    name: "Epaulières de cuir"
+    description: "Des épaulières de cuir renforcées de rivets métalliques"
+    type: "gear"
+    slug: 'leather-shoulders'
+    price: 45
+    gear_location: 'shoulder'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 3
+    materia_slots: 1
+  leather_pants (extends item):
+    name: "Jambières de cuir"
+    description: "Des jambières de cuir offrant souplesse et protection"
+    type: "gear"
+    slug: 'leather-pants'
+    price: 55
+    gear_location: 'leg'
+    nbUsages: 100
+    rarity: 'common'
+    protection: 4
+    materia_slots: 1

@@ -30,6 +30,7 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setUser($this->getReference('user_remy', User::class));
         $playerRemy->setClassType('admin');
         $playerRemy->setRace($this->getReference('race_human', Race::class));
+        $playerRemy->setGils(100000);
         $playerRemy->setCreatedAt(new \DateTime());
         $playerRemy->setUpdatedAt(new \DateTime());
         $playerRemy->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
