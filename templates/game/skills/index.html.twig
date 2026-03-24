@@ -128,6 +128,63 @@
             </div>
         {% endif %}
 
+        {# Build Presets #}
+        <div class="mb-4 sm:mb-6 game-card overflow-hidden">
+            <div class="bg-gradient-to-r from-gray-700 to-gray-600 px-4 py-3 flex items-center justify-between">
+                <h2 class="text-base sm:text-lg font-bold text-white">Presets de build</h2>
+                <span class="text-xs text-white/70">{{ presets|length }}/{{ maxPresets }}</span>
+            </div>
+            <div class="p-3 sm:p-4">
+                {# Save form #}
+                {% if canSavePreset %}
+                    <form action="{{ path('app_game_skill_preset_save') }}" method="post" class="flex gap-2 mb-3">
+                        <input type="hidden" name="_token" value="{{ csrf_token('preset_save') }}">
+                        <input type="text" name="preset_name" placeholder="Nom du preset..." maxlength="50" required
+                            class="flex-1 bg-gray-800 border border-gray-600 rounded px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1.5 px-4 rounded text-sm transition-colors flex-shrink-0">
+                            Sauvegarder
+                        </button>
+                    </form>
+                {% elseif skillCount > 0 %}
+                    <p class="text-xs text-gray-500 mb-3">Limite de {{ maxPresets }} presets atteinte.</p>
+                {% else %}
+                    <p class="text-xs text-gray-500 mb-3">Apprenez des competences pour pouvoir sauvegarder un preset.</p>
+                {% endif %}
+
+                {# Preset list #}
+                {% if presets|length > 0 %}
+                    <div class="space-y-2">
+                        {% for preset in presets %}
+                            <div class="flex items-center justify-between bg-gray-800 rounded-lg p-3 border border-gray-700">
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="text-sm font-semibold text-white truncate">{{ preset.name }}</h3>
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ preset.skillSlugs|length }} competence{{ preset.skillSlugs|length > 1 ? 's' : '' }}</p>
+                                </div>
+                                <div class="flex gap-2 flex-shrink-0 ml-3">
+                                    <form action="{{ path('app_game_skill_preset_load', {id: preset.id}) }}" method="post">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('preset_load_' ~ preset.id) }}">
+                                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded text-xs transition-colors"
+                                            onclick="return confirm('Charger ce preset ? Vos competences actuelles seront redistribuees (cout en gils).')">
+                                            Charger
+                                        </button>
+                                    </form>
+                                    <form action="{{ path('app_game_skill_preset_delete', {id: preset.id}) }}" method="post">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('preset_delete_' ~ preset.id) }}">
+                                        <button type="submit" class="bg-red-600/80 hover:bg-red-700 text-white font-bold py-1.5 px-3 rounded text-xs transition-colors"
+                                            onclick="return confirm('Supprimer ce preset ?')">
+                                            Supprimer
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-xs text-gray-500 text-center py-2">Aucun preset sauvegarde.</p>
+                {% endif %}
+            </div>
+        </div>
+
         {# Domain sections #}
         {% for domain in domains %}
             <div class="mb-4 sm:mb-6 game-card overflow-hidden">
