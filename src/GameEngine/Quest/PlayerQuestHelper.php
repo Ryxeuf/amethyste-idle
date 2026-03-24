@@ -109,8 +109,13 @@ class PlayerQuestHelper
         }
         $allQuests = $qb->orderBy('q.name', 'ASC')->getQuery()->getResult();
 
-        // Filter by prerequisites
+        // Filter by prerequisites and event availability
         return array_values(array_filter($allQuests, function (Quest $quest) use ($completedQuestIds) {
+            // Hide event quests whose event is no longer active
+            if ($quest->isEventQuest() && !$quest->isEventActive()) {
+                return false;
+            }
+
             $prerequisites = $quest->getPrerequisiteQuests();
             if (empty($prerequisites)) {
                 return true;

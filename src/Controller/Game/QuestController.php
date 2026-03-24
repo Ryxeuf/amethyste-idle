@@ -110,6 +110,11 @@ class QuestController extends AbstractController
             return new JsonResponse(['error' => 'Quête introuvable'], Response::HTTP_NOT_FOUND);
         }
 
+        // Block acceptance of expired event quests
+        if ($quest->isEventQuest() && !$quest->isEventActive()) {
+            return new JsonResponse(['error' => 'Cette quête d\'événement n\'est plus disponible'], Response::HTTP_BAD_REQUEST);
+        }
+
         $player = $this->playerHelper->getPlayer();
 
         // Check if already accepted

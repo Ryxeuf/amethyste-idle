@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Event\CraftEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
@@ -21,6 +22,7 @@ class CraftingManager
         private readonly PlayerHelper $playerHelper,
         private readonly QualityCalculator $qualityCalculator,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -113,8 +115,8 @@ class CraftingManager
             $lastPlayerItem = $playerItem;
         }
 
-        // Accorder l'XP de domaine
-        $this->grantCraftingXp($player, $recipe->getCraft(), $recipe->getXpReward());
+        // Accorder l'XP de domaine (avec bonus evenement)
+        $grantedXp = $this->grantCraftingXp($player, $recipe->getCraft(), $recipe->getXpReward());
 
         $this->entityManager->flush();
 
@@ -134,7 +136,7 @@ class CraftingManager
                 $resultItem->getName(),
                 $recipe->getResultQuantity(),
                 $qualityLabel,
-                $recipe->getXpReward()
+                $grantedXp
             ),
         ];
     }
@@ -161,21 +163,26 @@ class CraftingManager
     /**
      * Accorde de l'XP de craft au joueur dans le domaine correspondant.
      */
-    private function grantCraftingXp(Player $player, string $craft, int $xpAmount): void
+    private function grantCraftingXp(Player $player, string $craft, int $xpAmount): int
     {
+        $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($player->getMap());
+        $finalXp = (int) round($xpAmount * $xpMultiplier);
+
         foreach ($player->getDomainExperiences() as $domainExperience) {
             $domain = $domainExperience->getDomain();
             $domainSlug = strtolower(str_replace(' ', '-', $domain->getTitle()));
 
             if ($domainSlug === $craft) {
                 $domainExperience->setTotalExperience(
-                    $domainExperience->getTotalExperience() + $xpAmount
+                    $domainExperience->getTotalExperience() + $finalXp
                 );
                 $this->entityManager->persist($domainExperience);
 
-                return;
+                return $finalXp;
             }
         }
+
+        return $finalXp;
     }
 
     /**

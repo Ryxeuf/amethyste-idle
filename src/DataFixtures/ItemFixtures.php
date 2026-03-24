@@ -82,6 +82,10 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             $item->setRarity($data['rarity'] ?? $this->inferRarity($data));
 
+            if (isset($data['boundToPlayer'])) {
+                $item->setBoundToPlayer($data['boundToPlayer']);
+            }
+
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());
 
@@ -2418,6 +2422,40 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+            ],
+
+            // Cosmétiques d'événement — Festival de la Lune
+            'cosmetic_lunar_crown' => [
+                'name' => 'Couronne lunaire',
+                'description' => 'Une couronne argentee qui brille sous la lumiere de la lune. Recompense exclusive du Festival de la Lune.',
+                'type' => 'gear',
+                'slug' => 'cosmetic-lunar-crown',
+                'gear_location' => Item::GEAR_LOCATION_HEAD,
+                'element' => Element::Light,
+                'price' => 0,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Epic,
+                'level' => 1,
+                'boundToPlayer' => true,
+            ],
+
+            // Cosmétiques d'événement — La Nuit des Ombres
+            'cosmetic_shadow_cloak' => [
+                'name' => 'Cape des ombres',
+                'description' => 'Une cape tissee dans l\'obscurite elle-meme. Recompense exclusive de la Nuit des Ombres.',
+                'type' => 'gear',
+                'slug' => 'cosmetic-shadow-cloak',
+                'gear_location' => Item::GEAR_LOCATION_SHOULDER,
+                'element' => Element::Dark,
+                'price' => 0,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Epic,
+                'level' => 1,
+                'boundToPlayer' => true,
             ],
         ];
     }

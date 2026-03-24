@@ -119,12 +119,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
-### 79 — Evenements bonus/festivals (S | ★★)
-> Integration des types xp_bonus et drop_bonus dans les calculs de jeu, plus quetes et cosmetiques d'evenement. Prerequis : ← 21 (Executeur GameEvent), 35 (Annonces Mercure evenements)
-- [ ] Integrer `drop_bonus` dans LootGenerator : multiplier les probabilites de drop pendant l'event actif
-- [ ] Integrer `xp_bonus` dans les systemes d'XP (combat, recolte, craft) : multiplier l'XP gagnee
-- [ ] Quetes d'evenement : quetes temporaires liees a un GameEvent (disparaissent a la fin)
-- [ ] Cosmetiques d'evenement : items decoratifs exclusifs comme recompenses
+### ~~79 — Evenements bonus/festivals (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
