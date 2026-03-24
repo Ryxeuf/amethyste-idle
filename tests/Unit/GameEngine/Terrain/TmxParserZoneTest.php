@@ -39,7 +39,8 @@ class TmxParserZoneTest extends TestCase
         </map>
         XML;
 
-        $crawler = new Crawler($xml);
+        $crawler = new Crawler();
+        $crawler->addXmlContent($xml);
         $objects = $this->parser->parseObjectLayers($crawler, 32, 32, 40, 30, 0, 0);
 
         $this->assertCount(2, $objects);
@@ -80,7 +81,8 @@ class TmxParserZoneTest extends TestCase
         </map>
         XML;
 
-        $crawler = new Crawler($xml);
+        $crawler = new Crawler();
+        $crawler->addXmlContent($xml);
         // With offsets: offsetX=1, offsetY=2, mapWidth=20, mapHeight=15
         $objects = $this->parser->parseObjectLayers($crawler, 32, 32, 20, 15, 1, 2);
 

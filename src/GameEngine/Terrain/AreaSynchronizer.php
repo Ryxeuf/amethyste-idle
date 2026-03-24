@@ -8,10 +8,35 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 
 /**
- * Synchronizes zone/biome objects from Tiled into Area entities.
+ * Synchronizes zone/biome objects from Tiled Map Editor into Area entities.
  *
- * Tiled objects of type "zone" or "biome" are rectangles with custom properties
- * (biome, weather, music, light_level). This service upserts matching Area records.
+ * ## Tiled setup
+ *
+ * In a TMX map, create an **Object Layer** (e.g. named "zones") and draw
+ * rectangles covering logical regions of the map. Each rectangle must have:
+ *
+ * - **Type** (class): `zone` or `biome`
+ * - **Name**: human-readable zone name (used as slug source and fallback biome)
+ *
+ * Then add **Custom Properties** on each rectangle:
+ *
+ * | Property      | Type   | Required | Description                                   |
+ * |---------------|--------|----------|-----------------------------------------------|
+ * | `biome`       | string | no       | Biome identifier (forest, desert, swamp…).    |
+ * |               |        |          | Defaults to the object name if omitted.       |
+ * | `weather`     | string | no       | Default weather for the zone (rain, fog…).    |
+ * | `music`       | string | no       | Background music filename (forest_theme.ogg). |
+ * | `light_level` | float  | no       | Luminosity multiplier (1.0 = normal).         |
+ *
+ * The rectangle's pixel position and size are converted to tile coordinates
+ * by TmxParser::parseObjectLayers(). This service then upserts Area records
+ * with the zone metadata (biome, weather, music, lightLevel, bounds).
+ *
+ * ## Usage
+ *
+ * ```bash
+ * php bin/console app:terrain:import --sync-zones [--map-id=1]
+ * ```
  */
 class AreaSynchronizer
 {
