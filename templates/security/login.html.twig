@@ -33,7 +33,8 @@
                     </div>
                 {% endif %}
 
-                <form method="post" class="space-y-5">
+                {# Turbo intercepte le POST en fetch() : la session / le 302 de login peuvent échouer sans rechargement complet #}
+                <form method="post" class="space-y-5" data-turbo="false">
                     <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
                     <div>

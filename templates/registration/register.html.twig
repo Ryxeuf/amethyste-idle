@@ -11,7 +11,7 @@
                     <h1 class="h3 mb-3 font-weight-normal">{{ 'registration.title'|trans }}</h1>
                 </div>
                 <div class="card-body">
-                    {{ form_start(registrationForm) }}
+                    {{ form_start(registrationForm, { attr: { 'data-turbo': 'false' } }) }}
                         {{ form_row(registrationForm.email) }}
                         {{ form_row(registrationForm.plainPassword, {
                             label: 'registration.password'|trans
