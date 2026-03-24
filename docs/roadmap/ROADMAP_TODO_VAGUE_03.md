@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **16 completees**, 2 restantes.
+> **18 taches** initiales, **17 completees**, 1 restante.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -70,11 +70,8 @@
 ### ~~58 — Parsing zones/biomes Tiled (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 59 — Tests E2E Panther (M | ★★)
-> Tests de parcours complets multi-pages valides via Panther. Prerequis : ← 23 (P6-3 tests fonctionnels controleurs), 42 (P6-5 tests integration evenements)
-- [ ] Parcours combat : carte → engagement mob → combat → victoire → loot → retour carte
-- [ ] Parcours quete : PNJ dialogue → accepter quete → tuer mob → rendre quete → recompense
-- [ ] Parcours craft : inventaire → atelier → crafter → verifier item cree
+### ~~59 — Tests E2E Panther (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~60 — Minimap PixiJS (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

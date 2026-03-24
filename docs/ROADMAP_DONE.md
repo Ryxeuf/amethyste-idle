@@ -886,3 +886,15 @@
 - [x] Dialogues narratifs pour Claire la Sage (guide), Gerard le Forgeron, Marie la Herboriste
 - [x] Recompenses progressives : gils, XP, epee courte, potions, parchemin herboristerie, materia Soin
 - [x] Chaine de prerequis : Reveil → Premiers pas → Bapteme → Recolte → Cristal
+
+---
+
+## 59 — Tests E2E Panther (2026-03-24) ✅
+
+> Tests de parcours complets multi-pages via Symfony Panther (Chrome headless).
+
+- [x] Parcours combat : carte → engagement mob via API → combat → attaque en boucle → victoire/loot → retour carte
+- [x] Parcours quete : page quetes → navigation onglets → accepter quete disponible → verifier suivi actif → abandonner
+- [x] Parcours craft : inventaire → atelier → navigation onglets professions → affichage recettes → tentative fabrication
+- [x] Tests UI combat : verification boutons action (attaque, sorts, objets, fuite), combattants visibles
+- [x] Tests navigation craft : onglets professions, section experimentation, cartes de recettes
