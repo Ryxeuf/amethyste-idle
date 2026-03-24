@@ -1,7 +1,6 @@
-## Vague 3 — Contenu & enrichissement
+## Vague 3 — Contenu & enrichissement ✅
 
-> **18 taches** initiales, **17 completees**, 1 restante.
-> Organisees en 5 pistes paralleles.
+> **18 taches** initiales, **18 completees**. Vague terminee.
 
 ---
 
@@ -22,14 +21,8 @@
 ### ~~47 — Monstres tier 2 lvl 10-15 (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 48 — Village central hub (L | ★★★)
-> Nouvelle carte "Village central" servant de hub principal entre les zones. Prerequis : ← 30 (C-8 teleportation entre cartes), 25 (v0.4-A boutiques PNJ)
-- [ ] Design carte Tiled (~40x40, interieur/exterieur) avec places, batiments
-- [ ] Import BDD via app:terrain:import
-- [ ] PNJ hub : forgeron, alchimiste, marchand, maitre des quetes, banquier (5-8 PNJ)
-- [ ] Dialogues PNJ (JSON conditions)
-- [ ] Portail bidirectionnel vers carte existante
-- [ ] Aucun monstre (zone safe)
+### ~~48 — Village central hub (L | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~49 — Monstres soigneurs / multi-mobs (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

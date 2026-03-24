@@ -226,6 +226,59 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             $this->addReference($slug, $objectLayer);
         }
 
+        // =====================
+        // PORTAILS — Village ↔ Carte principale (bidirectionnels)
+        // =====================
+        $map1 = $this->getReference('map_1', Map::class);
+        $map2 = $this->getReference('map_2', Map::class);
+
+        $portals = [
+            // Depuis carte principale → village (entrée sud du village)
+            'portal-to-village' => [
+                'name' => 'Portail vers le Village de Lumière',
+                'map' => $map1,
+                'coordinates' => '30.30',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '19.37',
+            ],
+            // Depuis village → carte principale (sortie sud du village)
+            'portal-village-exit-1' => [
+                'name' => 'Sortie du village',
+                'map' => $map2,
+                'coordinates' => '19.39',
+                'destinationMapId' => $map1->getId(),
+                'destinationCoordinates' => '30.31',
+            ],
+            'portal-village-exit-2' => [
+                'name' => 'Sortie du village',
+                'map' => $map2,
+                'coordinates' => '20.39',
+                'destinationMapId' => $map1->getId(),
+                'destinationCoordinates' => '31.31',
+            ],
+        ];
+
+        foreach ($portals as $portalSlug => $data) {
+            $portal = new ObjectLayer();
+            $portal->setName($data['name']);
+            $portal->setSlug($portalSlug);
+            $portal->setType(ObjectLayer::TYPE_PORTAL);
+            $portal->setMovement(0);
+            $portal->setMap($data['map']);
+            $portal->setUsable(true);
+            $portal->setCoordinates($data['coordinates']);
+            $portal->setActions([['action' => 'portal', 'distance' => 0]]);
+            $portal->setItems(null);
+            $portal->setDestinationMapId($data['destinationMapId']);
+            $portal->setDestinationCoordinates($data['destinationCoordinates']);
+            $portal->setNightOnly(false);
+            $portal->setCreatedAt(new \DateTime());
+            $portal->setUpdatedAt(new \DateTime());
+
+            $manager->persist($portal);
+            $this->addReference($portalSlug, $portal);
+        }
+
         $manager->flush();
     }
 

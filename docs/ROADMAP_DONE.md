@@ -898,3 +898,16 @@
 - [x] Parcours craft : inventaire → atelier → navigation onglets professions → affichage recettes → tentative fabrication
 - [x] Tests UI combat : verification boutons action (attaque, sorts, objets, fuite), combattants visibles
 - [x] Tests navigation craft : onglets professions, section experimentation, cartes de recettes
+
+---
+
+## 48 — Village central hub (2026-03-24) ✅
+
+> Nouvelle carte "Village de Lumière" servant de hub principal entre les zones. Zone safe (aucun monstre).
+
+- [x] Carte Tiled 40x40 (world-1-village-1.tmx) avec plaza centrale, batiments, chemins pavés
+- [x] Entité Map "Village de Lumière" (map_2) dans MapFixtures
+- [x] 6 PNJ hub : Aldric le Forgeron (armes/armures), Iris l'Alchimiste (potions), Marcellin le Marchand (outils/nourriture), Oriane la Maîtresse des Quêtes, Théodore le Banquier, Gareth le Garde
+- [x] Dialogues PNJ avec boutiques, horaires d'ouverture, et substitution {{player_name}}
+- [x] Portails bidirectionnels : carte principale (30.30) ↔ village (19.39/20.39)
+- [x] Données d'area générées pour le rendu PixiJS (area_data.json + world-1-village-1.json)

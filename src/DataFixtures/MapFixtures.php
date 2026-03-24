@@ -26,6 +26,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($map);
         $this->addReference('map_1', $map);
 
+        // Village central — hub principal entre les zones (zone safe, aucun monstre)
+        $village = new Map();
+        $village->setName('Village de Lumière');
+        $village->setWorld($this->getReference('world_1', World::class));
+        $village->setAreaWidth(40);
+        $village->setAreaHeight(40);
+        $village->setCreatedAt(new \DateTime());
+        $village->setUpdatedAt(new \DateTime());
+
+        $manager->persist($village);
+        $this->addReference('map_2', $village);
+
         $manager->flush();
     }
 
