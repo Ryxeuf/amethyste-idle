@@ -5,6 +5,7 @@ namespace App\Controller\Game\Skill;
 use App\Dto\Domain\DomainModel;
 use App\Dto\Domain\PlayerDomain;
 use App\Entity\Game\Domain;
+use App\GameEngine\Progression\BuildPresetManager;
 use App\GameEngine\Progression\SkillRespecManager;
 use App\GameEngine\Progression\SynergyCalculator;
 use App\Helper\PlayerDomainHelper;
@@ -27,6 +28,7 @@ class IndexController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly SkillRespecManager $respecManager,
         private readonly SynergyCalculator $synergyCalculator,
+        private readonly BuildPresetManager $presetManager,
     ) {
     }
 
@@ -48,6 +50,9 @@ class IndexController extends AbstractController
             'totalUsedPoints' => $player ? $this->skillHelper->getTotalUsedPoints($player) : 0,
             'maxTotalPoints' => PlayerSkillHelper::MAX_TOTAL_SKILL_POINTS,
             'synergies' => $player ? $this->synergyCalculator->getAllSynergiesWithStatus($player) : [],
+            'presets' => $player ? $this->presetManager->getPresets($player) : [],
+            'canSavePreset' => $player ? $this->presetManager->canSave($player) : false,
+            'maxPresets' => BuildPresetManager::MAX_PRESETS_PER_PLAYER,
         ]);
     }
 

@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **4 completees**, 14 restantes.
+> **18 taches** initiales, **6 completees**, 12 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -113,16 +113,8 @@
 - [ ] Dissolution automatique si tous les membres partent
 - [ ] Tests unitaires : creation, invitation, depart, dissolution
 
-### 56 — Presets de build (M | ★★)
-> Sauvegarde et chargement de configurations de skills. Prerequis : ← 14 (PB-1 respec basique)
-- [ ] Entite `BuildPreset` (player, name, skillSlugs JSON, createdAt)
-- [ ] Migration SQL
-- [ ] Service `BuildPresetManager` : save(Player, name), load(Player, presetId), delete(presetId)
-- [ ] `load()` = respec gratuit + acquisition auto des skills du preset (si XP suffisante)
-- [ ] Limite : 3 presets par joueur
-- [ ] Route GET/POST `/game/skills/presets` (liste, sauvegarder, charger, supprimer)
-- [ ] Template : liste des presets avec boutons Charger/Supprimer + formulaire de sauvegarde
-- [ ] Tests BuildPresetManager (save/load OK, limite atteinte, XP insuffisante pour charger)
+### ~~56 — Presets de build (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
@@ -151,11 +143,7 @@
 ### ~~60 — Minimap PixiJS (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 61 — Barre d'action rapide (S | ★★)
-> Raccourcis clavier/boutons en bas de l'ecran carte pour utiliser consommables et sorts frequents.
-- [ ] Barre fixe en bas de l'ecran carte (4-6 slots)
-- [ ] Drag & drop items consommables depuis l'inventaire vers les slots
-- [ ] Raccourcis clavier 1-6 pour activer un slot
-- [ ] Persistance des slots en localStorage
+### ~~61 — Barre d'action rapide (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---

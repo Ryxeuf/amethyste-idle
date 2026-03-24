@@ -2,7 +2,7 @@
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
 > Numerotation unifiee : chaque tache a un identifiant unique (01 a 103).
-> Derniere mise a jour : 2026-03-23
+> Derniere mise a jour : 2026-03-24
 
 ---
 
@@ -83,12 +83,12 @@ VAGUE 3 (depend de Vague 2)
   ├─ 53 Groupes de combat formation ← 38
   ├─ 54 Quetes a choix ← 13, 31
   ├─ 55 Quetes quotidiennes ← 12, 27
-  ├─ 56 Presets de build ← 14
+  ├─ ✅ 56 Presets de build (FAIT) ← 14
   ├─ 57 Commande terrain:sync ← 44
   ├─ 58 Parsing zones/biomes Tiled ← 44
   ├─ 59 Tests E2E Panther ← 23, 42
   ├─ ✅ 60 Minimap PixiJS (FAIT)
-  ├─ 61 Barre d'action rapide (∅)
+  ├─ ✅ 61 Barre d'action rapide (FAIT)
   ├─ ✅ 62 Particules combat/recolte (FAIT)
   └─ ✅ 63 Flash elementaire combat (FAIT)
 ```

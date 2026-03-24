@@ -707,3 +707,26 @@
 - [x] Shake camera sur coups critiques (animation CSS sur le conteneur .game-page)
 - [x] Animation de tremblement sur le sprite cible quand il recoit des degats
 - [x] Fondu progressif du sprite a la mort d'un mob (desaturation + opacite reduite)
+
+## 56 — Presets de build (2026-03-24) ✅
+
+> Sauvegarde et chargement de configurations de skills (max 3 presets par joueur).
+
+- [x] Entite `BuildPreset` (player, name, skillSlugs JSON, createdAt)
+- [x] Migration SQL (table build_preset)
+- [x] Service `BuildPresetManager` : save, load (respec + re-acquire), delete
+- [x] `load()` = respec (cout en gils) + acquisition auto des skills du preset
+- [x] Limite : 3 presets par joueur
+- [x] Routes POST `/game/skills/presets/save`, `/game/skills/presets/{id}/load`, `/game/skills/presets/{id}/delete`
+- [x] Section presets dans la page competences avec formulaire de sauvegarde et boutons Charger/Supprimer
+- [x] Tests BuildPresetManager (save/load OK, limite atteinte, owner check, combat check)
+
+## 61 — Barre d'action rapide (2026-03-24) ✅
+
+> Raccourcis clavier/boutons en bas de l'ecran carte pour utiliser consommables.
+
+- [x] Barre fixe en bas de l'ecran carte (6 slots) via Stimulus controller `quickbar_controller`
+- [x] Picker modal pour selectionner les consommables depuis l'inventaire
+- [x] Raccourcis clavier 1-6 pour activer un slot
+- [x] Persistance des slots en localStorage
+- [x] API `/api/quickbar/items` et `/api/quickbar/use/{id}` avec cooldown 1s
