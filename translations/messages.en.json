@@ -60,7 +60,8 @@
       "skills": "Skills",
       "settings": "Settings",
       "factions": "Factions",
-      "friends": "Friends"
+      "friends": "Friends",
+      "guild": "Guild"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -432,6 +433,34 @@
       "offline": "Offline",
       "waiting": "Pending",
       "add_friend": "Add friend"
+    },
+    "guild": {
+      "title": "Guild",
+      "create_title": "Create a guild",
+      "create_desc": "Create your own guild for %cost% gils and gather adventurers!",
+      "create_button": "Create guild",
+      "name": "Guild name",
+      "name_placeholder": "e.g. The Amethyst Guardians",
+      "tag": "Tag (2-5 characters)",
+      "tag_placeholder": "e.g. GARD",
+      "description": "Description (optional)",
+      "desc_placeholder": "Describe your guild...",
+      "cost": "Cost: %amount% gils",
+      "leader": "Leader",
+      "members": "Members",
+      "pending_invitations": "Pending invitations",
+      "invited_by": "Invited by %name%",
+      "accept": "Accept",
+      "decline": "Decline",
+      "leave": "Leave guild",
+      "leave_confirm": "Do you really want to leave this guild?",
+      "disband": "Disband guild",
+      "disband_confirm": "Do you really want to disband this guild? This action is irreversible.",
+      "kick": "Kick",
+      "promote_officer": "Promote to officer",
+      "demote_member": "Demote to member",
+      "invite_title": "Invite a player",
+      "invite_desc": "Visit a player's profile to invite them to your guild."
     }
   },
   "common": {

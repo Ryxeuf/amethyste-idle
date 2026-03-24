@@ -787,3 +787,22 @@
 - [x] QuestController : routes daily/accept, daily/complete, daily/abandon
 - [x] 6 quetes quotidiennes dans les fixtures (combat + recolte)
 - [x] Section "Quotidiennes" dans le journal de quetes
+
+---
+
+## 52 — Guildes fondation (2026-03-24) ✅
+
+> Premiere brique du systeme de guilde : creation, gestion des membres, invitations, rangs.
+
+- [x] Enum `GuildRank` (master, officer, member, recruit) avec labels FR, classes CSS, permissions
+- [x] Entite `Guild` (name unique, tag 2-5 chars, description, leader: Player, members collection)
+- [x] Entite `GuildMember` (guild, player unique, rank enum, joinedAt)
+- [x] Entite `GuildInvitation` (guild, player, invitedBy, unique guild+player)
+- [x] Migration PostgreSQL (3 tables : guilds, guild_members, guild_invitations)
+- [x] `GuildManager` : create (5000 gils), invite (officier+), accept/decline invitation, leave, kick, promote/demote, disband
+- [x] `GuildController` : 9 routes (/game/guild, create, invite, accept, decline, leave, kick, promote, disband)
+- [x] Templates Twig : page sans guilde (formulaire creation + invitations recues), page guilde (infos, membres, actions)
+- [x] Traductions FR + EN completes
+- [x] Navigation : lien "Guilde" dans la barre de jeu
+- [x] Tests unitaires GuildManager (14 tests : creation, validation, invitation, leave, kick, promote, disband)
+- [x] Validations : nom unique, tag unique, max 1 guilde/joueur, cout creation, permissions par rang

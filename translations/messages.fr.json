@@ -62,7 +62,8 @@
       "bestiary": "Bestiaire",
       "craft": "Artisanat",
       "factions": "Factions",
-      "friends": "Amis"
+      "friends": "Amis",
+      "guild": "Guilde"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -453,6 +454,34 @@
       "offline": "Hors ligne",
       "waiting": "En attente",
       "add_friend": "Ajouter en ami"
+    },
+    "guild": {
+      "title": "Guilde",
+      "create_title": "Créer une guilde",
+      "create_desc": "Créez votre propre guilde pour %cost% gils et rassemblez des aventuriers !",
+      "create_button": "Créer la guilde",
+      "name": "Nom de la guilde",
+      "name_placeholder": "Ex: Les Gardiens d'Amethyste",
+      "tag": "Tag (2-5 caractères)",
+      "tag_placeholder": "Ex: GARD",
+      "description": "Description (optionnel)",
+      "desc_placeholder": "Décrivez votre guilde...",
+      "cost": "Coût : %amount% gils",
+      "leader": "Chef",
+      "members": "Membres",
+      "pending_invitations": "Invitations reçues",
+      "invited_by": "Invité par %name%",
+      "accept": "Accepter",
+      "decline": "Refuser",
+      "leave": "Quitter la guilde",
+      "leave_confirm": "Voulez-vous vraiment quitter cette guilde ?",
+      "disband": "Dissoudre la guilde",
+      "disband_confirm": "Voulez-vous vraiment dissoudre cette guilde ? Cette action est irréversible.",
+      "kick": "Exclure",
+      "promote_officer": "Promouvoir officier",
+      "demote_member": "Rétrograder membre",
+      "invite_title": "Inviter un joueur",
+      "invite_desc": "Visitez le profil d'un joueur pour l'inviter dans votre guilde."
     }
   },
   "common": {
