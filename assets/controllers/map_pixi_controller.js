@@ -71,6 +71,17 @@ export default class extends Controller {
         this._particles = [];
         this._particleContainer = null;
 
+        // Weather visual effects
+        this._currentWeather = 'sunny';
+        this._targetWeather = 'sunny';
+        this._weatherContainer = null;
+        this._weatherOverlay = null;
+        this._weatherParticles = [];
+        this._weatherTransitionAlpha = 0;
+        this._weatherTransitionDuration = 2000; // 2s fade
+        this._weatherTransitioning = false;
+        this._weatherSpawnTimer = 0;
+
         // Minimap state
         this._minimapVisible = true;
         this._minimapSize = 150;
@@ -84,6 +95,7 @@ export default class extends Controller {
         this._setupMercure();
         await this._fetchGameTime();
         this._initDayNight();
+        this._initWeather();
         this._initTimeHud();
         this._initMinimap();
         this._updateCamera(true);
@@ -129,6 +141,15 @@ export default class extends Controller {
         this._entitySpatialHash.clear();
         this._animatedEntities = [];
         this._particles = [];
+        this._clearWeatherParticles();
+        if (this._weatherContainer) {
+            this._weatherContainer.destroy({ children: true });
+            this._weatherContainer = null;
+        }
+        if (this._weatherOverlay) {
+            this._weatherOverlay.destroy();
+            this._weatherOverlay = null;
+        }
         if (this._minimapContainer) {
             this._minimapContainer.destroy({ children: true });
             this._minimapContainer = null;
@@ -227,6 +248,10 @@ export default class extends Controller {
         this._currentHeight = h;
         this._app.renderer.resize(w, h);
         this._updateCamera(true);
+        // Reapply weather overlay to match new dimensions
+        if (this._weatherOverlay) {
+            this._applyWeatherEffect(this._currentWeather);
+        }
     }
 
     async _loadConfig() {
@@ -235,6 +260,12 @@ export default class extends Controller {
         this._tilesets = config.tilesets || [];
         this._tileSize = config.tileSize || 32;
         this._spriteConfig = config.sprites || {};
+
+        // Load initial weather from config
+        if (config.weather && config.weather.type) {
+            this._currentWeather = config.weather.type;
+            this._targetWeather = config.weather.type;
+        }
 
         this._tilesets.sort((a, b) => a.firstGid - b.firstGid);
 
@@ -781,6 +812,9 @@ export default class extends Controller {
 
         // Update particles
         this._updateParticles(dt);
+
+        // Update weather effects
+        this._updateWeather(dt);
     }
 
     // --- Camera Shake ---
@@ -880,7 +914,9 @@ export default class extends Controller {
         const m = String(data.minute).padStart(2, '0');
         const seasonIcons = { spring: '\u2741', summer: '\u2600', autumn: '\u2618', winter: '\u2744' };
         const icon = seasonIcons[data.season] || '';
-        this._timeHudText.text = `${h}:${m} ${icon}`;
+        const weatherIcons = { sunny: '\u2600', cloudy: '\u2601', rain: '\u{1F327}', storm: '\u26C8', fog: '\u{1F32B}', snow: '\u2744' };
+        const weatherIcon = weatherIcons[this._currentWeather] || '';
+        this._timeHudText.text = `${h}:${m} ${icon} ${weatherIcon}`;
     }
 
     _updateDayNight(dt) {
@@ -977,6 +1013,258 @@ export default class extends Controller {
         this.spawnParticles(cx, cy, { count: 10, color: 0x22c55e, life: 900, spread: 20 });
         // Gold stars for domain XP gain
         this.spawnParticles(cx, cy, { count: 5, color: 0xfbbf24, life: 1200, spread: 12 });
+    }
+
+    // --- Weather Visual Effects ---
+
+    _initWeather() {
+        if (!this._app) return;
+
+        // Container for weather particles (above entities, below HUD)
+        this._weatherContainer = new PIXI.Container();
+        this._weatherContainer.zIndex = 400;
+        this._app.stage.addChild(this._weatherContainer);
+
+        // Overlay for fog/cloudy/storm flash effects
+        this._weatherOverlay = new PIXI.Graphics();
+        this._weatherOverlay.zIndex = 450;
+        this._weatherOverlay.alpha = 0;
+        this._app.stage.addChild(this._weatherOverlay);
+
+        // Apply initial weather immediately
+        this._applyWeatherEffect(this._currentWeather);
+    }
+
+    _transitionWeather(newWeather) {
+        if (newWeather === this._currentWeather) return;
+        this._targetWeather = newWeather;
+        this._weatherTransitioning = true;
+        this._weatherTransitionAlpha = 0;
+    }
+
+    _updateWeather(dt) {
+        if (!this._weatherContainer) return;
+
+        // Handle transition between weather states
+        if (this._weatherTransitioning) {
+            this._weatherTransitionAlpha += dt / this._weatherTransitionDuration;
+            if (this._weatherTransitionAlpha >= 1) {
+                this._weatherTransitionAlpha = 0;
+                this._weatherTransitioning = false;
+                this._clearWeatherParticles();
+                this._currentWeather = this._targetWeather;
+                this._applyWeatherEffect(this._currentWeather);
+            } else if (this._weatherTransitionAlpha >= 0.5 && this._currentWeather !== this._targetWeather) {
+                // Halfway through: switch to new weather
+                this._clearWeatherParticles();
+                this._currentWeather = this._targetWeather;
+                this._applyWeatherEffect(this._currentWeather);
+            }
+        }
+
+        // Spawn weather particles based on current type
+        this._weatherSpawnTimer += dt;
+        const spawnInterval = this._getWeatherSpawnInterval(this._currentWeather);
+        if (spawnInterval > 0 && this._weatherSpawnTimer >= spawnInterval) {
+            this._weatherSpawnTimer = 0;
+            this._spawnWeatherParticles(this._currentWeather);
+        }
+
+        // Update existing weather particles
+        this._updateWeatherParticles(dt);
+
+        // Update weather overlay effects (storm flash, fog pulse)
+        this._updateWeatherOverlay(dt);
+    }
+
+    _getWeatherSpawnInterval(weather) {
+        switch (weather) {
+            case 'rain': return 50;
+            case 'snow': return 120;
+            case 'storm': return 35;
+            default: return 0; // sunny, cloudy, fog don't use particles
+        }
+    }
+
+    _applyWeatherEffect(weather) {
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+
+        // Reset overlay
+        this._weatherOverlay.clear();
+        this._weatherOverlay.alpha = 0;
+        this._stormFlashTimer = 0;
+        this._stormFlashActive = false;
+        this._fogPulsePhase = 0;
+
+        switch (weather) {
+            case 'cloudy':
+                this._weatherOverlay.rect(0, 0, viewW, viewH);
+                this._weatherOverlay.fill({ color: 0x808080, alpha: 1 });
+                this._weatherOverlay.alpha = 0.08;
+                break;
+            case 'fog':
+                this._weatherOverlay.rect(0, 0, viewW, viewH);
+                this._weatherOverlay.fill({ color: 0xffffff, alpha: 1 });
+                this._weatherOverlay.alpha = 0.2;
+                this._fogPulsePhase = 0;
+                break;
+            case 'rain':
+                this._weatherOverlay.rect(0, 0, viewW, viewH);
+                this._weatherOverlay.fill({ color: 0x3355aa, alpha: 1 });
+                this._weatherOverlay.alpha = 0.05;
+                break;
+            case 'storm':
+                this._weatherOverlay.rect(0, 0, viewW, viewH);
+                this._weatherOverlay.fill({ color: 0x222244, alpha: 1 });
+                this._weatherOverlay.alpha = 0.1;
+                this._stormFlashTimer = 0;
+                this._stormNextFlash = 3000 + Math.random() * 5000;
+                break;
+            // sunny: no overlay
+        }
+    }
+
+    _updateWeatherOverlay(dt) {
+        if (!this._weatherOverlay) return;
+
+        if (this._currentWeather === 'fog') {
+            // Gentle alpha pulse for fog (0.15 – 0.25)
+            this._fogPulsePhase = (this._fogPulsePhase || 0) + dt * 0.0008;
+            this._weatherOverlay.alpha = 0.2 + Math.sin(this._fogPulsePhase) * 0.05;
+        } else if (this._currentWeather === 'storm') {
+            // Lightning flash
+            this._stormFlashTimer = (this._stormFlashTimer || 0) + dt;
+            if (this._stormFlashActive) {
+                this._stormFlashElapsed += dt;
+                if (this._stormFlashElapsed > 150) {
+                    this._stormFlashActive = false;
+                    this._weatherOverlay.alpha = 0.1;
+                    this._stormNextFlash = 2000 + Math.random() * 6000;
+                    this._stormFlashTimer = 0;
+                }
+            } else if (this._stormFlashTimer >= (this._stormNextFlash || 4000)) {
+                this._stormFlashActive = true;
+                this._stormFlashElapsed = 0;
+                this._weatherOverlay.clear();
+                const viewW = this._currentWidth || this._viewportPx;
+                const viewH = this._currentHeight || this._viewportPx;
+                this._weatherOverlay.rect(0, 0, viewW, viewH);
+                this._weatherOverlay.fill({ color: 0xffffff, alpha: 1 });
+                this._weatherOverlay.alpha = 0.35;
+            }
+        }
+
+        // During transitions, fade overlay
+        if (this._weatherTransitioning) {
+            const progress = this._weatherTransitionAlpha;
+            if (progress < 0.5) {
+                // Fading out old weather overlay
+                this._weatherOverlay.alpha *= (1 - progress * 2);
+            }
+        }
+    }
+
+    _spawnWeatherParticles(weather) {
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+
+        switch (weather) {
+            case 'rain':
+                this._spawnRainDrops(viewW, viewH, 3);
+                break;
+            case 'snow':
+                this._spawnSnowflakes(viewW, viewH, 1);
+                break;
+            case 'storm':
+                this._spawnRainDrops(viewW, viewH, 5);
+                break;
+        }
+    }
+
+    _spawnRainDrops(viewW, viewH, count) {
+        // Cap weather particles for performance
+        if (this._weatherParticles.length > 200) return;
+
+        for (let i = 0; i < count; i++) {
+            const g = new PIXI.Graphics();
+            g.rect(0, 0, 1, 4 + Math.random() * 4);
+            g.fill({ color: 0x8899cc, alpha: 0.5 + Math.random() * 0.3 });
+            g.position.set(Math.random() * viewW, -10);
+            this._weatherContainer.addChild(g);
+
+            this._weatherParticles.push({
+                sprite: g,
+                vx: -0.02 - Math.random() * 0.01,
+                vy: 0.3 + Math.random() * 0.15,
+                life: 3000,
+                maxLife: 3000,
+                type: 'rain',
+                maxY: viewH + 10,
+            });
+        }
+    }
+
+    _spawnSnowflakes(viewW, viewH, count) {
+        if (this._weatherParticles.length > 150) return;
+
+        for (let i = 0; i < count; i++) {
+            const size = 1.5 + Math.random() * 2;
+            const g = new PIXI.Graphics();
+            g.circle(0, 0, size);
+            g.fill({ color: 0xffffff, alpha: 0.6 + Math.random() * 0.3 });
+            g.position.set(Math.random() * viewW, -10);
+            this._weatherContainer.addChild(g);
+
+            this._weatherParticles.push({
+                sprite: g,
+                vx: (Math.random() - 0.5) * 0.015,
+                vy: 0.03 + Math.random() * 0.02,
+                life: 12000,
+                maxLife: 12000,
+                type: 'snow',
+                maxY: viewH + 10,
+                oscillation: Math.random() * Math.PI * 2, // phase for lateral sway
+                oscillationSpeed: 0.002 + Math.random() * 0.001,
+                oscillationAmplitude: 0.015 + Math.random() * 0.01,
+            });
+        }
+    }
+
+    _updateWeatherParticles(dt) {
+        for (let i = this._weatherParticles.length - 1; i >= 0; i--) {
+            const p = this._weatherParticles[i];
+            p.life -= dt;
+
+            if (p.life <= 0 || p.sprite.position.y > p.maxY) {
+                if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+                p.sprite.destroy();
+                this._weatherParticles.splice(i, 1);
+                continue;
+            }
+
+            p.sprite.position.y += p.vy * dt;
+            p.sprite.position.x += p.vx * dt;
+
+            // Snow lateral oscillation
+            if (p.type === 'snow' && p.oscillation !== undefined) {
+                p.oscillation += p.oscillationSpeed * dt;
+                p.sprite.position.x += Math.sin(p.oscillation) * p.oscillationAmplitude * dt;
+            }
+
+            // Fade out near end of life
+            if (p.life < 500) {
+                p.sprite.alpha = Math.max(0, (p.life / 500) * 0.7);
+            }
+        }
+    }
+
+    _clearWeatherParticles() {
+        for (const p of this._weatherParticles) {
+            if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+            p.sprite.destroy();
+        }
+        this._weatherParticles = [];
     }
 
     // --- Spatial Hash for Entity Lookup ---
@@ -1688,6 +1976,7 @@ export default class extends Controller {
         const url = new URL(this.mercureUrlValue);
         url.searchParams.append('topic', 'map/move');
         url.searchParams.append('topic', 'map/respawn');
+        url.searchParams.append('topic', 'map/weather');
 
         this._eventSource = new EventSource(url);
         this._eventSource.onmessage = (event) => {
@@ -1714,6 +2003,10 @@ export default class extends Controller {
             }
         } else if (topic === 'map/respawn') {
             this._loadEntities();
+        } else if (topic === 'map/weather') {
+            if (data.mapId === this.mapIdValue) {
+                this._transitionWeather(data.weather);
+            }
         }
     }
 
