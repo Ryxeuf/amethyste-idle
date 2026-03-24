@@ -83,8 +83,8 @@ class PlayerMoveProcessorTest extends TestCase
 
         $fight = new Fight();
         $this->fightHandler->expects($this->once())
-            ->method('startFight')
-            ->with($player, $mob)
+            ->method('startGroupFight')
+            ->with($player, $this->callback(fn (array $mobs) => in_array($mob, $mobs, true)))
             ->willReturn($fight);
 
         $cells = [
@@ -119,7 +119,7 @@ class PlayerMoveProcessorTest extends TestCase
         $portal = $this->createMock(ObjectLayer::class);
         $this->portalDetector->method('detectPortal')->willReturn($portal);
 
-        $this->fightHandler->expects($this->never())->method('startFight');
+        $this->fightHandler->expects($this->never())->method('startGroupFight');
 
         $cells = [['x' => 6, 'y' => 5]];
 
@@ -171,7 +171,7 @@ class PlayerMoveProcessorTest extends TestCase
         $this->em->method('flush');
 
         $fight = new Fight();
-        $this->fightHandler->method('startFight')->willReturn($fight);
+        $this->fightHandler->method('startGroupFight')->willReturn($fight);
 
         $this->processor->processMove($player, [['x' => 6, 'y' => 5]]);
         $this->assertNotNull($this->processor->getTriggeredFight());

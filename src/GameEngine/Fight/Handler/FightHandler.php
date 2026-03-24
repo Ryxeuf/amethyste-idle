@@ -20,13 +20,25 @@ class FightHandler
 
     public function startFight(Player $player, Mob $mob): Fight
     {
-        $this->logger->info('Starting fight between {player} and {mob}', ['player' => $player->getId(), 'mob' => $mob->getId()]);
+        return $this->startGroupFight($player, [$mob]);
+    }
+
+    /**
+     * @param Mob[] $mobs
+     */
+    public function startGroupFight(Player $player, array $mobs): Fight
+    {
+        $mobIds = array_map(fn (Mob $m) => $m->getId(), $mobs);
+        $this->logger->info('Starting fight between {player} and {mobs}', ['player' => $player->getId(), 'mobs' => implode(',', $mobIds)]);
+
         $fight = new Fight();
         $fight->addPlayer($player);
-        $fight->addMob($mob);
-
         $player->setFight($fight);
-        $mob->setFight($fight);
+
+        foreach ($mobs as $mob) {
+            $fight->addMob($mob);
+            $mob->setFight($fight);
+        }
 
         $player->setIsMoving(false);
 

@@ -756,3 +756,34 @@
 - [x] Formulaire admin : champ `choiceOutcomeJson` pour editer les choix
 - [x] 1 quete fixture "Allegeance contestee" : 2 branches (aide garde = bouclier, aide marchand = or + potions)
 - [x] Dialogue PNJ conditionnel post-choix (Michel le Garde reagit differemment selon le choix)
+
+---
+
+## 49 — Monstres soigneurs / multi-mobs (2026-03-24) ✅
+
+> Combat multi-mobs et IA soigneur. Les mobs peuvent former des groupes (groupTag) et combattre ensemble.
+- [x] Champ `groupTag` (VARCHAR 50, nullable) sur l'entite Mob + migration
+- [x] `FightHandler::startGroupFight()` : demarrer un combat avec plusieurs mobs
+- [x] `PlayerMoveProcessor::resolveGroupMobs()` : engagement automatique du groupe quand un mob est rencontre
+- [x] `MobActionHandler::doAction()` : tous les mobs vivants agissent a chaque tour
+- [x] IA soigneur (`role: healer`) : cible l'allie mob le plus blesse (% PV < 70%)
+- [x] `SpellApplicator` : supporte deja les heals mob→mob (CharacterInterface)
+- [x] Template combat : boucle deja sur `fight.mobs` (multi-mob ready)
+- [x] `FightFleeController` : fuite basee sur le mob le plus rapide, verifie tous les boss
+- [x] `FightIndexController` : danger alert verifie tous les mobs vivants
+- [x] Fixtures : monstre Necromancien (soigneur) + groupe 2 Squelettes + 1 Necromancien
+- [x] 5 tests unitaires : multi-mob actions, mobs morts ignores, ciblage soigneur, auto-soin
+
+---
+
+## 55 — Quetes quotidiennes (2026-03-24) ✅
+
+> Systeme de quetes quotidiennes avec rotation automatique.
+- [x] Champs `isDaily` (bool) + `dailyPool` (string) sur Quest
+- [x] Entite `PlayerDailyQuest` (player, quest, date, tracking, completedAt)
+- [x] `DailyQuestService` : rotation, acceptation, progression, completion
+- [x] `DailyQuestRotateCommand` : selection aleatoire de 3 quetes/jour
+- [x] Symfony Scheduler : rotation quotidienne a 00h01
+- [x] QuestController : routes daily/accept, daily/complete, daily/abandon
+- [x] 6 quetes quotidiennes dans les fixtures (combat + recolte)
+- [x] Section "Quotidiennes" dans le journal de quetes

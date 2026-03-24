@@ -78,6 +78,12 @@ class Mob implements CharacterInterface
     #[ORM\Column(name: 'spawn_weather', type: 'string', length: 20, nullable: true, enumType: WeatherType::class)]
     private ?WeatherType $spawnWeather = null;
 
+    /**
+     * Tag de groupe : les mobs avec le même groupTag sur la même map combattent ensemble.
+     */
+    #[ORM\Column(name: 'group_tag', type: 'string', length: 50, nullable: true)]
+    private ?string $groupTag = null;
+
     public function getName(): string
     {
         return $this->getMonster()->getName();
@@ -198,5 +204,15 @@ class Mob implements CharacterInterface
     public function setSpawnWeather(?WeatherType $spawnWeather): void
     {
         $this->spawnWeather = $spawnWeather;
+    }
+
+    public function getGroupTag(): ?string
+    {
+        return $this->groupTag;
+    }
+
+    public function setGroupTag(?string $groupTag): void
+    {
+        $this->groupTag = $groupTag;
     }
 }

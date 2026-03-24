@@ -88,7 +88,8 @@ class PlayerMoveProcessor
 
         if ($encounterMob) {
             $this->logger->info('Mob found at {cell}, starting fight', ['cell' => $encounterMob->getCoordinates()]);
-            $this->triggeredFight = $this->fightHandler->startFight($player, $encounterMob);
+            $groupMobs = $this->resolveGroupMobs($encounterMob, $player);
+            $this->triggeredFight = $this->fightHandler->startGroupFight($player, $groupMobs);
         } else {
             // Check for portal at final position
             $finalCoords = CellHelper::stringifyCoordinates($lastCell['x'], $lastCell['y']);
@@ -118,5 +119,33 @@ class PlayerMoveProcessor
     public function getTriggeredFight(): ?Fight
     {
         return $this->triggeredFight;
+    }
+
+    /**
+     * Résout le groupe de mobs à engager. Si le mob a un groupTag,
+     * tous les mobs du même groupe sur la même map rejoignent le combat.
+     *
+     * @return Mob[]
+     */
+    private function resolveGroupMobs(Mob $encounterMob, Player $player): array
+    {
+        $groupTag = $encounterMob->getGroupTag();
+        if ($groupTag === null) {
+            return [$encounterMob];
+        }
+
+        $groupMobs = $this->entityManager->getRepository(Mob::class)->findBy([
+            'groupTag' => $groupTag,
+            'map' => $player->getMap(),
+        ]);
+
+        // Exclure les mobs déjà en combat
+        $groupMobs = array_filter($groupMobs, fn (Mob $m) => $m->getFight() === null);
+
+        if (empty($groupMobs)) {
+            return [$encounterMob];
+        }
+
+        return array_values($groupMobs);
     }
 }

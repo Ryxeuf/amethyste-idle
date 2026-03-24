@@ -70,25 +70,31 @@ class FightIndexController extends AbstractController
             $playerCooldowns[$spell->getSlug()] = $fight->getSpellCooldown($entityKey, $spell->getSlug());
         }
 
-        // Danger alert check from mob AI
+        // Danger alert check from mob AI (check all alive mobs)
         $dangerAlert = null;
-        $mob = $fight->getMobs()->first();
-        if ($mob && !$mob->isDead()) {
-            $monster = $mob->getMonster();
+        foreach ($fight->getMobs() as $fightMob) {
+            if ($fightMob->isDead()) {
+                continue;
+            }
+            $monster = $fightMob->getMonster();
             $aiPattern = $monster->getAiPattern();
-            $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+            $hpPercent = ($fightMob->getLife() / $fightMob->getMaxLife()) * 100;
 
             if ($monster->isBoss() && $monster->getBossPhases()) {
                 $phase = $monster->getCurrentBossPhase((int) $hpPercent);
                 if ($phase && isset($phase['danger_message'])) {
                     $dangerAlert = $phase['danger_message'];
+                    break;
                 }
             }
 
-            if ($dangerAlert === null && $aiPattern !== null && isset($aiPattern['danger_alert'])) {
+            if ($aiPattern !== null && isset($aiPattern['danger_alert'])) {
                 $alertThreshold = $aiPattern['danger_alert']['threshold'] ?? 30;
                 if ($hpPercent <= $alertThreshold) {
                     $dangerAlert = $aiPattern['danger_alert']['message'] ?? null;
+                    if ($dangerAlert !== null) {
+                        break;
+                    }
                 }
             }
         }
@@ -103,7 +109,6 @@ class FightIndexController extends AbstractController
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
             'fight' => $fight,
-            'mob' => $mob,
             'statusEffects' => $statusEffects,
             'materiaSpells' => $materiaSpells,
             'playerCooldowns' => $playerCooldowns,

@@ -287,6 +287,22 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '126.36',
                 'monster' => 'crystal_golem',
             ],
+            // === Groupe multi-mob avec soigneur (tâche 49) ===
+            'skeleton_group_1' => [
+                'coordinates' => '75.22',
+                'monster' => 'skeleton',
+                'groupTag' => 'necro_pack_1',
+            ],
+            'skeleton_group_2' => [
+                'coordinates' => '76.22',
+                'monster' => 'skeleton',
+                'groupTag' => 'necro_pack_1',
+            ],
+            'necromancer_1' => [
+                'coordinates' => '75.23',
+                'monster' => 'necromancer',
+                'groupTag' => 'necro_pack_1',
+            ],
             // === Mobs météo-spécifiques ===
             'storm_elemental_1' => [
                 'coordinates' => '75.36',
@@ -321,6 +337,7 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
             $mob->setLevel($monster->getLevel());
             $mob->setNocturnal($data['nocturnal'] ?? false);
             $mob->setSpawnWeather($data['spawnWeather'] ?? null);
+            $mob->setGroupTag($data['groupTag'] ?? null);
             $mob->setCreatedAt(new \DateTime());
             $mob->setUpdatedAt(new \DateTime());
 
