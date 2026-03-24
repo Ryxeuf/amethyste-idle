@@ -832,3 +832,19 @@
 - [x] Exposition des zones dans `/api/map/config` (coordonnees, biome, meteo, musique)
 - [x] Option `--sync-zones` dans `app:terrain:import`
 - [x] 7 tests unitaires (AreaSynchronizer + TmxParser zones)
+
+---
+
+## 50 — Meteo effets visuels PixiJS (2026-03-24) ✅
+
+> Effets visuels de meteo dans le renderer PixiJS (pluie, neige, orage, brouillard).
+- [x] Ecoute du topic Mercure `map/weather` dans `map_pixi_controller.js`
+- [x] Container de particules dedie (zIndex 400, au-dessus des entites, sous le HUD)
+- [x] Overlay meteo dedie (zIndex 450) pour brouillard/nuageux/orage
+- [x] Effet pluie : particules tombantes bleues semi-transparentes
+- [x] Effet neige : particules blanches lentes avec oscillation laterale sinusoidale
+- [x] Effet orage : flash blanc intermittent (3-8s) + pluie battante
+- [x] Effet brouillard : overlay blanc semi-transparent avec alpha pulse doux
+- [x] Effet nuageux : leger assombrissement (overlay gris alpha 0.08)
+- [x] Transition douce entre meteos (fade 2 secondes)
+- [x] Chargement de la meteo initiale depuis `/api/map/config`

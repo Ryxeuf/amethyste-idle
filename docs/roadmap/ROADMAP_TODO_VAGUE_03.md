@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **13 completees**, 5 restantes.
+> **18 taches** initiales, **14 completees**, 4 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -45,16 +45,8 @@
 
 ### Piste C — Meteo & visuels (‖)
 
-### 50 — Meteo effets visuels PixiJS (M | ★★★)
-> Effets visuels de meteo dans le renderer PixiJS (pluie, neige, orage, brouillard). Prerequis : ← 34 (MV-3 meteo backend & diffusion)
-- [ ] Ecouter le topic Mercure `map/weather` dans `map_pixi_controller.js`
-- [ ] Container de particules dedie (zIndex au-dessus des entites, sous le HUD)
-- [ ] Effet pluie : particules tombantes bleues semi-transparentes
-- [ ] Effet neige : particules blanches lentes avec oscillation laterale
-- [ ] Effet orage : flash blanc intermittent (alpha spike sur l'overlay) + particules pluie
-- [ ] Effet brouillard : overlay blanc semi-transparent avec alpha pulse doux
-- [ ] Effet nuageux : leger assombrissement (overlay gris alpha 0.08)
-- [ ] Transition douce entre meteos (fade 2 secondes)
+### ~~50 — Meteo effets visuels PixiJS (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~62 — Particules combat et recolte (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
