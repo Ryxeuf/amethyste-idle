@@ -871,3 +871,18 @@
 - [x] Abonnement Mercure `chat/guild/{guildId}` cote client
 - [x] Verification d'appartenance a la guilde avant envoi (ChatController + ChatCommandHandler)
 - [x] Commande `/guild` (alias `/gu`) dans ChatCommandHandler
+
+---
+
+## 46 — Trame Acte 1 : L'Eveil (2026-03-24) ✅
+
+> Tutoriel narratif. Chaine de 5 quetes guidant le joueur dans ses premieres actions.
+
+- [x] Quete 1.1 "Reveil" : dialogue d'introduction avec Claire la Sage, explorer la place du village
+- [x] Quete 1.2 "Premiers pas" : aller voir Gerard le Forgeron, recevoir une epee courte
+- [x] Quete 1.3 "Bapteme du feu" : tuer 2 slimes dans la zone de depart
+- [x] Quete 1.4 "Recolte" : collecter 3 champignons pour Marie la Herboriste
+- [x] Quete 1.5 "Le Cristal d'Amethyste" : explorer la clairiere au sud, dialogue revelateur
+- [x] Dialogues narratifs pour Claire la Sage (guide), Gerard le Forgeron, Marie la Herboriste
+- [x] Recompenses progressives : gils, XP, epee courte, potions, parchemin herboristerie, materia Soin
+- [x] Chaine de prerequis : Reveil → Premiers pas → Bapteme → Recolte → Cristal

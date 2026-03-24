@@ -73,7 +73,7 @@ VAGUE 2 (depend de Vague 1)                                           │
   └─ ✅ 45 Portraits de personnages (FAIT)
 
 VAGUE 3 (depend de Vague 2)
-  ┌─ 46 Trame Acte 1 : L'Eveil ← 12, 13, 31
+  ┌─ ✅ 46 Trame Acte 1 : L'Eveil (FAIT) ← 12, 13, 31
   ├─ ✅ 47 Monstres tier 2 (lvl 10-15) (FAIT) ← 28, 29
   ├─ 48 Village central hub ← 30, 25
   ├─ ✅ 49 Monstres soigneurs (multi-mobs) (FAIT) ← 28

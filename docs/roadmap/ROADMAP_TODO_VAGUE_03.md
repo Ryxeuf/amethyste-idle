@@ -1,20 +1,13 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **15 completees**, 3 restantes.
+> **18 taches** initiales, **16 completees**, 2 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
 
 ### Piste A — Narration & quetes (‖)
-### 46 — Trame Acte 1 : L'Eveil (M | ★★★)
-> Tutoriel narratif. Chaine de 4-5 quetes guidant le joueur dans ses premieres actions. Utilise les systemes existants (kill, collect, deliver, explore) — pas de nouvelle mecanique. Prerequis : ← 12 (QN-3 prerequis quetes), 13 (QN-4 journal enrichi), 31 (QN-1 recompenses quetes)
-- [ ] Quete 1.1 "Reveil" : dialogue d'introduction avec un PNJ guide, explorer le village
-- [ ] Quete 1.2 "Premiers pas" : aller voir le forgeron, recevoir une arme de base
-- [ ] Quete 1.3 "Bapteme du feu" : tuer 2 monstres faibles dans la zone de depart
-- [ ] Quete 1.4 "Recolte" : collecter des ressources de base (herbes ou minerai)
-- [ ] Quete 1.5 "Le cristal d'amethyste" : explorer un lieu specifique, dialogue revelateur
-- [ ] Dialogues narratifs pour chaque PNJ implique (guide, forgeron, ancien du village)
-- [ ] Recompenses progressives (equipement starter, gils, XP, premiere materia)
+### ~~46 — Trame Acte 1 : L'Eveil (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~54 — Quetes a choix (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

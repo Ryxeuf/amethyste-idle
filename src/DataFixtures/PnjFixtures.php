@@ -80,6 +80,21 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             21 => 'quest_explore_forest',     // Mathilde la Cartographe
         ];
 
+        // Chaîne Acte 1 — PNJ narratifs spéciaux
+        $acte1QuestRefs = [
+            'reveil' => 'quest_acte1_reveil',
+            'premiers_pas' => 'quest_acte1_premiers_pas',
+            'bapteme' => 'quest_acte1_bapteme_du_feu',
+            'recolte' => 'quest_acte1_recolte',
+            'cristal' => 'quest_acte1_cristal',
+        ];
+        $acte1QuestIds = [];
+        foreach ($acte1QuestRefs as $key => $ref) {
+            /** @var \App\Entity\Game\Quest $q */
+            $q = $this->getReference($ref, \App\Entity\Game\Quest::class);
+            $acte1QuestIds[$key] = $q->getId();
+        }
+
         // Noms de PNJ français
         $pnjNames = [
             'Gérard le Forgeron', 'Élise la Guérisseuse', 'Martin le Bûcheron', 'Jeanne la Tisserande',
@@ -153,7 +168,16 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             // Création d'un dialogue unique pour chaque PNJ
             $questId = $i < count($questReferences) ? $i + 1 : null;
             $specialQuestRef = $specialQuests[$i] ?? null;
-            if ($specialQuestRef) {
+            if (15 === $i) {
+                // Claire la Sage : guide Acte 1 (quêtes 1, 2 et 5)
+                $dialog = $this->createClaireSageDialog($acte1QuestIds);
+            } elseif (0 === $i) {
+                // Gérard le Forgeron : quête Acte 1 baptême + boutique
+                $dialog = $this->createGerardActe1Dialog($acte1QuestIds, $shopConfigs[0], $questId);
+            } elseif (7 === $i) {
+                // Marie la Herboriste : quête Acte 1 récolte + boutique
+                $dialog = $this->createMarieActe1Dialog($acte1QuestIds, $shopConfigs[7]);
+            } elseif ($specialQuestRef) {
                 /** @var \App\Entity\Game\Quest $specialQuest */
                 $specialQuest = $this->getReference($specialQuestRef, \App\Entity\Game\Quest::class);
                 $dialog = $this->createSpecialQuestDialog($i, $specialQuest->getId(), $specialQuestRef);
@@ -548,6 +572,204 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
         ];
 
         return $dialog;
+    }
+
+    /**
+     * Claire la Sage — guide narratif Acte 1 (quêtes 1 Réveil, 2 Premiers pas, 5 Cristal).
+     */
+    private function createClaireSageDialog(array $acte1QuestIds): array
+    {
+        $qReveil = $acte1QuestIds['reveil'];
+        $qPremiersPas = $acte1QuestIds['premiers_pas'];
+        $qCristal = $acte1QuestIds['cristal'];
+
+        return [
+            // 0 — Accueil
+            [
+                'next' => 1,
+                'text' => 'Vous êtes enfin réveillé, {{player_name}}... Vous étiez inconscient quand nous vous avons trouvé au bord du chemin. Personne ne sait d\'où vous venez.',
+            ],
+            // 1 — Aiguillage conditionnel
+            [
+                'conditional_next' => [
+                    // Toute la chaîne terminée (cristal fait) → dialogue final
+                    ['next' => 8, 'next_condition' => ['quest' => [$qCristal]]],
+                    // Cristal proposable (récolte terminée, cristal pas encore fait)
+                    ['next' => 7, 'next_condition' => ['quest_prerequisites_met' => [$qCristal], 'quest_not' => [$qCristal]]],
+                    // Premiers pas terminé → encouragement combat
+                    ['next' => 5, 'next_condition' => ['quest' => [$qPremiersPas]]],
+                    // Réveil terminé → proposer Premiers pas
+                    ['next' => 4, 'next_condition' => ['quest' => [$qReveil], 'quest_not' => [$qPremiersPas]]],
+                    // En cours (réveil accepté mais pas terminé)
+                    ['next' => 3, 'next_condition' => ['quest_active' => [$qReveil]]],
+                    // Rien fait → proposer Réveil
+                    ['next' => 2],
+                ],
+                'text' => 'Que puis-je faire pour vous, voyageur ?',
+            ],
+            // 2 — Proposer quête Réveil
+            [
+                'text' => 'Vous semblez désorienté. Commencez par explorer la place du village pour reprendre vos repères. Cela vous aidera peut-être à retrouver la mémoire.',
+                'choices' => [
+                    ['text' => 'D\'accord, je vais explorer', 'action' => 'quest_offer', 'data' => ['quest' => $qReveil]],
+                    ['text' => 'Pas maintenant', 'action' => 'close'],
+                ],
+            ],
+            // 3 — Réveil en cours
+            [
+                'text' => 'Allez explorer la place du village, {{player_name}}. Prenez le temps d\'observer les alentours.',
+            ],
+            // 4 — Proposer Premiers pas
+            [
+                'text' => 'Bien, vous avez l\'air d\'aller mieux. Maintenant, vous aurez besoin d\'une arme. Allez voir Gérard le Forgeron, il vous équipera.',
+                'choices' => [
+                    ['text' => 'J\'y vais', 'action' => 'quest_offer', 'data' => ['quest' => $qPremiersPas]],
+                    ['text' => 'Plus tard', 'action' => 'close'],
+                ],
+            ],
+            // 5 — Après Premiers pas, encouragement
+            [
+                'next' => 6,
+                'text' => 'Vous avez une arme maintenant, c\'est un bon début. Gérard ou Marie pourront vous guider pour la suite. Revenez me voir quand vous aurez fait vos preuves.',
+            ],
+            // 6 — Fin temporaire
+            [
+                'text' => 'Que les cristaux veillent sur vous, {{player_name}}.',
+            ],
+            // 7 — Proposer quête Cristal
+            [
+                'text' => 'Vous avez fait du chemin, {{player_name}}. Je sens que vous êtes prêt. Il existe un cristal d\'améthyste caché dans une clairière au sud... Il pourrait détenir la clé de vos souvenirs perdus.',
+                'choices' => [
+                    ['text' => 'Je veux le trouver', 'action' => 'quest_offer', 'data' => ['quest' => $qCristal]],
+                    ['text' => 'Je ne suis pas encore prêt', 'action' => 'close'],
+                ],
+            ],
+            // 8 — Cristal trouvé (fin Acte 1)
+            [
+                'next' => 9,
+                'text' => 'Vous l\'avez trouvé ! Le Cristal d\'Améthyste... Je savais que vous en étiez capable.',
+            ],
+            // 9 — Épilogue
+            [
+                'text' => 'Ce cristal est lié à votre passé, j\'en suis certaine. Gardez-le précieusement. Votre aventure ne fait que commencer, {{player_name}}.',
+            ],
+        ];
+    }
+
+    /**
+     * Gérard le Forgeron — quête Acte 1 « Baptême du feu » + boutique + quête zombie existante.
+     */
+    private function createGerardActe1Dialog(array $acte1QuestIds, array $shopConfig, ?int $existingQuestId): array
+    {
+        $qBapteme = $acte1QuestIds['bapteme'];
+
+        return [
+            // 0 — Accueil
+            [
+                'next' => 1,
+                'text' => $shopConfig['greeting'],
+            ],
+            // 1 — Aiguillage
+            [
+                'conditional_next' => [
+                    // Baptême terminé → remerciement + boutique
+                    ['next' => 5, 'next_condition' => ['quest' => [$qBapteme]]],
+                    // Baptême proposable (premiers pas terminés)
+                    ['next' => 3, 'next_condition' => ['quest_prerequisites_met' => [$qBapteme], 'quest_not' => [$qBapteme]]],
+                    // Baptême en cours
+                    ['next' => 4, 'next_condition' => ['quest_active' => [$qBapteme]]],
+                    // Par défaut → boutique
+                    ['next' => 2],
+                ],
+                'text' => 'Que puis-je faire pour vous ?',
+                'choices' => [
+                    ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
+                    ['text' => 'Autre chose...', 'action' => 'next'],
+                ],
+            ],
+            // 2 — Boutique simple (pas encore dans l'Acte 1)
+            [
+                'text' => 'N\'hésitez pas à revenir si vous avez besoin d\'équipement.',
+            ],
+            // 3 — Proposer Baptême du feu
+            [
+                'text' => 'Alors c\'est vous, le nouveau que Claire m\'a envoyé ? Vous avez une épée maintenant, mais il faut apprendre à s\'en servir. Allez donc éliminer quelques slimes aux abords du village.',
+                'choices' => [
+                    ['text' => 'Je suis prêt !', 'action' => 'quest_offer', 'data' => ['quest' => $qBapteme]],
+                    ['text' => 'Pas encore', 'action' => 'close'],
+                ],
+            ],
+            // 4 — En cours
+            [
+                'text' => 'Alors, ces slimes ? Revenez quand vous en aurez éliminé deux. Ce n\'est pas sorcier !',
+            ],
+            // 5 — Baptême terminé
+            [
+                'text' => 'Bien joué ! Vous vous débrouillez mieux que je ne le pensais. Ma boutique est à votre disposition.',
+                'choices' => [
+                    ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
+                    ['text' => 'Merci, à bientôt', 'action' => 'close'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Marie la Herboriste — quête Acte 1 « Récolte » + boutique.
+     */
+    private function createMarieActe1Dialog(array $acte1QuestIds, array $shopConfig): array
+    {
+        $qRecolte = $acte1QuestIds['recolte'];
+
+        return [
+            // 0 — Accueil
+            [
+                'next' => 1,
+                'text' => $shopConfig['greeting'],
+            ],
+            // 1 — Aiguillage
+            [
+                'conditional_next' => [
+                    // Récolte terminée → remerciement + boutique
+                    ['next' => 5, 'next_condition' => ['quest' => [$qRecolte]]],
+                    // Récolte proposable (baptême terminé)
+                    ['next' => 3, 'next_condition' => ['quest_prerequisites_met' => [$qRecolte], 'quest_not' => [$qRecolte]]],
+                    // Récolte en cours
+                    ['next' => 4, 'next_condition' => ['quest_active' => [$qRecolte]]],
+                    // Par défaut → boutique
+                    ['next' => 2],
+                ],
+                'text' => 'Que cherchez-vous aujourd\'hui ?',
+                'choices' => [
+                    ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
+                    ['text' => 'Autre chose...', 'action' => 'next'],
+                ],
+            ],
+            // 2 — Boutique simple
+            [
+                'text' => 'Mes herbes et outils sont à votre disposition.',
+            ],
+            // 3 — Proposer Récolte
+            [
+                'text' => 'Oh, un aventurier ! J\'ai justement besoin d\'aide. Mes réserves de champignons sont épuisées et j\'en ai besoin pour mes remèdes. Pourriez-vous m\'en rapporter trois ?',
+                'choices' => [
+                    ['text' => 'Bien sûr, je m\'en occupe', 'action' => 'quest_offer', 'data' => ['quest' => $qRecolte]],
+                    ['text' => 'Pas pour le moment', 'action' => 'close'],
+                ],
+            ],
+            // 4 — En cours
+            [
+                'text' => 'Avez-vous trouvé les champignons ? Il m\'en faut trois pour préparer mes remèdes.',
+            ],
+            // 5 — Récolte terminée
+            [
+                'text' => 'Merveilleux ! Ces champignons sont parfaits. Tenez, ce parchemin vous initiera aux secrets de l\'herboristerie. Ma boutique est ouverte si vous avez besoin de quoi que ce soit.',
+                'choices' => [
+                    ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
+                    ['text' => 'Merci Marie !', 'action' => 'close'],
+                ],
+            ],
+        ];
     }
 
     public function getDependencies(): array
