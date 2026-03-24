@@ -78,6 +78,23 @@ class AchievementFixtures extends Fixture
             ['slug' => 'kill-creeping-shadow-50', 'title' => 'Chasseur d\'ombres rampantes', 'description' => 'Tuer 50 ombres rampantes', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'creeping_shadow', 'count' => 50], 'reward' => ['gils' => 500]],
             ['slug' => 'kill-creeping-shadow-100', 'title' => 'Exterminateur d\'ombres', 'description' => 'Tuer 100 ombres rampantes', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'creeping_shadow', 'count' => 100], 'reward' => ['gils' => 1000, 'title' => 'Exterminateur d\'ombres']],
 
+            // Wyverne
+            ['slug' => 'kill-wyvern-10', 'title' => 'Chasseur de wyvernes', 'description' => 'Tuer 10 wyvernes', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'wyvern', 'count' => 10], 'reward' => ['gils' => 300]],
+            ['slug' => 'kill-wyvern-50', 'title' => 'Dompteur de wyvernes', 'description' => 'Tuer 50 wyvernes', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'wyvern', 'count' => 50], 'reward' => ['gils' => 800]],
+            ['slug' => 'kill-wyvern-100', 'title' => 'Exterminateur de wyvernes', 'description' => 'Tuer 100 wyvernes', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'wyvern', 'count' => 100], 'reward' => ['gils' => 1500, 'title' => 'Exterminateur de wyvernes']],
+            // Chevalier maudit
+            ['slug' => 'kill-cursed-knight-10', 'title' => 'Briseur de malédictions', 'description' => 'Tuer 10 chevaliers maudits', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'cursed_knight', 'count' => 10], 'reward' => ['gils' => 350]],
+            ['slug' => 'kill-cursed-knight-50', 'title' => 'Chasseur de chevaliers maudits', 'description' => 'Tuer 50 chevaliers maudits', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'cursed_knight', 'count' => 50], 'reward' => ['gils' => 900]],
+            ['slug' => 'kill-cursed-knight-100', 'title' => 'Exterminateur de chevaliers maudits', 'description' => 'Tuer 100 chevaliers maudits', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'cursed_knight', 'count' => 100], 'reward' => ['gils' => 1800, 'title' => 'Exterminateur de chevaliers maudits']],
+            // Naga
+            ['slug' => 'kill-naga-10', 'title' => 'Chasseur de nagas', 'description' => 'Tuer 10 nagas', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'naga', 'count' => 10], 'reward' => ['gils' => 350]],
+            ['slug' => 'kill-naga-50', 'title' => 'Dompteur de nagas', 'description' => 'Tuer 50 nagas', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'naga', 'count' => 50], 'reward' => ['gils' => 900]],
+            ['slug' => 'kill-naga-100', 'title' => 'Exterminateur de nagas', 'description' => 'Tuer 100 nagas', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'naga', 'count' => 100], 'reward' => ['gils' => 1800, 'title' => 'Exterminateur de nagas']],
+            // Golem de cristal
+            ['slug' => 'kill-crystal-golem-10', 'title' => 'Briseur de cristaux', 'description' => 'Tuer 10 golems de cristal', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'crystal_golem', 'count' => 10], 'reward' => ['gils' => 400]],
+            ['slug' => 'kill-crystal-golem-50', 'title' => 'Chasseur de golems de cristal', 'description' => 'Tuer 50 golems de cristal', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'crystal_golem', 'count' => 50], 'reward' => ['gils' => 1000]],
+            ['slug' => 'kill-crystal-golem-100', 'title' => 'Exterminateur de golems de cristal', 'description' => 'Tuer 100 golems de cristal', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'crystal_golem', 'count' => 100], 'reward' => ['gils' => 2000, 'title' => 'Exterminateur de golems de cristal']],
+
             // === EXPLORATION: Monstres différents découverts ===
             ['slug' => 'discover-5', 'title' => 'Explorateur novice', 'description' => 'Combattre 5 types de monstres différents', 'category' => 'exploration', 'criteria' => ['type' => 'monster_discovery', 'count' => 5], 'reward' => ['gils' => 100]],
             ['slug' => 'discover-10', 'title' => 'Explorateur confirmé', 'description' => 'Combattre 10 types de monstres différents', 'category' => 'exploration', 'criteria' => ['type' => 'monster_discovery', 'count' => 10], 'reward' => ['gils' => 300]],

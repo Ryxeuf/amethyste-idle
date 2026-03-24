@@ -123,6 +123,48 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'stone_golem', 'item' => 'iron_sword', 'probability' => 5],
             ['monster' => 'stone_golem', 'item' => 'scroll_teleport', 'probability' => 8],
 
+            // --- Monstres tier 2 (tâche 47) — lvl 10-15 ---
+            // Wyverne (Air/Feu, lvl 10)
+            ['monster' => 'wyvern', 'item' => 'leather_skin_2', 'probability' => 70],
+            ['monster' => 'wyvern', 'item' => 'healing_potion_medium', 'probability' => 25],
+            ['monster' => 'wyvern', 'item' => 'healing_potion_major', 'probability' => 10],
+            ['monster' => 'wyvern', 'item' => 'materia_wind_lame', 'probability' => 6],
+            ['monster' => 'wyvern', 'item' => 'materia_fire_ball', 'probability' => 5],
+            ['monster' => 'wyvern', 'item' => 'stew', 'probability' => 15],
+            ['monster' => 'wyvern', 'item' => 't2_air_sword', 'probability' => 5],
+            ['monster' => 'wyvern', 'item' => 't2_fire_helmet', 'probability' => 4],
+
+            // Chevalier maudit (Dark/Métal, lvl 12)
+            ['monster' => 'cursed_knight', 'item' => 'leather_skin_2', 'probability' => 60],
+            ['monster' => 'cursed_knight', 'item' => 'long_sword', 'probability' => 8],
+            ['monster' => 'cursed_knight', 'item' => 'iron_sword', 'probability' => 5],
+            ['monster' => 'cursed_knight', 'item' => 'healing_potion_medium', 'probability' => 25],
+            ['monster' => 'cursed_knight', 'item' => 'healing_potion_major', 'probability' => 12],
+            ['monster' => 'cursed_knight', 'item' => 'materia_vital_drain', 'probability' => 5],
+            ['monster' => 'cursed_knight', 'item' => 'materia_steel_riposte', 'probability' => 5],
+            ['monster' => 'cursed_knight', 'item' => 'ancient_scroll', 'probability' => 10],
+
+            // Naga (Eau/Bête, lvl 13)
+            ['monster' => 'naga', 'item' => 'leather_skin_2', 'probability' => 65],
+            ['monster' => 'naga', 'item' => 'healing_potion_medium', 'probability' => 30],
+            ['monster' => 'naga', 'item' => 'healing_potion_major', 'probability' => 10],
+            ['monster' => 'naga', 'item' => 'antidote', 'probability' => 25],
+            ['monster' => 'naga', 'item' => 'materia_frost_mist', 'probability' => 6],
+            ['monster' => 'naga', 'item' => 'materia_savage_bite', 'probability' => 4],
+            ['monster' => 'naga', 'item' => 't2_water_sword', 'probability' => 5],
+            ['monster' => 'naga', 'item' => 't2_water_shield', 'probability' => 4],
+
+            // Golem de cristal (Terre/Lumière, lvl 15)
+            ['monster' => 'crystal_golem', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'crystal_golem', 'item' => 'healing_potion_major', 'probability' => 20],
+            ['monster' => 'crystal_golem', 'item' => 'healing_potion_medium', 'probability' => 30],
+            ['monster' => 'crystal_golem', 'item' => 'materia_stone_throw', 'probability' => 8],
+            ['monster' => 'crystal_golem', 'item' => 'materia_light_blessing', 'probability' => 5],
+            ['monster' => 'crystal_golem', 'item' => 'scroll_xp_boost', 'probability' => 6],
+            ['monster' => 'crystal_golem', 'item' => 'scroll_teleport', 'probability' => 8],
+            ['monster' => 'crystal_golem', 'item' => 't2_earth_shield', 'probability' => 5],
+            ['monster' => 'crystal_golem', 'item' => 't2_earth_chest', 'probability' => 4],
+
             // --- Boss : Dragon ---
             ['monster' => 'dragon', 'item' => 'materia_fire_ball', 'probability' => 40],
             ['monster' => 'dragon', 'item' => 'materia_flame_rain', 'probability' => 25],

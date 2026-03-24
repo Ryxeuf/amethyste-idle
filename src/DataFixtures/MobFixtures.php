@@ -249,6 +249,44 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'monster' => 'creeping_shadow',
                 'nocturnal' => true,
             ],
+            // === Monstres tier 2 (tâche 47) — lvl 10-15 ===
+            // Wyverne (Air/Feu, lvl 10) — distance éloignée
+            'wyvern_1' => [
+                'coordinates' => '50.28',
+                'monster' => 'wyvern',
+            ],
+            'wyvern_2' => [
+                'coordinates' => '118.40',
+                'monster' => 'wyvern',
+            ],
+            // Chevalier maudit (Dark/Métal, lvl 12) — très loin, nocturne
+            'cursed_knight_1' => [
+                'coordinates' => '48.38',
+                'monster' => 'cursed_knight',
+                'nocturnal' => true,
+            ],
+            'cursed_knight_2' => [
+                'coordinates' => '120.30',
+                'monster' => 'cursed_knight',
+            ],
+            // Naga (Eau/Bête, lvl 13) — très loin
+            'naga_1' => [
+                'coordinates' => '46.34',
+                'monster' => 'naga',
+            ],
+            'naga_2' => [
+                'coordinates' => '122.38',
+                'monster' => 'naga',
+            ],
+            // Golem de cristal (Terre/Lumière, lvl 15) — zone la plus éloignée
+            'crystal_golem_1' => [
+                'coordinates' => '42.32',
+                'monster' => 'crystal_golem',
+            ],
+            'crystal_golem_2' => [
+                'coordinates' => '126.36',
+                'monster' => 'crystal_golem',
+            ],
             // === Mobs météo-spécifiques ===
             'storm_elemental_1' => [
                 'coordinates' => '75.36',
