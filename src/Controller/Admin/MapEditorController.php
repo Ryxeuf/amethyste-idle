@@ -53,8 +53,8 @@ class MapEditorController extends AbstractController
         $mapHeight = 0;
 
         foreach ($map->getAreas() as $area) {
-            $areaCoords = explode('.', $area->getCoordinates() ?? '0.0');
-            $areaX = (int) ($areaCoords[0] ?? 0);
+            $areaCoords = explode('.', $area->getCoordinates());
+            $areaX = (int) $areaCoords[0];
             $areaY = (int) ($areaCoords[1] ?? 0);
 
             $areaMinGlobalX = $areaX * $areaWidth;
@@ -154,34 +154,34 @@ class MapEditorController extends AbstractController
     {
         $mobs = [];
         foreach ($this->em->getRepository(Mob::class)->findBy(['map' => $map]) as $mob) {
-            $coords = explode('.', $mob->getCoordinates() ?? '0.0');
+            $coords = explode('.', $mob->getCoordinates());
             $mobs[] = [
                 'id' => $mob->getId(),
                 'name' => $mob->getMonster()->getName(),
                 'level' => $mob->getLevel(),
-                'x' => (int) ($coords[0] ?? 0),
+                'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
         }
 
         $pnjs = [];
         foreach ($this->em->getRepository(Pnj::class)->findBy(['map' => $map]) as $pnj) {
-            $coords = explode('.', $pnj->getCoordinates() ?? '0.0');
+            $coords = explode('.', $pnj->getCoordinates());
             $pnjs[] = [
                 'id' => $pnj->getId(),
                 'name' => $pnj->getName(),
-                'x' => (int) ($coords[0] ?? 0),
+                'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
         }
 
         $portals = [];
         foreach ($this->em->getRepository(ObjectLayer::class)->findBy(['map' => $map, 'type' => ObjectLayer::TYPE_PORTAL]) as $portal) {
-            $coords = explode('.', $portal->getCoordinates() ?? '0.0');
+            $coords = explode('.', $portal->getCoordinates());
             $portals[] = [
                 'id' => $portal->getId(),
                 'name' => $portal->getName(),
-                'x' => (int) ($coords[0] ?? 0),
+                'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
                 'destMapId' => $portal->getDestinationMapId(),
                 'destCoords' => $portal->getDestinationCoordinates(),
@@ -190,11 +190,11 @@ class MapEditorController extends AbstractController
 
         $harvestSpots = [];
         foreach ($this->em->getRepository(ObjectLayer::class)->findBy(['map' => $map, 'type' => ObjectLayer::TYPE_HARVEST_SPOT]) as $spot) {
-            $coords = explode('.', $spot->getCoordinates() ?? '0.0');
+            $coords = explode('.', $spot->getCoordinates());
             $harvestSpots[] = [
                 'id' => $spot->getId(),
                 'name' => $spot->getName(),
-                'x' => (int) ($coords[0] ?? 0),
+                'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
         }
@@ -203,12 +203,12 @@ class MapEditorController extends AbstractController
         $craftTypes = [ObjectLayer::TYPE_FORGE, ObjectLayer::TYPE_TANNERY, ObjectLayer::TYPE_ALCHEMY_LAB, ObjectLayer::TYPE_JEWELER_BENCH];
         foreach ($this->em->getRepository(ObjectLayer::class)->findBy(['map' => $map]) as $obj) {
             if (in_array($obj->getType(), $craftTypes, true)) {
-                $coords = explode('.', $obj->getCoordinates() ?? '0.0');
+                $coords = explode('.', $obj->getCoordinates());
                 $craftStations[] = [
                     'id' => $obj->getId(),
                     'name' => $obj->getName(),
                     'type' => $obj->getType(),
-                    'x' => (int) ($coords[0] ?? 0),
+                    'x' => (int) $coords[0],
                     'y' => (int) ($coords[1] ?? 0),
                 ];
             }
