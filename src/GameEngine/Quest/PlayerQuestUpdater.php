@@ -221,6 +221,10 @@ class PlayerQuestUpdater
     private function updateDailyQuestTracking(callable $updater): void
     {
         $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return;
+        }
+
         $dailyQuests = $this->dailyQuestService->getActiveDailyQuests($player);
 
         foreach ($dailyQuests as $dailyQuest) {
