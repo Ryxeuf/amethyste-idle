@@ -85,7 +85,7 @@ VAGUE 3 (depend de Vague 2)
   ├─ ✅ 55 Quetes quotidiennes (FAIT) ← 12, 27
   ├─ ✅ 56 Presets de build (FAIT) ← 14
   ├─ 57 Commande terrain:sync ← 44
-  ├─ 58 Parsing zones/biomes Tiled ← 44
+  ├─ ✅ 58 Parsing zones/biomes Tiled (FAIT) ← 44
   ├─ 59 Tests E2E Panther ← 23, 42
   ├─ ✅ 60 Minimap PixiJS (FAIT)
   ├─ ✅ 61 Barre d'action rapide (FAIT)
