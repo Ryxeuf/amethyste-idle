@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **8 completees**, 10 restantes.
+> **18 taches** initiales, **10 completees**, 8 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -19,14 +19,8 @@
 ### ~~54 — Quetes a choix (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 55 — Quetes quotidiennes (M | ★★★)
-> Contenu renouvelable qui donne une raison de revenir chaque jour. Prerequis : ← 12 (QN-3 prerequis quetes), 27 (systeme de scheduling)
-- [ ] Champ `isDaily` (bool) + `dailyPool` (JSON) sur Quest : pool de variantes
-- [ ] DailyQuestScheduler (Symfony Scheduler) : chaque jour, selectionner 3 quetes du pool
-- [ ] Permettre de re-accepter une quete quotidienne (lever la contrainte unique player+quest)
-- [ ] Entite PlayerDailyQuest ou reset du PlayerQuest chaque jour
-- [ ] 5-8 quetes quotidiennes dans les fixtures (kill X, collect Y, variantes simples)
-- [ ] Section "Quotidiennes" dans le journal de quetes
+### ~~55 — Quetes quotidiennes (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
@@ -44,14 +38,8 @@
 - [ ] Portail bidirectionnel vers carte existante
 - [ ] Aucun monstre (zone safe)
 
-### 49 — Monstres soigneurs / multi-mobs (M | ★★★)
-> Support du combat multi-mobs avec role soigneur pour les monstres. Prerequis : ← 28 (C-3 monstres tier 1)
-- [ ] Support multi-mobs dans FightController : engager un groupe de mobs (2-3 mobs)
-- [ ] MobActionHandler : role `healer` cible un allie blesse (mob avec le moins de PV%)
-- [ ] SpellApplicator : supporter les heals mob→mob
-- [ ] Template combat : afficher plusieurs mobs avec barres de vie individuelles
-- [ ] Fixtures : groupe de mobs avec un soigneur (ex: 2 Squelettes + 1 Necromancien soigneur)
-- [ ] Tests : heal mob→mob, ciblage du plus blesse
+### ~~49 — Monstres soigneurs / multi-mobs (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

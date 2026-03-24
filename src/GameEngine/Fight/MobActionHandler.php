@@ -4,6 +4,7 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
+use App\Entity\CharacterInterface;
 use App\Entity\Game\Spell;
 use App\Event\Fight\ActionEvent;
 use App\Event\Fight\MobActionHitEvent;
@@ -27,17 +28,44 @@ class MobActionHandler
     }
 
     /**
+     * Exécute l'action de TOUS les mobs vivants du combat.
+     *
      * @return array{messages: string[], dangerAlert: string|null}
      */
     public function doAction(Fight $fight): array
     {
         $result = ['messages' => [], 'dangerAlert' => null];
-        $mob = $fight->getMobs()->first();
-        if (!$mob || $mob->isDead()) {
-            $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
 
-            return $result;
+        foreach ($fight->getMobs() as $mob) {
+            if ($mob->isDead()) {
+                continue;
+            }
+
+            $mobResult = $this->doMobAction($fight, $mob);
+            $result['messages'] = array_merge($result['messages'], $mobResult['messages']);
+            if ($mobResult['dangerAlert'] !== null) {
+                $result['dangerAlert'] = $mobResult['dangerAlert'];
+            }
+
+            // Si tous les joueurs sont morts, arrêter
+            if ($fight->isTerminated()) {
+                break;
+            }
         }
+
+        $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
+
+        return $result;
+    }
+
+    /**
+     * Exécute l'action d'un mob spécifique.
+     *
+     * @return array{messages: string[], dangerAlert: string|null}
+     */
+    private function doMobAction(Fight $fight, Mob $mob): array
+    {
+        $result = ['messages' => [], 'dangerAlert' => null];
 
         // Process status effects at start of mob turn
         $statusMessages = $this->statusEffectManager->processStartOfTurn($fight, $mob);
@@ -49,24 +77,22 @@ class MobActionHandler
             $this->logger->debug('[MobActionHandler] Mob is paralyzed/frozen, skipping turn');
             $result['messages'][] = sprintf('%s est immobilise !', $mob->getName());
             $this->combatLogger->logImmobilized($fight, $mob);
-            $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
 
             return $result;
         }
 
-        $action = $this->generateAction($fight);
+        $action = $this->generateAction($fight, $mob);
         $spell = $this->resolveSpell($action, $mob);
 
         $this->logger->debug(sprintf('[MobActionHandler] Spell %s used by mob #%d', $spell->getName(), $mob->getId()));
 
-        $target = $fight->getPlayers()->first();
+        // Résoudre la cible selon le rôle du mob
+        $target = $this->resolveTarget($fight, $mob, $action);
         if (!$target || $target->isDead()) {
-            $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
-
             return $result;
         }
 
-        // Danger alert check: warn player about upcoming powerful attack
+        // Danger alert check
         $dangerAlert = $this->checkDangerAlert($fight, $mob);
         if ($dangerAlert !== null) {
             $result['dangerAlert'] = $dangerAlert;
@@ -87,9 +113,57 @@ class MobActionHandler
         // Decrement cooldowns for mob
         $fight->decrementAllCooldowns();
 
-        $this->eventDispatcher->dispatch(new ActionEvent($fight->getId()), ActionEvent::NAME);
-
         return $result;
+    }
+
+    /**
+     * Résout la cible de l'action du mob.
+     * Les soigneurs ciblent l'allié mob le plus blessé ; les autres ciblent un joueur.
+     */
+    private function resolveTarget(Fight $fight, Mob $mob, string $action): ?CharacterInterface
+    {
+        // Action de soin : cibler un allié mob blessé
+        if ($action === 'heal') {
+            $healTarget = $this->findMostWoundedAlly($fight, $mob);
+            if ($healTarget !== null) {
+                return $healTarget;
+            }
+        }
+
+        // Par défaut : cibler le premier joueur vivant
+        foreach ($fight->getPlayers() as $player) {
+            if (!$player->isDead()) {
+                return $player;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Trouve le mob allié (ou soi-même) le plus blessé (% PV le plus bas).
+     * Retourne null si aucun allié n'est blessé.
+     */
+    private function findMostWoundedAlly(Fight $fight, Mob $currentMob): ?Mob
+    {
+        $mostWounded = null;
+        $lowestHpPercent = 100.0;
+
+        foreach ($fight->getMobs() as $mob) {
+            if ($mob->isDead()) {
+                continue;
+            }
+
+            $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+
+            // Ne soigner que si le mob a perdu des PV
+            if ($hpPercent < 100.0 && $hpPercent < $lowestHpPercent) {
+                $lowestHpPercent = $hpPercent;
+                $mostWounded = $mob;
+            }
+        }
+
+        return $mostWounded;
     }
 
     /**
@@ -137,13 +211,8 @@ class MobActionHandler
      *   "role": "healer"
      * }
      */
-    private function generateAction(Fight $fight): string
+    private function generateAction(Fight $fight, Mob $mob): string
     {
-        $mob = $fight->getMobs()->first();
-        if (!$mob) {
-            return 'attack';
-        }
-
         $monster = $mob->getMonster();
         $aiPattern = $monster->getAiPattern();
 
@@ -152,7 +221,19 @@ class MobActionHandler
             return $this->defaultAi($mob);
         }
 
-        // Check low HP heal behavior
+        // Healer role: priorité au soin d'un allié blessé
+        if (isset($aiPattern['role']) && $aiPattern['role'] === 'healer') {
+            $healTarget = $this->findMostWoundedAlly($fight, $mob);
+            if ($healTarget !== null && $this->mobHasHealSpell($mob)) {
+                $hpPercent = ($healTarget->getLife() / $healTarget->getMaxLife()) * 100;
+                // Soigner si un allié est en dessous de 70% PV
+                if ($hpPercent < 70) {
+                    return 'heal';
+                }
+            }
+        }
+
+        // Check low HP heal behavior (self-heal)
         if (isset($aiPattern['low_hp_heal'])) {
             $threshold = $aiPattern['low_hp_heal']['threshold'] ?? 30;
             $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;

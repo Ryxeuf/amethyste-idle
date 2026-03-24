@@ -34,9 +34,10 @@ class FightFleeController extends AbstractController
         $fight = $player->getFight();
 
         // Cannot flee from boss fights
-        $mob = $fight->getMobs()->first();
-        if ($mob && $mob->getMonster()->isBoss()) {
-            return new JsonResponse(['error' => 'Impossible de fuir un boss !', 'success' => false]);
+        foreach ($fight->getMobs() as $fightMob) {
+            if (!$fightMob->isDead() && $fightMob->getMonster()->isBoss()) {
+                return new JsonResponse(['error' => 'Impossible de fuir un boss !', 'success' => false]);
+            }
         }
 
         // Cannot flee while berserk
@@ -50,9 +51,14 @@ class FightFleeController extends AbstractController
             return new JsonResponse(['error' => 'Vous ne pouvez pas bouger !', 'success' => false]);
         }
 
-        // Flee chance based on player speed vs mob speed (50-90%)
+        // Flee chance based on player speed vs fastest mob speed (50-90%)
         $playerSpeed = $player->getSpeed();
-        $mobSpeed = $mob ? $mob->getSpeed() : 10;
+        $mobSpeed = 10;
+        foreach ($fight->getMobs() as $fightMob) {
+            if (!$fightMob->isDead()) {
+                $mobSpeed = max($mobSpeed, $fightMob->getSpeed());
+            }
+        }
         $fleeChance = min(90, max(50, 50 + ($playerSpeed - $mobSpeed) * 2));
         $success = random_int(1, 100) <= $fleeChance;
 

@@ -76,13 +76,13 @@ VAGUE 3 (depend de Vague 2)
   ┌─ 46 Trame Acte 1 : L'Eveil ← 12, 13, 31
   ├─ ✅ 47 Monstres tier 2 (lvl 10-15) (FAIT) ← 28, 29
   ├─ 48 Village central hub ← 30, 25
-  ├─ 49 Monstres soigneurs (multi-mobs) ← 28
+  ├─ ✅ 49 Monstres soigneurs (multi-mobs) (FAIT) ← 28
   ├─ 50 Meteo effets visuels PixiJS ← 34
   ├─ ✅ 51 Meteo impact gameplay (FAIT) ← 34
   ├─ 52 Guildes fondation ← 38
   ├─ 53 Groupes de combat formation ← 38
   ├─ ✅ 54 Quetes a choix (FAIT) ← 13, 31
-  ├─ 55 Quetes quotidiennes ← 12, 27
+  ├─ ✅ 55 Quetes quotidiennes (FAIT) ← 12, 27
   ├─ ✅ 56 Presets de build (FAIT) ← 14
   ├─ 57 Commande terrain:sync ← 44
   ├─ 58 Parsing zones/biomes Tiled ← 44
