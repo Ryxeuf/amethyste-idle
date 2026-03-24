@@ -2,7 +2,6 @@
 
 namespace App\Controller\Game;
 
-use App\Entity\App\Guild;
 use App\Entity\App\GuildInvitation;
 use App\Entity\App\Player;
 use App\Enum\GuildRank;
