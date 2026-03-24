@@ -60,7 +60,12 @@
       "skills": "Skills",
       "settings": "Settings",
       "factions": "Factions",
-      "friends": "Friends"
+      "friends": "Friends",
+      "menu": {
+        "adventure": "Adventure",
+        "character": "Character",
+        "social": "Social"
+      }
     },
     "currency": "Gold",
     "energy": "Energy",

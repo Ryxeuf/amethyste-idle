@@ -1,50 +1,117 @@
 {% extends 'base.html.twig' %}
 
 {% block site_navbar %}
+    {% set current_route = app.request.get('_route') %}
+
+    {# ===== Macro: dropdown menu item ===== #}
+    {% macro nav_link(route, label, current_route, icon) %}
+        <a href="{{ path(route) }}"
+           class="flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors
+                  {% if current_route == route or current_route starts with route %}bg-purple-700/50 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+            {% if icon %}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 flex-shrink-0 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    {{ icon|raw }}
+                </svg>
+            {% endif %}
+            {{ label }}
+        </a>
+    {% endmacro %}
+
     {# ===== TOP NAV BAR (desktop only) ===== #}
-    <nav class="hidden md:block bg-gray-800/95 backdrop-blur-sm border-b border-purple-900/50 sticky top-0 z-40">
+    <nav class="hidden md:block bg-gray-800/95 backdrop-blur-sm border-b border-purple-900/50 sticky top-0 z-40"
+         data-controller="game-nav">
         <div class="max-w-7xl mx-auto px-4 lg:px-8">
             <div class="flex items-center justify-between h-12">
-                <div class="flex items-center">
-                    <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-lg mr-6">{{ 'game.title'|trans }}</a>
-                    <div class="flex items-baseline space-x-1">
-                        {% set nav_items = [
-                            { route: 'app_game', label: 'game.nav.dashboard'|trans, match: 'app_game' },
-                            { route: 'app_game_inventory_index', label: 'game.nav.inventory'|trans, match: 'app_game_inventory_index' },
-                            { route: 'app_game_quests', label: 'game.nav.quests'|trans, match: 'app_game_quests' },
-                            { route: 'app_game_map', label: 'game.nav.map'|trans, match: 'app_game_map' },
-                            { route: 'app_game_skills', label: 'game.nav.skills'|trans, match: 'app_game_skills' },
-                            { route: 'app_game_craft', label: 'game.nav.craft'|trans, match: 'app_game_craft' },
-                            { route: 'app_game_bestiary', label: 'game.nav.bestiary'|trans, match: 'app_game_bestiary' },
-                            { route: 'app_game_factions', label: 'game.nav.factions'|trans, match: 'app_game_factions' },
-                            { route: 'app_game_friends', label: 'game.nav.friends'|trans, match: 'app_game_friends' },
-                            { route: 'app_game_guild', label: 'Guilde', match: 'app_game_guild' },
-                            { route: 'app_game_party', label: 'Groupe', match: 'app_game_party' },
-                            { route: 'app_game_achievements', label: 'Succes', match: 'app_game_achievements' },
-                            { route: 'app_game_chat_index', label: 'Chat', match: 'app_game_chat' },
-                        ] %}
-                        {% for item in nav_items %}
-                            <a href="{{ path(item.route) }}"
-                               class="px-3 py-2 rounded-md text-sm font-medium transition-colors
-                                      {% if app.request.get('_route') == item.match %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
-                                {{ item.label }}
-                            </a>
-                        {% endfor %}
+                <div class="flex items-center gap-1">
+                    <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-lg mr-4">{{ 'game.title'|trans }}</a>
+
+                    {# -- Direct link: Dashboard -- #}
+                    <a href="{{ path('app_game') }}"
+                       class="px-3 py-2 rounded-md text-sm font-medium transition-colors
+                              {% if current_route == 'app_game' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                        {{ 'game.nav.dashboard'|trans }}
+                    </a>
+
+                    {# -- Dropdown: Aventure -- #}
+                    {% set adventure_routes = ['app_game_map', 'app_game_quests', 'app_game_bestiary'] %}
+                    <div class="relative" data-dropdown-group>
+                        <button data-action="click->game-nav#toggleDropdown"
+                                class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                       {% if current_route in adventure_routes %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                            {{ 'game.nav.menu.adventure'|trans }}
+                            <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div data-game-nav-target="dropdown"
+                             class="hidden opacity-0 translate-y-1 transition-all duration-150
+                                    absolute left-0 top-full mt-1 w-48 bg-gray-800/95 border border-purple-900/50 rounded-lg py-1 shadow-xl z-50">
+                            {{ _self.nav_link('app_game_map', 'game.nav.map'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />') }}
+                            {{ _self.nav_link('app_game_quests', 'game.nav.quests'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />') }}
+                            {{ _self.nav_link('app_game_bestiary', 'game.nav.bestiary'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />') }}
+                        </div>
+                    </div>
+
+                    {# -- Dropdown: Personnage -- #}
+                    {% set character_routes = ['app_game_inventory_index', 'app_game_skills', 'app_game_craft', 'app_game_achievements'] %}
+                    <div class="relative" data-dropdown-group>
+                        <button data-action="click->game-nav#toggleDropdown"
+                                class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                       {% if current_route in character_routes or current_route starts with 'app_game_inventory' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                            {{ 'game.nav.menu.character'|trans }}
+                            <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div data-game-nav-target="dropdown"
+                             class="hidden opacity-0 translate-y-1 transition-all duration-150
+                                    absolute left-0 top-full mt-1 w-48 bg-gray-800/95 border border-purple-900/50 rounded-lg py-1 shadow-xl z-50">
+                            {{ _self.nav_link('app_game_inventory_index', 'game.nav.inventory'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />') }}
+                            {{ _self.nav_link('app_game_skills', 'game.nav.skills'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />') }}
+                            {{ _self.nav_link('app_game_craft', 'game.nav.craft'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />') }}
+                            {{ _self.nav_link('app_game_achievements', 'Succès', current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />') }}
+                        </div>
+                    </div>
+
+                    {# -- Dropdown: Social -- #}
+                    {% set social_routes = ['app_game_friends', 'app_game_guild', 'app_game_party', 'app_game_chat_index', 'app_game_factions'] %}
+                    <div class="relative" data-dropdown-group>
+                        <button data-action="click->game-nav#toggleDropdown"
+                                class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
+                                       {% if current_route in social_routes or current_route starts with 'app_game_chat' %}bg-purple-700 text-white{% else %}text-gray-300 hover:bg-gray-700 hover:text-white{% endif %}">
+                            {{ 'game.nav.menu.social'|trans }}
+                            <svg class="h-3.5 w-3.5 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div data-game-nav-target="dropdown"
+                             class="hidden opacity-0 translate-y-1 transition-all duration-150
+                                    absolute left-0 top-full mt-1 w-48 bg-gray-800/95 border border-purple-900/50 rounded-lg py-1 shadow-xl z-50">
+                            {{ _self.nav_link('app_game_chat_index', 'Chat', current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />') }}
+                            {{ _self.nav_link('app_game_guild', 'Guilde', current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />') }}
+                            {{ _self.nav_link('app_game_party', 'Groupe', current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />') }}
+                            {{ _self.nav_link('app_game_friends', 'game.nav.friends'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />') }}
+                            {{ _self.nav_link('app_game_factions', 'game.nav.factions'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />') }}
+                        </div>
                     </div>
                 </div>
-                {% if is_granted('ROLE_MODERATOR') %}
-                    <a href="{{ path('admin_dashboard') }}" class="text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700" title="Administration">
+
+                {# -- Right side: admin + settings icons -- #}
+                <div class="flex items-center gap-1">
+                    {% if is_granted('ROLE_MODERATOR') %}
+                        <a href="{{ path('admin_dashboard') }}" class="text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700" title="Administration">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('app_game_settings') }}" class="text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700" title="{{ 'game.nav.settings'|trans }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </a>
-                {% endif %}
-                <a href="{{ path('app_game_settings') }}" class="text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                </a>
+                </div>
             </div>
         </div>
     </nav>
@@ -72,52 +139,136 @@
     </header>
 
     {# ===== BOTTOM TAB BAR (mobile only) ===== #}
-    <nav class="game-bottom-nav md:hidden" aria-label="Navigation du jeu">
-        <div class="game-bottom-nav-inner">
-            {# Dashboard #}
-            <a href="{{ path('app_game') }}" class="{% if app.request.get('_route') == 'app_game' %}active{% endif %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                <span>{{ 'game.nav.dashboard'|trans }}</span>
-            </a>
-            {# Map #}
-            <a href="{{ path('app_game_map') }}" class="{% if app.request.get('_route') == 'app_game_map' %}active{% endif %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <span>{{ 'game.nav.map'|trans }}</span>
-            </a>
-            {# Inventory #}
-            <a href="{{ path('app_game_inventory_index') }}" class="{% if app.request.get('_route') starts with 'app_game_inventory' %}active{% endif %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-                <span>{{ 'game.nav.inventory'|trans }}</span>
-            </a>
-            {# Quests #}
-            <a href="{{ path('app_game_quests') }}" class="{% if app.request.get('_route') == 'app_game_quests' %}active{% endif %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                </svg>
-                <span>{{ 'game.nav.quests'|trans }}</span>
-            </a>
-            {# Skills #}
-            <a href="{{ path('app_game_skills') }}" class="{% if app.request.get('_route') == 'app_game_skills' %}active{% endif %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                <span>{{ 'game.nav.skills'|trans }}</span>
-            </a>
-            {# Chat #}
-            <a href="{{ path('app_game_chat_index') }}" class="{% if app.request.get('_route') starts with 'app_game_chat' %}active{% endif %}">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <span>Chat</span>
-            </a>
+    <div data-controller="game-nav" class="md:hidden">
+        <nav class="game-bottom-nav" aria-label="Navigation du jeu">
+            <div class="game-bottom-nav-inner">
+                {# Dashboard #}
+                <a href="{{ path('app_game') }}" class="{% if current_route == 'app_game' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    <span>{{ 'game.nav.dashboard'|trans }}</span>
+                </a>
+                {# Map #}
+                <a href="{{ path('app_game_map') }}" class="{% if current_route == 'app_game_map' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    <span>{{ 'game.nav.map'|trans }}</span>
+                </a>
+                {# Inventory #}
+                <a href="{{ path('app_game_inventory_index') }}" class="{% if current_route starts with 'app_game_inventory' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <span>{{ 'game.nav.inventory'|trans }}</span>
+                </a>
+                {# Chat #}
+                <a href="{{ path('app_game_chat_index') }}" class="{% if current_route starts with 'app_game_chat' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <span>Chat</span>
+                </a>
+                {# Plus (drawer toggle) #}
+                <button data-action="click->game-nav#toggleMobileDrawer" data-mobile-drawer-area
+                        class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 px-0.5 text-gray-400 text-[0.625rem] leading-none bg-transparent border-0
+                               {% if current_route in ['app_game_quests', 'app_game_skills', 'app_game_craft', 'app_game_bestiary', 'app_game_achievements', 'app_game_friends', 'app_game_guild', 'app_game_party', 'app_game_factions'] %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-[1.375rem] h-[1.375rem] mb-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <span>Plus</span>
+                </button>
+            </div>
+        </nav>
+
+        {# ===== MOBILE DRAWER (slide-up) ===== #}
+        <div data-game-nav-target="mobileOverlay"
+             data-action="click->game-nav#closeMobileDrawer"
+             class="hidden opacity-0 fixed inset-0 bg-black/60 z-[55] transition-opacity duration-200"></div>
+        <div data-game-nav-target="mobileDrawer" data-mobile-drawer-area
+             class="fixed bottom-0 left-0 right-0 z-[60] translate-y-full transition-transform duration-300 ease-out
+                    bg-gray-800/98 backdrop-blur-lg border-t border-purple-900/50 rounded-t-2xl"
+             style="padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 0.5rem)">
+            <div class="flex justify-center pt-3 pb-2">
+                <div class="w-10 h-1 bg-gray-600 rounded-full"></div>
+            </div>
+            <div class="px-4 pb-3 grid grid-cols-3 gap-2">
+                {# Quêtes #}
+                <a href="{{ path('app_game_quests') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_quests' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    <span>{{ 'game.nav.quests'|trans }}</span>
+                </a>
+                {# Compétences #}
+                <a href="{{ path('app_game_skills') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_skills' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>{{ 'game.nav.skills'|trans }}</span>
+                </a>
+                {# Artisanat #}
+                <a href="{{ path('app_game_craft') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_craft' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                    </svg>
+                    <span>{{ 'game.nav.craft'|trans }}</span>
+                </a>
+                {# Bestiaire #}
+                <a href="{{ path('app_game_bestiary') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_bestiary' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <span>{{ 'game.nav.bestiary'|trans }}</span>
+                </a>
+                {# Succès #}
+                <a href="{{ path('app_game_achievements') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_achievements' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    <span>Succès</span>
+                </a>
+                {# Guilde #}
+                <a href="{{ path('app_game_guild') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_guild' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                    </svg>
+                    <span>Guilde</span>
+                </a>
+                {# Groupe #}
+                <a href="{{ path('app_game_party') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_party' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <span>Groupe</span>
+                </a>
+                {# Amis #}
+                <a href="{{ path('app_game_friends') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_friends' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <span>{{ 'game.nav.friends'|trans }}</span>
+                </a>
+                {# Factions #}
+                <a href="{{ path('app_game_factions') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_factions' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                    </svg>
+                    <span>{{ 'game.nav.factions'|trans }}</span>
+                </a>
+            </div>
         </div>
-    </nav>
+    </div>
 {% endblock %}
 
 {% block body %}
