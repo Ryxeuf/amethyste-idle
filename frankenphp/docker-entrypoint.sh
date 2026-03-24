@@ -71,6 +71,13 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 		php bin/console tailwind:build --no-interaction || true
 	fi
 
+	# Précompiler les assets (manifest + fichiers digestés) pour éviter la compilation
+	# à la volée sur chaque GET /assets/... (timeouts 30s sous charge parallèle).
+	if [ "${APP_ENV:-prod}" = "prod" ]; then
+		echo 'Compiling asset map for production...'
+		php bin/console asset-map:compile --no-interaction || true
+	fi
+
 	echo 'PHP app ready!'
 fi
 
