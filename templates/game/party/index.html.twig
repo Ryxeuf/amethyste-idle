@@ -1,0 +1,203 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Groupe{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    {# Messages area #}
+    <div id="party-messages" class="mb-3 hidden">
+        <div class="rounded-lg p-3 text-sm" id="party-message-text"></div>
+    </div>
+
+    {# Pending invitations #}
+    {% if invitations is not empty %}
+        <div class="game-card mb-4">
+            <div class="game-card-header">
+                <h2 class="text-base font-semibold text-white">Invitations de groupe</h2>
+            </div>
+            <div class="game-card-body">
+                <div class="space-y-2">
+                    {% for invitation in invitations %}
+                        <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 border border-amber-700/30" id="invitation-{{ invitation.id }}">
+                            <div>
+                                <span class="text-white text-sm font-medium">Groupe de {{ invitation.party.leader.name }}</span>
+                                <span class="text-gray-400 text-xs ml-1">({{ invitation.party.memberCount }}/{{ invitation.party.maxSize }})</span>
+                                <p class="text-gray-500 text-[10px]">Invite par {{ invitation.invitedBy.name }}</p>
+                            </div>
+                            <div class="flex gap-1.5">
+                                <button onclick="acceptInvitation({{ invitation.id }})"
+                                        class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs rounded transition-colors touch-target">
+                                    Accepter
+                                </button>
+                                <button onclick="declineInvitation({{ invitation.id }})"
+                                        class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-white text-xs rounded transition-colors touch-target">
+                                    Decliner
+                                </button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if party %}
+        {# Party info #}
+        <div class="game-card">
+            <div class="game-card-header flex items-center justify-between">
+                <div>
+                    <h2 class="text-base sm:text-lg font-semibold text-white">
+                        Groupe
+                        <span class="text-gray-400 text-sm ml-1">({{ party.memberCount }}/{{ party.maxSize }})</span>
+                    </h2>
+                </div>
+                <div class="flex gap-1.5">
+                    {% if party.leader.id == player.id %}
+                        <button onclick="disbandParty()"
+                                class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-white text-xs rounded transition-colors touch-target">
+                            Dissoudre
+                        </button>
+                    {% else %}
+                        <button onclick="leaveParty()"
+                                class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 text-white text-xs rounded transition-colors touch-target">
+                            Quitter
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="game-card-body">
+                <div class="flex flex-wrap gap-4 mb-4 text-xs text-gray-400">
+                    <span>Chef : <span class="text-yellow-400">{{ party.leader.name }}</span></span>
+                    <span>Membres : <span class="text-white">{{ party.memberCount }}/{{ party.maxSize }}</span></span>
+                </div>
+
+                {# Invite form (leader only) #}
+                {% if party.leader.id == player.id and not party.isFull %}
+                    <div class="mb-4 p-3 bg-gray-700/30 rounded-lg border border-gray-600">
+                        <h3 class="text-white text-sm font-medium mb-2">Inviter un joueur</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="invite-player-name" placeholder="Nom du joueur"
+                                   class="flex-1 px-3 py-1.5 bg-gray-800 border border-gray-600 rounded text-white text-sm placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                            <button onclick="invitePlayer()"
+                                    class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors touch-target">
+                                Inviter
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Members list #}
+                <h3 class="text-white text-sm font-medium mb-2">Membres</h3>
+                <div class="space-y-1.5">
+                    {% for partyMember in party.members %}
+                        <div class="flex items-center justify-between bg-gray-700/30 rounded-lg p-2.5 border border-gray-700">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-7 h-7 rounded-full bg-gray-600 flex items-center justify-center text-xs text-white font-bold">
+                                    {{ partyMember.player.name|first|upper }}
+                                </div>
+                                <div>
+                                    <a href="{{ path('app_game_profile', {name: partyMember.player.name}) }}" class="text-white text-sm hover:text-purple-400 transition-colors">
+                                        {{ partyMember.player.name }}
+                                    </a>
+                                    {% if partyMember.player.id == party.leader.id %}
+                                        <span class="text-yellow-400 text-[10px] ml-1">Chef</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% if party.leader.id == player.id and partyMember.player.id != player.id %}
+                                <div class="flex gap-1">
+                                    <button onclick="transferLeader({{ partyMember.player.id }}, '{{ partyMember.player.name|e('js') }}')"
+                                            class="px-2 py-1 bg-yellow-700/50 hover:bg-yellow-600 text-yellow-300 text-[10px] rounded transition-colors"
+                                            title="Transferer le leadership">Chef</button>
+                                    <button onclick="kickMember({{ partyMember.id }}, '{{ partyMember.player.name|e('js') }}')"
+                                            class="px-2 py-1 bg-red-700/50 hover:bg-red-600 text-red-300 text-[10px] rounded transition-colors"
+                                            title="Expulser">Expulser</button>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {# No party — create button #}
+        <div class="game-card">
+            <div class="game-card-header">
+                <h2 class="text-base sm:text-lg font-semibold text-white">Groupe</h2>
+            </div>
+            <div class="game-card-body">
+                <div class="text-center py-4 mb-4">
+                    <p class="text-gray-400 text-sm">Vous n'etes dans aucun groupe.</p>
+                    <p class="text-gray-500 text-xs mt-1">Creez un groupe pour jouer avec d'autres joueurs.</p>
+                </div>
+
+                <button onclick="createParty()"
+                        class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded transition-colors touch-target">
+                    Creer un groupe
+                </button>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+async function partyAction(url, method = 'POST', body = null) {
+    try {
+        const opts = { method };
+        if (body) {
+            opts.headers = { 'Content-Type': 'application/json' };
+            opts.body = JSON.stringify(body);
+        }
+        const resp = await fetch(url, opts);
+        const data = await resp.json();
+        if (data.success) {
+            showPartyMessage(data.message);
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showPartyMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showPartyMessage('Erreur de connexion', true);
+    }
+}
+
+function createParty() { partyAction('/game/party/create'); }
+
+function invitePlayer() {
+    const nameInput = document.getElementById('invite-player-name');
+    const name = nameInput.value.trim();
+    if (!name) { showPartyMessage('Entrez un nom de joueur.', true); return; }
+    fetch(`/game/chat/players/search?q=${encodeURIComponent(name)}`)
+        .then(r => r.json())
+        .then(data => {
+            const exact = (data.players || []).find(p => p.name.toLowerCase() === name.toLowerCase());
+            if (exact) {
+                partyAction(`/game/party/invite/${exact.id}`);
+            } else if (data.players && data.players.length > 0) {
+                partyAction(`/game/party/invite/${data.players[0].id}`);
+            } else {
+                showPartyMessage('Joueur introuvable.', true);
+            }
+        })
+        .catch(() => showPartyMessage('Erreur de recherche.', true));
+}
+
+function acceptInvitation(id) { partyAction(`/game/party/invitation/${id}/accept`); }
+function declineInvitation(id) { partyAction(`/game/party/invitation/${id}/decline`); }
+function leaveParty() { if (confirm('Quitter le groupe ?')) partyAction('/game/party/leave'); }
+function disbandParty() { if (confirm('Dissoudre le groupe ?')) partyAction('/game/party/disband'); }
+function kickMember(id, name) { if (confirm(`Expulser ${name} ?`)) partyAction(`/game/party/kick/${id}`); }
+function transferLeader(playerId, name) { if (confirm(`Transferer le leadership a ${name} ?`)) partyAction(`/game/party/transfer/${playerId}`); }
+
+function showPartyMessage(msg, isError = false) {
+    const container = document.getElementById('party-messages');
+    const text = document.getElementById('party-message-text');
+    container.classList.remove('hidden');
+    text.textContent = msg;
+    text.className = isError
+        ? 'bg-red-900/50 border border-red-700 rounded-lg p-3 text-red-300 text-sm'
+        : 'bg-green-900/50 border border-green-700 rounded-lg p-3 text-green-300 text-sm';
+    setTimeout(() => container.classList.add('hidden'), 3000);
+}
+</script>
+{% endblock %}

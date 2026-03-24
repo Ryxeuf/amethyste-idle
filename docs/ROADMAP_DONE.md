@@ -787,3 +787,36 @@
 - [x] QuestController : routes daily/accept, daily/complete, daily/abandon
 - [x] 6 quetes quotidiennes dans les fixtures (combat + recolte)
 - [x] Section "Quotidiennes" dans le journal de quetes
+
+---
+
+## 52 — Guildes fondation (2026-03-24) ✅
+
+> Systeme de guilde : creation, invitations, gestion des membres et rangs.
+- [x] Entite `Guild` (name unique, tag 3-5 chars, description, leader)
+- [x] Entite `GuildMember` (guild, player, rank enum, joinedAt) — unique par joueur
+- [x] Entite `GuildInvitation` (guild, player, invitedBy)
+- [x] Enum `GuildRank` (Leader, Officer, Member, Recruit) avec permissions
+- [x] Migration PostgreSQL (3 tables + index + contraintes)
+- [x] `GuildManager` : create (5000 gils), invite, accept, leave, kick, promote, demote
+- [x] `GuildController` : page de guilde, creation, invitation, gestion membres
+- [x] Template Twig avec formulaire creation, liste membres, actions par rang
+- [x] Validation : nom unique, max 1 guilde/joueur, cout creation
+- [x] 12 tests unitaires : creation, invitation, promotion, depart, kick
+
+---
+
+## 53 — Groupes de combat formation (2026-03-24) ✅
+
+> Systeme de groupe (party) pour jouer ensemble. Base pour le combat coop et donjons futurs.
+- [x] Entite `Party` (leader, maxSize: 4, membres)
+- [x] Entite `PartyMember` (party, player, joinedAt) — unique par joueur
+- [x] Entite `PartyInvitation` (party, player, invitedBy)
+- [x] Migration PostgreSQL (3 tables + index + contraintes)
+- [x] `PartyManager` : create, invite, accept, leave, kick, transfer leader, disband
+- [x] Dissolution automatique si tous les membres partent
+- [x] Transfert automatique de leadership si le chef quitte
+- [x] `PartyController` : page de groupe, creation, invitation, gestion membres
+- [x] Template Twig avec interface de groupe (membres, invitations, actions)
+- [x] Lien "Groupe" dans la navigation du jeu
+- [x] 13 tests unitaires : creation, invitation, depart, dissolution, transfert leadership
