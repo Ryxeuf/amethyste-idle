@@ -20,6 +20,8 @@ services:
       - ./frankenphp/Caddyfile:/etc/caddy/Caddyfile:ro
       - ./frankenphp/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro
     environment:
+      # Évite le skeleton Symfony 8 si vide : frankenphp-symfony n’est pas encore compatible 8.
+      SYMFONY_VERSION: "${SYMFONY_VERSION:-^7.4}"
       MERCURE_EXTRA_DIRECTIVES: demo
       XDEBUG_MODE: "${XDEBUG_MODE:-off}"
     extra_hosts:

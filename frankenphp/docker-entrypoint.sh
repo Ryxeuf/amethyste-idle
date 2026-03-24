@@ -5,18 +5,21 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 	# Install the project the first time PHP is started
 	# After the installation, the following block can be deleted
 	if [ ! -f composer.json ]; then
+		echo "Aucun composer.json dans /app — bootstrap Symfony (volume .:/app vide ou mauvais répertoire ?)." >&2
 		rm -Rf tmp/
-		composer create-project "symfony/skeleton $SYMFONY_VERSION" tmp --stability="$STABILITY" --prefer-dist --no-progress --no-interaction --no-install
+		# Sans contrainte, le skeleton récent cible Symfony 8 ; runtime/frankenphp-symfony ne supporte que ≤ 7.x pour l’instant.
+		SKELETON_CONSTRAINT="${SYMFONY_VERSION:-^7.4}"
+		composer create-project "symfony/skeleton:${SKELETON_CONSTRAINT}" tmp --stability="$STABILITY" --prefer-dist --no-progress --no-interaction --no-install
 
 		cd tmp
 		cp -Rp . ..
 		cd -
 		rm -Rf tmp/
 
-		composer require "php:>=$PHP_VERSION" runtime/frankenphp-symfony
+		composer require "php:>=${PHP_VERSION:-8.2}" runtime/frankenphp-symfony
 		composer config --json extra.symfony.docker 'true'
 
-		if grep -q ^DATABASE_URL= .env; then
+		if [ -n "${DATABASE_URL:-}" ] || { [ -f .env ] && grep -q ^DATABASE_URL= .env; }; then
 			echo 'To finish the installation please press Ctrl+C to stop Docker Compose and run: docker compose up --build -d --wait'
 			sleep infinity
 		fi
@@ -26,11 +29,16 @@ if [ "$1" = 'frankenphp' ] || [ "$1" = 'php' ] || [ "$1" = 'bin/console' ]; then
 		composer install --prefer-dist --no-progress --no-interaction
 	fi
 
+	if [ ! -f bin/console ]; then
+		echo "ERREUR: bin/console introuvable dans /app. Montez la racine du projet (compose override .:/app) ou exécutez « composer install » sur l’hôte." >&2
+		exit 1
+	fi
+
 	# Display information about the current project
 	# Or about an error in project initialization
 	php bin/console -V
 
-	if grep -q ^DATABASE_URL= .env; then
+	if [ -n "${DATABASE_URL:-}" ] || { [ -f .env ] && grep -q ^DATABASE_URL= .env; }; then
 		echo 'Waiting for database to be ready...'
 		ATTEMPTS_LEFT_TO_REACH_DATABASE=60
 		until [ $ATTEMPTS_LEFT_TO_REACH_DATABASE -eq 0 ] || DATABASE_ERROR=$(php bin/console dbal:run-sql -q "SELECT 1" 2>&1); do
