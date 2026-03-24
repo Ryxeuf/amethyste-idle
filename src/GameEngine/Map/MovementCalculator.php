@@ -24,11 +24,7 @@ class MovementCalculator
     {
         $tag = $this->mapStorage->getMapTag($mapId);
         if (!\is_array($tag)) {
-            throw new \InvalidArgumentException(\sprintf(
-                'Données de navigation (fichier tag) introuvables pour la carte %d (data/map/tag_%d_*).',
-                $mapId,
-                $mapId
-            ));
+            throw new \InvalidArgumentException(\sprintf('Données de navigation (fichier tag) introuvables pour la carte %d (data/map/tag_%d_*).', $mapId, $mapId));
         }
 
         $this->mapId = $mapId;
