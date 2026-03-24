@@ -130,14 +130,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ### Piste D — Social avance (‖)
 
-### 73 — Guildes chat (S | ★★)
-> Canal de communication dedie a la guilde via un nouveau topic Mercure. Prerequis : ← 52 (Guildes fondation)
-- [ ] Nouveau channel `CHANNEL_GUILD` dans ChatMessage
-- [ ] Topic Mercure `chat/guild/{guildId}` dans ChatManager
-- [ ] Methodes `sendGuildMessage()` et `getGuildHistory()` dans ChatManager
-- [ ] Onglet "Guilde" dans le chat (stimulus controller)
-- [ ] Verification d'appartenance a la guilde avant envoi
-- [ ] Tests unitaires : envoi, historique, joueur hors guilde refuse
+### ~~73 — Guildes chat (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

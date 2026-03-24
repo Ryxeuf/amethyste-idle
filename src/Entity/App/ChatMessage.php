@@ -16,6 +16,7 @@ class ChatMessage
     public const CHANNEL_GLOBAL = 'global';
     public const CHANNEL_MAP = 'map';
     public const CHANNEL_PRIVATE = 'private';
+    public const CHANNEL_GUILD = 'guild';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -39,6 +40,10 @@ class ChatMessage
     #[ORM\ManyToOne(targetEntity: Map::class)]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id', nullable: true)]
     private ?Map $map = null;
+
+    #[ORM\ManyToOne(targetEntity: Guild::class)]
+    #[ORM\JoinColumn(name: 'guild_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?Guild $guild = null;
 
     #[ORM\Column(name: 'is_deleted', type: 'boolean', options: ['default' => false])]
     private bool $isDeleted = false;
@@ -107,6 +112,18 @@ class ChatMessage
     public function setMap(?Map $map): self
     {
         $this->map = $map;
+
+        return $this;
+    }
+
+    public function getGuild(): ?Guild
+    {
+        return $this->guild;
+    }
+
+    public function setGuild(?Guild $guild): self
+    {
+        $this->guild = $guild;
 
         return $this;
     }

@@ -856,3 +856,18 @@
 - [x] Integration Dijkstra post-import (regeneration du cache collisions)
 - [x] Rapport diff (fichiers exportes, entites/zones synchronisees, Dijkstra maps regenerees)
 - [x] Mise a jour de l'agent `.claude/commands/import-terrain.md`
+
+---
+
+## 73 — Guildes chat (2026-03-24) ✅
+
+> Canal de communication dedie a la guilde via un nouveau topic Mercure.
+- [x] `CHANNEL_GUILD` dans ChatMessage + relation `guild` (ManyToOne)
+- [x] Migration PostgreSQL : colonne `guild_id` sur `chat_message`
+- [x] Topic Mercure `chat/guild/{guildId}` dans ChatManager
+- [x] Methodes `sendGuildMessage()` et `getGuildHistory()` dans ChatManager
+- [x] Onglet "Guilde" dans le chat (template + Stimulus controller)
+- [x] Couleur emerald pour les messages de guilde
+- [x] Abonnement Mercure `chat/guild/{guildId}` cote client
+- [x] Verification d'appartenance a la guilde avant envoi (ChatController + ChatCommandHandler)
+- [x] Commande `/guild` (alias `/gu`) dans ChatCommandHandler

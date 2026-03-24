@@ -3,6 +3,7 @@
 namespace App\GameEngine\Social;
 
 use App\Entity\App\ChatMessage;
+use App\Entity\App\Guild;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -103,6 +104,50 @@ class ChatManager
         $this->publishMessage($message);
 
         return $message;
+    }
+
+    public function sendGuildMessage(Player $sender, Guild $guild, string $content): ?ChatMessage
+    {
+        $content = $this->sanitizeContent($content);
+        if (!$this->validateMessage($content)) {
+            return null;
+        }
+
+        if ($this->isRateLimited($sender)) {
+            return null;
+        }
+
+        $message = new ChatMessage();
+        $message->setChannel(ChatMessage::CHANNEL_GUILD);
+        $message->setContent($content);
+        $message->setSender($sender);
+        $message->setGuild($guild);
+
+        $this->em->persist($message);
+        $this->em->flush();
+
+        $this->publishMessage($message);
+
+        return $message;
+    }
+
+    /**
+     * @return ChatMessage[]
+     */
+    public function getGuildHistory(Guild $guild, int $limit = 50): array
+    {
+        return $this->em->getRepository(ChatMessage::class)->createQueryBuilder('m')
+            ->leftJoin('m.sender', 's')
+            ->addSelect('s')
+            ->where('m.channel = :channel')
+            ->andWhere('m.guild = :guild')
+            ->andWhere('m.isDeleted = false')
+            ->setParameter('channel', ChatMessage::CHANNEL_GUILD)
+            ->setParameter('guild', $guild)
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
     public function deleteMessage(int $messageId, string $moderatorName): bool
@@ -251,6 +296,7 @@ class ChatManager
                 'chat/private/' . $message->getSender()->getId(),
                 'chat/private/' . $message->getRecipient()->getId(),
             ] : [],
+            ChatMessage::CHANNEL_GUILD => $message->getGuild() ? ['chat/guild/' . $message->getGuild()->getId()] : [],
             default => [],
         };
     }
@@ -281,6 +327,10 @@ class ChatManager
 
         if ($message->getMap()) {
             $data['mapId'] = $message->getMap()->getId();
+        }
+
+        if ($message->getGuild()) {
+            $data['guildId'] = $message->getGuild()->getId();
         }
 
         return $data;

@@ -3,12 +3,14 @@
 namespace App\GameEngine\Social;
 
 use App\Entity\App\Player;
+use App\GameEngine\Guild\GuildManager;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ChatCommandHandler
 {
     public function __construct(
         private readonly ChatManager $chatManager,
+        private readonly GuildManager $guildManager,
         private readonly EntityManagerInterface $em,
     ) {
     }
@@ -30,6 +32,7 @@ class ChatCommandHandler
             '/whisper', '/w', '/mp' => $this->handleWhisper($sender, $parts),
             '/zone', '/z' => $this->handleZone($sender, $parts),
             '/global', '/g' => $this->handleGlobal($sender, $parts),
+            '/guild', '/gu' => $this->handleGuild($sender, $parts),
             '/emote', '/e', '/me' => $this->handleEmote($sender, $parts),
             '/who' => $this->handleWho($sender),
             '/help', '/?' => $this->handleHelp(),
@@ -105,6 +108,26 @@ class ChatCommandHandler
     /**
      * @param string[] $parts
      */
+    private function handleGuild(Player $sender, array $parts): array
+    {
+        $message = trim(implode(' ', \array_slice($parts, 1)));
+        if ($message === '') {
+            return ['success' => false, 'message' => 'Usage : /guild <message>'];
+        }
+
+        $guild = $this->guildManager->getPlayerGuild($sender);
+        if (!$guild) {
+            return ['success' => false, 'message' => 'Vous n\'etes dans aucune guilde.'];
+        }
+
+        $chatMessage = $this->chatManager->sendGuildMessage($sender, $guild, $message);
+        if (!$chatMessage) {
+            return ['success' => false, 'message' => 'Impossible d\'envoyer le message de guilde.'];
+        }
+
+        return ['success' => true, 'messageId' => $chatMessage->getId()];
+    }
+
     private function handleEmote(Player $sender, array $parts): array
     {
         $action = trim(implode(' ', \array_slice($parts, 1)));
@@ -160,6 +183,7 @@ class ChatCommandHandler
             '/whisper <joueur> <message> — Message prive (alias: /w, /mp)',
             '/zone <message> — Message de zone (alias: /z)',
             '/global <message> — Message global (alias: /g)',
+            '/guild <message> — Message de guilde (alias: /gu)',
             '/emote <action> — Emote (alias: /e, /me)',
             '/who — Liste des joueurs sur la carte',
             '/help — Affiche cette aide',
