@@ -45,6 +45,19 @@ class QuestController extends AbstractController
         $completedQuests = $this->playerQuestHelper->getCompletedQuests();
         $availableQuests = $this->playerQuestHelper->getAvailableQuests();
 
+        // Daily quests
+        $dailyQuests = $this->playerQuestHelper->getTodayDailyQuests();
+        $dailyQuestStatus = [];
+        foreach ($dailyQuests as $quest) {
+            if ($this->playerQuestHelper->isDailyQuestActive($quest)) {
+                $dailyQuestStatus[$quest->getId()] = 'active';
+            } elseif ($this->playerQuestHelper->isDailyQuestCompletedToday($quest)) {
+                $dailyQuestStatus[$quest->getId()] = 'completed';
+            } else {
+                $dailyQuestStatus[$quest->getId()] = 'available';
+            }
+        }
+
         // Calculate progress for each active quest
         $questProgress = [];
         foreach ($activeQuests as $playerQuest) {
@@ -54,6 +67,7 @@ class QuestController extends AbstractController
         // Resolve quest givers, types and chain info for all quests
         $allQuests = array_merge(
             $availableQuests,
+            $dailyQuests,
             array_map(fn ($pq) => $pq->getQuest(), $activeQuests),
         );
         $questGivers = $this->questGiverResolver->getQuestGivers($allQuests);
@@ -68,6 +82,8 @@ class QuestController extends AbstractController
             'activeQuests' => $activeQuests,
             'completedQuests' => $completedQuests,
             'availableQuests' => $availableQuests,
+            'dailyQuests' => $dailyQuests,
+            'dailyQuestStatus' => $dailyQuestStatus,
             'questProgress' => $questProgress,
             'questGivers' => $questGivers,
             'questTypes' => $questTypes,
@@ -97,13 +113,24 @@ class QuestController extends AbstractController
             return new JsonResponse(['error' => 'Quête déjà acceptée'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Check if already completed
+        // Check if already completed (daily quests can be re-accepted if not completed today)
         $completed = $this->entityManager->getRepository(PlayerQuestCompleted::class)->findOneBy([
             'player' => $player,
             'quest' => $quest,
         ]);
         if ($completed) {
-            return new JsonResponse(['error' => 'Quête déjà complétée'], Response::HTTP_BAD_REQUEST);
+            if (!$quest->isDaily()) {
+                return new JsonResponse(['error' => 'Quête déjà complétée'], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Daily quest: allow re-accept only if completed before today
+            $today = new \DateTimeImmutable('today');
+            if ($completed->getUpdatedAt() >= $today) {
+                return new JsonResponse(['error' => 'Quête quotidienne déjà complétée aujourd\'hui'], Response::HTTP_BAD_REQUEST);
+            }
+
+            // Remove old completion record to allow re-acceptance
+            $this->entityManager->remove($completed);
         }
 
         // Check prerequisites

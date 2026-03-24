@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Quest;
 
+use App\Entity\App\DailyQuestSelection;
 use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Quest;
@@ -100,10 +101,11 @@ class PlayerQuestHelper
         );
         $excludeIds = array_merge($activeQuestIds, $completedQuestIds);
 
-        // Get all quests not already active or completed
-        $qb = $this->entityManager->getRepository(Quest::class)->createQueryBuilder('q');
+        // Get all non-daily quests not already active or completed
+        $qb = $this->entityManager->getRepository(Quest::class)->createQueryBuilder('q')
+            ->where('q.isDaily = false');
         if (!empty($excludeIds)) {
-            $qb->where('q.id NOT IN (:excludeIds)')
+            $qb->andWhere('q.id NOT IN (:excludeIds)')
                ->setParameter('excludeIds', $excludeIds);
         }
         $allQuests = $qb->orderBy('q.name', 'ASC')->getQuery()->getResult();
@@ -150,5 +152,51 @@ class PlayerQuestHelper
         }
 
         return (int) round($count / $necessary * 100);
+    }
+
+    /**
+     * @return Quest[]
+     */
+    public function getTodayDailyQuests(): array
+    {
+        $today = new \DateTimeImmutable('today');
+
+        $selections = $this->entityManager->getRepository(DailyQuestSelection::class)
+            ->createQueryBuilder('dqs')
+            ->addSelect('q')
+            ->innerJoin('dqs.quest', 'q')
+            ->where('dqs.date = :today')
+            ->setParameter('today', $today)
+            ->getQuery()
+            ->getResult();
+
+        return array_map(fn (DailyQuestSelection $s) => $s->getQuest(), $selections);
+    }
+
+    public function isDailyQuestCompletedToday(Quest $quest): bool
+    {
+        $player = $this->playerHelper->getPlayer();
+        $today = new \DateTimeImmutable('today');
+
+        $completed = $this->entityManager->getRepository(PlayerQuestCompleted::class)->findOneBy([
+            'player' => $player,
+            'quest' => $quest,
+        ]);
+
+        if (!$completed) {
+            return false;
+        }
+
+        return $completed->getUpdatedAt() >= $today;
+    }
+
+    public function isDailyQuestActive(Quest $quest): bool
+    {
+        $player = $this->playerHelper->getPlayer();
+
+        return (bool) $this->entityManager->getRepository(PlayerQuest::class)->findOneBy([
+            'player' => $player,
+            'quest' => $quest,
+        ]);
     }
 }

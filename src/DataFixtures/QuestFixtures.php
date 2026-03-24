@@ -339,6 +339,70 @@ class QuestFixtures extends Fixture
                     ],
                 ],
             ],
+            // --- Quetes quotidiennes ---
+            'quest_daily_zombie' => [
+                'name' => 'Chasse aux zombies',
+                'description' => 'Les zombies rôdent de nouveau. Éliminez-en quelques-uns pour garder les routes sûres.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 3],
+                    ],
+                ],
+                'rewards' => ['gold' => 20, 'xp' => 40],
+                'isDaily' => true,
+            ],
+            'quest_daily_skeleton' => [
+                'name' => 'Patrouille osseuse',
+                'description' => 'Des squelettes ont été vus près des ruines. Nettoyez la zone.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Squelette', 'slug' => 'skeleton', 'count' => 3],
+                    ],
+                ],
+                'rewards' => ['gold' => 20, 'xp' => 40],
+                'isDaily' => true,
+            ],
+            'quest_daily_goblin' => [
+                'name' => 'Razzia gobeline',
+                'description' => 'Les gobelins chapardent les récoltes des fermiers. Repoussez-les.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 2],
+                    ],
+                ],
+                'rewards' => ['gold' => 25, 'xp' => 45],
+                'isDaily' => true,
+            ],
+            'quest_daily_mushroom' => [
+                'name' => 'Cueillette du jour',
+                'description' => 'L\'apothicaire a besoin de champignons frais pour ses potions quotidiennes.',
+                'requirements' => [
+                    'collect' => ['mushroom' => 3],
+                ],
+                'rewards' => ['gold' => 15, 'xp' => 30],
+                'isDaily' => true,
+            ],
+            'quest_daily_wood' => [
+                'name' => 'Bois de chauffage',
+                'description' => 'Le village a besoin de bûches pour les feux de la nuit.',
+                'requirements' => [
+                    'collect' => ['wood_log' => 5],
+                ],
+                'rewards' => ['gold' => 15, 'xp' => 30],
+                'isDaily' => true,
+            ],
+            'quest_daily_mixed' => [
+                'name' => 'Corvée de l\'aventurier',
+                'description' => 'Tuez quelques monstres et récoltez des champignons. La routine d\'un aventurier !',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 2],
+                    ],
+                    'collect' => ['mushroom' => 2],
+                ],
+                'rewards' => ['gold' => 30, 'xp' => 50],
+                'isDaily' => true,
+            ],
             // --- Chaine de quetes : La Menace Rampante (3 quetes) ---
             'quest_chain_guard_1' => [
                 'name' => 'La Menace Rampante - Partie 1',
@@ -421,6 +485,9 @@ class QuestFixtures extends Fixture
             }
             if (isset($data['choiceOutcome'])) {
                 $quest->setChoiceOutcome($data['choiceOutcome']);
+            }
+            if (!empty($data['isDaily'])) {
+                $quest->setIsDaily(true);
             }
             $quest->setCreatedAt(new \DateTime());
             $quest->setUpdatedAt(new \DateTime());

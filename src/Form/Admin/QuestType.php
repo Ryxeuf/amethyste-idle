@@ -4,6 +4,7 @@ namespace App\Form\Admin;
 
 use App\Entity\Game\Quest;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -39,6 +40,10 @@ class QuestType extends AbstractType
                 'mapped' => false,
                 'required' => false,
                 'attr' => ['rows' => 4, 'class' => 'font-mono'],
+            ])
+            ->add('isDaily', CheckboxType::class, [
+                'label' => 'Quete quotidienne',
+                'required' => false,
             ])
         ;
     }
