@@ -79,8 +79,8 @@ VAGUE 3 (depend de Vague 2)
   ├─ ✅ 49 Monstres soigneurs (multi-mobs) (FAIT) ← 28
   ├─ 50 Meteo effets visuels PixiJS ← 34
   ├─ ✅ 51 Meteo impact gameplay (FAIT) ← 34
-  ├─ 52 Guildes fondation ← 38
-  ├─ 53 Groupes de combat formation ← 38
+  ├─ ✅ 52 Guildes fondation (FAIT) ← 38
+  ├─ ✅ 53 Groupes de combat formation (FAIT) ← 38
   ├─ ✅ 54 Quetes a choix (FAIT) ← 13, 31
   ├─ ✅ 55 Quetes quotidiennes (FAIT) ← 12, 27
   ├─ ✅ 56 Presets de build (FAIT) ← 14

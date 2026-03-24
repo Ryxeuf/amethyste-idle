@@ -1,6 +1,6 @@
 ## Vague 3 — Contenu & enrichissement
 
-> **18 taches** initiales, **10 completees**, 8 restantes.
+> **18 taches** initiales, **12 completees**, 6 restantes.
 > Organisees en 5 pistes paralleles.
 
 ---
@@ -66,32 +66,11 @@
 
 ### Piste D — Social & builds (‖)
 
-### 52 — Guildes fondation (M | ★★★)
-> Premiere brique du systeme de guilde : creation et gestion des membres. Prerequis : ← 38 (MS-3 liste d'amis)
+### ~~52 — Guildes fondation (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
-> **Plan controle de cite :** pour un decoupage implementation etendu (regions, saisons, influence, benefices economiques), voir [PLAN_GUILD_CITY_CONTROL.md](PLAN_GUILD_CITY_CONTROL.md). L'ancrage strategique du systeme « controle de cite » est en **Vague 4** de cette roadmap.
-- [ ] Entite `Guild` (name unique, tag 3-5 chars, description, createdAt, leader: Player)
-- [ ] Entite `GuildMember` (guild, player, rank: enum master/officer/member/recruit, joinedAt)
-- [ ] Migrations + repositories
-- [ ] GuildManager : create (cout en gils), invite, accept, leave, kick, promote, demote
-- [ ] Route `GET /game/guild` : page de guilde (infos, liste membres avec rangs)
-- [ ] Route `POST /game/guild/create` : formulaire creation
-- [ ] Route `POST /game/guild/invite/{playerId}` : invitation (officier+ requis)
-- [ ] Validation : nom unique, max 1 guilde par joueur, cout creation (ex: 5000 gils)
-- [ ] Tests unitaires : creation, invitation, promotion, depart
-
-### 53 — Groupes de combat formation (M | ★★★)
-> Systeme de groupe pour jouer ensemble. Base pour le combat coop et donjons futurs. Prerequis : ← 38 (MS-3 liste d'amis)
-- [ ] Entite `Party` (leader: Player, maxSize: 4, createdAt)
-- [ ] Entite `PartyMember` (party, player, joinedAt)
-- [ ] Migration + repository
-- [ ] PartyManager : create, invite, accept, leave, kick, disband, transfer leader
-- [ ] Topic Mercure `party/{partyId}` pour notifications groupe (invite, join, leave)
-- [ ] Route `GET /game/party` : interface du groupe (membres, barres de vie)
-- [ ] Route `POST /game/party/invite/{playerId}` : invitation
-- [ ] Affichage des membres du groupe sur la carte (icone ou bordure coloree)
-- [ ] Dissolution automatique si tous les membres partent
-- [ ] Tests unitaires : creation, invitation, depart, dissolution
+### ~~53 — Groupes de combat formation (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~56 — Presets de build (M | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
