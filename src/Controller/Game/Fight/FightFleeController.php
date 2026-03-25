@@ -33,10 +33,13 @@ class FightFleeController extends AbstractController
 
         $fight = $player->getFight();
 
-        // Cannot flee from boss fights
-        foreach ($fight->getMobs() as $fightMob) {
-            if (!$fightMob->isDead() && $fightMob->getMonster()->isBoss()) {
-                return new JsonResponse(['error' => 'Impossible de fuir un boss !', 'success' => false]);
+        // Cannot flee from boss fights (sauf world boss — on peut quitter le raid)
+        $isWorldBoss = $fight->isWorldBossFight();
+        if (!$isWorldBoss) {
+            foreach ($fight->getMobs() as $fightMob) {
+                if (!$fightMob->isDead() && $fightMob->getMonster()->isBoss()) {
+                    return new JsonResponse(['error' => 'Impossible de fuir un boss !', 'success' => false]);
+                }
             }
         }
 
@@ -70,22 +73,30 @@ class FightFleeController extends AbstractController
 
             // End fight - remove player from fight
             $player->setFight(null);
-            $fight->setInProgress(false);
+            $fight->removePlayer($player);
 
-            // Remove mobs from fight
-            foreach ($fight->getMobs() as $fightMob) {
-                $fightMob->setFight(null);
-                $this->entityManager->persist($fightMob);
+            if ($isWorldBoss) {
+                // World boss : le joueur quitte, le combat continue pour les autres
+                $this->entityManager->persist($player);
+                $this->entityManager->flush();
+            } else {
+                // Combat classique : fin complète du combat
+                $fight->setInProgress(false);
+                foreach ($fight->getMobs() as $fightMob) {
+                    $fightMob->setFight(null);
+                    $this->entityManager->persist($fightMob);
+                }
+                $this->entityManager->persist($player);
+                $this->entityManager->persist($fight);
+                $this->entityManager->flush();
             }
-
-            $this->entityManager->persist($player);
-            $this->entityManager->persist($fight);
-            $this->entityManager->flush();
 
             return new JsonResponse([
                 'success' => true,
                 'fled' => true,
-                'message' => 'Vous avez réussi à fuir !',
+                'message' => $isWorldBoss
+                    ? 'Vous quittez le raid !'
+                    : 'Vous avez réussi à fuir !',
             ]);
         }
 

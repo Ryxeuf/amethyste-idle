@@ -144,14 +144,23 @@ class MobActionHandler
             }
         }
 
-        // Par défaut : cibler le premier joueur vivant
+        // Cibler un joueur vivant. World boss : joueur aléatoire. Sinon : premier joueur.
+        $alivePlayers = [];
         foreach ($fight->getPlayers() as $player) {
             if (!$player->isDead()) {
-                return $player;
+                $alivePlayers[] = $player;
             }
         }
 
-        return null;
+        if (empty($alivePlayers)) {
+            return null;
+        }
+
+        if ($fight->isWorldBossFight() && \count($alivePlayers) > 1) {
+            return $alivePlayers[array_rand($alivePlayers)];
+        }
+
+        return $alivePlayers[0];
     }
 
     /**

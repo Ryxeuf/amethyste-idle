@@ -42,13 +42,17 @@ class FightLootIndexController extends AbstractController
         $gold = 0;
         $experience = 0;
         $items = [];
+        $isWorldBoss = $fight->isWorldBossFight();
+        $contributions = $isWorldBoss ? $fight->getRankedContributors() : [];
 
         /** @var Mob $mob */
         foreach ($fight->getMobs() as $mob) {
-            // $gold += $mob->getMonster()->getGold();
-            // $experience += $mob->getMonster()->getExperience();
-
             foreach ($mob->getItems() as $item) {
+                // World boss : ne montrer que les items liés à ce joueur
+                if ($isWorldBoss && $item->getBoundToPlayerId() !== $player->getId()) {
+                    continue;
+                }
+
                 $items[] = [
                     'id' => $item->getId(),
                     'name' => $item->getGenericItem()->getName(),
@@ -65,6 +69,8 @@ class FightLootIndexController extends AbstractController
             'gold' => $gold,
             'experience' => $experience,
             'items' => $items,
+            'isWorldBoss' => $isWorldBoss,
+            'contributions' => $contributions,
         ]);
     }
 }

@@ -188,8 +188,18 @@ class FightSpellController extends AbstractController
 
         $isCritical = false;
         if ($hit) {
+            $targetLifeBefore = $target->getLife();
             $spellMessages = $this->spellApplicator->apply($spell, $player, $target, $options);
             $isCritical = in_array('Coup critique !', $spellMessages, true);
+
+            // Tracker la contribution pour les combats world boss
+            if ($fight->isWorldBossFight()) {
+                $damageDealt = max(0, $targetLifeBefore - $target->getLife());
+                if ($damageDealt > 0) {
+                    $fight->addContribution($player->getId(), $damageDealt);
+                }
+            }
+
             $messages[] = sprintf('%s lance %s !', $player->getName(), $spell->getName());
             $messages = array_merge($messages, $spellMessages);
             $this->combatLogger->logSpell($fight, $player, $target, $spell->getName(), true);

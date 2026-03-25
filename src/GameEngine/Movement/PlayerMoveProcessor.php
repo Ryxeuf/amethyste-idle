@@ -88,8 +88,15 @@ class PlayerMoveProcessor
 
         if ($encounterMob) {
             $this->logger->info('Mob found at {cell}, starting fight', ['cell' => $encounterMob->getCoordinates()]);
-            $groupMobs = $this->resolveGroupMobs($encounterMob, $player);
-            $this->triggeredFight = $this->fightHandler->startGroupFight($player, $groupMobs);
+
+            // World boss déjà en combat : rejoindre le fight existant
+            if ($encounterMob->isWorldBoss() && $encounterMob->getFight() !== null) {
+                $this->fightHandler->joinWorldBossFight($player, $encounterMob->getFight());
+                $this->triggeredFight = $encounterMob->getFight();
+            } else {
+                $groupMobs = $this->resolveGroupMobs($encounterMob, $player);
+                $this->triggeredFight = $this->fightHandler->startGroupFight($player, $groupMobs);
+            }
         } else {
             // Check for portal at final position
             $finalCoords = CellHelper::stringifyCoordinates($lastCell['x'], $lastCell['y']);

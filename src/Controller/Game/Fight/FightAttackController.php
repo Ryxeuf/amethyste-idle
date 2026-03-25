@@ -74,6 +74,11 @@ class FightAttackController extends AbstractController
 
                 $this->combatLogger->logAttack($fight, $player, $target, $damage);
 
+                // Tracker la contribution pour les combats world boss
+                if ($fight->isWorldBossFight()) {
+                    $fight->addContribution($player->getId(), $damage);
+                }
+
                 if ($target->getLife() === 0) {
                     $target->setDiedAt(new \DateTime());
                     $messages[] = sprintf('%s est vaincu !', $target->getName());

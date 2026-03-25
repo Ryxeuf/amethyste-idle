@@ -330,6 +330,20 @@ class CombatLogger
         );
     }
 
+    public function logPlayerJoined(Fight $fight, Player $player): void
+    {
+        $this->log(
+            $fight,
+            $fight->getStep(),
+            FightLog::ACTOR_SYSTEM,
+            null,
+            'Systeme',
+            FightLog::TYPE_PLAYER_JOINED,
+            sprintf('%s rejoint le combat !', $player->getName()),
+            ['player_id' => $player->getId(), 'player_name' => $player->getName()]
+        );
+    }
+
     public function logVictory(Fight $fight): void
     {
         $this->log(

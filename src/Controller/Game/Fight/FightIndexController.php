@@ -44,6 +44,12 @@ class FightIndexController extends AbstractController
         if ($player->getFight()->isVictory()) {
             return $this->redirectToRoute('app_game_fight_loot');
         }
+        // World boss : si ce joueur est mort mais d'autres joueurs sont vivants,
+        // le retirer du combat et le respawn
+        if ($player->isDead() && $player->getFight()->isWorldBossFight()) {
+            return $this->handleWorldBossPlayerDeath($player);
+        }
+
         if ($player->getFight()->isDefeat()) {
             return $this->handleDefeat($player);
         }
@@ -116,6 +122,30 @@ class FightIndexController extends AbstractController
             'fightLogs' => $fightLogs,
             'timeline' => $timeline,
             'currentRound' => $currentRound,
+        ]);
+    }
+
+    /**
+     * Gère la mort d'un joueur dans un combat world boss : le retire du combat
+     * et le respawn, tandis que le combat continue pour les autres participants.
+     */
+    private function handleWorldBossPlayerDeath(Player $player): Response
+    {
+        $fight = $player->getFight();
+
+        // Dissocier le joueur du combat
+        $player->setFight(null);
+        $fight->removePlayer($player);
+
+        // Respawn du joueur
+        $player->setLife((int) round($player->getMaxLife() / 2));
+        $player->setDiedAt(null);
+
+        $this->entityManager->persist($player);
+        $this->entityManager->flush();
+
+        return $this->render('game/fight/defeat.html.twig', [
+            'player' => $player,
         ]);
     }
 
