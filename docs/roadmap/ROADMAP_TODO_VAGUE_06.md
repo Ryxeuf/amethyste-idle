@@ -1,26 +1,15 @@
 ## Vague 6 — Long terme & polish final
 
-> **13 taches** a planifier quand le contenu de base est solide.
+> **11 taches** a planifier quand le contenu de base est solide.
 > Aucune urgence — objectifs long terme.
 
 ---
 
-### 91 — Arene PvP classee (L | ★★)
-> Systeme competitif avec matchmaking et classement. Prerequis : ← 82
-> **Attention** : phase large, a re-decouper au moment de l'implementation.
-- [ ] Entite `ArenaRating` (player, rating ELO, wins, losses, season)
-- [ ] Entite `ArenaSeason` (number, startDate, endDate, active)
-- [ ] File d'attente matchmaking (recherche adversaire +/- 200 ELO)
-- [ ] Calcul ELO apres chaque match
-- [ ] Route `GET /game/arena` : classement, stats personnelles, bouton recherche
-- [ ] Recompenses de fin de saison (titres, items cosmetiques)
-- [ ] Tests : matchmaking, calcul ELO, classement
-
 ### 92 — Classement guildes (S | ★)
 > Tableau de classement simple par points de guilde. Prerequis : ← 52
-- [ ] Champ `points` sur Guild (incremente par succes membres, quetes, PvP)
+- [ ] Champ `points` sur Guild (incremente par succes membres, quetes)
 - [ ] Route `GET /game/guilds/ranking` : classement pagine
-- [ ] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent, ArenaDuelEndedEvent
+- [ ] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent
 - [ ] Tests : attribution points, classement ordonne
 
 ### 93 — Quetes de guilde (M | ★★)
@@ -47,13 +36,6 @@
 - [ ] Entite `Festival` (slug, name, season, startDay, endDay, quests, rewards)
 - [ ] 4 festivals de base (1 par saison) — contenu a definir plus tard
 - [ ] Decorations saisonnieres sur la carte (sprites overlays)
-
-### 96 — Tournois PvP (XL | ★★)
-> Prerequis : ← 91. Trop dependant d'autres systemes pour le court terme.
-- [ ] Entite `Tournament` : type, bracket, dates, recompenses
-- [ ] Inscription et matchmaking par bracket
-- [ ] Deroulement automatique (ou semi-auto) des rounds
-- [ ] Classement et recompenses saisonnieres
 
 ### 97 — Parsing animations tiles (S | ★★)
 > Les fichiers TSX contiennent des animations. Le backend les ignore. Prerequis : ← 44

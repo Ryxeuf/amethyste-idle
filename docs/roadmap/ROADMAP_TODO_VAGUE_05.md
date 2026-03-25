@@ -1,6 +1,6 @@
 ## Vague 5 — Endgame & contenu avance
 
-> **11 taches** de contenu endgame et systemes avances.
+> **10 taches** de contenu endgame et systemes avances.
 > Organisees en 4 pistes paralleles.
 
 ---
@@ -32,7 +32,7 @@
 
 ---
 
-### Piste B — Combat & PvP (‖)
+### Piste B — Combat (‖)
 
 ### 81 — Combat cooperatif (L | ★★★)
 > Combat a plusieurs joueurs contre des groupes de monstres. Prerequis : ← 53, 49
@@ -44,16 +44,6 @@
 - [ ] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
 - [ ] XP partagee (repartition equitable entre participants)
 - [ ] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
-
-### 82 — Duels PvP (M | ★★)
-> PvP consensuel simple : defi 1v1 sans classement. Prerequis : ← 38
-- [ ] Route `POST /game/duel/challenge/{playerId}` : envoyer un defi
-- [ ] Notification Mercure au joueur defie (accepter/refuser)
-- [ ] Creer un Fight PvP (joueur vs joueur, pas de mob)
-- [ ] Adapter FightTurnResolver pour PvP (2 joueurs alternent)
-- [ ] Pas de perte d'items/gils (combat amical)
-- [ ] Ecran de resultat (victoire/defaite)
-- [ ] Tests : defi, acceptation, combat, resultat
 
 ### 83 — Invasions (M | ★★)
 > Vagues de monstres cooperatives via GameEvent. Prerequis : ← 21, 35
