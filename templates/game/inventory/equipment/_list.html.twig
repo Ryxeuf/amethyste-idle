@@ -209,9 +209,10 @@
             {% if gi.equipmentSet is not null %}
                 <span class="text-[9px] text-yellow-500/80 font-medium">{{ gi.equipmentSet.name }}</span>
             {% endif %}
-            {# Materia slots — FF7 style #}
+            {# Materia slots — FF7 style orbs #}
             {% if playerItem.slots|length > 0 %}
-                <div class="flex items-center gap-1 mt-1">
+                <div class="materia-slots-bar" data-controller="materia-slot">
+                    <span class="materia-slots-counter">{{ playerItem.slots|filter(s => s.itemSet is not null)|length }}/{{ playerItem.slots|length }}</span>
                     {% for slot in playerItem.slots %}
                         {% set materiaItem = slot.itemSet %}
                         {% set slotElement = slot.element %}
@@ -221,29 +222,51 @@
                             and linkedSlot.itemSet.genericItem.element.value != 'none'
                             and materiaItem.genericItem.element == linkedSlot.itemSet.genericItem.element %}
                         {% if materiaItem is not null %}
-                            {% set materiaElement = materiaItem.genericItem.element %}
+                            {% set mGi = materiaItem.genericItem %}
+                            {% set materiaElement = mGi.element %}
                             {% set isMatch = slotElement is not null and slotElement.value != 'none' and materiaElement.value != 'none' and slotElement == materiaElement %}
-                            <form method="post" action="{{ path('app_game_inventory_materia_unset', {slotId: slot.id}) }}" data-turbo-frame="inventory-content" class="inline">
-                                <button type="submit" class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-medium cursor-pointer transition-all hover:ring-2 hover:ring-red-500/50
-                                    {% if hasLinkedBonus %}bg-cyan-900/50 text-cyan-400 ring-1 ring-cyan-500/50{% elseif isMatch %}bg-yellow-900/50 text-yellow-400 ring-1 ring-yellow-500/50{% else %}bg-gray-700 text-gray-400{% endif %}"
-                                    title="{{ materiaItem.genericItem.name }} (Nv.{{ materiaItem.materiaLevel }}){% if hasLinkedBonus %} — Synergie liée +15%{% endif %}{% if isMatch %} — Bonus élémentaire{% endif %} — Cliquer pour retirer">
-                                    <span class="w-2.5 h-2.5 rounded-full {{ _self.element_dot_class(materiaElement) }} shadow-[0_0_4px] shadow-current"></span>
-                                    {{ materiaItem.genericItem.name|slice(0, 10) }}
-                                    {% if hasLinkedBonus %}<span class="text-[7px] text-cyan-300">Lié</span>{% endif %}
-                                </button>
-                            </form>
+                            {% set xpThresholds = {1: 100, 2: 300, 3: 600, 4: 1000, 5: 1000} %}
+                            {% set currentLevel = materiaItem.materiaLevel %}
+                            {% set nextThreshold = xpThresholds[currentLevel] %}
+                            {% set xpPercent = currentLevel >= 5 ? 100 : ((materiaItem.experience / nextThreshold) * 100)|round %}
+                            <div class="materia-slot-orb materia-slot-orb--filled materia-slot-orb--{{ materiaElement.value }}
+                                    {% if slotElement is not null and slotElement.value != 'none' %}materia-slot-orb--elem-{{ slotElement.value }}{% endif %}
+                                    {% if isMatch %}materia-slot-orb--match{% endif %}
+                                    {% if hasLinkedBonus %}materia-slot-orb--synergy{% endif %}"
+                                 data-materia-slot-target="orb"
+                                 data-slot-id="{{ slot.id }}"
+                                 data-materia-name="{{ mGi.name }}"
+                                 data-materia-element="{{ materiaElement.value }}"
+                                 data-materia-level="{{ currentLevel }}"
+                                 data-materia-xp="{{ materiaItem.experience }}"
+                                 data-materia-xp-next="{{ nextThreshold }}"
+                                 data-materia-xp-percent="{{ xpPercent }}"
+                                 data-materia-spell="{{ mGi.spell ? mGi.spell.name : '' }}"
+                                 data-materia-spell-desc="{{ mGi.spell ? mGi.spell.description|default('') : '' }}"
+                                 data-materia-match="{{ isMatch ? '1' : '0' }}"
+                                 data-materia-synergy="{{ hasLinkedBonus ? '1' : '0' }}"
+                                 data-slot-filled="1"
+                                 data-unset-url="{{ path('app_game_inventory_materia_unset', {slotId: slot.id}) }}"
+                                 data-replace-url="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}">
+                                <span class="materia-slot-level">{{ currentLevel }}</span>
+                            </div>
                         {% else %}
                             <a href="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}"
                                data-turbo-frame="inventory-content"
-                               class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] bg-gray-800 text-gray-600 ring-1 ring-gray-700/50 hover:ring-purple-500/50 hover:text-purple-400 cursor-pointer transition-all"
-                               title="Slot vide{% if linkedSlot is not null %} (lié){% endif %} — Cliquer pour sertir une materia{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
-                                <span class="w-2.5 h-2.5 rounded-full {% if slotElement is not null %}{{ _self.element_dot_class(slotElement) }}{% else %}bg-gray-600{% endif %} opacity-50"></span>
-                                <span class="materia-slot-empty-pulse">◇</span>
+                               data-materia-slot-target="orb"
+                               data-slot-id="{{ slot.id }}"
+                               data-slot-filled="0"
+                               data-slot-element="{{ slotElement is not null ? slotElement.value : 'none' }}"
+                               data-slot-element-label="{{ slotElement is not null and slotElement.value != 'none' ? slotElement.label : '' }}"
+                               data-set-url="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}"
+                               class="materia-slot-orb materia-slot-orb--empty
+                                   {% if slotElement is not null and slotElement.value != 'none' %}materia-slot-orb--elem-{{ slotElement.value }}{% endif %}"
+                               title="Slot vide — Cliquer pour sertir{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
                             </a>
                         {% endif %}
-                        {# Lien visuel entre slots liés #}
+                        {# Linked slot connector #}
                         {% if linkedSlot is not null and not loop.last %}
-                            <span class="text-[8px] {% if hasLinkedBonus %}text-cyan-400{% else %}text-gray-600{% endif %}" title="Slots liés">⟷</span>
+                            <div class="materia-slot-link {% if hasLinkedBonus %}materia-slot-link--active{% endif %}"></div>
                         {% endif %}
                     {% endfor %}
                 </div>
