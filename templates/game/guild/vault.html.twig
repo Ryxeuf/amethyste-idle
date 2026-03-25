@@ -1,0 +1,151 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Coffre de guilde{% endblock %}
+
+{% macro rarityClass(rarity) %}{% if rarity == 'amethyst' %}text-fuchsia-400{% elseif rarity == 'legendary' %}text-yellow-400{% elseif rarity == 'epic' %}text-purple-300{% elseif rarity == 'rare' %}text-blue-300{% elseif rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}{% endmacro %}
+
+{% block game_content %}
+<div class="game-page">
+    <div id="vault-messages" class="mb-3 hidden">
+        <div class="rounded-lg p-3 text-sm" id="vault-message-text"></div>
+    </div>
+
+    <div class="game-card mb-4">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">
+                Coffre de {{ guild.name }}
+                <span class="text-gray-400 text-xs ml-1">({{ vault.occupiedSlots }}/{{ vault.maxSlots }})</span>
+            </h2>
+            <a href="{{ path('app_game_guild') }}" class="px-2.5 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
+                Retour guilde
+            </a>
+        </div>
+        <div class="game-card-body">
+            {% if vault.items is empty %}
+                <p class="text-gray-500 text-sm text-center py-4">Le coffre est vide.</p>
+            {% else %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {% for item in vault.items %}
+                        <div class="flex items-center justify-between bg-gray-700/30 rounded-lg p-2.5 border border-gray-700">
+                            <div class="flex-1 min-w-0">
+                                <span class="font-medium text-sm {{ _self.rarityClass(item.genericItem.rarity) }}">
+                                    {{ item.genericItem.name }}
+                                </span>
+                                <span class="text-gray-500 text-[10px] ml-1">{{ item.genericItem.type }}</span>
+                            </div>
+                            {% if membership.rank.canWithdraw %}
+                                <button onclick="withdrawItem({{ item.id }}, '{{ item.genericItem.name|e('js') }}')"
+                                        class="px-2 py-1 bg-amber-700/50 hover:bg-amber-600 text-amber-300 text-[10px] rounded transition-colors ml-2 shrink-0">
+                                    Retirer
+                                </button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Deposit from bag #}
+    {% if membership.rank.canDeposit and bag and bag.items|length > 0 %}
+        <div class="game-card mb-4">
+            <div class="game-card-header">
+                <h2 class="text-base font-semibold text-white">
+                    Deposer un objet
+                    <span class="text-gray-400 text-xs ml-1">({{ bag.occupiedSpace }}/{{ bag.size }})</span>
+                </h2>
+            </div>
+            <div class="game-card-body">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {% for item in bag.items %}
+                        {% if item.gear == 0 and not item.bound %}
+                            <div class="flex items-center justify-between bg-gray-700/30 rounded-lg p-2.5 border border-gray-700">
+                                <div class="flex-1 min-w-0">
+                                    <span class="font-medium text-sm {{ _self.rarityClass(item.genericItem.rarity) }}">
+                                        {{ item.genericItem.name }}
+                                    </span>
+                                    <span class="text-gray-500 text-[10px] ml-1">{{ item.genericItem.type }}</span>
+                                </div>
+                                <button onclick="depositItem({{ item.id }}, '{{ item.genericItem.name|e('js') }}')"
+                                        class="px-2 py-1 bg-green-700/50 hover:bg-green-600 text-green-300 text-[10px] rounded transition-colors ml-2 shrink-0">
+                                    Deposer
+                                </button>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Recent logs #}
+    {% if logs is not empty %}
+        <div class="game-card">
+            <div class="game-card-header">
+                <h2 class="text-base font-semibold text-white">Historique recent</h2>
+            </div>
+            <div class="game-card-body">
+                <div class="space-y-1">
+                    {% for log in logs %}
+                        <div class="flex items-center justify-between text-xs py-1.5 border-b border-gray-700/50 last:border-0">
+                            <div>
+                                <span class="text-white">{{ log.player.name }}</span>
+                                {% if log.action == 'deposit' %}
+                                    <span class="text-green-400">a depose</span>
+                                {% else %}
+                                    <span class="text-amber-400">a retire</span>
+                                {% endif %}
+                                <span class="text-gray-300">{{ log.item.name }}</span>
+                                {% if log.quantity > 1 %}
+                                    <span class="text-gray-500">x{{ log.quantity }}</span>
+                                {% endif %}
+                            </div>
+                            <span class="text-gray-600 text-[10px]">{{ log.createdAt|date('d/m H:i') }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+async function vaultAction(url) {
+    try {
+        const resp = await fetch(url, { method: 'POST' });
+        const data = await resp.json();
+        if (data.success) {
+            showVaultMessage(data.message);
+            setTimeout(() => location.reload(), 600);
+        } else {
+            showVaultMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showVaultMessage('Erreur de connexion', true);
+    }
+}
+
+function depositItem(id, name) {
+    if (confirm(`Deposer ${name} dans le coffre ?`)) {
+        vaultAction(`/game/guild/vault/deposit/${id}`);
+    }
+}
+
+function withdrawItem(id, name) {
+    if (confirm(`Retirer ${name} du coffre ?`)) {
+        vaultAction(`/game/guild/vault/withdraw/${id}`);
+    }
+}
+
+function showVaultMessage(msg, isError = false) {
+    const container = document.getElementById('vault-messages');
+    const text = document.getElementById('vault-message-text');
+    container.classList.remove('hidden');
+    text.textContent = msg;
+    text.className = isError
+        ? 'bg-red-900/50 border border-red-700 rounded-lg p-3 text-red-300 text-sm'
+        : 'bg-green-900/50 border border-green-700 rounded-lg p-3 text-green-300 text-sm';
+    setTimeout(() => container.classList.add('hidden'), 3000);
+}
+</script>
+{% endblock %}

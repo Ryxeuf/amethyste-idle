@@ -74,6 +74,10 @@ class PlayerItem
     #[ORM\JoinColumn(name: 'inventory_id', referencedColumnName: 'id')]
     private ?Inventory $inventory;
 
+    #[ORM\ManyToOne(targetEntity: GuildVault::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(name: 'guild_vault_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?GuildVault $guildVault = null;
+
     /**
      * Si l'item est généré à la mort d'un mob, il s'agit du mob sur lequel on loot cet objet.
      */
@@ -162,6 +166,16 @@ class PlayerItem
     public function setInventory(?Inventory $inventory): void
     {
         $this->inventory = $inventory;
+    }
+
+    public function getGuildVault(): ?GuildVault
+    {
+        return $this->guildVault;
+    }
+
+    public function setGuildVault(?GuildVault $guildVault): void
+    {
+        $this->guildVault = $guildVault;
     }
 
     public function getMob(): ?Mob

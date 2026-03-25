@@ -44,6 +44,16 @@ enum GuildRank: string
         return $this === self::Leader;
     }
 
+    public function canDeposit(): bool
+    {
+        return true;
+    }
+
+    public function canWithdraw(): bool
+    {
+        return \in_array($this, [self::Leader, self::Officer, self::Member], true);
+    }
+
     public function isHigherThan(self $other): bool
     {
         $order = [self::Leader, self::Officer, self::Member, self::Recruit];

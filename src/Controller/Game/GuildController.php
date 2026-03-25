@@ -5,7 +5,9 @@ namespace App\Controller\Game;
 use App\Entity\App\GuildInvitation;
 use App\Entity\App\GuildMember;
 use App\Entity\App\Player;
+use App\Entity\App\PlayerItem;
 use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\GuildVaultManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +23,7 @@ class GuildController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly GuildManager $guildManager,
+        private readonly GuildVaultManager $vaultManager,
     ) {
     }
 
@@ -220,6 +223,85 @@ class GuildController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'message' => sprintf('%s a été rétrogradé %s.', $target->getPlayer()->getName(), $target->getRank()->label()),
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/vault', name: 'app_game_guild_vault', methods: ['GET'])]
+    public function vault(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $membership = $this->guildManager->getPlayerMembership($player);
+        if (!$membership) {
+            return $this->redirectToRoute('app_game_guild');
+        }
+
+        $guild = $membership->getGuild();
+        $vault = $this->vaultManager->getOrCreateVault($guild);
+        $logs = $this->vaultManager->getRecentLogs($guild);
+
+        $bag = null;
+        foreach ($player->getInventories() as $inventory) {
+            if ($inventory->isBag()) {
+                $bag = $inventory;
+                break;
+            }
+        }
+
+        return $this->render('game/guild/vault.html.twig', [
+            'guild' => $guild,
+            'membership' => $membership,
+            'vault' => $vault,
+            'logs' => $logs,
+            'bag' => $bag,
+            'player' => $player,
+        ]);
+    }
+
+    #[Route('/vault/deposit/{itemId}', name: 'app_game_guild_vault_deposit', methods: ['POST'])]
+    public function vaultDeposit(int $itemId): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find($itemId);
+        if (!$playerItem) {
+            return new JsonResponse(['error' => 'Objet introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $this->vaultManager->deposit($player, $playerItem);
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => sprintf('%s déposé dans le coffre.', $playerItem->getGenericItem()->getName()),
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    #[Route('/vault/withdraw/{itemId}', name: 'app_game_guild_vault_withdraw', methods: ['POST'])]
+    public function vaultWithdraw(int $itemId): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find($itemId);
+        if (!$playerItem) {
+            return new JsonResponse(['error' => 'Objet introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $this->vaultManager->withdraw($player, $playerItem);
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => sprintf('%s retiré du coffre.', $playerItem->getGenericItem()->getName()),
             ]);
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
