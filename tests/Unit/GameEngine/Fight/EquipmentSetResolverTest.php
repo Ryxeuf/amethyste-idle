@@ -87,7 +87,7 @@ class EquipmentSetResolverTest extends TestCase
         $this->addBonus($set, 3, 'life', 15);
 
         $items = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $items[] = $this->createEquippedPlayerItem($set);
         }
         $player = $this->createPlayerWithEquippedItems($items);
@@ -106,7 +106,7 @@ class EquipmentSetResolverTest extends TestCase
         $this->addBonus($set, 3, 'life', 15);
 
         $items = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $items[] = $this->createEquippedPlayerItem($set);
         }
         $player = $this->createPlayerWithEquippedItems($items);
@@ -186,7 +186,7 @@ class EquipmentSetResolverTest extends TestCase
         $set->setDescription('Test set');
 
         // Populate items collection for totalPieces count
-        for ($i = 0; $i < $totalPieces; $i++) {
+        for ($i = 0; $i < $totalPieces; ++$i) {
             $item = new Item();
             $item->setName('piece_' . $i);
             $item->setDescription('');

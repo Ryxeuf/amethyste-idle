@@ -106,7 +106,7 @@ class EquipmentSetResolver
                 if (!isset($setCounts[$slug])) {
                     $setCounts[$slug] = ['set' => $set, 'count' => 0];
                 }
-                $setCounts[$slug]['count']++;
+                ++$setCounts[$slug]['count'];
             }
         }
 
