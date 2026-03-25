@@ -51,8 +51,7 @@ class GuildVaultManager
             throw new \InvalidArgumentException('Le coffre de guilde est plein.');
         }
 
-        $inventory = $playerItem->getInventory();
-        $inventory?->removeItem($playerItem);
+        $playerItem->getInventory()->removeItem($playerItem);
         $playerItem->setInventory(null);
 
         $vault->addItem($playerItem);
