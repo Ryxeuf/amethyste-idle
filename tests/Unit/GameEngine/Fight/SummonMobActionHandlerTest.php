@@ -101,6 +101,35 @@ class SummonMobActionHandlerTest extends TestCase
         return $monster;
     }
 
+    /**
+     * Cree un mob invoque mock avec un Monster minimal (pour traverser doMobAction).
+     */
+    private function createSummonedMobMock(int $id = 99): Mob&MockObject
+    {
+        $monster = $this->createMock(Monster::class);
+        $monster->method('getAiPattern')->willReturn(null);
+        $monster->method('getSpells')->willReturn(new ArrayCollection());
+        $monster->method('isBoss')->willReturn(false);
+        $monster->method('getBossPhases')->willReturn(null);
+        $monster->method('getHit')->willReturn(80);
+        $monster->method('getCurrentBossPhase')->willReturn(null);
+
+        $basicAttack = $this->createMock(Spell::class);
+        $basicAttack->method('getName')->willReturn('Attaque');
+
+        $mob = $this->createMock(Mob::class);
+        $mob->method('isDead')->willReturn(false);
+        $mob->method('isSummoned')->willReturn(true);
+        $mob->method('getLife')->willReturn(35);
+        $mob->method('getMaxLife')->willReturn(35);
+        $mob->method('getMonster')->willReturn($monster);
+        $mob->method('getName')->willReturn('Squelette');
+        $mob->method('getId')->willReturn($id);
+        $mob->method('getAttack')->willReturn($basicAttack);
+
+        return $mob;
+    }
+
     private function createFightWithMobs(array $mobs, bool $summonOnCooldown = false): Fight&MockObject
     {
         $player = $this->createMock(Player::class);
@@ -161,14 +190,9 @@ class SummonMobActionHandlerTest extends TestCase
     {
         $summoner = $this->createSummonerMob(100);
 
-        // 2 mobs invoques deja presents (vivants)
-        $summoned1 = $this->createMock(Mob::class);
-        $summoned1->method('isDead')->willReturn(false);
-        $summoned1->method('isSummoned')->willReturn(true);
-
-        $summoned2 = $this->createMock(Mob::class);
-        $summoned2->method('isDead')->willReturn(false);
-        $summoned2->method('isSummoned')->willReturn(true);
+        // 2 mobs invoques deja presents (vivants) — mock complet pour doMobAction
+        $summoned1 = $this->createSummonedMobMock(id: 20);
+        $summoned2 = $this->createSummonedMobMock(id: 21);
 
         $fight = $this->createFightWithMobs([$summoner, $summoned1, $summoned2]);
 
