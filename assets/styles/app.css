@@ -702,6 +702,295 @@ html, body {
 .materia-orb-none { background-position: -96px -448px; }
 .materia-orb-none::after { box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
 
+/* ===== MATERIA SLOTS: FF7-style orb display on equipment ===== */
+
+/* Container for materia slot orbs */
+.materia-slots-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-top: 0.25rem;
+}
+
+/* Slot counter label */
+.materia-slots-counter {
+  font-size: 0.5625rem;
+  color: #6b7280;
+  margin-right: 0.25rem;
+  white-space: nowrap;
+}
+
+/* Single materia slot orb (empty or filled) */
+.materia-slot-orb {
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Empty slot orb */
+.materia-slot-orb--empty {
+  background: rgba(31, 41, 55, 0.6);
+  border: 1.5px dashed rgba(107, 114, 128, 0.5);
+  animation: materia-slot-pulse 2.5s ease-in-out infinite;
+}
+.materia-slot-orb--empty:hover {
+  border-color: rgba(168, 85, 247, 0.7);
+  background: rgba(88, 28, 135, 0.2);
+  animation: none;
+}
+
+@keyframes materia-slot-pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Filled slot orb — uses materia sprite as background */
+.materia-slot-orb--filled {
+  background-image: url('images/materias_32.png');
+  background-size: 512px 512px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+}
+.materia-slot-orb--filled:hover {
+  transform: scale(1.2);
+  z-index: 2;
+}
+
+/* Element-specific filled orb positions (same as .materia-orb-*) */
+.materia-slot-orb--fire { background-position: -96px 0; }
+.materia-slot-orb--water { background-position: -96px -288px; }
+.materia-slot-orb--earth { background-position: -96px -64px; }
+.materia-slot-orb--air { background-position: -96px -320px; }
+.materia-slot-orb--light { background-position: -96px -32px; }
+.materia-slot-orb--dark { background-position: -96px -416px; }
+.materia-slot-orb--metal { background-position: -96px -480px; }
+.materia-slot-orb--beast { background-position: -96px -160px; }
+.materia-slot-orb--none { background-position: -96px -448px; }
+
+/* Element border on slot (slot's own element requirement) */
+.materia-slot-orb--elem-fire { border-color: rgba(239, 68, 68, 0.6); }
+.materia-slot-orb--elem-water { border-color: rgba(59, 130, 246, 0.6); }
+.materia-slot-orb--elem-earth { border-color: rgba(245, 158, 11, 0.6); }
+.materia-slot-orb--elem-air { border-color: rgba(6, 182, 212, 0.6); }
+.materia-slot-orb--elem-light { border-color: rgba(253, 224, 71, 0.6); }
+.materia-slot-orb--elem-dark { border-color: rgba(167, 139, 250, 0.6); }
+.materia-slot-orb--elem-metal { border-color: rgba(156, 163, 175, 0.6); }
+.materia-slot-orb--elem-beast { border-color: rgba(34, 197, 94, 0.6); }
+
+/* Element match glow (materia element == slot element) — golden */
+.materia-slot-orb--match {
+  box-shadow: 0 0 6px rgba(234, 179, 8, 0.6), 0 0 12px rgba(234, 179, 8, 0.3);
+  border-color: rgba(234, 179, 8, 0.7) !important;
+}
+
+/* Linked synergy glow — cyan */
+.materia-slot-orb--synergy {
+  box-shadow: 0 0 6px rgba(6, 182, 212, 0.6), 0 0 12px rgba(6, 182, 212, 0.3);
+}
+
+/* Level badge on the orb */
+.materia-slot-level {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 50%;
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid rgba(168, 85, 247, 0.5);
+  font-size: 0.5rem;
+  font-weight: 700;
+  color: #c084fc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  z-index: 3;
+}
+
+/* Linked slot connector arc */
+.materia-slot-link {
+  width: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.materia-slot-link::before {
+  content: '';
+  position: absolute;
+  top: 15%;
+  bottom: 15%;
+  left: 50%;
+  width: 1px;
+  background: rgba(107, 114, 128, 0.3);
+  transform: translateX(-50%);
+}
+/* Active linked synergy — cyan connector */
+.materia-slot-link--active::before {
+  background: rgba(6, 182, 212, 0.6);
+  box-shadow: 0 0 4px rgba(6, 182, 212, 0.4);
+  width: 2px;
+}
+
+/* ===== MATERIA SLOT: Tooltip (desktop) ===== */
+.materia-slot-tooltip {
+  position: fixed;
+  z-index: 1100;
+  width: 14rem;
+  background: rgba(17, 24, 39, 0.97);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.625rem;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+}
+.materia-slot-tooltip--visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+.materia-slot-tooltip__name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.125rem;
+}
+.materia-slot-tooltip__element {
+  font-size: 0.625rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.375rem;
+}
+.materia-slot-tooltip__xp-bar {
+  height: 0.25rem;
+  background: rgba(55, 65, 81, 0.6);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin: 0.25rem 0;
+}
+.materia-slot-tooltip__xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}
+.materia-slot-tooltip__spell {
+  font-size: 0.6875rem;
+  color: #d1d5db;
+  margin-top: 0.25rem;
+}
+.materia-slot-tooltip__bonus {
+  font-size: 0.625rem;
+  padding: 0.25rem 0.375rem;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+}
+.materia-slot-tooltip__bonus--match {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+.materia-slot-tooltip__bonus--synergy {
+  background: rgba(6, 182, 212, 0.15);
+  color: #22d3ee;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+}
+.materia-slot-tooltip__actions {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 0.5rem;
+  pointer-events: auto;
+}
+.materia-slot-tooltip__btn {
+  flex: 1;
+  font-size: 0.625rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  text-decoration: none;
+  display: block;
+}
+.materia-slot-tooltip__btn--unset {
+  background: rgba(127, 29, 29, 0.4);
+  color: #f87171;
+}
+.materia-slot-tooltip__btn--unset:hover {
+  background: rgba(153, 27, 27, 0.6);
+}
+.materia-slot-tooltip__btn--replace {
+  background: rgba(88, 28, 135, 0.4);
+  color: #c084fc;
+}
+.materia-slot-tooltip__btn--replace:hover {
+  background: rgba(107, 33, 168, 0.6);
+}
+.materia-slot-tooltip__btn--set {
+  background: rgba(88, 28, 135, 0.4);
+  color: #c084fc;
+}
+.materia-slot-tooltip__btn--set:hover {
+  background: rgba(107, 33, 168, 0.6);
+}
+
+/* ===== MATERIA SLOT: Bottom-sheet (mobile) ===== */
+.materia-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+.materia-sheet-backdrop--visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.materia-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1060;
+  background: rgba(17, 24, 39, 0.98);
+  border-top: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 1rem 1rem 0 0;
+  padding: 0.75rem 1rem 1.5rem;
+  transform: translateY(100%);
+  transition: transform 0.25s ease;
+  backdrop-filter: blur(12px);
+  max-height: 60vh;
+  overflow-y: auto;
+}
+.materia-sheet--visible {
+  transform: translateY(0);
+}
+.materia-sheet__handle {
+  width: 2rem;
+  height: 0.25rem;
+  background: rgba(107, 114, 128, 0.4);
+  border-radius: 9999px;
+  margin: 0 auto 0.75rem;
+}
+
 /* ===== INVENTORY: Item cards ===== */
 .inv-item-card {
   background: rgba(31, 41, 55, 0.4);
