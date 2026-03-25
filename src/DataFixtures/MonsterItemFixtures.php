@@ -208,6 +208,26 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_chest', 'probability' => 5],
             ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_shield', 'probability' => 5],
 
+            // --- Boss de zone : Gardien de la Forêt (tâche 66) ---
+            ['monster' => 'forest_guardian', 'item' => 'healing_potion_major', 'probability' => 80],
+            ['monster' => 'forest_guardian', 'item' => 'energy_potion_small', 'probability' => 60],
+            ['monster' => 'forest_guardian', 'item' => 'ancient_scroll', 'probability' => 40],
+            ['monster' => 'forest_guardian', 'item' => 'scroll_xp_boost', 'probability' => 15],
+            ['monster' => 'forest_guardian', 'item' => 'materia_savage_bite', 'probability' => 20],
+            // Drops uniques garantis
+            ['monster' => 'forest_guardian', 'item' => 'guardian_bark_armor', 'probability' => 12, 'guaranteed' => true],
+            ['monster' => 'forest_guardian', 'item' => 'guardian_thorn_staff', 'probability' => 12, 'guaranteed' => true],
+
+            // --- Boss de zone : Seigneur de la Forge (tâche 66) ---
+            ['monster' => 'forge_lord', 'item' => 'healing_potion_major', 'probability' => 80],
+            ['monster' => 'forge_lord', 'item' => 'energy_potion_small', 'probability' => 60],
+            ['monster' => 'forge_lord', 'item' => 'ancient_scroll', 'probability' => 50],
+            ['monster' => 'forge_lord', 'item' => 'scroll_xp_boost', 'probability' => 15],
+            ['monster' => 'forge_lord', 'item' => 'materia_steel_riposte', 'probability' => 20],
+            // Drops uniques garantis
+            ['monster' => 'forge_lord', 'item' => 'forgelord_obsidian_blade', 'probability' => 10, 'guaranteed' => true],
+            ['monster' => 'forge_lord', 'item' => 'forgelord_dark_plate', 'probability' => 10, 'guaranteed' => true],
+
             // --- Boss : Dragon ---
             ['monster' => 'dragon', 'item' => 'materia_fire_ball', 'probability' => 40],
             ['monster' => 'dragon', 'item' => 'materia_flame_rain', 'probability' => 25],

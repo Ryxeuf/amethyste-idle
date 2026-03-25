@@ -31,13 +31,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
-### 66 — Boss de zone (M | ★★★)
-> Deux boss avec mecaniques de phases, loot unique et succes associes. Prerequis : ← 65 (Monstres tier 2 avances)
-- [ ] **Sous-partie C** : 2 boss de zone avec mecaniques de phases
-  - Boss Foret (element Bete/Terre, 2 phases)
-  - Boss Mine (element Metal/Ombre, 3 phases)
-  - Loot unique (equipement tier 3, materia rare)
-  - Succes boss (2 achievements)
+### ~~66 — Boss de zone (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

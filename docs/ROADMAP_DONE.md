@@ -1034,3 +1034,28 @@
 - [x] Template vault avec affichage coffre, depot depuis sac, historique recent
 - [x] Lien "Coffre de guilde" dans la page guilde
 - [x] 12 tests unitaires : depot, retrait, permissions recruit/member, coffre plein, objet equipe/lie, item pas dans coffre
+
+---
+
+## 66 — Boss de zone (2026-03-25) ✅
+
+> Deux boss avec mecaniques de phases, loot unique et succes associes.
+
+- [x] **Gardien de la Foret** (lvl 15, diff 5, 400 HP) : boss Bete/Terre, 2 phases
+  - Phase 1 — Eveil sylvestre : sorts forest_call, entangling_roots
+  - Phase 2 — Fureur de la nature (< 50% HP) : sort signature primordial_roar (AoE + paralysie)
+  - Resistances : bete/terre +50%, feu -50%, metal -30%
+- [x] **Seigneur de la Forge** (lvl 20, diff 5, 500 HP) : boss Metal/Ombre, 3 phases
+  - Phase 1 — Le Forgeron : sorts blade_dance, shrapnel_burst
+  - Phase 2 — Metal en fusion (< 60% HP) : blade_dance preferee
+  - Phase 3 — Forge obscure (< 30% HP) : sort signature dark_forge_blast (AoE + brulure)
+  - Resistances : metal +60%, dark +40%, eau -50%, lumiere -40%
+- [x] 2 sorts de boss : primordial_roar (Beast AoE, paralysie), dark_forge_blast (Metal AoE, brulure)
+- [x] 4 items legendaires uniques :
+  - Cuirasse d'ecorce ancestrale (Beast, protection 18, 2 slots materia)
+  - Baton d'epines primordiales (Earth, arme mage, 2 slots materia)
+  - Lame d'obsidienne du Seigneur (Metal, arme soldat, 2 slots materia)
+  - Plastron de la forge obscure (Dark, protection 22, 2 slots materia)
+- [x] Tables de loot avec drops garantis pour chaque boss
+- [x] 2 succes : Gardien terrasse, Seigneur de la forge vaincu (avec titres)
+- [x] Placement sur la carte (1 mob par boss, zones eloignees)

@@ -326,6 +326,17 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '138.38',
                 'monster' => 'abyssal_blacksmith',
             ],
+            // === Boss de zone (tâche 66) ===
+            // Gardien de la Forêt — zone forestière (coords éloignées)
+            'forest_guardian_1' => [
+                'coordinates' => '45.40',
+                'monster' => 'forest_guardian',
+            ],
+            // Seigneur de la Forge — zone mine (coords très éloignées)
+            'forge_lord_1' => [
+                'coordinates' => '135.30',
+                'monster' => 'forge_lord',
+            ],
             // === Groupe multi-mob avec soigneur (tâche 49) ===
             'skeleton_group_1' => [
                 'coordinates' => '75.22',

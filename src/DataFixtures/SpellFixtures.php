@@ -2201,6 +2201,38 @@ class SpellFixtures extends Fixture
                 'energyCost' => 8,
                 'level' => 2,
             ],
+
+            // === Sorts de boss de zone (tâche 66) ===
+            // Gardien de la Forêt — Rugissement primordial (signature phase 2)
+            'primordial_roar' => [
+                'slug' => 'primordial-roar',
+                'damage' => 7,
+                'element' => Element::Beast,
+                'heal' => null,
+                'name' => 'Rugissement primordial',
+                'description' => 'Un rugissement ancestral qui fait trembler la terre et paralyse de terreur',
+                'hit' => 80,
+                'cooldown' => 3,
+                'statusEffectSlug' => 'paralysis',
+                'aoeTargets' => 0,
+                'critical' => 10,
+                'level' => 5,
+            ],
+            // Seigneur de la Forge — Forge obscure (signature phase 3)
+            'dark_forge_blast' => [
+                'slug' => 'dark-forge-blast',
+                'damage' => 9,
+                'element' => Element::Metal,
+                'heal' => null,
+                'name' => 'Déflagration de la forge obscure',
+                'description' => 'Libère une explosion de métal en fusion imprégné de ténèbres',
+                'hit' => 75,
+                'cooldown' => 4,
+                'statusEffectSlug' => 'burn',
+                'aoeTargets' => 0,
+                'critical' => 15,
+                'level' => 5,
+            ],
         ];
     }
 }

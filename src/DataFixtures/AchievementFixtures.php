@@ -112,6 +112,12 @@ class AchievementFixtures extends Fixture
             ['slug' => 'kill-abyssal-blacksmith-50', 'title' => 'Chasseur de forgerons', 'description' => 'Tuer 50 forgerons abyssaux', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'abyssal_blacksmith', 'count' => 50], 'reward' => ['gils' => 1800]],
             ['slug' => 'kill-abyssal-blacksmith-100', 'title' => 'Exterminateur de forgerons', 'description' => 'Tuer 100 forgerons abyssaux', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'abyssal_blacksmith', 'count' => 100], 'reward' => ['gils' => 3500, 'title' => 'Exterminateur de forgerons']],
 
+            // === BOSS DE ZONE (tâche 66) ===
+            // Gardien de la Forêt
+            ['slug' => 'kill-forest-guardian-1', 'title' => 'Gardien terrassé', 'description' => 'Vaincre le Gardien de la Forêt', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'forest_guardian', 'count' => 1], 'reward' => ['gils' => 1000, 'title' => 'Protecteur de la forêt']],
+            // Seigneur de la Forge
+            ['slug' => 'kill-forge-lord-1', 'title' => 'Seigneur de la forge vaincu', 'description' => 'Vaincre le Seigneur de la Forge', 'category' => 'combat', 'criteria' => ['type' => 'mob_kill', 'monster_slug' => 'forge_lord', 'count' => 1], 'reward' => ['gils' => 1500, 'title' => 'Maître de la forge']],
+
             // === EXPLORATION: Monstres différents découverts ===
             ['slug' => 'discover-5', 'title' => 'Explorateur novice', 'description' => 'Combattre 5 types de monstres différents', 'category' => 'exploration', 'criteria' => ['type' => 'monster_discovery', 'count' => 5], 'reward' => ['gils' => 100]],
             ['slug' => 'discover-10', 'title' => 'Explorateur confirmé', 'description' => 'Combattre 10 types de monstres différents', 'category' => 'exploration', 'criteria' => ['type' => 'monster_discovery', 'count' => 10], 'reward' => ['gils' => 300]],

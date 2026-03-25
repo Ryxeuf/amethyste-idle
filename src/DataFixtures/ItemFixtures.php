@@ -82,6 +82,14 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             $item->setRarity($data['rarity'] ?? $this->inferRarity($data));
 
+            if (isset($data['protection'])) {
+                $item->setProtection($data['protection']);
+            }
+
+            if (isset($data['materiaSlots'])) {
+                $item->setMateriaSlots($data['materiaSlots']);
+            }
+
             if (isset($data['boundToPlayer'])) {
                 $item->setBoundToPlayer($data['boundToPlayer']);
             }
@@ -1928,6 +1936,71 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+            ],
+
+            // --- Récompenses uniques de boss de zone (tâche 66) ---
+
+            'guardian_bark_armor' => [
+                'name' => 'Cuirasse d\'écorce ancestrale',
+                'description' => 'Une cuirasse vivante taillée dans l\'écorce du Gardien de la Forêt. Des runes végétales pulsent à sa surface.',
+                'type' => 'gear',
+                'element' => Element::Beast,
+                'slug' => 'guardian-bark-armor',
+                'gear_location' => Item::GEAR_LOCATION_CHEST,
+                'price' => 800,
+                'space' => 4,
+                'energy_cost' => 0,
+                'nb_usages' => 300,
+                'rarity' => ItemRarity::Legendary,
+                'protection' => 18,
+                'materiaSlots' => 2,
+            ],
+            'guardian_thorn_staff' => [
+                'name' => 'Bâton d\'épines primordiales',
+                'description' => 'Un bâton noueux arraché au cœur du Gardien. Des épines acérées y poussent encore.',
+                'type' => 'gear',
+                'element' => Element::Earth,
+                'spell' => 'none_attack_2',
+                'slug' => 'guardian-thorn-staff',
+                'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
+                'domain' => 'mage',
+                'price' => 750,
+                'space' => 3,
+                'energy_cost' => 0,
+                'nb_usages' => 300,
+                'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
+            ],
+            'forgelord_obsidian_blade' => [
+                'name' => 'Lame d\'obsidienne du Seigneur',
+                'description' => 'Une épée forgée dans les ténèbres par le Seigneur de la Forge. L\'obsidienne vibre d\'une énergie sombre.',
+                'type' => 'gear',
+                'element' => Element::Metal,
+                'spell' => 'none_attack_2',
+                'slug' => 'forgelord-obsidian-blade',
+                'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
+                'domain' => 'soldier',
+                'price' => 900,
+                'space' => 3,
+                'energy_cost' => 0,
+                'nb_usages' => 300,
+                'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
+            ],
+            'forgelord_dark_plate' => [
+                'name' => 'Plastron de la forge obscure',
+                'description' => 'Un plastron massif en métal sombre, imprégné de l\'essence des ténèbres de la forge.',
+                'type' => 'gear',
+                'element' => Element::Dark,
+                'slug' => 'forgelord-dark-plate',
+                'gear_location' => Item::GEAR_LOCATION_CHEST,
+                'price' => 950,
+                'space' => 4,
+                'energy_cost' => 0,
+                'nb_usages' => 300,
+                'rarity' => ItemRarity::Legendary,
+                'protection' => 22,
+                'materiaSlots' => 2,
             ],
 
             // --- Items craftables (tâche 26) ---
