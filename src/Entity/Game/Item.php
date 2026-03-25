@@ -183,6 +183,15 @@ class Item
     #[ORM\Column(name: 'materia_slots', type: 'integer', options: ['default' => 0])]
     private int $materiaSlots = 0;
 
+    /**
+     * Configuration détaillée des slots materia (élément par slot, liaisons).
+     * Format : [{"element": "fire", "linked": null}, {"element": "none", "linked": 1}, ...]
+     *
+     * @var array<int, array{element: string, linked: int|null}>
+     */
+    #[ORM\Column(name: 'materia_slot_config', type: 'json', nullable: true)]
+    private ?array $materiaSlotConfig = null;
+
     #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
     private bool $isCosmetic = false;
 
@@ -543,6 +552,26 @@ class Item
     public function setMateriaSlots(int $materiaSlots): void
     {
         $this->materiaSlots = $materiaSlots;
+    }
+
+    /**
+     * @return array<int, array{element: string, linked: int|null}>
+     */
+    public function getMateriaSlotConfig(): array
+    {
+        return $this->materiaSlotConfig ?? [];
+    }
+
+    /**
+     * @param array<int, array{element: string, linked: int|null}>|null $config
+     */
+    public function setMateriaSlotConfig(?array $config): void
+    {
+        $this->materiaSlotConfig = $config;
+
+        if ($config !== null) {
+            $this->materiaSlots = \count($config);
+        }
     }
 
     public function isCosmetic(): bool

@@ -4,7 +4,7 @@
     {{ form_start(form, {'attr': {'class': 'space-y-6', 'data-controller': 'admin-item-materia-slots'}}) }}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {% for field in form %}
-                {% if field.vars.name != '_token' and field.vars.name != 'materiaSlots' %}
+                {% if field.vars.name not in ['_token', 'materiaSlots', 'materiaSlotConfig'] %}
                     <div class="{% if field.vars.name in ['description', 'effect'] %}md:col-span-2{% endif %}">
                         {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
                         {% set merged_attr = field.vars.attr|default({})|merge({
@@ -20,7 +20,10 @@
             {% endfor %}
         </div>
 
-        {# Slots materia — carte dediee #}
+        {# Hidden config input #}
+        {{ form_widget(form.materiaSlotConfig) }}
+
+        {# Slots materia — carte dediee style FF7 #}
         <div
             class="md:col-span-2 rounded-xl border border-cyan-900/40 bg-gradient-to-br from-gray-900 via-gray-900 to-cyan-950/20 p-5 sm:p-6 shadow-inner transition-opacity duration-200"
             data-admin-item-materia-slots-target="panel"
@@ -33,9 +36,10 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                         </span>
                         Slots materia
+                        <span class="text-xs font-normal text-gray-500 ml-1">— style FF7</span>
                     </h2>
                     <p class="text-sm text-gray-500 mt-1 max-w-xl">
-                        Definissez combien de materias peuvent etre sertis sur cette piece. Un apercu visuel reflete le nombre choisi (max. 12).
+                        Configurez chaque slot : cliquez sur une orbe pour choisir son element. Utilisez le bouton de liaison pour connecter deux slots (synergie).
                     </p>
                 </div>
                 <p class="text-xs text-amber-200/80 bg-amber-950/40 border border-amber-800/50 rounded-lg px-3 py-2 sm:max-w-xs shrink-0">
@@ -43,8 +47,9 @@
                 </p>
             </div>
 
-            <div class="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
-                <div class="flex items-center gap-3">
+            <div class="flex flex-col gap-6">
+                {# Controls row: +/- and count #}
+                <div class="flex items-center gap-4">
                     <button type="button" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-800 border border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-cyan-600/50 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500/50" data-action="admin-item-materia-slots#decrement" aria-label="Retirer un slot">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
                     </button>
@@ -55,23 +60,34 @@
                     <button type="button" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-800 border border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-cyan-600/50 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500/50" data-action="admin-item-materia-slots#increment" aria-label="Ajouter un slot">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     </button>
+
+                    <div class="ml-auto lg:w-36 shrink-0">
+                        <label for="{{ form.materiaSlots.vars.id }}" class="block text-xs font-medium text-gray-500 mb-1">Valeur exacte</label>
+                        {% set slot_merged = form.materiaSlots.vars.attr|default({})|merge({
+                            'class': (form.materiaSlots.vars.attr.class|default('')) ~ ' w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-sm text-center tabular-nums font-semibold text-cyan-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/40'
+                        }) %}
+                        {{ form_widget(form.materiaSlots, {'attr': slot_merged}) }}
+                        {{ form_errors(form.materiaSlots) }}
+                    </div>
                 </div>
 
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-medium text-gray-500 mb-2">Apercu (12 emplacements max)</p>
-                    <div class="flex flex-wrap gap-2 sm:gap-2.5 p-3 rounded-lg bg-black/25 border border-gray-800" data-admin-item-materia-slots-target="orbs" role="img" aria-label="Apercu des slots"></div>
+                {# Visual slot editor #}
+                <div>
+                    <p class="text-xs font-medium text-gray-500 mb-2">Cliquez sur un slot pour configurer son element</p>
+                    <div class="p-4 rounded-lg bg-black/30 border border-gray-800" data-admin-item-materia-slots-target="orbs" role="group" aria-label="Editeur de slots materia"></div>
                 </div>
 
-                <div class="lg:w-44 shrink-0">
-                    <label for="{{ form.materiaSlots.vars.id }}" class="block text-xs font-medium text-gray-500 mb-1.5">Valeur exacte</label>
-                    {% set slot_merged = form.materiaSlots.vars.attr|default({})|merge({
-                        'class': (form.materiaSlots.vars.attr.class|default('')) ~ ' w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-sm text-center tabular-nums font-semibold text-cyan-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/40'
-                    }) %}
-                    {{ form_widget(form.materiaSlots, {'attr': slot_merged}) }}
-                    {{ form_errors(form.materiaSlots) }}
-                    {% if form.materiaSlots.vars.help %}
-                        <p class="text-xs text-gray-600 mt-2">{{ form.materiaSlots.vars.help|trans }}</p>
-                    {% endif %}
+                {# Legend #}
+                <div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[10px] text-gray-500">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border border-dashed border-gray-600"></span> Aucun</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_4px_rgba(239,68,68,0.6)]"></span> Feu</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_4px_rgba(59,130,246,0.6)]"></span> Eau</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_4px_rgba(245,158,11,0.6)]"></span> Terre</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-[0_0_4px_rgba(6,182,212,0.6)]"></span> Air</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-300 shadow-[0_0_4px_rgba(253,224,71,0.6)]"></span> Lumiere</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-violet-400 shadow-[0_0_4px_rgba(167,139,250,0.6)]"></span> Tenebres</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-gray-400 shadow-[0_0_4px_rgba(156,163,175,0.5)]"></span> Metal</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.6)]"></span> Bete</span>
                 </div>
             </div>
         </div>
