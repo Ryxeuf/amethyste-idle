@@ -86,7 +86,7 @@ class CombatCapacityResolver
     /**
      * Find the spell entry for a given slug from equipped materia.
      *
-     * @return array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, locked: bool}|null
+     * @return array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, linkedBonus: bool, locked: bool}|null
      */
     public function findMateriaSpell(Player $player, string $spellSlug): ?array
     {

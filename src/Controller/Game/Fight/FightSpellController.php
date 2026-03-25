@@ -111,7 +111,7 @@ class FightSpellController extends AbstractController
 
         $spell = $materiaEntry['spell'];
         $elementMatch = $materiaEntry['elementMatch'];
-        $linkedBonus = $materiaEntry['linkedBonus'] ?? false;
+        $linkedBonus = $materiaEntry['linkedBonus'];
 
         // Check cooldown
         $entityKey = 'player_' . $player->getId();
