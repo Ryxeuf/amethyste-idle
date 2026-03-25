@@ -81,9 +81,9 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 ### 71 — World boss spawn & combat (L | ★★★)
 > Boss mondial spawn via evenements, visible sur la carte, combat multi-joueurs avec loot a contribution. Prerequis : ← 21 (Executeur GameEvent), 35 (Annonces Mercure evenements)
-- [ ] **Sous-phase A — Spawn** : GameEventExecutor traite `boss_spawn` → creer un Mob boss sur une map donnee (params JSON)
-- [ ] **Sous-phase A** : Afficher le world boss sur la carte avec un sprite/aura distinctif
-- [ ] **Sous-phase A** : Despawn automatique quand l'event expire (si non vaincu)
+- [x] **Sous-phase A — Spawn** : GameEventExecutor traite `boss_spawn` → creer un Mob boss sur une map donnee (params JSON)
+- [x] **Sous-phase A** : Afficher le world boss sur la carte avec un sprite/aura distinctif
+- [x] **Sous-phase A** : Despawn automatique quand l'event expire (si non vaincu)
 - [ ] **Sous-phase B — Combat multi-joueurs** : Permettre a plusieurs joueurs d'engager le meme Mob (Fight partage)
 - [ ] **Sous-phase B** : `ContributionTracker` : tracker les degats infliges par chaque joueur pendant le combat
 - [ ] **Sous-phase B** : Loot base sur la contribution (top 3 = loot garanti, autres = loot probabiliste)
@@ -115,16 +115,8 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 ---
 
-### 75 — PNJ routines (L | ★★)
-> Les PNJ se deplacent selon un horaire in-game, animes sur la carte via Mercure. Prerequis : ← 20 (Horloge in-game & API temps)
-- [ ] Entite `PnjSchedule` (pnj, hour, coordinates, map) — table horaire du PNJ
-- [ ] Migration SQL
-- [ ] `PnjRoutineService` : deplace les PNJ selon l'heure in-game courante
-- [ ] Commande Scheduler `app:pnj:routine` (toutes les 5 min)
-- [ ] Topic Mercure `map/pnj-move` pour animer le deplacement cote client
-- [ ] Animation de marche du PNJ dans le renderer PixiJS (reutiliser SpriteAnimator)
-- [ ] Fixtures : 3-5 PNJ avec routines simples (maison ↔ travail ↔ taverne)
-- [ ] Gerer le cas ou un joueur parle a un PNJ qui se deplace
+### ~~75 — PNJ routines (L | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

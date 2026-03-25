@@ -90,6 +90,19 @@ class Mob implements CharacterInterface
     #[ORM\Column(name: 'summoned', type: 'boolean', options: ['default' => false])]
     private bool $summoned = false;
 
+    /**
+     * True si le mob est un world boss (spawné par un GameEvent boss_spawn).
+     */
+    #[ORM\Column(name: 'is_world_boss', type: 'boolean', options: ['default' => false])]
+    private bool $isWorldBoss = false;
+
+    /**
+     * GameEvent qui a spawné ce world boss (null pour les mobs normaux).
+     */
+    #[ORM\ManyToOne(targetEntity: GameEvent::class)]
+    #[ORM\JoinColumn(name: 'game_event_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?GameEvent $gameEvent = null;
+
     public function getName(): string
     {
         return $this->getMonster()->getName();
@@ -230,5 +243,25 @@ class Mob implements CharacterInterface
     public function setSummoned(bool $summoned): void
     {
         $this->summoned = $summoned;
+    }
+
+    public function isWorldBoss(): bool
+    {
+        return $this->isWorldBoss;
+    }
+
+    public function setIsWorldBoss(bool $isWorldBoss): void
+    {
+        $this->isWorldBoss = $isWorldBoss;
+    }
+
+    public function getGameEvent(): ?GameEvent
+    {
+        return $this->gameEvent;
+    }
+
+    public function setGameEvent(?GameEvent $gameEvent): void
+    {
+        $this->gameEvent = $gameEvent;
     }
 }

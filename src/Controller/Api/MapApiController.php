@@ -182,7 +182,7 @@ class MapApiController extends AbstractController
                 $spriteKey = 'mob_zombie';
             }
 
-            $mobs[] = [
+            $mobData = [
                 'id' => $mob->getId(),
                 'name' => $mob->getMonster()->getName(),
                 'slug' => $mob->getMonster()->getSlug(),
@@ -191,6 +191,12 @@ class MapApiController extends AbstractController
                 'y' => $ey,
                 'spriteKey' => $spriteKey,
             ];
+
+            if ($mob->isWorldBoss()) {
+                $mobData['isWorldBoss'] = true;
+            }
+
+            $mobs[] = $mobData;
         }
 
         $pnjEntities = $this->entityManager->getRepository(Pnj::class)->findBy(['map' => $map]);

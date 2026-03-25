@@ -708,6 +708,55 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // === World boss (tâche 71) ===
+            'ancient_wyrm' => [
+                'name' => 'Wyrm Ancien',
+                'life' => 2000,
+                'hit' => 95,
+                'speed' => 8,
+                'attack' => 'fire_ball',
+                'level' => 30,
+                'difficulty' => 5,
+                'isBoss' => true,
+                'spells' => ['dragon_breath', 'meteor_strike', 'volcanic_eruption', 'fire_nova'],
+                'aiPattern' => [
+                    'spell_chance' => 65,
+                    'preferred_element' => 'fire',
+                    'danger_alert' => [
+                        'threshold' => 40,
+                        'message' => 'Le Wyrm Ancien déploie ses ailes — la terre tremble sous sa fureur !',
+                        'spell' => 'volcanic-eruption',
+                    ],
+                ],
+                'elementalResistances' => [
+                    'fire' => 0.8,
+                    'dark' => 0.3,
+                    'water' => -0.5,
+                    'light' => -0.3,
+                    'earth' => 0.2,
+                ],
+                'bossPhases' => [
+                    [
+                        'hpThreshold' => 100,
+                        'name' => 'Phase 1 — Eveil',
+                        'action' => 'spell',
+                    ],
+                    [
+                        'hpThreshold' => 60,
+                        'name' => 'Phase 2 — Souffle devastateur',
+                        'action' => 'spell',
+                        'preferred_spell' => 'dragon-breath',
+                        'danger_message' => 'Le Wyrm crache un torrent de flammes anciennes !',
+                    ],
+                    [
+                        'hpThreshold' => 30,
+                        'name' => 'Phase 3 — Apocalypse',
+                        'action' => 'spell',
+                        'preferred_spell' => 'volcanic-eruption',
+                        'danger_message' => 'Le Wyrm Ancien entre en rage — le ciel s\'embrase !',
+                    ],
+                ],
+            ],
             'dragon' => [
                 'name' => 'Dragon ancestral',
                 'life' => 250,

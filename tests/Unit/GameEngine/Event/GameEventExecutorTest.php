@@ -4,6 +4,7 @@ namespace App\Tests\Unit\GameEngine\Event;
 
 use App\Entity\App\GameEvent;
 use App\Event\Game\GameEventActivatedEvent;
+use App\Event\Game\GameEventCompletedEvent;
 use App\GameEngine\Event\GameEventExecutor;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -77,6 +78,12 @@ class GameEventExecutorTest extends TestCase
         );
 
         $this->em->expects($this->once())->method('flush');
+        $this->eventDispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->isInstanceOf(GameEventCompletedEvent::class),
+                GameEventCompletedEvent::NAME,
+            );
 
         $result = $this->executor->execute();
 

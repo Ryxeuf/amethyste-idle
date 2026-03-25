@@ -4,6 +4,7 @@ namespace App\GameEngine\Event;
 
 use App\Entity\App\GameEvent;
 use App\Event\Game\GameEventActivatedEvent;
+use App\Event\Game\GameEventCompletedEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -33,7 +34,7 @@ class GameEventExecutor
         $now = new \DateTime();
 
         [$activatedEvents, $scheduledChanges] = $this->activateScheduledEvents($now);
-        [$completed, $recurring] = $this->completeExpiredEvents($now);
+        [$completedEvents, $completed, $recurring] = $this->completeExpiredEvents($now);
 
         if ($scheduledChanges > 0 || $completed > 0) {
             $this->entityManager->flush();
@@ -43,6 +44,13 @@ class GameEventExecutor
             $this->eventDispatcher->dispatch(
                 new GameEventActivatedEvent($gameEvent),
                 GameEventActivatedEvent::NAME,
+            );
+        }
+
+        foreach ($completedEvents as $gameEvent) {
+            $this->eventDispatcher->dispatch(
+                new GameEventCompletedEvent($gameEvent),
+                GameEventCompletedEvent::NAME,
             );
         }
 
@@ -91,7 +99,7 @@ class GameEventExecutor
     }
 
     /**
-     * @return array{int, int} [completed count, recurring count]
+     * @return array{GameEvent[], int, int} [completed events, completed count, recurring count]
      */
     private function completeExpiredEvents(\DateTime $now): array
     {
@@ -99,11 +107,13 @@ class GameEventExecutor
             'status' => GameEvent::STATUS_ACTIVE,
         ]);
 
+        $completedEvents = [];
         $completed = 0;
         $recurring = 0;
         foreach ($active as $event) {
             if ($event->getEndsAt() <= $now) {
                 $event->setStatus(GameEvent::STATUS_COMPLETED);
+                $completedEvents[] = $event;
                 ++$completed;
 
                 $this->logger->info(sprintf(
@@ -119,7 +129,7 @@ class GameEventExecutor
             }
         }
 
-        return [$completed, $recurring];
+        return [$completedEvents, $completed, $recurring];
     }
 
     private function createNextOccurrence(GameEvent $previous): void
