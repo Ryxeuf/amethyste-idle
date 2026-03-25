@@ -287,6 +287,45 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '126.36',
                 'monster' => 'crystal_golem',
             ],
+            // === Monstres tier 2 avancés (tâche 65) — lvl 15-25 ===
+            // Archidruide corrompu (lvl 16) — zone très éloignée
+            'corrupted_archdruid_1' => [
+                'coordinates' => '40.28',
+                'monster' => 'corrupted_archdruid',
+            ],
+            'corrupted_archdruid_2' => [
+                'coordinates' => '128.40',
+                'monster' => 'corrupted_archdruid',
+            ],
+            // Liche mineure (lvl 18) — zone extrême, nocturne
+            'lesser_lich_1' => [
+                'coordinates' => '38.40',
+                'monster' => 'lesser_lich',
+                'nocturnal' => true,
+            ],
+            'lesser_lich_2' => [
+                'coordinates' => '130.28',
+                'monster' => 'lesser_lich',
+                'nocturnal' => true,
+            ],
+            // Hydre des marais (lvl 20) — zone extrême
+            'swamp_hydra_1' => [
+                'coordinates' => '35.34',
+                'monster' => 'swamp_hydra',
+            ],
+            'swamp_hydra_2' => [
+                'coordinates' => '134.34',
+                'monster' => 'swamp_hydra',
+            ],
+            // Forgeron abyssal (lvl 24) — zone la plus éloignée
+            'abyssal_blacksmith_1' => [
+                'coordinates' => '32.30',
+                'monster' => 'abyssal_blacksmith',
+            ],
+            'abyssal_blacksmith_2' => [
+                'coordinates' => '138.38',
+                'monster' => 'abyssal_blacksmith',
+            ],
             // === Groupe multi-mob avec soigneur (tâche 49) ===
             'skeleton_group_1' => [
                 'coordinates' => '75.22',
