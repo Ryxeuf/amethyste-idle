@@ -187,5 +187,4 @@ class GameEventFixtures extends Fixture
             ],
         ];
     }
-
 }
