@@ -1059,3 +1059,21 @@
 - [x] Tables de loot avec drops garantis pour chaque boss
 - [x] 2 succes : Gardien terrasse, Seigneur de la forge vaincu (avec titres)
 - [x] Placement sur la carte (1 mob par boss, zones eloignees)
+
+---
+
+## 64 — Equipement tier 3 + slots materia (2026-03-25) ✅
+
+> Set avance avec slots materia integres pour les builds endgame.
+
+- [x] 28 items tier 3 : 7 pieces × 4 elements (Metal, Bete, Lumiere, Ombre)
+  - Epees, boucliers, casques, plastrons, jambieres, bottes, gantelets
+  - Rarete Epic, niveau 15, +15% degats elementaires
+- [x] 1-2 slots materia sur chaque piece (2 pour armes/plastrons, 1 pour le reste)
+- [x] Spell `none_attack_3` (damage 3) pour les armes tier 3
+- [x] 4 equipment sets avec bonus progressifs (2/4/6 pieces) :
+  - Acier Runique (Metal) : protection + degats + critique
+  - Predateur Sauvage (Bete) : degats + critique + vie
+  - Aurore Sacree (Lumiere) : soin + precision + vie
+  - Abysses Eternelles (Ombre) : degats + soin + critique
+- [x] Loot tables : drops T3 sur monstres lvl 15-25 et boss de zone

@@ -17,12 +17,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ### Piste A — Contenu avance (‖)
 
-### 64 — Equipement tier 3 + slots materia (M | ★★)
-> Set avance avec slots materia integres pour les builds endgame. Prerequis : ← 29 (Equipement tier 2), 06 (Systeme materia fonctionnel)
-- [ ] Set complet 7 pieces — 4 variantes elementaires (Metal, Bete, Lumiere, Ombre)
-  - = 28 items au total
-- [ ] 1-2 slots materia sur chaque piece avancee
-- [ ] Ajouter aux loot tables des monstres lvl 15-25 et boss
+### ~~64 — Equipement tier 3 + slots materia (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

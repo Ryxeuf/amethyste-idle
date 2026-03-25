@@ -44,3 +44,75 @@ App\Entity\Game\EquipmentSet:
       - '@silver_amulet'
       - '@iron_shield'
       - '@long_sword'
+
+  # === Set Tier 3 — Acier Runique (Métal) — dégâts & protection ===
+  set_runic_steel:
+    slug: 'runic-steel'
+    name: "Set d'Acier Runique"
+    description: "Forgé dans un alliage oublié, cet équipement renforce à la fois l'attaque et la défense de son porteur grâce à des runes métalliques ancestrales."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'protection', bonus_value: 5 }
+      - { required_pieces: 4, bonus_type: 'damage', bonus_value: 8 }
+      - { required_pieces: 6, bonus_type: 'critical', bonus_value: 10 }
+    items:
+      - '@t3_metal_sword'
+      - '@t3_metal_shield'
+      - '@t3_metal_helmet'
+      - '@t3_metal_chest'
+      - '@t3_metal_legs'
+      - '@t3_metal_boots'
+      - '@t3_metal_gloves'
+
+  # === Set Tier 3 — Prédateur Sauvage (Bête) — dégâts & critique ===
+  set_savage_predator:
+    slug: 'savage-predator'
+    name: "Set du Prédateur Sauvage"
+    description: "Taillé dans les dépouilles des bêtes les plus féroces, cet équipement déchaîne l'instinct primal de son porteur."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'damage', bonus_value: 6 }
+      - { required_pieces: 4, bonus_type: 'critical', bonus_value: 12 }
+      - { required_pieces: 6, bonus_type: 'life', bonus_value: 25 }
+    items:
+      - '@t3_beast_sword'
+      - '@t3_beast_shield'
+      - '@t3_beast_helmet'
+      - '@t3_beast_chest'
+      - '@t3_beast_legs'
+      - '@t3_beast_boots'
+      - '@t3_beast_gloves'
+
+  # === Set Tier 3 — Aurore Sacrée (Lumière) — soin & précision ===
+  set_sacred_dawn:
+    slug: 'sacred-dawn'
+    name: "Set de l'Aurore Sacrée"
+    description: "Béni par les prêtres de l'aube, cet équipement amplifie les soins et la précision de son porteur."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'heal', bonus_value: 12 }
+      - { required_pieces: 4, bonus_type: 'hit', bonus_value: 10 }
+      - { required_pieces: 6, bonus_type: 'life', bonus_value: 30 }
+    items:
+      - '@t3_light_sword'
+      - '@t3_light_shield'
+      - '@t3_light_helmet'
+      - '@t3_light_chest'
+      - '@t3_light_legs'
+      - '@t3_light_boots'
+      - '@t3_light_gloves'
+
+  # === Set Tier 3 — Abysses Éternelles (Ombre) — dégâts & drain ===
+  set_eternal_abyss:
+    slug: 'eternal-abyss'
+    name: "Set des Abysses Éternelles"
+    description: "Forgé dans les profondeurs du néant, cet équipement sombre amplifie la puissance destructrice et draine la vie des ennemis."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'damage', bonus_value: 8 }
+      - { required_pieces: 4, bonus_type: 'heal', bonus_value: 8 }
+      - { required_pieces: 6, bonus_type: 'critical', bonus_value: 15 }
+    items:
+      - '@t3_dark_sword'
+      - '@t3_dark_shield'
+      - '@t3_dark_helmet'
+      - '@t3_dark_chest'
+      - '@t3_dark_legs'
+      - '@t3_dark_boots'
+      - '@t3_dark_gloves'
