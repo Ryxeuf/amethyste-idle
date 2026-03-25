@@ -72,14 +72,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ### Piste B — Combat avance (‖)
 
-### 69 — Monstres invocateurs (M | ★★)
-> Monstres capables d'invoquer des renforts en cours de combat, rendant les combats dynamiques. Prerequis : ← 49 (Monstres soigneurs / multi-mobs)
-- [ ] Nouvelle action IA `summon` dans MobActionHandler
-- [ ] Creer un Mob en cours de combat (ajout a la Fight, insertion dans la timeline)
-- [ ] Limite d'invocation (max 2 renforts par combat)
-- [ ] FightTurnResolver : recalculer la timeline quand un mob est ajoute
-- [ ] Fixtures : monstre invocateur (ex: Necromancien invoque des Squelettes)
-- [ ] Message de log specifique ("X invoque un Y !")
+### ~~69 — Monstres invocateurs (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

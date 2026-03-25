@@ -14,6 +14,8 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -26,6 +28,7 @@ class MobActionHandlerTest extends TestCase
     private LoggerInterface&MockObject $logger;
     private StatusEffectManager&MockObject $statusEffectManager;
     private CombatLogger&MockObject $combatLogger;
+    private EntityManagerInterface&MockObject $entityManager;
 
     protected function setUp(): void
     {
@@ -34,6 +37,7 @@ class MobActionHandlerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         // Par defaut : pas de status, pas de messages
         $this->statusEffectManager->method('processStartOfTurn')->willReturn([]);
@@ -50,6 +54,7 @@ class MobActionHandlerTest extends TestCase
             $this->logger,
             $this->statusEffectManager,
             $this->combatLogger,
+            $this->entityManager,
         );
     }
 
@@ -66,6 +71,7 @@ class MobActionHandlerTest extends TestCase
         ?array $bossPhases = null,
         int $hit = 100,
         string $name = 'Gobelin',
+        bool $summonedInFight = false,
     ): Mob&MockObject {
         $monster = $this->createMock(Monster::class);
         $monster->method('getAiPattern')->willReturn($aiPattern);
@@ -95,6 +101,7 @@ class MobActionHandlerTest extends TestCase
         $mob->method('getMonster')->willReturn($monster);
         $mob->method('getName')->willReturn($name);
         $mob->method('getId')->willReturn(1);
+        $mob->method('isSummonedInFight')->willReturn($summonedInFight);
 
         // Mock getAttack comme fallback
         $basicAttack = $this->createMock(Spell::class);
@@ -104,8 +111,12 @@ class MobActionHandlerTest extends TestCase
         return $mob;
     }
 
-    private function createFightMock(Mob $mob, ?Player $player = null, int $step = 0): Fight&MockObject
+    private function createFightMock(Mob|array $mobs, ?Player $player = null, int $step = 0): Fight&MockObject
     {
+        if ($mobs instanceof Mob) {
+            $mobs = [$mobs];
+        }
+
         if ($player === null) {
             $player = $this->createMock(Player::class);
             $player->method('isDead')->willReturn(false);
@@ -113,7 +124,7 @@ class MobActionHandlerTest extends TestCase
         }
 
         $fight = $this->createMock(Fight::class);
-        $fight->method('getMobs')->willReturn(new ArrayCollection([$mob]));
+        $fight->method('getMobs')->willReturn(new ArrayCollection($mobs));
         $fight->method('getPlayers')->willReturn(new ArrayCollection([$player]));
         $fight->method('getId')->willReturn(42);
         $fight->method('getStep')->willReturn($step);
@@ -391,5 +402,128 @@ class MobActionHandlerTest extends TestCase
         $result = $handler->doAction($fight);
 
         $this->assertIsArray($result['messages']);
+    }
+
+    // === Tests invocation (tache 69) ===
+
+    public function testSummonCreatesNewMobInFight(): void
+    {
+        $summonedMonster = $this->createMock(Monster::class);
+        $summonedMonster->method('getName')->willReturn('Squelette');
+        $summonedMonster->method('getLife')->willReturn(35);
+        $summonedMonster->method('getLevel')->willReturn(2);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findOneBy')->with(['slug' => 'skeleton'])->willReturn($summonedMonster);
+        $this->entityManager->method('getRepository')->with(Monster::class)->willReturn($repo);
+        $this->entityManager->expects($this->once())->method('persist')->with($this->isInstanceOf(Mob::class));
+
+        $mob = $this->createMobMock(
+            name: 'Necromancien',
+            aiPattern: [
+                'summon' => [
+                    'monster_slug' => 'skeleton',
+                    'max_summons' => 2,
+                    'chance' => 100, // 100% pour le test
+                ],
+                'spell_chance' => 0,
+            ],
+            hit: 100,
+        );
+        $fight = $this->createFightMock($mob);
+
+        $this->combatLogger->expects($this->once())
+            ->method('logSummon')
+            ->with($fight, $mob, 'Squelette');
+
+        $handler = $this->createHandler();
+        $result = $handler->doAction($fight);
+
+        $this->assertContains('Necromancien invoque un Squelette !', $result['messages']);
+    }
+
+    public function testSummonBlockedWhenMaxReached(): void
+    {
+        // Deux mobs deja invoques dans le combat
+        $summonedMob1 = $this->createMobMock(name: 'Squelette 1', summonedInFight: true);
+        $summonedMob2 = $this->createMobMock(name: 'Squelette 2', summonedInFight: true);
+
+        $summoner = $this->createMobMock(
+            name: 'Necromancien',
+            aiPattern: [
+                'summon' => [
+                    'monster_slug' => 'skeleton',
+                    'max_summons' => 2,
+                    'chance' => 100,
+                ],
+                'spell_chance' => 0,
+            ],
+            hit: 100,
+        );
+
+        $fight = $this->createFightMock([$summoner, $summonedMob1, $summonedMob2]);
+
+        $this->spellApplicator->method('apply')->willReturn([]);
+
+        // Le persist ne devrait PAS etre appele pour un nouveau mob
+        // (car max_summons atteint, le mob fera une action normale)
+        $handler = $this->createHandler();
+        $result = $handler->doAction($fight);
+
+        // Le message ne devrait PAS contenir "invoque"
+        $hasSummonMessage = false;
+        foreach ($result['messages'] as $msg) {
+            if (str_contains($msg, 'invoque')) {
+                $hasSummonMessage = true;
+                break;
+            }
+        }
+        $this->assertFalse($hasSummonMessage, 'Le mob ne devrait pas pouvoir invoquer au-dela de la limite');
+    }
+
+    public function testSummonedMobAppearsInTimeline(): void
+    {
+        // Verifie que le mob invoque est bien ajoute a la collection du fight
+        $summonedMonster = $this->createMock(Monster::class);
+        $summonedMonster->method('getName')->willReturn('Squelette');
+        $summonedMonster->method('getLife')->willReturn(35);
+        $summonedMonster->method('getLevel')->willReturn(2);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findOneBy')->with(['slug' => 'skeleton'])->willReturn($summonedMonster);
+        $this->entityManager->method('getRepository')->with(Monster::class)->willReturn($repo);
+        $this->entityManager->method('persist');
+
+        $mob = $this->createMobMock(
+            name: 'Necromancien',
+            aiPattern: [
+                'summon' => [
+                    'monster_slug' => 'skeleton',
+                    'max_summons' => 2,
+                    'chance' => 100,
+                ],
+                'spell_chance' => 0,
+            ],
+            hit: 100,
+        );
+
+        // Utiliser un vrai Fight pour verifier que addMob fonctionne
+        $player = $this->createMock(Player::class);
+        $player->method('isDead')->willReturn(false);
+        $player->method('getName')->willReturn('Heros');
+
+        $fight = $this->createMock(Fight::class);
+        $fight->method('getMobs')->willReturn(new ArrayCollection([$mob]));
+        $fight->method('getPlayers')->willReturn(new ArrayCollection([$player]));
+        $fight->method('getId')->willReturn(42);
+        $fight->method('getStep')->willReturn(0);
+
+        // Verifie que addMob est appele avec le mob invoque
+        $fight->expects($this->once())
+            ->method('addMob')
+            ->with($this->isInstanceOf(Mob::class));
+
+        $handler = $this->createHandler();
+        $handler->doAction($fight);
     }
 }

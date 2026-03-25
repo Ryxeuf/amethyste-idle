@@ -75,6 +75,8 @@
 		<span class="text-red-600">&#9760;</span>
 	{% elseif type == 'fight_start' %}
 		<span class="text-purple-400">&#9876;</span>
+	{% elseif type == 'summon' %}
+		<span class="text-violet-400">&#10039;</span>
 	{% else %}
 		<span class="text-gray-400">&#8226;</span>
 	{% endif %}
@@ -515,6 +517,7 @@
 									{% elseif log.type == 'critical' %}text-yellow-400
 									{% elseif log.type == 'miss' %}text-gray-500
 									{% elseif log.type == 'fight_start' %}text-purple-300
+									{% elseif log.type == 'summon' %}text-violet-300
 									{% elseif log.actorType == 'mob' %}text-red-200
 									{% elseif log.actorType == 'player' %}text-blue-200
 									{% else %}text-gray-300{% endif %}">

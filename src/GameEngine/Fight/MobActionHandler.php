@@ -5,11 +5,13 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\CharacterInterface;
+use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use App\Event\Fight\ActionEvent;
 use App\Event\Fight\MobActionHitEvent;
 use App\Event\Fight\MobActionMissEvent;
 use App\GameEngine\Fight\Handler\MobActionHandlerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -24,6 +26,7 @@ class MobActionHandler
         private readonly LoggerInterface $logger,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatLogger $combatLogger,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -82,6 +85,15 @@ class MobActionHandler
         }
 
         $action = $this->generateAction($fight, $mob);
+
+        // Action d'invocation : créer un renfort au lieu d'attaquer
+        if ($action === 'summon') {
+            $summonMessages = $this->executeSummon($fight, $mob);
+            $result['messages'] = array_merge($result['messages'], $summonMessages);
+
+            return $result;
+        }
+
         $spell = $this->resolveSpell($action, $mob);
 
         $this->logger->debug(sprintf('[MobActionHandler] Spell %s used by mob #%d', $spell->getName(), $mob->getId()));
@@ -208,7 +220,8 @@ class MobActionHandler
      *   "preferred_element": "fire",
      *   "sequence": ["attack", "attack", "spell"],
      *   "danger_alert": { "threshold": 30, "message": "...", "spell": "..." },
-     *   "role": "healer"
+     *   "role": "healer",
+     *   "summon": { "monster_slug": "skeleton", "max_summons": 2, "chance": 40 }
      * }
      */
     private function generateAction(Fight $fight, Mob $mob): string
@@ -219,6 +232,17 @@ class MobActionHandler
         // No AI pattern: basic attack
         if (!$aiPattern) {
             return $this->defaultAi($mob);
+        }
+
+        // Summoner: invoquer un renfort si possible
+        if (isset($aiPattern['summon'])) {
+            $summonConfig = $aiPattern['summon'];
+            if ($this->canSummon($fight, $summonConfig)) {
+                $chance = $summonConfig['chance'] ?? 40;
+                if (random_int(1, 100) <= $chance) {
+                    return 'summon';
+                }
+            }
         }
 
         // Healer role: priorité au soin d'un allié blessé
@@ -296,6 +320,67 @@ class MobActionHandler
         }
 
         return false;
+    }
+
+    /**
+     * Vérifie si le mob peut encore invoquer des renforts dans ce combat.
+     */
+    private function canSummon(Fight $fight, array $summonConfig): bool
+    {
+        $maxSummons = $summonConfig['max_summons'] ?? 2;
+        $summonedCount = 0;
+
+        foreach ($fight->getMobs() as $mob) {
+            if ($mob->isSummonedInFight()) {
+                ++$summonedCount;
+            }
+        }
+
+        return $summonedCount < $maxSummons;
+    }
+
+    /**
+     * Exécute l'invocation d'un renfort en combat.
+     *
+     * @return string[] Messages de combat
+     */
+    private function executeSummon(Fight $fight, Mob $summoner): array
+    {
+        $aiPattern = $summoner->getMonster()->getAiPattern();
+        $summonConfig = $aiPattern['summon'] ?? null;
+
+        if ($summonConfig === null) {
+            return [];
+        }
+
+        $monsterSlug = $summonConfig['monster_slug'] ?? null;
+        if ($monsterSlug === null) {
+            return [];
+        }
+
+        $monster = $this->entityManager->getRepository(Monster::class)->findOneBy(['slug' => $monsterSlug]);
+        if ($monster === null) {
+            $this->logger->warning(sprintf('[MobActionHandler] Summon failed: monster slug "%s" not found', $monsterSlug));
+
+            return [];
+        }
+
+        $summonedMob = new Mob();
+        $summonedMob->setMonster($monster);
+        $summonedMob->setLife($monster->getLife());
+        $summonedMob->setLevel($monster->getLevel());
+        $summonedMob->setSummonedInFight(true);
+        $summonedMob->setFight($fight);
+        $summonedMob->setCreatedAt(new \DateTime());
+        $summonedMob->setUpdatedAt(new \DateTime());
+
+        $fight->addMob($summonedMob);
+        $this->entityManager->persist($summonedMob);
+
+        $this->combatLogger->logSummon($fight, $summoner, $monster->getName());
+        $this->logger->debug(sprintf('[MobActionHandler] Mob #%d summoned a %s', $summoner->getId(), $monster->getName()));
+
+        return [sprintf('%s invoque un %s !', $summoner->getName(), $monster->getName())];
     }
 
     /**
