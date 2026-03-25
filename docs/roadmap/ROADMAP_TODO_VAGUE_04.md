@@ -10,6 +10,16 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
+### Editeur de cartes integre (plan detaille)
+
+Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation d'entites, generation procedurale. Permet la creation de cartes a taille configurable directement depuis l'admin.
+
+**Prerequis roadmap globale :** **44** (Extraction services TerrainImport), **57** (Commande terrain:sync), **58** (Parsing zones/biomes Tiled)
+
+**Documentation :** [PLAN_MAP_EDITOR.md](PLAN_MAP_EDITOR.md) — *jalons internes **MED-01** a **MED-16** (sans collision avec les numeros de la roadmap globale). Debloque les taches **67** (Foret des murmures) et **68** (Mines profondes).*
+
+---
+
 > **16 taches** qui dependent des Vagues 2-3.
 > Organisees en 5 pistes paralleles.
 

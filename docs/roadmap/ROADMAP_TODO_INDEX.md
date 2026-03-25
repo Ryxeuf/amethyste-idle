@@ -105,3 +105,4 @@ VAGUE 3 (depend de Vague 2)
 6. [Vague 6 — Long terme & polish final](ROADMAP_TODO_VAGUE_06.md)
 
 **Plan annexe :** [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md)
+**Plan annexe :** [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md)

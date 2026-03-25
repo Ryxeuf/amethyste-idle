@@ -8,3 +8,4 @@ Les taches **todo** sont reparties par priorite dans `docs/roadmap/` :
 L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'affichage et les statistiques.
 
 **Plan annexe :** [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md)
+**Plan annexe :** [roadmap/PLAN_MAP_EDITOR.md](roadmap/PLAN_MAP_EDITOR.md)

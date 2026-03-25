@@ -1,5 +1,7 @@
 Importer les cartes Tiled Map Editor dans la base de donnees.
 
+> **Note** : ce pipeline TMX est desormais secondaire. Le pipeline principal est l'editeur integre (`/admin/maps/{id}/editor`) qui ecrit directement en JSON dans `Area.fullData`. L'import TMX reste utile pour les cartes existantes et la validation via export TMX.
+
 ## Commande unifiee (recommandee)
 
 Utiliser `app:terrain:sync` qui orchestre tout le pipeline en une seule commande :
@@ -61,4 +63,4 @@ Si besoin d'executer les etapes individuellement :
    docker compose exec php php bin/console cache:clear
    ```
 
-CONTEXT : les cartes sont editees dans Tiled Map Editor (fichiers `.tmx` dans `terrain/`). L'import parse le XML TMX en JSON, extrait les couches de tuiles, les collisions (bitmask directionnel), les object layers (mobs, portails, spots), et les animations de tiles.
+CONTEXT : les cartes existantes ont ete editees dans Tiled Map Editor (fichiers `.tmx` dans `terrain/`). L'import parse le XML TMX en JSON, extrait les couches de tuiles, les collisions (bitmask directionnel), les object layers (mobs, portails, spots), et les animations de tiles. Les nouvelles cartes sont creees via l'editeur integre ou le generateur procedural (voir `/map-editor-agent` et `/map-generator-agent`).
