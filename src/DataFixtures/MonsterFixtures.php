@@ -628,7 +628,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'difficulty' => 5,
                 'isBoss' => true,
-                'spells' => ['forest_call', 'entangling_roots', 'nature_fury', 'primordial_roar'],
+                'spells' => ['leaf_blade', 'entangling_roots', 'nature_fury', 'primordial_roar'],
                 'aiPattern' => [
                     'spell_chance' => 55,
                     'preferred_element' => 'beast',

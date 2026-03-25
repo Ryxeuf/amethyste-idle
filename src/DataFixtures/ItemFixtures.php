@@ -1985,7 +1985,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'spell' => 'none_attack_2',
                 'slug' => 'guardian-thorn-staff',
                 'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
-                'domain' => 'mage',
+                'domain' => 'druid',
                 'price' => 750,
                 'space' => 3,
                 'energy_cost' => 0,

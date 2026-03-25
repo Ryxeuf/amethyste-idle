@@ -7,10 +7,9 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class GameEventFixtures extends Fixture implements DependentFixtureInterface
+class GameEventFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
@@ -189,10 +188,4 @@ class GameEventFixtures extends Fixture implements DependentFixtureInterface
         ];
     }
 
-    public function getDependencies(): array
-    {
-        return [
-            QuestFixtures::class,
-        ];
-    }
 }

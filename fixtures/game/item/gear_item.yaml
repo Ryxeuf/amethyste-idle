@@ -20,7 +20,7 @@ App\Entity\Game\Item:
     nbUsages: 100
     rarity: 'common'
     protection: 1
-    materia_slots: 0
+    materia_slots: 1
   bronze_ring (extends item):
     name: "Anneau de bronze"
     description: "Un anneau simple mais résistant, forgé en bronze"
