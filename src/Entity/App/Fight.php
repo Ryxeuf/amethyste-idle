@@ -45,6 +45,13 @@ class Fight
     #[ORM\Column(name: 'cooldowns', type: 'json', nullable: true)]
     private ?array $cooldowns = null;
 
+    /**
+     * Contributions de dégâts par joueur dans un combat world boss.
+     * Format : { "player_<id>": <totalDamage>, ... }.
+     */
+    #[ORM\Column(name: 'contributions', type: 'json', nullable: true)]
+    private ?array $contributions = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -182,6 +189,75 @@ class Fight
     public function isSpellOnCooldown(string $entityKey, string $spellSlug): bool
     {
         return $this->getSpellCooldown($entityKey, $spellSlug) > 0;
+    }
+
+    public function getContributions(): ?array
+    {
+        return $this->contributions;
+    }
+
+    public function setContributions(?array $contributions): void
+    {
+        $this->contributions = $contributions;
+    }
+
+    /**
+     * Ajoute des dégâts à la contribution d'un joueur (world boss).
+     */
+    public function addContribution(int $playerId, int $damage): void
+    {
+        $key = 'player_' . $playerId;
+        $contributions = $this->contributions ?? [];
+        $contributions[$key] = ($contributions[$key] ?? 0) + $damage;
+        $this->contributions = $contributions;
+    }
+
+    /**
+     * Retourne la contribution d'un joueur (total de dégâts infligés).
+     */
+    public function getPlayerContribution(int $playerId): int
+    {
+        return $this->contributions['player_' . $playerId] ?? 0;
+    }
+
+    /**
+     * Retourne les contributeurs triés par dégâts décroissants.
+     *
+     * @return array<int, array{playerId: int, damage: int, rank: int}>
+     */
+    public function getRankedContributors(): array
+    {
+        if (!$this->contributions) {
+            return [];
+        }
+
+        $ranked = [];
+        foreach ($this->contributions as $key => $damage) {
+            $playerId = (int) str_replace('player_', '', $key);
+            $ranked[] = ['playerId' => $playerId, 'damage' => $damage];
+        }
+
+        usort($ranked, fn (array $a, array $b) => $b['damage'] <=> $a['damage']);
+
+        foreach ($ranked as $i => &$entry) {
+            $entry['rank'] = $i + 1;
+        }
+
+        return $ranked;
+    }
+
+    /**
+     * Vérifie si ce combat concerne un world boss.
+     */
+    public function isWorldBossFight(): bool
+    {
+        foreach ($this->mobs as $mob) {
+            if ($mob->isWorldBoss()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function decrementAllCooldowns(): void

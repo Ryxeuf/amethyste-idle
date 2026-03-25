@@ -50,4 +50,24 @@ class FightHandler
 
         return $fight;
     }
+
+    /**
+     * Ajoute un joueur à un combat world boss existant.
+     */
+    public function joinWorldBossFight(Player $player, Fight $fight): void
+    {
+        $this->logger->info('Player {player} joining world boss fight {fight}', [
+            'player' => $player->getId(),
+            'fight' => $fight->getId(),
+        ]);
+
+        $fight->addPlayer($player);
+        $player->setFight($fight);
+        $player->setIsMoving(false);
+
+        $this->entityManager->flush();
+
+        $this->combatLogger->logPlayerJoined($fight, $player);
+        $this->entityManager->flush();
+    }
 }

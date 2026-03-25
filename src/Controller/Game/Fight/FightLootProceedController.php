@@ -3,7 +3,6 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
-use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -47,23 +46,35 @@ class FightLootProceedController extends AbstractController
             return new JsonResponse(['error' => 'Player not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $this->combatLogArchiver->archive($fight);
-
+        // Détacher ce joueur du combat
         $player->setFight(null);
         $this->entityManager->persist($player);
+        $fight->removePlayer($player);
+
+        // Si c'est un world boss et qu'il reste des joueurs, ne pas supprimer le combat
+        $remainingPlayers = $fight->getPlayers()->filter(fn (Player $p) => $p->getFight() !== null);
+        $isWorldBoss = $fight->isWorldBossFight();
+
+        if ($isWorldBoss && $remainingPlayers->count() > 0) {
+            $this->entityManager->flush();
+
+            return new JsonResponse(['success' => true]);
+        }
+
+        // Dernier joueur ou combat classique : nettoyage complet
+        $this->combatLogArchiver->archive($fight);
+
+        foreach ($fight->getPlayers() as $remainingPlayer) {
+            $remainingPlayer->setFight(null);
+            $this->entityManager->persist($remainingPlayer);
+        }
+
         foreach ($fight->getMobs() as $mob) {
-            /* @var Mob $mob */
             $this->entityManager->remove($mob);
         }
-        foreach ($fight->getPlayers() as $player) {
-            /* @var Player $player */
-            $player->setFight(null);
-            $this->entityManager->persist($player);
-        }
+
         $this->statusEffectManager->clearAllEffects($fight);
         $this->entityManager->remove($fight);
-
-        // $player->addItems($items);
         $this->entityManager->flush();
 
         return new JsonResponse(['success' => true]);
