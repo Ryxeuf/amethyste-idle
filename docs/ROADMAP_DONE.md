@@ -1000,3 +1000,17 @@
 - [x] Affichage visuel dans le template inventaire (badge "Lie", couleur cyan, connecteur ⟷)
 - [x] Fixtures : slots lies automatiquement par paires sur equipements a 2+ slots
 - [x] Tests unitaires LinkedMateriaResolverTest (10 tests)
+
+---
+
+## Tache 65 — Monstres tier 2 avances lvl 15-25 (2026-03-25) ✅
+
+> 4 monstres intermediaires (lvl 15-25) avec IA complexe (soigneurs, invocateurs), loot tables et succes bestiaire.
+
+- [x] **Archidruide corrompu** (lvl 16, diff 4) : soigneur nature/ombre, heal a 45% HP, sorts nature + dark_harvest
+- [x] **Liche mineure** (lvl 18, diff 5) : invocateur dark, invoque 2 squelettes, sorts ombre + dark_ritual
+- [x] **Hydre des marais** (lvl 20, diff 5) : tank eau/bete multi-attaque, sequence 6 coups, tidal_wave
+- [x] **Forgeron abyssal** (lvl 24, diff 5) : tank metal/feu, tres resistant, shrapnel_burst + steel_shield
+- [x] Loot tables pour les 4 monstres (potions, materia, equipement T2)
+- [x] Placement sur la carte (8 mobs, zones eloignees 32-138 du spawn)
+- [x] 12 succes bestiaire (3 paliers x 4 monstres : 10/50/100 kills)

@@ -165,6 +165,49 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'crystal_golem', 'item' => 't2_earth_shield', 'probability' => 5],
             ['monster' => 'crystal_golem', 'item' => 't2_earth_chest', 'probability' => 4],
 
+            // --- Monstres tier 2 avancés (tâche 65) — lvl 15-25 ---
+            // Archidruide corrompu (Bête/Ombre, lvl 16)
+            ['monster' => 'corrupted_archdruid', 'item' => 'leather_skin_2', 'probability' => 70],
+            ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_major', 'probability' => 20],
+            ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_medium', 'probability' => 30],
+            ['monster' => 'corrupted_archdruid', 'item' => 'antidote', 'probability' => 25],
+            ['monster' => 'corrupted_archdruid', 'item' => 'materia_savage_bite', 'probability' => 6],
+            ['monster' => 'corrupted_archdruid', 'item' => 'materia_vital_drain', 'probability' => 5],
+            ['monster' => 'corrupted_archdruid', 'item' => 't2_earth_chest', 'probability' => 5],
+            ['monster' => 'corrupted_archdruid', 'item' => 't2_earth_gloves', 'probability' => 4],
+
+            // Liche mineure (Ombre, lvl 18)
+            ['monster' => 'lesser_lich', 'item' => 'ancient_scroll', 'probability' => 25],
+            ['monster' => 'lesser_lich', 'item' => 'healing_potion_major', 'probability' => 25],
+            ['monster' => 'lesser_lich', 'item' => 'energy_potion_small', 'probability' => 30],
+            ['monster' => 'lesser_lich', 'item' => 'materia_vital_drain', 'probability' => 7],
+            ['monster' => 'lesser_lich', 'item' => 'materia_light_blessing', 'probability' => 4],
+            ['monster' => 'lesser_lich', 'item' => 'scroll_xp_boost', 'probability' => 8],
+            ['monster' => 'lesser_lich', 'item' => 't2_air_helmet', 'probability' => 5],
+            ['monster' => 'lesser_lich', 'item' => 't2_air_boots', 'probability' => 4],
+
+            // Hydre des marais (Eau/Bête, lvl 20)
+            ['monster' => 'swamp_hydra', 'item' => 'leather_skin_2', 'probability' => 80],
+            ['monster' => 'swamp_hydra', 'item' => 'healing_potion_major', 'probability' => 30],
+            ['monster' => 'swamp_hydra', 'item' => 'healing_potion_medium', 'probability' => 35],
+            ['monster' => 'swamp_hydra', 'item' => 'antidote', 'probability' => 30],
+            ['monster' => 'swamp_hydra', 'item' => 'materia_frost_mist', 'probability' => 7],
+            ['monster' => 'swamp_hydra', 'item' => 'materia_savage_bite', 'probability' => 5],
+            ['monster' => 'swamp_hydra', 'item' => 'scroll_teleport', 'probability' => 10],
+            ['monster' => 'swamp_hydra', 'item' => 't2_water_sword', 'probability' => 6],
+            ['monster' => 'swamp_hydra', 'item' => 't2_water_chest', 'probability' => 5],
+
+            // Forgeron abyssal (Métal/Feu, lvl 24)
+            ['monster' => 'abyssal_blacksmith', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'abyssal_blacksmith', 'item' => 'healing_potion_major', 'probability' => 35],
+            ['monster' => 'abyssal_blacksmith', 'item' => 'iron_sword', 'probability' => 12],
+            ['monster' => 'abyssal_blacksmith', 'item' => 'materia_steel_riposte', 'probability' => 8],
+            ['monster' => 'abyssal_blacksmith', 'item' => 'materia_fire_ball', 'probability' => 6],
+            ['monster' => 'abyssal_blacksmith', 'item' => 'scroll_xp_boost', 'probability' => 10],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_sword', 'probability' => 6],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_chest', 'probability' => 5],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't2_fire_shield', 'probability' => 5],
+
             // --- Boss : Dragon ---
             ['monster' => 'dragon', 'item' => 'materia_fire_ball', 'probability' => 40],
             ['monster' => 'dragon', 'item' => 'materia_flame_rain', 'probability' => 25],

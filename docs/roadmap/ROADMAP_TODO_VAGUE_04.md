@@ -26,12 +26,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
-### 65 — Monstres tier 2 avances lvl 15-25 (M | ★★★)
-> Monstres complexes (soigneurs, invocateurs) pour les zones de contenu avance. Prerequis : ← 47 (Monstres tier 2 sous-partie A)
-- [ ] **Sous-partie B** : 4 monstres intermediaires (lvl 15-25)
-  - Monstres plus complexes (soigneurs, invocateurs selon combat enrichi)
-  - Stats, AI patterns, resistances, loot tables
-  - Succes bestiaire (12 achievements)
+### ~~65 — Monstres tier 2 avances lvl 15-25 (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
