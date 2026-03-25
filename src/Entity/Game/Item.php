@@ -548,17 +548,11 @@ class Item
         $this->materiaSlots = $materiaSlots;
     }
 
-    /**
-     * @return array<int, array{element: string, linked: int|null}>
-     */
     public function getMateriaSlotConfig(): array
     {
         return $this->materiaSlotConfig ?? [];
     }
 
-    /**
-     * @param array<int, array{element: string, linked: int|null}>|null $config
-     */
     public function setMateriaSlotConfig(?array $config): void
     {
         $this->materiaSlotConfig = $config;
