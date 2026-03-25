@@ -11,6 +11,7 @@ use App\GameEngine\Fight\CombatSkillResolver;
 use App\GameEngine\Fight\ElementalSynergyCalculator;
 use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
+use App\GameEngine\Fight\LinkedMateriaResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
@@ -110,6 +111,7 @@ class FightSpellController extends AbstractController
 
         $spell = $materiaEntry['spell'];
         $elementMatch = $materiaEntry['elementMatch'];
+        $linkedBonus = $materiaEntry['linkedBonus'] ?? false;
 
         // Check cooldown
         $entityKey = 'player_' . $player->getId();
@@ -139,6 +141,11 @@ class FightSpellController extends AbstractController
         // Apply element match bonus from materia/slot matching (+25% damage)
         if ($elementMatch) {
             $bonuses['damage'] += (int) round($bonuses['damage'] * CombatCapacityResolver::ELEMENT_MATCH_DAMAGE_BONUS);
+        }
+
+        // Apply linked materia bonus (+15% damage when linked slots share element)
+        if ($linkedBonus) {
+            $bonuses['damage'] += max(1, (int) round($bonuses['damage'] * LinkedMateriaResolver::LINKED_DAMAGE_BONUS));
         }
 
         // Apply equipped gear elemental damage bonus (+10% per matching piece)

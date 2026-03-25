@@ -21,6 +21,13 @@ class Slot
     private ?Element $element = null;
 
     /**
+     * Slot lié pour synergie materia (bonus si même élément).
+     */
+    #[ORM\OneToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(name: 'linked_slot_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?self $linkedSlot = null;
+
+    /**
      * Objet équipé dans le slot.
      */
     #[ORM\OneToOne(targetEntity: PlayerItem::class, inversedBy: 'slotSet')]
@@ -54,6 +61,18 @@ class Slot
     public function getElement(): ?Element
     {
         return $this->element;
+    }
+
+    public function getLinkedSlot(): ?self
+    {
+        return $this->linkedSlot;
+    }
+
+    public function setLinkedSlot(?self $linkedSlot): self
+    {
+        $this->linkedSlot = $linkedSlot;
+
+        return $this;
     }
 
     /**

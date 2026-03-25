@@ -47,6 +47,7 @@ class SlotFixtures extends Fixture implements DependentFixtureInterface
             $playerItem = $this->getReference($gearRef, PlayerItem::class);
             $nbSlots = $playerItem->getGenericItem()->getMateriaSlots();
 
+            $slotsForItem = [];
             for ($i = 0; $i < $nbSlots; ++$i) {
                 $slot = new Slot();
                 $slot->setItem($playerItem);
@@ -55,7 +56,14 @@ class SlotFixtures extends Fixture implements DependentFixtureInterface
 
                 $manager->persist($slot);
                 $this->addReference('slot_' . $slotIndex, $slot);
+                $slotsForItem[] = $slot;
                 ++$slotIndex;
+            }
+
+            // Lier les slots par paires adjacentes pour la synergie materia
+            for ($i = 0; $i + 1 < count($slotsForItem); $i += 2) {
+                $slotsForItem[$i]->setLinkedSlot($slotsForItem[$i + 1]);
+                $slotsForItem[$i + 1]->setLinkedSlot($slotsForItem[$i]);
             }
         }
 
