@@ -52,7 +52,7 @@ class ConsoleController extends AbstractController
         // Group by namespace
         $grouped = [];
         foreach ($commands as $cmd) {
-            $ns = explode(':', $cmd['name'])[0] ?? '_';
+            $ns = explode(':', $cmd['name'])[0];
             $grouped[$ns][] = $cmd;
         }
         ksort($grouped);
@@ -128,7 +128,7 @@ class ConsoleController extends AbstractController
         }
 
         // Verify command is in allowed namespaces
-        $ns = explode(':', $commandName)[0] ?? '';
+        $ns = explode(':', $commandName)[0];
         if (!in_array($ns, self::ALLOWED_NAMESPACES, true)) {
             return $this->json(['error' => 'Namespace non autorise: ' . $ns], 403);
         }
@@ -217,7 +217,7 @@ class ConsoleController extends AbstractController
                 continue;
             }
 
-            $ns = explode(':', $name)[0] ?? '';
+            $ns = explode(':', $name)[0];
             if (!in_array($ns, self::ALLOWED_NAMESPACES, true)) {
                 continue;
             }
