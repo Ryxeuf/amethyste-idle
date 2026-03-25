@@ -186,6 +186,10 @@ class Item
     #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
     private bool $isCosmetic = false;
 
+    #[ORM\ManyToOne(targetEntity: EquipmentSet::class, inversedBy: 'items')]
+    #[ORM\JoinColumn(name: 'equipment_set_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?EquipmentSet $equipmentSet = null;
+
     /**
      * Get id.
      */
@@ -549,5 +553,20 @@ class Item
     public function setIsCosmetic(bool $isCosmetic): void
     {
         $this->isCosmetic = $isCosmetic;
+    }
+
+    public function getEquipmentSet(): ?EquipmentSet
+    {
+        return $this->equipmentSet;
+    }
+
+    public function setEquipmentSet(?EquipmentSet $equipmentSet): void
+    {
+        $this->equipmentSet = $equipmentSet;
+    }
+
+    public function hasEquipmentSet(): bool
+    {
+        return $this->equipmentSet !== null;
     }
 }

@@ -1,0 +1,46 @@
+# Sets d'équipement — bonus progressifs quand plusieurs pièces du même set sont portées
+# Bonus types : damage, heal, hit, critical, life, protection
+
+App\Entity\Game\EquipmentSet:
+  # === Set du Gardien (cuir tier 1) — défense & vie ===
+  set_guardian:
+    slug: 'guardian'
+    name: "Set du Gardien"
+    description: "L'équipement traditionnel des gardiens du royaume. Porter plusieurs pièces renforce la résistance du porteur."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'protection', bonus_value: 3 }
+      - { required_pieces: 3, bonus_type: 'life', bonus_value: 15 }
+      - { required_pieces: 4, bonus_type: 'hit', bonus_value: 5 }
+    items:
+      - '@leather_armor'
+      - '@leather_hat'
+      - '@leather_boots'
+      - '@leather_gloves'
+      - '@leather_pants'
+      - '@leather_shoulders'
+
+  # === Set de l'Ombre (offensif) — dégâts & critique ===
+  set_shadow:
+    slug: 'shadow'
+    name: "Set de l'Ombre"
+    description: "Forgé dans les ténèbres, cet équipement amplifie la puissance destructrice de son porteur."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'damage', bonus_value: 5 }
+      - { required_pieces: 3, bonus_type: 'critical', bonus_value: 8 }
+    items:
+      - '@short_sword'
+      - '@leather_belt'
+      - '@bronze_ring'
+
+  # === Set du Veilleur (équilibre) — hit & soin ===
+  set_watcher:
+    slug: 'watcher'
+    name: "Set du Veilleur"
+    description: "L'équipement des veilleurs de nuit, conçu pour la polyvalence et l'endurance au combat."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'hit', bonus_value: 4 }
+      - { required_pieces: 3, bonus_type: 'heal', bonus_value: 10 }
+    items:
+      - '@silver_amulet'
+      - '@iron_shield'
+      - '@long_sword'

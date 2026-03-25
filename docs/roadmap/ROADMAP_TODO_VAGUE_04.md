@@ -158,16 +158,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ### Piste E — Progression & equilibrage (‖)
 
-### 76 — Sets d'equipement (M | ★★)
-> Bonus progressifs quand plusieurs pieces du meme set sont portees simultanement. Prerequis : ← 17 (Raretes d'equipement), 29 (Equipement tier 2)
-- [ ] Entite `EquipmentSet` (slug, name, description)
-- [ ] Entite `EquipmentSetBonus` (set, requiredPieces, bonusType, bonusValue)
-- [ ] Champ `equipmentSet` (ManyToOne, nullable) sur Item + migration
-- [ ] Service `EquipmentSetResolver` : detecte les sets actifs depuis l'equipement du joueur
-- [ ] Bonus appliques dans le combat (CombatSkillResolver) et affiches dans l'inventaire
-- [ ] Fixtures : 2-3 sets de base (Set du Gardien 2/3/4 pieces, Set de l'Ombre 2/3 pieces)
-- [ ] Affichage dans inventaire : pieces du set equipees, bonus actifs/inactifs
-- [ ] Tests EquipmentSetResolver
+### ~~76 — Sets d'equipement (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

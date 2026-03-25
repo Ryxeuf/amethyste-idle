@@ -93,6 +93,40 @@
         </div>
     </div>
 
+    {# ===== EQUIPMENT SETS ===== #}
+    {% if activeSets is defined and activeSets is not empty %}
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 mb-4 border border-gray-700/30">
+        <h2 class="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-1.5 mb-3 pb-2.5 border-b border-gray-700/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+            Sets d'équipement
+        </h2>
+        <div class="space-y-2.5">
+            {% for slug, data in activeSets %}
+                <div class="bg-gray-900/40 rounded-lg p-2.5 border border-gray-700/20">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs sm:text-sm font-medium text-yellow-400">{{ data.set.name }}</span>
+                        <span class="text-[10px] text-gray-500">{{ data.equippedCount }}/{{ data.totalPieces }} pièces</span>
+                    </div>
+                    <div class="space-y-0.5">
+                        {% for bonus in data.activeBonuses %}
+                            <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-green-400">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></span>
+                                <span>({{ bonus.requiredPieces }}) +{{ bonus.bonusValue }} {{ _self.bonus_type_label(bonus.bonusType) }}</span>
+                            </div>
+                        {% endfor %}
+                        {% for bonus in data.inactiveBonuses %}
+                            <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-600">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-700 shrink-0"></span>
+                                <span>({{ bonus.requiredPieces }}) +{{ bonus.bonusValue }} {{ _self.bonus_type_label(bonus.bonusType) }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     {# ===== AVAILABLE GEAR ===== #}
     <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
         <div class="flex items-center justify-between mb-3">
@@ -133,6 +167,9 @@
                                 {% if gi.protection > 0 %}
                                     <span class="text-[10px] text-blue-400 font-medium">+{{ gi.protection }} DEF</span>
                                 {% endif %}
+                                {% if gi.equipmentSet is not null %}
+                                    <span class="text-[10px] text-yellow-500/70">{{ gi.equipmentSet.name }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         <form method="post" action="{{ path('app_game_inventory_equipment_equip', {id: item.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
@@ -168,6 +205,9 @@
             <span class="equip-slot-name {{ _self.rarity_text_class(gi.rarity) }}">{{ gi.name }}</span>
             {% if gi.protection > 0 %}
                 <span class="equip-slot-stat">+{{ gi.protection }} DEF</span>
+            {% endif %}
+            {% if gi.equipmentSet is not null %}
+                <span class="text-[9px] text-yellow-500/80 font-medium">{{ gi.equipmentSet.name }}</span>
             {% endif %}
             {# Materia slots — FF7 style #}
             {% if playerItem.slots|length > 0 %}
@@ -323,6 +363,18 @@
 {% elseif element.value == 'metal' %}bg-gray-400
 {% elseif element.value == 'beast' %}bg-green-500
 {% else %}bg-gray-500{% endif %}
+{% endapply %}
+{% endmacro %}
+{# ===== MACRO: Bonus type label ===== #}
+{% macro bonus_type_label(type) %}
+{% apply spaceless %}
+{% if type == 'damage' %}Dégâts
+{% elseif type == 'heal' %}Soin
+{% elseif type == 'hit' %}Précision
+{% elseif type == 'critical' %}Critique
+{% elseif type == 'life' %}PV
+{% elseif type == 'protection' %}Défense
+{% else %}{{ type }}{% endif %}
 {% endapply %}
 {% endmacro %}
 {% endblock %}

@@ -926,3 +926,18 @@
 - [x] Fixtures : Festival des Étoiles (bonus XP x2, bonus drop x1.5, 2 quêtes, 2 cosmétiques)
 - [x] Migration PostgreSQL idempotente
 - [x] Tests unitaires : bonus XP crafting, quêtes d'événement actives/inactives, flag cosmétique
+
+---
+
+## Tâche 76 — Sets d'équipement (2026-03-25) ✅
+
+> Bonus progressifs quand plusieurs pièces du même set sont portées simultanément.
+
+- [x] Entité `EquipmentSet` (slug, name, description)
+- [x] Entité `EquipmentSetBonus` (set, requiredPieces, bonusType, bonusValue)
+- [x] Champ `equipmentSet` (ManyToOne, nullable) sur Item + migration PostgreSQL
+- [x] Service `EquipmentSetResolver` : détecte les sets actifs depuis l'équipement du joueur
+- [x] Bonus appliqués dans le combat via `CombatSkillResolver` (damage, heal, hit, critical, life, protection)
+- [x] Affichage dans inventaire : pièces du set équipées, bonus actifs/inactifs, nom du set par pièce
+- [x] Fixtures : 3 sets de base (Set du Gardien 2/3/4 pièces, Set de l'Ombre 2/3, Set du Veilleur 2/3)
+- [x] Tests unitaires EquipmentSetResolver (7 tests)
