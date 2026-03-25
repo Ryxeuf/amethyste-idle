@@ -25,6 +25,8 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 RecurringMessage::cron('* * * * *', new RunCommandMessage('app:game-event:execute')),
                 // Weather : met à jour la météo de chaque carte (toutes les 15 min)
                 RecurringMessage::cron('*/15 * * * *', new RunCommandMessage('app:weather:tick')),
+                // PnjRoutine : déplace les PNJ selon leurs horaires de routine (toutes les 5 min)
+                RecurringMessage::cron('*/5 * * * *', new RunCommandMessage('app:pnj:routine')),
                 // DailyQuest : rotation des quêtes quotidiennes (chaque jour à 00h01)
                 RecurringMessage::cron('1 0 * * *', new RunCommandMessage('app:daily-quest:rotate')),
             );

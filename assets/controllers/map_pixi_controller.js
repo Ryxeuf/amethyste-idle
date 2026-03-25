@@ -2357,6 +2357,8 @@ export default class extends Controller {
                 this._handlePlayerMoveEvent(data);
             } else if (type === 'mob') {
                 this._handleEntityMoveEvent('mob', data);
+            } else if (type === 'pnj') {
+                this._handlePnjMoveEvent(data);
             }
         } else if (topic === 'map/respawn') {
             this._loadEntities();
@@ -2404,9 +2406,56 @@ export default class extends Controller {
         }
     }
 
+    _handlePnjMoveEvent(data) {
+        const pnjId = data.object;
+        const finalX = parseInt(data.x);
+        const finalY = parseInt(data.y);
+        const key = `pnj_${pnjId}`;
+        const entity = this._entitySprites[key];
+
+        if (!entity) return;
+
+        // Don't animate PNJ movement while dialog is open (avoids disrupting interaction)
+        if (this._dialogOpen) {
+            entity.x = finalX;
+            entity.y = finalY;
+            return;
+        }
+
+        const oldX = entity.x;
+        const oldY = entity.y;
+
+        // Build a simple straight-line path for walking animation
+        const path = [];
+        const dx = finalX - oldX;
+        const dy = finalY - oldY;
+        const steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+        if (steps > 0 && steps <= 20) {
+            for (let i = 1; i <= steps; i++) {
+                path.push({
+                    x: Math.round(oldX + (dx * i) / steps),
+                    y: Math.round(oldY + (dy * i) / steps),
+                });
+            }
+            this._animateEntity(key, path, finalX, finalY);
+        } else {
+            // Teleport if too far (cross-map or large distance)
+            this._removeFromSpatialHash(key, oldX, oldY);
+            entity.container.position.set(finalX * this._tileSize, finalY * this._tileSize);
+            entity.container.zIndex = finalY * this._tileSize;
+            entity.x = finalX;
+            entity.y = finalY;
+            this._addToSpatialHash(key, finalX, finalY);
+        }
+    }
+
     async _animateEntity(key, path, finalX, finalY) {
         const entity = this._entitySprites[key];
         if (!entity) return;
+
+        const startX = entity.x;
+        const startY = entity.y;
 
         if (entity.animator) {
             entity.animator.play();
@@ -2440,10 +2489,13 @@ export default class extends Controller {
             entity.animator.stop();
         }
 
+        // Update spatial hash so interactions use the new position
+        this._removeFromSpatialHash(key, startX, startY);
         entity.container.position.set(finalX * this._tileSize, finalY * this._tileSize);
         entity.container.zIndex = finalY * this._tileSize;
         entity.x = finalX;
         entity.y = finalY;
+        this._addToSpatialHash(key, finalX, finalY);
     }
 
     // --- Minimap ---
