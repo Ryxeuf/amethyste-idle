@@ -1,0 +1,102 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ dungeon.name }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    {% for message in app.flashes('success') %}
+        <div class="mb-3 rounded-lg p-3 text-sm bg-green-900/50 border border-green-700 text-green-300">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="mb-3 rounded-lg p-3 text-sm bg-red-900/50 border border-red-700 text-red-300">{{ message }}</div>
+    {% endfor %}
+
+    <div class="game-card">
+        <div class="game-card-header">
+            <div class="flex items-center gap-2 mb-1">
+                <a href="{{ path('app_game_dungeon_list') }}" class="text-gray-400 hover:text-gray-300 text-xs">&larr; Retour</a>
+            </div>
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ dungeon.name }}</h2>
+            <p class="text-gray-400 text-xs mt-0.5">{{ dungeon.description }}</p>
+        </div>
+
+        <div class="game-card-body">
+            {# Dungeon info #}
+            <div class="flex flex-wrap gap-3 mb-4">
+                <div class="bg-gray-700/50 rounded-lg px-3 py-2 border border-gray-600">
+                    <span class="text-gray-500 text-[10px] block">Niveau requis</span>
+                    <span class="text-white text-sm font-medium">{{ dungeon.minLevel }}+</span>
+                </div>
+                <div class="bg-gray-700/50 rounded-lg px-3 py-2 border border-gray-600">
+                    <span class="text-gray-500 text-[10px] block">Joueurs max</span>
+                    <span class="text-white text-sm font-medium">{{ dungeon.maxPlayers }}</span>
+                </div>
+            </div>
+
+            {# Level requirement check #}
+            {% if not meetsLevel %}
+                <div class="mb-4 rounded-lg p-3 bg-red-900/30 border border-red-700/50">
+                    <p class="text-red-300 text-xs">Experience insuffisante. Vous devez atteindre {{ dungeon.minLevel * 100 }} XP dans au moins un domaine de combat.</p>
+                </div>
+            {% endif %}
+
+            {# Active run warning #}
+            {% if activeRun %}
+                <div class="mb-4 rounded-lg p-3 bg-yellow-900/30 border border-yellow-700/50">
+                    <p class="text-yellow-300 text-xs">Vous etes deja dans le donjon {{ activeRun.dungeon.name }}. Terminez-le avant d'en commencer un autre.</p>
+                </div>
+            {% endif %}
+
+            {# Loot preview #}
+            {% if dungeon.lootPreview is not null and dungeon.lootPreview is not empty %}
+                <div class="mb-4">
+                    <h3 class="text-sm font-semibold text-gray-300 mb-2">Loot possible</h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for item in dungeon.lootPreview %}
+                            <span class="px-2 py-1 bg-gray-800 border border-gray-700 text-gray-300 text-xs rounded">{{ item }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Difficulty selection #}
+            <h3 class="text-sm font-semibold text-gray-300 mb-3">Choisir une difficulte</h3>
+            <div class="space-y-2">
+                {% for diff in difficulties %}
+                    {% set cd = cooldowns[diff.value] %}
+                    {% set canEnter = meetsLevel and activeRun is null and cd == 0 %}
+                    <div class="bg-gray-700/50 rounded-lg p-3 border border-gray-600 {% if canEnter %}hover:border-purple-600/50{% endif %}">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="{{ diff.cssClass }} text-sm font-medium">{{ diff.label }}</span>
+                                <div class="flex items-center gap-3 mt-1">
+                                    <span class="text-gray-500 text-[10px]">Stats mobs x{{ diff.statMultiplier }}</span>
+                                    <span class="text-gray-500 text-[10px]">Cooldown {{ diff.cooldownSeconds // 3600 }}h</span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if cd > 0 %}
+                                    <span class="px-2 py-1 bg-gray-800 border border-gray-700 text-gray-500 text-xs rounded">
+                                        Cooldown
+                                    </span>
+                                {% elseif canEnter %}
+                                    <form action="{{ path('app_game_dungeon_enter', {slug: dungeon.slug}) }}" method="post">
+                                        <input type="hidden" name="difficulty" value="{{ diff.value }}">
+                                        <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors touch-target">
+                                            Entrer
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="px-2 py-1 bg-gray-800 border border-gray-700 text-gray-500 text-xs rounded">
+                                        Indisponible
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -107,15 +107,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ### Piste C — Donjons & events (‖)
 
-### 72 — Donjons entite & entree (M | ★★★)
-> Structure de donjon instancie : entite, difficultes, cooldown et point d'entree. Prerequis : ← 30 (Teleportation entre cartes)
-- [ ] Entite `Dungeon` : slug, name, description, map (ManyToOne vers la carte du donjon), minLevel (int), maxPlayers (int)
-- [ ] Entite `DungeonRun` : dungeon, player(s), startedAt, completedAt, difficulty (enum Normal/Heroique/Mythique)
-- [ ] Enum `DungeonDifficulty` : Normal, Heroique, Mythique (avec multiplicateurs HP/degats mobs)
-- [ ] Migration + fixtures : 1 donjon de test (ex: "Racines de la foret", lie a une carte existante ou nouvelle)
-- [ ] Route `/game/dungeon/{slug}/enter` : creer un DungeonRun, teleporter le joueur dans la carte du donjon
-- [ ] Route `/game/dungeon/{slug}` : fiche du donjon (description, difficulte, loot possible, cooldown)
-- [ ] Cooldown entre runs (ex: 1h Normal, 4h Heroique, 24h Mythique)
+### ~~72 — Donjons entite & entree (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
