@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-24
+> Derniere mise a jour : 2026-03-25
 
 ---
 
@@ -957,3 +957,19 @@
 - [x] Transition fluide entre zones (fondu progressif overlay + lumière)
 - [x] Re-détection après téléportation (portail vers nouvelle carte)
 - [x] Fixtures : 6 zones (5 sur carte principale + 1 village) avec biomes, météo et niveaux de lumière
+
+---
+
+## Tâche 72 — Donjons entité & entrée (2026-03-25) ✅
+
+> Structure de donjon instancié : entités, difficultés, cooldown et point d'entrée.
+
+- [x] Enum `DungeonDifficulty` : Normal, Heroique, Mythique (multiplicateurs HP/dégâts, cooldowns 1h/4h/24h)
+- [x] Entité `Dungeon` : slug, name, description, map (ManyToOne), minLevel, maxPlayers, lootPreview (JSON)
+- [x] Entité `DungeonRun` : dungeon, player, difficulty, startedAt, completedAt
+- [x] Migration PostgreSQL : tables `game_dungeons` + `dungeon_run` avec FK et index
+- [x] `DungeonRunRepository` : findActiveRun, findLastCompletedRun, findPlayerHistory
+- [x] `DungeonManager` : entrée avec vérifications (run actif, niveau requis, cooldown, combat), téléportation, complétion
+- [x] `DungeonController` : liste des donjons, fiche donjon avec choix de difficulté, entrée POST
+- [x] Templates Twig : liste des donjons, fiche détaillée avec sélection de difficulté et cooldowns
+- [x] Fixtures : 1 donjon de test "Racines de la forêt" (minLevel 5, 1 joueur)
