@@ -183,6 +183,9 @@ class Item
     #[ORM\Column(name: 'materia_slots', type: 'integer', options: ['default' => 0])]
     private int $materiaSlots = 0;
 
+    #[ORM\Column(name: 'materia_slot_config', type: 'json', nullable: true)]
+    private ?array $materiaSlotConfig = null;
+
     #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
     private bool $isCosmetic = false;
 
@@ -543,6 +546,20 @@ class Item
     public function setMateriaSlots(int $materiaSlots): void
     {
         $this->materiaSlots = $materiaSlots;
+    }
+
+    public function getMateriaSlotConfig(): array
+    {
+        return $this->materiaSlotConfig ?? [];
+    }
+
+    public function setMateriaSlotConfig(?array $config): void
+    {
+        $this->materiaSlotConfig = $config;
+
+        if ($config !== null) {
+            $this->materiaSlots = \count($config);
+        }
     }
 
     public function isCosmetic(): bool

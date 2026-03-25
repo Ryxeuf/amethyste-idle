@@ -8,8 +8,10 @@ use App\Entity\Game\Spell;
 use App\Enum\Element;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -64,6 +66,12 @@ class ItemType extends AbstractType
                     new Range(min: 0, max: 12),
                 ],
             ])
+            ->add('materiaSlotConfig', HiddenType::class, [
+                'attr' => [
+                    'data-admin-item-materia-slots-target' => 'configInput',
+                ],
+                'required' => false,
+            ])
             ->add('price', IntegerType::class, ['label' => 'Prix', 'required' => false])
             ->add('protection', IntegerType::class, ['label' => 'Protection', 'required' => false])
             ->add('energyCost', IntegerType::class, ['label' => 'Cout energie', 'required' => false])
@@ -86,6 +94,11 @@ class ItemType extends AbstractType
                 'placeholder' => '-- Aucun --',
             ])
         ;
+
+        $builder->get('materiaSlotConfig')->addModelTransformer(new CallbackTransformer(
+            fn (?array $config) => $config !== null ? json_encode($config) : '[]',
+            fn (?string $json) => $json ? json_decode($json, true) : null,
+        ));
     }
 
     public function configureOptions(OptionsResolver $resolver): void
