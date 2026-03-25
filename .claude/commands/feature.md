@@ -26,6 +26,17 @@ Lis le template dans `docs/PROMPT_TEMPLATE.md` puis :
 - Les contraintes du projet (CLAUDE.md) doivent etre integrees automatiquement : Docker, Turbo Frames, pas de bundler, mobile-first, dark theme.
 - Le "Hors perimetre" doit empecher toute derive de scope par rapport au besoin initial.
 
+## Phase 1.5 — Verification CI en amont (OBLIGATOIRE avant implementation)
+
+Avant de toucher au code, verifier que la CI est au vert :
+
+1. **Lancer les checks localement** :
+   - `docker compose exec php vendor/bin/php-cs-fixer fix --dry-run --diff` (lint)
+   - `docker compose exec php vendor/bin/phpstan analyse` (analyse statique)
+   - `docker compose exec php vendor/bin/phpunit` (tests)
+2. **Si la CI est en erreur** : corriger les problemes existants AVANT de commencer l'implementation. Ne pas empiler du nouveau code sur une base cassee.
+3. **Informer l'utilisateur** des erreurs pre-existantes trouvees et des corrections appliquees.
+
 ## Phase 2 — Implementation (apres validation utilisateur)
 
 Une fois le prompt valide :
@@ -43,6 +54,19 @@ Une fois le prompt valide :
    - Coherent avec le design existant (dark theme, glass-morphism, couleurs rarete)
    - `IF NOT EXISTS` dans les migrations Doctrine
    - Competences = passives uniquement, sorts actifs = materia uniquement
+
+## Phase 3 — Babysit PR & CI (apres implementation)
+
+Une fois tous les commits faits :
+
+1. **Pousser la branche et creer la PR**.
+2. **Surveiller la CI** : verifier que les checks GitHub Actions passent via `gh pr checks`.
+3. **Si un check echoue** :
+   - Lire les logs d'erreur (`gh run view <run-id> --log-failed`)
+   - Diagnostiquer et corriger le probleme
+   - Committer le fix, pousser, et re-verifier
+   - Repeter jusqu'a ce que la CI soit entierement au vert
+4. **Confirmer a l'utilisateur** que la PR est prete (CI verte, pas de conflit).
 
 ## Comportement attendu
 
