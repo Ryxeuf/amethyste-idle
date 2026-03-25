@@ -34,10 +34,13 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             $items = isset($content['Api\Entity\Game\Item']) ? $content['Api\Entity\Game\Item'] : $content['App\Entity\Game\Item'];
 
-            foreach ($items as $reference => $data) {
-                if ($reference === 'item (template)') {
+            foreach ($items as $rawReference => $data) {
+                if ($rawReference === 'item (template)') {
                     continue;
                 }
+
+                // Strip " (extends ...)" suffix from reference name
+                $reference = preg_replace('/\s*\(extends\s+.*\)$/', '', $rawReference);
 
                 $item = new Item();
 
@@ -161,11 +164,12 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             $items = isset($content['Api\Entity\Game\Item']) ? $content['Api\Entity\Game\Item'] : $content['App\Entity\Game\Item'];
 
-            foreach ($items as $reference => $data) {
-                if ($reference === 'item (template)' || !isset($data['requirements'])) {
+            foreach ($items as $rawReference => $data) {
+                if ($rawReference === 'item (template)' || !isset($data['requirements'])) {
                     continue;
                 }
 
+                $reference = preg_replace('/\s*\(extends\s+.*\)$/', '', $rawReference);
                 $item = $this->getReference($reference, Item::class);
 
                 foreach ($data['requirements'] as $requirementRef) {
