@@ -63,6 +63,11 @@
                                             <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50') }}">
                                                 {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : 'Divers'))) }}
                                             </span>
+                                            {% if quest.hidden %}
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 text-amber-300 border border-amber-700/50">
+                                                    Decouverte
+                                                </span>
+                                            {% endif %}
                                         </div>
                                         <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
                                         {% if giver %}
