@@ -170,6 +170,22 @@ class GameEventFixtures extends Fixture implements DependentFixtureInterface
                 'ends_at' => '+5 days',
                 'parameters' => ['multiplier' => 1.75],
             ],
+            'event_world_boss_wyrm' => [
+                'name' => 'Apparition du Wyrm Ancien',
+                'type' => GameEvent::TYPE_BOSS_SPAWN,
+                'description' => 'Un Wyrm Ancien emerge des profondeurs ! Les aventuriers les plus braves peuvent l\'affronter au village. Vainquez-le avant qu\'il ne disparaisse !',
+                'status' => GameEvent::STATUS_SCHEDULED,
+                'starts_at' => '+1 day',
+                'ends_at' => '+2 days',
+                'parameters' => [
+                    'monster_slug' => 'ancient_wyrm',
+                    'map_id' => 2,
+                    'coordinates' => '20.20',
+                    'level' => 30,
+                ],
+                'recurring' => true,
+                'recurrence_interval' => 10080, // 7 jours en minutes
+            ],
         ];
     }
 

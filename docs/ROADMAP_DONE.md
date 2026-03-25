@@ -1089,3 +1089,15 @@
 - [x] Alertes automatiques si desequilibre detecte (monstre trop fort/faible, drop rate aberrant, item sans prix)
 - [x] Sort sans effet, sort gratuit surpuissant, domaine vide
 - [x] Document de reference `docs/BALANCE.md` : courbe XP, bareme prix, degats attendus, seuils d'alerte
+
+## 75 — PNJ routines (2026-03-26) ✅
+
+> Les PNJ se deplacent selon un horaire in-game, animes sur la carte via Mercure.
+- [x] Entite `PnjSchedule` (pnj, hour, coordinates, map) — table horaire du PNJ
+- [x] Migration SQL
+- [x] `PnjRoutineService` : deplace les PNJ selon l'heure in-game courante
+- [x] Commande Scheduler `app:pnj:routine` (toutes les 5 min)
+- [x] Topic Mercure `map/pnj-move` pour animer le deplacement cote client
+- [x] Animation de marche du PNJ dans le renderer PixiJS (reutiliser SpriteAnimator)
+- [x] Fixtures : 4 PNJ avec routines simples (maison - travail - taverne)
+- [x] Gestion du cas ou un joueur parle a un PNJ qui se deplace

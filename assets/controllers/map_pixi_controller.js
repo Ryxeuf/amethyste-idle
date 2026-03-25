@@ -468,7 +468,7 @@ export default class extends Controller {
         }
 
         for (const mob of data.mobs) {
-            this._createEntitySprite('mob', mob.id, mob.x, mob.y, mob.spriteKey, 'M', { name: mob.name, level: mob.level });
+            this._createEntitySprite('mob', mob.id, mob.x, mob.y, mob.spriteKey, 'M', { name: mob.name, level: mob.level, isWorldBoss: mob.isWorldBoss || false });
         }
 
         for (const pnj of data.pnjs) {
@@ -518,6 +518,11 @@ export default class extends Controller {
             this._entitySprites[key] = { container, x, y, type, animator: null, meta };
         }
 
+        // World boss aura
+        if (type === 'mob' && meta.isWorldBoss) {
+            this._addWorldBossAura(container);
+        }
+
         // Quest indicator for PNJs
         if (type === 'pnj' && meta.questIndicator) {
             this._addQuestIndicator(container, meta.questIndicator);
@@ -560,6 +565,39 @@ export default class extends Controller {
         }
 
         return PIXI.Texture.from(canvas);
+    }
+
+    _addWorldBossAura(container) {
+        const s = this._tileSize;
+        const auraSize = s * 2;
+        const canvas = document.createElement('canvas');
+        canvas.width = auraSize;
+        canvas.height = auraSize;
+        const ctx = canvas.getContext('2d');
+        const cx = auraSize / 2;
+        const cy = auraSize / 2;
+        const radius = auraSize / 2 - 2;
+
+        const gradient = ctx.createRadialGradient(cx, cy, radius * 0.3, cx, cy, radius);
+        gradient.addColorStop(0, 'rgba(180, 0, 255, 0.35)');
+        gradient.addColorStop(0.6, 'rgba(120, 0, 200, 0.15)');
+        gradient.addColorStop(1, 'rgba(80, 0, 160, 0)');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        const texture = PIXI.Texture.from(canvas);
+        const aura = new PIXI.Sprite(texture);
+        aura.anchor.set(0.5, 0.5);
+        aura.position.set(s / 2, s / 2);
+        aura.alpha = 0.8;
+        container.addChildAt(aura, 0);
+
+        // Store reference for pulsing animation
+        if (!this._worldBossAuras) this._worldBossAuras = [];
+        this._worldBossAuras.push({ sprite: aura, time: 0 });
     }
 
     _addQuestIndicator(container, indicatorType) {
@@ -749,6 +787,7 @@ export default class extends Controller {
         this._entitySprites = {};
         this._animatedEntities = [];
         this._entitySpatialHash.clear();
+        this._worldBossAuras = [];
         if (this._playerAnimator) {
             this._playerAnimator.destroy();
             this._playerAnimator = null;
@@ -847,6 +886,17 @@ export default class extends Controller {
 
         // Update zone ambiance effects
         this._updateZoneAmbiance(dt);
+
+        // Pulse world boss auras
+        if (this._worldBossAuras) {
+            for (const aura of this._worldBossAuras) {
+                aura.time += dt * 0.003;
+                const pulse = 0.6 + 0.4 * Math.sin(aura.time);
+                aura.sprite.alpha = pulse * 0.8;
+                const scale = 0.9 + 0.1 * Math.sin(aura.time * 0.7);
+                aura.sprite.scale.set(scale, scale);
+            }
+        }
     }
 
     // --- Camera Shake ---
@@ -2361,7 +2411,14 @@ export default class extends Controller {
                 this._handlePnjMoveEvent(data);
             }
         } else if (topic === 'map/respawn') {
-            this._loadEntities();
+            if ((type === 'world_boss_spawn' || type === 'world_boss_despawn') && data.mapId === this.mapIdValue) {
+                this._loadEntities();
+                if (type === 'world_boss_spawn') {
+                    this.shakeCamera(6, 500);
+                }
+            } else if (type !== 'world_boss_spawn' && type !== 'world_boss_despawn') {
+                this._loadEntities();
+            }
         } else if (topic === 'map/weather') {
             if (data.mapId === this.mapIdValue) {
                 this._transitionWeather(data.weather);
