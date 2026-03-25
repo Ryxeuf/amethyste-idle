@@ -41,6 +41,7 @@ class BalanceReportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        /** @var string $section */
         $section = $input->getOption('section');
 
         $io->title('Rapport d\'equilibrage — Amethyste-Idle');
@@ -280,7 +281,7 @@ class BalanceReportCommand extends Command
 
         foreach ($domains as $domain) {
             $skills = $domain->getSkills()->toArray();
-            if (empty($skills)) {
+            if ($skills === []) {
                 $alerts[] = sprintf('[DOMAINE] %s n\'a aucune competence', $domain->getTitle());
                 continue;
             }
@@ -395,7 +396,7 @@ class BalanceReportCommand extends Command
     {
         $io->section('Alertes d\'equilibrage');
 
-        if (empty($alerts)) {
+        if ($alerts === []) {
             $io->success('Aucune alerte detectee.');
 
             return;
