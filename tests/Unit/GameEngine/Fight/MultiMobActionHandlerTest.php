@@ -25,6 +25,7 @@ class MultiMobActionHandlerTest extends TestCase
     private LoggerInterface&MockObject $logger;
     private StatusEffectManager&MockObject $statusEffectManager;
     private CombatLogger&MockObject $combatLogger;
+    private EntityManagerInterface&MockObject $entityManager;
 
     protected function setUp(): void
     {
@@ -33,6 +34,7 @@ class MultiMobActionHandlerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         $this->statusEffectManager->method('processStartOfTurn')->willReturn([]);
         $this->statusEffectManager->method('isCharacterParalyzed')->willReturn(false);
@@ -48,7 +50,7 @@ class MultiMobActionHandlerTest extends TestCase
             $this->logger,
             $this->statusEffectManager,
             $this->combatLogger,
-            $this->createMock(EntityManagerInterface::class),
+            $this->entityManager,
         );
     }
 
