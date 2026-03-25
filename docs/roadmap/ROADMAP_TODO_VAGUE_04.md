@@ -163,12 +163,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
-### 77 — Effets ambiance par zone (M | ★★★)
-> Detection de la zone courante du joueur et application d'effets visuels dynamiques en frontend. Prerequis : ← 58 (Parsing zones/biomes depuis Tiled)
-- [ ] Charger les zones depuis l'API au chargement de la carte
-- [ ] Detecter la zone courante du joueur (point-in-rect)
-- [ ] Appliquer les effets par zone : teinte/overlay, particules (pluie, brume, poussiere)
-- [ ] Transition fluide entre zones (fondu des effets)
+### ~~77 — Effets ambiance par zone (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

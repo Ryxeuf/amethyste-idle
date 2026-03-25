@@ -2,7 +2,7 @@
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
 > Numerotation unifiee : chaque tache a un identifiant unique (01 a 103).
-> Derniere mise a jour : 2026-03-24
+> Derniere mise a jour : 2026-03-25
 
 ---
 
