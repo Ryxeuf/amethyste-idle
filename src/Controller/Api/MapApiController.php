@@ -87,6 +87,43 @@ class MapApiController extends AbstractController
         return $this->json(['cells' => $cells]);
     }
 
+    /**
+     * Apercu carte (admin) : tuiles autour d'un point, sans joueur courant.
+     * Utilise par le formulaire deplacement PJ (ROLE_MODERATOR+).
+     */
+    #[Route('/preview', name: 'api_map_preview', methods: ['GET'])]
+    public function preview(Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_MODERATOR');
+
+        $mapId = $request->query->getInt('mapId', 0);
+        if ($mapId <= 0) {
+            return $this->json(['error' => 'mapId requis'], 400);
+        }
+
+        $x = $request->query->getInt('x', 0);
+        $y = $request->query->getInt('y', 0);
+        $radius = min(15, max(0, $request->query->getInt('radius', 5)));
+
+        $map = $this->entityManager->getRepository(Map::class)->find($mapId);
+        if (!$map) {
+            return $this->json(['error' => 'Map not found'], 404);
+        }
+
+        $cells = $this->loadRawCells($map, $x, $y, $radius);
+        $tilesets = $this->extractTilesets($map);
+
+        return $this->json([
+            'tileSize' => 32,
+            'centerX' => $x,
+            'centerY' => $y,
+            'radius' => $radius,
+            'mapId' => $map->getId(),
+            'tilesets' => $tilesets,
+            'cells' => $cells,
+        ]);
+    }
+
     #[Route('/entities', name: 'api_map_entities', methods: ['GET'])]
     public function entities(Request $request): JsonResponse
     {
@@ -504,11 +541,14 @@ class MapApiController extends AbstractController
                         }
                     }
 
+                    $movement = (int) ($cellData['mouvement'] ?? -1);
+
                     $cells[] = [
                         'x' => $globalX,
                         'y' => $globalY,
                         'l' => $layerGids,
-                        'w' => ($cellData['mouvement'] ?? -1) !== -1,
+                        'w' => $movement !== -1,
+                        'm' => $movement,
                     ];
                 }
             }

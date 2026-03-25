@@ -73,13 +73,18 @@
                     <dt class="text-gray-500 text-sm">Vitesse</dt>
                     <dd class="text-gray-200 text-sm">{{ player.speed }}</dd>
                 </div>
-                <div class="flex justify-between">
+                <div class="flex justify-between items-center gap-2">
                     <dt class="text-gray-500 text-sm">Carte</dt>
-                    <dd class="text-gray-200 text-sm">{{ player.map ? player.map.name : '-' }}</dd>
+                    <dd class="text-gray-200 text-sm text-right">
+                        {{ player.map ? player.map.name : '-' }}
+                    </dd>
                 </div>
-                <div class="flex justify-between">
-                    <dt class="text-gray-500 text-sm">Position</dt>
-                    <dd class="text-gray-200 text-sm">{{ player.coordinates }}</dd>
+                <div class="flex justify-between items-center gap-2">
+                    <dt class="text-gray-500 text-sm shrink-0">Position</dt>
+                    <dd class="text-gray-200 text-sm flex items-center gap-2 flex-wrap justify-end">
+                        <span>{{ player.coordinates }}</span>
+                        <a href="{{ path('admin_player_move', {id: player.id}) }}" class="text-blue-400 hover:text-blue-300 text-sm whitespace-nowrap">Deplacer</a>
+                    </dd>
                 </div>
                 <div class="flex justify-between">
                     <dt class="text-gray-500 text-sm">En combat</dt>
@@ -231,6 +236,10 @@
                     Reinitialiser la position
                 </button>
             </form>
+
+            <a href="{{ path('admin_player_move', {id: player.id}) }}" class="flex items-center justify-center w-full bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors text-center">
+                Deplacer sur la carte
+            </a>
 
             {# Change role #}
             <form method="post" action="{{ path('admin_player_change_role', {id: player.id}) }}" class="flex gap-2">

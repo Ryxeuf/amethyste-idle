@@ -10,9 +10,14 @@ use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
+use App\Form\Admin\PlayerPositionType;
+use App\GameEngine\Realtime\Map\MovedPlayerHandler;
+use App\Helper\CellHelper;
+use App\Helper\MapCellValidator;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,6 +30,7 @@ class PlayerController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
+        private readonly MovedPlayerHandler $movedPlayerHandler,
     ) {
     }
 
@@ -57,6 +63,54 @@ class PlayerController extends AbstractController
             'currentPage' => $page,
             'totalPages' => max(1, (int) ceil($total / $limit)),
             'total' => $total,
+        ]);
+    }
+
+    #[Route('/{id}/move', name: 'move', requirements: ['id' => '\d+'])]
+    public function move(Request $request, Player $player): Response
+    {
+        $form = $this->createForm(PlayerPositionType::class, $player, ['show_map_field' => true]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $coordsStr = trim($player->getCoordinates());
+            $map = $player->getMap();
+
+            if (!preg_match('/^\d+\.\d+$/', $coordsStr)) {
+                $form->get('coordinates')->addError(new FormError('Format attendu : x.y (entiers, ex. 10.15).'));
+            } elseif ($map === null) {
+                $form->get('map')->addError(new FormError('Choisissez une carte.'));
+            } else {
+                [$sx, $sy] = explode('.', $coordsStr, 2);
+                $x = (int) $sx;
+                $y = (int) $sy;
+                $normalized = CellHelper::stringifyCoordinates($x, $y);
+
+                if (!MapCellValidator::isCellWalkable($map, $x, $y)) {
+                    $form->get('coordinates')->addError(new FormError('La case cible est bloquee ou hors carte.'));
+                } else {
+                    $player->setCoordinates($normalized);
+                    $player->setLastCoordinates($normalized);
+                    $player->setIsMoving(false);
+                    $this->em->flush();
+                    $this->movedPlayerHandler->movePlayer($player);
+
+                    $this->adminLogger->log('update', 'Player', $player->getId(), sprintf(
+                        '%s deplace vers %s sur %s',
+                        $player->getName(),
+                        $normalized,
+                        $map->getName()
+                    ));
+                    $this->addFlash('success', 'Joueur "' . $player->getName() . '" place en ' . $normalized . ' (' . $map->getName() . ').');
+
+                    return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+                }
+            }
+        }
+
+        return $this->render('admin/player/move.html.twig', [
+            'player' => $player,
+            'form' => $form->createView(),
         ]);
     }
 
