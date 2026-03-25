@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-25
+> Derniere mise a jour : 2026-03-26
 
 ---
 
@@ -1018,3 +1018,19 @@
 - [x] Loot tables pour les 4 monstres (potions, materia, equipement T2)
 - [x] Placement sur la carte (8 mobs, zones eloignees 32-138 du spawn)
 - [x] 12 succes bestiaire (3 paliers x 4 monstres : 10/50/100 kills)
+
+---
+
+## 74 — Guildes coffre partage (2026-03-25) ✅
+
+> Inventaire collectif de guilde avec permissions par rang et tracabilite des actions.
+- [x] Entite `GuildVault` (guild OneToOne, items OneToMany PlayerItem, maxSlots)
+- [x] Entite `GuildVaultLog` (guild, player, action deposit/withdraw, item, quantity, createdAt)
+- [x] Relation `guildVault` sur `PlayerItem` + relation `vault` sur `Guild`
+- [x] Migration PostgreSQL : tables `guild_vault`, `guild_vault_log`, colonne `guild_vault_id` sur `player_item`
+- [x] Permissions vault dans `GuildRank` : `canDeposit()` (tous), `canWithdraw()` (member+)
+- [x] `GuildVaultManager` : deposit, withdraw, getOrCreateVault, getRecentLogs
+- [x] Routes : `GET /game/guild/vault`, `POST .../deposit/{itemId}`, `POST .../withdraw/{itemId}`
+- [x] Template vault avec affichage coffre, depot depuis sac, historique recent
+- [x] Lien "Coffre de guilde" dans la page guilde
+- [x] 12 tests unitaires : depot, retrait, permissions recruit/member, coffre plein, objet equipe/lie, item pas dans coffre

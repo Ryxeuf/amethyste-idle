@@ -109,15 +109,8 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
-### 74 — Guildes coffre partage (M | ★★)
-> Inventaire collectif de guilde avec systeme de permissions par rang et tracabilite des actions. Prerequis : ← 52 (Guildes fondation)
-- [ ] Entite `GuildVault` (guild, items: Collection, maxSlots: int)
-- [ ] Entite `GuildVaultLog` (guild, player, action: deposit/withdraw, item, quantity, createdAt)
-- [ ] GuildVaultManager : deposit, withdraw (permissions par rang)
-- [ ] Route `GET /game/guild/vault` : affichage coffre + logs recents
-- [ ] Route `POST /game/guild/vault/deposit` et `POST /game/guild/vault/withdraw`
-- [ ] Permissions : recruit = depot seul, member+ = retrait, officier+ = tout
-- [ ] Tests unitaires : depot, retrait, permissions, logs
+### ~~74 — Guildes coffre partage (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

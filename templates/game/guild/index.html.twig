@@ -69,6 +69,11 @@
                     <span>Votre rang : <span class="{{ membership.rank.cssClass }}">{{ membership.rank.label }}</span></span>
                 </div>
 
+                <a href="{{ path('app_game_guild_vault') }}"
+                   class="inline-block mb-4 px-3 py-1.5 bg-amber-700/50 hover:bg-amber-600 text-amber-300 text-xs rounded transition-colors touch-target">
+                    Coffre de guilde
+                </a>
+
                 {# Invite form (officer+) #}
                 {% if membership.rank.canInvite %}
                     <div class="mb-4 p-3 bg-gray-700/30 rounded-lg border border-gray-600">

@@ -35,6 +35,9 @@ class Guild
     #[ORM\OneToMany(targetEntity: GuildMember::class, mappedBy: 'guild', cascade: ['persist', 'remove'])]
     private Collection $members;
 
+    #[ORM\OneToOne(targetEntity: GuildVault::class, mappedBy: 'guild', cascade: ['persist', 'remove'])]
+    private ?GuildVault $vault = null;
+
     public function __construct()
     {
         $this->members = new ArrayCollection();
@@ -121,6 +124,18 @@ class Guild
     public function getMemberCount(): int
     {
         return $this->members->count();
+    }
+
+    public function getVault(): ?GuildVault
+    {
+        return $this->vault;
+    }
+
+    public function setVault(?GuildVault $vault): self
+    {
+        $this->vault = $vault;
+
+        return $this;
     }
 
     public function __toString(): string
