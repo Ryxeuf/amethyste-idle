@@ -384,6 +384,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'materiaSlots' => 1,
             ],
             'long_sword' => [
                 'name' => 'Epée longue',
@@ -398,6 +399,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100,
                 'rarity' => ItemRarity::Uncommon,
+                'materiaSlots' => 1,
             ],
             'leather_boots' => [
                 'name' => 'Bottes en cuir',
@@ -410,6 +412,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'materiaSlots' => 1,
             ],
             'leather_hat' => [
                 'name' => 'Chapeau de cuir',
@@ -421,6 +424,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'materiaSlots' => 1,
             ],
             'leather_armor' => [
                 'name' => 'Armure de cuir',
@@ -432,6 +436,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'materiaSlots' => 1,
             ],
 
             // Objets divers
@@ -713,6 +718,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 150,
                 'effect' => '{"action":"defense_boost", "amount":10}',
+                'materiaSlots' => 1,
             ],
             'leather_helmet' => [
                 'name' => 'Casque en cuir',
@@ -725,6 +731,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 100,
                 'effect' => '{"action":"defense_boost", "amount":5}',
+                'materiaSlots' => 1,
             ],
             'magic_amulet' => [
                 'name' => 'Amulette magique',
@@ -738,6 +745,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 100,
                 'effect' => '{"action":"magic_boost", "amount":15}',
                 'rarity' => ItemRarity::Rare,
+                'materiaSlots' => 1,
             ],
             'magic_ring' => [
                 'name' => 'Anneau magique',
@@ -751,6 +759,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 100,
                 'effect' => '{"action":"magic_boost", "amount":10}',
                 'rarity' => ItemRarity::Rare,
+                'materiaSlots' => 1,
             ],
             'bow' => [
                 'name' => 'Arc',
@@ -1788,6 +1797,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
             'starter_helmet' => [
                 'name' => 'Casque rouillé',
@@ -1799,6 +1809,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
             'starter_chest' => [
                 'name' => 'Tunique rembourrée',
@@ -1810,6 +1821,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
             'starter_legs' => [
                 'name' => 'Jambières en tissu',
@@ -1821,6 +1833,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
             'starter_boots' => [
                 'name' => 'Sandales usées',
@@ -1832,6 +1845,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
             'starter_gloves' => [
                 'name' => 'Gants de travail',
@@ -1843,6 +1857,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
             'starter_shield' => [
                 'name' => 'Bouclier en bois',
@@ -1854,6 +1869,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 60,
+                'materiaSlots' => 1,
             ],
 
             // --- Récompenses uniques de boss ---
@@ -1872,6 +1888,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
             ],
             'dragon_scale_armor' => [
                 'name' => 'Plastron en écailles de dragon',
@@ -1885,6 +1902,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
             ],
             'griffin_talon_ring' => [
                 'name' => 'Anneau de serre de griffon',
@@ -1898,6 +1916,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
             ],
             'minotaur_horn_helm' => [
                 'name' => 'Heaume cornu du minotaure',
@@ -1911,6 +1930,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
             ],
             'golem_heart_shield' => [
                 'name' => 'Bouclier cœur de golem',
@@ -1924,6 +1944,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
             ],
             'troll_king_belt' => [
                 'name' => 'Ceinture du roi troll',
@@ -1936,6 +1957,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 300,
                 'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 2,
             ],
 
             // --- Récompenses uniques de boss de zone (tâche 66) ---
@@ -2016,6 +2038,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'materiaSlots' => 1,
             ],
             'iron_shield' => [
                 'name' => 'Bouclier en fer',
@@ -2027,6 +2050,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 150,
+                'materiaSlots' => 1,
             ],
             'iron_helmet' => [
                 'name' => 'Casque en fer',
@@ -2038,6 +2062,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 2,
                 'energy_cost' => 0,
                 'nb_usages' => 150,
+                'materiaSlots' => 1,
             ],
             'copper_ring' => [
                 'name' => 'Anneau de cuivre',
@@ -2049,6 +2074,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'space' => 1,
                 'energy_cost' => 0,
                 'nb_usages' => 100,
+                'materiaSlots' => 1,
             ],
 
             // === Équipement Tier 2 — Variantes élémentaires (Feu, Eau, Terre, Air) ===
@@ -2072,6 +2098,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_sword' => [
                 'name' => 'Épée de givre',
@@ -2089,6 +2116,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_sword' => [
                 'name' => 'Épée tellurique',
@@ -2106,6 +2134,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_sword' => [
                 'name' => 'Épée du vent',
@@ -2123,6 +2152,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // --- Boucliers (side_weapon) ---
@@ -2140,6 +2170,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_shield' => [
                 'name' => 'Bouclier de givre',
@@ -2155,6 +2186,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_shield' => [
                 'name' => 'Bouclier de pierre',
@@ -2170,6 +2202,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_shield' => [
                 'name' => 'Bouclier du vent',
@@ -2185,6 +2218,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // --- Casques (head) ---
@@ -2202,6 +2236,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_helmet' => [
                 'name' => 'Casque de givre',
@@ -2217,6 +2252,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_helmet' => [
                 'name' => 'Casque de pierre',
@@ -2232,6 +2268,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_helmet' => [
                 'name' => 'Casque du vent',
@@ -2247,6 +2284,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // --- Plastrons (chest) ---
@@ -2264,6 +2302,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_chest' => [
                 'name' => 'Plastron de givre',
@@ -2279,6 +2318,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_chest' => [
                 'name' => 'Plastron de pierre',
@@ -2294,6 +2334,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_chest' => [
                 'name' => 'Plastron du vent',
@@ -2309,6 +2350,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // --- Jambières (leg) ---
@@ -2326,6 +2368,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_legs' => [
                 'name' => 'Jambières de givre',
@@ -2341,6 +2384,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_legs' => [
                 'name' => 'Jambières de pierre',
@@ -2356,6 +2400,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_legs' => [
                 'name' => 'Jambières du vent',
@@ -2371,6 +2416,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // --- Bottes (foot) ---
@@ -2388,6 +2434,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_boots' => [
                 'name' => 'Bottes de givre',
@@ -2403,6 +2450,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_boots' => [
                 'name' => 'Bottes de pierre',
@@ -2418,6 +2466,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_boots' => [
                 'name' => 'Bottes du vent',
@@ -2433,6 +2482,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // --- Gantelets (hand) ---
@@ -2450,6 +2500,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_water_gloves' => [
                 'name' => 'Gantelets de givre',
@@ -2465,6 +2516,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_earth_gloves' => [
                 'name' => 'Gantelets de pierre',
@@ -2480,6 +2532,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
+                'materiaSlots' => 1,
             ],
             't2_air_gloves' => [
                 'name' => 'Gantelets du vent',
@@ -2495,6 +2548,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Uncommon,
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
+                'materiaSlots' => 1,
             ],
 
             // === Équipement Tier 3 — Variantes élémentaires (Métal, Bête, Lumière, Ombre) ===
@@ -2986,6 +3040,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Epic,
                 'level' => 1,
                 'boundToPlayer' => true,
+                'materiaSlots' => 1,
             ],
 
             // Cosmétiques d'événement — La Nuit des Ombres
@@ -3003,6 +3058,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Epic,
                 'level' => 1,
                 'boundToPlayer' => true,
+                'materiaSlots' => 1,
             ],
         ];
     }

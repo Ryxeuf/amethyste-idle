@@ -1,19 +1,83 @@
+{% set widget_class = ' w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/40' %}
+
 <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
-    {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+    {{ form_start(form, {'attr': {'class': 'space-y-6', 'data-controller': 'admin-item-materia-slots'}}) }}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             {% for field in form %}
-                {% if field.vars.name != '_token' %}
+                {% if field.vars.name != '_token' and field.vars.name != 'materiaSlots' %}
                     <div class="{% if field.vars.name in ['description', 'effect'] %}md:col-span-2{% endif %}">
                         {{ form_label(field, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-400 mb-1'}}) }}
-                        {{ form_widget(field, {'attr': {'class': (field.vars.attr.class ?? '') ~ ' w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500'}}) }}
-                        {{ form_errors(field, {'attr': {'class': 'text-red-400 text-xs mt-1'}}) }}
+                        {% set merged_attr = field.vars.attr|default({})|merge({
+                            'class': (field.vars.attr.class|default('')) ~ widget_class
+                        }) %}
+                        {{ form_widget(field, {'attr': merged_attr}) }}
+                        {{ form_errors(field) }}
+                        {% if field.vars.help is defined and field.vars.help %}
+                            <p class="text-xs text-gray-500 mt-1.5">{{ field.vars.help|trans }}</p>
+                        {% endif %}
                     </div>
                 {% endif %}
             {% endfor %}
         </div>
 
-        <div class="flex items-center gap-4 pt-4 border-t border-gray-800">
-            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition-colors">Enregistrer</button>
+        {# Slots materia — carte dediee #}
+        <div
+            class="md:col-span-2 rounded-xl border border-cyan-900/40 bg-gradient-to-br from-gray-900 via-gray-900 to-cyan-950/20 p-5 sm:p-6 shadow-inner transition-opacity duration-200"
+            data-admin-item-materia-slots-target="panel"
+            aria-label="Configuration des slots materia"
+        >
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-base font-semibold text-gray-100 flex items-center gap-2">
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 ring-1 ring-cyan-500/30" aria-hidden="true">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                        </span>
+                        Slots materia
+                    </h2>
+                    <p class="text-sm text-gray-500 mt-1 max-w-xl">
+                        Definissez combien de materias peuvent etre sertis sur cette piece. Un apercu visuel reflete le nombre choisi (max. 12).
+                    </p>
+                </div>
+                <p class="text-xs text-amber-200/80 bg-amber-950/40 border border-amber-800/50 rounded-lg px-3 py-2 sm:max-w-xs shrink-0">
+                    Actif surtout pour le type <strong class="text-amber-100">Equipement</strong>. Pour les autres types, la valeur est ignoree en jeu.
+                </p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row lg:items-center gap-6 lg:gap-10">
+                <div class="flex items-center gap-3">
+                    <button type="button" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-800 border border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-cyan-600/50 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500/50" data-action="admin-item-materia-slots#decrement" aria-label="Retirer un slot">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+                    </button>
+                    <div class="flex flex-col items-center min-w-[4.5rem]">
+                        <span class="text-[10px] uppercase tracking-widest text-gray-500 font-medium">Total</span>
+                        <span class="text-3xl font-bold tabular-nums text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-violet-400" data-admin-item-materia-slots-target="valueDisplay">{{ form.materiaSlots.vars.value }}</span>
+                    </div>
+                    <button type="button" class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gray-800 border border-gray-600 text-gray-200 hover:bg-gray-700 hover:border-cyan-600/50 hover:text-cyan-300 transition-colors focus:outline-none focus:ring-2 focus:ring-cyan-500/50" data-action="admin-item-materia-slots#increment" aria-label="Ajouter un slot">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    </button>
+                </div>
+
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-medium text-gray-500 mb-2">Apercu (12 emplacements max)</p>
+                    <div class="flex flex-wrap gap-2 sm:gap-2.5 p-3 rounded-lg bg-black/25 border border-gray-800" data-admin-item-materia-slots-target="orbs" role="img" aria-label="Apercu des slots"></div>
+                </div>
+
+                <div class="lg:w-44 shrink-0">
+                    <label for="{{ form.materiaSlots.vars.id }}" class="block text-xs font-medium text-gray-500 mb-1.5">Valeur exacte</label>
+                    {% set slot_merged = form.materiaSlots.vars.attr|default({})|merge({
+                        'class': (form.materiaSlots.vars.attr.class|default('')) ~ ' w-full bg-gray-950 border border-gray-700 rounded-lg px-3 py-2 text-sm text-center tabular-nums font-semibold text-cyan-100 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500/40'
+                    }) %}
+                    {{ form_widget(form.materiaSlots, {'attr': slot_merged}) }}
+                    {{ form_errors(form.materiaSlots) }}
+                    {% if form.materiaSlots.vars.help %}
+                        <p class="text-xs text-gray-600 mt-2">{{ form.materiaSlots.vars.help|trans }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-800">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors shadow-lg shadow-purple-900/20">Enregistrer</button>
             <a href="{{ path('admin_item_index') }}" class="text-gray-400 hover:text-gray-300 text-sm">Annuler</a>
         </div>
     {{ form_end(form) }}

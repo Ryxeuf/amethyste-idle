@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Range;
 
 class ItemType extends AbstractType
 {
@@ -31,6 +32,10 @@ class ItemType extends AbstractType
                     'Equipement' => Item::TYPE_GEAR_PIECE,
                     'Materia' => Item::TYPE_MATERIA,
                 ],
+                'attr' => [
+                    'data-admin-item-materia-slots-target' => 'typeSelect',
+                    'data-action' => 'change->admin-item-materia-slots#typeChanged',
+                ],
             ])
             ->add('element', EnumType::class, [
                 'label' => 'Element',
@@ -45,6 +50,19 @@ class ItemType extends AbstractType
                     array_map(fn (string $loc) => ucfirst(str_replace('_', ' ', $loc)), Item::GEAR_LOCATIONS),
                     Item::GEAR_LOCATIONS
                 ),
+            ])
+            ->add('materiaSlots', IntegerType::class, [
+                'label' => 'Slots materia',
+                'help' => '0–12 emplacements (equipement).',
+                'attr' => [
+                    'min' => 0,
+                    'max' => 12,
+                    'data-admin-item-materia-slots-target' => 'input',
+                    'data-action' => 'input->admin-item-materia-slots#inputChanged',
+                ],
+                'constraints' => [
+                    new Range(min: 0, max: 12),
+                ],
             ])
             ->add('price', IntegerType::class, ['label' => 'Prix', 'required' => false])
             ->add('protection', IntegerType::class, ['label' => 'Protection', 'required' => false])

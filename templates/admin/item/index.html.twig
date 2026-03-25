@@ -27,6 +27,7 @@
                         <th class="text-left px-4 py-3 font-medium">Element</th>
                         <th class="text-left px-4 py-3 font-medium">Prix</th>
                         <th class="text-left px-4 py-3 font-medium">Niveau</th>
+                        <th class="text-center px-4 py-3 font-medium">Slots M.</th>
                         <th class="text-right px-4 py-3 font-medium">Actions</th>
                     </tr>
                 </thead>
@@ -43,6 +44,15 @@
                             <td class="px-4 py-3 text-gray-400">{{ item.element.value }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ item.price ?? '-' }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ item.level ?? '-' }}</td>
+                            <td class="px-4 py-3 text-center">
+                                {% if item.type == 'gear' and item.materiaSlots > 0 %}
+                                    <span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 text-xs font-semibold rounded-md bg-cyan-950/80 text-cyan-300 border border-cyan-800/60" title="Slots materia">{{ item.materiaSlots }}</span>
+                                {% elseif item.type == 'gear' %}
+                                    <span class="text-gray-600 text-xs">0</span>
+                                {% else %}
+                                    <span class="text-gray-600">—</span>
+                                {% endif %}
+                            </td>
                             <td class="px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <a href="{{ path('admin_item_edit', {id: item.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
@@ -55,7 +65,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucun item trouve.</td>
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">Aucun item trouve.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
