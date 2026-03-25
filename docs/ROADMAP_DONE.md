@@ -941,3 +941,19 @@
 - [x] Affichage dans inventaire : pièces du set équipées, bonus actifs/inactifs, nom du set par pièce
 - [x] Fixtures : 3 sets de base (Set du Gardien 2/3/4 pièces, Set de l'Ombre 2/3, Set du Veilleur 2/3)
 - [x] Tests unitaires EquipmentSetResolver (7 tests)
+
+---
+
+## 69 — Monstres invocateurs (2026-03-25) ✅
+
+> Monstres capables d'invoquer des renforts en cours de combat. Prerequis : ← 49 (Monstres soigneurs / multi-mobs)
+
+- [x] Nouvelle action IA `summon` dans MobActionHandler (aiPattern JSON `"summon": {...}`)
+- [x] Création d'un Mob en cours de combat (ajout à la Fight, insertion dans la timeline)
+- [x] Limite d'invocation (max N renforts par combat, configurable via `max_summons`)
+- [x] Champ `summoned_in_fight` sur entité Mob + migration PostgreSQL
+- [x] FightTurnResolver : les mobs invoqués apparaissent automatiquement dans la timeline
+- [x] Type de log `TYPE_SUMMON` + méthode `logSummon()` dans CombatLogger
+- [x] Icône et style du log d'invocation dans le template de combat
+- [x] Fixtures : Nécromancien invoque des Squelettes (max 2, chance 35%)
+- [x] Tests unitaires : invocation réussie, limite atteinte, ajout au combat

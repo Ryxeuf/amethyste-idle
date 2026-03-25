@@ -309,6 +309,22 @@ class CombatLogger
         );
     }
 
+    public function logSummon(Fight $fight, CharacterInterface $summoner, string $summonedName): void
+    {
+        $this->log(
+            $fight,
+            $fight->getStep(),
+            $this->getActorType($summoner),
+            $summoner->getId(),
+            $this->getCharacterName($summoner),
+            FightLog::TYPE_SUMMON,
+            sprintf('%s invoque un %s !', $this->getCharacterName($summoner), $summonedName),
+            [
+                'summoned_name' => $summonedName,
+            ]
+        );
+    }
+
     public function logVictory(Fight $fight): void
     {
         $this->log(

@@ -32,6 +32,7 @@ class FightLog
     public const TYPE_FIGHT_START = 'fight_start';
     public const TYPE_VICTORY = 'victory';
     public const TYPE_DEFEAT = 'defeat';
+    public const TYPE_SUMMON = 'summon';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

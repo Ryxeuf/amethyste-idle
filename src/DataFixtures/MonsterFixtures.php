@@ -516,6 +516,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     'role' => 'healer',
                     'spell_chance' => 40,
                     'low_hp_heal' => ['threshold' => 40, 'action' => 'heal'],
+                    'summon' => [
+                        'monster_slug' => 'skeleton',
+                        'max_summons' => 2,
+                        'chance' => 35,
+                    ],
                 ],
                 'elementalResistances' => ['dark' => 0.4, 'light' => -0.5],
             ],
