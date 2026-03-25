@@ -102,7 +102,8 @@ class BalanceReportCommand extends Command
                 $xp *= self::BOSS_XP_MULTIPLIER;
             }
 
-            $attackDmg = $monster->getAttack() ? ($monster->getAttack()->getDamage() ?? 0) : 0;
+            $attack = $monster->getAttack();
+            $attackDmg = $attack->getDamage() ?? 0;
 
             $rows[] = [
                 $monster->getName(),
