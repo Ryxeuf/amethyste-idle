@@ -10,7 +10,6 @@ use App\Entity\Game\EquipmentSetBonus;
 use App\Entity\Game\Item;
 use App\GameEngine\Fight\EquipmentSetResolver;
 use App\Helper\GearHelper;
-use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

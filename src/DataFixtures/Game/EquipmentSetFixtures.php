@@ -48,7 +48,6 @@ class EquipmentSetFixtures extends Fixture implements DependentFixtureInterface
             if (isset($data['items']) && \is_array($data['items'])) {
                 foreach ($data['items'] as $itemRef) {
                     $itemReference = substr($itemRef, 1); // Remove the @ symbol
-                    /** @var Item $item */
                     $item = $this->getReference($itemReference, Item::class);
                     $item->setEquipmentSet($set);
                 }

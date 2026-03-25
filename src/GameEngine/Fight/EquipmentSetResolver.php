@@ -25,7 +25,6 @@ class EquipmentSetResolver
         $result = [];
 
         foreach ($setCounts as $slug => $data) {
-            /** @var EquipmentSet $set */
             $set = $data['set'];
             $count = $data['count'];
 
