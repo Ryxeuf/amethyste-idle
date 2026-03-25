@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures\Game;
 
+use App\DataFixtures\ItemFixtures as PhpItemFixtures;
 use App\Entity\Game\EquipmentSet;
 use App\Entity\Game\EquipmentSetBonus;
 use App\Entity\Game\Item;
@@ -60,6 +61,7 @@ class EquipmentSetFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies(): array
     {
         return [
+            PhpItemFixtures::class,
             ItemFixtures::class,
         ];
     }

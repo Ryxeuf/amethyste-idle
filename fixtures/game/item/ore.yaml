@@ -1,20 +1,4 @@
 App\Entity\Game\Item:
-  ore_ruby (extends item):
-    id: 11
-    name: 'Rubis brut'
-    description: 'Un minerai de rubis scintillant'
-    type: 'resource'
-    slug: 'ore-ruby'
-    price: 15
-    domain: '@miner'
-  ore_iron (extends item):
-    id: 12
-    name: 'Minerai de fer'
-    description: 'Un morceau de minerai de fer'
-    type: 'resource'
-    slug: 'ore-iron'
-    price: 8
-    domain: '@miner'
   ore_copper (extends item):
     id: 20
     name: 'Minerai de cuivre'
@@ -30,14 +14,6 @@ App\Entity\Game\Item:
     type: 'resource'
     slug: 'ore-silver'
     price: 25
-    domain: '@miner'
-  ore_gold (extends item):
-    id: 22
-    name: 'Minerai d''or'
-    description: 'Un précieux minerai d''or'
-    type: 'resource'
-    slug: 'ore-gold'
-    price: 50
     domain: '@miner'
   ore_mithril (extends item):
     id: 23

@@ -752,7 +752,7 @@ class SpellFixtures extends Fixture
 
             // Sorts de métal
             'sword_10' => [
-                'slug' => 'slug-10',
+                'slug' => 'sword-strike',
                 'damage' => 1,
                 'element' => Element::Metal,
                 'heal' => null,

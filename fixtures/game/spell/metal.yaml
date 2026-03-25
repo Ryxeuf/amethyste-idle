@@ -1,6 +1,6 @@
 App\Entity\Game\Spell:
   sword_10 (extends spell):
-    slug: slug-10
+    slug: sword-strike
     damage: 1
     element: 'metal'
     heal: null

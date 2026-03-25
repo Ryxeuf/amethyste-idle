@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Game\ItemFixtures as GameItemFixtures;
 use App\Entity\App\Inventory;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
@@ -323,6 +324,7 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ItemFixtures::class,
+            GameItemFixtures::class,
             InventoryFixtures::class,
         ];
     }
