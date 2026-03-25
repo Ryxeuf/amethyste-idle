@@ -11,6 +11,7 @@ use App\Entity\Game\Spell;
 use App\Enum\Element;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatSkillResolver;
+use App\GameEngine\Fight\LinkedMateriaResolver;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -25,7 +26,7 @@ class CombatCapacityResolverTest extends TestCase
         $this->combatSkillResolver = $this->createMock(CombatSkillResolver::class);
         // By default, all spells are unlocked
         $this->combatSkillResolver->method('getUnlockedMateriaSpellSlugs')->willReturn(['fireball', 'ice_bolt']);
-        $this->resolver = new CombatCapacityResolver($this->combatSkillResolver);
+        $this->resolver = new CombatCapacityResolver($this->combatSkillResolver, new LinkedMateriaResolver());
     }
 
     private function createSpell(string $slug, Element $element = Element::Fire): Spell&MockObject
@@ -323,7 +324,7 @@ class CombatCapacityResolverTest extends TestCase
         // Override the default mock to return no unlocked slugs
         $combatSkillResolver = $this->createMock(CombatSkillResolver::class);
         $combatSkillResolver->method('getUnlockedMateriaSpellSlugs')->willReturn([]);
-        $resolver = new CombatCapacityResolver($combatSkillResolver);
+        $resolver = new CombatCapacityResolver($combatSkillResolver, new LinkedMateriaResolver());
 
         $spell = $this->createSpell('fireball', Element::Fire);
         $materia = $this->createMateria($spell, Element::Fire);
@@ -342,7 +343,7 @@ class CombatCapacityResolverTest extends TestCase
         // Only fireball is unlocked, not ice_bolt
         $combatSkillResolver = $this->createMock(CombatSkillResolver::class);
         $combatSkillResolver->method('getUnlockedMateriaSpellSlugs')->willReturn(['fireball']);
-        $resolver = new CombatCapacityResolver($combatSkillResolver);
+        $resolver = new CombatCapacityResolver($combatSkillResolver, new LinkedMateriaResolver());
 
         $spell1 = $this->createSpell('fireball', Element::Fire);
         $spell2 = $this->createSpell('ice_bolt', Element::Water);

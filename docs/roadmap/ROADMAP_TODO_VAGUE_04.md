@@ -72,24 +72,13 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ### Piste B — Combat avance (‖)
 
-### 69 — Monstres invocateurs (M | ★★)
-> Monstres capables d'invoquer des renforts en cours de combat, rendant les combats dynamiques. Prerequis : ← 49 (Monstres soigneurs / multi-mobs)
-- [ ] Nouvelle action IA `summon` dans MobActionHandler
-- [ ] Creer un Mob en cours de combat (ajout a la Fight, insertion dans la timeline)
-- [ ] Limite d'invocation (max 2 renforts par combat)
-- [ ] FightTurnResolver : recalculer la timeline quand un mob est ajoute
-- [ ] Fixtures : monstre invocateur (ex: Necromancien invoque des Squelettes)
-- [ ] Message de log specifique ("X invoque un Y !")
+### ~~69 — Monstres invocateurs (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
-### 70 — Slots materia lies (M | ★★)
-> Synergie entre slots adjacents : bonus elementaire si les materia sockettees partagent le meme element. Prerequis : ← 06 (Systeme materia fonctionnel)
-- [ ] Ajouter un champ `linkedSlotId` (nullable) sur l'entite Slot (migration)
-- [ ] Logique `LinkedMateriaResolver` : si 2 slots lies ont des materia du meme element, bonus +15% degats
-- [ ] Integrer le bonus dans CombatCapacityResolver
-- [ ] Afficher le lien entre slots dans le template inventaire (trait visuel)
-- [ ] Ajouter des slots lies sur quelques equipements avances dans les fixtures
+### ~~70 — Slots materia lies (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
