@@ -9,6 +9,7 @@ use App\Entity\App\Pnj;
 use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Map\SpriteConfigProvider;
 use App\GameEngine\Movement\PlayerMoveProcessor;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Player\PnjDialogParser;
 use App\GameEngine\Quest\PnjQuestIndicatorResolver;
 use App\GameEngine\World\GameTimeService;
@@ -252,6 +253,7 @@ class MapApiController extends AbstractController
         Request $request,
         MovementCalculator $movementCalculator,
         PlayerMoveProcessor $playerMoveProcessor,
+        PlayerActionHelper $playerActionHelper,
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
@@ -275,7 +277,8 @@ class MapApiController extends AbstractController
 
         try {
             $movementCalculator->loadMap($player->getMap()->getId());
-            $movements = $movementCalculator->calculateMovement($currentX, $currentY, $targetX, $targetY);
+            $abilityMask = $playerActionHelper->getMovementAbilityMask();
+            $movements = $movementCalculator->calculateMovement($currentX, $currentY, $targetX, $targetY, $abilityMask);
         } catch (\Throwable $e) {
             return $this->json(['error' => 'No path found', 'message' => $e->getMessage()], 400);
         }

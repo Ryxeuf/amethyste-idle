@@ -9,6 +9,26 @@ class CellHelper
     public const MOVE_UNREACHABLE = -1;
     public const MOVE_DEFAULT = 0;
 
+    // Bitmask-based movement types (powers of 2) used as Dijkstra edge costs
+    // and ability flags. The player's abilityMask must include all bits of the
+    // edge cost for the path to be traversable: ($cost & $mask) === $cost.
+    public const MOVE_WALK = 1;  // 0b001 — normal movement (default cost for MOVE_DEFAULT)
+    public const MOVE_SWIM = 2;  // 0b010 — requires swim skill
+    public const MOVE_CLIMB = 4; // 0b100 — requires climb skill
+
+    // Ability mask bits (combine with bitwise OR for player capabilities)
+    public const ABILITY_WALK = 0b001;
+    public const ABILITY_SWIM = 0b010;
+    public const ABILITY_CLIMB = 0b100;
+    public const ABILITY_ALL = 0b111;
+
+    public const MOVEMENT_LABELS = [
+        self::MOVE_UNREACHABLE => 'Bloque',
+        self::MOVE_DEFAULT => 'Libre',
+        self::MOVE_SWIM => 'Eau (nage)',
+        self::MOVE_CLIMB => 'Escalade',
+    ];
+
     public static function getDataFromSlug(string $slug): array
     {
         [$coordinates, $movement, $borders] = explode('_', $slug);

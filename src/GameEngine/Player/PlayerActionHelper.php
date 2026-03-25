@@ -2,11 +2,14 @@
 
 namespace App\GameEngine\Player;
 
+use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 
 class PlayerActionHelper
 {
     final public const HARVEST = 'harvest';
+    final public const MOVEMENT_SWIM = 'movement.swim';
+    final public const MOVEMENT_CLIMB = 'movement.climb';
 
     private ?array $actions = null;
 
@@ -30,6 +33,25 @@ class PlayerActionHelper
         }
 
         return in_array($spot, $harvestable);
+    }
+
+    /**
+     * Compute the bitmask of movement abilities the current player has.
+     * Always includes ABILITY_WALK. Adds ABILITY_SWIM / ABILITY_CLIMB
+     * when the player owns a skill with the corresponding action.
+     */
+    public function getMovementAbilityMask(): int
+    {
+        $mask = CellHelper::ABILITY_WALK;
+
+        if ($this->canDoAction(self::MOVEMENT_SWIM)) {
+            $mask |= CellHelper::ABILITY_SWIM;
+        }
+        if ($this->canDoAction(self::MOVEMENT_CLIMB)) {
+            $mask |= CellHelper::ABILITY_CLIMB;
+        }
+
+        return $mask;
     }
 
     private function getActions(): array

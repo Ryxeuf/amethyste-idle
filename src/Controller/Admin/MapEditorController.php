@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
+use App\Helper\CellHelper;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -85,11 +86,19 @@ class MapEditorController extends AbstractController
 
                     $movement = $cellData['mouvement'] ?? 0;
 
+                    // Extract border info from slug if available
+                    $borders = [0, 0, 0, 0]; // [north, east, south, west]
+                    if (isset($cellData['slug'])) {
+                        $slugData = CellHelper::getDataFromSlug($cellData['slug']);
+                        $borders = [$slugData['north'], $slugData['east'], $slugData['south'], $slugData['west']];
+                    }
+
                     $cells[] = [
                         'x' => $globalX,
                         'y' => $globalY,
                         'l' => $layerGids,
                         'm' => $movement,
+                        'b' => $borders, // [north, east, south, west]
                     ];
 
                     if ($globalX + 1 > $mapWidth) {
@@ -339,5 +348,161 @@ class MapEditorController extends AbstractController
         );
 
         return $this->json(['success' => true, 'count' => $count]);
+    }
+
+    #[Route('/{id}/editor/update-borders', name: 'editor_update_borders', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function updateBorders(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['cells']) || !is_array($data['cells'])) {
+            return $this->json(['error' => 'Missing cells parameter'], 400);
+        }
+
+        $areaWidth = $map->getAreaWidth();
+        $areaHeight = $map->getAreaHeight();
+
+        $areasCache = [];
+        foreach ($map->getAreas() as $a) {
+            $areasCache[$a->getCoordinates()] = $a;
+        }
+
+        $areaDataCache = [];
+        $count = 0;
+
+        foreach ($data['cells'] as $cell) {
+            if (!isset($cell['x'], $cell['y'], $cell['borders'])) {
+                continue;
+            }
+
+            $globalX = (int) $cell['x'];
+            $globalY = (int) $cell['y'];
+            $borders = $cell['borders']; // [north, east, south, west]
+
+            $areaCoordStr = intval($globalX / $areaWidth) . '.' . intval($globalY / $areaHeight);
+
+            if (!isset($areasCache[$areaCoordStr])) {
+                continue;
+            }
+
+            $area = $areasCache[$areaCoordStr];
+
+            if (!isset($areaDataCache[$areaCoordStr])) {
+                $areaDataCache[$areaCoordStr] = $area->getFullDataArray();
+            }
+
+            $localX = $globalX % $areaWidth;
+            $localY = $globalY % $areaHeight;
+
+            if (isset($areaDataCache[$areaCoordStr]['cells'][$localX][$localY]['slug'])) {
+                $cellData = $areaDataCache[$areaCoordStr]['cells'][$localX][$localY];
+                $movement = $cellData['mouvement'] ?? 0;
+                $n = (int) ($borders[0] ?? 0);
+                $e = (int) ($borders[1] ?? 0);
+                $s = (int) ($borders[2] ?? 0);
+                $w = (int) ($borders[3] ?? 0);
+
+                $areaDataCache[$areaCoordStr]['cells'][$localX][$localY]['slug'] =
+                    $localX . '.' . $localY . '_' . $movement . '_' . $n . ':' . $e . ':' . $s . ':' . $w;
+                ++$count;
+            }
+        }
+
+        foreach ($areaDataCache as $coordStr => $areaData) {
+            $areasCache[$coordStr]->setFullData(json_encode($areaData));
+        }
+
+        $this->em->flush();
+
+        $this->adminLogger->log(
+            'update',
+            'Border',
+            null,
+            sprintf('%d bordures modifiees sur %s', $count, $map->getName())
+        );
+
+        return $this->json(['success' => true, 'count' => $count]);
+    }
+
+    #[Route('/{id}/editor/delete-entity', name: 'editor_delete_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function deleteEntity(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['entityType'], $data['entityId'])) {
+            return $this->json(['error' => 'Missing parameters'], 400);
+        }
+
+        $entityType = $data['entityType'];
+        $entityId = (int) $data['entityId'];
+
+        $entity = match ($entityType) {
+            'mob' => $this->em->getRepository(Mob::class)->find($entityId),
+            'harvestSpot', 'portal', 'craftStation' => $this->em->getRepository(ObjectLayer::class)->find($entityId),
+            'pnj' => $this->em->getRepository(Pnj::class)->find($entityId),
+            default => null,
+        };
+
+        if (!$entity) {
+            return $this->json(['error' => 'Entity not found'], 404);
+        }
+
+        if ($entity->getMap()?->getId() !== $map->getId()) {
+            return $this->json(['error' => 'Entity does not belong to this map'], 403);
+        }
+
+        $name = method_exists($entity, 'getName') ? $entity->getName() : 'entity';
+        $this->em->remove($entity);
+        $this->em->flush();
+
+        $this->adminLogger->log(
+            'delete',
+            ucfirst($entityType),
+            $entityId,
+            sprintf('%s "%s" supprime de %s', $entityType, $name, $map->getName())
+        );
+
+        return $this->json(['success' => true]);
+    }
+
+    #[Route('/{id}/editor/move-entity', name: 'editor_move_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function moveEntity(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['entityType'], $data['entityId'], $data['x'], $data['y'])) {
+            return $this->json(['error' => 'Missing parameters'], 400);
+        }
+
+        $entityType = $data['entityType'];
+        $entityId = (int) $data['entityId'];
+        $newX = (int) $data['x'];
+        $newY = (int) $data['y'];
+
+        $entity = match ($entityType) {
+            'mob' => $this->em->getRepository(Mob::class)->find($entityId),
+            'harvestSpot', 'portal', 'craftStation' => $this->em->getRepository(ObjectLayer::class)->find($entityId),
+            'pnj' => $this->em->getRepository(Pnj::class)->find($entityId),
+            default => null,
+        };
+
+        if (!$entity) {
+            return $this->json(['error' => 'Entity not found'], 404);
+        }
+
+        if ($entity->getMap()?->getId() !== $map->getId()) {
+            return $this->json(['error' => 'Entity does not belong to this map'], 403);
+        }
+
+        $oldCoords = $entity->getCoordinates();
+        $entity->setCoordinates($newX . '.' . $newY);
+        $this->em->flush();
+
+        $name = method_exists($entity, 'getName') ? $entity->getName() : 'entity';
+        $this->adminLogger->log(
+            'update',
+            ucfirst($entityType),
+            $entityId,
+            sprintf('%s "%s" deplace de %s vers %d.%d sur %s', $entityType, $name, $oldCoords, $newX, $newY, $map->getName())
+        );
+
+        return $this->json(['success' => true]);
     }
 }

@@ -8,6 +8,9 @@ export default class extends Controller {
         entitiesUrl: String,
         updateCellUrl: String,
         updateCellsUrl: String,
+        updateBordersUrl: String,
+        deleteEntityUrl: String,
+        moveEntityUrl: String,
     }
 
     static targets = ['canvas', 'info', 'coords', 'legend', 'stats']
@@ -30,14 +33,20 @@ export default class extends Controller {
     _dragStartOffsetX = 0
     _dragStartOffsetY = 0
     _selectedCell = null
+    _selection = new Set() // Set of "x.y" keys for multi-selection
+    _selectionStart = null // {x, y} drag start tile
+    _selectionEnd = null // {x, y} drag end tile (while dragging)
+    _isSelecting = false
+    _selectedEntity = null // {type, id, name, x, y, listKey}
     _showCollisions = true
     _showEntities = true
     _showGrid = false
+    _showWalls = true
     _tilesetsLoaded = false
     _renderTiles = true
-    _tool = 'select' // select, block, unblock, paint
-    _paintMovement = -1
+    _tool = 'select' // select, block, unblock, water, wall, eraseWall
     _pendingChanges = {}
+    _pendingBorderChanges = {} // key: "x.y", value: [n, e, s, w]
     _ctx = null
     _animFrame = null
     _hoveredCell = null
@@ -58,6 +67,7 @@ export default class extends Controller {
 
     disconnect() {
         window.removeEventListener('resize', this._onResize)
+        document.removeEventListener('keydown', this._onKeyDown)
         if (this._animFrame) {
             cancelAnimationFrame(this._animFrame)
         }
@@ -81,6 +91,7 @@ export default class extends Controller {
         this._canvas.addEventListener('mouseup', this._onMouseUp)
         this._canvas.addEventListener('mouseleave', this._onMouseLeave)
         this._canvas.addEventListener('contextmenu', e => e.preventDefault())
+        document.addEventListener('keydown', this._onKeyDown)
     }
 
     async _loadData() {
@@ -209,12 +220,37 @@ export default class extends Controller {
                     ctx.fillRect(px, py, ts, ts)
                 }
 
+                // Climb overlay
+                if (this._showCollisions && cell.m === 4) {
+                    ctx.fillStyle = 'rgba(0, 200, 100, 0.25)'
+                    ctx.fillRect(px, py, ts, ts)
+                    // Upward arrow pattern
+                    if (ts >= 12) {
+                        ctx.strokeStyle = 'rgba(0, 200, 100, 0.5)'
+                        ctx.lineWidth = 1
+                        const cx = px + ts / 2
+                        const cy = py + ts / 2
+                        ctx.beginPath()
+                        ctx.moveTo(cx, cy + ts * 0.2)
+                        ctx.lineTo(cx, cy - ts * 0.2)
+                        ctx.moveTo(cx - ts * 0.12, cy - ts * 0.08)
+                        ctx.lineTo(cx, cy - ts * 0.2)
+                        ctx.lineTo(cx + ts * 0.12, cy - ts * 0.08)
+                        ctx.stroke()
+                    }
+                }
+
                 // Pending changes highlight
-                if (this._pendingChanges[key] !== undefined) {
+                if (this._pendingChanges[key] !== undefined || this._pendingBorderChanges[key] !== undefined) {
                     ctx.fillStyle = 'rgba(255, 255, 0, 0.3)'
                     ctx.fillRect(px, py, ts, ts)
                 }
             }
+        }
+
+        // Walls (directional borders)
+        if (this._showWalls) {
+            this._drawWalls(ctx, ts, minTileX, minTileY, maxTileX, maxTileY)
         }
 
         // Grid
@@ -251,13 +287,117 @@ export default class extends Controller {
             ctx.strokeRect(hx, hy, ts, ts)
         }
 
-        // Selected cell
-        if (this._selectedCell) {
-            const sx = this._selectedCell.x * ts + this._offsetX
-            const sy = this._selectedCell.y * ts + this._offsetY
+        // Multi-selection overlay
+        if (this._selection.size > 0) {
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.2)'
             ctx.strokeStyle = '#a855f7'
-            ctx.lineWidth = 3
-            ctx.strokeRect(sx, sy, ts, ts)
+            ctx.lineWidth = 2
+            for (const key of this._selection) {
+                const [sx, sy] = key.split('.').map(Number)
+                if (sx >= minTileX && sx < maxTileX && sy >= minTileY && sy < maxTileY) {
+                    const px = sx * ts + this._offsetX
+                    const py = sy * ts + this._offsetY
+                    ctx.fillRect(px, py, ts, ts)
+                    ctx.strokeRect(px, py, ts, ts)
+                }
+            }
+        }
+
+        // Selection rectangle (while dragging)
+        if (this._isSelecting && this._selectionStart && this._selectionEnd) {
+            const s = this._selectionStart
+            const e = this._selectionEnd
+            const rx = Math.min(s.x, e.x) * ts + this._offsetX
+            const ry = Math.min(s.y, e.y) * ts + this._offsetY
+            const rw = (Math.abs(e.x - s.x) + 1) * ts
+            const rh = (Math.abs(e.y - s.y) + 1) * ts
+            ctx.fillStyle = 'rgba(168, 85, 247, 0.15)'
+            ctx.fillRect(rx, ry, rw, rh)
+            ctx.strokeStyle = '#a855f7'
+            ctx.lineWidth = 2
+            ctx.setLineDash([6, 3])
+            ctx.strokeRect(rx, ry, rw, rh)
+            ctx.setLineDash([])
+        }
+
+        // Selected entity highlight
+        if (this._selectedEntity) {
+            const ex = this._selectedEntity.x * ts + this._offsetX
+            const ey = this._selectedEntity.y * ts + this._offsetY
+            ctx.strokeStyle = '#facc15'
+            ctx.lineWidth = 2
+            ctx.setLineDash([4, 4])
+            ctx.strokeRect(ex + 2, ey + 2, ts - 4, ts - 4)
+            ctx.setLineDash([])
+        }
+    }
+
+    _drawWalls(ctx, ts, minX, minY, maxX, maxY) {
+        const wallWidth = Math.max(3, ts * 0.12)
+        ctx.lineCap = 'round'
+
+        // Pre-build neighbor border lookup for one-way detection
+        const getBorders = (tx, ty) => {
+            const k = tx + '.' + ty
+            const c = this._cells[k]
+            if (!c || !c.b) return null
+            return this._pendingBorderChanges[k] || c.b
+        }
+
+        const oppositeIdx = { 0: 2, 1: 3, 2: 0, 3: 1 } // n↔s, e↔w
+        const neighborOff = [[0, -1], [1, 0], [0, 1], [-1, 0]] // n, e, s, w
+
+        for (let tx = minX; tx < maxX; tx++) {
+            for (let ty = minY; ty < maxY; ty++) {
+                const key = tx + '.' + ty
+                const cell = this._cells[key]
+                if (!cell || !cell.b) continue
+
+                const borders = this._pendingBorderChanges[key] || cell.b
+                const px = tx * ts + this._offsetX
+                const py = ty * ts + this._offsetY
+
+                const segments = [
+                    // [dirIdx, x1, y1, x2, y2]
+                    [0, px + 1, py, px + ts - 1, py],           // north
+                    [1, px + ts, py + 1, px + ts, py + ts - 1], // east
+                    [2, px + 1, py + ts, px + ts - 1, py + ts], // south
+                    [3, px, py + 1, px, py + ts - 1],           // west
+                ]
+
+                for (const [di, x1, y1, x2, y2] of segments) {
+                    if (borders[di] === 0) continue
+
+                    // Check if neighbor has the reciprocal wall → two-way; otherwise one-way
+                    const [ndx, ndy] = neighborOff[di]
+                    const neighborB = getBorders(tx + ndx, ty + ndy)
+                    const isOneWay = !neighborB || neighborB[oppositeIdx[di]] === 0
+
+                    ctx.lineWidth = wallWidth
+                    ctx.strokeStyle = isOneWay ? '#ef4444' : '#f97316' // red = one-way, orange = two-way
+                    ctx.beginPath()
+                    ctx.moveTo(x1, y1)
+                    ctx.lineTo(x2, y2)
+                    ctx.stroke()
+
+                    // Draw arrow for one-way walls (points inward = blocked direction)
+                    if (isOneWay && ts >= 16) {
+                        const mx = (x1 + x2) / 2
+                        const my = (y1 + y2) / 2
+                        const arrowSize = Math.max(4, ts * 0.2)
+                        // Arrow points INTO the cell (blocked from leaving in this direction)
+                        const dirs = [[0, 1], [-1, 0], [0, -1], [1, 0]] // n→down, e→left, s→up, w→right
+                        const [ax, ay] = dirs[di]
+                        ctx.fillStyle = '#ef4444'
+                        ctx.beginPath()
+                        ctx.moveTo(mx + ax * arrowSize, my + ay * arrowSize)
+                        ctx.lineTo(mx - ay * arrowSize * 0.5, my + ax * arrowSize * 0.5)
+                        ctx.lineTo(mx + ay * arrowSize * 0.5, my - ax * arrowSize * 0.5)
+                        ctx.closePath()
+                        ctx.fill()
+                    }
+                }
+            }
         }
     }
 
@@ -399,8 +539,17 @@ export default class extends Controller {
             const tileCoords = this._screenToTile(mouseX, mouseY)
             if (!tileCoords) return
 
+            // Ctrl+click: move selected entity
+            if (e.ctrlKey && this._selectedEntity) {
+                this._moveEntity(tileCoords.x, tileCoords.y)
+                return
+            }
+
             if (this._tool === 'select') {
-                this._selectCell(tileCoords.x, tileCoords.y)
+                this._selectionStart = { x: tileCoords.x, y: tileCoords.y }
+                this._selectionEnd = { x: tileCoords.x, y: tileCoords.y }
+                this._isSelecting = true
+                // Single click handled on mouseup
             } else if (this._tool === 'block') {
                 this._paintCell(tileCoords.x, tileCoords.y, -1)
                 this._isPainting = true
@@ -410,6 +559,13 @@ export default class extends Controller {
             } else if (this._tool === 'water') {
                 this._paintCell(tileCoords.x, tileCoords.y, 2)
                 this._isPainting = true
+            } else if (this._tool === 'climb') {
+                this._paintCell(tileCoords.x, tileCoords.y, 4)
+                this._isPainting = true
+            } else if (this._tool === 'wall' || this._tool === 'eraseWall') {
+                this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, e.shiftKey)
+                this._isPainting = true
+                this._isPaintingOneWay = e.shiftKey
             }
         }
     }
@@ -431,9 +587,16 @@ export default class extends Controller {
             this._hoveredCell = tileCoords
             this._updateCoords(tileCoords.x, tileCoords.y)
 
-            if (this._isPainting) {
-                const movement = this._tool === 'block' ? -1 : (this._tool === 'water' ? 2 : 0)
-                this._paintCell(tileCoords.x, tileCoords.y, movement)
+            if (this._isSelecting && this._selectionStart) {
+                this._selectionEnd = { x: tileCoords.x, y: tileCoords.y }
+            } else if (this._isPainting) {
+                if (this._tool === 'wall' || this._tool === 'eraseWall') {
+                    this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, this._isPaintingOneWay)
+                } else {
+                    const movementMap = { block: -1, unblock: 0, water: 2, climb: 4 }
+                    const movement = movementMap[this._tool] ?? 0
+                    this._paintCell(tileCoords.x, tileCoords.y, movement)
+                }
             }
         } else {
             this._hoveredCell = null
@@ -442,7 +605,45 @@ export default class extends Controller {
         this._render()
     }
 
-    _onMouseUp = () => {
+    _onMouseUp = (e) => {
+        if (this._isSelecting && this._selectionStart) {
+            const start = this._selectionStart
+            const end = this._selectionEnd || start
+            const minX = Math.min(start.x, end.x)
+            const maxX = Math.max(start.x, end.x)
+            const minY = Math.min(start.y, end.y)
+            const maxY = Math.max(start.y, end.y)
+
+            const isSingleClick = (minX === maxX && minY === maxY)
+
+            if (isSingleClick) {
+                // Single click: select one cell
+                this._selection = new Set([minX + '.' + minY])
+                this._selectedCell = { x: minX, y: minY }
+                this._selectCell(minX, minY)
+            } else {
+                // Rectangle drag: select all cells in rect
+                this._selection = new Set()
+                for (let x = minX; x <= maxX; x++) {
+                    for (let y = minY; y <= maxY; y++) {
+                        const key = x + '.' + y
+                        if (this._cells[key]) {
+                            this._selection.add(key)
+                        }
+                    }
+                }
+                this._selectedCell = null
+                this._selectedEntity = null
+                this._updateSelectionPanel()
+            }
+
+            this._isSelecting = false
+            this._selectionStart = null
+            this._selectionEnd = null
+            this._render()
+            return
+        }
+
         this._isDragging = false
         this._isPainting = false
         this._canvas.style.cursor = 'default'
@@ -451,9 +652,26 @@ export default class extends Controller {
     _onMouseLeave = () => {
         this._isDragging = false
         this._isPainting = false
+        this._isSelecting = false
+        this._selectionStart = null
+        this._selectionEnd = null
         this._hoveredCell = null
         this._canvas.style.cursor = 'default'
         this._render()
+    }
+
+    _onKeyDown = (e) => {
+        if (e.key === 'Delete' && this._selectedEntity) {
+            e.preventDefault()
+            this._deleteSelectedEntity()
+        }
+        if (e.key === 'Escape') {
+            this._selection = new Set()
+            this._selectedCell = null
+            this._selectedEntity = null
+            this.infoTarget.innerHTML = '<p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>'
+            this._render()
+        }
     }
 
     _screenToTile(screenX, screenY) {
@@ -467,27 +685,133 @@ export default class extends Controller {
         return { x: tileX, y: tileY }
     }
 
+    // Detect which edge of a cell the mouse is closest to
+    _detectEdge(mouseX, mouseY) {
+        const ts = this._tileSize * this._zoom
+        const worldX = mouseX - this._offsetX
+        const worldY = mouseY - this._offsetY
+        const tileX = Math.floor(worldX / ts)
+        const tileY = Math.floor(worldY / ts)
+
+        if (tileX < 0 || tileY < 0 || tileX >= this._mapWidth || tileY >= this._mapHeight) {
+            return null
+        }
+
+        // Position within tile (0-1)
+        const localX = (worldX / ts) - tileX
+        const localY = (worldY / ts) - tileY
+
+        // Determine closest edge using diagonal split
+        // Top-left to bottom-right diagonal: localY = localX
+        // Top-right to bottom-left diagonal: localY = 1 - localX
+        let direction
+        if (localY < localX && localY < (1 - localX)) {
+            direction = 'north'
+        } else if (localY > localX && localY > (1 - localX)) {
+            direction = 'south'
+        } else if (localX > 0.5) {
+            direction = 'east'
+        } else {
+            direction = 'west'
+        }
+
+        return { x: tileX, y: tileY, direction }
+    }
+
+    // oneWay: if true, only paints the source cell's border (Shift held)
+    _paintWallAtMouse(mouseX, mouseY, value, oneWay = false) {
+        const edge = this._detectEdge(mouseX, mouseY)
+        if (!edge) return
+
+        const key = edge.x + '.' + edge.y
+        const cell = this._cells[key]
+        if (!cell || !cell.b) return
+
+        const dirIndex = { north: 0, east: 1, south: 2, west: 3 }
+        const idx = dirIndex[edge.direction]
+
+        // Update this cell's border
+        const borders = this._pendingBorderChanges[key] || [...cell.b]
+        borders[idx] = value
+        this._pendingBorderChanges[key] = borders
+
+        // Also update the neighbor's reciprocal border (unless one-way)
+        if (!oneWay) {
+            const opposites = { north: 'south', south: 'north', east: 'west', west: 'east' }
+            const neighborOffsets = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0] }
+            const offset = neighborOffsets[edge.direction]
+            const nx = edge.x + offset[0]
+            const ny = edge.y + offset[1]
+            const neighborKey = nx + '.' + ny
+            const neighborCell = this._cells[neighborKey]
+
+            if (neighborCell && neighborCell.b) {
+                const neighborIdx = dirIndex[opposites[edge.direction]]
+                const neighborBorders = this._pendingBorderChanges[neighborKey] || [...neighborCell.b]
+                neighborBorders[neighborIdx] = value
+                this._pendingBorderChanges[neighborKey] = neighborBorders
+            }
+        }
+
+        this._updatePendingCount()
+        this._render()
+    }
+
     _selectCell(x, y) {
         const key = x + '.' + y
         const cell = this._cells[key]
         this._selectedCell = { x, y }
+        this._selection = new Set([key])
+
+        // Check if there's an entity to auto-select
+        const entitiesHere = this._getEntitiesAt(x, y)
+        if (entitiesHere.length > 0) {
+            this._selectedEntity = entitiesHere[0]
+        } else {
+            this._selectedEntity = null
+        }
+
         this._render()
 
         if (cell) {
-            const movLabel = cell.m === -1 ? 'Bloque (mur)' : (cell.m === 2 ? 'Eau' : 'Libre')
+            const movLabels = { '-1': 'Bloque (mur)', '0': 'Libre', '2': 'Eau (nage)', '4': 'Escalade' }
+            const movLabel = movLabels[String(cell.m)] || `Type ${cell.m}`
             const pendingMov = this._pendingChanges[key]
             let pendingLabel = ''
             if (pendingMov !== undefined) {
-                const pl = pendingMov === -1 ? 'Bloque' : (pendingMov === 2 ? 'Eau' : 'Libre')
+                const pl = movLabels[String(pendingMov)] || `Type ${pendingMov}`
                 pendingLabel = ` → <span class="text-yellow-400">${pl} (non sauvegarde)</span>`
             }
 
-            const entitiesHere = this._getEntitiesAt(x, y)
+            // Border info
+            const borders = this._pendingBorderChanges[key] || cell.b || [0, 0, 0, 0]
+            const dirNames = ['N', 'E', 'S', 'W']
+            const borderStr = borders.map((v, i) => {
+                const cls = v !== 0 ? 'text-orange-400 font-bold' : 'text-gray-500'
+                return `<span class="${cls}">${dirNames[i]}:${v}</span>`
+            }).join(' ')
+
+            // Entity list with action buttons
             let entitiesHtml = ''
             if (entitiesHere.length > 0) {
-                entitiesHtml = '<div class="mt-2 text-xs">'
-                for (const e of entitiesHere) {
-                    entitiesHtml += `<span class="inline-block px-2 py-0.5 rounded mr-1 mb-1" style="background:${e.color}">${e.type}: ${e.name}</span>`
+                entitiesHtml = '<div class="mt-2 space-y-1">'
+                for (const ent of entitiesHere) {
+                    const isSelected = this._selectedEntity && this._selectedEntity.id === ent.id && this._selectedEntity.type === ent.type
+                    const selClass = isSelected ? 'ring-2 ring-yellow-400' : ''
+                    entitiesHtml += `<div class="flex items-center gap-1 text-xs">
+                        <span class="inline-block px-2 py-0.5 rounded ${selClass}" style="background:${ent.color}">${ent.label}: ${ent.name}</span>`
+
+                    if (ent.canDelete) {
+                        entitiesHtml += `<button onclick="this.closest('[data-controller]').__stimulus_controller._deleteEntityById('${ent.type}', ${ent.id})"
+                            class="px-1.5 py-0.5 bg-red-800 hover:bg-red-700 rounded text-xs" title="Supprimer">✕</button>`
+                    }
+
+                    if (ent.canMove) {
+                        entitiesHtml += `<button onclick="this.closest('[data-controller]').__stimulus_controller._startMoveEntity('${ent.type}', ${ent.id}, '${ent.name.replace(/'/g, "\\'")}', ${ent.x}, ${ent.y}, '${ent.listKey}')"
+                            class="px-1.5 py-0.5 bg-blue-800 hover:bg-blue-700 rounded text-xs" title="Deplacer (puis Ctrl+clic)">↗</button>`
+                    }
+
+                    entitiesHtml += '</div>'
                 }
                 entitiesHtml += '</div>'
             }
@@ -496,15 +820,18 @@ export default class extends Controller {
                 <div class="text-sm">
                     <p><span class="text-gray-400">Position:</span> <strong>${x}, ${y}</strong></p>
                     <p><span class="text-gray-400">Mouvement:</span> <strong>${movLabel}</strong> (${cell.m})${pendingLabel}</p>
+                    <p><span class="text-gray-400">Murs:</span> ${borderStr}</p>
                     <p><span class="text-gray-400">Layers:</span> ${cell.l ? cell.l.join(', ') : 'aucun'}</p>
                     ${entitiesHtml}
-                    <div class="mt-3 flex gap-2">
+                    <div class="mt-3 flex flex-wrap gap-2">
                         <button onclick="this.closest('[data-controller]').__stimulus_controller._setCellMovement(${x}, ${y}, 0)"
-                                class="px-2 py-1 bg-green-700 hover:bg-green-600 rounded text-xs">Debloquer</button>
+                                class="px-2 py-1 bg-green-700 hover:bg-green-600 rounded text-xs">Libre</button>
                         <button onclick="this.closest('[data-controller]').__stimulus_controller._setCellMovement(${x}, ${y}, -1)"
                                 class="px-2 py-1 bg-red-700 hover:bg-red-600 rounded text-xs">Bloquer</button>
                         <button onclick="this.closest('[data-controller]').__stimulus_controller._setCellMovement(${x}, ${y}, 2)"
                                 class="px-2 py-1 bg-blue-700 hover:bg-blue-600 rounded text-xs">Eau</button>
+                        <button onclick="this.closest('[data-controller]').__stimulus_controller._setCellMovement(${x}, ${y}, 4)"
+                                class="px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-xs">Escalade</button>
                     </div>
                 </div>
             `
@@ -513,25 +840,193 @@ export default class extends Controller {
         }
     }
 
+    _updateSelectionPanel() {
+        const count = this._selection.size
+        if (count === 0) {
+            this.infoTarget.innerHTML = '<p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>'
+            return
+        }
+
+        // Count movement types in selection
+        let blocked = 0, water = 0, climb = 0, free = 0
+        for (const key of this._selection) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            if (cell.m === -1) blocked++
+            else if (cell.m === 2) water++
+            else if (cell.m === 4) climb++
+            else free++
+        }
+
+        // Collect all entities in selection
+        const allEntities = []
+        for (const key of this._selection) {
+            const [x, y] = key.split('.').map(Number)
+            allEntities.push(...this._getEntitiesAt(x, y))
+        }
+
+        let entitiesHtml = ''
+        if (allEntities.length > 0) {
+            entitiesHtml = `<p class="text-gray-400 mt-2 text-xs">${allEntities.length} entite(s) dans la selection</p>`
+        }
+
+        this.infoTarget.innerHTML = `
+            <div class="text-sm">
+                <p><span class="text-gray-400">Selection:</span> <strong>${count} cellules</strong></p>
+                <p class="text-xs text-gray-500">${free} libres, ${blocked} bloquees, ${water} eau, ${climb} escalade</p>
+                ${entitiesHtml}
+                <div class="mt-3 flex flex-wrap gap-2">
+                    <button onclick="this.closest('[data-controller]').__stimulus_controller._applyToSelection(0)"
+                            class="px-2 py-1 bg-green-700 hover:bg-green-600 rounded text-xs">Libre</button>
+                    <button onclick="this.closest('[data-controller]').__stimulus_controller._applyToSelection(-1)"
+                            class="px-2 py-1 bg-red-700 hover:bg-red-600 rounded text-xs">Bloquer</button>
+                    <button onclick="this.closest('[data-controller]').__stimulus_controller._applyToSelection(2)"
+                            class="px-2 py-1 bg-blue-700 hover:bg-blue-600 rounded text-xs">Eau</button>
+                    <button onclick="this.closest('[data-controller]').__stimulus_controller._applyToSelection(4)"
+                            class="px-2 py-1 bg-emerald-700 hover:bg-emerald-600 rounded text-xs">Escalade</button>
+                </div>
+            </div>
+        `
+    }
+
+    _applyToSelection(movement) {
+        for (const key of this._selection) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            if (cell.m === movement && this._pendingChanges[key] === undefined) continue
+            this._pendingChanges[key] = movement
+            cell.m = movement
+        }
+        this._updatePendingCount()
+        this._updateSelectionPanel()
+        this._render()
+    }
+
     _getEntitiesAt(x, y) {
         const results = []
         for (const mob of (this._entities.mobs || [])) {
-            if (mob.x === x && mob.y === y) results.push({ type: 'Mob', name: `${mob.name} (nv.${mob.level})`, color: '#991b1b' })
+            if (mob.x === x && mob.y === y) results.push({
+                type: 'mob', id: mob.id, label: 'Mob', name: `${mob.name} (nv.${mob.level})`,
+                color: '#991b1b', x, y, listKey: 'mobs', canDelete: true, canMove: true
+            })
         }
         for (const pnj of (this._entities.pnjs || [])) {
-            if (pnj.x === x && pnj.y === y) results.push({ type: 'PNJ', name: pnj.name, color: '#166534' })
+            if (pnj.x === x && pnj.y === y) results.push({
+                type: 'pnj', id: pnj.id, label: 'PNJ', name: pnj.name,
+                color: '#166534', x, y, listKey: 'pnjs', canDelete: false, canMove: true
+            })
         }
         for (const portal of (this._entities.portals || [])) {
-            if (portal.x === x && portal.y === y) results.push({ type: 'Portail', name: `${portal.name} → map ${portal.destMapId}`, color: '#1e40af' })
+            if (portal.x === x && portal.y === y) results.push({
+                type: 'portal', id: portal.id, label: 'Portail', name: `${portal.name} → map ${portal.destMapId}`,
+                color: '#1e40af', x, y, listKey: 'portals', canDelete: false, canMove: true
+            })
         }
         for (const spot of (this._entities.harvestSpots || [])) {
-            if (spot.x === x && spot.y === y) results.push({ type: 'Recolte', name: spot.name, color: '#854d0e' })
+            if (spot.x === x && spot.y === y) results.push({
+                type: 'harvestSpot', id: spot.id, label: 'Recolte', name: spot.name,
+                color: '#854d0e', x, y, listKey: 'harvestSpots', canDelete: true, canMove: true
+            })
         }
         for (const st of (this._entities.craftStations || [])) {
-            if (st.x === x && st.y === y) results.push({ type: 'Station', name: `${st.name} (${st.type})`, color: '#9a3412' })
+            if (st.x === x && st.y === y) results.push({
+                type: 'craftStation', id: st.id, label: 'Station', name: `${st.name} (${st.type})`,
+                color: '#9a3412', x, y, listKey: 'craftStations', canDelete: false, canMove: true
+            })
         }
         return results
     }
+
+    // --- Entity management ---
+
+    _startMoveEntity(type, id, name, x, y, listKey) {
+        this._selectedEntity = { type, id, name, x, y, listKey }
+        this._showFlash(`Ctrl+clic sur la case cible pour deplacer "${name}"`, 'info')
+        this._render()
+    }
+
+    async _moveEntity(targetX, targetY) {
+        const ent = this._selectedEntity
+        if (!ent) return
+
+        try {
+            const res = await fetch(this.moveEntityUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entityType: ent.type, entityId: ent.id, x: targetX, y: targetY }),
+            })
+            const data = await res.json()
+            if (data.success) {
+                // Update local entity data
+                const list = this._entities[ent.listKey] || []
+                const item = list.find(e => e.id === ent.id)
+                if (item) {
+                    item.x = targetX
+                    item.y = targetY
+                }
+                this._selectedEntity = { ...ent, x: targetX, y: targetY }
+                this._showFlash(`"${ent.name}" deplace en ${targetX},${targetY}`, 'success')
+                this._selectCell(targetX, targetY)
+            } else {
+                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+            }
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+        this._render()
+    }
+
+    async _deleteEntityById(type, id) {
+        const list = this._entities[this._entityListKey(type)] || []
+        const item = list.find(e => e.id === id)
+        const name = item ? (item.name || '') : ''
+
+        if (!confirm(`Supprimer ${type} "${name}" ?`)) return
+
+        try {
+            const res = await fetch(this.deleteEntityUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entityType: type, entityId: id }),
+            })
+            const data = await res.json()
+            if (data.success) {
+                // Remove from local data
+                const listKey = this._entityListKey(type)
+                this._entities[listKey] = (this._entities[listKey] || []).filter(e => e.id !== id)
+                if (this._selectedEntity && this._selectedEntity.id === id && this._selectedEntity.type === type) {
+                    this._selectedEntity = null
+                }
+                this._showFlash(`"${name}" supprime`, 'success')
+                // Refresh cell info
+                if (this._selectedCell) {
+                    this._selectCell(this._selectedCell.x, this._selectedCell.y)
+                }
+            } else {
+                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+            }
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+        this._render()
+    }
+
+    _deleteSelectedEntity() {
+        if (!this._selectedEntity) return
+        this._deleteEntityById(this._selectedEntity.type, this._selectedEntity.id)
+    }
+
+    _entityListKey(type) {
+        return {
+            mob: 'mobs',
+            pnj: 'pnjs',
+            portal: 'portals',
+            harvestSpot: 'harvestSpots',
+            craftStation: 'craftStations',
+        }[type] || type
+    }
+
+    // --- Cell painting ---
 
     _paintCell(x, y, movement) {
         const key = x + '.' + y
@@ -551,7 +1046,7 @@ export default class extends Controller {
     }
 
     _updatePendingCount() {
-        const count = Object.keys(this._pendingChanges).length
+        const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length
         const btn = document.getElementById('save-btn')
         const badge = document.getElementById('pending-badge')
         if (btn) btn.disabled = count === 0
@@ -592,10 +1087,18 @@ export default class extends Controller {
         this._render()
     }
 
+    toggleWalls() {
+        this._showWalls = !this._showWalls
+        this._render()
+    }
+
     setToolSelect() { this._tool = 'select'; this._updateToolButtons() }
     setToolBlock() { this._tool = 'block'; this._updateToolButtons() }
     setToolUnblock() { this._tool = 'unblock'; this._updateToolButtons() }
     setToolWater() { this._tool = 'water'; this._updateToolButtons() }
+    setToolClimb() { this._tool = 'climb'; this._updateToolButtons() }
+    setToolWall() { this._tool = 'wall'; this._updateToolButtons() }
+    setToolEraseWall() { this._tool = 'eraseWall'; this._updateToolButtons() }
 
     _updateToolButtons() {
         document.querySelectorAll('[data-tool]').forEach(btn => {
@@ -639,13 +1142,9 @@ export default class extends Controller {
     }
 
     async saveChanges() {
-        const changes = Object.entries(this._pendingChanges)
-        if (changes.length === 0) return
-
-        const cells = changes.map(([key, movement]) => {
-            const [x, y] = key.split('.').map(Number)
-            return { x, y, movement }
-        })
+        const cellChanges = Object.entries(this._pendingChanges)
+        const borderChanges = Object.entries(this._pendingBorderChanges)
+        if (cellChanges.length === 0 && borderChanges.length === 0) return
 
         const btn = document.getElementById('save-btn')
         if (btn) {
@@ -653,27 +1152,65 @@ export default class extends Controller {
             btn.textContent = 'Sauvegarde...'
         }
 
-        try {
-            const res = await fetch(this.updateCellsUrlValue, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cells }),
-            })
+        let totalSaved = 0
 
-            const data = await res.json()
-            if (data.success) {
-                this._pendingChanges = {}
-                this._updatePendingCount()
-                this._showFlash(`${data.count} cellule(s) sauvegardee(s)`, 'success')
-            } else {
-                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+        try {
+            // Save cell movement changes
+            if (cellChanges.length > 0) {
+                const cells = cellChanges.map(([key, movement]) => {
+                    const [x, y] = key.split('.').map(Number)
+                    return { x, y, movement }
+                })
+                const res = await fetch(this.updateCellsUrlValue, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cells }),
+                })
+                const data = await res.json()
+                if (data.success) {
+                    totalSaved += data.count
+                    this._pendingChanges = {}
+                } else {
+                    this._showFlash('Erreur collisions: ' + (data.error || 'inconnue'), 'error')
+                }
+            }
+
+            // Save border changes
+            if (borderChanges.length > 0) {
+                const cells = borderChanges.map(([key, borders]) => {
+                    const [x, y] = key.split('.').map(Number)
+                    return { x, y, borders }
+                })
+                const res = await fetch(this.updateBordersUrlValue, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cells }),
+                })
+                const data = await res.json()
+                if (data.success) {
+                    totalSaved += data.count
+                    // Update cell data with saved borders
+                    for (const [key, borders] of borderChanges) {
+                        if (this._cells[key]) {
+                            this._cells[key].b = borders
+                        }
+                    }
+                    this._pendingBorderChanges = {}
+                } else {
+                    this._showFlash('Erreur bordures: ' + (data.error || 'inconnue'), 'error')
+                }
+            }
+
+            this._updatePendingCount()
+            if (totalSaved > 0) {
+                this._showFlash(`${totalSaved} modification(s) sauvegardee(s)`, 'success')
             }
         } catch (err) {
             this._showFlash('Erreur reseau: ' + err.message, 'error')
         }
 
         if (btn) {
-            btn.disabled = Object.keys(this._pendingChanges).length === 0
+            btn.disabled = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length === 0
             btn.textContent = 'Sauvegarder'
         }
 
@@ -681,11 +1218,12 @@ export default class extends Controller {
     }
 
     discardChanges() {
-        if (Object.keys(this._pendingChanges).length === 0) return
+        if (Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length === 0) return
         if (!confirm('Annuler toutes les modifications non sauvegardees ?')) return
 
         // Reload to reset
         this._pendingChanges = {}
+        this._pendingBorderChanges = {}
         this._updatePendingCount()
         this._loadData()
     }
@@ -694,9 +1232,11 @@ export default class extends Controller {
         const container = document.getElementById('editor-flash')
         if (!container) return
 
-        const colors = type === 'success'
-            ? 'bg-green-900 text-green-200 border-green-800'
-            : 'bg-red-900 text-red-200 border-red-800'
+        const colors = {
+            success: 'bg-green-900 text-green-200 border-green-800',
+            error: 'bg-red-900 text-red-200 border-red-800',
+            info: 'bg-blue-900 text-blue-200 border-blue-800',
+        }[type] || 'bg-gray-900 text-gray-200 border-gray-800'
 
         container.innerHTML = `<div class="px-4 py-2 rounded-lg text-sm border ${colors}">${message}</div>`
         setTimeout(() => { container.innerHTML = '' }, 4000)
