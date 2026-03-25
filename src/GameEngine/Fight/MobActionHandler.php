@@ -5,17 +5,21 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\CharacterInterface;
+use App\Entity\Game\Monster;
 use App\Entity\Game\Spell;
 use App\Event\Fight\ActionEvent;
 use App\Event\Fight\MobActionHitEvent;
 use App\Event\Fight\MobActionMissEvent;
 use App\GameEngine\Fight\Handler\MobActionHandlerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class MobActionHandler
 {
+    private const MAX_SUMMONS_PER_FIGHT = 2;
+
     public function __construct(
         #[AutowireIterator(tag: MobActionHandlerInterface::class)]
         private readonly iterable $handlers,
@@ -24,6 +28,7 @@ class MobActionHandler
         private readonly LoggerInterface $logger,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatLogger $combatLogger,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -82,6 +87,15 @@ class MobActionHandler
         }
 
         $action = $this->generateAction($fight, $mob);
+
+        // Invocation : court-circuite le flux normal d'attaque
+        if ($action === 'summon') {
+            $summonMessages = $this->executeSummon($fight, $mob);
+            $result['messages'] = array_merge($result['messages'], $summonMessages);
+
+            return $result;
+        }
+
         $spell = $this->resolveSpell($action, $mob);
 
         $this->logger->debug(sprintf('[MobActionHandler] Spell %s used by mob #%d', $spell->getName(), $mob->getId()));
@@ -242,6 +256,15 @@ class MobActionHandler
             }
         }
 
+        // Summon behavior : invoquer des renforts si config présente et limite non atteinte
+        if (isset($aiPattern['summon']) && $this->canSummon($fight)) {
+            $entityKey = 'mob_' . $mob->getId();
+
+            if (!$fight->isSpellOnCooldown($entityKey, '__summon')) {
+                return 'summon';
+            }
+        }
+
         // Boss phase-based behavior
         if ($monster->isBoss() && $monster->getBossPhases()) {
             $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
@@ -296,6 +319,102 @@ class MobActionHandler
         }
 
         return false;
+    }
+
+    /**
+     * Compte le nombre de mobs invoqués encore vivants dans le combat.
+     */
+    private function getSummonedCount(Fight $fight): int
+    {
+        $count = 0;
+        foreach ($fight->getMobs() as $mob) {
+            if ($mob->isSummoned() && !$mob->isDead()) {
+                ++$count;
+            }
+        }
+
+        return $count;
+    }
+
+    /**
+     * Vérifie si une invocation est possible (limite globale non atteinte).
+     */
+    private function canSummon(Fight $fight): bool
+    {
+        return $this->getSummonedCount($fight) < self::MAX_SUMMONS_PER_FIGHT;
+    }
+
+    /**
+     * Exécute l'invocation d'un ou plusieurs mobs en combat.
+     *
+     * @return string[] Messages de combat
+     */
+    private function executeSummon(Fight $fight, Mob $summoner): array
+    {
+        $aiPattern = $summoner->getMonster()->getAiPattern();
+        $summonConfig = $aiPattern['summon'] ?? null;
+
+        if ($summonConfig === null) {
+            return [];
+        }
+
+        $monsterSlug = $summonConfig['monster_slug'] ?? null;
+        $countPerSummon = $summonConfig['count'] ?? 1;
+        $cooldownTurns = $summonConfig['cooldown'] ?? 3;
+        $levelOffset = $summonConfig['level_offset'] ?? 0;
+
+        if ($monsterSlug === null) {
+            $this->logger->warning('[MobActionHandler] Summon config missing monster_slug');
+
+            return [];
+        }
+
+        $monsterDef = $this->entityManager->getRepository(Monster::class)->findOneBy(['slug' => $monsterSlug]);
+        if ($monsterDef === null) {
+            $this->logger->warning(sprintf('[MobActionHandler] Monster slug "%s" not found for summon', $monsterSlug));
+
+            return [];
+        }
+
+        // Limiter au nombre de slots restants
+        $slotsAvailable = self::MAX_SUMMONS_PER_FIGHT - $this->getSummonedCount($fight);
+        $actualCount = min($countPerSummon, $slotsAvailable);
+
+        if ($actualCount <= 0) {
+            return [];
+        }
+
+        $messages = [];
+        $summonedLevel = max(1, $summoner->getLevel() + $levelOffset);
+
+        for ($i = 0; $i < $actualCount; ++$i) {
+            $summonedMob = new Mob();
+            $summonedMob->setMonster($monsterDef);
+            $summonedMob->setLife($monsterDef->getLife());
+            $summonedMob->setLevel($summonedLevel);
+            $summonedMob->setSummoned(true);
+            $summonedMob->setFight($fight);
+            $summonedMob->setMap(null);
+            $summonedMob->setCoordinates('0.0');
+
+            $this->entityManager->persist($summonedMob);
+            $fight->addMob($summonedMob);
+        }
+
+        // Mettre le cooldown d'invocation
+        $entityKey = 'mob_' . $summoner->getId();
+        $fight->setSpellCooldown($entityKey, '__summon', $cooldownTurns);
+
+        $this->combatLogger->logSummon($fight, $summoner, $monsterDef->getName(), $actualCount);
+
+        $message = $actualCount > 1
+            ? sprintf('%s invoque %d %s !', $summoner->getName(), $actualCount, $monsterDef->getName())
+            : sprintf('%s invoque un %s !', $summoner->getName(), $monsterDef->getName());
+        $messages[] = $message;
+
+        $this->logger->debug(sprintf('[MobActionHandler] Mob #%d summoned %d %s', $summoner->getId(), $actualCount, $monsterSlug));
+
+        return $messages;
     }
 
     /**

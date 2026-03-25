@@ -31,6 +31,12 @@ class MateriaXpGranter implements EventSubscriberInterface
     public function onMobDead(MobDeadEvent $event): void
     {
         $mob = $event->getMob();
+
+        // Les mobs invoqués ne donnent pas d'XP materia (anti-exploit)
+        if ($mob->isSummoned()) {
+            return;
+        }
+
         $fight = $mob->getFight();
         if (!$fight) {
             return;

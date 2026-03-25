@@ -20,6 +20,10 @@ class QuestMonsterTrackingListener implements EventSubscriberInterface
 
     public function updateMonsterPlayerQuest(MobDeadEvent $event): void
     {
+        if ($event->getMob()->isSummoned()) {
+            return;
+        }
+
         $this->playerQuestUpdater->updateMobKilled($event->getMob());
     }
 }

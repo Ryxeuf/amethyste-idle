@@ -26,6 +26,11 @@ class LootGenerator implements EventSubscriberInterface
 
     public function mobDied(MobDeadEvent $event)
     {
+        // Les mobs invoqués en combat ne droppent pas de loot (anti-exploit)
+        if ($event->getMob()->isSummoned()) {
+            return;
+        }
+
         $this->generateLoot($event->getMob());
     }
 

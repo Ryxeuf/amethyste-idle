@@ -297,6 +297,7 @@ class FightAttackControllerTest extends TestCase
         $mob->method('isDead')->willReturnCallback(function () use (&$currentLife) {
             return $currentLife <= 0;
         });
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }

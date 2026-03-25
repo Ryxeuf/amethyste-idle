@@ -30,6 +30,11 @@ class AchievementTracker implements EventSubscriberInterface
     public function onMobDead(MobDeadEvent $event): void
     {
         $mob = $event->getMob();
+
+        if ($mob->isSummoned()) {
+            return;
+        }
+
         $fight = $mob->getFight();
         if (!$fight) {
             return;

@@ -257,6 +257,7 @@ class MobDeadEventIntegrationTest extends TestCase
         $mob->method('getFight')->willReturn($fight);
         $mob->method('getMonster')->willReturn($monster);
         $mob->method('getLevel')->willReturn($level);
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }

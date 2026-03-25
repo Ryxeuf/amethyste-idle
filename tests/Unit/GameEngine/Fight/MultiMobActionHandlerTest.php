@@ -12,6 +12,7 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -47,6 +48,7 @@ class MultiMobActionHandlerTest extends TestCase
             $this->logger,
             $this->statusEffectManager,
             $this->combatLogger,
+            $this->createMock(EntityManagerInterface::class),
         );
     }
 
@@ -80,6 +82,7 @@ class MultiMobActionHandlerTest extends TestCase
         $mob->method('getName')->willReturn($name);
         $mob->method('getId')->willReturn($id);
         $mob->method('getAttack')->willReturn($basicAttack);
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }

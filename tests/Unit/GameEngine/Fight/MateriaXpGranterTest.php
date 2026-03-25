@@ -62,6 +62,7 @@ class MateriaXpGranterTest extends TestCase
         $mob = $this->createMock(Mob::class);
         $mob->method('getFight')->willReturn($fight);
         $mob->method('getMonster')->willReturn($monster);
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }
