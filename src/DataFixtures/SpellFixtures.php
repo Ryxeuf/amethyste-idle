@@ -2099,6 +2099,16 @@ class SpellFixtures extends Fixture
                 'hit' => 90,
                 'level' => 1,
             ],
+            'none_attack_3' => [
+                'slug' => 'none-attack-3',
+                'damage' => 3,
+                'element' => Element::None,
+                'heal' => null,
+                'name' => 'Attaque',
+                'description' => 'Attaque 3',
+                'hit' => 90,
+                'level' => 1,
+            ],
             'none_heal_2' => [
                 'slug' => 'none-heal-2',
                 'damage' => null,

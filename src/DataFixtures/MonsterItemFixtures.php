@@ -348,6 +348,51 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'stone_golem', 'item' => 't2_earth_sword', 'probability' => 5],
             ['monster' => 'stone_golem', 'item' => 't2_earth_shield', 'probability' => 5],
 
+            // --- Équipement Tier 3 élémentaire (tâche 64) ---
+            // Golem de cristal (Terre/Lumière, lvl 15) → T3 Light
+            ['monster' => 'crystal_golem', 'item' => 't3_light_helmet', 'probability' => 3],
+            ['monster' => 'crystal_golem', 'item' => 't3_light_shield', 'probability' => 2],
+
+            // Archidruide corrompu (Bête/Ombre, lvl 16) → T3 Beast
+            ['monster' => 'corrupted_archdruid', 'item' => 't3_beast_chest', 'probability' => 3],
+            ['monster' => 'corrupted_archdruid', 'item' => 't3_beast_gloves', 'probability' => 2],
+
+            // Liche mineure (Ombre, lvl 18) → T3 Dark
+            ['monster' => 'lesser_lich', 'item' => 't3_dark_helmet', 'probability' => 3],
+            ['monster' => 'lesser_lich', 'item' => 't3_dark_boots', 'probability' => 2],
+
+            // Hydre des marais (Eau/Bête, lvl 20) → T3 Beast
+            ['monster' => 'swamp_hydra', 'item' => 't3_beast_sword', 'probability' => 3],
+            ['monster' => 'swamp_hydra', 'item' => 't3_beast_legs', 'probability' => 2],
+
+            // Forgeron abyssal (Métal/Feu, lvl 24) → T3 Metal
+            ['monster' => 'abyssal_blacksmith', 'item' => 't3_metal_sword', 'probability' => 3],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't3_metal_chest', 'probability' => 2],
+            ['monster' => 'abyssal_blacksmith', 'item' => 't3_metal_shield', 'probability' => 2],
+
+            // Wyvern (Air/Feu, lvl 10) → T3 Light
+            ['monster' => 'wyvern', 'item' => 't3_light_boots', 'probability' => 2],
+
+            // Chevalier maudit (Ombre/Métal, lvl 12) → T3 Dark + Metal
+            ['monster' => 'cursed_knight', 'item' => 't3_dark_sword', 'probability' => 2],
+            ['monster' => 'cursed_knight', 'item' => 't3_metal_legs', 'probability' => 2],
+
+            // Naga (Eau/Bête, lvl 13) → T3 Beast
+            ['monster' => 'naga', 'item' => 't3_beast_boots', 'probability' => 2],
+
+            // Boss : Gardien de la Forêt → T3 Light & Beast
+            ['monster' => 'forest_guardian', 'item' => 't3_light_sword', 'probability' => 5],
+            ['monster' => 'forest_guardian', 'item' => 't3_beast_shield', 'probability' => 4],
+
+            // Boss : Seigneur de la Forge → T3 Metal & Dark
+            ['monster' => 'forge_lord', 'item' => 't3_metal_helmet', 'probability' => 5],
+            ['monster' => 'forge_lord', 'item' => 't3_dark_chest', 'probability' => 4],
+
+            // Boss : Dragon → T3 variés
+            ['monster' => 'dragon', 'item' => 't3_dark_sword', 'probability' => 4],
+            ['monster' => 'dragon', 'item' => 't3_light_chest', 'probability' => 3],
+            ['monster' => 'dragon', 'item' => 't3_metal_gloves', 'probability' => 3],
+
             // --- Drops légendaires rares sur monstres de haut niveau ---
             ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],
