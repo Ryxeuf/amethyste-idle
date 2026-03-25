@@ -130,19 +130,7 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 
 ---
 
-### 78 — Equilibrage & rapport (M | ★★)
-> Commande CLI de rapport d'equilibrage et document de reference pour ajuster les stats du jeu. Prerequis : ← 15 (Consommables de base), 17 (Raretes d'equipement), 28 (Monstres tier 2 sous-partie A), 29 (Equipement tier 2)
-- [ ] Commande CLI `app:balance:report` :
-  - Courbe XP par domaine (actuel vs theorique)
-  - Stats monstres par palier (HP, degats, XP donne)
-  - Table de drop rates par tier
-  - Alertes si desequilibre detecte (monstre trop fort/faible, drop rate aberrant)
-- [ ] Document de reference `docs/BALANCE.md` :
-  - Courbe de progression XP cible par domaine
-  - Bareme des prix boutique (ratio achat/vente 30-50%)
-  - Degats/HP attendus par palier de monstre
-  - Temps de recolte et rendement par skill level
-- [ ] Ajustement des stats monstres/items si desequilibre constate
-
+### ~~78 — Equilibrage & rapport (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---

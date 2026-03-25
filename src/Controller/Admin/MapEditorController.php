@@ -450,7 +450,7 @@ class MapEditorController extends AbstractController
             return $this->json(['error' => 'Entity does not belong to this map'], 403);
         }
 
-        $name = method_exists($entity, 'getName') ? $entity->getName() : 'entity';
+        $name = $entity->getName();
         $this->em->remove($entity);
         $this->em->flush();
 
@@ -500,7 +500,7 @@ class MapEditorController extends AbstractController
         $entity->setCoordinates($newX . '.' . $newY);
         $this->em->flush();
 
-        $name = method_exists($entity, 'getName') ? $entity->getName() : 'entity';
+        $name = $entity->getName();
         $this->adminLogger->log(
             'update',
             ucfirst($entityType),
