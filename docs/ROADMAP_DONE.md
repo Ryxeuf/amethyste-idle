@@ -1077,3 +1077,15 @@
   - Aurore Sacree (Lumiere) : soin + precision + vie
   - Abysses Eternelles (Ombre) : degats + soin + critique
 - [x] Loot tables : drops T3 sur monstres lvl 15-25 et boss de zone
+
+## 78 — Equilibrage & rapport (2026-03-25) ✅
+
+> Commande CLI de rapport d'equilibrage et document de reference pour ajuster les stats du jeu.
+
+- [x] Commande `app:balance:report` avec sections : monsters, items, drops, domains, spells, alerts
+- [x] Courbe XP par domaine (cout unitaire vs cumul)
+- [x] Stats monstres par palier (HP, degats, XP donne)
+- [x] Table de drop rates par monstre et rarete
+- [x] Alertes automatiques si desequilibre detecte (monstre trop fort/faible, drop rate aberrant, item sans prix)
+- [x] Sort sans effet, sort gratuit surpuissant, domaine vide
+- [x] Document de reference `docs/BALANCE.md` : courbe XP, bareme prix, degats attendus, seuils d'alerte
