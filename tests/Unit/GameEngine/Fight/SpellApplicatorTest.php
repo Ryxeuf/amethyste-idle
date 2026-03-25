@@ -112,6 +112,7 @@ class SpellApplicatorTest extends TestCase
         $mob->method('setDiedAt')->willReturnCallback(function ($dt) use (&$diedAt) {
             $diedAt = $dt;
         });
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }

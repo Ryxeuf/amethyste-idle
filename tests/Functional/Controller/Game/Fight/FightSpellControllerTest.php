@@ -329,6 +329,7 @@ class FightSpellControllerTest extends TestCase
         $mob->method('getId')->willReturn($id);
         $mob->method('getLife')->willReturn($life);
         $mob->method('isDead')->willReturn(false);
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }

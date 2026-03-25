@@ -14,6 +14,7 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -26,6 +27,7 @@ class MobActionHandlerTest extends TestCase
     private LoggerInterface&MockObject $logger;
     private StatusEffectManager&MockObject $statusEffectManager;
     private CombatLogger&MockObject $combatLogger;
+    private EntityManagerInterface&MockObject $entityManager;
 
     protected function setUp(): void
     {
@@ -34,6 +36,7 @@ class MobActionHandlerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         // Par defaut : pas de status, pas de messages
         $this->statusEffectManager->method('processStartOfTurn')->willReturn([]);
@@ -50,6 +53,7 @@ class MobActionHandlerTest extends TestCase
             $this->logger,
             $this->statusEffectManager,
             $this->combatLogger,
+            $this->entityManager,
         );
     }
 
@@ -95,6 +99,7 @@ class MobActionHandlerTest extends TestCase
         $mob->method('getMonster')->willReturn($monster);
         $mob->method('getName')->willReturn($name);
         $mob->method('getId')->willReturn(1);
+        $mob->method('isSummoned')->willReturn(false);
 
         // Mock getAttack comme fallback
         $basicAttack = $this->createMock(Spell::class);

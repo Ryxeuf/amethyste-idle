@@ -121,6 +121,7 @@ class StatusEffectManagerTest extends TestCase
             return $currentLife <= 0;
         });
         $mob->method('setDiedAt');
+        $mob->method('isSummoned')->willReturn(false);
 
         return $mob;
     }
