@@ -10,6 +10,16 @@ use Doctrine\Persistence\ObjectManager;
 
 class SlotFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * Equipment references whose 2+ slots should be linked together.
+     */
+    private const LINKED_SLOT_GEAR = [
+        'player_long_sword_2',
+        'player_leather_armor',
+        'remy_long_sword',
+        'remy_leather_armor',
+    ];
+
     public function load(ObjectManager $manager): void
     {
         $gearReferences = [
@@ -46,7 +56,9 @@ class SlotFixtures extends Fixture implements DependentFixtureInterface
 
             $playerItem = $this->getReference($gearRef, PlayerItem::class);
             $nbSlots = $playerItem->getGenericItem()->getMateriaSlots();
+            $shouldLink = in_array($gearRef, self::LINKED_SLOT_GEAR, true) && $nbSlots >= 2;
 
+            $gearSlots = [];
             for ($i = 0; $i < $nbSlots; ++$i) {
                 $slot = new Slot();
                 $slot->setItem($playerItem);
@@ -55,7 +67,14 @@ class SlotFixtures extends Fixture implements DependentFixtureInterface
 
                 $manager->persist($slot);
                 $this->addReference('slot_' . $slotIndex, $slot);
+                $gearSlots[] = $slot;
                 ++$slotIndex;
+            }
+
+            // Link first two slots together on eligible equipment
+            if ($shouldLink && count($gearSlots) >= 2) {
+                $gearSlots[0]->setLinkedSlot($gearSlots[1]);
+                $gearSlots[1]->setLinkedSlot($gearSlots[0]);
             }
         }
 

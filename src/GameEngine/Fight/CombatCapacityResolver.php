@@ -15,6 +15,7 @@ class CombatCapacityResolver
 
     public function __construct(
         private readonly CombatSkillResolver $combatSkillResolver,
+        private readonly LinkedMateriaResolver $linkedMateriaResolver,
     ) {
     }
 
@@ -22,8 +23,8 @@ class CombatCapacityResolver
      * Get available combat spells from equipped materia.
      * Each entry includes a 'locked' flag indicating if the player lacks the skill unlock.
      *
-     * @return array<string, array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, locked: bool}>
-     *                                                                                                               Keyed by spell slug, deduplicated (best match wins)
+     * @return array<string, array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, linkedBonus: bool, locked: bool}>
+     *                                                                                                                                   Keyed by spell slug, deduplicated (best match wins)
      */
     public function getEquippedMateriaSpells(Player $player): array
     {
@@ -48,6 +49,7 @@ class CombatCapacityResolver
                     }
 
                     $elementMatch = $this->isElementMatch($slot, $materia);
+                    $linkedBonus = $this->linkedMateriaResolver->hasLinkedBonus($slot);
                     $slug = $spell->getSlug();
                     $locked = !in_array($slug, $unlockedSlugs, true);
 
@@ -61,6 +63,7 @@ class CombatCapacityResolver
                         'materia' => $materia,
                         'slot' => $slot,
                         'elementMatch' => $elementMatch,
+                        'linkedBonus' => $linkedBonus,
                         'locked' => $locked,
                     ];
                 }
@@ -83,7 +86,7 @@ class CombatCapacityResolver
     /**
      * Find the spell entry for a given slug from equipped materia.
      *
-     * @return array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, locked: bool}|null
+     * @return array{spell: Spell, materia: PlayerItem, slot: Slot, elementMatch: bool, linkedBonus: bool, locked: bool}|null
      */
     public function findMateriaSpell(Player $player, string $spellSlug): ?array
     {

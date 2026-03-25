@@ -218,10 +218,11 @@
                         {% if materiaItem is not null %}
                             {% set materiaElement = materiaItem.genericItem.element %}
                             {% set isMatch = slotElement is not null and slotElement.value != 'none' and materiaElement.value != 'none' and slotElement == materiaElement %}
+                            {% set hasLinked = slot.linkedSlot is not null and slot.linkedSlot.itemSet is not null and slot.linkedSlot.itemSet.genericItem.element == materiaElement and materiaElement.value != 'none' %}
                             <form method="post" action="{{ path('app_game_inventory_materia_unset', {slotId: slot.id}) }}" data-turbo-frame="inventory-content" class="inline">
                                 <button type="submit" class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-medium cursor-pointer transition-all hover:ring-2 hover:ring-red-500/50
-                                    {% if isMatch %}bg-yellow-900/50 text-yellow-400 ring-1 ring-yellow-500/50{% else %}bg-gray-700 text-gray-400{% endif %}"
-                                    title="{{ materiaItem.genericItem.name }} (Nv.{{ materiaItem.materiaLevel }}){% if isMatch %} — Bonus élémentaire{% endif %} — Cliquer pour retirer">
+                                    {% if hasLinked %}bg-cyan-900/50 text-cyan-400 ring-1 ring-cyan-500/50{% elseif isMatch %}bg-yellow-900/50 text-yellow-400 ring-1 ring-yellow-500/50{% else %}bg-gray-700 text-gray-400{% endif %}"
+                                    title="{{ materiaItem.genericItem.name }} (Nv.{{ materiaItem.materiaLevel }}){% if hasLinked %} — Synergie liée +15%{% endif %}{% if isMatch %} — Bonus élémentaire{% endif %} — Cliquer pour retirer">
                                     <span class="w-2.5 h-2.5 rounded-full {{ _self.element_dot_class(materiaElement) }} shadow-[0_0_4px] shadow-current"></span>
                                     {{ materiaItem.genericItem.name|slice(0, 10) }}
                                 </button>
@@ -230,7 +231,7 @@
                             <a href="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}"
                                data-turbo-frame="inventory-content"
                                class="inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] bg-gray-800 text-gray-600 ring-1 ring-gray-700/50 hover:ring-purple-500/50 hover:text-purple-400 cursor-pointer transition-all"
-                               title="Slot vide — Cliquer pour sertir une materia{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
+                               title="Slot vide{% if slot.linkedSlot is not null %} (lié){% endif %} — Cliquer pour sertir une materia{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
                                 <span class="w-2.5 h-2.5 rounded-full {% if slotElement is not null %}{{ _self.element_dot_class(slotElement) }}{% else %}bg-gray-600{% endif %} opacity-50"></span>
                                 <span class="materia-slot-empty-pulse">◇</span>
                             </a>

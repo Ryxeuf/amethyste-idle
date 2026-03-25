@@ -387,6 +387,7 @@
       "skill_spells": "Sorts de compétences",
       "materia_spells": "Materia",
       "element_match_bonus": "Bonus élémentaire +25%",
+      "linked_materia_bonus": "Synergie materia liée +15%",
       "energy_insufficient": "Énergie insuffisante",
       "spell_locked": "Compétence requise",
       "cooldown_remaining": "Recharge : %turns% tours",

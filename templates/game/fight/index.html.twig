@@ -383,6 +383,7 @@
 									{% for entry in materiaSpells %}
 										{% set spell = entry.spell %}
 										{% set elementMatch = entry.elementMatch %}
+										{% set linkedBonus = entry.linkedBonus ?? false %}
 										{% set isLocked = entry.locked ?? false %}
 										{% set cooldown = playerCooldowns[spell.slug] ?? 0 %}
 										{% set hasEnergy = player.energy >= spell.energyCost %}
@@ -393,7 +394,8 @@
 											{% elseif not isAvailable %}spell-on-cooldown bg-gray-700 text-gray-500 cursor-not-allowed
 											{% else %}bg-gradient-to-r from-indigo-600 to-indigo-700 text-white hover:from-indigo-700 hover:to-indigo-800{% endif %}
 											{% if not isLocked %}
-												{% if elementMatch %} ring-2 ring-yellow-400
+												{% if elementMatch and linkedBonus %} ring-2 ring-cyan-400
+												{% elseif elementMatch %} ring-2 ring-yellow-400
 												{% elseif spell.element.value == 'fire' %} ring-1 ring-orange-500/50
 												{% elseif spell.element.value == 'water' %} ring-1 ring-blue-500/50
 												{% elseif spell.element.value == 'earth' %} ring-1 ring-amber-500/50
@@ -408,7 +410,7 @@
 											data-spell-slug="{{ spell.slug }}"
 											data-spell-type="{{ isDefensive ? 'defensive' : 'offensive' }}"
 											{% if not isAvailable %}disabled{% endif %}
-											title="{% if isLocked %}{{ 'game.fight.spell_locked'|trans }} — {% endif %}{{ spell.description }}{% if elementMatch %} [{{ 'game.fight.element_match_bonus'|trans }}]{% endif %}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
+											title="{% if isLocked %}{{ 'game.fight.spell_locked'|trans }} — {% endif %}{{ spell.description }}{% if elementMatch %} [{{ 'game.fight.element_match_bonus'|trans }}]{% endif %}{% if linkedBonus %} [{{ 'game.fight.linked_materia_bonus'|trans }}]{% endif %}{% if spell.energyCost > 0 %} ({{ spell.energyCost }} {{ 'game.fight.energy'|trans|lower }}){% endif %}{% if cooldown > 0 %} - {{ 'game.fight.cooldown_remaining'|trans({'%turns%': cooldown}) }}{% endif %}">
 											<span class="block truncate">{{ spell.name }}</span>
 											{% if isLocked %}
 												<span class="block text-[9px] text-red-400 mt-0.5">{{ 'game.fight.spell_locked'|trans }}</span>
@@ -418,6 +420,7 @@
 													{% if spell.damage %} · {{ spell.damage }} DMG{% endif %}
 													{% if spell.heal %} · {{ spell.heal }} HEAL{% endif %}
 													{% if elementMatch %} · <span class="text-yellow-400">+25%</span>{% endif %}
+													{% if linkedBonus %} · <span class="text-cyan-400">+15%</span>{% endif %}
 												</span>
 												{% if cooldown > 0 %}
 													<span class="cooldown-badge">{{ cooldown }}</span>

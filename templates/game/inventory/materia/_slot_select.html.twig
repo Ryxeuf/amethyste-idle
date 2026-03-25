@@ -33,6 +33,17 @@
                 Sertir une materia {{ slot.element.label }} dans ce slot accordera un bonus élémentaire.
             </div>
         {% endif %}
+        {% if slot.linkedSlot is not null %}
+            {% set linkedMateria = slot.linkedSlot.itemSet %}
+            <div class="mt-2 px-2 py-1.5 rounded-lg bg-cyan-900/20 border border-cyan-800/30 text-[10px] text-cyan-400/80">
+                Ce slot est lié à un autre.
+                {% if linkedMateria is not null %}
+                    Sertir une materia {{ linkedMateria.genericItem.element.label }} accordera un bonus de synergie +15%.
+                {% else %}
+                    Sertir deux materia du même élément dans les slots liés accordera un bonus +15%.
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 
     {# ===== MATERIA LIST ===== #}

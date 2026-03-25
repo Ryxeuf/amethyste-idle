@@ -973,3 +973,33 @@
 - [x] `DungeonController` : liste des donjons, fiche donjon avec choix de difficulté, entrée POST
 - [x] Templates Twig : liste des donjons, fiche détaillée avec sélection de difficulté et cooldowns
 - [x] Fixtures : 1 donjon de test "Racines de la forêt" (minLevel 5, 1 joueur)
+
+---
+
+## Tâche 69 — Monstres invocateurs (2026-03-25) ✅
+
+> Monstres capables d'invoquer des renforts en cours de combat.
+
+- [x] Action IA `summon` dans MobActionHandler (executeSummon, canSummon, cooldown)
+- [x] Création de Mob en cours de combat (ajout à la Fight, insertion dans la timeline)
+- [x] Limite d'invocation (MAX_SUMMONS_PER_FIGHT = 2)
+- [x] FightTurnResolver : recalcul automatique de la timeline (getMobs() inclut les invoqués)
+- [x] Fixtures : Nécromancien invoque des Squelettes (aiPattern.summon)
+- [x] Message de log spécifique via CombatLogger.logSummon()
+
+---
+
+## Tâche 70 — Slots materia liés (2026-03-25) ✅
+
+> Synergie entre slots adjacents : bonus +15% dégâts si les materia sockettées partagent le même élément.
+
+- [x] Migration : colonne `linked_slot_id` (FK nullable) sur la table `slot`
+- [x] Entité Slot : relation OneToOne `linkedSlot` (self-referencing)
+- [x] Service `LinkedMateriaResolver` : détection synergie (même élément) et multiplicateur +15%
+- [x] Intégration dans `CombatCapacityResolver` : champ `linkedBonus` dans le résultat
+- [x] Intégration dans `FightSpellController` : application du bonus de dégâts
+- [x] Template inventaire : indicateur visuel cyan pour slots liés avec synergie active
+- [x] Template combat : affichage du bonus +15% et ring cyan sur les sorts
+- [x] Fixtures : slots liés sur épée longue et armure de cuir (2 slots → liés)
+- [x] Tests unitaires : LinkedMateriaResolverTest (9 tests), CombatCapacityResolverTest mis à jour
+- [x] Traductions FR/EN ajoutées

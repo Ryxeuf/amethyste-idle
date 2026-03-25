@@ -385,6 +385,7 @@
       "skill_spells": "Skill spells",
       "materia_spells": "Materia",
       "element_match_bonus": "Element match bonus +25%",
+      "linked_materia_bonus": "Linked materia synergy +15%",
       "energy_insufficient": "Not enough energy",
       "spell_locked": "Skill required",
       "cooldown_remaining": "Cooldown: %turns% turns",
