@@ -85,7 +85,7 @@ class Mob implements CharacterInterface
     private ?string $groupTag = null;
 
     /**
-     * True si le mob a été invoqué en combat (non présent sur la carte).
+     * True si le mob a été invoqué en combat (non présent sur la carte, pas de loot, pas de XP).
      */
     #[ORM\Column(name: 'summoned', type: 'boolean', options: ['default' => false])]
     private bool $summoned = false;

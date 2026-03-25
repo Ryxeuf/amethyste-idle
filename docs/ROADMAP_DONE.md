@@ -978,14 +978,18 @@
 
 ## Tache 69 — Monstres invocateurs (2026-03-25) ✅
 
-> Monstres capables d'invoquer des renforts en cours de combat.
+> Monstres capables d'invoquer des renforts en cours de combat (max 2 par combat).
 
 - [x] Action IA `summon` dans MobActionHandler (generateAction + executeSummon)
 - [x] Creation de Mob en cours de combat (ajout a la Fight, insertion dans la timeline)
 - [x] Limite d'invocation (MAX_SUMMONS_PER_FIGHT = 2)
 - [x] FightTurnResolver : recalcul dynamique de la timeline (getTurnOrder itere fight.getMobs())
-- [x] Fixtures : Necromancien invoque des Squelettes (aiPattern.summon avec cooldown)
+- [x] Fixtures : Necromancien invoque des Squelettes (aiPattern.summon avec cooldown, role: summoner)
 - [x] Message de log specifique via CombatLogger.logSummon ("X invoque un Y !")
+- [x] Champ `summoned` sur Mob : les mobs invoques ne droppent pas de loot
+- [x] Type de log `TYPE_SUMMON` + `logSummon()` dans CombatLogger
+- [x] Migration PostgreSQL idempotente
+- [x] Tests unitaires (5 tests) : invocation, limite atteinte, proprietes mob, chance 0%, slug inconnu
 
 ---
 

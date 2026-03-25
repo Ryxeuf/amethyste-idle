@@ -256,12 +256,15 @@ class MobActionHandler
             }
         }
 
-        // Summon behavior : invoquer des renforts si config présente et limite non atteinte
+        // Summon behavior : invoquer des renforts si config présente, limite et cooldown OK
         if (isset($aiPattern['summon']) && $this->canSummon($fight)) {
             $entityKey = 'mob_' . $mob->getId();
 
             if (!$fight->isSpellOnCooldown($entityKey, '__summon')) {
-                return 'summon';
+                $summonChance = $aiPattern['summon']['chance'] ?? 40;
+                if (random_int(1, 100) <= $summonChance) {
+                    return 'summon';
+                }
             }
         }
 

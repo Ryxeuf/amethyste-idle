@@ -36,6 +36,11 @@ class LootGenerator implements EventSubscriberInterface
 
     protected function generateLoot(Mob $mob): void
     {
+        // Les mobs invoqués en cours de combat ne droppent pas de loot
+        if ($mob->isSummoned()) {
+            return;
+        }
+
         $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
         $monsterDifficulty = $mob->getMonster()->getDifficulty();
 

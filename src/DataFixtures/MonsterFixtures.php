@@ -593,7 +593,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'elementalResistances' => ['metal' => 0.6, 'fire' => 0.4, 'water' => -0.5, 'air' => -0.3],
             ],
-            // === Monstre soigneur multi-mob (tâche 49) ===
+            // === Monstre invocateur (tâche 69) ===
             'necromancer' => [
                 'name' => 'Nécromancien',
                 'life' => 40,
@@ -604,7 +604,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 'difficulty' => 3,
                 'spells' => ['shadow_bolt', 'natural_healing'],
                 'aiPattern' => [
-                    'role' => 'healer',
+                    'role' => 'summoner',
                     'spell_chance' => 40,
                     'low_hp_heal' => ['threshold' => 40, 'action' => 'heal'],
                     'summon' => [
@@ -613,6 +613,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                         'max_per_fight' => 2,
                         'cooldown' => 3,
                         'level_offset' => -1,
+                        'chance' => 35,
                     ],
                 ],
                 'elementalResistances' => ['dark' => 0.4, 'light' => -0.5],
