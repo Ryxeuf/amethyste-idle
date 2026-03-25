@@ -183,12 +183,6 @@ class Item
     #[ORM\Column(name: 'materia_slots', type: 'integer', options: ['default' => 0])]
     private int $materiaSlots = 0;
 
-    /**
-     * Configuration détaillée des slots materia (élément par slot, liaisons).
-     * Format : [{"element": "fire", "linked": null}, {"element": "none", "linked": 1}, ...]
-     *
-     * @var array<int, array{element: string, linked: int|null}>
-     */
     #[ORM\Column(name: 'materia_slot_config', type: 'json', nullable: true)]
     private ?array $materiaSlotConfig = null;
 
