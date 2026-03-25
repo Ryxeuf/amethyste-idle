@@ -26,6 +26,11 @@ class BestiaryListener implements EventSubscriberInterface
     public function onMobDead(MobDeadEvent $event): void
     {
         $mob = $event->getMob();
+
+        if ($mob->isSummoned()) {
+            return;
+        }
+
         $monster = $mob->getMonster();
         $fight = $mob->getFight();
 

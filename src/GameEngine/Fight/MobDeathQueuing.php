@@ -23,6 +23,12 @@ class MobDeathQueuing implements EventSubscriberInterface
     public function mobDied(MobDeadEvent $event): void
     {
         $mob = $event->getMob();
+
+        // Les mobs invoqués n'ont pas de respawn sur la carte
+        if ($mob->isSummoned()) {
+            return;
+        }
+
         $monster = $mob->getMonster();
 
         // Boss mobs have a longer respawn delay (1 hour)

@@ -84,6 +84,12 @@ class Mob implements CharacterInterface
     #[ORM\Column(name: 'group_tag', type: 'string', length: 50, nullable: true)]
     private ?string $groupTag = null;
 
+    /**
+     * True si le mob a été invoqué en combat (non présent sur la carte).
+     */
+    #[ORM\Column(name: 'summoned', type: 'boolean', options: ['default' => false])]
+    private bool $summoned = false;
+
     public function getName(): string
     {
         return $this->getMonster()->getName();
@@ -214,5 +220,15 @@ class Mob implements CharacterInterface
     public function setGroupTag(?string $groupTag): void
     {
         $this->groupTag = $groupTag;
+    }
+
+    public function isSummoned(): bool
+    {
+        return $this->summoned;
+    }
+
+    public function setSummoned(bool $summoned): void
+    {
+        $this->summoned = $summoned;
     }
 }

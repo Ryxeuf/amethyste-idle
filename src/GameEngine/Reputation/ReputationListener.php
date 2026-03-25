@@ -27,6 +27,11 @@ class ReputationListener implements EventSubscriberInterface
     public function onMobDead(MobDeadEvent $event): void
     {
         $mob = $event->getMob();
+
+        if ($mob->isSummoned()) {
+            return;
+        }
+
         $monster = $mob->getMonster();
         $faction = $monster->getFaction();
 
