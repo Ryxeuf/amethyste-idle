@@ -70,6 +70,10 @@ class WorldBossManagerTest extends TestCase
                 $this->assertTrue($mob->isWorldBoss());
                 $this->assertSame(2000, $mob->getLife());
 
+                // Simulate Doctrine assigning an ID after persist
+                $ref = new \ReflectionProperty(Mob::class, 'id');
+                $ref->setValue($mob, 99);
+
                 return true;
             }));
 

@@ -71,7 +71,7 @@ class WorldBossManager implements EventSubscriberInterface
 
         if (!$params || !isset($params['monster_slug'], $params['map_id'], $params['coordinates'])) {
             $this->logger->warning('[WorldBossManager] boss_spawn event missing required parameters', [
-                'eventId' => $gameEvent->getId(),
+                'eventName' => $gameEvent->getName(),
                 'params' => $params,
             ]);
 
@@ -153,7 +153,7 @@ class WorldBossManager implements EventSubscriberInterface
                 'topic' => 'map/respawn',
                 'type' => 'world_boss_spawn',
                 'object' => [
-                    'id' => $mob->getId(),
+                    'id' => (int) $mob->getId(),
                     'name' => $mob->getName(),
                     'slug' => $mob->getMonster()->getSlug(),
                     'level' => $mob->getLevel(),
