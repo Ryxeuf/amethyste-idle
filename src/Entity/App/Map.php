@@ -64,6 +64,10 @@ class Map
     #[ORM\JoinColumn(name: 'world_id', referencedColumnName: 'id')]
     private World $world;
 
+    #[ORM\ManyToOne(targetEntity: Region::class, inversedBy: 'maps')]
+    #[ORM\JoinColumn(name: 'region_id', referencedColumnName: 'id', nullable: true)]
+    private ?Region $region = null;
+
     /** @var Collection<int, ObjectLayer> */
     #[ORM\OneToMany(targetEntity: ObjectLayer::class, mappedBy: 'map')]
     private Collection $objectLayers;
@@ -203,5 +207,15 @@ class Map
     public function setWeatherChangedAt(?\DateTimeImmutable $weatherChangedAt): void
     {
         $this->weatherChangedAt = $weatherChangedAt;
+    }
+
+    public function getRegion(): ?Region
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?Region $region): void
+    {
+        $this->region = $region;
     }
 }
