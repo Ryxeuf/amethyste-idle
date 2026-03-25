@@ -4,5 +4,11 @@
 {% block page_title %}Modifier : {{ pnj.name }}{% endblock %}
 
 {% block body %}
+    <div class="flex items-center gap-4 mb-6">
+        {% include 'admin/_sprite_preview.html.twig' with { sprite_key: 'pnj_' ~ pnj.classType, size: 'lg' } %}
+        <div>
+            <p class="text-gray-400 text-sm">Sprite : <span class="text-gray-200">pnj_{{ pnj.classType }}</span></p>
+        </div>
+    </div>
     {% include 'admin/pnj/_form.html.twig' %}
 {% endblock %}

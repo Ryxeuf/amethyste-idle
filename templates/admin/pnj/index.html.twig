@@ -22,6 +22,7 @@
                 <thead>
                     <tr class="border-b border-gray-800 text-gray-400">
                         <th class="text-left px-4 py-3 font-medium">ID</th>
+                        <th class="text-left px-4 py-3 font-medium">Sprite</th>
                         <th class="text-left px-4 py-3 font-medium">Nom</th>
                         <th class="text-left px-4 py-3 font-medium">Type</th>
                         <th class="text-left px-4 py-3 font-medium">Carte</th>
@@ -34,6 +35,7 @@
                     {% for pnj in pnjs %}
                         <tr class="hover:bg-gray-800 transition-colors">
                             <td class="px-4 py-3 text-gray-500">{{ pnj.id }}</td>
+                            <td class="px-4 py-3">{% include 'admin/_sprite_preview.html.twig' with { sprite_key: 'pnj_' ~ pnj.classType, size: 'sm' } %}</td>
                             <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ pnj.name }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ pnj.classType }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ pnj.map ? pnj.map.name : '-' }}</td>
@@ -51,7 +53,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucun PNJ trouve.</td>
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">Aucun PNJ trouve.</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -1,0 +1,83 @@
+{#
+    Sprite preview component for admin pages.
+
+    Usage:
+        {% include 'admin/_sprite_preview.html.twig' with {
+            sprite_key: 'pnj_merchant',
+            size: 'sm'
+        } %}
+
+    Parameters:
+        - sprite_key (string): The sprite key (e.g. 'pnj_merchant', 'mob_zombie', 'player_default')
+        - size (string, optional): 'sm' (32px), 'md' (64px, default), 'lg' (96px)
+#}
+{% set config = sprite_config(sprite_key) %}
+{% if config %}
+    {% set sz = (size|default('md') == 'sm') ? 32 : ((size|default('md') == 'lg') ? 96 : 64) %}
+    {% set uid = 'sprite_' ~ sprite_key|replace({'.': '_', ' ': '_', '-': '_'}) ~ '_' ~ random() %}
+    <canvas id="{{ uid }}"
+            width="{{ sz }}"
+            height="{{ sz }}"
+            class="inline-block"
+            style="image-rendering: pixelated; width: {{ sz }}px; height: {{ sz }}px;"
+            data-sheet="{{ config.sheet }}"
+            data-type="{{ config.type }}"
+            data-char-index="{{ config.charIndex|default(0) }}"
+            title="{{ sprite_key }}"></canvas>
+    <script>
+    (function() {
+        var canvas = document.getElementById('{{ uid }}');
+        if (!canvas) return;
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+            var type = canvas.dataset.type;
+            var charIndex = parseInt(canvas.dataset.charIndex, 10) || 0;
+
+            // Compute frame size from actual image dimensions
+            var cols, rows;
+            if (type === 'multi') {
+                cols = 12; rows = 8;
+            } else {
+                cols = 3; rows = 4;
+            }
+            var fw = img.naturalWidth / cols;
+            var fh = img.naturalHeight / rows;
+
+            var sx, sy;
+            if (type === 'multi') {
+                var charsPerRow = 4;
+                var charCol = charIndex % charsPerRow;
+                var charRow = Math.floor(charIndex / charsPerRow);
+                sx = (charCol * 3 + 1) * fw;
+                sy = (charRow * 4) * fh;
+            } else {
+                // Idle frame = column 1, row 0 (facing down)
+                sx = 1 * fw;
+                sy = 0;
+            }
+
+            ctx.imageSmoothingEnabled = false;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, sx, sy, fw, fh, 0, 0, canvas.width, canvas.height);
+        };
+        img.onerror = function() {
+            ctx.fillStyle = '#374151';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('?', canvas.width / 2, canvas.height / 2);
+        };
+        img.src = canvas.dataset.sheet;
+    })();
+    </script>
+{% else %}
+    {% set sz = (size|default('md') == 'sm') ? 32 : ((size|default('md') == 'lg') ? 96 : 64) %}
+    <span class="inline-flex items-center justify-center bg-gray-800 rounded text-gray-600 text-xs"
+          style="width: {{ sz }}px; height: {{ sz }}px;">
+        ?
+    </span>
+{% endif %}

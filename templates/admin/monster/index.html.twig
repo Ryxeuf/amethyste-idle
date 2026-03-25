@@ -22,6 +22,7 @@
                 <thead>
                     <tr class="border-b border-gray-800 text-gray-400">
                         <th class="text-left px-4 py-3 font-medium">ID</th>
+                        <th class="text-left px-4 py-3 font-medium">Sprite</th>
                         <th class="text-left px-4 py-3 font-medium">Nom</th>
                         <th class="text-left px-4 py-3 font-medium">Vie</th>
                         <th class="text-left px-4 py-3 font-medium">Precision</th>
@@ -35,6 +36,7 @@
                     {% for monster in monsters %}
                         <tr class="hover:bg-gray-800 transition-colors">
                             <td class="px-4 py-3 text-gray-500">{{ monster.id }}</td>
+                            <td class="px-4 py-3">{% include 'admin/_sprite_preview.html.twig' with { sprite_key: 'mob_' ~ monster.slug, size: 'sm' } %}</td>
                             <td class="px-4 py-3 text-gray-200 font-medium whitespace-nowrap">{{ monster.name }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ monster.life }}</td>
                             <td class="px-4 py-3 text-gray-400">{{ monster.hit }}</td>
@@ -53,7 +55,7 @@
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-500">Aucun monstre trouve.</td>
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-500">Aucun monstre trouve.</td>
                         </tr>
                     {% endfor %}
                 </tbody>

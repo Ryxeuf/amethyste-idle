@@ -4,5 +4,11 @@
 {% block page_title %}Modifier : {{ monster.name }}{% endblock %}
 
 {% block body %}
+    <div class="flex items-center gap-4 mb-6">
+        {% include 'admin/_sprite_preview.html.twig' with { sprite_key: 'mob_' ~ monster.slug, size: 'lg' } %}
+        <div>
+            <p class="text-gray-400 text-sm">Sprite : <span class="text-gray-200">mob_{{ monster.slug }}</span></p>
+        </div>
+    </div>
     {% include 'admin/monster/_form.html.twig' %}
 {% endblock %}
