@@ -43,6 +43,12 @@ class Quest
     #[ORM\Column(type: 'string', length: 50, nullable: true)]
     private ?string $dailyPool = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isHidden = false;
+
+    #[ORM\Column(type: 'json', nullable: true)]
+    private ?array $triggerCondition = null;
+
     #[ORM\ManyToOne(targetEntity: GameEvent::class)]
     #[ORM\JoinColumn(name: 'game_event_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?GameEvent $gameEvent = null;
@@ -193,6 +199,30 @@ class Quest
     public function setDailyPool(?string $dailyPool): Quest
     {
         $this->dailyPool = $dailyPool;
+
+        return $this;
+    }
+
+    public function isHidden(): bool
+    {
+        return $this->isHidden;
+    }
+
+    public function setIsHidden(bool $isHidden): Quest
+    {
+        $this->isHidden = $isHidden;
+
+        return $this;
+    }
+
+    public function getTriggerCondition(): ?array
+    {
+        return $this->triggerCondition;
+    }
+
+    public function setTriggerCondition(?array $triggerCondition): Quest
+    {
+        $this->triggerCondition = $triggerCondition;
 
         return $this;
     }

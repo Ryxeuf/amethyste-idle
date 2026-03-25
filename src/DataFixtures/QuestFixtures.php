@@ -616,6 +616,109 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 // prerequisiteQuests set after flush
             ],
+            // --- Quetes cachees (decouverte) ---
+            'quest_hidden_secret_clearing' => [
+                'name' => 'Le secret de la clairiere',
+                'description' => 'En explorant une clairiere isolee, vous decouvrez des traces anciennes au sol. Quelque chose est enterre ici... Explorez les alentours pour trouver d\'autres indices.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '25.40',
+                            'name' => 'Pierre gravee',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 50,
+                ],
+                'isHidden' => true,
+                'triggerCondition' => [
+                    'type' => 'explore',
+                    'map_id' => 1,
+                    'coordinates' => '20.38',
+                ],
+            ],
+            'quest_hidden_rare_slime' => [
+                'name' => 'La gelee doree',
+                'description' => 'En eliminant une gelee, vous remarquez un etrange eclat dore dans ses restes. Les villageois parlent d\'une gelee rare au coeur brillant. Eliminez-en davantage pour la trouver.',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Gelée',
+                            'slug' => 'slime',
+                            'count' => 5,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 100,
+                    'gold' => 75,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 3,
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
+                'isHidden' => true,
+                'triggerCondition' => [
+                    'type' => 'kill',
+                    'monster_slug' => 'slime',
+                ],
+            ],
+            'quest_hidden_herb_lore' => [
+                'name' => 'Savoir ancestral',
+                'description' => 'En recoltant des champignons, vous trouvez un vieux parchemin cachant une recette oubliee. Recoltez d\'autres ingredients pour la reconstituer.',
+                'requirements' => [
+                    'collect' => [
+                        'mushroom' => 8,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 70,
+                    'gold' => 40,
+                    'items' => [
+                        'materia_soin' => 1,
+                    ],
+                ],
+                'isHidden' => true,
+                'triggerCondition' => [
+                    'type' => 'harvest',
+                    'item_slug' => 'mushroom',
+                ],
+            ],
+            'quest_hidden_goblin_cache' => [
+                'name' => 'La planque des gobelins',
+                'description' => 'Sur le cadavre d\'un gobelin, vous trouvez une carte menant a une cache secrete. Eliminez d\'autres gobelins pour reunir les morceaux de la carte.',
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Gobelin',
+                            'slug' => 'goblin',
+                            'count' => 4,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 100,
+                    'items' => [
+                        [
+                            'type' => 'gear',
+                            'count' => 1,
+                            'genericItemSlug' => 'leather-boots',
+                        ],
+                    ],
+                ],
+                'isHidden' => true,
+                'triggerCondition' => [
+                    'type' => 'kill',
+                    'monster_slug' => 'goblin',
+                ],
+            ],
             // --- Quêtes d'événement ---
             'quest_event_lunar_hunt' => [
                 'name' => 'Chasse sous la Lune',
@@ -672,6 +775,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             }
             if (isset($data['dailyPool'])) {
                 $quest->setDailyPool($data['dailyPool']);
+            }
+            if (isset($data['isHidden'])) {
+                $quest->setIsHidden($data['isHidden']);
+            }
+            if (isset($data['triggerCondition'])) {
+                $quest->setTriggerCondition($data['triggerCondition']);
             }
             if (isset($data['gameEvent'])) {
                 $quest->setGameEvent($this->getReference($data['gameEvent'], GameEvent::class));
