@@ -82,6 +82,21 @@ export default class extends Controller {
         this._weatherTransitioning = false;
         this._weatherSpawnTimer = 0;
 
+        // Zone ambiance system
+        this._zones = [];
+        this._currentZone = null;
+        this._zoneOverlay = null;
+        this._zoneOverlayAlpha = 0;
+        this._zoneTargetAlpha = 0;
+        this._zoneTargetColor = 0x000000;
+        this._zoneCurrentColor = 0x000000;
+        this._zoneTransitionSpeed = 0.002; // alpha per ms
+        this._zoneParticles = [];
+        this._zoneParticleContainer = null;
+        this._zoneParticleSpawnTimer = 0;
+        this._zoneLightModifier = 1.0;
+        this._zoneTargetLightModifier = 1.0;
+
         // Minimap state
         this._minimapVisible = true;
         this._minimapSize = 150;
@@ -98,6 +113,8 @@ export default class extends Controller {
         this._initWeather();
         this._initTimeHud();
         this._initMinimap();
+        this._initZoneAmbiance();
+        this._detectZone(this._playerX, this._playerY, true);
         this._updateCamera(true);
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
@@ -142,6 +159,15 @@ export default class extends Controller {
         this._animatedEntities = [];
         this._particles = [];
         this._clearWeatherParticles();
+        this._clearZoneParticles();
+        if (this._zoneOverlay) {
+            this._zoneOverlay.destroy();
+            this._zoneOverlay = null;
+        }
+        if (this._zoneParticleContainer) {
+            this._zoneParticleContainer.destroy({ children: true });
+            this._zoneParticleContainer = null;
+        }
         if (this._weatherContainer) {
             this._weatherContainer.destroy({ children: true });
             this._weatherContainer = null;
@@ -266,6 +292,9 @@ export default class extends Controller {
             this._currentWeather = config.weather.type;
             this._targetWeather = config.weather.type;
         }
+
+        // Load zone data for ambiance effects
+        this._zones = config.zones || [];
 
         this._tilesets.sort((a, b) => a.firstGid - b.firstGid);
 
@@ -815,6 +844,9 @@ export default class extends Controller {
 
         // Update weather effects
         this._updateWeather(dt);
+
+        // Update zone ambiance effects
+        this._updateZoneAmbiance(dt);
     }
 
     // --- Camera Shake ---
@@ -955,7 +987,18 @@ export default class extends Controller {
             night: { color: 0x0a0a2e, alpha: 0.45 },
         };
         const c = colors[time] || colors.day;
-        this._ambientOverlay.fill({ color: c.color, alpha: c.alpha });
+
+        // Apply zone light modifier: lightLevel < 1 darkens, > 1 brightens
+        const lightMod = this._zoneLightModifier ?? 1.0;
+        let alpha = c.alpha;
+        if (lightMod < 1.0) {
+            // Darker zone: add extra darkness (up to +0.3 at lightLevel=0)
+            alpha = Math.min(0.7, alpha + (1.0 - lightMod) * 0.3);
+        } else if (lightMod > 1.0 && alpha > 0) {
+            // Brighter zone: reduce darkness
+            alpha = Math.max(0, alpha - (lightMod - 1.0) * 0.2);
+        }
+        this._ambientOverlay.fill({ color: c.color, alpha });
     }
 
     // --- Particle System ---
@@ -1257,6 +1300,318 @@ export default class extends Controller {
                 p.sprite.alpha = Math.max(0, (p.life / 500) * 0.7);
             }
         }
+    }
+
+    // --- Zone Ambiance System ---
+
+    _initZoneAmbiance() {
+        if (!this._app) return;
+
+        // Overlay for zone-specific tint (between weather and day/night layers)
+        this._zoneOverlay = new PIXI.Graphics();
+        this._zoneOverlay.zIndex = 350; // Below weather (400) and day/night (500)
+        this._zoneOverlay.alpha = 0;
+        this._app.stage.addChild(this._zoneOverlay);
+
+        // Container for zone-specific ambient particles (leaves, dust, etc.)
+        this._zoneParticleContainer = new PIXI.Container();
+        this._zoneParticleContainer.zIndex = 395; // Just below weather particles
+        this._app.stage.addChild(this._zoneParticleContainer);
+    }
+
+    _detectZone(px, py, instant = false) {
+        const tileX = Math.floor(px);
+        const tileY = Math.floor(py);
+        let newZone = null;
+
+        for (const zone of this._zones) {
+            if (tileX >= zone.x && tileX < zone.x + zone.width
+                && tileY >= zone.y && tileY < zone.y + zone.height) {
+                newZone = zone;
+                break;
+            }
+        }
+
+        const newSlug = newZone ? newZone.slug : null;
+        const oldSlug = this._currentZone ? this._currentZone.slug : null;
+        if (newSlug === oldSlug) return;
+
+        this._currentZone = newZone;
+        this._applyZoneEffect(newZone, instant);
+    }
+
+    _applyZoneEffect(zone, instant = false) {
+        if (!zone) {
+            // Leaving all zones — fade out overlay
+            this._zoneTargetAlpha = 0;
+            this._zoneTargetLightModifier = 1.0;
+            if (instant) {
+                this._zoneOverlayAlpha = 0;
+                this._zoneLightModifier = 1.0;
+                if (this._zoneOverlay) this._zoneOverlay.alpha = 0;
+            }
+            this._clearZoneParticles();
+            return;
+        }
+
+        const biomeConfig = this._getBiomeConfig(zone.biome);
+        this._zoneTargetColor = biomeConfig.color;
+        this._zoneTargetAlpha = biomeConfig.alpha;
+        this._zoneTargetLightModifier = zone.lightLevel ?? 1.0;
+
+        if (instant) {
+            this._zoneOverlayAlpha = this._zoneTargetAlpha;
+            this._zoneCurrentColor = this._zoneTargetColor;
+            this._zoneLightModifier = this._zoneTargetLightModifier;
+            this._redrawZoneOverlay();
+        }
+
+        // Zone-specific weather override
+        if (zone.weather && zone.weather !== this._currentWeather) {
+            this._transitionWeather(zone.weather);
+        }
+    }
+
+    _getBiomeConfig(biome) {
+        const configs = {
+            plains:  { color: 0x88aa44, alpha: 0.04 },
+            forest:  { color: 0x1a3d0c, alpha: 0.12 },
+            swamp:   { color: 0x3d4a2a, alpha: 0.15 },
+            hills:   { color: 0x8a7d60, alpha: 0.05 },
+            dark:    { color: 0x0a0a1e, alpha: 0.20 },
+            village: { color: 0xffe8a0, alpha: 0.03 },
+            desert:  { color: 0xc8a050, alpha: 0.08 },
+            snow:    { color: 0xd0e8ff, alpha: 0.06 },
+            cave:    { color: 0x101018, alpha: 0.25 },
+        };
+        return configs[biome] || { color: 0x000000, alpha: 0 };
+    }
+
+    _redrawZoneOverlay() {
+        if (!this._zoneOverlay) return;
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+        this._zoneOverlay.clear();
+        this._zoneOverlay.rect(0, 0, viewW, viewH);
+        this._zoneOverlay.fill({ color: this._zoneCurrentColor, alpha: 1 });
+        this._zoneOverlay.alpha = this._zoneOverlayAlpha;
+    }
+
+    _updateZoneAmbiance(dt) {
+        if (!this._zoneOverlay) return;
+
+        // Smooth transition of overlay alpha
+        const alphaDiff = this._zoneTargetAlpha - this._zoneOverlayAlpha;
+        if (Math.abs(alphaDiff) > 0.001) {
+            this._zoneOverlayAlpha += Math.sign(alphaDiff) * Math.min(
+                Math.abs(alphaDiff),
+                this._zoneTransitionSpeed * dt,
+            );
+            this._zoneCurrentColor = this._zoneTargetColor;
+            this._redrawZoneOverlay();
+        }
+
+        // Smooth transition of light modifier
+        const lightDiff = this._zoneTargetLightModifier - this._zoneLightModifier;
+        if (Math.abs(lightDiff) > 0.001) {
+            this._zoneLightModifier += Math.sign(lightDiff) * Math.min(
+                Math.abs(lightDiff),
+                0.001 * dt,
+            );
+            // Re-apply day/night with updated light modifier
+            this._applyTimeOfDay(this._timeOfDay);
+        }
+
+        // Spawn zone ambient particles
+        if (this._currentZone && this._zoneParticleContainer) {
+            this._zoneParticleSpawnTimer += dt;
+            const interval = this._getZoneParticleInterval(this._currentZone.biome);
+            if (interval > 0 && this._zoneParticleSpawnTimer >= interval) {
+                this._zoneParticleSpawnTimer = 0;
+                this._spawnZoneParticles(this._currentZone.biome);
+            }
+        }
+
+        // Update existing zone particles
+        this._updateZoneParticles(dt);
+    }
+
+    _getZoneParticleInterval(biome) {
+        switch (biome) {
+            case 'forest': return 300;  // Falling leaves
+            case 'swamp': return 500;   // Bubbles
+            case 'dark': return 400;    // Shadow wisps
+            case 'desert': return 200;  // Dust motes
+            case 'snow': return 250;    // Extra snowflakes
+            case 'cave': return 600;    // Dripping particles
+            default: return 0;          // No ambient particles
+        }
+    }
+
+    _spawnZoneParticles(biome) {
+        if (this._zoneParticles.length > 80) return;
+
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+
+        switch (biome) {
+            case 'forest':
+                this._spawnLeafParticle(viewW, viewH);
+                break;
+            case 'swamp':
+                this._spawnBubbleParticle(viewW, viewH);
+                break;
+            case 'dark':
+                this._spawnWispParticle(viewW, viewH);
+                break;
+            case 'desert':
+                this._spawnDustParticle(viewW, viewH);
+                break;
+            case 'cave':
+                this._spawnDripParticle(viewW, viewH);
+                break;
+        }
+    }
+
+    _spawnLeafParticle(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const size = 2 + Math.random() * 2;
+        const colors = [0x2d5a1e, 0x4a7a2e, 0x8a6a20, 0x6b8e23];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        g.ellipse(0, 0, size, size * 0.6);
+        g.fill({ color, alpha: 0.5 + Math.random() * 0.3 });
+        g.position.set(Math.random() * viewW, -5);
+        this._zoneParticleContainer.addChild(g);
+
+        this._zoneParticles.push({
+            sprite: g,
+            vx: -0.02 + Math.random() * 0.04,
+            vy: 0.03 + Math.random() * 0.02,
+            life: 6000,
+            maxLife: 6000,
+            swayPhase: Math.random() * Math.PI * 2,
+            swaySpeed: 0.002 + Math.random() * 0.002,
+            swayAmplitude: 0.03 + Math.random() * 0.02,
+            maxY: viewH + 10,
+            type: 'leaf',
+        });
+    }
+
+    _spawnBubbleParticle(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const size = 1 + Math.random() * 2;
+        g.circle(0, 0, size);
+        g.fill({ color: 0x6a8a5a, alpha: 0.3 + Math.random() * 0.2 });
+        g.position.set(Math.random() * viewW, viewH + 5);
+        this._zoneParticleContainer.addChild(g);
+
+        this._zoneParticles.push({
+            sprite: g,
+            vx: -0.005 + Math.random() * 0.01,
+            vy: -0.02 - Math.random() * 0.015,
+            life: 4000,
+            maxLife: 4000,
+            maxY: -10,
+            type: 'bubble',
+        });
+    }
+
+    _spawnWispParticle(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const size = 2 + Math.random() * 3;
+        g.circle(0, 0, size);
+        g.fill({ color: 0x6644aa, alpha: 0.2 + Math.random() * 0.15 });
+        g.position.set(Math.random() * viewW, Math.random() * viewH);
+        this._zoneParticleContainer.addChild(g);
+
+        this._zoneParticles.push({
+            sprite: g,
+            vx: -0.01 + Math.random() * 0.02,
+            vy: -0.01 + Math.random() * 0.02,
+            life: 5000,
+            maxLife: 5000,
+            swayPhase: Math.random() * Math.PI * 2,
+            swaySpeed: 0.001 + Math.random() * 0.001,
+            swayAmplitude: 0.02,
+            type: 'wisp',
+        });
+    }
+
+    _spawnDustParticle(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const size = 1 + Math.random() * 1.5;
+        g.circle(0, 0, size);
+        g.fill({ color: 0xc8a050, alpha: 0.3 + Math.random() * 0.2 });
+        g.position.set(-5, Math.random() * viewH);
+        this._zoneParticleContainer.addChild(g);
+
+        this._zoneParticles.push({
+            sprite: g,
+            vx: 0.04 + Math.random() * 0.03,
+            vy: -0.005 + Math.random() * 0.01,
+            life: 4000,
+            maxLife: 4000,
+            type: 'dust',
+        });
+    }
+
+    _spawnDripParticle(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        g.rect(0, 0, 1, 2 + Math.random() * 2);
+        g.fill({ color: 0x5588aa, alpha: 0.4 + Math.random() * 0.2 });
+        g.position.set(Math.random() * viewW, -5);
+        this._zoneParticleContainer.addChild(g);
+
+        this._zoneParticles.push({
+            sprite: g,
+            vx: 0,
+            vy: 0.15 + Math.random() * 0.1,
+            life: 2500,
+            maxLife: 2500,
+            maxY: viewH + 10,
+            type: 'drip',
+        });
+    }
+
+    _updateZoneParticles(dt) {
+        for (let i = this._zoneParticles.length - 1; i >= 0; i--) {
+            const p = this._zoneParticles[i];
+            p.life -= dt;
+
+            if (p.life <= 0 || (p.maxY !== undefined && (
+                (p.vy > 0 && p.sprite.position.y > p.maxY) ||
+                (p.vy < 0 && p.sprite.position.y < p.maxY)
+            ))) {
+                if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+                p.sprite.destroy();
+                this._zoneParticles.splice(i, 1);
+                continue;
+            }
+
+            // Sway effect for leaves and wisps
+            let extraVx = 0;
+            if (p.swayPhase !== undefined) {
+                p.swayPhase += p.swaySpeed * dt;
+                extraVx = Math.sin(p.swayPhase) * p.swayAmplitude;
+            }
+
+            p.sprite.position.x += (p.vx + extraVx) * dt;
+            p.sprite.position.y += p.vy * dt;
+
+            // Fade out near end of life
+            const lifeRatio = p.life / p.maxLife;
+            if (lifeRatio < 0.2) {
+                p.sprite.alpha = lifeRatio / 0.2;
+            }
+        }
+    }
+
+    _clearZoneParticles() {
+        for (const p of this._zoneParticles) {
+            if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+            p.sprite.destroy();
+        }
+        this._zoneParticles = [];
     }
 
     _clearWeatherParticles() {
@@ -1703,6 +2058,7 @@ export default class extends Controller {
             await this._tweenTo(from, to, this.stepDelayValue);
             this._playerX = to.x;
             this._playerY = to.y;
+            this._detectZone(to.x, to.y);
         }
 
         // Stop walk animation
@@ -1796,6 +2152,7 @@ export default class extends Controller {
                 await this._loadConfig();
                 await this._loadCells(this._playerX, this._playerY);
                 await this._loadEntities();
+                this._detectZone(this._playerX, this._playerY, true);
                 this._updateCamera(true);
                 this._lastEntityLoadX = this._playerX;
                 this._lastEntityLoadY = this._playerY;

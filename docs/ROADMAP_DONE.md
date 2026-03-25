@@ -941,3 +941,19 @@
 - [x] Affichage dans inventaire : pièces du set équipées, bonus actifs/inactifs, nom du set par pièce
 - [x] Fixtures : 3 sets de base (Set du Gardien 2/3/4 pièces, Set de l'Ombre 2/3, Set du Veilleur 2/3)
 - [x] Tests unitaires EquipmentSetResolver (7 tests)
+
+---
+
+## Tâche 77 — Effets ambiance par zone (2026-03-25) ✅
+
+> Détection de la zone courante du joueur et application d'effets visuels dynamiques en frontend.
+
+- [x] Charger les zones depuis l'API `/api/map/config` au chargement de la carte
+- [x] Détecter la zone courante du joueur (point-in-rect) à chaque déplacement
+- [x] Appliquer les effets par zone : overlay teinté par biome (forêt, marais, dark, etc.)
+- [x] Particules ambiantes par biome (feuilles en forêt, bulles en marais, lucioles sombres, poussière)
+- [x] Modificateur de lumière par zone (intégré au cycle jour/nuit)
+- [x] Override météo par zone (ex: brouillard permanent en marais, orage dans la lande)
+- [x] Transition fluide entre zones (fondu progressif overlay + lumière)
+- [x] Re-détection après téléportation (portail vers nouvelle carte)
+- [x] Fixtures : 6 zones (5 sur carte principale + 1 village) avec biomes, météo et niveaux de lumière
