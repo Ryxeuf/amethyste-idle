@@ -129,8 +129,8 @@ docker compose exec php php bin/console app:terrain:import --dry-run --stats
 # Dump Dijkstra
 docker compose exec php php bin/console app:map:dump
 
-# Debug mouvement
-docker compose exec php php bin/console app:debug-move
+# Audit placement entites
+docker compose exec php php bin/console app:audit:entity-placement
 
 # Cache
 docker compose exec php php bin/console cache:clear

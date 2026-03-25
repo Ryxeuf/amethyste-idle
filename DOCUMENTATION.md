@@ -867,8 +867,7 @@ ROLE_USER (base)
 | `app:index:cell` | Parcourt World→Map→Area, indexe les cellules dans Typesense |
 | `app:reset-ts` | Vide la collection Typesense `cells` |
 | `app:map:dump` | Dump JSON d'une map : modèle statique (`-m`) ou tag Dijkstra |
-| `app:debug-move` | Debug de pathfinding : teste Dijkstra avec coordonnées, génère `debug.txt` visuel |
-| `app:debug` | Debug de recherche Typesense : affiche les cellules autour du joueur |
+| `app:audit:entity-placement` | Audite et corrige les entités placées sur des cases bloquées (`--fix`) |
 
 ---
 

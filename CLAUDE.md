@@ -79,7 +79,7 @@ docker compose exec php php bin/console doctrine:fixtures:load
 
 # Debug
 docker compose exec php php bin/console app:map:dump
-docker compose exec php php bin/console app:debug-move
+docker compose exec php php bin/console app:audit:entity-placement
 
 # PostgreSQL direct
 docker compose exec database psql -U app -d amethyste
