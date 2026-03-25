@@ -41,7 +41,9 @@
                 {% else %}
                     <div class="space-y-2">
                         {% for item in shopItems %}
-                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors"
+                            {% set itemStock = stockInfo[item.slug] ?? null %}
+                            {% set outOfStock = itemStock is not null and itemStock <= 0 %}
+                            <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors{% if outOfStock %} opacity-50{% endif %}"
                                  data-item-slug="{{ item.slug }}">
                                 <div class="flex-1 min-w-0">
                                     <span class="font-medium text-sm {% if item.rarity == 'amethyst' %}text-fuchsia-400{% elseif item.rarity == 'legendary' %}text-yellow-400{% elseif item.rarity == 'epic' %}text-purple-300{% elseif item.rarity == 'rare' %}text-blue-300{% elseif item.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ item.name }}</span>
@@ -51,11 +53,18 @@
                                     <p class="text-gray-400 text-xs truncate">{{ item.description|slice(0, 60) }}{% if item.description|length > 60 %}...{% endif %}</p>
                                 </div>
                                 <div class="flex items-center gap-3 ml-3">
+                                    {% if itemStock is not null %}
+                                        <span class="text-xs font-mono whitespace-nowrap {% if outOfStock %}text-red-400{% elseif itemStock <= 3 %}text-orange-400{% else %}text-gray-400{% endif %}"
+                                              id="stock-{{ item.slug }}">
+                                            {% if outOfStock %}Rupture{% else %}x{{ itemStock }}{% endif %}
+                                        </span>
+                                    {% endif %}
                                     <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">{{ item.price }} G</span>
                                     <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ item.price }}, {{ pnj.id }})"
-                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if player.gils < item.price %} opacity-50 cursor-not-allowed{% endif %}"
-                                            {% if player.gils < item.price %}disabled{% endif %}>
-                                        Acheter
+                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if player.gils < item.price or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
+                                            {% if player.gils < item.price or outOfStock %}disabled{% endif %}
+                                            id="buy-btn-{{ item.slug }}">
+                                        {% if outOfStock %}Rupture{% else %}Acheter{% endif %}
                                     </button>
                                 </div>
                             </div>
@@ -113,6 +122,23 @@ async function buyItem(slug, name, price, pnjId) {
         if (data.success) {
             showMessage(data.message);
             document.getElementById('player-gils').textContent = data.gils + ' Gils';
+            // Update stock display if present
+            if (data.stock !== undefined && data.stock !== null) {
+                const stockEl = document.getElementById('stock-' + slug);
+                const btnEl = document.getElementById('buy-btn-' + slug);
+                const rowEl = document.querySelector(`[data-item-slug="${slug}"]`);
+                if (stockEl) {
+                    if (data.stock <= 0) {
+                        stockEl.textContent = 'Rupture';
+                        stockEl.className = 'text-xs font-mono whitespace-nowrap text-red-400';
+                        if (btnEl) { btnEl.disabled = true; btnEl.textContent = 'Rupture'; btnEl.classList.add('opacity-50', 'cursor-not-allowed'); }
+                        if (rowEl) rowEl.classList.add('opacity-50');
+                    } else {
+                        stockEl.textContent = 'x' + data.stock;
+                        stockEl.className = 'text-xs font-mono whitespace-nowrap ' + (data.stock <= 3 ? 'text-orange-400' : 'text-gray-400');
+                    }
+                }
+            }
             // Reload page to update sell list
             setTimeout(() => location.reload(), 800);
         } else {

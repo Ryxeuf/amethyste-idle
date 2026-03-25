@@ -40,9 +40,16 @@ class ShopController extends AbstractController
         $player = $this->playerHelper->getPlayer();
         $shopItems = $this->getShopItems($pnj);
 
+        // Build stock info per slug (null = unlimited)
+        $stockInfo = [];
+        foreach ($shopItems as $item) {
+            $stockInfo[$item->getSlug()] = $pnj->getItemStock($item->getSlug());
+        }
+
         return $this->render('game/shop/index.html.twig', [
             'pnj' => $pnj,
             'shopItems' => $shopItems,
+            'stockInfo' => $stockInfo,
             'player' => $player,
             'isOpen' => $isOpen,
             'opensAt' => $pnj->getOpensAt(),
@@ -78,6 +85,16 @@ class ShopController extends AbstractController
             return new JsonResponse(['error' => 'Cet objet n\'est pas en vente ici'], Response::HTTP_BAD_REQUEST);
         }
 
+        // Check stock
+        $stock = $pnj->getItemStock($itemSlug);
+        if ($stock !== null && $stock < $quantity) {
+            $msg = $stock === 0
+                ? 'Cet objet est en rupture de stock.'
+                : sprintf('Stock insuffisant (disponible: %d).', $stock);
+
+            return new JsonResponse(['error' => $msg], Response::HTTP_BAD_REQUEST);
+        }
+
         $item = $this->entityManager->getRepository(Item::class)->findOneBy(['slug' => $itemSlug]);
         if (!$item) {
             return new JsonResponse(['error' => 'Objet introuvable'], Response::HTTP_NOT_FOUND);
@@ -95,6 +112,9 @@ class ShopController extends AbstractController
         // Debit gils
         $player->removeGils($totalCost);
 
+        // Decrement stock
+        $pnj->decrementStock($itemSlug, $quantity);
+
         // Add item to player bag inventory
         $bag = $this->playerHelper->getBagInventory();
         for ($i = 0; $i < $quantity; ++$i) {
@@ -109,12 +129,16 @@ class ShopController extends AbstractController
         }
 
         $this->entityManager->persist($player);
+        $this->entityManager->persist($pnj);
         $this->entityManager->flush();
+
+        $remainingStock = $pnj->getItemStock($itemSlug);
 
         return new JsonResponse([
             'success' => true,
             'message' => sprintf('Vous avez acheté %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost),
             'gils' => $player->getGils(),
+            'stock' => $remainingStock,
         ]);
     }
 

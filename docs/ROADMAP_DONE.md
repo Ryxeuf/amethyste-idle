@@ -1101,3 +1101,14 @@
 - [x] Animation de marche du PNJ dans le renderer PixiJS (reutiliser SpriteAnimator)
 - [x] Fixtures : 4 PNJ avec routines simples (maison - travail - taverne)
 - [x] Gestion du cas ou un joueur parle a un PNJ qui se deplace
+
+## 88 — Stock boutique & restock (2026-03-26) ✅
+
+> Les boutiques PNJ ont desormais un stock limite qui se reapprovisionne periodiquement.
+- [x] Colonne `shop_stock` (JSON) sur l'entite Pnj — stock, maxStock, restockInterval par item
+- [x] Migration SQL
+- [x] `ShopController::buy()` verifie le stock et le decremente a l'achat
+- [x] Commande `app:shop:restock` (mode one-shot ou boucle) — reapprovisionne selon l'intervalle
+- [x] Affichage du stock restant dans le template boutique (badge couleur, rupture)
+- [x] Bouton Acheter desactive si stock = 0
+- [x] Fixtures : stock initial pour toutes les boutiques (PnjFixtures + VillageHubPnjFixtures)

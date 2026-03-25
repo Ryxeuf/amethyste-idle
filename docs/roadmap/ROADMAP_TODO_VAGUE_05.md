@@ -82,12 +82,8 @@
 
 ### Piste D — Divers (‖)
 
-### 88 — Stock boutique & restock (M | ★)
-> Actuellement les boutiques ont un stock illimite. Prerequis : ← 25
-- [ ] Ajouter champs stock/maxStock/restockInterval dans la structure shopItems (JSON)
-- [ ] ShopRestockScheduler : commande/scheduler qui restock les boutiques periodiquement
-- [ ] Afficher le stock restant dans le template boutique
-- [ ] Bloquer l'achat si stock = 0
+### ~~88 — Stock boutique & restock (M | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 89 — Enchantements temporaires (S | ★)
 > Alchimiste applique un buff temporaire sur une arme/armure. Prerequis : ← 26

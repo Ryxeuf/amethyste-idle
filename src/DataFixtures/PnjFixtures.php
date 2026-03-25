@@ -23,12 +23,24 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                 'shop_prompt' => 'Voyons ce que j\'ai en stock pour vous.',
                 'opensAt' => 8,
                 'closesAt' => 20,
+                'stock' => [
+                    'short-sword' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 3600],
+                    'long-sword' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'leather-armor' => ['stock' => 4, 'maxStock' => 4, 'restockInterval' => 3600],
+                    'leather-boots' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 3600],
+                    'leather-hat' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 3600],
+                ],
             ],
             // Élise la Guérisseuse — potions et soins (toujours ouverte)
             1 => [
                 'items' => ['life-potion', 'healing-potion-major', 'antidote', 'mushroom', 'beer-pint'],
                 'greeting' => 'Bonjour, voyageur. Vous avez l\'air fatigué... J\'ai ce qu\'il vous faut pour reprendre des forces.',
                 'shop_prompt' => 'Voici mes remèdes et potions.',
+                'stock' => [
+                    'life-potion' => ['stock' => 20, 'maxStock' => 20, 'restockInterval' => 1800],
+                    'healing-potion-major' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 7200],
+                    'antidote' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                ],
             ],
             // Pierre le Tavernier — consommables et boissons (ouvert de 10h à 2h)
             4 => [
@@ -37,6 +49,10 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                 'shop_prompt' => 'Voici la carte de ma taverne.',
                 'opensAt' => 10,
                 'closesAt' => 2,
+                'stock' => [
+                    'grilled-meat' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 1800],
+                    'stew' => ['stock' => 8, 'maxStock' => 8, 'restockInterval' => 1800],
+                ],
             ],
             // Marie la Herboriste — plantes et outils herboristerie (ouverte de 6h à 18h)
             7 => [
@@ -45,6 +61,15 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                 'shop_prompt' => 'Regardez mes herbes et mes outils de récolte.',
                 'opensAt' => 6,
                 'closesAt' => 18,
+                'stock' => [
+                    'plant-mint' => ['stock' => 15, 'maxStock' => 15, 'restockInterval' => 1800],
+                    'plant-sage' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                    'plant-lavender' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                    'plant-thyme' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                    'plant-rosemary' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                    'sickle-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'sickle-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                ],
             ],
             // Émilie la Marchande — outils variés et ressources de base (ouverte de 8h à 22h)
             13 => [
@@ -53,6 +78,15 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                 'shop_prompt' => 'Voici mon inventaire d\'outils et de matériel.',
                 'opensAt' => 8,
                 'closesAt' => 22,
+                'stock' => [
+                    'pickaxe-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'pickaxe-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'sickle-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'fishing-rod-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'fishing-rod-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'skinning-knife-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'skinning-knife-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                ],
             ],
         ];
     }
@@ -162,6 +196,9 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                 }
                 if (isset($shopConfigs[$i]['closesAt'])) {
                     $pnj->setClosesAt($shopConfigs[$i]['closesAt']);
+                }
+                if (isset($shopConfigs[$i]['stock'])) {
+                    $pnj->setShopStock($shopConfigs[$i]['stock']);
                 }
             }
 

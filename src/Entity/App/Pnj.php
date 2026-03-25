@@ -60,6 +60,13 @@ class Pnj
     private ?string $portrait = null;
 
     /**
+     * Stock par item slug : {"sword": {"stock": 5, "maxStock": 10, "restockInterval": 3600}}.
+     * Null = stock illimité (comportement par défaut).
+     */
+    #[ORM\Column(name: 'shop_stock', type: 'json', nullable: true)]
+    private ?array $shopStock = null;
+
+    /**
      * Get id.
      *
      * @return int
@@ -224,6 +231,72 @@ class Pnj
     public function setPortrait(?string $portrait): void
     {
         $this->portrait = $portrait;
+    }
+
+    public function getShopStock(): ?array
+    {
+        return $this->shopStock;
+    }
+
+    public function setShopStock(?array $shopStock): void
+    {
+        $this->shopStock = $shopStock;
+    }
+
+    /**
+     * Retourne le stock restant pour un item. Null = illimité.
+     */
+    public function getItemStock(string $slug): ?int
+    {
+        if ($this->shopStock === null || !isset($this->shopStock[$slug])) {
+            return null;
+        }
+
+        return (int) ($this->shopStock[$slug]['stock'] ?? 0);
+    }
+
+    /**
+     * Décrémente le stock d'un item. Ne fait rien si stock illimité.
+     */
+    public function decrementStock(string $slug, int $quantity = 1): void
+    {
+        if ($this->shopStock === null || !isset($this->shopStock[$slug])) {
+            return;
+        }
+
+        $this->shopStock[$slug]['stock'] = max(0, ($this->shopStock[$slug]['stock'] ?? 0) - $quantity);
+    }
+
+    /**
+     * Restock tous les items dont le restockInterval est écoulé.
+     */
+    public function restockItems(\DateTimeInterface $now): int
+    {
+        if ($this->shopStock === null) {
+            return 0;
+        }
+
+        $restocked = 0;
+        foreach ($this->shopStock as $slug => &$data) {
+            $maxStock = (int) ($data['maxStock'] ?? 0);
+            $currentStock = (int) ($data['stock'] ?? 0);
+            $interval = (int) ($data['restockInterval'] ?? 0);
+
+            if ($currentStock >= $maxStock || $interval <= 0) {
+                continue;
+            }
+
+            $lastRestock = isset($data['lastRestockedAt']) ? new \DateTimeImmutable($data['lastRestockedAt']) : null;
+            if ($lastRestock !== null && ($now->getTimestamp() - $lastRestock->getTimestamp()) < $interval) {
+                continue;
+            }
+
+            $data['stock'] = $maxStock;
+            $data['lastRestockedAt'] = $now->format('c');
+            ++$restocked;
+        }
+
+        return $restocked;
     }
 
     /**

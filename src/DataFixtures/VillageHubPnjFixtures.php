@@ -44,6 +44,9 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
             if (isset($data['closesAt'])) {
                 $pnj->setClosesAt($data['closesAt']);
             }
+            if (isset($data['shopStock'])) {
+                $pnj->setShopStock($data['shopStock']);
+            }
 
             $pnj->setDialog($data['dialog']);
             $pnj->setCreatedAt(new \DateTime());
@@ -71,6 +74,16 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'shopItems' => ['short-sword', 'long-sword', 'iron-sword', 'wooden-shield', 'leather-armor', 'leather-boots', 'leather-hat', 'leather-helmet'],
                 'opensAt' => 7,
                 'closesAt' => 20,
+                'shopStock' => [
+                    'short-sword' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 3600],
+                    'long-sword' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'iron-sword' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'wooden-shield' => ['stock' => 4, 'maxStock' => 4, 'restockInterval' => 3600],
+                    'leather-armor' => ['stock' => 4, 'maxStock' => 4, 'restockInterval' => 3600],
+                    'leather-boots' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 3600],
+                    'leather-hat' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 3600],
+                    'leather-helmet' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                ],
                 'dialog' => [
                     [
                         'text' => 'Bienvenue dans ma forge, voyageur ! Le Village de Lumière est réputé pour la qualité de ses armes. Que puis-je faire pour vous ?',
@@ -110,6 +123,14 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'shopItems' => ['life-potion', 'healing-potion-small', 'healing-potion-medium', 'healing-potion-major', 'antidote', 'energy-potion-small', 'crafted-potion-base'],
                 'opensAt' => 6,
                 'closesAt' => 22,
+                'shopStock' => [
+                    'life-potion' => ['stock' => 20, 'maxStock' => 20, 'restockInterval' => 1800],
+                    'healing-potion-small' => ['stock' => 15, 'maxStock' => 15, 'restockInterval' => 1800],
+                    'healing-potion-medium' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                    'healing-potion-major' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 7200],
+                    'antidote' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 3600],
+                    'energy-potion-small' => ['stock' => 8, 'maxStock' => 8, 'restockInterval' => 3600],
+                ],
                 'dialog' => [
                     [
                         'text' => 'Ah, un visiteur ! Entrez, entrez. Mon laboratoire déborde de potions et d\'élixirs. Quelque chose vous intéresse ?',
@@ -149,6 +170,11 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'shopItems' => ['pickaxe', 'fishing-rod', 'bread', 'grilled-meat', 'stew', 'mushroom', 'beer-pint', 'scroll-teleport'],
                 'opensAt' => 8,
                 'closesAt' => 21,
+                'shopStock' => [
+                    'scroll-teleport' => ['stock' => 5, 'maxStock' => 5, 'restockInterval' => 7200],
+                    'grilled-meat' => ['stock' => 10, 'maxStock' => 10, 'restockInterval' => 1800],
+                    'stew' => ['stock' => 8, 'maxStock' => 8, 'restockInterval' => 1800],
+                ],
                 'dialog' => [
                     [
                         'text' => 'Holà, aventurier ! Marcellin, marchand général du Village de Lumière, pour vous servir. J\'ai de tout : outils, nourriture, parchemins... Faites votre choix !',
