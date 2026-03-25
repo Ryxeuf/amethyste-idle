@@ -85,6 +85,7 @@ run_php php /app/bin/console doctrine:migrations:migrate --no-interaction --allo
 
 echo ""
 echo "==> 4/6 Compilation des assets (Tailwind + AssetMapper)..."
+run_php rm -rf /app/public/assets/
 run_php php /app/bin/console tailwind:build --no-interaction
 run_php php /app/bin/console asset-map:compile
 
