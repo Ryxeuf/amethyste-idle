@@ -13,6 +13,7 @@ class CombatSkillResolver
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly SynergyCalculator $synergyCalculator,
+        private readonly EquipmentSetResolver $equipmentSetResolver,
     ) {
     }
 
@@ -125,6 +126,12 @@ class CombatSkillResolver
         $synergyBonuses = $this->synergyCalculator->getSynergyBonuses($player);
         foreach ($synergyBonuses as $stat => $value) {
             $bonuses[$stat] += $value;
+        }
+
+        // Ajouter les bonus de sets d'équipement
+        $setBonuses = $this->equipmentSetResolver->getSetBonuses($player);
+        foreach (['damage', 'heal', 'hit', 'critical', 'life'] as $stat) {
+            $bonuses[$stat] += $setBonuses[$stat];
         }
 
         return $bonuses;

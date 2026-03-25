@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\Game\Item;
+use App\GameEngine\Fight\EquipmentSetResolver;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,6 +16,7 @@ class EquipmentController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly GearHelper $gearHelper,
+        private readonly EquipmentSetResolver $equipmentSetResolver,
     ) {
     }
 
@@ -54,11 +56,19 @@ class EquipmentController extends AbstractController
             'protection' => $totalProtection,
         ];
 
+        $activeSets = $this->equipmentSetResolver->getActiveSets($player);
+        $setBonuses = $this->equipmentSetResolver->getSetBonuses($player);
+
+        // Ajouter protection des sets aux stats
+        $stats['protection'] += $setBonuses['protection'];
+
         return $this->render('game/inventory/equipment/_list.html.twig', [
             'equipped' => $equipped,
             'availableGear' => $availableGear,
             'stats' => $stats,
             'player' => $player,
+            'activeSets' => $activeSets,
+            'setBonuses' => $setBonuses,
         ]);
     }
 }
