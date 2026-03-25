@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\Game\Monster;
+use App\Helper\CellHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -25,7 +26,10 @@ class EntitySynchronizer
      *
      * @return array{synced: int, messages: string[]}
      */
-    public function syncEntitiesFromObjects(array $objects, ?int $mapId = null): array
+    /**
+     * @param array<string, int>|null $cellMovements Pre-built cell movement lookup (optional; if null, validation skipped)
+     */
+    public function syncEntitiesFromObjects(array $objects, ?int $mapId = null, ?array $cellMovements = null): array
     {
         $synced = 0;
         $messages = [];
@@ -45,6 +49,17 @@ class EntitySynchronizer
 
         foreach ($objects as $obj) {
             $type = $obj['type'] ?? '';
+
+            // Validate placement for entity types that must be on walkable cells
+            if (in_array($type, ['mob_spawn', 'harvest_spot', 'spot', 'portal'], true) && $cellMovements !== null) {
+                $coords = ($obj['x'] ?? 0) . '.' . ($obj['y'] ?? 0);
+                $movement = $cellMovements[$coords] ?? null;
+                if ($movement === null || $movement === CellHelper::MOVE_UNREACHABLE) {
+                    $messages[] = sprintf('  ! %s "%s" at %s is on a blocked cell (m=%s) — skipped', $type, $obj['name'] ?? '', $coords, $movement ?? 'null');
+                    continue;
+                }
+            }
+
             $result = match ($type) {
                 'portal' => $this->syncPortal($obj, $map),
                 'mob_spawn' => $this->syncMobSpawn($obj, $map),

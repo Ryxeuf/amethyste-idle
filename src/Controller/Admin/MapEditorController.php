@@ -7,6 +7,7 @@ use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
 use App\Helper\CellHelper;
+use App\Helper\MapCellValidator;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -489,6 +490,10 @@ class MapEditorController extends AbstractController
 
         if ($entity->getMap()?->getId() !== $map->getId()) {
             return $this->json(['error' => 'Entity does not belong to this map'], 403);
+        }
+
+        if (!MapCellValidator::isCellWalkable($map, $newX, $newY)) {
+            return $this->json(['error' => 'La case cible est bloquee ou inexistante'], 400);
         }
 
         $oldCoords = $entity->getCoordinates();
