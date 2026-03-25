@@ -52,9 +52,7 @@ class GuildVaultManager
         }
 
         $inventory = $playerItem->getInventory();
-        if ($inventory) {
-            $inventory->removeItem($playerItem);
-        }
+        $inventory?->removeItem($playerItem);
         $playerItem->setInventory(null);
 
         $vault->addItem($playerItem);

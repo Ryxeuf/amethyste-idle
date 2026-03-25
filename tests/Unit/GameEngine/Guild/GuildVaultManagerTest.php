@@ -267,9 +267,6 @@ class GuildVaultManagerTest extends TestCase
         $this->assertCount(0, $logs);
     }
 
-    /**
-     * @return Player&MockObject
-     */
     private function createPlayer(int $id): Player&MockObject
     {
         $player = $this->createMock(Player::class);
