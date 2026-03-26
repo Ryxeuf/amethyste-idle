@@ -59,10 +59,10 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 - [x] Panneau layers (visibilite, layer actif, opacite)
 - [x] Raccourcis 1/2/3/4
 
-**MED-08 — Undo / Redo (S | ★★ | HAUTE)**
+**MED-08 — Undo / Redo (S | ★★ | HAUTE)** ✅
 > Historique des modifications. Prerequis : ← MED-04
-- [ ] Module `MapEditorHistory.js` (stack undo/redo, 50 ops)
-- [ ] Raccourcis Ctrl+Z / Ctrl+Y
+- [x] Module `MapEditorHistory.js` (stack undo/redo, 50 ops)
+- [x] Raccourcis Ctrl+Z / Ctrl+Y
 
 #### Phase 4 — Entites (MED-09, MED-10)
 
