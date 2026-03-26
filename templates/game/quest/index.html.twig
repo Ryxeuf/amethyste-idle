@@ -60,8 +60,8 @@
                                                     Quete {{ chainInfo.position }}/{{ chainInfo.total }}
                                                 </span>
                                             {% endif %}
-                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50') }}">
-                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : 'Divers'))) }}
+                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50'))) }}">
+                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : 'Divers'))))) }}
                                             </span>
                                             {% if quest.hidden %}
                                                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 text-amber-300 border border-amber-700/50">
@@ -171,6 +171,43 @@
                                                     {{ entry.count >= entry.necessary ? 'Decouvert' : 'Non decouvert' }}
                                                 </span>
                                             </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if tracking.talk_to is defined and tracking.talk_to is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.talk_to %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Parler a {{ entry.name|default('PNJ inconnu') }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count >= entry.necessary ? 'Fait' : 'A faire' }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if tracking.boss_challenge is defined and tracking.boss_challenge is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.boss_challenge %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Vaincre {{ entry.name|default('Boss') }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count >= entry.necessary ? 'Vaincu' : 'Non vaincu' }}
+                                                </span>
+                                            </div>
+                                            {% if entry.conditions is defined and entry.conditions is not empty %}
+                                                <div class="ml-3 text-[10px] text-gray-500">
+                                                    {% if entry.conditions.no_heal is defined and entry.conditions.no_heal %}
+                                                        <span class="inline-block mr-2">Sans soin</span>
+                                                    {% endif %}
+                                                    {% if entry.conditions.solo is defined and entry.conditions.solo %}
+                                                        <span class="inline-block mr-2">Solo</span>
+                                                    {% endif %}
+                                                    {% if entry.conditions.time_limit is defined %}
+                                                        <span class="inline-block">< {{ (entry.conditions.time_limit / 60)|round }}min</span>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
                                         {% endfor %}
                                     </div>
                                 {% endif %}
@@ -461,8 +498,8 @@
                                                     Quete {{ chainInfo.position }}/{{ chainInfo.total }}
                                                 </span>
                                             {% endif %}
-                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50') }}">
-                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : 'Divers'))) }}
+                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50'))) }}">
+                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : 'Divers'))))) }}
                                             </span>
                                         </div>
                                         <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>

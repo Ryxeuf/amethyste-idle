@@ -67,6 +67,12 @@ class QuestGiverResolver
         if (!empty($requirements['explore'])) {
             return 'explore';
         }
+        if (!empty($requirements['talk_to'])) {
+            return 'talk_to';
+        }
+        if (!empty($requirements['boss_challenge'])) {
+            return 'boss_challenge';
+        }
 
         return 'other';
     }

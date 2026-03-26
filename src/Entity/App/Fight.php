@@ -52,6 +52,13 @@ class Fight
     #[ORM\Column(name: 'contributions', type: 'json', nullable: true)]
     private ?array $contributions = null;
 
+    /**
+     * Métadonnées de combat pour le tracking de quêtes (boss_challenge, etc.).
+     * Format : { "heal_used": bool, ... }.
+     */
+    #[ORM\Column(name: 'metadata', type: 'json', nullable: true)]
+    private ?array $metadata = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -258,6 +265,28 @@ class Fight
         }
 
         return false;
+    }
+
+    public function getMetadata(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function setMetadata(?array $metadata): void
+    {
+        $this->metadata = $metadata;
+    }
+
+    public function setMetadataValue(string $key, mixed $value): void
+    {
+        $metadata = $this->metadata ?? [];
+        $metadata[$key] = $value;
+        $this->metadata = $metadata;
+    }
+
+    public function getMetadataValue(string $key, mixed $default = null): mixed
+    {
+        return $this->metadata[$key] ?? $default;
     }
 
     public function decrementAllCooldowns(): void
