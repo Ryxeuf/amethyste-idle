@@ -3,6 +3,7 @@
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
 > Numerotation unifiee : chaque tache a un identifiant unique (01 a 103).
 > Derniere mise a jour : 2026-03-26
+> **Repriorisation** : l'editeur de cartes integre (MED-01 a MED-16) est desormais la **priorite absolue** de la Vague 4.
 
 ---
 
@@ -23,74 +24,62 @@
 ## Graphe de dependances global
 
 ```
-VAGUE 1 (aucun prerequis — tout en parallele)
-  ┌─ ✅ 01 De-hardcoder map IDs (FAIT) ────────────────────────────────┐
-  ├─ ✅ 02 Supprimer CSS mort (FAIT)                                    │
-  ├─ ✅ 03 Optimisation queries N+1 (FAIT)                              │
-  ├─ ✅ 04 Rate limiting API (FAIT)                                    │
-  ├─ ✅ 05 Consolidation craft (FAIT)                                  │
-  ├─ ✅ 06 Materia unlock verification (FAIT)                          │
-  ├─ ✅ 07 Raretes d'equipement (FAIT)                                  │
-  ├─ ✅ 08 Combat log frontend (FAIT)                                  │
-  ├─ ✅ 09 Icones statuts timeline combat (FAIT)                        │
-  ├─ ✅ 10 Indicateur difficulte monstres (FAIT)                       │
-  ├─ ✅ 11 Recompenses uniques de boss (FAIT)                           │
-  ├─ ✅ 12 Recompenses de quetes completes (FAIT)                       │
-  ├─ ✅ 13 Prerequis de quetes et chaines (FAIT)                          │
-  ├─ ✅ 14 Respec basique (FAIT)                                       │
-  ├─ ✅ 15 Consommables de base (FAIT)                                  │
-  ├─ ✅ 16 Materia complement (8 nouvelles) (FAIT)                     │
-  ├─ ✅ 17 Equipement tier 1 Starter (FAIT)                             │
-  ├─ ✅ 18 Commandes chat slash (FAIT)                                  │
-  ├─ ✅ 19 Profil joueur public (FAIT)                                          │
-  ├─ ✅ 20 Horloge in-game & API temps (FAIT)                           │
-  ├─ ✅ 21 GameEvent executor (FAIT)                                    │
-  ├─ ✅ 22 Factions & reputation (FAIT)                               │
-  ├─ ✅ 23 Tests fonctionnels controleurs (FAIT)                       │
-  ├─ ✅ 24 Notifications toast in-game (FAIT)                           │
-  └─ ✅ 25 Boutiques PNJ fixtures (FAIT)                               │
-                                                                      │
-VAGUE 2 (depend de Vague 1)                                           │
-  ┌─ ✅ 26 Recettes de craft fixtures (FAIT) ← 05                      │
-  ├─ ✅ 27 Tracking quetes collect/craft (FAIT)                        │
-  ├─ ✅ 28 Monstres tier 1 (8 mobs) (FAIT) ← 15                       │
-  ├─ ✅ 29 Equipement tier 2 (FAIT) ← 17                                │
-  ├─ ✅ 30 Teleportation entre cartes (FAIT) ← 01 ────────────────────┘
-  ├─ ✅ 31 Types quetes livraison/exploration (FAIT) ← 27
-  ├─ ✅ 32 Journal de quetes enrichi (FAIT) ← 13
-  ├─ ✅ 33 Impact gameplay jour/nuit (FAIT) ← 20
-  ├─ ✅ 34 Meteo backend & diffusion (FAIT) ← 20
-  ├─ ✅ 35 Annonces Mercure evenements (FAIT) ← 21
-  ├─ ✅ 36 Gains et recompenses reputation (FAIT) ← 22
-  ├─ ✅ 37 Loot exclusif et rarete etendue (FAIT) ← 07
-  ├─ ✅ 38 Liste d'amis (FAIT) ← 19
-  ├─ ✅ 39 Limite points multi-domaine (FAIT) ← 14
-  ├─ ✅ 40 Synergies cross-domaine (FAIT)
-  ├─ ✅ 41 Indicateurs quetes sur PNJ (FAIT) ← 27
-  ├─ ✅ 42 Tests unitaires systemes core (FAIT) ← 25, 26, 27
-  ├─ ✅ 43 Tests integration events (FAIT) ← 23
-  ├─ ✅ 44 Extraction services TerrainImport (FAIT) ← 01
-  └─ ✅ 45 Portraits de personnages (FAIT)
+VAGUES 1-3 : TERMINEES ✅ (63 taches completees)
+  Prerequis editeur de carte : ✅ 44 (TerrainImport), ✅ 57 (terrain:sync), ✅ 58 (zones/biomes)
 
-VAGUE 3 (depend de Vague 2)
-  ┌─ ✅ 46 Trame Acte 1 : L'Eveil (FAIT) ← 12, 13, 31
-  ├─ ✅ 47 Monstres tier 2 (lvl 10-15) (FAIT) ← 28, 29
-  ├─ ✅ 48 Village central hub (FAIT) ← 30, 25
-  ├─ ✅ 49 Monstres soigneurs (multi-mobs) (FAIT) ← 28
-  ├─ ✅ 50 Meteo effets visuels PixiJS (FAIT) ← 34
-  ├─ ✅ 51 Meteo impact gameplay (FAIT) ← 34
-  ├─ ✅ 52 Guildes fondation (FAIT) ← 38
-  ├─ ✅ 53 Groupes de combat formation (FAIT) ← 38
-  ├─ ✅ 54 Quetes a choix (FAIT) ← 13, 31
-  ├─ ✅ 55 Quetes quotidiennes (FAIT) ← 12, 27
-  ├─ ✅ 56 Presets de build (FAIT) ← 14
-  ├─ ✅ 57 Commande terrain:sync (FAIT) ← 44
-  ├─ ✅ 58 Parsing zones/biomes Tiled (FAIT) ← 44
-  ├─ ✅ 59 Tests E2E Panther (FAIT) ← 23, 42
-  ├─ ✅ 60 Minimap PixiJS (FAIT)
-  ├─ ✅ 61 Barre d'action rapide (FAIT)
-  ├─ ✅ 62 Particules combat/recolte (FAIT)
-  └─ ✅ 63 Flash elementaire combat (FAIT)
+VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
+  ┌─ Phase 1 (fondation)
+  │   MED-01 TilesetRegistry ← ✅ 44, ✅ 58 ─────────────────────────┐
+  │   MED-02 MapFactory ← MED-01 ────────────────────────────────────┤
+  │                                                                   │
+  ├─ Phase 2 (peinture)                                               │
+  │   MED-03 Tileset Picker ← MED-01                                 │
+  │   MED-04 Stamp Brush & Eyedropper ← MED-03 ─────────────────────┤
+  │   MED-05 Eraser ← MED-04                                         │
+  │   MED-06 Bucket Fill ← MED-04                                    │
+  │                                                                   │
+  ├─ Phase 3 (UX editeur) ‖                                          │
+  │   MED-07 Gestion layers ← MED-03                                 │
+  │   MED-08 Undo / Redo ← MED-04                                    │
+  │                                                                   │
+  ├─ Phase 4 (entites)                                                │
+  │   MED-09 Creation entites ← MED-04                               │
+  │   MED-10 Edition entites ← MED-09                                │
+  │                                                                   │
+  ├─ Phase 5 (auto-tiling)                                            │
+  │   MED-11 WangTileResolver backend ← MED-01                       │
+  │   MED-12 Auto-tiling frontend ← MED-11, MED-04                   │
+  │                                                                   │
+  ├─ Phase 6 (generateur procedural)                                  │
+  │   MED-13 Moteur Perlin ← MED-01, MED-02                          │
+  │   MED-14 Biomes ← MED-13                                         │
+  │   MED-15 Objets & connectivite ← MED-14                          │
+  │                                                                   │
+  └─ Phase 7 (export/qualite)                                         │
+      MED-16 Export TMX & tests E2E ← MED-04, MED-09                 │
+                                                                      │
+  PRIORITE 2 — Contenu (debloque par editeur)                         │
+  ┌─ 68 Mines profondes ← 30, 47, 66, MED-02 ───────────────────────┘
+  │
+  PRIORITE 3 — Guildes
+  └─ GCC-01..20 Controle cite ← 38, 48, 52
+
+VAGUE 5 (depend de Vague 4)
+  ┌─ 80 Trame Acte 2 ← 46, 67, 68
+  ├─ 81 Combat cooperatif ← 53, 49
+  └─ 84 Donjons mecaniques & loot ← 72, 37
+
+VAGUE 6 (long terme)
+  ┌─ 92 Classement guildes ← 52
+  ├─ 93 Quetes de guilde ← 52, 92
+  ├─ 94 Trame Acte 3 ← 80, 72
+  ├─ 95 Saisonnalite & festivals ← 20, 85
+  ├─ 98 Rendu tiles animees ← 97
+  ├─ 99 Transitions de zone ← 30
+  ├─ 100 Sons basiques
+  ├─ 101 Monitoring basique
+  ├─ 102 Index DB composites
+  └─ 103 Achievements caches
 ```
 
 ---
