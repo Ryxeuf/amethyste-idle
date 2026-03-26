@@ -31,22 +31,22 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 2 — Outils de peinture (MED-03 a MED-06)
 
-**MED-03 — Tileset Picker — palette de tiles (M | ★★★ | CRITIQUE)**
+**MED-03 — Tileset Picker — palette de tiles (M | ★★★ | CRITIQUE)** ✅
 > Panneau lateral avec les tilesets en grille cliquable. Prerequis : ← MED-01
-- [ ] Controller Stimulus `admin_tileset_picker_controller.js`
-- [ ] Onglets par tileset, selection stamp 1x1 et NxM
-- [ ] Selecteur de layer actif
+- [x] Controller Stimulus `admin_tileset_picker_controller.js`
+- [x] Onglets par tileset, selection stamp 1x1 et NxM
+- [x] Selecteur de layer actif
 
-**MED-04 — Stamp Brush & Eyedropper (M | ★★★ | CRITIQUE)**
+**MED-04 — Stamp Brush & Eyedropper (M | ★★★ | CRITIQUE)** ✅
 > Outil principal de peinture. Prerequis : ← MED-03
-- [ ] Stamp Brush (clic/drag, preview fantome, batch)
-- [ ] Eyedropper (clic droit / Alt+clic)
-- [ ] Route `POST /{id}/editor/paint-tiles`
-- [ ] Rendu immediat + sauvegarde batch
+- [x] Stamp Brush (clic/drag, preview fantome, batch)
+- [x] Eyedropper (Alt+clic)
+- [x] Route `POST /{id}/editor/paint-tiles`
+- [x] Rendu immediat + sauvegarde batch
 
-**MED-05 — Eraser (S | ★★ | HAUTE)**
+**MED-05 — Eraser (S | ★★ | HAUTE)** ✅
 > Outil de gomme. Prerequis : ← MED-04
-- [ ] Gomme (GID a 0), raccourci E, reutilise paint-tiles
+- [x] Gomme (GID a 0), raccourci E, reutilise paint-tiles
 
 **MED-06 — Bucket Fill (S | ★★ | HAUTE)**
 > Remplissage par inondation. Prerequis : ← MED-04

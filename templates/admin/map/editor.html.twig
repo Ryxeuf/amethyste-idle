@@ -42,7 +42,9 @@
         <button data-tool="eraseWall" data-action="admin-map-editor#setToolEraseWall"
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Gomme mur</button>
         <button data-tool="paint" data-action="admin-map-editor#setToolPaint"
-                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Peindre</button>
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Peindre (P)</button>
+        <button data-tool="eraser" data-action="admin-map-editor#setToolEraser"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Gomme (E)</button>
 
         <div class="h-6 border-r border-gray-700 mx-1"></div>
 
@@ -217,13 +219,26 @@
                 <div class="px-4 pb-4 space-y-1 text-xs text-gray-400">
                     <p><kbd class="bg-gray-700 px-1 rounded">Molette</kbd> Zoom</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer vue</p>
-                    <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Deplacer vue</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Pipette (Eyedropper)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic</kbd> Selectionner / Peindre</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic + glisser</kbd> Multi-selection (mode Selection)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Shift + mur</kbd> Mur sens unique</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Ctrl + clic</kbd> Deplacer entite selectionnee</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Ctrl + S</kbd> Sauvegarder</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Suppr</kbd> Supprimer entite selectionnee</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Echap</kbd> Vider la selection</p>
+                    <p class="mt-2 text-gray-500 font-semibold">Outils</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">V</kbd> Selection</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">P</kbd> Peindre</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">E</kbd> Gomme</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">B</kbd> Bloquer</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">U</kbd> Debloquer</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">W</kbd> Mur</p>
+                    <p class="mt-2 text-gray-500 font-semibold">Layers</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">1</kbd> Background</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">2</kbd> Ground</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">3</kbd> Decoration</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">4</kbd> Overlay</p>
                 </div>
             </details>
         </div>
