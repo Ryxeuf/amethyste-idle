@@ -97,7 +97,7 @@ class EnchantmentManager
         $enchantment->setName($def['name']);
         $enchantment->setStat($def['stat']);
         $enchantment->setValue($def['value']);
-        $enchantment->setElement($def['element'] !== null ? Element::from($def['element']) : null);
+        $enchantment->setElement(Element::from($def['element']));
         $enchantment->setExpiresAt(new \DateTime(sprintf('+%d seconds', $def['duration'])));
 
         $this->entityManager->persist($enchantment);
