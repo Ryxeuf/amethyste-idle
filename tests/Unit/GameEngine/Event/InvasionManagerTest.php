@@ -89,7 +89,7 @@ class InvasionManagerTest extends TestCase
         $this->assertCount(3, $persistedMobs);
 
         $params = $event->getParameters();
-        $this->assertSame(1, $params['current_wave']);
+        $this->assertSame(2, $params['current_wave']);
         $this->assertSame(0, $params['total_kills']);
     }
 
@@ -119,7 +119,7 @@ class InvasionManagerTest extends TestCase
         $player = $this->createMock(Player::class);
         $player->method('getId')->willReturn(42);
 
-        $this->hub->expects($this->once())->method('publish');
+        $this->hub->expects($this->exactly(2))->method('publish');
 
         $this->manager->recordKill($event, $player);
 
@@ -333,6 +333,9 @@ class InvasionManagerTest extends TestCase
             'kill_objective' => 7,
             'rewards' => ['gold' => 150, 'xp' => 300],
         ]);
+
+        $ref = new \ReflectionProperty(GameEvent::class, 'id');
+        $ref->setValue($event, 1);
 
         return $event;
     }
