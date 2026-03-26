@@ -9,7 +9,7 @@ use App\GameEngine\Fight\CombatSkillResolver;
 /**
  * PV max, ATK, DEF « effectifs » = base joueur + bonus (sets, compétences, synergies, enchantements).
  */
-final class PlayerEffectiveStatsCalculator
+class PlayerEffectiveStatsCalculator
 {
     public function __construct(
         private readonly CombatSkillResolver $combatSkillResolver,

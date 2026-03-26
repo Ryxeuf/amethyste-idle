@@ -432,6 +432,72 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'map' => 'map_3',
                 'nocturnal' => true,
             ],
+
+            // === Mines profondes (map_4) — zone lvl 10-25 ===
+            // Entrée des mines — mobs lvl 10-12
+            'mines_stone_golem_1' => [
+                'coordinates' => '10.25',
+                'monster' => 'stone_golem',
+                'map' => 'map_4',
+            ],
+            'mines_rusty_automaton_1' => [
+                'coordinates' => '15.22',
+                'monster' => 'rusty_automaton',
+                'map' => 'map_4',
+            ],
+            'mines_clay_golem_1' => [
+                'coordinates' => '8.18',
+                'monster' => 'clay_golem',
+                'map' => 'map_4',
+            ],
+            // Tunnels centraux — mobs lvl 13-18
+            'mines_crystal_golem_1' => [
+                'coordinates' => '28.15',
+                'monster' => 'crystal_golem',
+                'map' => 'map_4',
+            ],
+            'mines_gargoyle_1' => [
+                'coordinates' => '35.12',
+                'monster' => 'gargoyle',
+                'map' => 'map_4',
+            ],
+            'mines_cursed_knight_1' => [
+                'coordinates' => '30.20',
+                'monster' => 'cursed_knight',
+                'map' => 'map_4',
+                'nocturnal' => true,
+            ],
+            // Salles profondes — mobs lvl 18-24
+            'mines_abyssal_blacksmith_1' => [
+                'coordinates' => '45.10',
+                'monster' => 'abyssal_blacksmith',
+                'map' => 'map_4',
+            ],
+            'mines_lesser_lich_1' => [
+                'coordinates' => '50.8',
+                'monster' => 'lesser_lich',
+                'map' => 'map_4',
+                'nocturnal' => true,
+            ],
+            // Groupe multi-mob minier
+            'mines_automaton_group_1' => [
+                'coordinates' => '40.15',
+                'monster' => 'rusty_automaton',
+                'map' => 'map_4',
+                'groupTag' => 'mine_patrol_1',
+            ],
+            'mines_automaton_group_2' => [
+                'coordinates' => '41.15',
+                'monster' => 'rusty_automaton',
+                'map' => 'map_4',
+                'groupTag' => 'mine_patrol_1',
+            ],
+            // Boss de mine — Seigneur de la Forge
+            'mines_forge_lord_1' => [
+                'coordinates' => '55.5',
+                'monster' => 'forge_lord',
+                'map' => 'map_4',
+            ],
         ];
 
         foreach ($mobs as $key => $data) {
