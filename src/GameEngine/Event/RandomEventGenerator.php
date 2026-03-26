@@ -87,7 +87,7 @@ class RandomEventGenerator
             '[RandomEventGenerator] Created random event "%s" (type: %s, duration: %d min)',
             $event->getName(),
             $event->getType(),
-            ($event->getStartsAt()->diff($event->getEndsAt()))->i,
+            $event->getStartsAt()->diff($event->getEndsAt())->i,
         ));
 
         return $event;
