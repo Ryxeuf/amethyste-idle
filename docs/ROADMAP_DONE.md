@@ -1140,3 +1140,13 @@
 - [x] Entite `GuildInfluence` : guild, region, season, points (UNIQUE guild+region+season, index ranking)
 - [x] Entite `InfluenceLog` : guild, region, season, player, activityType, pointsEarned, details (JSON), createdAt
 - [x] Migration PostgreSQL (2 tables avec FK et index)
+
+## GCC-08 — InfluenceListener — hook events PvE (2026-03-26) ✅
+
+> Coeur du moteur d'influence : ecoute les evenements PvE existants et attribue des points d'influence aux guildes.
+- [x] `InfluenceManager` : calculatePoints (formules par type), addPoints (upsert GuildInfluence + insert InfluenceLog), awardInfluence (orchestrateur)
+- [x] Region determinee via `player.map.region` (FK directe)
+- [x] Multiplicateur saisonnier via `season.parameters.multipliers[activityType]`
+- [x] `InfluenceListener` (EventSubscriber) : MobDeadEvent, CraftEvent, SpotHarvestEvent, FishingEvent, ButcheringEvent, QuestCompletedEvent
+- [x] Ignore si joueur pas en guilde ou map sans region
+- [x] Tests unitaires : 15 tests InfluenceManagerTest + 14 tests InfluenceListenerTest
