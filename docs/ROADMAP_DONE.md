@@ -1162,3 +1162,25 @@
 - [x] `InfluenceListener` (EventSubscriber) : MobDeadEvent, CraftEvent, SpotHarvestEvent, FishingEvent, ButcheringEvent, QuestCompletedEvent
 - [x] Ignore si joueur pas en guilde ou map sans region
 - [x] Tests unitaires : 15 tests InfluenceManagerTest + 14 tests InfluenceListenerTest
+
+## 87 — Types quetes avances : enquete et defi boss (2026-03-26) ✅
+
+> Deux nouveaux types de quetes avec tracking complet et integration UI.
+- [x] Type `enquete` (talk_to) : parler a plusieurs PNJ pour avancer, tracke via PnjDialogEvent
+- [x] Type `boss_challenge` : vaincre un boss sous conditions (no_heal, solo, time_limit)
+- [x] Conditions de defi trackees dans le combat (colonne metadata sur Fight)
+- [x] QuestBossChallengeTrackingListener et QuestTalkToTrackingListener
+- [x] QuestTrackingFormater : formatTalkTo() et formatBossChallenge()
+- [x] 2 quetes fixtures : enquete herboriste (3 PNJ), defi gardien de la foret
+
+## 83 — Invasions (2026-03-26) ✅
+
+> Vagues de monstres cooperatives via GameEvent. Les joueurs collaborent pour repousser l'invasion.
+- [x] `InvasionManager` (EventSubscriber) : spawn des mobs a l'activation, vagues progressives, cleanup a la fin
+- [x] Vagues progressives : 3 vagues espacees de 2 min, difficulte croissante (+2 niveaux par vague)
+- [x] `InvasionKillTracker` : ecoute MobDeadEvent, track les kills par joueur dans les params de l'event
+- [x] Recompenses collectives proportionnelles aux kills si objectif atteint
+- [x] `InvasionTickCommand` (`app:invasion:tick`) : avancement periodique des vagues
+- [x] Notifications Mercure : invasion_start, invasion_progress, invasion_end, invasion_mob_spawn/despawn
+- [x] Nettoyage automatique des mobs d'invasion a la fin de l'event
+- [x] Fixture : invasion gobeline (3 vagues de 4 mobs, objectif 8 kills, recurrente)
