@@ -79,15 +79,8 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 ---
 
-### 71 — World boss spawn & combat (L | ★★★)
-> Boss mondial spawn via evenements, visible sur la carte, combat multi-joueurs avec loot a contribution. Prerequis : ← 21 (Executeur GameEvent), 35 (Annonces Mercure evenements)
-- [x] **Sous-phase A — Spawn** : GameEventExecutor traite `boss_spawn` → creer un Mob boss sur une map donnee (params JSON)
-- [x] **Sous-phase A** : Afficher le world boss sur la carte avec un sprite/aura distinctif
-- [x] **Sous-phase A** : Despawn automatique quand l'event expire (si non vaincu)
-- [x] **Sous-phase B — Combat multi-joueurs** : Permettre a plusieurs joueurs d'engager le meme Mob (Fight partage)
-- [x] **Sous-phase B** : `ContributionTracker` : tracker les degats infliges par chaque joueur pendant le combat
-- [x] **Sous-phase B** : Loot base sur la contribution (top 3 = loot garanti, autres = loot probabiliste)
-- [ ] Tester : spawn world boss via event admin, 2+ joueurs l'engagent, loot distribue
+### ~~71 — World boss spawn & combat (L | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

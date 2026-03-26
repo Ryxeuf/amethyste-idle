@@ -1198,3 +1198,16 @@
 - [x] Section enchantements dans la page Artisanat (template _enchantment.html.twig)
 - [x] Fixtures : 4 enchantements (Tranchant de feu, Protection de glace, Robustesse tellurique, Precision lumineuse)
 - [x] Tests EnchantmentManager (10 tests, 20 assertions)
+
+---
+
+## 71 — World boss spawn & combat (2026-03-26) ✅
+
+> Boss mondial spawn via evenements, visible sur la carte, combat multi-joueurs avec loot a contribution.
+- [x] GameEventExecutor traite `boss_spawn` → creer un Mob boss sur une map donnee (params JSON)
+- [x] Afficher le world boss sur la carte avec un sprite/aura distinctif
+- [x] Despawn automatique quand l'event expire (si non vaincu)
+- [x] Permettre a plusieurs joueurs d'engager le meme Mob (Fight partage)
+- [x] `ContributionTracker` : tracker les degats infliges par chaque joueur pendant le combat
+- [x] Loot base sur la contribution (top 3 = loot garanti, autres = loot probabiliste)
+- [x] Tests world boss : FightContributionTest, WorldBossLootDistributorTest, FightHandlerWorldBossTest (18 tests, 48 assertions)
