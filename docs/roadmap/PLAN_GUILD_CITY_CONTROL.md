@@ -89,12 +89,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [ ] Champ `region_id` (FK Region, nullable) sur `Map`
 - [ ] Migration + fixtures : 2-3 regions de test
 
-### GCC-06 — Saisons d'influence — entites & SeasonManager (S | ★★★ | CRITIQUE)
+### ~~GCC-06 — Saisons d'influence — entites & SeasonManager (S | ★★★ | CRITIQUE)~~ ✅
 > Cycles de competition mensuels. Prerequis : ← GCC-05
-- [ ] Enum `SeasonStatus` : scheduled, active, completed
-- [ ] Entite `InfluenceSeason` : name, slug, seasonNumber, startsAt, endsAt, status, theme (nullable), parameters (JSON nullable)
-- [ ] `SeasonManager` : getCurrentSeason(), getOrCreateNextSeason(), startSeason(), endSeason()
-- [ ] Fixtures : 1 saison active de test
+- [x] Enum `SeasonStatus` : scheduled, active, completed
+- [x] Entite `InfluenceSeason` : name, slug, seasonNumber, startsAt, endsAt, status, theme (nullable), parameters (JSON nullable)
+- [x] `SeasonManager` : getCurrentSeason(), getOrCreateNextSeason(), startSeason(), endSeason()
+- [x] Fixtures : 1 saison active de test
 
 ### GCC-07 — Influence — entites score & log (S | ★★ | HAUTE)
 > Tables de score et journal des gains. Prerequis : ← GCC-06
