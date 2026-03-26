@@ -43,8 +43,6 @@ class TmxParser
 
     /**
      * Parse tileset references from a TMX file.
-     *
-     * @return array<string, array<string, int|string|null>>
      */
     public function parseTilesets(Crawler $fileCrawler, string $terrainPath): array
     {

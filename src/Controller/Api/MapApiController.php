@@ -524,8 +524,11 @@ class MapApiController extends AbstractController
                     continue;
                 }
                 $firstGid = (int) ($terrain['firstgid'] ?? 0);
-                /** @var array<int|string, list<array{tileid: int, duration: int}>> $tileAnimations */
                 $tileAnimations = $terrain['animations'] ?? [];
+
+                if (!is_array($tileAnimations)) {
+                    continue;
+                }
 
                 foreach ($tileAnimations as $localTileId => $frames) {
                     $globalGid = $firstGid + (int) $localTileId;
@@ -535,11 +538,18 @@ class MapApiController extends AbstractController
                         continue;
                     }
 
+                    if (!is_array($frames)) {
+                        continue;
+                    }
+
                     $globalFrames = [];
                     foreach ($frames as $frame) {
+                        if (!is_array($frame)) {
+                            continue;
+                        }
                         $globalFrames[] = [
-                            'tileid' => $firstGid + $frame['tileid'],
-                            'duration' => $frame['duration'],
+                            'tileid' => $firstGid + (int) ($frame['tileid'] ?? 0),
+                            'duration' => (int) ($frame['duration'] ?? 0),
                         ];
                     }
 
