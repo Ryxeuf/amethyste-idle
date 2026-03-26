@@ -7,7 +7,7 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version20260326GuildInfluence extends AbstractMigration
+final class Version20260326ZGuildInfluence extends AbstractMigration
 {
     public function getDescription(): string
     {
