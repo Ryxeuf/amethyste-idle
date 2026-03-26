@@ -66,11 +66,11 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 4 — Entites (MED-09, MED-10)
 
-**MED-09 — Creation d'entites via menu contextuel (M | ★★★ | HAUTE)**
+**MED-09 — Creation d'entites via menu contextuel (M | ★★★ | HAUTE)** ✅
 > Prerequis : ← MED-04
-- [ ] Menu contextuel clic droit (mob, portail, spot recolte, PNJ)
-- [ ] Formulaires inline panneau lateral
-- [ ] Route `POST /{id}/editor/create-entity`
+- [x] Menu contextuel clic droit (mob, portail, spot recolte, PNJ)
+- [x] Formulaires inline panneau lateral
+- [x] Route `POST /{id}/editor/create-entity`
 
 **MED-10 — Edition d'entites inline (S | ★★ | MOYENNE)**
 > Prerequis : ← MED-09

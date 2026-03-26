@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
+use App\Entity\Game\Monster;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
@@ -561,5 +562,211 @@ class MapEditorController extends AbstractController
         );
 
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/{id}/editor/entity-options', name: 'editor_entity_options', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function entityOptions(Map $map): JsonResponse
+    {
+        $monsters = $this->em->getRepository(Monster::class)->findAll();
+        $monsterOptions = [];
+        foreach ($monsters as $monster) {
+            $monsterOptions[] = ['id' => $monster->getId(), 'name' => $monster->getName(), 'slug' => $monster->getSlug()];
+        }
+
+        usort($monsterOptions, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        $maps = $this->em->getRepository(Map::class)->findAll();
+        $mapOptions = [];
+        foreach ($maps as $m) {
+            $mapOptions[] = ['id' => $m->getId(), 'name' => $m->getName()];
+        }
+
+        usort($mapOptions, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        $pnjs = $this->em->getRepository(Pnj::class)->findAll();
+        $pnjOptions = [];
+        $seen = [];
+        foreach ($pnjs as $pnj) {
+            $name = $pnj->getName();
+            if (!isset($seen[$name])) {
+                $pnjOptions[] = ['name' => $name, 'classType' => $pnj->getClassType()];
+                $seen[$name] = true;
+            }
+        }
+
+        usort($pnjOptions, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        return $this->json([
+            'monsters' => $monsterOptions,
+            'maps' => $mapOptions,
+            'pnjs' => $pnjOptions,
+        ]);
+    }
+
+    #[Route('/{id}/editor/create-entity', name: 'editor_create_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function createEntity(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['type'], $data['x'], $data['y'])) {
+            return $this->json(['error' => 'Parametres manquants (type, x, y)'], 400);
+        }
+
+        $type = $data['type'];
+        $x = (int) $data['x'];
+        $y = (int) $data['y'];
+        $properties = $data['properties'] ?? [];
+
+        if (!MapCellValidator::isCellWalkable($map, $x, $y)) {
+            return $this->json(['error' => 'La case cible est bloquee ou inexistante'], 400);
+        }
+
+        $coordinates = $x . '.' . $y;
+
+        try {
+            $entity = match ($type) {
+                'mob' => $this->createMob($map, $coordinates, $properties),
+                'portal' => $this->createPortal($map, $coordinates, $properties),
+                'harvestSpot' => $this->createHarvestSpot($map, $coordinates, $properties),
+                'pnj' => $this->createPnj($map, $coordinates, $properties),
+                default => throw new \InvalidArgumentException("Type d'entite inconnu : {$type}"),
+            };
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+
+        $this->em->flush();
+
+        $result = $this->buildEntityResult($entity, $type, $x, $y);
+
+        $this->adminLogger->log(
+            'create',
+            ucfirst($type),
+            $result['id'],
+            sprintf('%s "%s" cree en %d,%d sur %s', $type, $result['name'], $x, $y, $map->getName())
+        );
+
+        return $this->json([
+            'success' => true,
+            'entity' => $result,
+        ]);
+    }
+
+    private function createMob(Map $map, string $coordinates, array $properties): Mob
+    {
+        if (!isset($properties['monsterId'])) {
+            throw new \InvalidArgumentException('monsterId requis');
+        }
+
+        $monster = $this->em->getRepository(Monster::class)->find((int) $properties['monsterId']);
+        if (!$monster) {
+            throw new \InvalidArgumentException('Monstre introuvable');
+        }
+
+        $level = max(1, (int) ($properties['level'] ?? 1));
+
+        $mob = new Mob();
+        $mob->setMonster($monster);
+        $mob->setMap($map);
+        $mob->setCoordinates($coordinates);
+        $mob->setLevel($level);
+        $mob->setLife($monster->getLife());
+
+        $this->em->persist($mob);
+
+        return $mob;
+    }
+
+    private function createPortal(Map $map, string $coordinates, array $properties): ObjectLayer
+    {
+        $name = !empty($properties['name']) ? $properties['name'] : 'Portail';
+        $destMapId = isset($properties['destMapId']) ? (int) $properties['destMapId'] : null;
+        $destCoords = $properties['destCoords'] ?? null;
+
+        $portal = new ObjectLayer();
+        $portal->setType(ObjectLayer::TYPE_PORTAL);
+        $portal->setName($name);
+        $portal->setSlug('portal-' . time() . '-' . random_int(100, 999));
+        $portal->setMap($map);
+        $portal->setCoordinates($coordinates);
+        $portal->setDestinationMapId($destMapId);
+        $portal->setDestinationCoordinates($destCoords);
+        $portal->setUsedAt(null);
+        $portal->setItems(null);
+        $portal->setActions(null);
+
+        $this->em->persist($portal);
+
+        return $portal;
+    }
+
+    private function createHarvestSpot(Map $map, string $coordinates, array $properties): ObjectLayer
+    {
+        $name = !empty($properties['name']) ? $properties['name'] : 'Spot de recolte';
+        $slug = !empty($properties['slug']) ? $properties['slug'] : 'harvest-' . time() . '-' . random_int(100, 999);
+
+        $spot = new ObjectLayer();
+        $spot->setType(ObjectLayer::TYPE_HARVEST_SPOT);
+        $spot->setName($name);
+        $spot->setSlug($slug);
+        $spot->setMap($map);
+        $spot->setCoordinates($coordinates);
+        $spot->setRespawnDelay(isset($properties['respawnDelay']) ? (int) $properties['respawnDelay'] : 300);
+        $spot->setRequiredToolType($properties['requiredToolType'] ?? null);
+        $spot->setUsedAt(null);
+        $spot->setItems($properties['items'] ?? null);
+        $spot->setActions(null);
+
+        $this->em->persist($spot);
+
+        return $spot;
+    }
+
+    private function createPnj(Map $map, string $coordinates, array $properties): Pnj
+    {
+        $name = !empty($properties['name']) ? $properties['name'] : 'PNJ';
+        $classType = !empty($properties['classType']) ? $properties['classType'] : 'npc';
+
+        $pnj = new Pnj();
+        $pnj->setName($name);
+        $pnj->setClassType($classType);
+        $pnj->setLife(100);
+        $pnj->setMaxLife(100);
+        $pnj->setMap($map);
+        $pnj->setCoordinates($coordinates);
+        $pnj->setDialog([]);
+
+        $this->em->persist($pnj);
+
+        return $pnj;
+    }
+
+    private function buildEntityResult(Mob|ObjectLayer|Pnj $entity, string $type, int $x, int $y): array
+    {
+        $base = [
+            'id' => $entity->getId(),
+            'type' => $type,
+            'name' => $entity->getName(),
+            'x' => $x,
+            'y' => $y,
+        ];
+
+        return match ($type) {
+            'mob' => array_merge($base, [
+                'listKey' => 'mobs',
+                'level' => $entity->getLevel(),
+            ]),
+            'portal' => array_merge($base, [
+                'listKey' => 'portals',
+                'destMapId' => $entity->getDestinationMapId(),
+                'destCoords' => $entity->getDestinationCoordinates(),
+            ]),
+            'harvestSpot' => array_merge($base, [
+                'listKey' => 'harvestSpots',
+            ]),
+            'pnj' => array_merge($base, [
+                'listKey' => 'pnjs',
+            ]),
+            default => $base,
+        };
     }
 }
