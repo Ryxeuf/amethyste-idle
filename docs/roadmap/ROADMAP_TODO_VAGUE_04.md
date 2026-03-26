@@ -22,12 +22,12 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 - [x] Constantes publiques pour les GID cles
 - [x] Tests unitaires
 
-**MED-02 — MapFactory — creation de carte vierge (S | ★★★ | CRITIQUE)**
+**MED-02 — MapFactory — creation de carte vierge (S | ★★★ | CRITIQUE)** ✅
 > Permet de creer des cartes de taille configurable depuis l'admin. Prerequis : ← MED-01
-- [ ] Classe `MapFactory` dans `src/GameEngine/Terrain/MapFactory.php`
-- [ ] Routes admin `/admin/maps/create` (GET + POST)
-- [ ] Template + lien dans la liste admin
-- [ ] Tester creation carte + verification Area.fullData
+- [x] Classe `MapFactory` dans `src/GameEngine/Terrain/MapFactory.php`
+- [x] Routes admin `/admin/maps/create` (GET + POST)
+- [x] Template + lien dans la liste admin
+- [x] Tester creation carte + verification Area.fullData
 
 #### Phase 2 — Outils de peinture (MED-03 a MED-06)
 

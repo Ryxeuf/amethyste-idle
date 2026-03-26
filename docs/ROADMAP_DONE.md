@@ -1239,3 +1239,12 @@
 - [x] 3 PNJ : Grimmur le Contremaître, Hilda l'Ingenieure (boutique potions + pioche), Noric le Marchand souterrain (boutique minerais)
 - [x] Portails bidirectionnels Village ↔ Mines (3 portails)
 - [x] 6 spots de recolte minerais (cuivre, fer x2, argent, or, rubis) repartis par profondeur
+
+## MED-02 — MapFactory — creation de carte vierge (2026-03-26) ✅
+
+> Service de creation de cartes vierges depuis l'admin. Remplace le workflow Tiled pour la creation initiale.
+- [x] Classe `MapFactory` dans `src/GameEngine/Terrain/MapFactory.php` (generation Area avec cellules herbe)
+- [x] Routes admin `GET/POST /admin/maps/create` dans `MapController`
+- [x] Template `create.html.twig` avec formulaire (nom, largeur, hauteur, monde)
+- [x] Bouton « Nouvelle carte » dans la liste admin des cartes
+- [x] Test unitaire `MapFactoryTest` (proprietes Map, structure Area.fullData, cellules walkable)

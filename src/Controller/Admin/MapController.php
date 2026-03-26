@@ -7,8 +7,10 @@ use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
+use App\Entity\App\World;
 use App\Form\Admin\MobSpawnType;
 use App\Form\Admin\PnjPositionType;
+use App\GameEngine\Terrain\MapFactory;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +26,7 @@ class MapController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
+        private readonly MapFactory $mapFactory,
     ) {
     }
 
@@ -56,6 +59,45 @@ class MapController extends AbstractController
             'mapStats' => $mapStats,
             'search' => $search,
         ]);
+    }
+
+    #[Route('/create', name: 'create')]
+    public function create(Request $request): Response
+    {
+        $worlds = $this->em->getRepository(World::class)->findBy([], ['name' => 'ASC']);
+
+        if ($request->isMethod('POST')) {
+            $name = trim($request->request->getString('name'));
+            $width = $request->request->getInt('width', 60);
+            $height = $request->request->getInt('height', 60);
+            $worldId = $request->request->getInt('world_id');
+
+            if (!$name) {
+                $this->addFlash('error', 'Le nom de la carte est obligatoire.');
+
+                return $this->render('admin/map/create.html.twig', ['worlds' => $worlds]);
+            }
+
+            $width = max(10, min(200, $width));
+            $height = max(10, min(200, $height));
+
+            $world = $this->em->getRepository(World::class)->find($worldId);
+            if (!$world) {
+                $this->addFlash('error', 'Monde introuvable.');
+
+                return $this->render('admin/map/create.html.twig', ['worlds' => $worlds]);
+            }
+
+            $map = $this->mapFactory->create($name, $world, $width, $height);
+            $this->em->flush();
+
+            $this->adminLogger->log('create', 'Map', $map->getId(), $name . ' (' . $width . 'x' . $height . ')');
+            $this->addFlash('success', 'Carte "' . $name . '" creee (' . $width . 'x' . $height . ').');
+
+            return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+        }
+
+        return $this->render('admin/map/create.html.twig', ['worlds' => $worlds]);
     }
 
     #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'])]

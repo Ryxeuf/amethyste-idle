@@ -29,8 +29,8 @@ VAGUES 1-3 : TERMINEES ✅ (63 taches completees)
 
 VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
   ┌─ Phase 1 (fondation)
-  │   MED-01 TilesetRegistry ← ✅ 44, ✅ 58 ─────────────────────────┐
-  │   MED-02 MapFactory ← MED-01 ────────────────────────────────────┤
+  │   ✅ MED-01 TilesetRegistry ← ✅ 44, ✅ 58 ──────────────────────┐
+  │   ✅ MED-02 MapFactory ← MED-01 ────────────────────────────────┤
   │                                                                   │
   ├─ Phase 2 (peinture)                                               │
   │   MED-03 Tileset Picker ← MED-01                                 │
