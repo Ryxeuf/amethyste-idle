@@ -48,9 +48,9 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 > Outil de gomme. Prerequis : ← MED-04
 - [x] Gomme (GID a 0), raccourci E, reutilise paint-tiles
 
-**MED-06 — Bucket Fill (S | ★★ | HAUTE)**
+**MED-06 — Bucket Fill (S | ★★ | HAUTE)** ✅
 > Remplissage par inondation. Prerequis : ← MED-04
-- [ ] Module `BucketFill.js` (BFS), route `POST /{id}/editor/fill`
+- [x] BFS flood fill dans le controller Stimulus, raccourci G, reutilise paint-tiles pour la sauvegarde
 
 #### Phase 3 — UX editeur (MED-07, MED-08) — parallelisable
 
