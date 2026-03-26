@@ -107,19 +107,19 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste C — Moteur d'influence (sequentiel)
 
-### GCC-08 — InfluenceListener — hook events PvE (M | ★★★ | CRITIQUE)
-> Coeur du systeme : ecoute les events existants et attribue des points. Prerequis : ← GCC-07
-- [ ] `InfluenceManager::calculatePoints(Player, activityType, context)` — formules :
+### ~~GCC-08 — InfluenceListener — hook events PvE (M | ★★★ | CRITIQUE)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
+- [x] `InfluenceManager::calculatePoints(Player, activityType, context)` — formules :
   - mob_kill: 5 + (mob_level × 2)
   - craft: 10 + (recipe_level × 5)
   - harvest: 3/item, fishing: 5/peche, butchering: 4/item
   - quest: 20 + (quest_tier × 10)
-- [ ] `addPoints(Guild, Region, Season, points, Player, activityType, details)` — upsert GuildInfluence + insert InfluenceLog
-- [ ] Region determinee via `player.map.region` (FK directe)
-- [ ] Multiplicateur saisonnier via `season.parameters.multipliers[activityType]`
-- [ ] `InfluenceListener` (EventSubscriber) : MobDeadEvent, CraftEvent, SpotHarvestEvent, FishingEvent, ButcheringEvent, QuestCompletedEvent
-- [ ] Ignore si joueur pas en guilde ou map sans region
-- [ ] Tests unitaires (12+ tests)
+- [x] `addPoints(Guild, Region, Season, points, Player, activityType, details)` — upsert GuildInfluence + insert InfluenceLog
+- [x] Region determinee via `player.map.region` (FK directe)
+- [x] Multiplicateur saisonnier via `season.parameters.multipliers[activityType]`
+- [x] `InfluenceListener` (EventSubscriber) : MobDeadEvent, CraftEvent, SpotHarvestEvent, FishingEvent, ButcheringEvent, QuestCompletedEvent
+- [x] Ignore si joueur pas en guilde ou map sans region
+- [x] Tests unitaires (12+ tests)
 
 ### GCC-09 — Anti-exploit — plafonds & diminishing returns (S | ★★ | HAUTE)
 > Protections anti-farming. Prerequis : ← GCC-08
