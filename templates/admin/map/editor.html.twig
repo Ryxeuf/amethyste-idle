@@ -12,8 +12,10 @@
      data-admin-map-editor-update-cell-url-value="{{ path('admin_map_editor_update_cell', {id: map.id}) }}"
      data-admin-map-editor-update-cells-url-value="{{ path('admin_map_editor_update_cells', {id: map.id}) }}"
      data-admin-map-editor-update-borders-url-value="{{ path('admin_map_editor_update_borders', {id: map.id}) }}"
+     data-admin-map-editor-paint-tiles-url-value="{{ path('admin_map_editor_paint_tiles', {id: map.id}) }}"
      data-admin-map-editor-delete-entity-url-value="{{ path('admin_map_editor_delete_entity', {id: map.id}) }}"
      data-admin-map-editor-move-entity-url-value="{{ path('admin_map_editor_move_entity', {id: map.id}) }}"
+     data-action="admin-tileset-picker:tileSelected->admin-map-editor#onTileSelected admin-tileset-picker:layerChanged->admin-map-editor#onLayerChanged"
      class="flex flex-col h-[calc(100vh-130px)]">
 
     {# Toolbar #}
@@ -39,6 +41,8 @@
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Mur</button>
         <button data-tool="eraseWall" data-action="admin-map-editor#setToolEraseWall"
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Gomme mur</button>
+        <button data-tool="paint" data-action="admin-map-editor#setToolPaint"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Peindre</button>
 
         <div class="h-6 border-r border-gray-700 mx-1"></div>
 
@@ -93,7 +97,61 @@
         </div>
 
         {# Side panel #}
-        <div class="w-72 flex-shrink-0 flex flex-col gap-3">
+        <div class="w-72 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
+            {# Tileset Picker #}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3"
+                 data-controller="admin-tileset-picker"
+                 data-admin-tileset-picker-tilesets-url-value="{{ path('admin_map_editor_tilesets', {id: map.id}) }}">
+                <h3 class="text-sm font-semibold text-gray-300 mb-2">Tileset</h3>
+
+                {# Tabs #}
+                <div data-admin-tileset-picker-target="tabs" class="flex gap-1 mb-2"></div>
+
+                {# Canvas #}
+                <div class="overflow-hidden rounded border border-gray-700" style="max-height: 400px;">
+                    <canvas data-admin-tileset-picker-target="canvas"
+                            data-action="mousedown->admin-tileset-picker#canvasMouseDown mousemove->admin-tileset-picker#canvasMouseMove mouseup->admin-tileset-picker#canvasMouseUp wheel->admin-tileset-picker#canvasScroll"
+                            class="block cursor-crosshair"></canvas>
+                </div>
+
+                {# Selection info #}
+                <div class="flex items-center gap-2 mt-2">
+                    <span data-admin-tileset-picker-target="gidDisplay" class="text-xs text-gray-400">GID: —</span>
+                    <div data-admin-tileset-picker-target="stampPreview" class="ml-auto"></div>
+                </div>
+
+                {# Layer selector #}
+                <div class="mt-3">
+                    <span class="text-xs text-gray-500 uppercase mb-1 block">Layer actif</span>
+                    <div class="grid grid-cols-2 gap-1">
+                        <label class="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
+                            <input type="radio" name="active-layer" value="0"
+                                   data-admin-tileset-picker-target="layerRadio"
+                                   data-action="admin-tileset-picker#selectLayer"
+                                   class="accent-purple-500"> Background
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
+                            <input type="radio" name="active-layer" value="1" checked
+                                   data-admin-tileset-picker-target="layerRadio"
+                                   data-action="admin-tileset-picker#selectLayer"
+                                   class="accent-purple-500"> Ground
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
+                            <input type="radio" name="active-layer" value="2"
+                                   data-admin-tileset-picker-target="layerRadio"
+                                   data-action="admin-tileset-picker#selectLayer"
+                                   class="accent-purple-500"> Decoration
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-400 cursor-pointer">
+                            <input type="radio" name="active-layer" value="3"
+                                   data-admin-tileset-picker-target="layerRadio"
+                                   data-action="admin-tileset-picker#selectLayer"
+                                   class="accent-purple-500"> Overlay
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             {# Cell info #}
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
                 <h3 class="text-sm font-semibold text-gray-300 mb-2">Cellule selectionnee</h3>
@@ -102,10 +160,10 @@
                 </div>
             </div>
 
-            {# Legend #}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h3 class="text-sm font-semibold text-gray-300 mb-2">Legende</h3>
-                <div class="space-y-1.5 text-xs">
+            {# Legend (collapsible) #}
+            <details class="bg-gray-900 border border-gray-800 rounded-xl">
+                <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Legende</summary>
+                <div class="px-4 pb-4 space-y-1.5 text-xs">
                     <div class="flex items-center gap-2">
                         <span class="w-4 h-4 rounded bg-red-500/50 border border-red-500 inline-block"></span>
                         <span class="text-gray-400">Case bloquee (mur)</span>
@@ -151,12 +209,12 @@
                         <span class="text-gray-400">Mur (sens unique)</span>
                     </div>
                 </div>
-            </div>
+            </details>
 
-            {# Shortcuts #}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h3 class="text-sm font-semibold text-gray-300 mb-2">Raccourcis</h3>
-                <div class="space-y-1 text-xs text-gray-400">
+            {# Shortcuts (collapsible) #}
+            <details class="bg-gray-900 border border-gray-800 rounded-xl">
+                <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Raccourcis</summary>
+                <div class="px-4 pb-4 space-y-1 text-xs text-gray-400">
                     <p><kbd class="bg-gray-700 px-1 rounded">Molette</kbd> Zoom</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer vue</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Deplacer vue</p>
@@ -167,7 +225,7 @@
                     <p><kbd class="bg-gray-700 px-1 rounded">Suppr</kbd> Supprimer entite selectionnee</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Echap</kbd> Vider la selection</p>
                 </div>
-            </div>
+            </details>
         </div>
     </div>
 </div>

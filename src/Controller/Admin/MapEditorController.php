@@ -383,6 +383,99 @@ class MapEditorController extends AbstractController
         return $this->json(['success' => true, 'count' => $count]);
     }
 
+    #[Route('/{id}/editor/paint-tiles', name: 'editor_paint_tiles', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function paintTiles(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['cells']) || !is_array($data['cells'])) {
+            return $this->json(['error' => 'Missing cells parameter'], 400);
+        }
+
+        $areaWidth = $map->getAreaWidth();
+        $areaHeight = $map->getAreaHeight();
+
+        $areasCache = [];
+        foreach ($map->getAreas() as $a) {
+            $areasCache[$a->getCoordinates()] = $a;
+        }
+
+        $areaDataCache = [];
+        $count = 0;
+
+        foreach ($data['cells'] as $cell) {
+            if (!isset($cell['x'], $cell['y'], $cell['layer'], $cell['gid'])) {
+                continue;
+            }
+
+            $globalX = (int) $cell['x'];
+            $globalY = (int) $cell['y'];
+            $layer = (int) $cell['layer'];
+            $gid = (int) $cell['gid'];
+
+            if ($layer < 0 || $layer > 3) {
+                continue;
+            }
+
+            $areaCoordStr = intval($globalX / $areaWidth) . '.' . intval($globalY / $areaHeight);
+
+            if (!isset($areasCache[$areaCoordStr])) {
+                continue;
+            }
+
+            $area = $areasCache[$areaCoordStr];
+
+            if (!isset($areaDataCache[$areaCoordStr])) {
+                $areaDataCache[$areaCoordStr] = $area->getFullDataArray();
+            }
+
+            $localX = $globalX % $areaWidth;
+            $localY = $globalY % $areaHeight;
+
+            if (!isset($areaDataCache[$areaCoordStr]['cells'][$localX][$localY])) {
+                continue;
+            }
+
+            $cellData = &$areaDataCache[$areaCoordStr]['cells'][$localX][$localY];
+            if (!isset($cellData['layers'])) {
+                $cellData['layers'] = [null, null, null, null];
+            }
+
+            // Ensure layers array has enough entries
+            while (\count($cellData['layers']) <= $layer) {
+                $cellData['layers'][] = null;
+            }
+
+            if ($gid > 0) {
+                $tileset = $this->tilesetRegistry->getTilesetForGid($gid);
+                if ($tileset) {
+                    $cellData['layers'][$layer] = [
+                        'mapIdx' => $tileset['firstGid'],
+                        'idxInMap' => $gid - $tileset['firstGid'],
+                    ];
+                }
+            } else {
+                $cellData['layers'][$layer] = null;
+            }
+
+            ++$count;
+        }
+
+        foreach ($areaDataCache as $coordStr => $areaData) {
+            $areasCache[$coordStr]->setFullData(json_encode($areaData));
+        }
+
+        $this->em->flush();
+
+        $this->adminLogger->log(
+            'update',
+            'Tile',
+            null,
+            sprintf('%d tiles peintes sur %s', $count, $map->getName())
+        );
+
+        return $this->json(['success' => true, 'count' => $count]);
+    }
+
     #[Route('/{id}/editor/delete-entity', name: 'editor_delete_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function deleteEntity(Request $request, Map $map): JsonResponse
     {

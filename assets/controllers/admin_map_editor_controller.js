@@ -9,6 +9,7 @@ export default class extends Controller {
         updateCellUrl: String,
         updateCellsUrl: String,
         updateBordersUrl: String,
+        paintTilesUrl: String,
         deleteEntityUrl: String,
         moveEntityUrl: String,
     }
@@ -44,12 +45,20 @@ export default class extends Controller {
     _showWalls = true
     _tilesetsLoaded = false
     _renderTiles = true
-    _tool = 'select' // select, block, unblock, water, wall, eraseWall
+    _tool = 'select' // select, block, unblock, water, wall, eraseWall, paint
     _pendingChanges = {}
     _pendingBorderChanges = {} // key: "x.y", value: [n, e, s, w]
+    _pendingTileChanges = {} // key: "x.y", value: {layer, gid} — tile GID changes
     _ctx = null
     _animFrame = null
     _hoveredCell = null
+
+    // Tileset picker state (received via events)
+    _pickerGid = 0
+    _pickerStampWidth = 1
+    _pickerStampHeight = 1
+    _pickerStampGids = []
+    _pickerLayer = 1 // 0=background, 1=ground, 2=decoration, 3=overlay
 
     connect() {
         this._canvas = this.canvasTarget
@@ -278,13 +287,42 @@ export default class extends Controller {
             this._drawEntities(ctx, ts, minTileX, minTileY, maxTileX, maxTileY)
         }
 
-        // Hovered cell
+        // Hovered cell + paint ghost preview
         if (this._hoveredCell) {
             const hx = this._hoveredCell.x * ts + this._offsetX
             const hy = this._hoveredCell.y * ts + this._offsetY
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-            ctx.lineWidth = 2
-            ctx.strokeRect(hx, hy, ts, ts)
+
+            if (this._tool === 'paint' && this._pickerGid > 0 && this._tilesetsLoaded) {
+                // Ghost preview of stamp
+                ctx.globalAlpha = 0.5
+                for (let dy = 0; dy < this._pickerStampHeight; dy++) {
+                    for (let dx = 0; dx < this._pickerStampWidth; dx++) {
+                        const stampIdx = dy * this._pickerStampWidth + dx
+                        const gid = this._pickerStampGids[stampIdx]
+                        if (!gid) continue
+
+                        const tileset = this._findTileset(gid)
+                        if (!tileset) continue
+                        const img = this._tilesetImages[tileset.name]
+                        if (!img) continue
+
+                        const localId = gid - tileset.firstGid
+                        const srcX = (localId % tileset.columns) * tileset.tileWidth
+                        const srcY = Math.floor(localId / tileset.columns) * tileset.tileHeight
+                        const px = (this._hoveredCell.x + dx) * ts + this._offsetX
+                        const py = (this._hoveredCell.y + dy) * ts + this._offsetY
+                        ctx.drawImage(img, srcX, srcY, tileset.tileWidth, tileset.tileHeight, px, py, ts, ts)
+                    }
+                }
+                ctx.globalAlpha = 1
+                ctx.strokeStyle = '#a855f7'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, this._pickerStampWidth * ts, this._pickerStampHeight * ts)
+            } else {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, ts, ts)
+            }
         }
 
         // Multi-selection overlay
@@ -566,6 +604,9 @@ export default class extends Controller {
                 this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, e.shiftKey)
                 this._isPainting = true
                 this._isPaintingOneWay = e.shiftKey
+            } else if (this._tool === 'paint') {
+                this._paintTile(tileCoords.x, tileCoords.y)
+                this._isPainting = true
             }
         }
     }
@@ -592,6 +633,8 @@ export default class extends Controller {
             } else if (this._isPainting) {
                 if (this._tool === 'wall' || this._tool === 'eraseWall') {
                     this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, this._isPaintingOneWay)
+                } else if (this._tool === 'paint') {
+                    this._paintTile(tileCoords.x, tileCoords.y)
                 } else {
                     const movementMap = { block: -1, unblock: 0, water: 2, climb: 4 }
                     const movement = movementMap[this._tool] ?? 0
@@ -1045,8 +1088,42 @@ export default class extends Controller {
         this._selectCell(x, y)
     }
 
+    _paintTile(x, y) {
+        if (this._pickerGid === 0 || this._pickerStampGids.length === 0) return
+
+        for (let dy = 0; dy < this._pickerStampHeight; dy++) {
+            for (let dx = 0; dx < this._pickerStampWidth; dx++) {
+                const tx = x + dx
+                const ty = y + dy
+                const key = tx + '.' + ty
+                const cell = this._cells[key]
+                if (!cell) continue
+
+                const stampIdx = dy * this._pickerStampWidth + dx
+                const gid = this._pickerStampGids[stampIdx] || 0
+
+                // Update the layer GID in the local cell data
+                if (!cell.l) cell.l = []
+                // Ensure the layers array is long enough
+                while (cell.l.length <= this._pickerLayer) {
+                    cell.l.push(0)
+                }
+                cell.l[this._pickerLayer] = gid
+
+                // Track tile changes for save
+                if (!this._pendingTileChanges[key]) {
+                    this._pendingTileChanges[key] = {}
+                }
+                this._pendingTileChanges[key][this._pickerLayer] = gid
+            }
+        }
+
+        this._updatePendingCount()
+        this._render()
+    }
+
     _updatePendingCount() {
-        const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length
+        const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length
         const btn = document.getElementById('save-btn')
         const badge = document.getElementById('pending-badge')
         if (btn) btn.disabled = count === 0
@@ -1099,6 +1176,28 @@ export default class extends Controller {
     setToolClimb() { this._tool = 'climb'; this._updateToolButtons() }
     setToolWall() { this._tool = 'wall'; this._updateToolButtons() }
     setToolEraseWall() { this._tool = 'eraseWall'; this._updateToolButtons() }
+    setToolPaint() { this._tool = 'paint'; this._updateToolButtons() }
+
+    // --- Tileset picker events ---
+
+    onTileSelected(e) {
+        const { gid, stampWidth, stampHeight, stampGids, layer } = e.detail
+        this._pickerGid = gid
+        this._pickerStampWidth = stampWidth
+        this._pickerStampHeight = stampHeight
+        this._pickerStampGids = stampGids
+        this._pickerLayer = layer
+
+        // Auto-switch to paint tool when a tile is selected
+        if (gid > 0) {
+            this._tool = 'paint'
+            this._updateToolButtons()
+        }
+    }
+
+    onLayerChanged(e) {
+        this._pickerLayer = e.detail.layer
+    }
 
     _updateToolButtons() {
         document.querySelectorAll('[data-tool]').forEach(btn => {
@@ -1144,7 +1243,8 @@ export default class extends Controller {
     async saveChanges() {
         const cellChanges = Object.entries(this._pendingChanges)
         const borderChanges = Object.entries(this._pendingBorderChanges)
-        if (cellChanges.length === 0 && borderChanges.length === 0) return
+        const tileChanges = Object.entries(this._pendingTileChanges)
+        if (cellChanges.length === 0 && borderChanges.length === 0 && tileChanges.length === 0) return
 
         const btn = document.getElementById('save-btn')
         if (btn) {
@@ -1201,6 +1301,29 @@ export default class extends Controller {
                 }
             }
 
+            // Save tile changes
+            if (tileChanges.length > 0) {
+                const cells = []
+                for (const [key, layers] of tileChanges) {
+                    const [x, y] = key.split('.').map(Number)
+                    for (const [layer, gid] of Object.entries(layers)) {
+                        cells.push({ x, y, layer: parseInt(layer, 10), gid })
+                    }
+                }
+                const res = await fetch(this.paintTilesUrlValue, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cells }),
+                })
+                const data = await res.json()
+                if (data.success) {
+                    totalSaved += data.count
+                    this._pendingTileChanges = {}
+                } else {
+                    this._showFlash('Erreur tiles: ' + (data.error || 'inconnue'), 'error')
+                }
+            }
+
             this._updatePendingCount()
             if (totalSaved > 0) {
                 this._showFlash(`${totalSaved} modification(s) sauvegardee(s)`, 'success')
@@ -1210,7 +1333,7 @@ export default class extends Controller {
         }
 
         if (btn) {
-            btn.disabled = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length === 0
+            btn.disabled = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length === 0
             btn.textContent = 'Sauvegarder'
         }
 
@@ -1218,12 +1341,13 @@ export default class extends Controller {
     }
 
     discardChanges() {
-        if (Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length === 0) return
+        if (Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length === 0) return
         if (!confirm('Annuler toutes les modifications non sauvegardees ?')) return
 
         // Reload to reset
         this._pendingChanges = {}
         this._pendingBorderChanges = {}
+        this._pendingTileChanges = {}
         this._updatePendingCount()
         this._loadData()
     }

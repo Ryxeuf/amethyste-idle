@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\GameEngine\World;
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use DateTimeZone;
-
 /**
  * Temps de jeu aligne sur le fuseau UTC : l'heure utilisee pour le cycle jour/nuit est
  * derivee des secondes ecoulees depuis minuit UTC, multipliees par un facteur configurable
@@ -26,7 +22,7 @@ final class GameTimeService
     /**
      * Secondes depuis minuit UTC (0 .. 86399).
      */
-    public function getUtcSecondsSinceMidnight(?DateTimeInterface $realTime = null): int
+    public function getUtcSecondsSinceMidnight(?\DateTimeInterface $realTime = null): int
     {
         $utc = $this->toUtcImmutable($realTime);
         $midnight = $utc->setTime(0, 0, 0);
@@ -37,7 +33,7 @@ final class GameTimeService
     /**
      * Position dans le cycle jour/nuit « jeu » (0 .. 86400), apres application du facteur.
      */
-    public function getVirtualSecondsSinceMidnight(?DateTimeInterface $realTime = null): float
+    public function getVirtualSecondsSinceMidnight(?\DateTimeInterface $realTime = null): float
     {
         $factor = $this->utcDayCycleFactorProvider->getUtcDayCycleFactor();
         $offset = $this->getUtcSecondsSinceMidnight($realTime);
@@ -49,14 +45,14 @@ final class GameTimeService
         return $scaled;
     }
 
-    public function getHour(?DateTimeInterface $realTime = null): int
+    public function getHour(?\DateTimeInterface $realTime = null): int
     {
         $scaled = $this->getVirtualSecondsSinceMidnight($realTime);
 
         return (int) floor($scaled / 3600) % 24;
     }
 
-    public function getMinute(?DateTimeInterface $realTime = null): int
+    public function getMinute(?\DateTimeInterface $realTime = null): int
     {
         $scaled = $this->getVirtualSecondsSinceMidnight($realTime);
 
@@ -67,9 +63,9 @@ final class GameTimeService
      * - dawn:  6h-8h
      * - day:   8h-18h
      * - dusk:  18h-20h
-     * - night: 20h-6h
+     * - night: 20h-6h.
      */
-    public function getTimeOfDay(?DateTimeInterface $realTime = null): string
+    public function getTimeOfDay(?\DateTimeInterface $realTime = null): string
     {
         $hour = $this->getHour($realTime);
 
@@ -89,7 +85,7 @@ final class GameTimeService
     /**
      * Saisons selon le mois UTC (hemisphere nord).
      */
-    public function getSeason(?DateTimeInterface $realTime = null): string
+    public function getSeason(?\DateTimeInterface $realTime = null): string
     {
         $m = (int) $this->toUtcImmutable($realTime)->format('n');
 
@@ -104,7 +100,7 @@ final class GameTimeService
     /**
      * Jour in-game 1-28 (cycle sur l'annee UTC).
      */
-    public function getDay(?DateTimeInterface $realTime = null): int
+    public function getDay(?\DateTimeInterface $realTime = null): int
     {
         $doy = (int) $this->toUtcImmutable($realTime)->format('z');
 
@@ -127,7 +123,7 @@ final class GameTimeService
      *     utcSecondsSinceMidnight: int
      * }
      */
-    public function getSnapshot(?DateTimeInterface $realTime = null): array
+    public function getSnapshot(?\DateTimeInterface $realTime = null): array
     {
         return [
             'hour' => $this->getHour($realTime),
@@ -140,10 +136,10 @@ final class GameTimeService
         ];
     }
 
-    private function toUtcImmutable(?DateTimeInterface $realTime): DateTimeImmutable
+    private function toUtcImmutable(?\DateTimeInterface $realTime): \DateTimeImmutable
     {
         $ts = $realTime?->getTimestamp() ?? time();
 
-        return (new DateTimeImmutable('@' . $ts))->setTimezone(new DateTimeZone('UTC'));
+        return (new \DateTimeImmutable('@' . $ts))->setTimezone(new \DateTimeZone('UTC'));
     }
 }
