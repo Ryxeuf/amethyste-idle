@@ -203,6 +203,70 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'fish-electric-eel', 'min' => 1, 'max' => 1, 'difficulty' => 75],
                 ],
             ],
+
+            // =====================
+            // FORÊT DES MURMURES — Herboristerie & Pêche
+            // =====================
+            'forest-spot-mint' => [
+                'name' => 'Herbes médicinales',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '14.38',
+                'requiredToolType' => 'herbalism',
+                'respawnDelay' => 45,
+                'items' => [['slug' => 'herb-mint', 'min' => 1, 'max' => 2]],
+                'map' => 'map_3',
+            ],
+            'forest-spot-sage' => [
+                'name' => 'Buisson de sauge',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '16.42',
+                'requiredToolType' => 'herbalism',
+                'respawnDelay' => 60,
+                'items' => [['slug' => 'herb-sage', 'min' => 1, 'max' => 2]],
+                'map' => 'map_3',
+            ],
+            'forest-spot-dandelion' => [
+                'name' => 'Fleurs sauvages',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '33.28',
+                'requiredToolType' => 'herbalism',
+                'respawnDelay' => 30,
+                'items' => [
+                    ['slug' => 'herb-dandelion', 'min' => 1, 'max' => 2],
+                    ['slug' => 'herb-lavender', 'min' => 1, 'max' => 1],
+                ],
+                'map' => 'map_3',
+            ],
+            'forest-spot-rosemary' => [
+                'name' => 'Romarin des bois',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '20.25',
+                'requiredToolType' => 'herbalism',
+                'respawnDelay' => 60,
+                'items' => [['slug' => 'herb-rosemary', 'min' => 1, 'max' => 2]],
+                'map' => 'map_3',
+            ],
+            'forest-spot-mandrake' => [
+                'name' => 'Racines anciennes',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '25.10',
+                'requiredToolType' => 'herbalism',
+                'respawnDelay' => 180,
+                'items' => [['slug' => 'herb-mandrake', 'min' => 1, 'max' => 1]],
+                'map' => 'map_3',
+            ],
+            'forest-spot-fishing' => [
+                'name' => 'Rivière forestière',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '46.30',
+                'requiredToolType' => 'fishing_rod',
+                'respawnDelay' => 45,
+                'items' => [
+                    ['slug' => 'fish-trout', 'min' => 1, 'max' => 1, 'difficulty' => 35],
+                    ['slug' => 'fish-salmon', 'min' => 1, 'max' => 1, 'difficulty' => 50],
+                ],
+                'map' => 'map_3',
+            ],
         ];
 
         foreach ($harvestSpots as $slug => $data) {
@@ -211,7 +275,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
             $objectLayer->setSlug($slug);
             $objectLayer->setType($data['type']);
             $objectLayer->setMovement(0);
-            $objectLayer->setMap($this->getReference('map_1', Map::class));
+            $objectLayer->setMap($this->getReference($data['map'] ?? 'map_1', Map::class));
             $objectLayer->setUsable(true);
             $objectLayer->setCoordinates($data['coordinates']);
             $objectLayer->setActions([['action' => 'harvest', 'distance' => 1]]);
@@ -231,6 +295,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
         // =====================
         $map1 = $this->getReference('map_1', Map::class);
         $map2 = $this->getReference('map_2', Map::class);
+        $map3 = $this->getReference('map_3', Map::class);
 
         $portals = [
             // Depuis carte principale → village (entrée sud du village)
@@ -255,6 +320,31 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '20.39',
                 'destinationMapId' => $map1->getId(),
                 'destinationCoordinates' => '31.31',
+            ],
+
+            // === Forêt des murmures ↔ Village (bidirectionnels) ===
+            // Village → Forêt (sortie est du village)
+            'portal-village-to-forest' => [
+                'name' => 'Chemin vers la Forêt des murmures',
+                'map' => $map2,
+                'coordinates' => '38.20',
+                'destinationMapId' => $map3->getId(),
+                'destinationCoordinates' => '30.56',
+            ],
+            // Forêt → Village (entrée sud de la forêt)
+            'portal-forest-to-village' => [
+                'name' => 'Retour au Village de Lumière',
+                'map' => $map3,
+                'coordinates' => '29.57',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '37.20',
+            ],
+            'portal-forest-to-village-2' => [
+                'name' => 'Retour au Village de Lumière',
+                'map' => $map3,
+                'coordinates' => '30.57',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '37.20',
             ],
         ];
 
