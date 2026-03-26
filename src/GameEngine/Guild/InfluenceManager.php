@@ -111,7 +111,7 @@ class InfluenceManager
     /**
      * Point d'entree principal : attribue des points d'influence si toutes les conditions sont remplies.
      *
-     * @param array<string, mixed> $context
+     * @param array<string, mixed>      $context
      * @param array<string, mixed>|null $details
      *
      * @return bool true si des points ont ete attribues

@@ -171,7 +171,7 @@ class InfluenceListener implements EventSubscriberInterface
     }
 
     /**
-     * @param array<string, mixed> $context
+     * @param array<string, mixed>      $context
      * @param array<string, mixed>|null $details
      */
     private function awardForPlayer(
