@@ -59,7 +59,7 @@ VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
       MED-16 Export TMX & tests E2E ← MED-04, MED-09                 │
                                                                       │
   PRIORITE 2 — Contenu (debloque par editeur)                         │
-  ┌─ 68 Mines profondes ← 30, 47, 66, MED-02 ───────────────────────┘
+  ┌─ ✅ 68 Mines profondes (FAIT) ← 30, 47, 66 ─────────────────────┘
   │
   PRIORITE 3 — Guildes
   └─ GCC-01..20 Controle cite ← 38, 48, 52

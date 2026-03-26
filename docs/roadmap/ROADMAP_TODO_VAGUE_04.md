@@ -114,16 +114,8 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 ### PRIORITE 2 — Contenu (debloque par l'editeur)
 
-### 68 — Mines profondes (L | ★★★)
-> Carte de contenu lvl 10-25 avec tunnels, boss de mine et filons a exploiter. Prerequis : ← 30 (Teleportation entre cartes), 47 (Monstres tier 1), 66 (Boss de zone), **MED-02** (MapFactory)
-> **Note :** a realiser avec l'editeur integre (MED-02+) au lieu de Tiled.
-- [ ] Design carte ~60x30 via l'editeur integre (tunnels, salles, filons)
-- [ ] Import BDD + portails vers hub
-- [ ] Placement 8-10 mobs (monstres C-7a + C-7b)
-- [ ] Boss de mine (C-7c)
-- [ ] 3-5 PNJ (mineur, ingenieur, marchand souterrain)
-- [ ] 5-8 spots de recolte (minerais) — si v0.4 recolte pret
-- [ ] Coffre tresor (si systeme implemente)
+### ~~68 — Mines profondes (L | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
@@ -149,6 +141,9 @@ Competition PvE entre guildes pour le controle temporaire des villes : les guild
 > Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~67 — Foret des murmures (L | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
+
+### ~~68 — Mines profondes (L | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~69 — Monstres invocateurs (M | ★★)~~ ✅

@@ -1229,3 +1229,13 @@
 - [x] 3 PNJ : Sylvain le Garde forestier, Elara l'Herboriste (boutique potions), Thadeus l'Ermite
 - [x] Portails bidirectionnels Village ↔ Foret (3 portails)
 - [x] 6 spots de recolte (menthe, sauge, pissenlit/lavande, romarin, mandragore, peche riviere)
+
+## 68 — Mines profondes (2026-03-26) ✅
+
+> Carte de contenu lvl 10-25 : mines 60x30 avec tunnels, boss de mine, filons et PNJ.
+- [x] Map entity `map_4` dans MapFixtures (60x30)
+- [x] 11 mobs adaptes lvl 10-25 (stone_golem, rusty_automaton, clay_golem, crystal_golem, gargoyle, cursed_knight nocturne, abyssal_blacksmith, lesser_lich nocturne, groupe patrouille automates)
+- [x] Boss de mine : Seigneur de la Forge (forge_lord) en salle profonde
+- [x] 3 PNJ : Grimmur le Contremaître, Hilda l'Ingenieure (boutique potions + pioche), Noric le Marchand souterrain (boutique minerais)
+- [x] Portails bidirectionnels Village ↔ Mines (3 portails)
+- [x] 6 spots de recolte minerais (cuivre, fer x2, argent, or, rubis) repartis par profondeur

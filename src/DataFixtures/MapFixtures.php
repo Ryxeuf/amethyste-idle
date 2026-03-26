@@ -50,6 +50,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($forest);
         $this->addReference('map_3', $forest);
 
+        // Mines profondes — zone lvl 10-25, tunnels, salles, filons, boss
+        $mines = new Map();
+        $mines->setName('Mines profondes');
+        $mines->setWorld($this->getReference('world_1', World::class));
+        $mines->setAreaWidth(60);
+        $mines->setAreaHeight(30);
+        $mines->setCreatedAt(new \DateTime());
+        $mines->setUpdatedAt(new \DateTime());
+
+        $manager->persist($mines);
+        $this->addReference('map_4', $mines);
+
         $manager->flush();
     }
 

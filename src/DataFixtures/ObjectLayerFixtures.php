@@ -267,6 +267,64 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'map' => 'map_3',
             ],
+
+            // =====================
+            // MINES PROFONDES — Filons de minerai
+            // =====================
+            'mines-spot-copper' => [
+                'name' => 'Filon de cuivre',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '12.22',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 45,
+                'items' => [['slug' => 'ore-copper', 'min' => 1, 'max' => 3]],
+                'map' => 'map_4',
+            ],
+            'mines-spot-iron-1' => [
+                'name' => 'Filon de fer brut',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '18.20',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 60,
+                'items' => [['slug' => 'ore-iron', 'min' => 1, 'max' => 3]],
+                'map' => 'map_4',
+            ],
+            'mines-spot-iron-2' => [
+                'name' => 'Filon de fer profond',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '32.14',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 60,
+                'items' => [['slug' => 'ore-iron', 'min' => 2, 'max' => 4]],
+                'map' => 'map_4',
+            ],
+            'mines-spot-silver' => [
+                'name' => "Filon d'argent",
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '38.10',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 120,
+                'items' => [['slug' => 'ore-silver', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
+            'mines-spot-gold' => [
+                'name' => "Filon d'or enfoui",
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '46.6',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 300,
+                'items' => [['slug' => 'ore-gold', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
+            'mines-spot-ruby' => [
+                'name' => 'Filon de rubis caché',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '52.4',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 600,
+                'items' => [['slug' => 'ore-ruby', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
         ];
 
         foreach ($harvestSpots as $slug => $data) {
@@ -296,6 +354,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
         $map1 = $this->getReference('map_1', Map::class);
         $map2 = $this->getReference('map_2', Map::class);
         $map3 = $this->getReference('map_3', Map::class);
+        $map4 = $this->getReference('map_4', Map::class);
 
         $portals = [
             // Depuis carte principale → village (entrée sud du village)
@@ -345,6 +404,31 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '30.57',
                 'destinationMapId' => $map2->getId(),
                 'destinationCoordinates' => '37.20',
+            ],
+
+            // === Mines profondes ↔ Village (bidirectionnels) ===
+            // Village → Mines (sortie ouest du village)
+            'portal-village-to-mines' => [
+                'name' => 'Descente vers les Mines profondes',
+                'map' => $map2,
+                'coordinates' => '1.20',
+                'destinationMapId' => $map4->getId(),
+                'destinationCoordinates' => '3.27',
+            ],
+            // Mines → Village (sortie sud des mines)
+            'portal-mines-to-village' => [
+                'name' => 'Retour au Village de Lumière',
+                'map' => $map4,
+                'coordinates' => '2.28',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '2.20',
+            ],
+            'portal-mines-to-village-2' => [
+                'name' => 'Retour au Village de Lumière',
+                'map' => $map4,
+                'coordinates' => '3.28',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '2.20',
             ],
         ];
 
