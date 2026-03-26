@@ -2041,6 +2041,9 @@ export default class extends Controller {
             } else if (fromX !== null && fromY !== null) {
                 await this._loadCells(fromX, fromY);
                 await this._loadEntities();
+            } else if (!data.error) {
+                // path vide sans erreur (ex. désync client/serveur après fuite) : resync position serveur
+                await this._syncPlayerPositionFromServer();
             }
         } catch (err) {
             console.error('[map_pixi] Move error:', err);
@@ -2670,6 +2673,30 @@ export default class extends Controller {
         const vpY = (py - mapMinY - vpTiles / 2) * scale;
         this._minimapViewport.rect(vpX, vpY, vpW, vpH);
         this._minimapViewport.stroke({ color: 0xffffff, width: 1, alpha: 0.5 });
+    }
+
+    async _syncPlayerPositionFromServer() {
+        try {
+            const resp = await fetch(`/api/map/entities?radius=${this._viewRadius}`);
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const me = data.players?.find((p) => p.self);
+            if (!me) return;
+
+            this._playerX = me.x;
+            this._playerY = me.y;
+            if (this._playerMarker) {
+                this._playerMarker.position.set(me.x * this._tileSize, me.y * this._tileSize);
+            }
+            this._lastEntityLoadX = me.x;
+            this._lastEntityLoadY = me.y;
+            this._updateCamera(true);
+            await this._loadCells(me.x, me.y);
+            await this._loadEntities();
+            this._detectZone(me.x, me.y, true);
+        } catch (e) {
+            console.warn('[map_pixi] Resync position impossible :', e);
+        }
     }
 
     _wait(ms) {
