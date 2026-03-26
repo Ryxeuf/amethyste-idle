@@ -85,7 +85,7 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'text' => "Les golems se sont réveillés et les automates ont perdu leur contrôle. Plus vous descendez, plus les créatures sont dangereuses. Au fond se cache le Seigneur de la Forge, un ancien gardien devenu fou. Soyez prudent.",
+                        'text' => 'Les golems se sont réveillés et les automates ont perdu leur contrôle. Plus vous descendez, plus les créatures sont dangereuses. Au fond se cache le Seigneur de la Forge, un ancien gardien devenu fou. Soyez prudent.',
                         'choices' => [
                             [
                                 'text' => 'Merci pour les avertissements.',
@@ -113,7 +113,7 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'dialog' => [
                     [
-                        'text' => "Ah, un visiteur ! Je suis Hilda, la dernière ingénieure encore en poste ici. Je répare ce que je peux et je vends du matériel de survie. Ça vous intéresse ?",
+                        'text' => 'Ah, un visiteur ! Je suis Hilda, la dernière ingénieure encore en poste ici. Je répare ce que je peux et je vends du matériel de survie. Ça vous intéresse ?',
                         'choices' => [
                             [
                                 'text' => 'Voir la boutique',
@@ -121,7 +121,7 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                                 'datas' => [],
                             ],
                             [
-                                'text' => "Parlez-moi des mines",
+                                'text' => 'Parlez-moi des mines',
                                 'action' => 'next',
                             ],
                             [
@@ -134,7 +134,7 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                         'text' => "Les filons les plus riches se trouvent en profondeur : fer et cuivre près de l'entrée, argent et or plus loin, et si vous avez de la chance, des rubis au fond. Mais les golems gardent jalousement ces richesses.",
                         'choices' => [
                             [
-                                'text' => "Je tenterai ma chance. Merci !",
+                                'text' => 'Je tenterai ma chance. Merci !',
                                 'action' => 'close',
                             ],
                         ],
