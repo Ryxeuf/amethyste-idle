@@ -42,15 +42,8 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 ---
 
-### 67 — Foret des murmures (L | ★★★)
-> Carte de contenu lvl 5-15 avec monstres, PNJ, spots de recolte et quetes de zone. Prerequis : ← 30 (Teleportation entre cartes), 28 (Village central hub), 47 (Monstres tier 1)
-- [ ] **C-10a — Foret des murmures (lvl 5-15)**
-  - Design Tiled (~60x60), arbres, clairiere, riviere
-  - Import BDD + portails vers hub
-  - Placement 8-10 mobs (monstres C-3 + C-7a)
-  - 3-5 PNJ (garde forestier, herboriste, ermite)
-  - 5-8 spots de recolte (herbes, bois) — si v0.4 recolte pret
-  - 2-3 quetes zone (si v0.4 quetes pret)
+### ~~67 — Foret des murmures (L | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

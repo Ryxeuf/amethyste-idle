@@ -374,13 +374,71 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'monster' => 'stone_golem',
                 'spawnWeather' => WeatherType::Snow,
             ],
+
+            // === Forêt des murmures (map_3) — zone lvl 5-15 ===
+            // Mobs faciles près de l'entrée sud
+            'forest_slime_1' => [
+                'coordinates' => '30.52',
+                'monster' => 'slime',
+                'map' => 'map_3',
+            ],
+            'forest_spider_1' => [
+                'coordinates' => '25.48',
+                'monster' => 'spider',
+                'map' => 'map_3',
+            ],
+            // Mobs intermédiaires — clairière centrale et chemins
+            'forest_undine_1' => [
+                'coordinates' => '35.35',
+                'monster' => 'undine',
+                'map' => 'map_3',
+            ],
+            'forest_ochu_1' => [
+                'coordinates' => '15.20',
+                'monster' => 'ochu',
+                'map' => 'map_3',
+            ],
+            'forest_venom_snake_1' => [
+                'coordinates' => '35.45',
+                'monster' => 'venom_snake',
+                'map' => 'map_3',
+            ],
+            'forest_sylph_1' => [
+                'coordinates' => '25.15',
+                'monster' => 'sylph',
+                'map' => 'map_3',
+            ],
+            // Mobs avancés — zones reculées
+            'forest_alpha_wolf_1' => [
+                'coordinates' => '40.45',
+                'monster' => 'alpha_wolf',
+                'map' => 'map_3',
+            ],
+            'forest_salamander_1' => [
+                'coordinates' => '10.45',
+                'monster' => 'salamander',
+                'map' => 'map_3',
+            ],
+            // Mobs nocturnes
+            'forest_will_o_wisp_1' => [
+                'coordinates' => '45.10',
+                'monster' => 'will_o_wisp',
+                'map' => 'map_3',
+                'nocturnal' => true,
+            ],
+            'forest_creeping_shadow_1' => [
+                'coordinates' => '50.35',
+                'monster' => 'creeping_shadow',
+                'map' => 'map_3',
+                'nocturnal' => true,
+            ],
         ];
 
         foreach ($mobs as $key => $data) {
             $monster = $this->getReference($data['monster'], Monster::class);
 
             $mob = new Mob();
-            $mob->setMap($this->getReference('map_1', Map::class));
+            $mob->setMap($this->getReference($data['map'] ?? 'map_1', Map::class));
             $mob->setCoordinates($data['coordinates']);
             $mob->setMonster($monster);
             $mob->setLife($monster->getLife());

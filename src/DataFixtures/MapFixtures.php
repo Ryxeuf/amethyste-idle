@@ -38,6 +38,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($village);
         $this->addReference('map_2', $village);
 
+        // Forêt des murmures — zone lvl 5-15, arbres, clairières, rivière
+        $forest = new Map();
+        $forest->setName('Forêt des murmures');
+        $forest->setWorld($this->getReference('world_1', World::class));
+        $forest->setAreaWidth(60);
+        $forest->setAreaHeight(60);
+        $forest->setCreatedAt(new \DateTime());
+        $forest->setUpdatedAt(new \DateTime());
+
+        $manager->persist($forest);
+        $this->addReference('map_3', $forest);
+
         $manager->flush();
     }
 

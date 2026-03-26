@@ -1219,3 +1219,13 @@
 - [x] Stockage des animations dans les metadonnees terrain (cle `animations` par tileset)
 - [x] Exposition dans `GET /api/map/config` via champ `tileAnimations` (GID global → frames + durations)
 - [x] Test unitaire `TmxParserAnimationTest` (parsing avec et sans animations)
+
+## 67 — Foret des murmures (2026-03-26) ✅
+
+> Carte de contenu lvl 5-15 : foret 60x60 avec monstres, PNJ, spots de recolte et portails vers le hub.
+- [x] Design TMX 60x60 genere proceduralement (arbres, clairieres, riviere, chemins)
+- [x] Map entity `map_3` dans MapFixtures
+- [x] 10 mobs adaptes lvl 5-15 (slime, spider, undine, ochu, venom_snake, sylph, alpha_wolf, salamander, will_o_wisp nocturne, creeping_shadow nocturne)
+- [x] 3 PNJ : Sylvain le Garde forestier, Elara l'Herboriste (boutique potions), Thadeus l'Ermite
+- [x] Portails bidirectionnels Village ↔ Foret (3 portails)
+- [x] 6 spots de recolte (menthe, sauge, pissenlit/lavande, romarin, mandragore, peche riviere)
