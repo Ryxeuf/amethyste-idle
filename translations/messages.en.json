@@ -65,7 +65,8 @@
         "adventure": "Adventure",
         "character": "Character",
         "social": "Social"
-      }
+      },
+      "catalog": "Catalog"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -149,29 +150,6 @@
       "select_region": "Select a region",
       "click_region": "Click on a region to see its details",
       "difficulty": "Difficulty",
-      "resources": "Resources",
-      "enemies": "Enemies",
-      "explore": "Explore",
-      "available_quests": "Available Quests",
-      "discovered_locations": "Discovered Locations",
-      "energy_cost": "Energy Cost",
-      "start_quest": "Start Quest",
-      "fast_travel": "Fast Travel",
-      "exploration_message": "You begin exploring this region...",
-      "regions": {
-        "forest": "Mystic Forest",
-        "mountains": "Misty Mountains",
-        "desert": "Burning Desert",
-        "swamp": "Dark Swamp",
-        "capital": "Royal Capital"
-      },
-      "region_descriptions": {
-        "forest": "A dense and mysterious forest, home to a wide variety of plants and creatures. Sunlight barely penetrates through the canopy.",
-        "mountains": "Steep peaks and deep valleys, where the wind whistles between the rocks. The most dangerous creatures in the realm have made their home here.",
-        "desert": "A vast expanse of burning sand, where water is scarce and precious. The ruins of ancient civilizations are buried beneath the dunes.",
-        "swamp": "A dark and humid marshland, where mist clings to twisted trees. Strange creatures lurk in the murky waters.",
-        "capital": "The center of the kingdom, where magnificent buildings stand and merchants offer their wares. This is where the royal family resides."
-      },
       "resources": {
         "wood": "Wood",
         "herbs": "Herbs",
@@ -205,6 +183,27 @@
         "thief": "Thief",
         "guard": "Corrupt Guard",
         "noble": "Arrogant Noble"
+      },
+      "explore": "Explore",
+      "available_quests": "Available Quests",
+      "discovered_locations": "Discovered Locations",
+      "energy_cost": "Energy Cost",
+      "start_quest": "Start Quest",
+      "fast_travel": "Fast Travel",
+      "exploration_message": "You begin exploring this region...",
+      "regions": {
+        "forest": "Mystic Forest",
+        "mountains": "Misty Mountains",
+        "desert": "Burning Desert",
+        "swamp": "Dark Swamp",
+        "capital": "Royal Capital"
+      },
+      "region_descriptions": {
+        "forest": "A dense and mysterious forest, home to a wide variety of plants and creatures. Sunlight barely penetrates through the canopy.",
+        "mountains": "Steep peaks and deep valleys, where the wind whistles between the rocks. The most dangerous creatures in the realm have made their home here.",
+        "desert": "A vast expanse of burning sand, where water is scarce and precious. The ruins of ancient civilizations are buried beneath the dunes.",
+        "swamp": "A dark and humid marshland, where mist clings to twisted trees. Strange creatures lurk in the murky waters.",
+        "capital": "The center of the kingdom, where magnificent buildings stand and merchants offer their wares. This is where the royal family resides."
       },
       "quest_example": {
         "title": "The Shadow Threat",
@@ -437,6 +436,27 @@
       "offline": "Offline",
       "waiting": "Pending",
       "add_friend": "Add friend"
+    },
+    "catalog": {
+      "title": "Herbarium & Mining Catalog",
+      "subtitle": "Catalog of discovered resources",
+      "discovered": "%count%/%total% resources discovered",
+      "total_collected": "%count% total collected",
+      "collected": "%count% collected",
+      "tier_locations": "Info revealed",
+      "tier_recipes": "Recipes visible",
+      "tier_specialist": "Specialist of %resource%",
+      "info_element": "Information",
+      "value": "Value: %price% gils",
+      "next_tier": "Next tier: %count%/%required% collected",
+      "empty": "No resources discovered",
+      "empty_hint": "Harvest herbs, ores and plants on the map to fill your catalog",
+      "type_herb": "Herb",
+      "type_ore": "Ore",
+      "type_plant": "Plant",
+      "type_resource": "Resource",
+      "type_stuff": "Material",
+      "type_food": "Food"
     }
   },
   "common": {
