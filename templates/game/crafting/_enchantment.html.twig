@@ -1,0 +1,94 @@
+<div class="space-y-6">
+    {# Enchantements actifs #}
+    {% if activeEnchantments|length > 0 %}
+        <div>
+            <h3 class="text-lg font-semibold text-purple-300 mb-3">Enchantements actifs</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {% for enchantment in activeEnchantments %}
+                    <div class="bg-gray-800 border border-purple-700 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-purple-400 font-medium">
+                                {% if enchantment.definition.icon %}{{ enchantment.definition.icon }}{% endif %}
+                                {{ enchantment.definition.name }}
+                            </span>
+                            <span class="text-xs text-gray-400">
+                                sur {{ enchantment.playerItem.genericItem.name }}
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-300 mb-1">
+                            {% for stat, value in enchantment.definition.statBonuses %}
+                                <span class="text-green-400">+{{ value }} {{ stat }}</span>
+                                {% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            {% set remaining = enchantment.remainingSeconds %}
+                            {% if remaining > 3600 %}
+                                Expire dans {{ (remaining / 3600)|round(0, 'floor') }}h{{ ((remaining % 3600) / 60)|round(0, 'floor') }}min
+                            {% elseif remaining > 60 %}
+                                Expire dans {{ (remaining / 60)|round(0, 'floor') }}min
+                            {% else %}
+                                Expire dans {{ remaining }}s
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# Formulaire d'application d'enchantement #}
+    {% if enchantmentDefinitions|length > 0 and equippedItems|length > 0 %}
+        <div>
+            <h3 class="text-lg font-semibold text-purple-300 mb-3">Appliquer un enchantement</h3>
+            <form action="{{ path('app_game_craft_enchant') }}" method="POST" class="bg-gray-800 border border-gray-700 rounded-lg p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Equipement cible</label>
+                    <select name="player_item_id" class="w-full bg-gray-900 text-gray-200 border border-gray-600 rounded px-3 py-2 text-sm focus:border-purple-500 focus:outline-none">
+                        {% for item in equippedItems %}
+                            <option value="{{ item.id }}">{{ item.genericItem.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Enchantement</label>
+                    <select name="enchantment_slug" class="w-full bg-gray-900 text-gray-200 border border-gray-600 rounded px-3 py-2 text-sm focus:border-purple-500 focus:outline-none">
+                        {% for definition in enchantmentDefinitions %}
+                            <option value="{{ definition.slug }}">
+                                {% if definition.icon %}{{ definition.icon }} {% endif %}{{ definition.name }}
+                                ({% for stat, value in definition.statBonuses %}+{{ value }} {{ stat }}{% if not loop.last %}, {% endif %}{% endfor %})
+                                — {{ (definition.duration / 60)|round(0, 'floor') }}min
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {# Details de l'enchantement selectionne #}
+                {% for definition in enchantmentDefinitions %}
+                    <div class="text-xs text-gray-400">
+                        <span class="font-medium">{{ definition.name }} :</span>
+                        {% if definition.ingredients|length > 0 %}
+                            Ingredients :
+                            {% for ingredient in definition.ingredients %}
+                                {{ ingredient.slug }} x{{ ingredient.quantity }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                        {% if definition.cost > 0 %}
+                            | Cout : {{ definition.cost }} gils
+                        {% endif %}
+                        | Niv. alchimiste requis : {{ definition.requiredLevel }}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded transition-colors text-sm">
+                    Enchanter
+                </button>
+            </form>
+        </div>
+    {% elseif enchantmentDefinitions|length == 0 %}
+        <p class="text-gray-400 text-sm">Aucun enchantement disponible a votre niveau d'alchimie.</p>
+    {% elseif equippedItems|length == 0 %}
+        <p class="text-gray-400 text-sm">Equipez un objet pour pouvoir l'enchanter.</p>
+    {% endif %}
+</div>

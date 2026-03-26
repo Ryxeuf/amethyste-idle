@@ -5,6 +5,7 @@ namespace App\Controller\Game\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
+use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
@@ -26,6 +27,7 @@ class FightAttackController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogger $combatLogger,
         private readonly FightTurnResolver $turnResolver,
+        private readonly EnchantmentManager $enchantmentManager,
     ) {
     }
 
@@ -147,6 +149,10 @@ class FightAttackController extends AbstractController
         $baseDamage = 3;
         $variance = random_int(0, 2);
 
-        return $baseDamage + $variance;
+        // Bonus d'enchantement sur les degats
+        $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($attacker);
+        $enchantDamage = (int) ($enchantBonuses['damage'] ?? 0);
+
+        return $baseDamage + $variance + $enchantDamage;
     }
 }

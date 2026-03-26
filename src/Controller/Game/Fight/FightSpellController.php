@@ -5,6 +5,7 @@ namespace App\Controller\Game\Fight;
 use App\Entity\App\Fight;
 use App\Entity\CharacterInterface;
 use App\Enum\Element;
+use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
@@ -39,6 +40,7 @@ class FightSpellController extends AbstractController
         private readonly CombatLogger $combatLogger,
         private readonly FightTurnResolver $turnResolver,
         private readonly GearHelper $gearHelper,
+        private readonly EnchantmentManager $enchantmentManager,
     ) {
     }
 
@@ -137,6 +139,14 @@ class FightSpellController extends AbstractController
 
         // Calculate combat bonuses from skills
         $bonuses = $this->combatSkillResolver->getCombatBonuses($player);
+
+        // Apply enchantment bonuses from equipped items
+        $enchantBonuses = $this->enchantmentManager->getEnchantmentBonuses($player);
+        foreach (['damage', 'heal', 'hit', 'critical'] as $stat) {
+            if (isset($enchantBonuses[$stat])) {
+                $bonuses[$stat] += (int) $enchantBonuses[$stat];
+            }
+        }
 
         // Apply element match bonus from materia/slot matching (+25% damage)
         if ($elementMatch) {
