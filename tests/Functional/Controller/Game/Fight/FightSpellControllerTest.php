@@ -19,6 +19,7 @@ use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -39,6 +40,7 @@ class FightSpellControllerTest extends TestCase
     private MobActionHandler&MockObject $mobActionHandler;
     private CombatLogger&MockObject $combatLogger;
     private FightTurnResolver&MockObject $turnResolver;
+    private PlayerEffectiveStatsCalculator&MockObject $playerEffectiveStatsCalculator;
     private FightSpellController $controller;
 
     protected function setUp(): void
@@ -60,6 +62,11 @@ class FightSpellControllerTest extends TestCase
         $enchantmentManager = $this->createMock(EnchantmentManager::class);
         $enchantmentManager->method('getEnchantmentBonuses')->willReturn([]);
 
+        $this->playerEffectiveStatsCalculator = $this->createMock(PlayerEffectiveStatsCalculator::class);
+        $this->playerEffectiveStatsCalculator->method('getEffectiveMaxLife')->willReturnCallback(
+            static fn (Player $p) => $p->getMaxLife()
+        );
+
         $this->controller = new FightSpellController(
             $this->playerHelper,
             $this->entityManager,
@@ -73,6 +80,7 @@ class FightSpellControllerTest extends TestCase
             $this->turnResolver,
             $gearHelper,
             $enchantmentManager,
+            $this->playerEffectiveStatsCalculator,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

@@ -29,10 +29,11 @@
 				<div class="bg-gray-700/50 rounded-lg p-4 mb-6">
 					<div class="flex items-center justify-between mb-2">
 						<span class="text-sm text-gray-400">{{ 'game.fight.hp'|trans }}</span>
-						<span class="text-sm font-bold text-white">{{ player.life }}/{{ player.maxLife }}</span>
+						{% set effMax = effectiveMaxLife is defined ? effectiveMaxLife : player.maxLife %}
+						<span class="text-sm font-bold text-white">{{ player.life }}/{{ effMax }}</span>
 					</div>
 					<div class="w-full bg-gray-600 rounded-full h-2">
-						<div class="bg-red-500 h-2 rounded-full" style="width: {{ (player.life / player.maxLife) * 100 }}%"></div>
+						<div class="bg-red-500 h-2 rounded-full" style="width: {{ (player.life / (effMax > 0 ? effMax : 1)) * 100 }}%"></div>
 					</div>
 				</div>
 

@@ -5,7 +5,7 @@ import { Controller } from '@hotwired/stimulus';
  * when a GameEvent becomes active. Also shows active events in the HUD badge.
  */
 export default class extends Controller {
-    static targets = ['badge', 'list'];
+    static targets = ['badge', 'list', 'wrapper', 'trigger'];
     static values = {
         mercureUrl: String,
         eventsUrl: String,
@@ -15,12 +15,34 @@ export default class extends Controller {
         this._activeEvents = [];
         this._loadActiveEvents();
         this._connectMercure();
+        this._onDocumentClick = (e) => {
+            if (!this.hasWrapperTarget || this.wrapperTarget.contains(e.target)) return;
+            this._setPanelOpen(false);
+        };
+        document.addEventListener('click', this._onDocumentClick);
     }
 
     disconnect() {
+        document.removeEventListener('click', this._onDocumentClick);
         if (this._eventSource) {
             this._eventSource.close();
             this._eventSource = null;
+        }
+    }
+
+    togglePanel(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!this.hasWrapperTarget) return;
+        const open = !this.wrapperTarget.classList.contains('panel-open');
+        this._setPanelOpen(open);
+    }
+
+    _setPanelOpen(open) {
+        if (!this.hasWrapperTarget) return;
+        this.wrapperTarget.classList.toggle('panel-open', open);
+        if (this.hasTriggerTarget) {
+            this.triggerTarget.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
     }
 

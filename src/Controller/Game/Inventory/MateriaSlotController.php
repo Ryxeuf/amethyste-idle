@@ -4,6 +4,7 @@ namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\Slot;
 use App\Helper\PlayerHelper;
+use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,6 +16,7 @@ class MateriaSlotController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerItemHelper $playerItemHelper,
     ) {
     }
 
@@ -56,10 +58,38 @@ class MateriaSlotController extends AbstractController
             $availableMateria[] = $materiaItem;
         }
 
+        $slotElement = $slot->getElement();
+        $materiaRows = [];
+        foreach ($availableMateria as $materiaItem) {
+            $blockMessage = $this->playerItemHelper->getMateriaSocketBlockMessage($materiaItem);
+            $gi = $materiaItem->getGenericItem();
+            $isElementMatch = $slotElement !== null
+                && $slotElement->value !== 'none'
+                && $gi->getElement()->value !== 'none'
+                && $slotElement === $gi->getElement();
+            $materiaRows[] = [
+                'materia' => $materiaItem,
+                'canSocket' => $blockMessage === null,
+                'blockMessage' => $blockMessage,
+                'isElementMatch' => $isElementMatch,
+            ];
+        }
+
+        usort($materiaRows, static function (array $a, array $b): int {
+            if ($a['canSocket'] !== $b['canSocket']) {
+                return $a['canSocket'] ? -1 : 1;
+            }
+            if ($a['canSocket'] && $b['canSocket'] && $a['isElementMatch'] !== $b['isElementMatch']) {
+                return $a['isElementMatch'] ? -1 : 1;
+            }
+
+            return $a['materia']->getGenericItem()->getName() <=> $b['materia']->getGenericItem()->getName();
+        });
+
         return $this->render('game/inventory/materia/_slot_select.html.twig', [
             'slot' => $slot,
             'gearItem' => $gearItem,
-            'availableMateria' => $availableMateria,
+            'materiaRows' => $materiaRows,
         ]);
     }
 }

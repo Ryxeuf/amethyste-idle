@@ -10,6 +10,7 @@ use App\Entity\App\PlayerStatusEffect;
 use App\Entity\Game\StatusEffect;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -19,6 +20,7 @@ class StatusEffectManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
     private CombatLogger&MockObject $combatLogger;
+    private PlayerEffectiveStatsCalculator&MockObject $playerEffectiveStatsCalculator;
     private EntityRepository&MockObject $fightStatusEffectRepo;
     private EntityRepository&MockObject $playerStatusEffectRepo;
     private StatusEffectManager $manager;
@@ -48,8 +50,12 @@ class StatusEffectManagerTest extends TestCase
 
         $this->fight = $this->createMock(Fight::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
+        $this->playerEffectiveStatsCalculator = $this->createMock(PlayerEffectiveStatsCalculator::class);
+        $this->playerEffectiveStatsCalculator->method('getEffectiveMaxLife')->willReturnCallback(
+            static fn (Player $p) => $p->getMaxLife()
+        );
 
-        $this->manager = new StatusEffectManager($this->entityManager, $this->combatLogger);
+        $this->manager = new StatusEffectManager($this->entityManager, $this->combatLogger, $this->playerEffectiveStatsCalculator);
     }
 
     /**

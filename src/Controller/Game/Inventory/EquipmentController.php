@@ -4,6 +4,7 @@ namespace App\Controller\Game\Inventory;
 
 use App\Entity\Game\Item;
 use App\GameEngine\Fight\EquipmentSetResolver;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,6 +18,7 @@ class EquipmentController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly GearHelper $gearHelper,
         private readonly EquipmentSetResolver $equipmentSetResolver,
+        private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
     ) {
     }
 
@@ -46,21 +48,12 @@ class EquipmentController extends AbstractController
             }
         }
 
-        $stats = [
-            'maxLife' => $player->getMaxLife(),
-            'life' => $player->getLife(),
-            'hit' => $player->getHit(),
-            'speed' => $player->getSpeed(),
-            'energy' => $player->getEnergy(),
-            'maxEnergy' => $player->getMaxEnergy(),
-            'protection' => $totalProtection,
-        ];
-
         $activeSets = $this->equipmentSetResolver->getActiveSets($player);
         $setBonuses = $this->equipmentSetResolver->getSetBonuses($player);
 
-        // Ajouter protection des sets aux stats
-        $stats['protection'] += $setBonuses['protection'];
+        $totalProtection += $setBonuses['protection'];
+
+        $stats = $this->playerEffectiveStatsCalculator->getInventorySheetStats($player, $totalProtection);
 
         return $this->render('game/inventory/equipment/_list.html.twig', [
             'equipped' => $equipped,

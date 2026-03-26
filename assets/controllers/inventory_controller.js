@@ -126,13 +126,17 @@ export default class extends Controller {
         el.addEventListener('mouseenter', (e) => this._showTooltip(e, el));
         el.addEventListener('mouseleave', () => this._hideTooltip());
         el.addEventListener('mousemove', (e) => this._moveTooltip(e));
-        // Mobile: tap
+        // Mobile: tap — ouvre la fiche objet, sauf si l'utilisateur interagit avec
+        // les slots materia (liens / orbes) ou le formulaire de déséquipement.
         el.addEventListener('click', (e) => {
-            if (this._isMobile) {
-                e.preventDefault();
-                e.stopPropagation();
-                this._showSheet(el);
-            }
+            if (!this._isMobile) return;
+            if (e.target.closest('.materia-slots-bar')) return;
+            if (e.target.closest('a[href]')) return;
+            if (e.target.closest('form')) return;
+            if (e.target.closest('button')) return;
+            e.preventDefault();
+            e.stopPropagation();
+            this._showSheet(el);
         });
         // Make it look tappable
         el.style.cursor = 'pointer';

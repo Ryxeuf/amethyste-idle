@@ -17,6 +17,7 @@ use App\GameEngine\Fight\Calculator\DamageCalculator;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\GameEngine\World\WeatherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -30,6 +31,7 @@ class SpellApplicatorTest extends TestCase
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private StatusEffectManager&MockObject $statusEffectManager;
     private CombatLogger&MockObject $combatLogger;
+    private PlayerEffectiveStatsCalculator&MockObject $playerEffectiveStatsCalculator;
     private SpellApplicator $spellApplicator;
 
     protected function setUp(): void
@@ -38,6 +40,10 @@ class SpellApplicatorTest extends TestCase
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
+        $this->playerEffectiveStatsCalculator = $this->createMock(PlayerEffectiveStatsCalculator::class);
+        $this->playerEffectiveStatsCalculator->method('getEffectiveMaxLife')->willReturnCallback(
+            static fn (Player $p) => $p->getMaxLife()
+        );
 
         // Par defaut, pas de status effect actif
         $this->statusEffectManager->method('isCharacterBerserk')->willReturn(false);
@@ -56,6 +62,7 @@ class SpellApplicatorTest extends TestCase
             new DamageCalculator(),
             new CriticalCalculator(),
             new WeatherService(),
+            $this->playerEffectiveStatsCalculator,
         );
     }
 
@@ -269,6 +276,7 @@ class SpellApplicatorTest extends TestCase
             new DamageCalculator(),
             new CriticalCalculator(),
             new WeatherService(),
+            $this->playerEffectiveStatsCalculator,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -316,6 +324,7 @@ class SpellApplicatorTest extends TestCase
             new DamageCalculator(),
             new CriticalCalculator(),
             new WeatherService(),
+            $this->playerEffectiveStatsCalculator,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -363,6 +372,7 @@ class SpellApplicatorTest extends TestCase
             new DamageCalculator(),
             new CriticalCalculator(),
             new WeatherService(),
+            $this->playerEffectiveStatsCalculator,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);
@@ -408,6 +418,7 @@ class SpellApplicatorTest extends TestCase
             new DamageCalculator(),
             new CriticalCalculator(),
             new WeatherService(),
+            $this->playerEffectiveStatsCalculator,
         );
 
         $this->spellApplicator->apply($spell, $sender, $target, ['fight' => $fight]);

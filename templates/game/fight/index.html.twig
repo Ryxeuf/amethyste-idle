@@ -201,6 +201,7 @@
 			<div class="space-y-2">
 				{% for fightPlayer in fight.players %}
 					{% set isCurrentPlayer = fightPlayer.id == player.id %}
+					{% set effMaxLife = effectiveMaxLifeByPlayer[fightPlayer.id] ?? fightPlayer.maxLife %}
 					<div class="selectable-target rounded-lg p-2 sm:p-3 transition-all
 						{% if isCurrentPlayer %}bg-gradient-to-br from-purple-900/80 to-purple-800/80 border-2 border-purple-500{% else %}game-card border border-purple-500/20{% endif %}"
 						data-player-id="{{ fightPlayer.id }}" data-target-type="player">
@@ -222,10 +223,10 @@
 						<div class="mb-1">
 							<div class="flex items-center justify-between mb-0.5">
 								<span class="text-[10px] text-gray-400">{{ 'game.fight.hp'|trans }}</span>
-								<span class="text-[10px] font-bold text-white">{{ fightPlayer.life }}/{{ fightPlayer.maxLife }}</span>
+								<span class="text-[10px] font-bold text-white">{{ fightPlayer.life }}/{{ effMaxLife }}</span>
 							</div>
 							<div class="progress-bar progress-bar-compact">
-								<div class="progress-bar-fill bg-red-500" style="width: {{ (fightPlayer.life/fightPlayer.maxLife)*100 }}%"></div>
+								<div class="progress-bar-fill bg-red-500" style="width: {{ (fightPlayer.life / (effMaxLife > 0 ? effMaxLife : 1)) * 100 }}%"></div>
 							</div>
 						</div>
 

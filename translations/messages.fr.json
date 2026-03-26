@@ -132,6 +132,27 @@
         "action": "Action",
         "socket": "Sertir"
       },
+      "materia_counter_link_title": "Choisir une materia à sertir dans un emplacement vide",
+      "effective_pv_bonus": "Bonus PV (sets, compétences, enchantements)",
+      "materia_socket": {
+        "title": "Sertir une materia",
+        "back": "Retour à l'équipement",
+        "slot_element": "Slot %element%",
+        "slot_any": "Aucune affinité élémentaire sur ce lien",
+        "element_bonus_hint": "Une materia du même élément que le slot reçoit un bonus en combat et en XP.",
+        "list_title": "Materia disponibles",
+        "empty": "Aucune materia disponible dans votre inventaire dédié.",
+        "uses": "utilisations",
+        "badge_bonus": "Bonus élément",
+        "no_element_bonus": "Élément différent du slot : sertissage possible, sans bonus d'affinité.",
+        "blocked_badge": "Bloqué",
+        "block_not_materia": "Cet objet n'est pas une materia.",
+        "block_not_owned": "Vous ne possédez pas cette materia.",
+        "block_no_player": "Session invalide.",
+        "block_requirements": "Compétences requises : %skills%",
+        "block_no_spell": "Cette materia n'a pas de sort associé.",
+        "block_unlock": "Apprenez la compétence qui débloque le sort « %spell% » pour l'utiliser."
+      },
       "item_details": {
         "name": "Nom",
         "type": "Type",

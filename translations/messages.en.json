@@ -130,6 +130,27 @@
         "action": "Action",
         "socket": "Socket"
       },
+      "materia_counter_link_title": "Choose a materia to socket in an empty slot",
+      "effective_pv_bonus": "Bonus HP (sets, skills, enchantments)",
+      "materia_socket": {
+        "title": "Socket a materia",
+        "back": "Back to equipment",
+        "slot_element": "%element% slot",
+        "slot_any": "No elemental affinity on this link",
+        "element_bonus_hint": "A materia matching the slot's element gets bonuses in combat and XP.",
+        "list_title": "Available materia",
+        "empty": "No materia in your dedicated inventory.",
+        "uses": "uses",
+        "badge_bonus": "Elem. bonus",
+        "no_element_bonus": "Different element than the slot: you can socket it, without affinity bonus.",
+        "blocked_badge": "Locked",
+        "block_not_materia": "This item is not a materia.",
+        "block_not_owned": "You do not own this materia.",
+        "block_no_player": "Invalid session.",
+        "block_requirements": "Required skills: %skills%",
+        "block_no_spell": "This materia has no linked spell.",
+        "block_unlock": "Learn the skill that unlocks spell « %spell% » to use it."
+      },
       "item_details": {
         "name": "Name",
         "type": "Type",

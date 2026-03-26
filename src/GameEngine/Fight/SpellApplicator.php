@@ -13,6 +13,7 @@ use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Fight\Calculator\CriticalCalculator;
 use App\GameEngine\Fight\Calculator\DamageCalculator;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\GameEngine\World\WeatherService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -27,6 +28,7 @@ class SpellApplicator
         private readonly DamageCalculator $damageCalculator,
         private readonly CriticalCalculator $criticalCalculator,
         private readonly WeatherService $weatherService,
+        private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
     ) {
     }
 
@@ -39,8 +41,12 @@ class SpellApplicator
 
         $messages = [];
 
-        $damage = $this->damageCalculator->computeBaseDamage($spell, $domainDamage, $target);
-        $heal = $this->damageCalculator->computeBaseHeal($spell, $domainHeal, $target);
+        $effectiveMaxLife = $target instanceof Player
+            ? $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($target)
+            : null;
+
+        $damage = $this->damageCalculator->computeBaseDamage($spell, $domainDamage, $target, $effectiveMaxLife);
+        $heal = $this->damageCalculator->computeBaseHeal($spell, $domainHeal, $target, $effectiveMaxLife);
 
         // Critical hit check
         if ($this->criticalCalculator->isCritical($spell, $domainCritical)) {
@@ -104,7 +110,10 @@ class SpellApplicator
         }
 
         $life = $target->getLife() - $damage + $heal;
-        $life = min($target->getMaxLife(), $life);
+        $capMax = $target instanceof Player
+            ? $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($target)
+            : $target->getMaxLife();
+        $life = min($capMax, $life);
         $life = max(0, $life);
 
         $target->setLife($life);

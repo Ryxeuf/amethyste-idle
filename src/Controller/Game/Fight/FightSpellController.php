@@ -16,6 +16,7 @@ use App\GameEngine\Fight\LinkedMateriaResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,6 +42,7 @@ class FightSpellController extends AbstractController
         private readonly FightTurnResolver $turnResolver,
         private readonly GearHelper $gearHelper,
         private readonly EnchantmentManager $enchantmentManager,
+        private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
     ) {
     }
 
@@ -185,7 +187,10 @@ class FightSpellController extends AbstractController
             $options['damage'] = $bonuses['damage'];
 
             // Self damage from Eclipse synergy
-            $selfDamage = $this->synergyCalculator->getSelfDamage($player->getMaxLife(), $synergyData);
+            $selfDamage = $this->synergyCalculator->getSelfDamage(
+                $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($player),
+                $synergyData
+            );
             if ($selfDamage > 0) {
                 $player->setLife(max(0, $player->getLife() - $selfDamage));
                 $this->entityManager->persist($player);

@@ -2,6 +2,7 @@
 
 {% block turbo_stream_content %}
 <turbo-frame id="inventory-content">
+    {% include 'game/inventory/_frame_flashes.html.twig' %}
     <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
         <div class="flex items-center justify-between mb-3">
             <h2 class="text-xs sm:text-sm font-semibold text-purple-400 uppercase tracking-wide flex items-center gap-1.5">

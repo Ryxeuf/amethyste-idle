@@ -8,6 +8,7 @@ use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -25,6 +26,7 @@ class FightIndexController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly FightTurnResolver $turnResolver,
+        private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
     ) {
     }
 
@@ -112,6 +114,11 @@ class FightIndexController extends AbstractController
         $timeline = $this->turnResolver->getTimeline($fight, 3);
         $currentRound = (int) floor($fight->getStep() / max(1, count($this->turnResolver->getTurnOrder($fight)))) + 1;
 
+        $effectiveMaxLifeByPlayer = [];
+        foreach ($fight->getPlayers() as $fightPlayerEntity) {
+            $effectiveMaxLifeByPlayer[$fightPlayerEntity->getId()] = $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($fightPlayerEntity);
+        }
+
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
             'fight' => $fight,
@@ -122,6 +129,7 @@ class FightIndexController extends AbstractController
             'fightLogs' => $fightLogs,
             'timeline' => $timeline,
             'currentRound' => $currentRound,
+            'effectiveMaxLifeByPlayer' => $effectiveMaxLifeByPlayer,
         ]);
     }
 
@@ -146,6 +154,7 @@ class FightIndexController extends AbstractController
 
         return $this->render('game/fight/defeat.html.twig', [
             'player' => $player,
+            'effectiveMaxLife' => $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($player),
         ]);
     }
 
@@ -188,6 +197,7 @@ class FightIndexController extends AbstractController
 
         return $this->render('game/fight/defeat.html.twig', [
             'player' => $player,
+            'effectiveMaxLife' => $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($player),
         ]);
     }
 }

@@ -13,15 +13,17 @@ class DamageCalculator
      *
      * @param int $domainDamage bonus de degats du domaine
      */
-    public function computeBaseDamage(Spell $spell, int $domainDamage, CharacterInterface $target): int
+    public function computeBaseDamage(Spell $spell, int $domainDamage, CharacterInterface $target, ?int $effectiveMaxLife = null): int
     {
         $spellDamage = $spell->getDamage();
         if ($spellDamage === null || $spellDamage === 0) {
             return 0;
         }
 
+        $maxForPercent = $effectiveMaxLife ?? $target->getMaxLife();
+
         if ($spell->isPercent()) {
-            return (int) round($target->getMaxLife() * ($spellDamage / 100.0)) + $domainDamage;
+            return (int) round($maxForPercent * ($spellDamage / 100.0)) + $domainDamage;
         }
 
         return $spellDamage + $domainDamage;
@@ -32,15 +34,17 @@ class DamageCalculator
      *
      * @param int $domainHeal bonus de soin du domaine
      */
-    public function computeBaseHeal(Spell $spell, int $domainHeal, CharacterInterface $target): int
+    public function computeBaseHeal(Spell $spell, int $domainHeal, CharacterInterface $target, ?int $effectiveMaxLife = null): int
     {
         $spellHeal = $spell->getHeal();
         if ($spellHeal === null || $spellHeal === 0) {
             return 0;
         }
 
+        $maxForPercent = $effectiveMaxLife ?? $target->getMaxLife();
+
         if ($spell->isPercent()) {
-            return (int) round($target->getMaxLife() * ($spellHeal / 100.0)) + $domainHeal;
+            return (int) round($maxForPercent * ($spellHeal / 100.0)) + $domainHeal;
         }
 
         return $spellHeal + $domainHeal;

@@ -3,8 +3,12 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\Slot;
+use App\Exception\ItemNotEquippedException;
+use App\Exception\ItemNotMateriaException;
+use App\Exception\ItemRequirementsException;
 use App\GameEngine\Gear\MateriaGearSetter;
 use App\Helper\PlayerHelper;
+use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,6 +21,7 @@ class SetMateriaController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly MateriaGearSetter $materiaGearSetter,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerItemHelper $playerItemHelper,
     ) {
     }
 
@@ -71,11 +76,24 @@ class SetMateriaController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_equipment_list');
         }
 
+        $block = $this->playerItemHelper->getMateriaSocketBlockMessage($materia);
+        if ($block !== null) {
+            $this->addFlash('error', $block);
+
+            return $this->redirectToRoute('app_game_inventory_equipment_list');
+        }
+
         try {
             $this->materiaGearSetter->setMateria($materia, $slot);
             $this->addFlash('success', 'Materia "' . $materia->getGenericItem()->getName() . '" équipée avec succès.');
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Impossible d\'équiper cette materia. Vérifiez les prérequis.');
+        } catch (ItemRequirementsException $e) {
+            $this->addFlash('error', $this->playerItemHelper->getMateriaSocketBlockMessage($materia) ?? $e->getMessage());
+        } catch (ItemNotEquippedException) {
+            $this->addFlash('error', 'L\'équipement n\'est plus porté.');
+        } catch (ItemNotMateriaException) {
+            $this->addFlash('error', 'Cet objet n\'est pas une materia.');
+        } catch (\Throwable) {
+            $this->addFlash('error', 'Impossible d\'équiper cette materia. Réessayez.');
         }
 
         return $this->redirectToRoute('app_game_inventory_equipment_list');

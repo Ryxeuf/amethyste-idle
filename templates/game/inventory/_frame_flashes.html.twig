@@ -1,0 +1,19 @@
+{# Toasts Turbo : les flashes ne sont pas dans le layout lors d’un remplacement de frame — déclenche le même système que game.html.twig #}
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <script>
+            (function () {
+                const type = {{ type|json_encode|raw }};
+                const msg = {{ message|json_encode|raw }};
+                const run = function () {
+                    if (window.Toast && typeof window.Toast.show === 'function') {
+                        window.Toast.show(type, msg);
+                    } else {
+                        window.dispatchEvent(new CustomEvent('toast:show', { detail: { type: type, message: msg } }));
+                    }
+                };
+                setTimeout(run, 30);
+            })();
+        </script>
+    {% endfor %}
+{% endfor %}

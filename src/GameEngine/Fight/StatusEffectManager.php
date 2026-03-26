@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerStatusEffect;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\StatusEffect;
+use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class StatusEffectManager
@@ -16,6 +17,7 @@ class StatusEffectManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly CombatLogger $combatLogger,
+        private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
     ) {
     }
 
@@ -105,7 +107,10 @@ class StatusEffectManager
             // Heal over time (regeneration)
             if ($effect->isHealing()) {
                 $heal = $effect->getHealPerTurn();
-                $newLife = min($character->getMaxLife(), $character->getLife() + $heal);
+                $cap = $character instanceof Player
+                    ? $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($character)
+                    : $character->getMaxLife();
+                $newLife = min($cap, $character->getLife() + $heal);
                 $character->setLife($newLife);
 
                 $this->entityManager->persist($character);
