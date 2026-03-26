@@ -45,7 +45,7 @@ export default class extends Controller {
     _showWalls = true
     _tilesetsLoaded = false
     _renderTiles = true
-    _tool = 'select' // select, block, unblock, water, wall, eraseWall, paint
+    _tool = 'select' // select, block, unblock, water, wall, eraseWall, paint, eraser
     _pendingChanges = {}
     _pendingBorderChanges = {} // key: "x.y", value: [n, e, s, w]
     _pendingTileChanges = {} // key: "x.y", value: {layer, gid} — tile GID changes
@@ -292,7 +292,21 @@ export default class extends Controller {
             const hx = this._hoveredCell.x * ts + this._offsetX
             const hy = this._hoveredCell.y * ts + this._offsetY
 
-            if (this._tool === 'paint' && this._pickerGid > 0 && this._tilesetsLoaded) {
+            if (this._tool === 'eraser') {
+                // Eraser ghost preview: red overlay
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'
+                ctx.fillRect(hx, hy, ts, ts)
+                ctx.strokeStyle = '#ef4444'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, ts, ts)
+                // X mark
+                ctx.beginPath()
+                ctx.moveTo(hx + ts * 0.25, hy + ts * 0.25)
+                ctx.lineTo(hx + ts * 0.75, hy + ts * 0.75)
+                ctx.moveTo(hx + ts * 0.75, hy + ts * 0.25)
+                ctx.lineTo(hx + ts * 0.25, hy + ts * 0.75)
+                ctx.stroke()
+            } else if (this._tool === 'paint' && this._pickerGid > 0 && this._tilesetsLoaded) {
                 // Ghost preview of stamp
                 ctx.globalAlpha = 0.5
                 for (let dy = 0; dy < this._pickerStampHeight; dy++) {
@@ -562,8 +576,17 @@ export default class extends Controller {
         const mouseX = e.clientX - rect.left
         const mouseY = e.clientY - rect.top
 
-        if (e.button === 1 || e.button === 2 || (e.button === 0 && e.altKey)) {
-            // Middle click or right click or alt+click: pan
+        // Alt+click: eyedropper (pick tile GID under cursor)
+        if (e.button === 0 && e.altKey) {
+            const tileCoords = this._screenToTile(mouseX, mouseY)
+            if (tileCoords) {
+                this._eyedropperPick(tileCoords.x, tileCoords.y)
+            }
+            return
+        }
+
+        if (e.button === 1 || e.button === 2) {
+            // Middle click or right click: pan
             this._isDragging = true
             this._dragStartX = mouseX
             this._dragStartY = mouseY
@@ -607,6 +630,9 @@ export default class extends Controller {
             } else if (this._tool === 'paint') {
                 this._paintTile(tileCoords.x, tileCoords.y)
                 this._isPainting = true
+            } else if (this._tool === 'eraser') {
+                this._eraseTile(tileCoords.x, tileCoords.y)
+                this._isPainting = true
             }
         }
     }
@@ -635,6 +661,8 @@ export default class extends Controller {
                     this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, this._isPaintingOneWay)
                 } else if (this._tool === 'paint') {
                     this._paintTile(tileCoords.x, tileCoords.y)
+                } else if (this._tool === 'eraser') {
+                    this._eraseTile(tileCoords.x, tileCoords.y)
                 } else {
                     const movementMap = { block: -1, unblock: 0, water: 2, climb: 4 }
                     const movement = movementMap[this._tool] ?? 0
@@ -704,6 +732,9 @@ export default class extends Controller {
     }
 
     _onKeyDown = (e) => {
+        // Ignore shortcuts when typing in an input/textarea
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return
+
         if (e.key === 'Delete' && this._selectedEntity) {
             e.preventDefault()
             this._deleteSelectedEntity()
@@ -714,6 +745,38 @@ export default class extends Controller {
             this._selectedEntity = null
             this.infoTarget.innerHTML = '<p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>'
             this._render()
+        }
+
+        // Tool shortcuts
+        if (e.key === 'e' || e.key === 'E') { this.setToolEraser(); e.preventDefault() }
+        if (e.key === 'p' || e.key === 'P') { this.setToolPaint(); e.preventDefault() }
+        if (e.key === 'v' || e.key === 'V') { this.setToolSelect(); e.preventDefault() }
+        if (e.key === 'b' || e.key === 'B') { this.setToolBlock(); e.preventDefault() }
+        if (e.key === 'u' || e.key === 'U') { this.setToolUnblock(); e.preventDefault() }
+        if (e.key === 'w' || e.key === 'W') { this.setToolWall(); e.preventDefault() }
+
+        // Layer shortcuts: 1/2/3/4
+        if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
+            const layer = parseInt(e.key, 10) - 1
+            this._pickerLayer = layer
+            // Update the radio buttons in the tileset picker
+            const radios = document.querySelectorAll('input[name="active-layer"]')
+            radios.forEach(r => { r.checked = parseInt(r.value, 10) === layer })
+            // Notify the tileset picker
+            const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
+            if (pickerEl) {
+                const pickerCtrl = this.application.getControllerForElementAndIdentifier(pickerEl, 'admin-tileset-picker')
+                if (pickerCtrl) {
+                    pickerCtrl._activeLayer = layer
+                }
+            }
+            e.preventDefault()
+        }
+
+        // Ctrl+S: save
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault()
+            this.saveChanges()
         }
     }
 
@@ -1122,6 +1185,57 @@ export default class extends Controller {
         this._render()
     }
 
+    _eyedropperPick(x, y) {
+        const key = x + '.' + y
+        const cell = this._cells[key]
+        if (!cell || !cell.l) return
+
+        const gid = cell.l[this._pickerLayer] || 0
+        if (gid <= 0) return
+
+        // Find the tileset picker controller and update its selection
+        const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
+        if (pickerEl) {
+            const pickerCtrl = this.application.getControllerForElementAndIdentifier(pickerEl, 'admin-tileset-picker')
+            if (pickerCtrl) {
+                pickerCtrl.selectGid(gid)
+            }
+        }
+
+        // Update local state
+        this._pickerGid = gid
+        this._pickerStampWidth = 1
+        this._pickerStampHeight = 1
+        this._pickerStampGids = [gid]
+
+        // Switch to paint tool
+        this._tool = 'paint'
+        this._updateToolButtons()
+        this._render()
+    }
+
+    _eraseTile(x, y) {
+        const key = x + '.' + y
+        const cell = this._cells[key]
+        if (!cell) return
+
+        // Set GID to 0 on the active layer
+        if (!cell.l) cell.l = []
+        while (cell.l.length <= this._pickerLayer) {
+            cell.l.push(0)
+        }
+        cell.l[this._pickerLayer] = 0
+
+        // Track tile change for save
+        if (!this._pendingTileChanges[key]) {
+            this._pendingTileChanges[key] = {}
+        }
+        this._pendingTileChanges[key][this._pickerLayer] = 0
+
+        this._updatePendingCount()
+        this._render()
+    }
+
     _updatePendingCount() {
         const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length
         const btn = document.getElementById('save-btn')
@@ -1177,6 +1291,7 @@ export default class extends Controller {
     setToolWall() { this._tool = 'wall'; this._updateToolButtons() }
     setToolEraseWall() { this._tool = 'eraseWall'; this._updateToolButtons() }
     setToolPaint() { this._tool = 'paint'; this._updateToolButtons() }
+    setToolEraser() { this._tool = 'eraser'; this._updateToolButtons() }
 
     // --- Tileset picker events ---
 

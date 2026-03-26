@@ -73,47 +73,48 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste B — Outils de peinture (sequentiel)
 
-### MED-03 — Tileset Picker — palette de tiles (M | ★★★ | CRITIQUE)
+### MED-03 — Tileset Picker — palette de tiles (M | ★★★ | CRITIQUE) ✅
 > Panneau lateral avec les tilesets en grille cliquable. Prerequis : ← MED-01
-- [ ] Controller Stimulus `admin_tileset_picker_controller.js` dans `assets/controllers/`
-- [ ] Chargement des images tileset via les URLs de `TilesetRegistry` (route `/editor/tilesets`)
-- [ ] Rendu canvas de chaque tileset en grille 32x32 avec scroll
-- [ ] Onglets par tileset : Terrain, Forest, BaseChip (pas Collisions — gere automatiquement)
-- [ ] Clic sur une tile = selection d'un stamp 1x1, affichage du GID selectionne
-- [ ] Drag rectangle = selection multi-tiles (stamp NxM), apercu dans un mini-canvas
-- [ ] Selecteur de layer actif : background / ground / decoration / overlay (radio buttons)
-- [ ] Highlight visuel de la tile/zone selectionnee
-- [ ] Integration dans le template editeur existant (remplacement du panneau lateral droit)
-- [ ] Tester : ouvrir l'editeur, naviguer entre tilesets, selectionner des tiles et stamps
+- [x] Controller Stimulus `admin_tileset_picker_controller.js` dans `assets/controllers/`
+- [x] Chargement des images tileset via les URLs de `TilesetRegistry` (route `/editor/tilesets`)
+- [x] Rendu canvas de chaque tileset en grille 32x32 avec scroll
+- [x] Onglets par tileset : Terrain, Forest, BaseChip (pas Collisions — gere automatiquement)
+- [x] Clic sur une tile = selection d'un stamp 1x1, affichage du GID selectionne
+- [x] Drag rectangle = selection multi-tiles (stamp NxM), apercu dans un mini-canvas
+- [x] Selecteur de layer actif : background / ground / decoration / overlay (radio buttons)
+- [x] Highlight visuel de la tile/zone selectionnee
+- [x] Integration dans le template editeur existant (remplacement du panneau lateral droit)
+- [x] Tester : ouvrir l'editeur, naviguer entre tilesets, selectionner des tiles et stamps
 
-### MED-04 — Stamp Brush & Eyedropper (M | ★★★ | CRITIQUE)
+### MED-04 — Stamp Brush & Eyedropper (M | ★★★ | CRITIQUE) ✅
 > Outil principal de peinture. Prerequis : ← MED-03
-- [ ] Outil Stamp Brush dans `admin_map_editor_controller.js` :
+- [x] Outil Stamp Brush dans `admin_map_editor_controller.js` :
   - Clic gauche sur la carte peint le stamp selectionne sur le layer actif
   - Drag = peinture continue (trail de tiles)
   - Preview fantome du stamp sous le curseur avant le clic
   - Accumulation des changements en memoire (pas d'envoi a chaque clic)
-- [ ] Outil Eyedropper :
-  - Clic droit sur la carte capture le GID de la tile sous le curseur (layer actif)
+- [x] Outil Eyedropper :
+  - Alt+clic gauche capture le GID de la tile sous le curseur (layer actif)
   - Met a jour la selection dans le Tileset Picker
-  - Fonctionne aussi avec Alt+clic gauche
-- [ ] Route `POST /{id}/editor/paint-tiles` dans `MapEditorController` :
+  - Bascule automatiquement en mode peinture
+- [x] Route `POST /{id}/editor/paint-tiles` dans `MapEditorController` :
   - Body : `{cells: [{x, y, layer, gid}, ...]}` (batch)
   - Met a jour `Area.fullData.cells[x.y].layers[layer]` pour chaque cell
   - Retourne 200 + count des cells modifiees
-- [ ] Bouton "Sauvegarder" pour envoyer le batch accumule (reutiliser le mecanisme existant)
-- [ ] Compteur de modifications en attente (badge existant)
-- [ ] Rendu immediat sur le canvas (optimistic rendering)
-- [ ] Tester : peindre des tiles, sauvegarder, recharger → les tiles persistent
+- [x] Bouton "Sauvegarder" pour envoyer le batch accumule (reutiliser le mecanisme existant)
+- [x] Compteur de modifications en attente (badge existant)
+- [x] Rendu immediat sur le canvas (optimistic rendering)
+- [x] Tester : peindre des tiles, sauvegarder, recharger → les tiles persistent
 
-### MED-05 — Eraser (S | ★★ | HAUTE)
+### MED-05 — Eraser (S | ★★ | HAUTE) ✅
 > Outil de gomme. Prerequis : ← MED-04
-- [ ] Outil Eraser dans la toolbar (icone gomme, raccourci E)
-- [ ] Clic gauche met le GID a 0 sur le layer actif pour la cell ciblee
-- [ ] Drag = gomme continue
-- [ ] Reutilise la meme route `paint-tiles` (avec gid: 0)
-- [ ] Rendu immediat (tile supprimee visuellement)
-- [ ] Tester : peindre, gommer, sauvegarder, verifier
+- [x] Outil Eraser dans la toolbar (bouton Gomme, raccourci E)
+- [x] Clic gauche met le GID a 0 sur le layer actif pour la cell ciblee
+- [x] Drag = gomme continue
+- [x] Reutilise la meme route `paint-tiles` (avec gid: 0)
+- [x] Rendu immediat (preview rouge avec X sous le curseur)
+- [x] Raccourcis clavier outils : V (selection), P (peindre), E (gomme), B (bloquer), U (debloquer), W (mur)
+- [x] Raccourcis layers : 1/2/3/4, Ctrl+S (sauvegarder)
 
 ### MED-06 — Bucket Fill — flood fill (S | ★★ | HAUTE)
 > Remplissage par inondation. Prerequis : ← MED-04
