@@ -1132,3 +1132,11 @@
 - [x] Template Twig avec badges paliers, barre de progression, infos revelees
 - [x] Navigation : lien dans le dropdown Aventure et le drawer mobile
 - [x] Traductions FR/EN
+
+## GCC-07 — Influence — entites score & log (2026-03-26) ✅
+
+> Tables de score et journal des gains d'influence pour le systeme de controle de cite par les guildes.
+- [x] Enum `InfluenceActivityType` : mob_kill, craft, harvest, fishing, butchering, quest, challenge
+- [x] Entite `GuildInfluence` : guild, region, season, points (UNIQUE guild+region+season, index ranking)
+- [x] Entite `InfluenceLog` : guild, region, season, player, activityType, pointsEarned, details (JSON), createdAt
+- [x] Migration PostgreSQL (2 tables avec FK et index)
