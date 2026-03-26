@@ -72,10 +72,10 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 - [x] Formulaires inline panneau lateral
 - [x] Route `POST /{id}/editor/create-entity`
 
-**MED-10 — Edition d'entites inline (S | ★★ | MOYENNE)**
+**MED-10 — Edition d'entites inline (S | ★★ | MOYENNE)** ✅
 > Prerequis : ← MED-09
-- [ ] Clic entite → panneau edition
-- [ ] Route `POST /{id}/editor/update-entity`
+- [x] Clic entite → panneau edition (bouton ✎ + menu contextuel "Editer")
+- [x] Route `POST /{id}/editor/update-entity`
 
 #### Phase 5 — Auto-tiling (MED-11, MED-12)
 

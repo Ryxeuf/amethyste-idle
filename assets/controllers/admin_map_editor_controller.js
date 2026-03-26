@@ -14,6 +14,7 @@ export default class extends Controller {
         moveEntityUrl: String,
         createEntityUrl: String,
         entityOptionsUrl: String,
+        updateEntityUrl: String,
     }
 
     static targets = ['canvas', 'info', 'coords', 'legend', 'stats', 'contextMenu']
@@ -976,6 +977,9 @@ export default class extends Controller {
                             class="px-1.5 py-0.5 bg-blue-800 hover:bg-blue-700 rounded text-xs" title="Deplacer (puis Ctrl+clic)">↗</button>`
                     }
 
+                    entitiesHtml += `<button onclick="this.closest('[data-controller]').__stimulus_controller._showEditForm('${ent.type}', ${ent.id})"
+                        class="px-1.5 py-0.5 bg-yellow-800 hover:bg-yellow-700 rounded text-xs" title="Editer">✎</button>`
+
                     entitiesHtml += '</div>'
                 }
                 entitiesHtml += '</div>'
@@ -1227,6 +1231,7 @@ export default class extends Controller {
             html += '<div class="border-t border-gray-700 mt-1 pt-1">'
             for (const ent of entitiesHere) {
                 html += `<div class="px-3 py-1 text-xs text-gray-300">${ent.label}: ${ent.name}</div>`
+                html += this._contextMenuItem('Editer', '_ctxEditEntity', `${ent.type},${ent.id}`)
                 if (ent.canDelete) {
                     html += this._contextMenuItem('Supprimer', '_ctxDeleteEntity', `${ent.type},${ent.id}`)
                 }
@@ -1468,6 +1473,209 @@ export default class extends Controller {
                 this._entities[listKey].push(ent)
                 this._showFlash(`${this._entityTypeLabel(entityType)} cree en ${cell.x},${cell.y}`, 'success')
                 this._selectCell(cell.x, cell.y)
+            } else {
+                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+            }
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+
+        this._render()
+    }
+
+    // --- Entity editing (MED-10) ---
+
+    _ctxEditEntity(args) {
+        this._hideContextMenu()
+        const [type, idStr] = args.split(',')
+        this._showEditForm(type, parseInt(idStr, 10))
+    }
+
+    async _showEditForm(entityType, entityId) {
+        if (!this._entityOptions) {
+            this._showFlash('Chargement des options...', 'info')
+            try {
+                const res = await fetch(this.entityOptionsUrlValue)
+                this._entityOptions = await res.json()
+            } catch {
+                this._showFlash('Erreur chargement options', 'error')
+                return
+            }
+        }
+
+        const listKey = this._entityListKey(entityType)
+        const list = this._entities[listKey] || []
+        const entity = list.find(e => e.id === entityId)
+        if (!entity) {
+            this._showFlash('Entite introuvable', 'error')
+            return
+        }
+
+        let formHtml = `<div class="text-sm">
+            <h4 class="font-semibold text-gray-200 mb-2">Editer ${this._entityTypeLabel(entityType)}</h4>
+            <p class="text-xs text-gray-400 mb-3">Position: ${entity.x}, ${entity.y}</p>`
+
+        if (entityType === 'mob') {
+            const currentMonsterId = entity.monsterId || ''
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Monstre</label>
+                    <select id="edit-entity-monster" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        ${this._entityOptions.monsters.map(m => `<option value="${m.id}" ${m.id === currentMonsterId ? 'selected' : ''}>${m.name} (${m.slug})</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Niveau</label>
+                    <input type="number" id="edit-entity-level" value="${entity.level || 1}" min="1" max="100"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'portal') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-name" value="${this._escHtml(entity.name || '')}" placeholder="Nom du portail"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Carte destination</label>
+                    <select id="edit-entity-dest-map" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="">— Aucune —</option>
+                        ${this._entityOptions.maps.map(m => `<option value="${m.id}" ${m.id === entity.destMapId ? 'selected' : ''}>${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Coordonnees destination (x.y)</label>
+                    <input type="text" id="edit-entity-dest-coords" value="${this._escHtml(entity.destCoords || '')}" placeholder="10.15"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'harvestSpot') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-name" value="${this._escHtml(entity.name || '')}" placeholder="Nom"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Outil requis</label>
+                    <select id="edit-entity-tool" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="" ${!entity.requiredToolType ? 'selected' : ''}>— Aucun —</option>
+                        <option value="pickaxe" ${entity.requiredToolType === 'pickaxe' ? 'selected' : ''}>Pioche</option>
+                        <option value="sickle" ${entity.requiredToolType === 'sickle' ? 'selected' : ''}>Faucille</option>
+                        <option value="fishing_rod" ${entity.requiredToolType === 'fishing_rod' ? 'selected' : ''}>Canne a peche</option>
+                        <option value="skinning_knife" ${entity.requiredToolType === 'skinning_knife' ? 'selected' : ''}>Couteau de depecage</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Delai respawn (sec)</label>
+                    <input type="number" id="edit-entity-respawn" value="${entity.respawnDelay ?? 300}" min="0"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'pnj') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-pnj-name" value="${this._escHtml(entity.name || '')}" placeholder="Nom du PNJ"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Classe</label>
+                    <input type="text" id="edit-entity-pnj-class" value="${this._escHtml(entity.classType || 'npc')}" placeholder="npc, merchant, quest..."
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'craftStation') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-name" value="${this._escHtml(entity.name || '')}" placeholder="Nom"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        }
+
+        formHtml += `<div class="mt-3 flex gap-2">
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._submitUpdateEntity('${entityType}', ${entityId})"
+                        class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded text-xs text-white">Enregistrer</button>
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._cancelCreateForm()"
+                        class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-300">Annuler</button>
+            </div>
+        </div>`
+
+        this.infoTarget.innerHTML = formHtml
+    }
+
+    _escHtml(str) {
+        const div = document.createElement('div')
+        div.textContent = str
+        return div.innerHTML
+    }
+
+    async _submitUpdateEntity(entityType, entityId) {
+        let properties = {}
+
+        if (entityType === 'mob') {
+            const monsterEl = document.getElementById('edit-entity-monster')
+            const levelEl = document.getElementById('edit-entity-level')
+            properties = {
+                monsterId: monsterEl ? parseInt(monsterEl.value, 10) : undefined,
+                level: levelEl ? parseInt(levelEl.value, 10) : undefined,
+            }
+        } else if (entityType === 'portal') {
+            const nameEl = document.getElementById('edit-entity-name')
+            const destMapEl = document.getElementById('edit-entity-dest-map')
+            const destCoordsEl = document.getElementById('edit-entity-dest-coords')
+            properties = {
+                name: nameEl?.value || 'Portail',
+                destMapId: destMapEl?.value ? parseInt(destMapEl.value, 10) : null,
+                destCoords: destCoordsEl?.value || null,
+            }
+        } else if (entityType === 'harvestSpot') {
+            const nameEl = document.getElementById('edit-entity-name')
+            const toolEl = document.getElementById('edit-entity-tool')
+            const respawnEl = document.getElementById('edit-entity-respawn')
+            properties = {
+                name: nameEl?.value || 'Spot de recolte',
+                requiredToolType: toolEl?.value || null,
+                respawnDelay: parseInt(respawnEl?.value || '300', 10),
+            }
+        } else if (entityType === 'pnj') {
+            const nameEl = document.getElementById('edit-entity-pnj-name')
+            const classEl = document.getElementById('edit-entity-pnj-class')
+            if (!nameEl?.value) {
+                this._showFlash('Le nom du PNJ est requis', 'error')
+                return
+            }
+            properties = {
+                name: nameEl.value,
+                classType: classEl?.value || 'npc',
+            }
+        } else if (entityType === 'craftStation') {
+            const nameEl = document.getElementById('edit-entity-name')
+            properties = {
+                name: nameEl?.value || '',
+            }
+        }
+
+        try {
+            const res = await fetch(this.updateEntityUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entityType, entityId, properties }),
+            })
+            const data = await res.json()
+            if (data.success && data.entity) {
+                const ent = data.entity
+                const listKey = this._entityListKey(entityType)
+                const list = this._entities[listKey] || []
+                const idx = list.findIndex(e => e.id === entityId)
+                if (idx !== -1) {
+                    list[idx] = { ...list[idx], ...ent }
+                }
+                this._showFlash(`${this._entityTypeLabel(entityType)} mis a jour`, 'success')
+                this._selectCell(ent.x, ent.y)
             } else {
                 this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
             }
