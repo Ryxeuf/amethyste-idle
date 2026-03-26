@@ -16,9 +16,12 @@ export default class extends Controller {
         this._createTooltip();
         this._createSheet();
 
+        this._onBeforeVisit = () => this._hideTooltip();
+        document.addEventListener('turbo:before-visit', this._onBeforeVisit);
+
         // Close tooltip on outside click
         this._onDocClick = (e) => {
-            if (this._tooltip && !this._tooltip.contains(e.target) && !e.target.closest('.materia-slot-orb')) {
+            if (this._tooltip && !this._tooltip.contains(e.target) && !e.target.closest('.materia-slot-orb, .materia-sphere')) {
                 this._hideTooltip();
             }
         };
@@ -28,6 +31,7 @@ export default class extends Controller {
     disconnect() {
         window.removeEventListener('resize', this._onResize);
         document.removeEventListener('click', this._onDocClick);
+        document.removeEventListener('turbo:before-visit', this._onBeforeVisit);
         this._tooltip?.remove();
         this._sheet?.remove();
         this._backdrop?.remove();
@@ -81,9 +85,23 @@ export default class extends Controller {
 
     orbTargetConnected(el) {
         const isFilled = el.dataset.slotFilled === '1';
+        const navigatesPanel = el.dataset.materiaPanelLink === '1';
 
         if (isFilled) {
-            // Prevent default click — we handle it ourselves
+            if (navigatesPanel) {
+                el.addEventListener('mouseenter', (e) => {
+                    if (!this._isMobile && !this._tooltipPinned) {
+                        this._showTooltip(el, e);
+                    }
+                });
+                el.addEventListener('mouseleave', () => {
+                    if (!this._tooltipPinned) {
+                        this._hideTooltip();
+                    }
+                });
+                return;
+            }
+
             el.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -94,7 +112,6 @@ export default class extends Controller {
                 }
             });
 
-            // Desktop hover shows tooltip
             el.addEventListener('mouseenter', (e) => {
                 if (!this._isMobile && !this._tooltipPinned) {
                     this._showTooltip(el, e);
@@ -106,7 +123,6 @@ export default class extends Controller {
                 }
             });
         }
-        // Empty slots use <a> tags — default navigation is fine
     }
 
     // ---- Tooltip (desktop) ----
@@ -237,34 +253,10 @@ export default class extends Controller {
             }
         }
 
-        // Actions
+        // Actions : retirées sur l'équipement (sertir / retirer / remplacer via la piste materia uniquement)
         const actionsEl = panel.querySelector('.materia-slot-tooltip__actions');
         actionsEl.innerHTML = '';
-
-        if (isFilled) {
-            // Unset button
-            const unsetForm = document.createElement('form');
-            unsetForm.method = 'post';
-            unsetForm.action = d.unsetUrl;
-            unsetForm.setAttribute('data-turbo-frame', 'inventory-content');
-            unsetForm.innerHTML = '<button type="submit" class="materia-slot-tooltip__btn materia-slot-tooltip__btn--unset">Retirer</button>';
-            actionsEl.appendChild(unsetForm);
-
-            // Replace link
-            const replaceLink = document.createElement('a');
-            replaceLink.href = d.replaceUrl;
-            replaceLink.setAttribute('data-turbo-frame', 'inventory-content');
-            replaceLink.className = 'materia-slot-tooltip__btn materia-slot-tooltip__btn--replace';
-            replaceLink.textContent = 'Remplacer';
-            actionsEl.appendChild(replaceLink);
-        } else {
-            const setLink = document.createElement('a');
-            setLink.href = d.setUrl;
-            setLink.setAttribute('data-turbo-frame', 'inventory-content');
-            setLink.className = 'materia-slot-tooltip__btn materia-slot-tooltip__btn--set';
-            setLink.textContent = 'Sertir';
-            actionsEl.appendChild(setLink);
-        }
+        actionsEl.style.display = 'none';
     }
 
     // ---- Helpers ----

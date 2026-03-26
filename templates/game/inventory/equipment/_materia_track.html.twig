@@ -1,0 +1,129 @@
+{# Barre FF7 : slots materia. materiaTrackContext: 'list' (paperdoll) | 'modify' (fiche + frame materia-pick) #}
+{% set ctx = materiaTrackContext|default('modify') %}
+{% set emptyMateriaSlots = playerItem.slots|filter(s => s.itemSet is null) %}
+<div class="materia-slots-track ff7-materia-track">
+    <div class="materia-slots-bar" data-controller="materia-slot">
+        {% if emptyMateriaSlots is not empty %}
+            {% set firstEmptySlot = emptyMateriaSlots|first %}
+            {% if ctx == 'list' %}
+                <a href="{{ path('app_game_inventory_equipment_modify', {id: playerItem.id}) }}"
+                   data-turbo-frame="inventory-content"
+                   data-turbo-action="advance"
+                   class="materia-slots-counter materia-slots-counter--link"
+                   title="{{ 'game.inventory.materia_counter_link_title'|trans }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-2.5 w-2.5 text-purple-400 mr-0.5 -mt-px" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><circle cx="12" cy="12" r="5"/></svg>
+                    {{ playerItem.slots|filter(s => s.itemSet is not null)|length }}/{{ playerItem.slots|length }} Materia
+                </a>
+            {% else %}
+                <a href="{{ path('app_game_inventory_materia_slot', {slotId: firstEmptySlot.id}) }}"
+                   data-turbo-frame="materia-pick"
+                   data-turbo-action="advance"
+                   class="materia-slots-counter materia-slots-counter--link"
+                   title="{{ 'game.inventory.materia_counter_link_title'|trans }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-2.5 w-2.5 text-purple-400 mr-0.5 -mt-px" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><circle cx="12" cy="12" r="5"/></svg>
+                    {{ playerItem.slots|filter(s => s.itemSet is not null)|length }}/{{ playerItem.slots|length }} Materia
+                </a>
+            {% endif %}
+        {% else %}
+            <span class="materia-slots-counter" title="Slots de materia occupés / total">
+                <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-2.5 w-2.5 text-purple-400 mr-0.5 -mt-px" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><circle cx="12" cy="12" r="5"/></svg>
+                {{ playerItem.slots|filter(s => s.itemSet is not null)|length }}/{{ playerItem.slots|length }} Materia
+            </span>
+        {% endif %}
+        {% for slot in playerItem.slots %}
+            {% set materiaItem = slot.itemSet %}
+            {% set slotElement = slot.element %}
+            {% set linkedSlot = slot.linkedSlot %}
+            {% set hasLinkedBonus = linkedSlot is not null and materiaItem is not null and linkedSlot.itemSet is not null
+                and materiaItem.genericItem.element.value != 'none'
+                and linkedSlot.itemSet.genericItem.element.value != 'none'
+                and materiaItem.genericItem.element == linkedSlot.itemSet.genericItem.element %}
+            {% if materiaItem is not null %}
+                {% set mGi = materiaItem.genericItem %}
+                {% set materiaElement = mGi.element %}
+                {% set isMatch = slotElement is not null and slotElement.value != 'none' and materiaElement.value != 'none' and slotElement == materiaElement %}
+                {% set xpThresholds = {1: 100, 2: 300, 3: 600, 4: 1000, 5: 1000} %}
+                {% set currentLevel = materiaItem.materiaLevel %}
+                {% set nextThreshold = xpThresholds[currentLevel] %}
+                {% set xpPercent = currentLevel >= 5 ? 100 : ((materiaItem.experience / nextThreshold) * 100)|round %}
+                {% if ctx == 'list' %}
+                    <div class="materia-slot-orb materia-slot-orb--filled materia-sphere materia-sphere--{{ materiaElement.value }}
+                            {% if slotElement is not null and slotElement.value != 'none' %}materia-slot-orb--elem-{{ slotElement.value }}{% endif %}
+                            {% if isMatch %}materia-slot-orb--match{% endif %}
+                            {% if hasLinkedBonus %}materia-slot-orb--synergy{% endif %}"
+                         data-materia-slot-target="orb"
+                         data-slot-id="{{ slot.id }}"
+                         data-materia-name="{{ mGi.name }}"
+                         data-materia-element="{{ materiaElement.value }}"
+                         data-materia-level="{{ currentLevel }}"
+                         data-materia-xp="{{ materiaItem.experience }}"
+                         data-materia-xp-next="{{ nextThreshold }}"
+                         data-materia-xp-percent="{{ xpPercent }}"
+                         data-materia-spell="{{ mGi.spell ? mGi.spell.name : '' }}"
+                         data-materia-spell-desc="{{ mGi.spell ? mGi.spell.description|default('') : '' }}"
+                         data-materia-match="{{ isMatch ? '1' : '0' }}"
+                         data-materia-synergy="{{ hasLinkedBonus ? '1' : '0' }}"
+                         data-slot-filled="1">
+                        <span class="materia-slot-level">{{ currentLevel }}</span>
+                    </div>
+                {% else %}
+                    <a href="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}"
+                       data-turbo-frame="materia-pick"
+                       data-turbo-action="advance"
+                       data-materia-panel-link="1"
+                       class="materia-slot-orb materia-slot-orb--filled materia-sphere materia-sphere--{{ materiaElement.value }}
+                            {% if slotElement is not null and slotElement.value != 'none' %}materia-slot-orb--elem-{{ slotElement.value }}{% endif %}
+                            {% if isMatch %}materia-slot-orb--match{% endif %}
+                            {% if hasLinkedBonus %}materia-slot-orb--synergy{% endif %}"
+                       data-materia-slot-target="orb"
+                       data-slot-id="{{ slot.id }}"
+                       data-materia-name="{{ mGi.name }}"
+                       data-materia-element="{{ materiaElement.value }}"
+                       data-materia-level="{{ currentLevel }}"
+                       data-materia-xp="{{ materiaItem.experience }}"
+                       data-materia-xp-next="{{ nextThreshold }}"
+                       data-materia-xp-percent="{{ xpPercent }}"
+                       data-materia-spell="{{ mGi.spell ? mGi.spell.name : '' }}"
+                       data-materia-spell-desc="{{ mGi.spell ? mGi.spell.description|default('') : '' }}"
+                       data-materia-match="{{ isMatch ? '1' : '0' }}"
+                       data-materia-synergy="{{ hasLinkedBonus ? '1' : '0' }}"
+                       data-slot-filled="1">
+                        <span class="materia-slot-level">{{ currentLevel }}</span>
+                    </a>
+                {% endif %}
+            {% else %}
+                {% if ctx == 'list' %}
+                    <a href="{{ path('app_game_inventory_equipment_modify', {id: playerItem.id}) }}"
+                       data-turbo-frame="inventory-content"
+                       data-turbo-action="advance"
+                       data-materia-slot-target="orb"
+                       data-slot-id="{{ slot.id }}"
+                       data-slot-filled="0"
+                       data-slot-element="{{ slotElement is not null ? slotElement.value : 'none' }}"
+                       data-slot-element-label="{{ slotElement is not null and slotElement.value != 'none' ? slotElement.label : '' }}"
+                       class="materia-slot-orb materia-slot-orb--empty materia-sphere materia-sphere--empty
+                           {% if slotElement is not null and slotElement.value != 'none' %}materia-slot-orb--elem-{{ slotElement.value }}{% endif %}"
+                       title="Slot vide — {{ 'game.inventory.equipment_modify.title'|trans }}{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}"
+                       data-turbo-frame="materia-pick"
+                       data-turbo-action="advance"
+                       data-materia-slot-target="orb"
+                       data-slot-id="{{ slot.id }}"
+                       data-slot-filled="0"
+                       data-slot-element="{{ slotElement is not null ? slotElement.value : 'none' }}"
+                       data-slot-element-label="{{ slotElement is not null and slotElement.value != 'none' ? slotElement.label : '' }}"
+                       data-set-url="{{ path('app_game_inventory_materia_slot', {slotId: slot.id}) }}"
+                       class="materia-slot-orb materia-slot-orb--empty materia-sphere materia-sphere--empty
+                           {% if slotElement is not null and slotElement.value != 'none' %}materia-slot-orb--elem-{{ slotElement.value }}{% endif %}"
+                       title="Slot vide — Cliquer pour sertir{% if slotElement is not null and slotElement.value != 'none' %} ({{ slotElement.label }}){% endif %}">
+                    </a>
+                {% endif %}
+            {% endif %}
+            {% if linkedSlot is not null and not loop.last %}
+                <div class="materia-slot-link {% if hasLinkedBonus %}materia-slot-link--active{% endif %}"></div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>

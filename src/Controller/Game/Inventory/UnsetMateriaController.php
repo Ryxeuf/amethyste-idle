@@ -32,6 +32,7 @@ class UnsetMateriaController extends AbstractController
         }
 
         // Verify the slot belongs to the current player's gear
+        /** @var \App\Entity\App\PlayerItem $gearItem */
         $gearItem = $slot->getItem();
         $bagInventory = $this->playerHelper->getBagInventory();
         $ownsGear = false;
@@ -48,16 +49,18 @@ class UnsetMateriaController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_equipment_list');
         }
 
+        $redirectToGear = fn (): \Symfony\Component\HttpFoundation\Response => $this->redirectToRoute('app_game_inventory_equipment_modify', ['id' => $gearItem->getId()]);
+
         if ($slot->getItemSet() === null) {
             $this->addFlash('error', 'Ce slot est déjà vide.');
 
-            return $this->redirectToRoute('app_game_inventory_equipment_list');
+            return $redirectToGear();
         }
 
         $materiaName = $slot->getItemSet()->getGenericItem()->getName();
         $this->materiaGearSetter->unsetMateria($slot);
         $this->addFlash('success', 'Materia "' . $materiaName . '" retirée avec succès.');
 
-        return $this->redirectToRoute('app_game_inventory_equipment_list');
+        return $redirectToGear();
     }
 }

@@ -1,0 +1,80 @@
+{% extends 'turbo_stream.html.twig' %}
+{% import 'game/inventory/equipment/_list.html.twig' as eq %}
+
+{% block turbo_stream_content %}
+<turbo-frame id="inventory-content">
+    {% include 'game/inventory/_frame_flashes.html.twig' %}
+
+    {% set gi = playerItem.genericItem %}
+
+    <div class="materia-socket-hero mb-4 rounded-xl border border-blue-500/15 overflow-hidden shadow-[0_12px_40px_rgba(15,23,42,0.55)]">
+        <div class="materia-socket-hero__bg px-3 py-3 sm:px-4 sm:py-4">
+            <div class="flex items-start justify-between gap-3 mb-3">
+                <a href="{{ path('app_game_inventory_equipment_list') }}" data-turbo-frame="inventory-content"
+                   data-turbo-action="advance"
+                   class="inline-flex items-center gap-1.5 text-[10px] sm:text-xs text-cyan-300/90 hover:text-cyan-200 transition-colors font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    {{ 'game.inventory.equipment_modify.back'|trans }}
+                </a>
+            </div>
+            <div class="flex items-start gap-3">
+                <div class="materia-socket-hero__icon w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center shrink-0 {{ eq.rarity_bg_class(gi.rarity) }}">
+                    {{ eq.slot_icon(slotKey) }}
+                </div>
+                <div class="min-w-0 flex-1">
+                    <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/90">{{ 'game.inventory.equipment_modify.title'|trans }}</p>
+                    <h2 class="text-sm sm:text-base font-bold text-white mt-0.5 truncate {{ eq.rarity_text_class(gi.rarity) }}">{{ gi.name }}</h2>
+                    <p class="text-[10px] sm:text-xs text-slate-400 mt-1">
+                        <span class="text-slate-500">{{ eq.paperdoll_slot_label(slotKey) }}</span>
+                        {% if gi.protection > 0 %}
+                            <span class="mx-1 text-slate-600">·</span>
+                            <span class="text-sky-300/90">+{{ gi.protection }} DEF</span>
+                        {% endif %}
+                        {% if gi.level %}
+                            <span class="mx-1 text-slate-600">·</span>
+                            <span>{{ 'game.inventory.item_details.level'|trans }} {{ gi.level }}</span>
+                        {% endif %}
+                    </p>
+                    {% if gi.element.value != 'none' %}
+                        <p class="text-[10px] sm:text-xs mt-1.5 flex flex-wrap items-center gap-1.5">
+                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-900/60 border border-white/10">
+                                <span class="w-1.5 h-1.5 rounded-full {{ eq.element_dot_class(gi.element) }}"></span>
+                                {{ gi.element.label }}
+                            </span>
+                        </p>
+                    {% endif %}
+                    {% if gi.equipmentSet is not null %}
+                        <p class="text-[10px] text-yellow-500/85 font-medium mt-1.5">{{ gi.equipmentSet.name }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% if gi.description %}
+                <div class="mt-3 text-[10px] sm:text-xs text-slate-400 leading-relaxed border-t border-white/5 pt-3">
+                    {{ gi.description }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if playerItem.slots|length > 0 %}
+        <div class="mb-3">
+            <h3 class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                {{ 'game.inventory.equipment_modify.section_materia'|trans }}
+            </h3>
+            {% include 'game/inventory/equipment/_materia_track.html.twig' with { playerItem: playerItem, materiaTrackContext: 'modify' } only %}
+        </div>
+        {% include 'game/inventory/equipment/_modify_materia_pick_placeholder.html.twig' %}
+    {% else %}
+        <div class="rounded-xl border border-slate-700/40 bg-slate-900/30 px-3 py-4 text-center text-[10px] sm:text-xs text-slate-500 mb-4">
+            {{ 'game.inventory.equipment_modify.no_materia_slots'|trans }}
+        </div>
+    {% endif %}
+
+    <form method="post" action="{{ path('app_game_inventory_equipment_unequip', {id: playerItem.id}) }}" data-turbo-frame="inventory-content" class="flex justify-end">
+        <button type="submit" class="text-[10px] sm:text-xs px-3 py-1.5 rounded-lg bg-red-950/40 text-red-300 border border-red-900/40 hover:bg-red-900/50 transition-colors">
+            {{ 'game.inventory.actions.unequip'|trans }}
+        </button>
+    </form>
+</turbo-frame>
+{% endblock %}

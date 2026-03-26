@@ -131,6 +131,7 @@ export default class extends Controller {
         el.addEventListener('click', (e) => {
             if (!this._isMobile) return;
             if (e.target.closest('.materia-slots-bar')) return;
+            if (e.target.closest('.materia-slots-track')) return;
             if (e.target.closest('a[href]')) return;
             if (e.target.closest('form')) return;
             if (e.target.closest('button')) return;

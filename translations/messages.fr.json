@@ -132,11 +132,18 @@
         "action": "Action",
         "socket": "Sertir"
       },
+      "equipment_modify": {
+        "title": "Modifier l'équipement",
+        "back": "Retour à l'équipement",
+        "section_materia": "Materia serties",
+        "no_materia_slots": "Cette pièce ne possède pas d'emplacements materia.",
+        "materia_pick_placeholder": "Cliquez sur un emplacement materia ci-dessus pour sertir ou remplacer une materia."
+      },
       "materia_counter_link_title": "Choisir une materia à sertir dans un emplacement vide",
       "effective_pv_bonus": "Bonus PV (sets, compétences, enchantements)",
       "materia_socket": {
         "title": "Sertir une materia",
-        "back": "Retour à l'équipement",
+        "back": "Retour à la pièce",
         "slot_element": "Slot %element%",
         "slot_any": "Aucune affinité élémentaire sur ce lien",
         "element_bonus_hint": "Une materia du même élément que le slot reçoit un bonus en combat et en XP.",
