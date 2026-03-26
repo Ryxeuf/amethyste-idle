@@ -19,12 +19,8 @@
 ### ~~86 — Quetes de decouverte cachees (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 87 — Types quetes avances : enquete et defi boss (M | ★★)
-> Mecaniques plus complexes, a faire quand le contenu de base est solide. Prerequis : ← 31, 13
-- [ ] Type `enquete` : requirements.talk_to = [{pnj_id, condition}], tracking sur dialogue PNJ
-- [ ] Type `boss_challenge` : requirements.boss = {monster_slug, conditions: {no_heal, solo, time_limit}}
-- [ ] Conditions de defi trackees dans le combat (FightController enregistre les contraintes)
-- [ ] 2 quetes fixtures : 1 enquete (parler a 3 PNJ), 1 defi de boss
+### ~~87 — Types quetes avances : enquete et defi boss (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
@@ -41,13 +37,8 @@
 - [ ] XP partagee (repartition equitable entre participants)
 - [ ] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
 
-### 83 — Invasions (M | ★★)
-> Vagues de monstres cooperatives via GameEvent. Prerequis : ← 21, 35
-- [ ] GameEventExecutor traite `invasion` : spawner N mobs supplementaires sur une zone (params JSON : mobSlugs, count, mapId)
-- [ ] Vagues progressives : 3 vagues espacees de 2 min, difficulte croissante
-- [ ] Tracker les kills de tous les joueurs pendant l'invasion
-- [ ] Recompenses collectives si objectif atteint (X mobs tues avant la fin)
-- [ ] Nettoyer les mobs d'invasion a la fin de l'event
+### ~~83 — Invasions (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

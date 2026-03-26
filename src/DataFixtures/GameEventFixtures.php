@@ -185,6 +185,26 @@ class GameEventFixtures extends Fixture
                 'recurring' => true,
                 'recurrence_interval' => 10080, // 7 jours en minutes
             ],
+            'event_invasion_goblin' => [
+                'name' => 'Invasion gobeline',
+                'type' => GameEvent::TYPE_INVASION,
+                'description' => 'Des hordes de gobelins et de squelettes deferlent sur le village ! Repoussez-les avant qu\'ils ne submergent la zone.',
+                'status' => GameEvent::STATUS_SCHEDULED,
+                'starts_at' => '+3 days',
+                'ends_at' => '+3 days 15 minutes',
+                'parameters' => [
+                    'mob_slugs' => ['goblin', 'skeleton'],
+                    'count_per_wave' => 4,
+                    'map_id' => 2,
+                    'spawn_coordinates' => ['15.10', '16.10', '17.10', '15.11', '16.11', '17.11'],
+                    'wave_count' => 3,
+                    'wave_interval_seconds' => 120,
+                    'kill_objective' => 8,
+                    'rewards' => ['gold' => 150, 'xp' => 300],
+                ],
+                'recurring' => true,
+                'recurrence_interval' => 4320, // 3 jours en minutes
+            ],
         ];
     }
 }
