@@ -23,6 +23,7 @@ use App\Event\Map\SpotHarvestEvent;
 use App\EventListener\InfluenceListener;
 use App\GameEngine\Guild\InfluenceManager;
 use App\Helper\PlayerHelper;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -323,7 +324,7 @@ class InfluenceListenerTest extends TestCase
         $map->method('getRegion')->willReturn($region);
 
         $fight = $this->createMock(Fight::class);
-        $fight->method('getPlayers')->willReturn($players);
+        $fight->method('getPlayers')->willReturn(new ArrayCollection($players));
 
         $mob = $this->createMock(Mob::class);
         $mob->method('isSummoned')->willReturn(false);
