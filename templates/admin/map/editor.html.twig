@@ -15,6 +15,8 @@
      data-admin-map-editor-paint-tiles-url-value="{{ path('admin_map_editor_paint_tiles', {id: map.id}) }}"
      data-admin-map-editor-delete-entity-url-value="{{ path('admin_map_editor_delete_entity', {id: map.id}) }}"
      data-admin-map-editor-move-entity-url-value="{{ path('admin_map_editor_move_entity', {id: map.id}) }}"
+     data-admin-map-editor-create-entity-url-value="{{ path('admin_map_editor_create_entity', {id: map.id}) }}"
+     data-admin-map-editor-entity-options-url-value="{{ path('admin_map_editor_entity_options', {id: map.id}) }}"
      data-action="admin-tileset-picker:tileSelected->admin-map-editor#onTileSelected admin-tileset-picker:layerChanged->admin-map-editor#onLayerChanged"
      class="flex flex-col h-[calc(100vh-130px)]">
 
@@ -100,6 +102,11 @@
         {# Canvas #}
         <div class="flex-1 bg-gray-900 border border-gray-800 rounded-xl overflow-hidden relative">
             <canvas data-admin-map-editor-target="canvas" class="block w-full h-full"></canvas>
+
+            {# Context menu #}
+            <div data-admin-map-editor-target="contextMenu"
+                 class="hidden absolute z-50 bg-gray-800 border border-gray-600 rounded-lg shadow-xl py-1 min-w-[180px]">
+            </div>
 
             {# Coords overlay #}
             <div class="absolute bottom-2 left-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-gray-400">
@@ -233,7 +240,7 @@
                 <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Raccourcis</summary>
                 <div class="px-4 pb-4 space-y-1 text-xs text-gray-400">
                     <p><kbd class="bg-gray-700 px-1 rounded">Molette</kbd> Zoom</p>
-                    <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer vue</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer vue / Menu contextuel (mode Selection)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Pipette (Eyedropper)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic</kbd> Selectionner / Peindre</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic + glisser</kbd> Multi-selection (mode Selection)</p>

@@ -12,9 +12,11 @@ export default class extends Controller {
         paintTilesUrl: String,
         deleteEntityUrl: String,
         moveEntityUrl: String,
+        createEntityUrl: String,
+        entityOptionsUrl: String,
     }
 
-    static targets = ['canvas', 'info', 'coords', 'legend', 'stats']
+    static targets = ['canvas', 'info', 'coords', 'legend', 'stats', 'contextMenu']
 
     _tileSize = 32
     _zoom = 1
@@ -53,6 +55,10 @@ export default class extends Controller {
     _animFrame = null
     _hoveredCell = null
 
+    // Entity creation
+    _entityOptions = null // Cached options from server {monsters, maps, pnjs}
+    _contextMenuCell = null // {x, y} cell where context menu was opened
+
     // Undo / Redo history
     _undoStack = [] // Array of {tiles: {key: {layer: {before, after}}}, collisions: {key: {before, after}}, borders: {key: {before, after}}}
     _redoStack = []
@@ -85,6 +91,7 @@ export default class extends Controller {
     disconnect() {
         window.removeEventListener('resize', this._onResize)
         document.removeEventListener('keydown', this._onKeyDown)
+        document.removeEventListener('mousedown', this._onDocumentMouseDown)
         if (this._animFrame) {
             cancelAnimationFrame(this._animFrame)
         }
@@ -107,8 +114,9 @@ export default class extends Controller {
         this._canvas.addEventListener('mousemove', this._onMouseMove)
         this._canvas.addEventListener('mouseup', this._onMouseUp)
         this._canvas.addEventListener('mouseleave', this._onMouseLeave)
-        this._canvas.addEventListener('contextmenu', e => e.preventDefault())
+        this._canvas.addEventListener('contextmenu', this._onContextMenu)
         document.addEventListener('keydown', this._onKeyDown)
+        document.addEventListener('mousedown', this._onDocumentMouseDown)
     }
 
     async _loadData() {
@@ -603,8 +611,8 @@ export default class extends Controller {
             return
         }
 
-        if (e.button === 1 || e.button === 2) {
-            // Middle click or right click: pan
+        if (e.button === 1 || (e.button === 2 && this._tool !== 'select')) {
+            // Middle click or right click (non-select mode): pan
             this._isDragging = true
             this._dragStartX = mouseX
             this._dragStartY = mouseY
@@ -773,6 +781,7 @@ export default class extends Controller {
             this._deleteSelectedEntity()
         }
         if (e.key === 'Escape') {
+            this._hideContextMenu()
             this._selection = new Set()
             this._selectedCell = null
             this._selectedEntity = null
@@ -1183,6 +1192,290 @@ export default class extends Controller {
             harvestSpot: 'harvestSpots',
             craftStation: 'craftStations',
         }[type] || type
+    }
+
+    // --- Context Menu & Entity Creation ---
+
+    _onContextMenu = (e) => {
+        e.preventDefault()
+
+        if (this._tool !== 'select') return
+
+        const rect = this._canvas.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+        const tileCoords = this._screenToTile(mouseX, mouseY)
+        if (!tileCoords) return
+
+        this._contextMenuCell = tileCoords
+        const cell = this._cells[tileCoords.x + '.' + tileCoords.y]
+        const isWalkable = cell && cell.m !== -1
+        const entitiesHere = this._getEntitiesAt(tileCoords.x, tileCoords.y)
+
+        let html = `<div class="px-3 py-1.5 text-xs text-gray-400 border-b border-gray-700">Case ${tileCoords.x}, ${tileCoords.y}</div>`
+
+        if (isWalkable) {
+            html += this._contextMenuItem('Ajouter un mob', '_showCreateForm', 'mob')
+            html += this._contextMenuItem('Ajouter un portail', '_showCreateForm', 'portal')
+            html += this._contextMenuItem('Ajouter un spot de recolte', '_showCreateForm', 'harvestSpot')
+            html += this._contextMenuItem('Ajouter un PNJ', '_showCreateForm', 'pnj')
+        } else {
+            html += '<div class="px-3 py-1.5 text-xs text-gray-500 italic">Case non-praticable</div>'
+        }
+
+        if (entitiesHere.length > 0) {
+            html += '<div class="border-t border-gray-700 mt-1 pt-1">'
+            for (const ent of entitiesHere) {
+                html += `<div class="px-3 py-1 text-xs text-gray-300">${ent.label}: ${ent.name}</div>`
+                if (ent.canDelete) {
+                    html += this._contextMenuItem('Supprimer', '_ctxDeleteEntity', `${ent.type},${ent.id}`)
+                }
+            }
+            html += '</div>'
+        }
+
+        const menu = this.contextMenuTarget
+        menu.innerHTML = html
+        menu.classList.remove('hidden')
+
+        // Position relative to canvas container
+        const container = this._canvas.parentElement
+        const containerRect = container.getBoundingClientRect()
+        let left = e.clientX - containerRect.left
+        let top = e.clientY - containerRect.top
+
+        // Keep menu within container bounds
+        requestAnimationFrame(() => {
+            if (left + menu.offsetWidth > container.clientWidth) {
+                left = container.clientWidth - menu.offsetWidth - 4
+            }
+            if (top + menu.offsetHeight > container.clientHeight) {
+                top = container.clientHeight - menu.offsetHeight - 4
+            }
+            menu.style.left = left + 'px'
+            menu.style.top = top + 'px'
+        })
+
+        menu.style.left = left + 'px'
+        menu.style.top = top + 'px'
+    }
+
+    _contextMenuItem(label, method, arg) {
+        return `<button class="block w-full text-left px-3 py-1.5 text-sm text-gray-200 hover:bg-purple-700 hover:text-white transition-colors"
+                    onclick="this.closest('[data-controller]').__stimulus_controller.${method}('${arg}')">${label}</button>`
+    }
+
+    _hideContextMenu() {
+        if (this.hasContextMenuTarget) {
+            this.contextMenuTarget.classList.add('hidden')
+        }
+    }
+
+    _onDocumentMouseDown = (e) => {
+        // Hide context menu on any click outside it
+        if (this.hasContextMenuTarget && !this.contextMenuTarget.contains(e.target)) {
+            this._hideContextMenu()
+        }
+    }
+
+    _ctxDeleteEntity(args) {
+        this._hideContextMenu()
+        const [type, idStr] = args.split(',')
+        this._deleteEntityById(type, parseInt(idStr, 10))
+    }
+
+    async _showCreateForm(entityType) {
+        this._hideContextMenu()
+
+        if (!this._entityOptions) {
+            this._showFlash('Chargement des options...', 'info')
+            try {
+                const res = await fetch(this.entityOptionsUrlValue)
+                this._entityOptions = await res.json()
+            } catch {
+                this._showFlash('Erreur chargement options', 'error')
+                return
+            }
+        }
+
+        const cell = this._contextMenuCell
+        if (!cell) return
+
+        let formHtml = `<div class="text-sm">
+            <h4 class="font-semibold text-gray-200 mb-2">Creer ${this._entityTypeLabel(entityType)}</h4>
+            <p class="text-xs text-gray-400 mb-3">Position: ${cell.x}, ${cell.y}</p>`
+
+        if (entityType === 'mob') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Monstre</label>
+                    <select id="create-entity-monster" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        ${this._entityOptions.monsters.map(m => `<option value="${m.id}">${m.name} (${m.slug})</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Niveau</label>
+                    <input type="number" id="create-entity-level" value="1" min="1" max="100"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'portal') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="create-entity-name" value="Portail" placeholder="Nom du portail"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Carte destination</label>
+                    <select id="create-entity-dest-map" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="">— Aucune —</option>
+                        ${this._entityOptions.maps.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Coordonnees destination (x.y)</label>
+                    <input type="text" id="create-entity-dest-coords" placeholder="10.15"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'harvestSpot') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="create-entity-name" value="Spot de recolte" placeholder="Nom"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Slug</label>
+                    <input type="text" id="create-entity-slug" placeholder="herb-spot-01"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Outil requis</label>
+                    <select id="create-entity-tool" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="">— Aucun —</option>
+                        <option value="pickaxe">Pioche</option>
+                        <option value="sickle">Faucille</option>
+                        <option value="fishing_rod">Canne a peche</option>
+                        <option value="skinning_knife">Couteau de depecage</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Delai respawn (sec)</label>
+                    <input type="number" id="create-entity-respawn" value="300" min="0"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'pnj') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="create-entity-pnj-name" placeholder="Nom du PNJ"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Classe</label>
+                    <input type="text" id="create-entity-pnj-class" value="npc" placeholder="npc, merchant, quest..."
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        }
+
+        formHtml += `<div class="mt-3 flex gap-2">
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._submitCreateEntity('${entityType}')"
+                        class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded text-xs text-white">Creer</button>
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._cancelCreateForm()"
+                        class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-300">Annuler</button>
+            </div>
+        </div>`
+
+        this.infoTarget.innerHTML = formHtml
+    }
+
+    _cancelCreateForm() {
+        if (this._selectedCell) {
+            this._selectCell(this._selectedCell.x, this._selectedCell.y)
+        } else {
+            this.infoTarget.innerHTML = '<p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>'
+        }
+    }
+
+    _entityTypeLabel(type) {
+        return { mob: 'un mob', portal: 'un portail', harvestSpot: 'un spot de recolte', pnj: 'un PNJ' }[type] || type
+    }
+
+    async _submitCreateEntity(entityType) {
+        const cell = this._contextMenuCell
+        if (!cell) return
+
+        let properties = {}
+
+        if (entityType === 'mob') {
+            const monsterEl = document.getElementById('create-entity-monster')
+            const levelEl = document.getElementById('create-entity-level')
+            if (!monsterEl) return
+            properties = {
+                monsterId: parseInt(monsterEl.value, 10),
+                level: parseInt(levelEl?.value || '1', 10),
+            }
+        } else if (entityType === 'portal') {
+            const nameEl = document.getElementById('create-entity-name')
+            const destMapEl = document.getElementById('create-entity-dest-map')
+            const destCoordsEl = document.getElementById('create-entity-dest-coords')
+            properties = {
+                name: nameEl?.value || 'Portail',
+                destMapId: destMapEl?.value ? parseInt(destMapEl.value, 10) : null,
+                destCoords: destCoordsEl?.value || null,
+            }
+        } else if (entityType === 'harvestSpot') {
+            const nameEl = document.getElementById('create-entity-name')
+            const slugEl = document.getElementById('create-entity-slug')
+            const toolEl = document.getElementById('create-entity-tool')
+            const respawnEl = document.getElementById('create-entity-respawn')
+            properties = {
+                name: nameEl?.value || 'Spot de recolte',
+                slug: slugEl?.value || '',
+                requiredToolType: toolEl?.value || null,
+                respawnDelay: parseInt(respawnEl?.value || '300', 10),
+            }
+        } else if (entityType === 'pnj') {
+            const nameEl = document.getElementById('create-entity-pnj-name')
+            const classEl = document.getElementById('create-entity-pnj-class')
+            if (!nameEl?.value) {
+                this._showFlash('Le nom du PNJ est requis', 'error')
+                return
+            }
+            properties = {
+                name: nameEl.value,
+                classType: classEl?.value || 'npc',
+            }
+        }
+
+        try {
+            const res = await fetch(this.createEntityUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: entityType, x: cell.x, y: cell.y, properties }),
+            })
+            const data = await res.json()
+            if (data.success && data.entity) {
+                const ent = data.entity
+                const listKey = ent.listKey
+                if (!this._entities[listKey]) {
+                    this._entities[listKey] = []
+                }
+                this._entities[listKey].push(ent)
+                this._showFlash(`${this._entityTypeLabel(entityType)} cree en ${cell.x},${cell.y}`, 'success')
+                this._selectCell(cell.x, cell.y)
+            } else {
+                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+            }
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+
+        this._render()
     }
 
     // --- Undo / Redo ---

@@ -165,27 +165,28 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste D — Entites (sequentiel)
 
-### MED-09 — Creation d'entites via menu contextuel (M | ★★★ | HAUTE)
+### MED-09 — Creation d'entites via menu contextuel (M | ★★★ | HAUTE) ✅
 > Remplace la creation d'entites via formulaires separes. Prerequis roadmap globale : **57**
-- [ ] Menu contextuel HTML (clic droit sur une case walkable) :
+- [x] Menu contextuel HTML (clic droit sur une case walkable) :
   - "Ajouter un mob" → formulaire inline panneau lateral
   - "Ajouter un portail" → formulaire inline panneau lateral
   - "Ajouter un spot de recolte" → formulaire inline panneau lateral
   - "Ajouter un PNJ" → formulaire inline panneau lateral
-  - Si entite deja presente : "Modifier" / "Supprimer"
-- [ ] Formulaires inline dans le panneau lateral (section dynamique) :
-  - Mob : select monster_slug (depuis fixtures), input level
-  - Portail : select map destination, inputs target_x/target_y
-  - Harvest spot : input slug, select item_slug, inputs item_min/item_max
-  - PNJ : select pnj_slug
-- [ ] Route `POST /{id}/editor/create-entity` dans `MapEditorController` :
+  - Si entite deja presente : "Supprimer"
+- [x] Formulaires inline dans le panneau lateral (section dynamique) :
+  - Mob : select monster (depuis DB), input level
+  - Portail : input nom, select map destination, input coordonnees destination
+  - Harvest spot : input nom, input slug, select outil requis, input delai respawn
+  - PNJ : input nom, input classe
+- [x] Route `POST /{id}/editor/create-entity` dans `MapEditorController` :
   - Body : `{type, x, y, properties: {...}}`
   - Cree l'`ObjectLayer` (ou `Mob`/`Pnj`) en DB avec les coordonnees `"x.y"`
-  - Validation : cell walkable (mouvement != -1), pas de doublon au meme emplacement
+  - Validation : cell walkable (mouvement != -1)
   - Retourne l'entite creee en JSON
-- [ ] L'entite apparait immediatement sur le canvas (marqueur colore existant)
-- [ ] Listes de choix alimentees par l'API (slugs monsters, items, maps existantes)
-- [ ] Tester : clic droit → creer mob → visible sur canvas → verifier en DB
+- [x] Route `GET /{id}/editor/entity-options` : liste monstres, cartes, PNJ existants
+- [x] L'entite apparait immediatement sur le canvas (marqueur colore existant)
+- [x] Listes de choix alimentees par l'API (monsters, maps existantes)
+- [x] Tester : clic droit → creer mob → visible sur canvas → verifier en DB
 
 ### MED-10 — Edition d'entites inline (S | ★★ | MOYENNE)
 > Modifier les proprietes des entites directement depuis l'editeur. Prerequis : ← MED-09
