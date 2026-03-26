@@ -78,6 +78,7 @@ export default class extends Controller {
             <div class="inv-tooltip-slot"></div>
             <div class="inv-tooltip-desc"></div>
             <div class="inv-tooltip-stats"></div>
+            <div class="inv-tooltip-materia"></div>
             <div class="inv-tooltip-effects"></div>
         `;
         this.element.appendChild(el);
@@ -107,6 +108,7 @@ export default class extends Controller {
             <div class="inv-sheet-slot"></div>
             <div class="inv-sheet-desc"></div>
             <div class="inv-sheet-stats"></div>
+            <div class="inv-sheet-materia"></div>
             <div class="inv-sheet-effects"></div>
             <div class="inv-sheet-actions"></div>
         `;
@@ -212,6 +214,8 @@ export default class extends Controller {
             statsEl.style.display = 'none';
         }
 
+        this._fillMateriaSection(t.querySelector('.inv-tooltip-materia'), data);
+
         const fxEl = t.querySelector('.inv-tooltip-effects');
         if (data.effects) {
             fxEl.textContent = data.effects;
@@ -267,6 +271,8 @@ export default class extends Controller {
             statsEl.style.display = 'none';
         }
 
+        this._fillMateriaSection(s.querySelector('.inv-sheet-materia'), data);
+
         const fxEl = s.querySelector('.inv-sheet-effects');
         if (data.effects) {
             fxEl.textContent = data.effects;
@@ -301,6 +307,25 @@ export default class extends Controller {
         document.body.style.overflow = '';
     }
 
+    // ---- Materia section ----
+
+    _fillMateriaSection(el, data) {
+        const total = parseInt(data.materiaTotal) || 0;
+        if (total <= 0) {
+            el.style.display = 'none';
+            return;
+        }
+        const filled = parseInt(data.materiaFilled) || 0;
+        const filledClass = filled > 0 ? 'text-purple-300' : 'text-gray-500';
+        el.innerHTML = `
+            <div class="flex items-center gap-1.5 text-[11px]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-purple-400 shrink-0" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><circle cx="12" cy="12" r="5"/></svg>
+                <span class="${filledClass}">${filled}/${total} Materia</span>
+            </div>
+        `;
+        el.style.display = '';
+    }
+
     // ---- Helpers ----
 
     _extractData(el) {
@@ -313,6 +338,8 @@ export default class extends Controller {
             element: el.dataset.itemElement || '',
             slot: el.dataset.itemSlot || '',
             effects: el.dataset.itemEffects || '',
+            materiaTotal: el.dataset.itemMateriaTotal || '0',
+            materiaFilled: el.dataset.itemMateriaFilled || '0',
         };
     }
 
