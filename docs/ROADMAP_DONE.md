@@ -1121,6 +1121,18 @@
 - [x] Si condition remplie, creer automatiquement le PlayerQuest
 - [x] 4 quetes cachees dans les fixtures (clairiere secrete, slime rare, herborisme, cache gobelin)
 
+## 85 — Evenements aleatoires (2026-03-26) ✅
+
+> Systeme d'evenements aleatoires pour dynamiser le monde avec des bonus temporaires.
+- [x] `RandomEventGenerator` : selection ponderee parmi 3 templates (Aurore Mystique, Esprit du Marchand, Heure Doree)
+- [x] Prevention des doublons : un seul evenement aleatoire actif a la fois
+- [x] Commande `app:events:random` (probabilite 30%, option `--force`)
+- [x] Scheduler : execution toutes les 30 minutes
+- [x] Duree limitee 10-30 min, parametres `random_event: true` pour identification
+- [x] Integration automatique via GameEventExecutor (activation, Mercure broadcast, completion)
+- [x] HUD existant affiche les evenements sans modification frontend
+- [x] 8 tests unitaires couvrant generation, probabilite, doublons, parametres
+
 ## 90 — Herbier & catalogue minier (2026-03-26) ✅
 
 > Catalogue des ressources recoltees par le joueur, avec paliers de decouverte et completion.

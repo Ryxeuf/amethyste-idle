@@ -62,17 +62,8 @@
 - [ ] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
 - [ ] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
 
-### 85 — Evenements aleatoires (M | ★★)
-> Reutilise l'entite `GameEvent` existante. Ajoute du dynamisme au monde. Prerequis : ← 21
-- [ ] `RandomEventGenerator` : selectionne un type d'evenement aleatoire selon des poids configurables
-- [ ] Types : `invasion` (vague de mobs), `merchant` (marchand itinerant temporaire), `aurora` (buff XP zone)
-- [ ] Commande Scheduler `app:events:random` (toutes les 30-60 min, probabilite 30%)
-- [ ] Creer automatiquement un `GameEvent` avec duree limitee (10-30 min)
-- [ ] Pour `invasion` : spawner des mobs temporaires sur la zone ciblee
-- [ ] Pour `merchant` : creer un PNJ temporaire avec boutique speciale
-- [ ] Pour `aurora` : activer un buff XP via Mercure broadcast
-- [ ] Notification Mercure `game/event` pour alerter les joueurs connectes
-- [ ] Bandeau visuel dans le HUD quand un evenement est actif
+### ~~85 — Evenements aleatoires (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 
