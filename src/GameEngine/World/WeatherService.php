@@ -70,6 +70,15 @@ class WeatherService
     }
 
     /**
+     * Force la météo sur une carte (admin / scripts).
+     */
+    public function applyWeather(Map $map, WeatherType $weather): void
+    {
+        $map->setCurrentWeather($weather);
+        $map->setWeatherChangedAt(new \DateTimeImmutable());
+    }
+
+    /**
      * Tire une météo aléatoire pondérée par les poids de chaque type.
      */
     private function rollWeather(): WeatherType

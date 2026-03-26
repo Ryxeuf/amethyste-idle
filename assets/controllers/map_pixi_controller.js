@@ -65,7 +65,7 @@ export default class extends Controller {
         this._dayNightEnabled = true;
         this._ambientOverlay = null;
         this._timeOfDay = 'day';
-        this._gameTimeData = null; // { hour, minute, timeOfDay, season, day, timeRatio }
+        this._gameTimeData = null; // { hour, minute, timeOfDay, season, day, utcDayCycleFactor, utcSecondsSinceMidnight }
 
         // Particle system for environmental effects
         this._particles = [];
@@ -920,35 +920,40 @@ export default class extends Controller {
             if (resp.ok) {
                 this._gameTimeData = await resp.json();
                 this._timeOfDay = this._gameTimeData.timeOfDay;
-                this._gameTimeFetchedAt = Date.now();
             }
         } catch (e) {
             console.warn('[map_pixi] Failed to fetch game time, using fallback');
         }
     }
 
-    _computeTimeOfDay() {
-        if (this._gameTimeData && this._gameTimeFetchedAt) {
-            // Extrapolate from last fetch using timeRatio
-            const elapsed = (Date.now() - this._gameTimeFetchedAt) / 1000; // real seconds since fetch
-            const ratio = this._gameTimeData.timeRatio || 24;
-            const inGameSecondsSinceFetch = elapsed * ratio;
-            const baseInGameSeconds = this._gameTimeData.hour * 3600 + this._gameTimeData.minute * 60;
-            const totalInGameSeconds = baseInGameSeconds + inGameSecondsSinceFetch;
-            const hour = Math.floor(totalInGameSeconds / 3600) % 24;
-            const minute = Math.floor(totalInGameSeconds / 60) % 60;
+    _utcSecondsSinceMidnightFromDate(d) {
+        return d.getUTCHours() * 3600 + d.getUTCMinutes() * 60 + d.getUTCSeconds();
+    }
 
-            // Update cached display values
+    /**
+     * Meme logique que GameTimeService : secondes depuis minuit UTC * facteur, modulo 86400.
+     */
+    _computeTimeOfDay() {
+        const factor =
+            this._gameTimeData && typeof this._gameTimeData.utcDayCycleFactor === 'number'
+                ? this._gameTimeData.utcDayCycleFactor
+                : 1;
+        if (factor <= 0) {
+            return this._timeOfDay || 'day';
+        }
+
+        const d = new Date();
+        let utcSec = this._utcSecondsSinceMidnightFromDate(d);
+        let scaled = (utcSec * factor) % 86400;
+        if (scaled < 0) scaled += 86400;
+        const hour = Math.floor(scaled / 3600) % 24;
+        const minute = Math.floor((scaled % 3600) / 60) % 60;
+
+        if (this._gameTimeData) {
             this._gameTimeData.hour = hour;
             this._gameTimeData.minute = minute;
-
-            if (hour >= 8 && hour < 18) return 'day';
-            if (hour >= 6 && hour < 8) return 'dawn';
-            if (hour >= 18 && hour < 20) return 'dusk';
-            return 'night';
         }
-        // Fallback to local time
-        const hour = new Date().getHours();
+
         if (hour >= 8 && hour < 18) return 'day';
         if (hour >= 6 && hour < 8) return 'dawn';
         if (hour >= 18 && hour < 20) return 'dusk';

@@ -9,6 +9,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
 use App\GameEngine\World\GameTimeService;
+use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -29,7 +30,7 @@ class ShopControllerTest extends TestCase
     {
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->gameTimeService = new GameTimeService();
+        $this->gameTimeService = new GameTimeService(new StaticUtcDayCycleFactorProvider(1.0));
 
         $this->controller = new ShopController(
             $this->playerHelper,

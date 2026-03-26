@@ -8,9 +8,12 @@ use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
 use App\Entity\App\World;
+use App\Enum\WeatherType;
 use App\Form\Admin\MobSpawnType;
 use App\Form\Admin\PnjPositionType;
 use App\GameEngine\Terrain\MapFactory;
+use App\GameEngine\World\MapWeatherMercurePublisher;
+use App\GameEngine\World\WeatherService;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,6 +30,8 @@ class MapController extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
         private readonly MapFactory $mapFactory,
+        private readonly WeatherService $weatherService,
+        private readonly MapWeatherMercurePublisher $mapWeatherMercurePublisher,
     ) {
     }
 
@@ -75,7 +80,38 @@ class MapController extends AbstractController
             'mobs' => $mobs,
             'pnjs' => $pnjs,
             'portals' => $portals,
+            'weatherChoices' => array_map(static fn (WeatherType $w) => [
+                'value' => $w->value,
+                'label' => $w->label(),
+                'icon' => $w->icon(),
+            ], WeatherType::cases()),
         ]);
+    }
+
+    #[Route('/{id}/weather', name: 'weather', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function setWeather(Request $request, Map $map): Response
+    {
+        if (!$this->isCsrfTokenValid('map_weather' . $map->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+        }
+
+        $weather = WeatherType::tryFrom($request->request->getString('weather'));
+        if ($weather === null) {
+            $this->addFlash('error', 'Type de meteo invalide.');
+
+            return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+        }
+
+        $this->weatherService->applyWeather($map, $weather);
+        $this->em->flush();
+        $this->mapWeatherMercurePublisher->publish($map);
+
+        $this->adminLogger->log('update', 'Map', $map->getId(), 'Meteo: ' . $weather->label() . ' sur ' . $map->getName());
+        $this->addFlash('success', sprintf('Meteo definie : %s %s.', $weather->icon(), $weather->label()));
+
+        return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
     }
 
     // --- Mob Spawn Management ---

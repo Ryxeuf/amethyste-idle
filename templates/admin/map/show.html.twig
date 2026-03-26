@@ -31,6 +31,33 @@
     </div>
 </div>
 
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-5 mb-8">
+    <h2 class="text-lg font-bold mb-3">Meteo sur la carte</h2>
+    <p class="text-gray-300 mb-1">
+        <span class="text-2xl align-middle" aria-hidden="true">{{ map.currentWeather.icon() }}</span>
+        <span class="ml-2 align-middle font-medium">{{ map.currentWeather.label() }}</span>
+        <span class="text-gray-500 text-sm ml-2">({{ map.currentWeather.value }})</span>
+    </p>
+    {% if map.weatherChangedAt %}
+        <p class="text-xs text-gray-500 mb-4">Dernier changement : {{ map.weatherChangedAt|date('Y-m-d H:i') }} (UTC)</p>
+    {% else %}
+        <p class="text-xs text-gray-500 mb-4">Aucune date d&apos;enregistrement.</p>
+    {% endif %}
+    <form method="post" action="{{ path('admin_map_weather', {id: map.id}) }}" class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-end gap-3">
+        <input type="hidden" name="_token" value="{{ csrf_token('map_weather' ~ map.id) }}">
+        <div class="flex-1 min-w-[200px]">
+            <label for="map-weather" class="block text-xs text-gray-400 mb-1">Nouvelle meteo</label>
+            <select id="map-weather" name="weather" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                {% for w in weatherChoices %}
+                    <option value="{{ w.value }}" {{ w.value == map.currentWeather.value ? 'selected' : '' }}>{{ w.icon }} {{ w.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">Appliquer et notifier les clients</button>
+    </form>
+    <p class="text-xs text-gray-500 mt-3">Les joueurs connectes recoivent la mise a jour via Mercure (topic <code class="text-gray-400">map/weather</code>).</p>
+</div>
+
 {# --- Mobs Section --- #}
 <div class="flex items-center justify-between mb-3">
     <h2 class="text-lg sm:text-xl font-bold">Mobs sur la carte</h2>

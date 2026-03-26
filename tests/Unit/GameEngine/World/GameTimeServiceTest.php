@@ -5,134 +5,108 @@ declare(strict_types=1);
 namespace App\Tests\Unit\GameEngine\World;
 
 use App\GameEngine\World\GameTimeService;
+use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use PHPUnit\Framework\TestCase;
 
 class GameTimeServiceTest extends TestCase
 {
-    public function testGetHourAtMidnight(): void
+    private function service(float $factor = 1.0): GameTimeService
     {
-        $service = new GameTimeService(24);
-        // Unix epoch = midnight in-game
-        $time = new \DateTimeImmutable('@0');
-        $this->assertSame(0, $service->getHour($time));
+        return new GameTimeService(new StaticUtcDayCycleFactorProvider($factor));
     }
 
-    public function testGetHourProgresses(): void
+    public function testGetHourAtUtcMidnightWithFactor1(): void
     {
-        $service = new GameTimeService(24);
-        // After 150 real seconds = 150*24 = 3600 in-game seconds = 1 in-game hour
-        $time = new \DateTimeImmutable('@150');
-        $this->assertSame(1, $service->getHour($time));
+        $time = new \DateTimeImmutable('2024-06-15 00:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame(0, $this->service(1.0)->getHour($time));
+        $this->assertSame(0, $this->service(1.0)->getMinute($time));
     }
 
-    public function testGetMinute(): void
+    public function testGetHourMatchesUtcClockWithFactor1(): void
     {
-        $service = new GameTimeService(24);
-        // After 100 real seconds = 2400 in-game seconds = 40 in-game minutes
-        $time = new \DateTimeImmutable('@100');
-        $this->assertSame(40, $service->getMinute($time));
+        $time = new \DateTimeImmutable('2024-06-15 14:32:09', new \DateTimeZone('UTC'));
+        $this->assertSame(14, $this->service(1.0)->getHour($time));
+        $this->assertSame(32, $this->service(1.0)->getMinute($time));
+    }
+
+    public function testFactorHalfSlowsCycleAtNoonUtc(): void
+    {
+        $time = new \DateTimeImmutable('2024-01-01 12:00:00', new \DateTimeZone('UTC'));
+        // 12h UTC * 0.5 = 6h virtuelles
+        $this->assertSame(6, $this->service(0.5)->getHour($time));
+    }
+
+    public function testFactorTwoDoublesSpeedAtNoonUtc(): void
+    {
+        $time = new \DateTimeImmutable('2024-01-01 12:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame(0, $this->service(2.0)->getHour($time));
+        $this->assertSame(0, $this->service(2.0)->getMinute($time));
     }
 
     public function testGetTimeOfDayDay(): void
     {
-        $service = new GameTimeService(24);
-        // 10h in-game = 10*3600/24 = 1500 real seconds from epoch
-        $time = new \DateTimeImmutable('@1500');
-        $this->assertSame('day', $service->getTimeOfDay($time));
+        $time = new \DateTimeImmutable('2024-03-10 10:15:00', new \DateTimeZone('UTC'));
+        $this->assertSame('day', $this->service(1.0)->getTimeOfDay($time));
     }
 
     public function testGetTimeOfDayDawn(): void
     {
-        $service = new GameTimeService(24);
-        // 6h in-game = 6*3600/24 = 900 real seconds
-        $time = new \DateTimeImmutable('@900');
-        $this->assertSame('dawn', $service->getTimeOfDay($time));
+        $time = new \DateTimeImmutable('2024-03-10 07:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame('dawn', $this->service(1.0)->getTimeOfDay($time));
     }
 
     public function testGetTimeOfDayDusk(): void
     {
-        $service = new GameTimeService(24);
-        // 19h in-game = 19*3600/24 = 2850 real seconds
-        $time = new \DateTimeImmutable('@2850');
-        $this->assertSame('dusk', $service->getTimeOfDay($time));
+        $time = new \DateTimeImmutable('2024-03-10 19:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame('dusk', $this->service(1.0)->getTimeOfDay($time));
     }
 
     public function testGetTimeOfDayNight(): void
     {
-        $service = new GameTimeService(24);
-        // 22h in-game = 22*3600/24 = 3300 real seconds
-        $time = new \DateTimeImmutable('@3300');
-        $this->assertSame('night', $service->getTimeOfDay($time));
+        $time = new \DateTimeImmutable('2024-03-10 22:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame('night', $this->service(1.0)->getTimeOfDay($time));
     }
 
-    public function testGetSeasonCycles(): void
+    public function testGetSeasonByUtcMonth(): void
     {
-        $service = new GameTimeService(24);
-
-        // Day 0 = spring
-        $time = new \DateTimeImmutable('@0');
-        $this->assertSame('spring', $service->getSeason($time));
-
-        // Day 7 = summer (7 * 86400 seconds)
-        $time = new \DateTimeImmutable('@' . (7 * 86400));
-        $this->assertSame('summer', $service->getSeason($time));
-
-        // Day 14 = autumn
-        $time = new \DateTimeImmutable('@' . (14 * 86400));
-        $this->assertSame('autumn', $service->getSeason($time));
-
-        // Day 21 = winter
-        $time = new \DateTimeImmutable('@' . (21 * 86400));
-        $this->assertSame('winter', $service->getSeason($time));
-
-        // Day 28 = spring again
-        $time = new \DateTimeImmutable('@' . (28 * 86400));
-        $this->assertSame('spring', $service->getSeason($time));
+        $this->assertSame('winter', $this->service(1.0)->getSeason(new \DateTimeImmutable('2024-01-15 12:00:00', new \DateTimeZone('UTC'))));
+        $this->assertSame('spring', $this->service(1.0)->getSeason(new \DateTimeImmutable('2024-04-10 12:00:00', new \DateTimeZone('UTC'))));
+        $this->assertSame('summer', $this->service(1.0)->getSeason(new \DateTimeImmutable('2024-07-20 12:00:00', new \DateTimeZone('UTC'))));
+        $this->assertSame('autumn', $this->service(1.0)->getSeason(new \DateTimeImmutable('2024-10-05 12:00:00', new \DateTimeZone('UTC'))));
     }
 
-    public function testGetDayIsCyclic(): void
+    public function testGetDayCycles28FromDayOfYear(): void
     {
-        $service = new GameTimeService(24);
+        $time = new \DateTimeImmutable('2024-01-01 12:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame(1, $this->service(1.0)->getDay($time));
 
-        $time = new \DateTimeImmutable('@0');
-        $this->assertSame(1, $service->getDay($time));
+        $time = new \DateTimeImmutable('2024-01-28 12:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame(28, $this->service(1.0)->getDay($time));
 
-        // After 1 real hour = 1 in-game day with ratio 24
-        $time = new \DateTimeImmutable('@3600');
-        $this->assertSame(2, $service->getDay($time));
+        $time = new \DateTimeImmutable('2024-01-29 12:00:00', new \DateTimeZone('UTC'));
+        $this->assertSame(1, $this->service(1.0)->getDay($time));
     }
 
-    public function testGetSnapshotReturnsAllKeys(): void
+    public function testGetSnapshotReturnsExpectedKeys(): void
     {
-        $service = new GameTimeService(24);
-        $time = new \DateTimeImmutable('@0');
-        $snapshot = $service->getSnapshot($time);
+        $time = new \DateTimeImmutable('2024-06-01 08:00:00', new \DateTimeZone('UTC'));
+        $snapshot = $this->service(0.25)->getSnapshot($time);
 
         $this->assertArrayHasKey('hour', $snapshot);
         $this->assertArrayHasKey('minute', $snapshot);
         $this->assertArrayHasKey('timeOfDay', $snapshot);
         $this->assertArrayHasKey('season', $snapshot);
         $this->assertArrayHasKey('day', $snapshot);
-        $this->assertArrayHasKey('timeRatio', $snapshot);
-        $this->assertSame(24, $snapshot['timeRatio']);
+        $this->assertArrayHasKey('utcDayCycleFactor', $snapshot);
+        $this->assertArrayHasKey('utcSecondsSinceMidnight', $snapshot);
+        $this->assertSame(0.25, $snapshot['utcDayCycleFactor']);
+        $this->assertSame(8 * 3600, $snapshot['utcSecondsSinceMidnight']);
     }
 
-    public function testCustomTimeRatio(): void
+    public function testConvertsLocalWallClockToUtc(): void
     {
-        // Ratio 12 = 12 in-game hours per 1 real hour
-        $service = new GameTimeService(12);
-        // After 300 real seconds = 300*12 = 3600 in-game seconds = 1 in-game hour
-        $time = new \DateTimeImmutable('@300');
-        $this->assertSame(1, $service->getHour($time));
-        $this->assertSame(12, $service->getTimeRatio());
-    }
-
-    public function testHourWrapsAround24(): void
-    {
-        $service = new GameTimeService(24);
-        // 25 in-game hours should wrap to 1
-        // 25*3600/24 = 3750 real seconds
-        $time = new \DateTimeImmutable('@3750');
-        $this->assertSame(1, $service->getHour($time));
+        // 15:00 a Paris (ete UTC+2) = 13:00 UTC
+        $time = new \DateTimeImmutable('2024-07-15 15:00:00', new \DateTimeZone('Europe/Paris'));
+        $this->assertSame(13, $this->service(1.0)->getHour($time));
     }
 }

@@ -6,7 +6,6 @@
 parameters:
     app_locales: ['fr', 'en']
     default_locale: 'fr'
-    game.time_ratio: 24  # 1 real hour = 1 in-game day (24 in-game hours per real hour)
 
 services:
     # default configuration for services in *this* file
@@ -24,6 +23,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
+            - '../src/GameEngine/World/StaticUtcDayCycleFactorProvider.php'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -31,10 +31,6 @@ services:
     App\GameEngine\Fight\CombatLogArchiver:
         arguments:
             $archiveDir: '%kernel.project_dir%/var/log/fights'
-
-    App\GameEngine\World\GameTimeService:
-        arguments:
-            $gameTimeRatio: '%game.time_ratio%'
 
     App\EventListener\LocaleListener:
         arguments:
