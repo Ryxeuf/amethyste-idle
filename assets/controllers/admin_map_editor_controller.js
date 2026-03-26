@@ -59,6 +59,8 @@ export default class extends Controller {
     _pickerStampHeight = 1
     _pickerStampGids = []
     _pickerLayer = 1 // 0=background, 1=ground, 2=decoration, 3=overlay
+    _layerVisibility = [true, true, true, true] // per-layer visibility
+    _layerOpacity = [1, 1, 1, 1] // per-layer opacity (0..1)
 
     connect() {
         this._canvas = this.canvasTarget
@@ -454,7 +456,10 @@ export default class extends Controller {
     }
 
     _drawTileLayers(ctx, cell, px, py, ts) {
-        for (const gid of cell.l) {
+        for (let i = 0; i < cell.l.length; i++) {
+            if (!this._layerVisibility[i]) continue
+
+            const gid = cell.l[i]
             const tileset = this._findTileset(gid)
             if (!tileset) continue
 
@@ -465,7 +470,14 @@ export default class extends Controller {
             const srcX = (localId % tileset.columns) * tileset.tileWidth
             const srcY = Math.floor(localId / tileset.columns) * tileset.tileHeight
 
+            const opacity = this._layerOpacity[i]
+            if (opacity < 1) {
+                ctx.globalAlpha = opacity
+            }
             ctx.drawImage(img, srcX, srcY, tileset.tileWidth, tileset.tileHeight, px, py, ts, ts)
+            if (opacity < 1) {
+                ctx.globalAlpha = 1
+            }
         }
     }
 
@@ -758,13 +770,10 @@ export default class extends Controller {
         if (e.key === 'w' || e.key === 'W') { this.setToolWall(); e.preventDefault() }
         if (e.key === 'g' || e.key === 'G') { this.setToolFill(); e.preventDefault() }
 
-        // Layer shortcuts: 1/2/3/4
+        // Layer shortcuts: 1/2/3/4 (select active layer)
         if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
             const layer = parseInt(e.key, 10) - 1
             this._pickerLayer = layer
-            // Update the radio buttons in the tileset picker
-            const radios = document.querySelectorAll('input[name="active-layer"]')
-            radios.forEach(r => { r.checked = parseInt(r.value, 10) === layer })
             // Notify the tileset picker
             const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
             if (pickerEl) {
@@ -773,6 +782,7 @@ export default class extends Controller {
                     pickerCtrl._activeLayer = layer
                 }
             }
+            this._updateLayerPanel()
             e.preventDefault()
         }
 
@@ -1341,6 +1351,65 @@ export default class extends Controller {
     toggleWalls() {
         this._showWalls = !this._showWalls
         this._render()
+    }
+
+    toggleLayerVisibility(e) {
+        const layer = parseInt(e.currentTarget.dataset.layer, 10)
+        this._layerVisibility[layer] = !this._layerVisibility[layer]
+        this._updateLayerPanel()
+        this._render()
+    }
+
+    setLayerOpacity(e) {
+        const layer = parseInt(e.currentTarget.dataset.layer, 10)
+        this._layerOpacity[layer] = parseFloat(e.currentTarget.value)
+        this._render()
+    }
+
+    selectActiveLayer(e) {
+        const layer = parseInt(e.currentTarget.dataset.layer, 10)
+        this._pickerLayer = layer
+        this._updateLayerPanel()
+        // Sync with tileset picker
+        const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
+        if (pickerEl) {
+            const pickerCtrl = this.application.getControllerForElementAndIdentifier(pickerEl, 'admin-tileset-picker')
+            if (pickerCtrl) {
+                pickerCtrl._activeLayer = layer
+            }
+        }
+    }
+
+    _updateLayerPanel() {
+        const panel = this.element.querySelector('#layer-panel')
+        if (!panel) return
+
+        const layerNames = ['Background', 'Ground', 'Decoration', 'Overlay']
+        panel.querySelectorAll('[data-layer-row]').forEach(row => {
+            const layer = parseInt(row.dataset.layerRow, 10)
+            const isActive = layer === this._pickerLayer
+            const isVisible = this._layerVisibility[layer]
+
+            // Active layer highlight
+            row.classList.toggle('bg-purple-900/30', isActive)
+            row.classList.toggle('border-purple-500/50', isActive)
+            row.classList.toggle('border-transparent', !isActive)
+
+            // Visibility icon
+            const eyeBtn = row.querySelector('[data-eye-btn]')
+            if (eyeBtn) {
+                eyeBtn.innerHTML = isVisible ? '👁' : '—'
+                eyeBtn.classList.toggle('text-gray-300', isVisible)
+                eyeBtn.classList.toggle('text-gray-600', !isVisible)
+            }
+
+            // Opacity slider
+            const slider = row.querySelector('input[type="range"]')
+            if (slider) {
+                slider.disabled = !isVisible
+                slider.classList.toggle('opacity-30', !isVisible)
+            }
+        })
     }
 
     setToolSelect() { this._tool = 'select'; this._updateToolButtons() }

@@ -54,10 +54,10 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 3 — UX editeur (MED-07, MED-08) — parallelisable
 
-**MED-07 — Gestion des layers (S | ★★ | HAUTE)**
+**MED-07 — Gestion des layers (S | ★★ | HAUTE)** ✅
 > Controle de visibilite et selection des layers. Prerequis : ← MED-03
-- [ ] Panneau layers (visibilite, layer actif, opacite)
-- [ ] Raccourcis 1/2/3/4
+- [x] Panneau layers (visibilite, layer actif, opacite)
+- [x] Raccourcis 1/2/3/4
 
 **MED-08 — Undo / Redo (S | ★★ | HAUTE)**
 > Historique des modifications. Prerequis : ← MED-04
