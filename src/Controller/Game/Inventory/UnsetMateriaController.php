@@ -49,7 +49,7 @@ class UnsetMateriaController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_equipment_list');
         }
 
-        $redirectToGear = fn (): \Symfony\Component\HttpFoundation\Response => $this->redirectToRoute('app_game_inventory_equipment_modify', ['id' => $gearItem->getId()]);
+        $redirectToGear = fn (): Response => $this->redirectToRoute('app_game_inventory_equipment_modify', ['id' => $gearItem->getId()]);
 
         if ($slot->getItemSet() === null) {
             $this->addFlash('error', 'Ce slot est déjà vide.');
