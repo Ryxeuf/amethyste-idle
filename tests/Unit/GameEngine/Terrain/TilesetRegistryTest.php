@@ -47,30 +47,33 @@ class TilesetRegistryTest extends TestCase
         }
     }
 
+    public function testGetTilesetForGidTerrain(): void
+    {
+        // GID 1 = premiere tile du tileset Terrain (firstGid=1)
+        $tileset = $this->registry->getTilesetForGid(1);
+
+        $this->assertNotNull($tileset);
+        $this->assertSame('terrain', $tileset['name']);
+        $this->assertSame(TilesetRegistry::FIRST_GID_TERRAIN, $tileset['firstGid']);
+    }
+
     public function testGetTilesetForGidForest(): void
     {
-        $tileset = $this->registry->getTilesetForGid(1);
+        // GID 1025 = premiere tile du tileset Forest (firstGid=1025)
+        $tileset = $this->registry->getTilesetForGid(1025);
 
         $this->assertNotNull($tileset);
         $this->assertSame('forest', $tileset['name']);
         $this->assertSame(TilesetRegistry::FIRST_GID_FOREST, $tileset['firstGid']);
     }
 
-    public function testGetTilesetForGidTerrain(): void
+    public function testGetTilesetForGidForestMiddle(): void
     {
-        $tileset = $this->registry->getTilesetForGid(3073);
+        // GID 2000 = Forest firstGid(1025) + 975
+        $tileset = $this->registry->getTilesetForGid(2000);
 
         $this->assertNotNull($tileset);
-        $this->assertSame('terrain', $tileset['name']);
-    }
-
-    public function testGetTilesetForGidTerrainMiddle(): void
-    {
-        // GID 3427 = Terrain firstGid(3073) + 354
-        $tileset = $this->registry->getTilesetForGid(3427);
-
-        $this->assertNotNull($tileset);
-        $this->assertSame('terrain', $tileset['name']);
+        $this->assertSame('forest', $tileset['name']);
     }
 
     public function testGetTilesetForGidCollisions(): void
@@ -83,7 +86,8 @@ class TilesetRegistryTest extends TestCase
 
     public function testGetTilesetForGidBaseChipPipo(): void
     {
-        $tileset = $this->registry->getTilesetForGid(4115);
+        // GID 4097 = premiere tile du tileset BaseChip_pipo
+        $tileset = $this->registry->getTilesetForGid(4097);
 
         $this->assertNotNull($tileset);
         $this->assertSame('BaseChip_pipo', $tileset['name']);
@@ -98,40 +102,40 @@ class TilesetRegistryTest extends TestCase
 
     public function testGetTilesetForGidOutOfRangeReturnsNull(): void
     {
-        // GID bien au-dela du dernier tileset (BaseChip_pipo: 4115 + 1064 = 5179)
+        // GID bien au-dela du dernier tileset (Collisions: 5161 + 18 = 5179)
         $tileset = $this->registry->getTilesetForGid(99999);
 
         $this->assertNull($tileset);
     }
 
-    public function testGetLocalTileIdForest(): void
+    public function testGetLocalTileIdTerrain(): void
     {
-        // GID 100 dans forest (firstGid=1) => local = 99
+        // GID 100 dans Terrain (firstGid=1) => local = 99
         $localId = $this->registry->getLocalTileId(100);
 
         $this->assertSame(99, $localId);
     }
 
-    public function testGetLocalTileIdTerrain(): void
+    public function testGetLocalTileIdForest(): void
     {
-        // GID 3427 dans Terrain (firstGid=3073) => local = 354
-        $localId = $this->registry->getLocalTileId(3427);
+        // GID 1379 dans Forest (firstGid=1025) => local = 354
+        $localId = $this->registry->getLocalTileId(1379);
 
         $this->assertSame(354, $localId);
     }
 
     public function testGetLocalTileIdCollision(): void
     {
-        // GID 4098 dans Collisions (firstGid=4097) => local = 1
-        $localId = $this->registry->getLocalTileId(4098);
+        // GID 5162 dans Collisions (firstGid=5161) => local = 1
+        $localId = $this->registry->getLocalTileId(5162);
 
         $this->assertSame(1, $localId);
     }
 
     public function testGetLocalTileIdBaseChip(): void
     {
-        // GID 4115 dans BaseChip_pipo (firstGid=4115) => local = 0
-        $localId = $this->registry->getLocalTileId(4115);
+        // GID 4097 dans BaseChip_pipo (firstGid=4097) => local = 0
+        $localId = $this->registry->getLocalTileId(4097);
 
         $this->assertSame(0, $localId);
     }
@@ -186,14 +190,34 @@ class TilesetRegistryTest extends TestCase
 
     public function testFirstGidBoundaries(): void
     {
-        // Derniere tile de forest: firstGid(1) + tileCount(3072) - 1 = 3072
-        $tileset = $this->registry->getTilesetForGid(3072);
+        // Derniere tile de Terrain: firstGid(1) + tileCount(1024) - 1 = 1024
+        $tileset = $this->registry->getTilesetForGid(1024);
+        $this->assertNotNull($tileset);
+        $this->assertSame('terrain', $tileset['name']);
+
+        // Premiere tile de Forest: 1025
+        $tileset = $this->registry->getTilesetForGid(1025);
         $this->assertNotNull($tileset);
         $this->assertSame('forest', $tileset['name']);
 
-        // Premiere tile de terrain: 3073
-        $tileset = $this->registry->getTilesetForGid(3073);
+        // Derniere tile de Forest: 1025 + 3072 - 1 = 4096
+        $tileset = $this->registry->getTilesetForGid(4096);
         $this->assertNotNull($tileset);
-        $this->assertSame('terrain', $tileset['name']);
+        $this->assertSame('forest', $tileset['name']);
+
+        // Premiere tile de BaseChip_pipo: 4097
+        $tileset = $this->registry->getTilesetForGid(4097);
+        $this->assertNotNull($tileset);
+        $this->assertSame('BaseChip_pipo', $tileset['name']);
+
+        // Derniere tile de BaseChip_pipo: 4097 + 1064 - 1 = 5160
+        $tileset = $this->registry->getTilesetForGid(5160);
+        $this->assertNotNull($tileset);
+        $this->assertSame('BaseChip_pipo', $tileset['name']);
+
+        // Premiere tile de Collisions: 5161
+        $tileset = $this->registry->getTilesetForGid(5161);
+        $this->assertNotNull($tileset);
+        $this->assertSame('collisions', $tileset['name']);
     }
 }

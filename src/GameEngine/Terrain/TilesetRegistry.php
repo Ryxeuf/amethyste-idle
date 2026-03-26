@@ -10,20 +10,20 @@ use Symfony\Component\Asset\Packages;
  */
 class TilesetRegistry
 {
-    // --- First GID de chaque tileset (ordre fixe) ---
-    public const FIRST_GID_FOREST = 1;
-    public const FIRST_GID_TERRAIN = 3073;
-    public const FIRST_GID_COLLISIONS = 4097;
-    public const FIRST_GID_BASECHIP_PIPO = 4115;
+    // --- First GID de chaque tileset (ordre fixe, depuis les fichiers TMX) ---
+    public const FIRST_GID_TERRAIN = 1;
+    public const FIRST_GID_FOREST = 1025;
+    public const FIRST_GID_BASECHIP_PIPO = 4097;
+    public const FIRST_GID_COLLISIONS = 5161;
 
     // --- GID cles : herbe variantes (dans Terrain tileset) ---
-    public const GID_GRASS_BASE = 3366;  // 3073 + 293
-    public const GID_GRASS_ALT1 = 3426;  // 3073 + 353
-    public const GID_GRASS_ALT2 = 3427;  // 3073 + 354
-    public const GID_GRASS_ALT3 = 3428;  // 3073 + 355
+    public const GID_GRASS_BASE = 294;   // 1 + 293
+    public const GID_GRASS_ALT1 = 354;   // 1 + 353
+    public const GID_GRASS_ALT2 = 355;   // 1 + 354
+    public const GID_GRASS_ALT3 = 356;   // 1 + 355
 
     // --- GID cles : collision ---
-    public const GID_COLLISION_WALL = 4098;  // 4097 + 1 = mur impassable
+    public const GID_COLLISION_WALL = 5162;  // 5161 + 1 = mur impassable
 
     /**
      * Definitions statiques des 4 tilesets, triees par firstGid.
@@ -31,15 +31,6 @@ class TilesetRegistry
      * @var array<int, array{name: string, firstGid: int, columns: int, tileCount: int, tileWidth: int, tileHeight: int, imageFile: string}>
      */
     private const TILESETS = [
-        self::FIRST_GID_FOREST => [
-            'name' => 'forest',
-            'firstGid' => self::FIRST_GID_FOREST,
-            'columns' => 16,
-            'tileCount' => 3072,
-            'tileWidth' => 32,
-            'tileHeight' => 32,
-            'imageFile' => 'forest.png',
-        ],
         self::FIRST_GID_TERRAIN => [
             'name' => 'terrain',
             'firstGid' => self::FIRST_GID_TERRAIN,
@@ -49,14 +40,14 @@ class TilesetRegistry
             'tileHeight' => 32,
             'imageFile' => 'terrain.png',
         ],
-        self::FIRST_GID_COLLISIONS => [
-            'name' => 'collisions',
-            'firstGid' => self::FIRST_GID_COLLISIONS,
-            'columns' => 6,
-            'tileCount' => 18,
+        self::FIRST_GID_FOREST => [
+            'name' => 'forest',
+            'firstGid' => self::FIRST_GID_FOREST,
+            'columns' => 16,
+            'tileCount' => 3072,
             'tileWidth' => 32,
             'tileHeight' => 32,
-            'imageFile' => 'collisions.png',
+            'imageFile' => 'forest.png',
         ],
         self::FIRST_GID_BASECHIP_PIPO => [
             'name' => 'BaseChip_pipo',
@@ -66,6 +57,15 @@ class TilesetRegistry
             'tileWidth' => 32,
             'tileHeight' => 32,
             'imageFile' => 'BaseChip_pipo.png',
+        ],
+        self::FIRST_GID_COLLISIONS => [
+            'name' => 'collisions',
+            'firstGid' => self::FIRST_GID_COLLISIONS,
+            'columns' => 6,
+            'tileCount' => 18,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'collisions.png',
         ],
     ];
 
