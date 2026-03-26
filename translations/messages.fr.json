@@ -67,7 +67,8 @@
         "adventure": "Aventure",
         "character": "Personnage",
         "social": "Social"
-      }
+      },
+      "catalog": "Herbier"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -151,29 +152,6 @@
       "select_region": "Sélectionnez une région",
       "click_region": "Cliquez sur une région pour voir ses détails",
       "difficulty": "Difficulté",
-      "resources": "Ressources",
-      "enemies": "Ennemis",
-      "explore": "Explorer",
-      "available_quests": "Quêtes disponibles",
-      "discovered_locations": "Lieux découverts",
-      "energy_cost": "Coût en énergie",
-      "start_quest": "Commencer la quête",
-      "fast_travel": "Voyage rapide",
-      "exploration_message": "Vous commencez à explorer cette région...",
-      "regions": {
-        "forest": "Forêt Mystique",
-        "mountains": "Montagnes Brumeuses",
-        "desert": "Désert Ardent",
-        "swamp": "Marais Obscurs",
-        "capital": "Capitale Royale"
-      },
-      "region_descriptions": {
-        "forest": "Une forêt dense et mystérieuse, abritant une grande variété de plantes et de créatures. Les rayons du soleil percent à peine à travers la canopée.",
-        "mountains": "Des pics escarpés et des vallées profondes, où le vent siffle entre les rochers. Les créatures les plus dangereuses du royaume y ont élu domicile.",
-        "desert": "Une vaste étendue de sable brûlant, où l'eau est rare et précieuse. Les ruines d'anciennes civilisations sont enfouies sous les dunes.",
-        "swamp": "Un marécage sombre et humide, où la brume s'accroche aux arbres tordus. Des créatures étranges rôdent dans les eaux troubles.",
-        "capital": "Le centre du royaume, où se dressent de magnifiques bâtiments et où les marchands proposent leurs marchandises. C'est ici que réside la famille royale."
-      },
       "resources": {
         "wood": "Bois",
         "herbs": "Herbes",
@@ -207,6 +185,27 @@
         "thief": "Voleur",
         "guard": "Garde corrompu",
         "noble": "Noble arrogant"
+      },
+      "explore": "Explorer",
+      "available_quests": "Quêtes disponibles",
+      "discovered_locations": "Lieux découverts",
+      "energy_cost": "Coût en énergie",
+      "start_quest": "Commencer la quête",
+      "fast_travel": "Voyage rapide",
+      "exploration_message": "Vous commencez à explorer cette région...",
+      "regions": {
+        "forest": "Forêt Mystique",
+        "mountains": "Montagnes Brumeuses",
+        "desert": "Désert Ardent",
+        "swamp": "Marais Obscurs",
+        "capital": "Capitale Royale"
+      },
+      "region_descriptions": {
+        "forest": "Une forêt dense et mystérieuse, abritant une grande variété de plantes et de créatures. Les rayons du soleil percent à peine à travers la canopée.",
+        "mountains": "Des pics escarpés et des vallées profondes, où le vent siffle entre les rochers. Les créatures les plus dangereuses du royaume y ont élu domicile.",
+        "desert": "Une vaste étendue de sable brûlant, où l'eau est rare et précieuse. Les ruines d'anciennes civilisations sont enfouies sous les dunes.",
+        "swamp": "Un marécage sombre et humide, où la brume s'accroche aux arbres tordus. Des créatures étranges rôdent dans les eaux troubles.",
+        "capital": "Le centre du royaume, où se dressent de magnifiques bâtiments et où les marchands proposent leurs marchandises. C'est ici que réside la famille royale."
       },
       "quest_example": {
         "title": "La Menace des Ombres",
@@ -458,6 +457,27 @@
       "offline": "Hors ligne",
       "waiting": "En attente",
       "add_friend": "Ajouter en ami"
+    },
+    "catalog": {
+      "title": "Herbier & Catalogue minier",
+      "subtitle": "Catalogue des ressources découvertes",
+      "discovered": "%count%/%total% ressources découvertes",
+      "total_collected": "%count% récoltes totales",
+      "collected": "%count% récoltée(s)",
+      "tier_locations": "Infos révélées",
+      "tier_recipes": "Recettes visibles",
+      "tier_specialist": "Spécialiste de %resource%",
+      "info_element": "Informations",
+      "value": "Valeur : %price% gils",
+      "next_tier": "Prochain palier : %count%/%required% récoltes",
+      "empty": "Aucune ressource découverte",
+      "empty_hint": "Récoltez des herbes, minerais et plantes sur la carte pour remplir votre herbier",
+      "type_herb": "Herbe",
+      "type_ore": "Minerai",
+      "type_plant": "Plante",
+      "type_resource": "Ressource",
+      "type_stuff": "Matériau",
+      "type_food": "Nourriture"
     }
   },
   "common": {

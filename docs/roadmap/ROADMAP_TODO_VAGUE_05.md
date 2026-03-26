@@ -16,12 +16,8 @@
 - [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
 - [ ] Chaque fragment donne un item cle collectible
 
-### 86 — Quetes de decouverte cachees (S | ★★)
-> Quetes non visibles dans le journal tant que non declenchees. Recompense l'exploration. Prerequis : ← 13
-- [ ] Champ `isHidden` (bool) sur Quest + champ `triggerCondition` (JSON)
-- [ ] HiddenQuestTriggerListener : ecoute PlayerMoveEvent, SpotHarvestEvent, MobDeadEvent
-- [ ] Si condition remplie, creer automatiquement le PlayerQuest + notification
-- [ ] 3-4 quetes cachees dans les fixtures (lieu secret, mob rare, action inhabituelle)
+### ~~86 — Quetes de decouverte cachees (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 87 — Types quetes avances : enquete et defi boss (M | ★★)
 > Mecaniques plus complexes, a faire quand le contenu de base est solide. Prerequis : ← 31, 13
@@ -95,9 +91,8 @@
 - [ ] Fixtures : 3-4 enchantements (Tranchant de feu +5 degats feu 1h, Protection de glace +3 defense 30min, etc.)
 - [ ] Tests EnchantmentManager
 
-### 90 — Herbier & catalogue minier (S | ★★)
-> Fiche par ressource, premiere decouverte, completion. Prerequis : ← 28
-- [ ] Herbier & catalogue minier : fiche par ressource, premiere decouverte, completion
+### ~~90 — Herbier & catalogue minier (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 
 ---

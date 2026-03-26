@@ -1112,3 +1112,23 @@
 - [x] Affichage du stock restant dans le template boutique (badge couleur, rupture)
 - [x] Bouton Acheter desactive si stock = 0
 - [x] Fixtures : stock initial pour toutes les boutiques (PnjFixtures + VillageHubPnjFixtures)
+
+## 86 — Quetes de decouverte cachees (2026-03-26) ✅
+
+> Quetes non visibles dans le journal tant que non declenchees. Se declenchent automatiquement via les actions du joueur.
+- [x] Champ `isHidden` (bool) sur Quest + champ `triggerCondition` (JSON)
+- [x] `HiddenQuestTriggerListener` : ecoute PlayerMoveEvent, SpotHarvestEvent, MobDeadEvent
+- [x] Si condition remplie, creer automatiquement le PlayerQuest
+- [x] 4 quetes cachees dans les fixtures (clairiere secrete, slime rare, herborisme, cache gobelin)
+
+## 90 — Herbier & catalogue minier (2026-03-26) ✅
+
+> Catalogue des ressources recoltees par le joueur, avec paliers de decouverte et completion.
+- [x] Entite `PlayerResourceCatalog` (player, item, collectCount, firstCollectedAt) — paliers 5/25/50
+- [x] Migration SQL
+- [x] `ResourceCatalogListener` : ecoute SpotHarvestEvent et GatheringEvent pour tracker les recoltes
+- [x] `PlayerResourceCatalogRepository` avec requetes optimisees
+- [x] `ResourceCatalogController` : page `/game/catalog`
+- [x] Template Twig avec badges paliers, barre de progression, infos revelees
+- [x] Navigation : lien dans le dropdown Aventure et le drawer mobile
+- [x] Traductions FR/EN

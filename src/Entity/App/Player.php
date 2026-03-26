@@ -39,6 +39,7 @@ class Player implements CharacterInterface
         $this->skills = new ArrayCollection();
         $this->statusEffects = new ArrayCollection();
         $this->bestiaryEntries = new ArrayCollection();
+        $this->resourceCatalogEntries = new ArrayCollection();
         $this->achievements = new ArrayCollection();
     }
 
@@ -121,6 +122,9 @@ class Player implements CharacterInterface
     #[ORM\OneToMany(targetEntity: PlayerBestiary::class, mappedBy: 'player', cascade: ['remove'])]
     private Collection $bestiaryEntries;
 
+    #[ORM\OneToMany(targetEntity: PlayerResourceCatalog::class, mappedBy: 'player', cascade: ['remove'])]
+    private Collection $resourceCatalogEntries;
+
     #[ORM\OneToMany(targetEntity: PlayerAchievement::class, mappedBy: 'player')]
     private Collection $achievements;
 
@@ -153,6 +157,12 @@ class Player implements CharacterInterface
     public function getBestiaryEntries(): Collection
     {
         return $this->bestiaryEntries;
+    }
+
+    /** @return Collection<int, PlayerResourceCatalog> */
+    public function getResourceCatalogEntries(): Collection
+    {
+        return $this->resourceCatalogEntries;
     }
 
     public function getSpeed(): int
