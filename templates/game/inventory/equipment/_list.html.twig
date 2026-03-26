@@ -156,7 +156,9 @@
                          data-item-protection="{{ gi.protection }}"
                          data-item-level="{{ gi.level }}"
                          data-item-element="{{ gi.element.value }}"
-                         data-item-slot="{{ gi.gearLocation }}">
+                         data-item-slot="{{ gi.gearLocation }}"
+                         data-item-materia-total="{{ gi.materiaSlots }}"
+                         data-item-materia-filled="0">
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 {{ _self.rarity_bg_class(gi.rarity) }}">
                             {{ _self.slot_icon(gi.gearLocation) }}
                         </div>
@@ -166,6 +168,12 @@
                                 <span class="text-[10px] text-gray-500">{{ _self.slot_name(gi.gearLocation) }}</span>
                                 {% if gi.protection > 0 %}
                                     <span class="text-[10px] text-blue-400 font-medium">+{{ gi.protection }} DEF</span>
+                                {% endif %}
+                                {% if gi.materiaSlots > 0 %}
+                                    <span class="text-[10px] text-purple-400/80 flex items-center gap-0.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-2 w-2" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><circle cx="12" cy="12" r="5"/></svg>
+                                        {{ gi.materiaSlots }} slot{{ gi.materiaSlots > 1 ? 's' : '' }}
+                                    </span>
                                 {% endif %}
                                 {% if gi.equipmentSet is not null %}
                                     <span class="text-[10px] text-yellow-500/70">{{ gi.equipmentSet.name }}</span>
@@ -196,7 +204,10 @@
          data-item-protection="{{ gi.protection }}"
          data-item-level="{{ gi.level }}"
          data-item-element="{{ gi.element.value }}"
-         data-item-slot="{{ slotKey }}">
+         data-item-slot="{{ slotKey }}"
+         data-item-materia-total="{{ playerItem.slots|length }}"
+         data-item-materia-filled="{{ playerItem.slots|filter(s => s.itemSet is not null)|length }}"
+         data-item-materia-elements="{% for slot in playerItem.slots %}{{ slot.element is not null ? slot.element.value : 'none' }}{% if not loop.last %},{% endif %}{% endfor %}">
         <div class="equip-slot-icon {{ _self.rarity_bg_class(gi.rarity) }}">
             {{ _self.slot_icon(slotKey) }}
         </div>
@@ -212,7 +223,10 @@
             {# Materia slots — FF7 style orbs #}
             {% if playerItem.slots|length > 0 %}
                 <div class="materia-slots-bar" data-controller="materia-slot">
-                    <span class="materia-slots-counter">{{ playerItem.slots|filter(s => s.itemSet is not null)|length }}/{{ playerItem.slots|length }}</span>
+                    <span class="materia-slots-counter" title="Slots de materia occupés / total">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="inline-block h-2.5 w-2.5 text-purple-400 mr-0.5 -mt-px" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10" opacity=".3"/><circle cx="12" cy="12" r="5"/></svg>
+                        {{ playerItem.slots|filter(s => s.itemSet is not null)|length }}/{{ playerItem.slots|length }} Materia
+                    </span>
                     {% for slot in playerItem.slots %}
                         {% set materiaItem = slot.itemSet %}
                         {% set slotElement = slot.element %}

@@ -2,8 +2,10 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
+
 return static function (ContainerConfigurator $container): void {
-    if (!class_exists(\Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class)) {
+    if (!class_exists(WebProfilerBundle::class)) {
         return;
     }
 

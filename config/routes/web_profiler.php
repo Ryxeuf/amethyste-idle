@@ -1,9 +1,10 @@
 <?php
 
+use Symfony\Bundle\WebProfilerBundle\WebProfilerBundle;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 return function (RoutingConfigurator $routes): void {
-    if (!class_exists(\Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class)) {
+    if (!class_exists(WebProfilerBundle::class)) {
         return;
     }
 
