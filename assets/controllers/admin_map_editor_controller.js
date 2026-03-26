@@ -45,7 +45,7 @@ export default class extends Controller {
     _showWalls = true
     _tilesetsLoaded = false
     _renderTiles = true
-    _tool = 'select' // select, block, unblock, water, wall, eraseWall, paint, eraser
+    _tool = 'select' // select, block, unblock, water, wall, eraseWall, paint, eraser, fill
     _pendingChanges = {}
     _pendingBorderChanges = {} // key: "x.y", value: [n, e, s, w]
     _pendingTileChanges = {} // key: "x.y", value: {layer, gid} — tile GID changes
@@ -633,6 +633,8 @@ export default class extends Controller {
             } else if (this._tool === 'eraser') {
                 this._eraseTile(tileCoords.x, tileCoords.y)
                 this._isPainting = true
+            } else if (this._tool === 'fill') {
+                this._fillBucket(tileCoords.x, tileCoords.y)
             }
         }
     }
@@ -754,6 +756,7 @@ export default class extends Controller {
         if (e.key === 'b' || e.key === 'B') { this.setToolBlock(); e.preventDefault() }
         if (e.key === 'u' || e.key === 'U') { this.setToolUnblock(); e.preventDefault() }
         if (e.key === 'w' || e.key === 'W') { this.setToolWall(); e.preventDefault() }
+        if (e.key === 'g' || e.key === 'G') { this.setToolFill(); e.preventDefault() }
 
         // Layer shortcuts: 1/2/3/4
         if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
@@ -1236,6 +1239,63 @@ export default class extends Controller {
         this._render()
     }
 
+    _fillBucket(x, y) {
+        if (this._pickerGid === 0 || this._pickerStampGids.length === 0) return
+
+        const layer = this._pickerLayer
+        const fillGid = this._pickerStampGids[0]
+        const startKey = x + '.' + y
+        const startCell = this._cells[startKey]
+        if (!startCell) return
+
+        const targetGid = (startCell.l && startCell.l[layer]) || 0
+        if (targetGid === fillGid) return
+
+        const visited = new Set()
+        const queue = [startKey]
+        visited.add(startKey)
+
+        const maxFill = 10000
+
+        while (queue.length > 0 && visited.size <= maxFill) {
+            const key = queue.shift()
+            const cell = this._cells[key]
+            if (!cell) continue
+
+            if (!cell.l) cell.l = []
+            while (cell.l.length <= layer) {
+                cell.l.push(0)
+            }
+            cell.l[layer] = fillGid
+
+            if (!this._pendingTileChanges[key]) {
+                this._pendingTileChanges[key] = {}
+            }
+            this._pendingTileChanges[key][layer] = fillGid
+
+            const [cx, cy] = key.split('.').map(Number)
+            const neighbors = [
+                (cx - 1) + '.' + cy,
+                (cx + 1) + '.' + cy,
+                cx + '.' + (cy - 1),
+                cx + '.' + (cy + 1),
+            ]
+
+            for (const nk of neighbors) {
+                if (visited.has(nk)) continue
+                const nc = this._cells[nk]
+                if (!nc) continue
+                const ncGid = (nc.l && nc.l[layer]) || 0
+                if (ncGid !== targetGid) continue
+                visited.add(nk)
+                queue.push(nk)
+            }
+        }
+
+        this._updatePendingCount()
+        this._render()
+    }
+
     _updatePendingCount() {
         const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length
         const btn = document.getElementById('save-btn')
@@ -1292,6 +1352,7 @@ export default class extends Controller {
     setToolEraseWall() { this._tool = 'eraseWall'; this._updateToolButtons() }
     setToolPaint() { this._tool = 'paint'; this._updateToolButtons() }
     setToolEraser() { this._tool = 'eraser'; this._updateToolButtons() }
+    setToolFill() { this._tool = 'fill'; this._updateToolButtons() }
 
     // --- Tileset picker events ---
 
