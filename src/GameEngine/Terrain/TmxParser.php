@@ -70,6 +70,8 @@ class TmxParser
             $sanitizePath = str_replace('../', '', $sourceContentPath);
             $sanitizePath = str_replace($terrainPath . '/', '', $sanitizePath);
 
+            $animations = $this->parseTileAnimations($crawler);
+
             $terrains[$tilesetCrawler->attr('firstgid')] = [
                 'fullPath' => $sourceContentPath,
                 'sanitizePath' => $sanitizePath,
@@ -82,6 +84,7 @@ class TmxParser
                 'imageWidth' => $imageNode->attr('width'),
                 'imageHeight' => $imageNode->attr('height'),
                 'firstgid' => (int) $tilesetCrawler->attr('firstgid'),
+                'animations' => $animations,
             ];
         }
 
@@ -325,6 +328,41 @@ class TmxParser
         }
 
         return $errors;
+    }
+
+    /**
+     * Extract tile animation data from a TSX tileset.
+     *
+     * @return array<int, array<int, array{tileid: int, duration: int}>> keyed by local tile ID
+     */
+    private function parseTileAnimations(Crawler $crawler): array
+    {
+        $animations = [];
+        $tileNodes = $crawler->filterXPath('//tileset/tile');
+
+        foreach ($tileNodes as $tileNode) {
+            $tileCrawler = new Crawler($tileNode);
+            $animationFrames = $tileCrawler->filterXPath('//animation/frame');
+
+            if ($animationFrames->count() === 0) {
+                continue;
+            }
+
+            $tileId = (int) $tileCrawler->attr('id');
+            $frames = [];
+
+            foreach ($animationFrames as $frame) {
+                $frameCrawler = new Crawler($frame);
+                $frames[] = [
+                    'tileid' => (int) $frameCrawler->attr('tileid'),
+                    'duration' => (int) $frameCrawler->attr('duration'),
+                ];
+            }
+
+            $animations[$tileId] = $frames;
+        }
+
+        return $animations;
     }
 
     private function buildCollisionSlug(int $x, int $y, int $idxInMap): string

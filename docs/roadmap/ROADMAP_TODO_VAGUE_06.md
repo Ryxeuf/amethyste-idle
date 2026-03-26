@@ -37,10 +37,8 @@
 - [ ] 4 festivals de base (1 par saison) — contenu a definir plus tard
 - [ ] Decorations saisonnieres sur la carte (sprites overlays)
 
-### 97 — Parsing animations tiles (S | ★★)
-> Les fichiers TSX contiennent des animations. Le backend les ignore. Prerequis : ← 44
-- [ ] Etendre le parsing TSX dans TmxParser : extraire les frames d'animation (tileId, duration)
-- [ ] Exposer les animations dans `/api/map/config` (tableau par GID : frames + durations)
+### ~~97 — Parsing animations tiles (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 98 — Rendu tiles animees PixiJS (M | ★★★)
 > Remplacer PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees. Prerequis : ← 97

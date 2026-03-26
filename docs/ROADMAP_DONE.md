@@ -1211,3 +1211,11 @@
 - [x] `ContributionTracker` : tracker les degats infliges par chaque joueur pendant le combat
 - [x] Loot base sur la contribution (top 3 = loot garanti, autres = loot probabiliste)
 - [x] Tests world boss : FightContributionTest, WorldBossLootDistributorTest, FightHandlerWorldBossTest (18 tests, 48 assertions)
+
+## 97 — Parsing animations tiles (2026-03-26) ✅
+
+> Les fichiers TSX contiennent des animations de tiles (eau, torches). Le backend les extrait et les expose dans l'API.
+- [x] `TmxParser::parseTileAnimations()` : extraction des `<tile><animation>` depuis les TSX (tileId local + duration)
+- [x] Stockage des animations dans les metadonnees terrain (cle `animations` par tileset)
+- [x] Exposition dans `GET /api/map/config` via champ `tileAnimations` (GID global → frames + durations)
+- [x] Test unitaire `TmxParserAnimationTest` (parsing avec et sans animations)

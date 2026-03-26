@@ -52,6 +52,8 @@ class MapApiController extends AbstractController
 
         $zones = $this->extractZones($map);
 
+        $tileAnimations = $this->extractTileAnimations($map);
+
         return $this->json([
             'tileSize' => 32,
             'viewRadius' => 15,
@@ -65,6 +67,7 @@ class MapApiController extends AbstractController
                 'changedAt' => $map->getWeatherChangedAt()?->format('c'),
             ],
             'zones' => $zones,
+            'tileAnimations' => $tileAnimations,
         ]);
     }
 
@@ -501,6 +504,51 @@ class MapApiController extends AbstractController
         }
 
         return $zones;
+    }
+
+    /**
+     * Extract tile animation data from map areas, keyed by global GID.
+     *
+     * @return array<string, array<int, array{tileid: int, duration: int}>>
+     */
+    private function extractTileAnimations(Map $map): array
+    {
+        $animations = [];
+
+        foreach ($map->getAreas() as $area) {
+            $data = $area->getFullDataArray();
+            $terrains = $data['terrains'] ?? [];
+
+            foreach ($terrains as $terrain) {
+                $firstGid = (int) ($terrain['firstgid'] ?? 0);
+                $tileAnimations = $terrain['animations'] ?? [];
+
+                foreach ($tileAnimations as $localTileId => $frames) {
+                    $globalGid = $firstGid + (int) $localTileId;
+                    $gidKey = (string) $globalGid;
+
+                    if (isset($animations[$gidKey])) {
+                        continue;
+                    }
+
+                    $globalFrames = [];
+                    foreach ($frames as $frame) {
+                        $globalFrames[] = [
+                            'tileid' => $firstGid + (int) $frame['tileid'],
+                            'duration' => (int) $frame['duration'],
+                        ];
+                    }
+
+                    $animations[$gidKey] = $globalFrames;
+                }
+            }
+
+            if (!empty($animations)) {
+                break;
+            }
+        }
+
+        return $animations;
     }
 
     private function loadRawCells(Map $map, int $centerX, int $centerY, int $radius): array
