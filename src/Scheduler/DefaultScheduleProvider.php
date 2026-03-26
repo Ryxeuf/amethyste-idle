@@ -29,6 +29,8 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 RecurringMessage::cron('*/5 * * * *', new RunCommandMessage('app:pnj:routine')),
                 // DailyQuest : rotation des quêtes quotidiennes (chaque jour à 00h01)
                 RecurringMessage::cron('1 0 * * *', new RunCommandMessage('app:daily-quest:rotate')),
+                // Enchantment : nettoyage des enchantements expirés (toutes les 10 min)
+                RecurringMessage::cron('*/10 * * * *', new RunCommandMessage('app:enchantment:cleanup')),
             );
     }
 }

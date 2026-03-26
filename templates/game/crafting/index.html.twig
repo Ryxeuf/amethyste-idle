@@ -5,8 +5,15 @@
 {% block game_content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="mb-8">
-        <h1 class="text-3xl font-bold text-purple-400 mb-2">Artisanat</h1>
-        <p class="text-gray-300">Fabriquez des objets a partir de materiaux recoltes.</p>
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-purple-400 mb-2">Artisanat</h1>
+                <p class="text-gray-300">Fabriquez des objets a partir de materiaux recoltes.</p>
+            </div>
+            <a href="{{ path('app_game_craft_enchant') }}" class="bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium px-4 py-2 rounded transition-colors">
+                Enchantements
+            </a>
+        </div>
     </div>
 
     {# Messages flash #}

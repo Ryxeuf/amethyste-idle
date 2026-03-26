@@ -1,0 +1,176 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Enchantements{% endblock %}
+
+{% block game_content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold text-purple-400 mb-2">Enchantements</h1>
+                <p class="text-gray-300">Appliquez des buffs temporaires sur vos armes et armures.</p>
+            </div>
+            <a href="{{ path('app_game_craft') }}" class="text-sm text-purple-400 hover:text-purple-300">
+                Retour a l'artisanat
+            </a>
+        </div>
+    </div>
+
+    {# Messages flash #}
+    {% include 'game/crafting/_craft_result.html.twig' %}
+
+    {% set statLabels = {
+        'damage': 'Degats',
+        'protection': 'Protection',
+        'hit': 'Precision',
+        'critical': 'Critique',
+        'heal': 'Soin',
+        'life': 'Vie',
+    } %}
+
+    {% set elementColors = {
+        'fire': 'text-red-400',
+        'water': 'text-blue-400',
+        'earth': 'text-amber-400',
+        'air': 'text-cyan-400',
+        'light': 'text-yellow-300',
+        'dark': 'text-purple-500',
+    } %}
+
+    {% set elementLabels = {
+        'fire': 'Feu',
+        'water': 'Eau',
+        'earth': 'Terre',
+        'air': 'Air',
+    } %}
+
+    {# Enchantment types grid #}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        {% for type, def in definitions %}
+            {% set check = canApply[type] ?? {possible: false, missing: []} %}
+            {% set skillOk = hasSkill[type] ?? false %}
+            {% set canUse = check.possible and skillOk %}
+
+            <div class="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-purple-600 transition-colors {% if not canUse %}opacity-75{% endif %}">
+                <div class="flex items-start justify-between mb-3">
+                    <div>
+                        <h3 class="text-lg font-semibold text-white">{{ def.name }}</h3>
+                        <p class="text-sm mt-1 {{ elementColors[def.element] ?? 'text-gray-400' }}">
+                            +{{ def.value }} {{ statLabels[def.stat] ?? def.stat }}
+                            {% if def.element %}
+                                ({{ elementLabels[def.element] ?? def.element }})
+                            {% endif %}
+                        </p>
+                    </div>
+                    <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded-full whitespace-nowrap">
+                        {{ (def.duration / 60)|round(0) }} min
+                    </span>
+                </div>
+
+                {# Ingredients #}
+                <div class="mb-3">
+                    <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Ingredients</h4>
+                    <div class="flex flex-wrap gap-2">
+                        {% for ingredient in def.ingredients %}
+                            {% set isMissing = false %}
+                            {% set haveCount = ingredient.quantity %}
+                            {% for missing in check.missing %}
+                                {% if missing.slug == ingredient.slug %}
+                                    {% set isMissing = true %}
+                                    {% set haveCount = missing.have %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs
+                                {% if isMissing %}
+                                    bg-red-900 text-red-300 border border-red-700
+                                {% else %}
+                                    bg-green-900 text-green-300 border border-green-700
+                                {% endif %}">
+                                {{ ingredient.slug|replace({'_': ' ', '-': ' '})|capitalize }}
+                                <span class="ml-1 font-mono">{{ haveCount }}/{{ ingredient.quantity }}</span>
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Skill requirement #}
+                {% if not skillOk %}
+                    <p class="text-xs text-red-400 mb-3">Competence requise : {{ def.required_skill|replace({'-': ' '})|capitalize }}</p>
+                {% endif %}
+
+                {# Apply form with item selector #}
+                {% if canUse %}
+                    <form method="post" action="{{ path('app_game_craft_enchant_apply') }}" class="mt-2">
+                        <div class="flex gap-2">
+                            <select name="player_item_id" class="flex-1 bg-gray-700 border border-gray-600 text-gray-200 text-sm rounded px-3 py-2">
+                                <option value="">Choisir un equipement...</option>
+                                {% for entry in equippedItems %}
+                                    {% set pi = entry.playerItem %}
+                                    {% set gearLoc = pi.genericItem.gearLocation %}
+                                    {% if gearLoc in def.gear_types %}
+                                        <option value="{{ pi.id }}">
+                                            {{ pi.genericItem.name }}
+                                            {% if entry.enchantment %}
+                                                ({{ entry.enchantment.name }})
+                                            {% endif %}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" name="enchant_type" value="{{ type }}">
+                            <button type="submit"
+                                    class="bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium px-4 py-2 rounded transition-colors">
+                                Enchanter
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <button disabled class="w-full py-2 px-4 rounded-md text-sm font-medium bg-gray-700 text-gray-500 cursor-not-allowed mt-2">
+                        {% if not skillOk %}
+                            Competence manquante
+                        {% else %}
+                            Ingredients manquants
+                        {% endif %}
+                    </button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Active enchantments on equipped items #}
+    {% set hasActiveEnchantments = false %}
+    {% for entry in equippedItems %}
+        {% if entry.enchantment %}
+            {% set hasActiveEnchantments = true %}
+        {% endif %}
+    {% endfor %}
+
+    {% if hasActiveEnchantments %}
+        <div class="border-t border-gray-700 pt-6">
+            <h2 class="text-xl font-semibold text-purple-300 mb-4">Enchantements actifs</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {% for entry in equippedItems %}
+                    {% if entry.enchantment %}
+                        {% set ench = entry.enchantment %}
+                        {% set remainMin = (ench.remainingSeconds / 60)|round(0) %}
+                        <div class="bg-gray-800 border border-gray-700 rounded-lg p-3">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-white font-medium">{{ entry.playerItem.genericItem.name }}</span>
+                                    <p class="text-sm {{ elementColors[ench.element.value] ?? 'text-gray-400' }}">
+                                        {{ ench.name }} : +{{ ench.value }} {{ statLabels[ench.stat] ?? ench.stat }}
+                                    </p>
+                                </div>
+                                <span class="text-xs {% if remainMin <= 5 %}text-red-400{% else %}text-gray-400{% endif %}">
+                                    {{ remainMin }} min
+                                </span>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

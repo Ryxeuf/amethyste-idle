@@ -5,6 +5,7 @@ namespace App\GameEngine\Fight;
 use App\Entity\App\Player;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\GameEngine\Item\EnchantmentManager;
 use App\GameEngine\Progression\SynergyCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -14,6 +15,7 @@ class CombatSkillResolver
         private readonly EntityManagerInterface $entityManager,
         private readonly SynergyCalculator $synergyCalculator,
         private readonly EquipmentSetResolver $equipmentSetResolver,
+        private readonly EnchantmentManager $enchantmentManager,
     ) {
     }
 
@@ -132,6 +134,12 @@ class CombatSkillResolver
         $setBonuses = $this->equipmentSetResolver->getSetBonuses($player);
         foreach (['damage', 'heal', 'hit', 'critical', 'life'] as $stat) {
             $bonuses[$stat] += $setBonuses[$stat];
+        }
+
+        // Ajouter les bonus d'enchantements temporaires
+        $enchantBonuses = $this->enchantmentManager->getEquippedEnchantmentBonuses($player);
+        foreach (['damage', 'heal', 'hit', 'critical', 'life'] as $stat) {
+            $bonuses[$stat] += $enchantBonuses[$stat];
         }
 
         return $bonuses;
