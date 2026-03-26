@@ -1239,3 +1239,13 @@
 - [x] 3 PNJ : Grimmur le Contremaître, Hilda l'Ingenieure (boutique potions + pioche), Noric le Marchand souterrain (boutique minerais)
 - [x] Portails bidirectionnels Village ↔ Mines (3 portails)
 - [x] 6 spots de recolte minerais (cuivre, fer x2, argent, or, rubis) repartis par profondeur
+
+## MED-08 — Undo / Redo editeur de carte (2026-03-26) ✅
+
+> Historique des modifications dans l'editeur de carte web (tiles, collisions, murs). 50 operations max.
+- [x] Systeme d'historique integre au controller Stimulus (stack undo/redo, 50 ops)
+- [x] Capture des changements par stroke (mousedown→mouseup = 1 entree)
+- [x] Support tiles, collisions, murs et bucket fill
+- [x] Raccourcis Ctrl+Z (undo) / Ctrl+Y ou Ctrl+Shift+Z (redo)
+- [x] Boutons undo/redo dans la barre d'outils avec etat disabled
+- [x] Reset historique apres sauvegarde ou annulation

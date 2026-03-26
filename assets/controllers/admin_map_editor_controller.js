@@ -53,6 +53,12 @@ export default class extends Controller {
     _animFrame = null
     _hoveredCell = null
 
+    // Undo / Redo history
+    _undoStack = [] // Array of {tiles: {key: {layer: {before, after}}}, collisions: {key: {before, after}}, borders: {key: {before, after}}}
+    _redoStack = []
+    _maxHistory = 50
+    _currentStroke = null // Accumulates changes during a single mouse drag
+
     // Tileset picker state (received via events)
     _pickerGid = 0
     _pickerStampWidth = 1
@@ -624,25 +630,32 @@ export default class extends Controller {
                 this._isSelecting = true
                 // Single click handled on mouseup
             } else if (this._tool === 'block') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, -1)
                 this._isPainting = true
             } else if (this._tool === 'unblock') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, 0)
                 this._isPainting = true
             } else if (this._tool === 'water') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, 2)
                 this._isPainting = true
             } else if (this._tool === 'climb') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, 4)
                 this._isPainting = true
             } else if (this._tool === 'wall' || this._tool === 'eraseWall') {
+                this._beginStroke()
                 this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, e.shiftKey)
                 this._isPainting = true
                 this._isPaintingOneWay = e.shiftKey
             } else if (this._tool === 'paint') {
+                this._beginStroke()
                 this._paintTile(tileCoords.x, tileCoords.y)
                 this._isPainting = true
             } else if (this._tool === 'eraser') {
+                this._beginStroke()
                 this._eraseTile(tileCoords.x, tileCoords.y)
                 this._isPainting = true
             } else if (this._tool === 'fill') {
@@ -729,12 +742,18 @@ export default class extends Controller {
             return
         }
 
+        if (this._isPainting) {
+            this._endStroke()
+        }
         this._isDragging = false
         this._isPainting = false
         this._canvas.style.cursor = 'default'
     }
 
     _onMouseLeave = () => {
+        if (this._isPainting) {
+            this._endStroke()
+        }
         this._isDragging = false
         this._isPainting = false
         this._isSelecting = false
@@ -784,6 +803,20 @@ export default class extends Controller {
             }
             this._updateLayerPanel()
             e.preventDefault()
+        }
+
+        // Ctrl+Z: undo
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+            e.preventDefault()
+            this.undo()
+            return
+        }
+
+        // Ctrl+Y or Ctrl+Shift+Z: redo
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y' || (e.shiftKey && (e.key === 'z' || e.key === 'Z')))) {
+            e.preventDefault()
+            this.redo()
+            return
         }
 
         // Ctrl+S: save
@@ -851,8 +884,10 @@ export default class extends Controller {
 
         // Update this cell's border
         const borders = this._pendingBorderChanges[key] || [...cell.b]
+        const beforeBorders = [...borders]
         borders[idx] = value
         this._pendingBorderChanges[key] = borders
+        this._recordBorderChange(key, beforeBorders, borders)
 
         // Also update the neighbor's reciprocal border (unless one-way)
         if (!oneWay) {
@@ -867,8 +902,10 @@ export default class extends Controller {
             if (neighborCell && neighborCell.b) {
                 const neighborIdx = dirIndex[opposites[edge.direction]]
                 const neighborBorders = this._pendingBorderChanges[neighborKey] || [...neighborCell.b]
+                const beforeNeighborBorders = [...neighborBorders]
                 neighborBorders[neighborIdx] = value
                 this._pendingBorderChanges[neighborKey] = neighborBorders
+                this._recordBorderChange(neighborKey, beforeNeighborBorders, neighborBorders)
             }
         }
 
@@ -1009,13 +1046,16 @@ export default class extends Controller {
     }
 
     _applyToSelection(movement) {
+        this._beginStroke()
         for (const key of this._selection) {
             const cell = this._cells[key]
             if (!cell) continue
             if (cell.m === movement && this._pendingChanges[key] === undefined) continue
+            this._recordCollisionChange(key, cell.m, movement)
             this._pendingChanges[key] = movement
             cell.m = movement
         }
+        this._endStroke()
         this._updatePendingCount()
         this._updateSelectionPanel()
         this._render()
@@ -1145,6 +1185,131 @@ export default class extends Controller {
         }[type] || type
     }
 
+    // --- Undo / Redo ---
+
+    _beginStroke() {
+        this._currentStroke = { tiles: {}, collisions: {}, borders: {} }
+    }
+
+    _endStroke() {
+        if (!this._currentStroke) return
+
+        // Only push if there were actual changes
+        const hasChanges = Object.keys(this._currentStroke.tiles).length > 0
+            || Object.keys(this._currentStroke.collisions).length > 0
+            || Object.keys(this._currentStroke.borders).length > 0
+
+        if (hasChanges) {
+            this._undoStack.push(this._currentStroke)
+            if (this._undoStack.length > this._maxHistory) {
+                this._undoStack.shift()
+            }
+            this._redoStack = []
+            this._updateUndoRedoButtons()
+        }
+        this._currentStroke = null
+    }
+
+    _recordTileChange(key, layer, beforeGid, afterGid) {
+        if (!this._currentStroke) return
+        if (!this._currentStroke.tiles[key]) {
+            this._currentStroke.tiles[key] = {}
+        }
+        // Only record the first "before" value per key+layer in this stroke
+        if (this._currentStroke.tiles[key][layer] === undefined) {
+            this._currentStroke.tiles[key][layer] = { before: beforeGid, after: afterGid }
+        } else {
+            this._currentStroke.tiles[key][layer].after = afterGid
+        }
+    }
+
+    _recordCollisionChange(key, before, after) {
+        if (!this._currentStroke) return
+        if (this._currentStroke.collisions[key] === undefined) {
+            this._currentStroke.collisions[key] = { before, after }
+        } else {
+            this._currentStroke.collisions[key].after = after
+        }
+    }
+
+    _recordBorderChange(key, before, after) {
+        if (!this._currentStroke) return
+        if (this._currentStroke.borders[key] === undefined) {
+            this._currentStroke.borders[key] = { before: [...before], after: [...after] }
+        } else {
+            this._currentStroke.borders[key].after = [...after]
+        }
+    }
+
+    undo() {
+        if (this._undoStack.length === 0) return
+
+        const entry = this._undoStack.pop()
+        this._applyHistoryEntry(entry, true)
+        this._redoStack.push(entry)
+        this._updatePendingCount()
+        this._updateUndoRedoButtons()
+        this._render()
+    }
+
+    redo() {
+        if (this._redoStack.length === 0) return
+
+        const entry = this._redoStack.pop()
+        this._applyHistoryEntry(entry, false)
+        this._undoStack.push(entry)
+        this._updatePendingCount()
+        this._updateUndoRedoButtons()
+        this._render()
+    }
+
+    _applyHistoryEntry(entry, isUndo) {
+        // Restore tile changes
+        for (const [key, layers] of Object.entries(entry.tiles)) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            if (!cell.l) cell.l = []
+
+            for (const [layerStr, change] of Object.entries(layers)) {
+                const layer = parseInt(layerStr, 10)
+                while (cell.l.length <= layer) cell.l.push(0)
+                const value = isUndo ? change.before : change.after
+                cell.l[layer] = value
+
+                // Update pending tile changes
+                if (!this._pendingTileChanges[key]) {
+                    this._pendingTileChanges[key] = {}
+                }
+                this._pendingTileChanges[key][layer] = value
+            }
+        }
+
+        // Restore collision changes
+        for (const [key, change] of Object.entries(entry.collisions)) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            const value = isUndo ? change.before : change.after
+            cell.m = value
+            this._pendingChanges[key] = value
+        }
+
+        // Restore border changes
+        for (const [key, change] of Object.entries(entry.borders)) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            const value = isUndo ? [...change.before] : [...change.after]
+            cell.b = value
+            this._pendingBorderChanges[key] = value
+        }
+    }
+
+    _updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undo-btn')
+        const redoBtn = document.getElementById('redo-btn')
+        if (undoBtn) undoBtn.disabled = this._undoStack.length === 0
+        if (redoBtn) redoBtn.disabled = this._redoStack.length === 0
+    }
+
     // --- Cell painting ---
 
     _paintCell(x, y, movement) {
@@ -1153,6 +1318,7 @@ export default class extends Controller {
         if (!cell) return
         if (cell.m === movement && this._pendingChanges[key] === undefined) return
 
+        this._recordCollisionChange(key, cell.m, movement)
         this._pendingChanges[key] = movement
         cell.m = movement
         this._updatePendingCount()
@@ -1160,7 +1326,9 @@ export default class extends Controller {
     }
 
     _setCellMovement(x, y, movement) {
+        this._beginStroke()
         this._paintCell(x, y, movement)
+        this._endStroke()
         this._selectCell(x, y)
     }
 
@@ -1184,7 +1352,9 @@ export default class extends Controller {
                 while (cell.l.length <= this._pickerLayer) {
                     cell.l.push(0)
                 }
+                const beforeGid = cell.l[this._pickerLayer]
                 cell.l[this._pickerLayer] = gid
+                this._recordTileChange(key, this._pickerLayer, beforeGid, gid)
 
                 // Track tile changes for save
                 if (!this._pendingTileChanges[key]) {
@@ -1237,7 +1407,9 @@ export default class extends Controller {
         while (cell.l.length <= this._pickerLayer) {
             cell.l.push(0)
         }
+        const beforeGid = cell.l[this._pickerLayer]
         cell.l[this._pickerLayer] = 0
+        this._recordTileChange(key, this._pickerLayer, beforeGid, 0)
 
         // Track tile change for save
         if (!this._pendingTileChanges[key]) {
@@ -1261,6 +1433,9 @@ export default class extends Controller {
         const targetGid = (startCell.l && startCell.l[layer]) || 0
         if (targetGid === fillGid) return
 
+        // Fill is a single atomic operation
+        this._beginStroke()
+
         const visited = new Set()
         const queue = [startKey]
         visited.add(startKey)
@@ -1276,7 +1451,9 @@ export default class extends Controller {
             while (cell.l.length <= layer) {
                 cell.l.push(0)
             }
+            const beforeGid = cell.l[layer]
             cell.l[layer] = fillGid
+            this._recordTileChange(key, layer, beforeGid, fillGid)
 
             if (!this._pendingTileChanges[key]) {
                 this._pendingTileChanges[key] = {}
@@ -1302,6 +1479,7 @@ export default class extends Controller {
             }
         }
 
+        this._endStroke()
         this._updatePendingCount()
         this._render()
     }
@@ -1571,6 +1749,9 @@ export default class extends Controller {
 
             this._updatePendingCount()
             if (totalSaved > 0) {
+                this._undoStack = []
+                this._redoStack = []
+                this._updateUndoRedoButtons()
                 this._showFlash(`${totalSaved} modification(s) sauvegardee(s)`, 'success')
             }
         } catch (err) {
@@ -1593,7 +1774,10 @@ export default class extends Controller {
         this._pendingChanges = {}
         this._pendingBorderChanges = {}
         this._pendingTileChanges = {}
+        this._undoStack = []
+        this._redoStack = []
         this._updatePendingCount()
+        this._updateUndoRedoButtons()
         this._loadData()
     }
 
