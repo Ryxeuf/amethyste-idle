@@ -15,12 +15,12 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 1 — Fondations & infrastructure (MED-01, MED-02)
 
-**MED-01 — TilesetRegistry — registre PHP des tilesets (S | ★★★ | CRITIQUE)**
+**MED-01 — TilesetRegistry — registre PHP des tilesets (S | ★★★ | CRITIQUE)** ✅
 > Registre centralise remplacant la lecture des fichiers .tsx de Tiled. Fondation de tout l'editeur.
-- [ ] Classe `TilesetRegistry` dans `src/GameEngine/Terrain/TilesetRegistry.php`
-- [ ] Methodes `getTilesets()`, `getTilesetForGid()`, `getLocalTileId()`
-- [ ] Constantes publiques pour les GID cles
-- [ ] Tests unitaires
+- [x] Classe `TilesetRegistry` dans `src/GameEngine/Terrain/TilesetRegistry.php`
+- [x] Methodes `getTilesets()`, `getTilesetForGid()`, `getLocalTileId()`
+- [x] Constantes publiques pour les GID cles
+- [x] Tests unitaires
 
 **MED-02 — MapFactory — creation de carte vierge (S | ★★★ | CRITIQUE)**
 > Permet de creer des cartes de taille configurable depuis l'admin. Prerequis : ← MED-01

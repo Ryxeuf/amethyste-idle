@@ -12,13 +12,13 @@ use App\GameEngine\Movement\PlayerMoveProcessor;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Player\PnjDialogParser;
 use App\GameEngine\Quest\PnjQuestIndicatorResolver;
+use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -30,12 +30,12 @@ class MapApiController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
-        private readonly Packages $packages,
         private readonly SpriteConfigProvider $spriteConfigProvider,
         private readonly MobRepository $mobRepository,
         private readonly PnjQuestIndicatorResolver $pnjQuestIndicatorResolver,
         private readonly GameTimeService $gameTimeService,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly TilesetRegistry $tilesetRegistry,
     ) {
     }
 
@@ -447,50 +447,9 @@ class MapApiController extends AbstractController
         ]);
     }
 
-    private const TILESET_COLUMNS = [
-        'terrain' => 32,
-        'forest' => 16,
-        'BaseChip_pipo' => 8,
-        'collisions' => 6,
-    ];
-
     private function extractTilesets(Map $map): array
     {
-        $tilesets = [];
-        $seen = [];
-
-        foreach ($map->getAreas() as $area) {
-            $data = $area->getFullDataArray();
-            $terrains = $data['terrains'] ?? [];
-            foreach ($terrains as $firstGid => $terrain) {
-                $gid = (int) ($terrain['firstgid'] ?? $firstGid);
-                if (isset($seen[$gid])) {
-                    continue;
-                }
-                $seen[$gid] = true;
-
-                $image = $terrain['image'] ?? 'terrain.png';
-                $name = pathinfo($image, PATHINFO_FILENAME);
-                $publicPath = $this->packages->getUrl('styles/images/terrain/' . $image);
-                $columns = self::TILESET_COLUMNS[$name] ?? (int) ($terrain['columns'] ?? 32);
-
-                $tilesets[] = [
-                    'name' => $name,
-                    'image' => $publicPath,
-                    'columns' => $columns,
-                    'tileWidth' => (int) ($terrain['tilewidth'] ?? 32),
-                    'tileHeight' => (int) ($terrain['tileheight'] ?? 32),
-                    'firstGid' => $gid,
-                ];
-            }
-            if (!empty($tilesets)) {
-                break;
-            }
-        }
-
-        usort($tilesets, fn ($a, $b) => $a['firstGid'] - $b['firstGid']);
-
-        return $tilesets;
+        return $this->tilesetRegistry->getTilesetsForApi();
     }
 
     private function extractZones(Map $map): array
