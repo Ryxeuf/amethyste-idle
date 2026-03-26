@@ -96,12 +96,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] `SeasonManager` : getCurrentSeason(), getOrCreateNextSeason(), startSeason(), endSeason()
 - [x] Fixtures : 1 saison active de test
 
-### GCC-07 — Influence — entites score & log (S | ★★ | HAUTE)
+### ~~GCC-07 — Influence — entites score & log (S | ★★ | HAUTE)~~ ✅
 > Tables de score et journal des gains. Prerequis : ← GCC-06
-- [ ] Enum `InfluenceActivityType` : mob_kill, craft, harvest, fishing, butchering, quest, challenge
-- [ ] Entite `GuildInfluence` : guild, region, season, points. UNIQUE (guild, region, season). Index (region, season, points DESC)
-- [ ] Entite `InfluenceLog` : guild, region, season, player, activityType, pointsEarned, details (JSON), createdAt
-- [ ] Migration (2 tables)
+- [x] Enum `InfluenceActivityType` : mob_kill, craft, harvest, fishing, butchering, quest, challenge
+- [x] Entite `GuildInfluence` : guild, region, season, points. UNIQUE (guild, region, season). Index (region, season, points DESC)
+- [x] Entite `InfluenceLog` : guild, region, season, player, activityType, pointsEarned, details (JSON), createdAt
+- [x] Migration (2 tables)
 
 ---
 
