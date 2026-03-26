@@ -6,12 +6,12 @@ use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
+use App\GameEngine\Terrain\TilesetRegistry;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,16 +22,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_WORLD_BUILDER')]
 class MapEditorController extends AbstractController
 {
-    private const TILESET_COLUMNS = [
-        'terrain' => 32,
-        'forest' => 16,
-        'BaseChip_pipo' => 8,
-        'collisions' => 6,
-    ];
-
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly Packages $packages,
+        private readonly TilesetRegistry $tilesetRegistry,
         private readonly AdminLogger $adminLogger,
     ) {
     }
@@ -122,41 +115,7 @@ class MapEditorController extends AbstractController
     #[Route('/{id}/editor/tilesets', name: 'editor_tilesets', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function editorTilesets(Map $map): JsonResponse
     {
-        $tilesets = [];
-        $seen = [];
-
-        foreach ($map->getAreas() as $area) {
-            $data = $area->getFullDataArray();
-            $terrains = $data['terrains'] ?? [];
-            foreach ($terrains as $firstGid => $terrain) {
-                $gid = (int) ($terrain['firstgid'] ?? $firstGid);
-                if (isset($seen[$gid])) {
-                    continue;
-                }
-                $seen[$gid] = true;
-
-                $image = $terrain['image'] ?? 'terrain.png';
-                $name = pathinfo($image, PATHINFO_FILENAME);
-                $publicPath = $this->packages->getUrl('styles/images/terrain/' . $image);
-                $columns = self::TILESET_COLUMNS[$name] ?? (int) ($terrain['columns'] ?? 32);
-
-                $tilesets[] = [
-                    'name' => $name,
-                    'image' => $publicPath,
-                    'columns' => $columns,
-                    'tileWidth' => (int) ($terrain['tilewidth'] ?? 32),
-                    'tileHeight' => (int) ($terrain['tileheight'] ?? 32),
-                    'firstGid' => $gid,
-                ];
-            }
-            if (!empty($tilesets)) {
-                break;
-            }
-        }
-
-        usort($tilesets, fn ($a, $b) => $a['firstGid'] - $b['firstGid']);
-
-        return $this->json(['tilesets' => $tilesets]);
+        return $this->json(['tilesets' => $this->tilesetRegistry->getTilesetsForApi()]);
     }
 
     #[Route('/{id}/editor/entities', name: 'editor_entities', requirements: ['id' => '\d+'], methods: ['GET'])]
