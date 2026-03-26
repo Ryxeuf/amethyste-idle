@@ -10,6 +10,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Slot;
 use App\Entity\Game\Spell;
 use App\Enum\Element;
+use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
@@ -56,6 +57,9 @@ class FightSpellControllerTest extends TestCase
         $gearHelper = $this->createMock(GearHelper::class);
         $gearHelper->method('getEquippedElementalDamageBonus')->willReturn(0.0);
 
+        $enchantmentManager = $this->createMock(EnchantmentManager::class);
+        $enchantmentManager->method('getEnchantmentBonuses')->willReturn([]);
+
         $this->controller = new FightSpellController(
             $this->playerHelper,
             $this->entityManager,
@@ -68,6 +72,7 @@ class FightSpellControllerTest extends TestCase
             $this->combatLogger,
             $this->turnResolver,
             $gearHelper,
+            $enchantmentManager,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
@@ -372,6 +377,8 @@ class FightSpellControllerTest extends TestCase
             'materia' => $materia,
             'slot' => $slot,
             'elementMatch' => $elementMatch,
+            'linkedBonus' => false,
+            'locked' => false,
         ];
     }
 

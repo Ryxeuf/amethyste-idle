@@ -1184,3 +1184,17 @@
 - [x] Notifications Mercure : invasion_start, invasion_progress, invasion_end, invasion_mob_spawn/despawn
 - [x] Nettoyage automatique des mobs d'invasion a la fin de l'event
 - [x] Fixture : invasion gobeline (3 vagues de 4 mobs, objectif 8 kills, recurrente)
+
+## 89 — Enchantements temporaires (2026-03-26) ✅
+
+> Alchimiste applique un buff temporaire sur une arme/armure equipee. Les bonus s'appliquent en combat.
+- [x] Entite `EnchantmentDefinition` (slug, name, element, statBonuses, duration, ingredients, requiredLevel, cost)
+- [x] Entite `Enchantment` (playerItem, definition, appliedAt, expiresAt, isExpired(), getRemainingSeconds())
+- [x] Migration SQL (tables game_enchantment_definitions + enchantments)
+- [x] Service `EnchantmentManager` : apply, canEnchant, remove, cleanExpired, getEnchantmentBonuses
+- [x] Route POST `/game/craft/enchant` (necessite skill alchimiste + ingredients + gils)
+- [x] Expiration automatique verifiee au debut de chaque combat (FightHandler)
+- [x] Bonus d'enchantement integres dans FightSpellController et FightAttackController
+- [x] Section enchantements dans la page Artisanat (template _enchantment.html.twig)
+- [x] Fixtures : 4 enchantements (Tranchant de feu, Protection de glace, Robustesse tellurique, Precision lumineuse)
+- [x] Tests EnchantmentManager (10 tests, 20 assertions)

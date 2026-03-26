@@ -2,9 +2,12 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\PlayerItem;
+use App\Entity\Game\EnchantmentDefinition;
 use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\ExperimentationManager;
+use App\GameEngine\Enchantment\EnchantmentManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +23,7 @@ class CraftingController extends AbstractController
     public function __construct(
         private readonly CraftingManager $craftingManager,
         private readonly ExperimentationManager $experimentationManager,
+        private readonly EnchantmentManager $enchantmentManager,
         private readonly EntityManagerInterface $em,
         private readonly PlayerHelper $playerHelper,
     ) {
@@ -67,6 +71,18 @@ class CraftingController extends AbstractController
             }
         }
 
+        // Enchantements
+        $enchantmentDefinitions = $this->enchantmentManager->getAvailableDefinitions($player);
+        $equippedItems = [];
+        foreach ($player->getInventories() as $inventory) {
+            foreach ($inventory->getItems() as $playerItem) {
+                if ($playerItem->getGear() !== 0 && $playerItem->isGear()) {
+                    $equippedItems[] = $playerItem;
+                }
+            }
+        }
+        $activeEnchantments = $this->enchantmentManager->getActiveEnchantmentsForPlayer($player);
+
         return $this->render('game/crafting/index.html.twig', [
             'crafts' => $crafts,
             'recipesByCraft' => $recipesByCraft,
@@ -74,6 +90,9 @@ class CraftingController extends AbstractController
             'craftLevels' => $craftLevels,
             'player' => $player,
             'playerItems' => array_values($playerItems),
+            'enchantmentDefinitions' => $enchantmentDefinitions,
+            'equippedItems' => $equippedItems,
+            'activeEnchantments' => $activeEnchantments,
         ]);
     }
 
@@ -91,6 +110,37 @@ class CraftingController extends AbstractController
         }
 
         $result = $this->craftingManager->craft($player, $recipe);
+        $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
+
+        return $this->redirectToRoute('app_game_craft');
+    }
+
+    #[Route('/enchant', name: 'app_game_craft_enchant', methods: ['POST'])]
+    public function enchant(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $playerItemId = (int) $request->request->get('player_item_id');
+        $definitionSlug = $request->request->get('enchantment_slug');
+
+        $playerItem = $this->em->getRepository(PlayerItem::class)->find($playerItemId);
+        if (!$playerItem) {
+            $this->addFlash('warning', 'Objet introuvable.');
+
+            return $this->redirectToRoute('app_game_craft');
+        }
+
+        $definition = $this->em->getRepository(EnchantmentDefinition::class)->findOneBy(['slug' => $definitionSlug]);
+        if (!$definition) {
+            $this->addFlash('warning', 'Enchantement introuvable.');
+
+            return $this->redirectToRoute('app_game_craft');
+        }
+
+        $result = $this->enchantmentManager->apply($player, $playerItem, $definition);
         $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
 
         return $this->redirectToRoute('app_game_craft');

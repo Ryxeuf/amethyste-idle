@@ -5,6 +5,7 @@ namespace App\GameEngine\Fight\Handler;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -15,6 +16,7 @@ class FightHandler
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
         private readonly CombatLogger $combatLogger,
+        private readonly EnchantmentManager $enchantmentManager,
     ) {
     }
 
@@ -41,6 +43,9 @@ class FightHandler
         }
 
         $player->setIsMoving(false);
+
+        // Nettoyage des enchantements expires au debut du combat
+        $this->enchantmentManager->cleanExpiredForPlayer($player);
 
         $this->entityManager->persist($fight);
         $this->entityManager->flush();

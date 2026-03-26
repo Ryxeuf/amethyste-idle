@@ -6,6 +6,7 @@ use App\Controller\Game\Fight\FightAttackController;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
+use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
@@ -36,12 +37,16 @@ class FightAttackControllerTest extends TestCase
         $this->turnResolver = $this->createMock(FightTurnResolver::class);
         $this->turnResolver->method('isMobFirst')->willReturn(false);
 
+        $enchantmentManager = $this->createMock(EnchantmentManager::class);
+        $enchantmentManager->method('getEnchantmentBonuses')->willReturn([]);
+
         $this->controller = new FightAttackController(
             $this->playerHelper,
             $this->mobActionHandler,
             $this->entityManager,
             $this->combatLogger,
             $this->turnResolver,
+            $enchantmentManager,
         );
 
         // Stub the container for security checks

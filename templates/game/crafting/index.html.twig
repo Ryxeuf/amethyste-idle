@@ -66,6 +66,16 @@
         </div>
     {% endfor %}
 
+    {# Section Enchantements #}
+    <div class="mt-8 border-t border-gray-700 pt-6">
+        <h2 class="text-xl font-semibold text-purple-300 mb-4">Enchantements</h2>
+        {% include 'game/crafting/_enchantment.html.twig' with {
+            enchantmentDefinitions: enchantmentDefinitions,
+            equippedItems: equippedItems,
+            activeEnchantments: activeEnchantments
+        } %}
+    </div>
+
     {# Section Experimentation #}
     <div class="mt-8 border-t border-gray-700 pt-6">
         <h2 class="text-xl font-semibold text-purple-300 mb-4">Experimentation</h2>

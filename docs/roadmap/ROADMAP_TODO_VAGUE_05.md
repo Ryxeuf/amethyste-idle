@@ -63,15 +63,8 @@
 ### ~~88 — Stock boutique & restock (M | ★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 89 — Enchantements temporaires (S | ★)
-> Alchimiste applique un buff temporaire sur une arme/armure. Prerequis : ← 26
-- [ ] Entite `Enchantment` (playerItem, type, value, expiresAt)
-- [ ] Migration SQL
-- [ ] Service `EnchantmentManager` : apply(PlayerItem, enchantType, duration), tick(), remove()
-- [ ] Route POST `/game/craft/enchant` (necessite skill alchimiste + ingredients)
-- [ ] Expiration automatique (verifiee au debut de chaque combat ou via Scheduler)
-- [ ] Fixtures : 3-4 enchantements (Tranchant de feu +5 degats feu 1h, Protection de glace +3 defense 30min, etc.)
-- [ ] Tests EnchantmentManager
+### ~~89 — Enchantements temporaires (S | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~90 — Herbier & catalogue minier (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
