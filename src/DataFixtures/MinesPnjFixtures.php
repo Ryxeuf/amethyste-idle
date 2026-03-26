@@ -167,7 +167,7 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                                 'datas' => [],
                             ],
                             [
-                                'text' => "Comment survivez-vous ici ?",
+                                'text' => 'Comment survivez-vous ici ?',
                                 'action' => 'next',
                             ],
                             [
