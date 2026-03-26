@@ -257,7 +257,15 @@ class InvasionManagerTest extends TestCase
             },
         );
 
-        $this->em->expects($this->exactly(3))->method('persist');
+        $mobCounter = 0;
+        $this->em->expects($this->exactly(3))->method('persist')
+            ->with($this->callback(function (Mob $mob) use (&$mobCounter): bool {
+                ++$mobCounter;
+                $ref = new \ReflectionProperty(Mob::class, 'id');
+                $ref->setValue($mob, $mobCounter + 100);
+
+                return true;
+            }));
 
         $wavesSpawned = $this->manager->tick();
 
