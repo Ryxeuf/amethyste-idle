@@ -68,10 +68,21 @@ class PlayerActionHelper
         foreach ($player->getSkills() as $skill) {
             if ($skill->getActions()) {
                 foreach ($skill->getActions() as $action) {
-                    if (!isset($this->actions[$action['action']])) {
-                        $this->actions[$action['action']] = [];
+                    if (!\is_array($action)) {
+                        continue;
                     }
-                    $this->actions[$action['action']] = array_merge($this->actions[$action['action']], $action['spots']);
+                    $actionKey = $action['action'] ?? null;
+                    if (!\is_string($actionKey) || $actionKey === '') {
+                        continue;
+                    }
+                    $spots = $action['spots'] ?? [];
+                    if (!\is_array($spots)) {
+                        $spots = [];
+                    }
+                    if (!isset($this->actions[$actionKey])) {
+                        $this->actions[$actionKey] = [];
+                    }
+                    $this->actions[$actionKey] = array_merge($this->actions[$actionKey], $spots);
                 }
             }
         }

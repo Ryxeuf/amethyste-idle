@@ -70,6 +70,7 @@ class FightFleeController extends AbstractController
         if ($success) {
             // Repositionner le joueur sur sa case precedente (avant le combat)
             $player->setCoordinates($player->getLastCoordinates());
+            $player->setIsMoving(false);
 
             // End fight - remove player from fight
             $player->setFight(null);

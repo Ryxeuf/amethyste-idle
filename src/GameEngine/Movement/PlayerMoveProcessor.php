@@ -40,6 +40,12 @@ class PlayerMoveProcessor
         $this->triggeredPortal = null;
         $this->triggeredFight = null;
 
+        // Recharger depuis la BDD : le PlayerHelper peut garder un joueur « encore en combat »
+        // après une fuite (autre onglet, worker sans reset, etc.) alors que fight_id est déjà null.
+        if ($this->entityManager->contains($player)) {
+            $this->entityManager->refresh($player);
+        }
+
         if ($player->getFight()) {
             $this->logger->info('Player {player} is in a fight, move ignored', ['player' => $player->getId()]);
 
