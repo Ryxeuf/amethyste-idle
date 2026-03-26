@@ -14,6 +14,7 @@ use App\Form\Admin\PlayerPositionType;
 use App\GameEngine\Realtime\Map\MovedPlayerHandler;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
+use App\Service\Admin\AdminFightModerationService;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,6 +32,7 @@ class PlayerController extends AbstractController
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
         private readonly MovedPlayerHandler $movedPlayerHandler,
+        private readonly AdminFightModerationService $fightModeration,
     ) {
     }
 
@@ -40,7 +42,9 @@ class PlayerController extends AbstractController
         $search = $request->query->get('q', '');
         $qb = $this->em->getRepository(Player::class)->createQueryBuilder('p')
             ->leftJoin('p.user', 'u')
-            ->addSelect('u');
+            ->leftJoin('p.fight', 'f')
+            ->addSelect('u')
+            ->addSelect('f');
 
         if ($search) {
             $qb->where('LOWER(p.name) LIKE LOWER(:q) OR LOWER(u.email) LIKE LOWER(:q) OR LOWER(u.username) LIKE LOWER(:q)')
@@ -112,6 +116,44 @@ class PlayerController extends AbstractController
             'player' => $player,
             'form' => $form->createView(),
         ]);
+    }
+
+    #[Route('/{id}/combat/detach', name: 'combat_detach', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function combatDetach(Request $request, Player $player): Response
+    {
+        if (!$this->isCsrfTokenValid('combat_detach' . $player->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+        }
+
+        if ($player->getFight() === null) {
+            $this->addFlash('warning', 'Ce joueur n\'est dans aucun combat.');
+        } else {
+            $fightId = $player->getFight()->getId();
+            $this->fightModeration->detachPlayerFromFight($player);
+            $this->adminLogger->log('combat_detach', 'Player', $player->getId(), $player->getName(), ['fight_id' => $fightId]);
+            $this->addFlash('success', 'Joueur retire du combat #' . $fightId . '.');
+        }
+
+        return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+    }
+
+    #[Route('/{id}/session/moving', name: 'session_moving', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function sessionMoving(Request $request, Player $player): Response
+    {
+        if (!$this->isCsrfTokenValid('session_moving' . $player->getId(), $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
+        }
+
+        $isMoving = $request->request->getInt('is_moving', 0) === 1;
+        $this->fightModeration->setPlayerMoving($player, $isMoving);
+        $this->adminLogger->log('session_moving', 'Player', $player->getId(), $player->getName(), ['is_moving' => $isMoving]);
+        $this->addFlash('success', 'Etat deplacement (is_moving) mis a ' . ($isMoving ? 'oui' : 'non') . '.');
+
+        return $this->redirectToRoute('admin_player_show', ['id' => $player->getId()]);
     }
 
     #[Route('/{id}', name: 'show', requirements: ['id' => '\d+'])]

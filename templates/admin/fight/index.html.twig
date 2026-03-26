@@ -1,0 +1,68 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Combats - Admin{% endblock %}
+{% block page_title %}Combats{% endblock %}
+
+{% block body %}
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <form method="get" class="flex items-center gap-3">
+            <label class="flex items-center gap-2 text-sm text-gray-400">
+                <input type="checkbox" name="active" value="1" {% if onlyActive %}checked{% endif %}
+                       onchange="this.form.submit()">
+                Seulement en cours (in_progress)
+            </label>
+            {% if onlyActive %}
+                <a href="{{ path('admin_fight_index') }}" class="text-sm text-purple-400 hover:text-purple-300">Tout afficher</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-800 text-gray-400">
+                        <th class="text-left px-4 py-3 font-medium">ID</th>
+                        <th class="text-left px-4 py-3 font-medium">En cours</th>
+                        <th class="text-left px-4 py-3 font-medium">Tour (step)</th>
+                        <th class="text-left px-4 py-3 font-medium">Joueurs</th>
+                        <th class="text-left px-4 py-3 font-medium">Mobs</th>
+                        <th class="text-left px-4 py-3 font-medium">World boss</th>
+                        <th class="text-right px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for fight in fights %}
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-4 py-3 text-gray-300 font-mono">#{{ fight.id }}</td>
+                            <td class="px-4 py-3">
+                                {% if fight.inProgress %}
+                                    <span class="inline-flex px-2 py-1 text-xs rounded-full bg-orange-900 text-orange-200">Oui</span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-1 text-xs rounded-full bg-gray-800 text-gray-400">Non</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">{{ fight.step }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ fight.players|length }}</td>
+                            <td class="px-4 py-3 text-gray-400">{{ fight.mobs|length }}</td>
+                            <td class="px-4 py-3">
+                                {% if fight.isWorldBossFight %}
+                                    <span class="text-amber-400 text-xs">Oui</span>
+                                {% else %}
+                                    <span class="text-gray-600 text-xs">—</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <a href="{{ path('admin_fight_show', {id: fight.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Detail</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-gray-500">Aucun combat.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

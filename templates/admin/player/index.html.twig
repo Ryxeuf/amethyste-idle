@@ -28,6 +28,7 @@
                         <th class="text-left px-4 py-3 font-medium">Vie</th>
                         <th class="text-left px-4 py-3 font-medium">Gils</th>
                         <th class="text-left px-4 py-3 font-medium">Statut</th>
+                        <th class="text-left px-4 py-3 font-medium">Combat</th>
                         <th class="text-right px-4 py-3 font-medium">Actions</th>
                     </tr>
                 </thead>
@@ -48,13 +49,20 @@
                                     <span class="inline-flex px-2 py-1 text-xs rounded-full bg-green-900 text-green-300">Actif</span>
                                 {% endif %}
                             </td>
+                            <td class="px-4 py-3">
+                                {% if player.fight %}
+                                    <a href="{{ path('admin_fight_show', {id: player.fight.id}) }}" class="inline-flex px-2 py-1 text-xs rounded-full bg-orange-900 text-orange-200 hover:bg-orange-800">#{{ player.fight.id }}</a>
+                                {% else %}
+                                    <span class="text-gray-600 text-xs">—</span>
+                                {% endif %}
+                            </td>
                             <td class="px-4 py-3 text-right">
                                 <a href="{{ path('admin_player_show', {id: player.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Details</a>
                             </td>
                         </tr>
                     {% else %}
                         <tr>
-                            <td colspan="9" class="px-4 py-8 text-center text-gray-500">Aucun joueur trouve.</td>
+                            <td colspan="10" class="px-4 py-8 text-center text-gray-500">Aucun joueur trouve.</td>
                         </tr>
                     {% endfor %}
                 </tbody>
