@@ -131,7 +131,7 @@ class InfluenceListenerTest extends TestCase
     {
         $player = $this->createMock(Player::class);
         $recipe = $this->createMock(Recipe::class);
-        $recipe->method('getLevel')->willReturn(3);
+        $recipe->method('getRequiredLevel')->willReturn(3);
         $recipe->method('getName')->willReturn('Epee de fer');
 
         $item = $this->createMock(Item::class);

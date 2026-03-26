@@ -80,7 +80,7 @@ class InfluenceListener implements EventSubscriberInterface
         $this->awardForPlayer(
             $player,
             InfluenceActivityType::Craft,
-            ['recipe_level' => $recipe->getLevel()],
+            ['recipe_level' => $recipe->getRequiredLevel()],
             null,
             ['recipe' => $recipe->getName(), 'item' => $event->getResultItem()->getSlug(), 'qty' => $event->getQuantity()],
         );
@@ -171,7 +171,7 @@ class InfluenceListener implements EventSubscriberInterface
     }
 
     /**
-     * @param array<string, mixed>  $context
+     * @param array<string, mixed> $context
      * @param array<string, mixed>|null $details
      */
     private function awardForPlayer(
