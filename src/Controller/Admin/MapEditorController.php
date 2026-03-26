@@ -441,7 +441,7 @@ class MapEditorController extends AbstractController
             }
 
             // Ensure layers array has enough entries
-            while (count($cellData['layers']) <= $layer) {
+            while (\count($cellData['layers']) <= $layer) {
                 $cellData['layers'][] = null;
             }
 
