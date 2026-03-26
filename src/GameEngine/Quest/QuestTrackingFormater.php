@@ -36,6 +36,16 @@ class QuestTrackingFormater
             $tracking['explore'] = $explore;
         }
 
+        $talkTo = $this->formatTalkTo($requirements);
+        if (!empty($talkTo)) {
+            $tracking['talk_to'] = $talkTo;
+        }
+
+        $bossChallenge = $this->formatBossChallenge($requirements);
+        if (!empty($bossChallenge)) {
+            $tracking['boss_challenge'] = $bossChallenge;
+        }
+
         return $tracking;
     }
 
@@ -141,5 +151,56 @@ class QuestTrackingFormater
         }
 
         return $explore;
+    }
+
+    /**
+     * Format talk_to requirements into tracking entries (enquête quests).
+     *
+     * Requirements format: [['pnj_id' => 5, 'name' => 'Marie la Herboriste']]
+     *
+     * @return array<int, array{count: int, necessary: int, pnj_id: int, name: string}>
+     */
+    public function formatTalkTo(array $requirements): array
+    {
+        if (!isset($requirements['talk_to'])) {
+            return [];
+        }
+        $talkTo = [];
+        foreach ($requirements['talk_to'] as $entry) {
+            $talkTo[] = [
+                'count' => 0,
+                'necessary' => 1,
+                'pnj_id' => $entry['pnj_id'],
+                'name' => $entry['name'] ?? 'PNJ inconnu',
+            ];
+        }
+
+        return $talkTo;
+    }
+
+    /**
+     * Format boss_challenge requirements into tracking entries.
+     *
+     * Requirements format: [['monster_slug' => 'forest_guardian', 'name' => 'Gardien', 'conditions' => ['no_heal' => true]]]
+     *
+     * @return array<int, array{count: int, necessary: int, monster_slug: string, name: string, conditions: array<string, mixed>}>
+     */
+    public function formatBossChallenge(array $requirements): array
+    {
+        if (!isset($requirements['boss_challenge'])) {
+            return [];
+        }
+        $bossChallenge = [];
+        foreach ($requirements['boss_challenge'] as $entry) {
+            $bossChallenge[] = [
+                'count' => 0,
+                'necessary' => 1,
+                'monster_slug' => $entry['monster_slug'],
+                'name' => $entry['name'] ?? $entry['monster_slug'],
+                'conditions' => $entry['conditions'] ?? [],
+            ];
+        }
+
+        return $bossChallenge;
     }
 }

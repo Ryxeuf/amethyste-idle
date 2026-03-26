@@ -182,6 +182,11 @@ class FightSpellController extends AbstractController
             }
         }
 
+        // Track heal usage for boss_challenge quests
+        if ($spell->getHeal() > 0 && $data['targetType'] === 'player') {
+            $fight->setMetadataValue('heal_used', true);
+        }
+
         // Apply the spell
         $hit = FightCalculator::hasAttackHit($spell->getHit() + $bonuses['hit']);
         $messages = $statusMessages;

@@ -143,7 +143,7 @@ class PlayerQuestHelper
         $necessary = 0;
         $tracking = $playerQuest->getTracking();
 
-        foreach (['monsters', 'collect', 'craft', 'deliver', 'explore'] as $type) {
+        foreach (['monsters', 'collect', 'craft', 'deliver', 'explore', 'talk_to', 'boss_challenge'] as $type) {
             if (isset($tracking[$type])) {
                 foreach ($tracking[$type] as $entry) {
                     $count += $entry['count'] ?? 0;

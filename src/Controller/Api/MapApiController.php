@@ -22,6 +22,7 @@ use Symfony\Component\Asset\Packages;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/api/map')]
 class MapApiController extends AbstractController
@@ -34,6 +35,7 @@ class MapApiController extends AbstractController
         private readonly MobRepository $mobRepository,
         private readonly PnjQuestIndicatorResolver $pnjQuestIndicatorResolver,
         private readonly GameTimeService $gameTimeService,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -424,6 +426,15 @@ class MapApiController extends AbstractController
 
         $dialogParser->setPnj($pnj);
         $parsedDialog = $dialogParser->parseDialog($dialog);
+
+        // Dispatch PNJ dialog event for quest tracking (enquête quests)
+        $player = $this->playerHelper->getPlayer();
+        if ($player) {
+            $this->eventDispatcher->dispatch(
+                new \App\Event\Game\PnjDialogEvent($player, $pnj),
+                \App\Event\Game\PnjDialogEvent::NAME
+            );
+        }
 
         return $this->json([
             'sentences' => $parsedDialog,

@@ -169,6 +169,98 @@ class PlayerQuestUpdater
         }
     }
 
+    /**
+     * Called when a player talks to a PNJ (for enquête quests).
+     */
+    public function updateTalkedTo(int $pnjId): void
+    {
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $changed = false;
+
+        foreach ($quests as $quest) {
+            if ($this->playerQuestHelper->isPlayerQuestCompleted($quest)) {
+                continue;
+            }
+            $tracking = $quest->getTracking();
+            if (!isset($tracking['talk_to'])) {
+                continue;
+            }
+            foreach ($tracking['talk_to'] as $idx => $entry) {
+                if ($entry['pnj_id'] === $pnjId && $entry['count'] < $entry['necessary']) {
+                    $tracking['talk_to'][$idx]['count'] = 1;
+                    $changed = true;
+                }
+            }
+            $quest->setTracking($tracking);
+        }
+
+        // Update daily quests
+        $this->updateDailyQuestTracking(function (array &$tracking) use ($pnjId) {
+            if (!isset($tracking['talk_to'])) {
+                return false;
+            }
+            $changed = false;
+            foreach ($tracking['talk_to'] as $idx => $entry) {
+                if ($entry['pnj_id'] === $pnjId && $entry['count'] < $entry['necessary']) {
+                    $tracking['talk_to'][$idx]['count'] = 1;
+                    $changed = true;
+                }
+            }
+
+            return $changed;
+        });
+
+        if ($changed) {
+            $this->entityManager->flush();
+        }
+    }
+
+    /**
+     * Called when a boss is defeated under challenge conditions.
+     */
+    public function updateBossChallenge(string $monsterSlug): void
+    {
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $changed = false;
+
+        foreach ($quests as $quest) {
+            if ($this->playerQuestHelper->isPlayerQuestCompleted($quest)) {
+                continue;
+            }
+            $tracking = $quest->getTracking();
+            if (!isset($tracking['boss_challenge'])) {
+                continue;
+            }
+            foreach ($tracking['boss_challenge'] as $idx => $entry) {
+                if ($entry['monster_slug'] === $monsterSlug && $entry['count'] < $entry['necessary']) {
+                    $tracking['boss_challenge'][$idx]['count'] = 1;
+                    $changed = true;
+                }
+            }
+            $quest->setTracking($tracking);
+        }
+
+        // Update daily quests
+        $this->updateDailyQuestTracking(function (array &$tracking) use ($monsterSlug) {
+            if (!isset($tracking['boss_challenge'])) {
+                return false;
+            }
+            $changed = false;
+            foreach ($tracking['boss_challenge'] as $idx => $entry) {
+                if ($entry['monster_slug'] === $monsterSlug && $entry['count'] < $entry['necessary']) {
+                    $tracking['boss_challenge'][$idx]['count'] = 1;
+                    $changed = true;
+                }
+            }
+
+            return $changed;
+        });
+
+        if ($changed) {
+            $this->entityManager->flush();
+        }
+    }
+
     private function updateTrackingEntries(string $type, string $slug, int $quantity): void
     {
         $quests = $this->playerQuestHelper->getCurrentQuests();

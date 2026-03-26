@@ -66,6 +66,11 @@ class FightItemController extends AbstractController
                 }
             }
 
+            // Track heal usage for boss_challenge quests
+            if ($spell->getHeal() > 0 && $target === $player) {
+                $fight->setMetadataValue('heal_used', true);
+            }
+
             $spellMessages = $this->spellApplicator->apply($spell, $player, $target, ['fight' => $fight]);
             $messages[] = sprintf('Vous utilisez %s !', $item->getName());
             $messages = array_merge($messages, $spellMessages);

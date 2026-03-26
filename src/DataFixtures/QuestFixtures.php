@@ -719,6 +719,49 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'monster_slug' => 'goblin',
                 ],
             ],
+            // --- Quêtes avancées : enquête et défi boss ---
+            'quest_enquete_herboriste' => [
+                'name' => 'L\'Herboriste disparue',
+                'description' => 'Marie la Herboriste a disparu. Interrogez Claire la Sage, Antoine le Mage et Élise la Guérisseuse pour retrouver sa trace.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 16, 'name' => 'Claire la Sage'],
+                        ['pnj_id' => 19, 'name' => 'Antoine le Mage'],
+                        ['pnj_id' => 2, 'name' => 'Élise la Guérisseuse'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 80,
+                    'xp' => 120,
+                    'items' => [
+                        ['genericItemSlug' => 'life-potion', 'count' => 3],
+                    ],
+                ],
+            ],
+            'quest_defi_gardien_foret' => [
+                'name' => 'Défi du Gardien',
+                'description' => 'Prouvez votre valeur en vainquant le Gardien de la Forêt en solo, sans utiliser de soin et en moins de 5 minutes.',
+                'requirements' => [
+                    'boss_challenge' => [
+                        [
+                            'monster_slug' => 'forest_guardian',
+                            'name' => 'Gardien de la Forêt',
+                            'conditions' => [
+                                'no_heal' => true,
+                                'solo' => true,
+                                'time_limit' => 300,
+                            ],
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 200,
+                    'xp' => 300,
+                    'items' => [
+                        ['genericItemSlug' => 'life-potion', 'count' => 5],
+                    ],
+                ],
+            ],
             // --- Quêtes d'événement ---
             'quest_event_lunar_hunt' => [
                 'name' => 'Chasse sous la Lune',
