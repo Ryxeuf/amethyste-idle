@@ -99,10 +99,10 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 > Foret, plaines, marecage. Prerequis : ← MED-13
 - [x] `ForestBiome`, `PlainsBiome`, `SwampBiome`
 
-**MED-15 — Generateur procedural — objets & connectivite (M | ★★★ | HAUTE)**
+**MED-15 — Generateur procedural — objets & connectivite (M | ★★★ | HAUTE)** ✅
 > Placement entites + verification jouabilite. Prerequis : ← MED-14
-- [ ] `ObjectPlacer`, verification connectivite flood fill
-- [ ] Bouton "Generer" dans l'editeur admin
+- [x] `ObjectPlacer`, verification connectivite flood fill
+- [x] Bouton "Generer" dans l'editeur admin
 
 #### Phase 7 — Export & qualite (MED-16)
 

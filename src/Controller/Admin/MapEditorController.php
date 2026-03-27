@@ -9,6 +9,7 @@ use App\Entity\App\Pnj;
 use App\Entity\Game\Monster;
 use App\GameEngine\Terrain\Generator\BiomeRegistry;
 use App\GameEngine\Terrain\Generator\MapGenerator;
+use App\GameEngine\Terrain\Generator\ObjectPlacer;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
@@ -33,6 +34,7 @@ class MapEditorController extends AbstractController
         private readonly AdminLogger $adminLogger,
         private readonly MapGenerator $mapGenerator,
         private readonly BiomeRegistry $biomeRegistry,
+        private readonly ObjectPlacer $objectPlacer,
     ) {
     }
 
@@ -1066,22 +1068,72 @@ class MapEditorController extends AbstractController
         $biomeSlug = $data['biome'];
         $difficulty = isset($data['difficulty']) ? max(1, min(10, (int) $data['difficulty'])) : 1;
         $seed = isset($data['seed']) && $data['seed'] !== '' ? (int) $data['seed'] : null;
+        $placeEntities = (bool) ($data['placeEntities'] ?? true);
 
         $biome = $this->biomeRegistry->get($biomeSlug);
         if (!$biome) {
             return $this->json(['error' => 'Biome inconnu : ' . $biomeSlug], 400);
         }
 
-        $this->mapGenerator->generate($map, $biome, $difficulty, $seed);
+        $actualSeed = $seed ?? random_int(0, 2147483647);
+
+        // Supprimer les entites generees precedemment (mobs + harvest spots)
+        if ($placeEntities) {
+            $this->removeGeneratedEntities($map);
+        }
+
+        // 1. Generer le terrain
+        $this->mapGenerator->generate($map, $biome, $difficulty, $actualSeed);
+
+        $result = [
+            'success' => true,
+            'biome' => $biomeSlug,
+            'difficulty' => $difficulty,
+            'seed' => $actualSeed,
+        ];
+
+        if ($placeEntities) {
+            // 2. Verifier et corriger la connectivite
+            $passages = $this->objectPlacer->ensureConnectivity($map);
+
+            // 3. Placer les entites
+            $entityCounts = $this->objectPlacer->placeAll($map, $biome, $difficulty, $actualSeed);
+
+            $this->em->flush();
+
+            $result['passages'] = $passages;
+            $result['entities'] = $entityCounts;
+        }
 
         $this->adminLogger->log(
             'update',
             'Map',
             $map->getId(),
-            sprintf('Generation procedurale %s (diff %d, seed %s) sur %s', $biomeSlug, $difficulty, $seed ?? 'auto', $map->getName())
+            sprintf('Generation procedurale %s (diff %d, seed %d) sur %s', $biomeSlug, $difficulty, $actualSeed, $map->getName())
         );
 
-        return $this->json(['success' => true, 'biome' => $biomeSlug, 'difficulty' => $difficulty]);
+        return $this->json($result);
+    }
+
+    /**
+     * Supprime les mobs et harvest spots generes sur la carte.
+     */
+    private function removeGeneratedEntities(Map $map): void
+    {
+        $mobs = $this->em->getRepository(Mob::class)->findBy(['map' => $map]);
+        foreach ($mobs as $mob) {
+            $this->em->remove($mob);
+        }
+
+        $harvestSpots = $this->em->getRepository(ObjectLayer::class)->findBy([
+            'map' => $map,
+            'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+        ]);
+        foreach ($harvestSpots as $spot) {
+            $this->em->remove($spot);
+        }
+
+        $this->em->flush();
     }
 
     #[Route('/{id}/editor/biomes', name: 'editor_biomes', requirements: ['id' => '\d+'], methods: ['GET'])]
