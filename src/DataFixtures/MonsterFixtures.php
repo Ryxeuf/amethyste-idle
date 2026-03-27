@@ -804,6 +804,55 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // === Boss de donjon : Racines de la foret (tache 84) ===
+            'ancient_root' => [
+                'name' => 'Racine Ancienne',
+                'life' => 350,
+                'hit' => 75,
+                'speed' => 7,
+                'attack' => 'entangling_roots',
+                'level' => 10,
+                'difficulty' => 4,
+                'isBoss' => true,
+                'spells' => ['entangling_roots', 'nature_fury', 'poison_cloud', 'primordial_roar'],
+                'aiPattern' => [
+                    'spell_chance' => 50,
+                    'preferred_element' => 'beast',
+                    'danger_alert' => [
+                        'threshold' => 40,
+                        'message' => 'La Racine Ancienne s\'enfonce dans le sol... le sol tremble violemment !',
+                        'spell' => 'primordial-roar',
+                    ],
+                ],
+                'elementalResistances' => [
+                    'beast' => 0.4,
+                    'earth' => 0.5,
+                    'fire' => -0.5,
+                    'metal' => -0.3,
+                    'water' => 0.3,
+                ],
+                'bossPhases' => [
+                    [
+                        'hpThreshold' => 100,
+                        'name' => 'Phase 1 — Racines dormantes',
+                        'action' => 'spell',
+                    ],
+                    [
+                        'hpThreshold' => 60,
+                        'name' => 'Phase 2 — Eveil corrompu',
+                        'action' => 'spell',
+                        'preferred_spell' => 'nature-fury',
+                        'danger_message' => 'La Racine Ancienne se deploie — des spores toxiques envahissent l\'air !',
+                    ],
+                    [
+                        'hpThreshold' => 30,
+                        'name' => 'Phase 3 — Fureur primordiale',
+                        'action' => 'spell',
+                        'preferred_spell' => 'primordial-roar',
+                        'danger_message' => 'La Racine Ancienne pousse un cri qui fait trembler les murs du donjon !',
+                    ],
+                ],
+            ],
         ];
 
         foreach ($monsters as $key => $data) {

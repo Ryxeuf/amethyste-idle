@@ -5,7 +5,9 @@ namespace App\GameEngine\Achievement;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerAchievement;
 use App\Entity\Game\Achievement;
+use App\Enum\DungeonDifficulty;
 use App\Event\Fight\MobDeadEvent;
+use App\Event\Game\DungeonCompletedEvent;
 use App\Event\Game\QuestCompletedEvent;
 use App\Repository\PlayerAchievementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,6 +26,7 @@ class AchievementTracker implements EventSubscriberInterface
         return [
             MobDeadEvent::NAME => 'onMobDead',
             QuestCompletedEvent::NAME => 'onQuestCompleted',
+            DungeonCompletedEvent::NAME => 'onDungeonCompleted',
         ];
     }
 
@@ -58,6 +61,17 @@ class AchievementTracker implements EventSubscriberInterface
     public function onQuestCompleted(QuestCompletedEvent $event): void
     {
         $this->progressAchievements($event->getPlayer(), 'quest_complete');
+    }
+
+    public function onDungeonCompleted(DungeonCompletedEvent $event): void
+    {
+        $player = $event->getPlayer();
+
+        $this->progressAchievements($player, 'dungeon_clear');
+
+        if ($event->getDungeonRun()->getDifficulty() === DungeonDifficulty::Mythic) {
+            $this->progressAchievements($player, 'dungeon_clear_mythic');
+        }
     }
 
     private function progressAchievements(Player $player, string $criteriaType, ?string $monsterSlug = null): void

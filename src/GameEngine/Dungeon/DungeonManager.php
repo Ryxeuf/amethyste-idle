@@ -57,6 +57,8 @@ class DungeonManager
         $run->setDungeon($dungeon);
         $run->setPlayer($player);
         $run->setDifficulty($difficulty);
+        $run->setOriginMap($player->getMap());
+        $run->setOriginCoordinates($player->getCoordinates());
 
         $this->entityManager->persist($run);
 
@@ -77,6 +79,35 @@ class DungeonManager
     {
         $run->setCompletedAt(new \DateTimeImmutable());
         $this->entityManager->flush();
+    }
+
+    /**
+     * Teleporte le joueur hors du donjon vers sa position d'origine.
+     */
+    public function teleportPlayerBack(DungeonRun $run): void
+    {
+        $player = $run->getPlayer();
+        $originMap = $run->getOriginMap();
+        $originCoords = $run->getOriginCoordinates();
+
+        if ($originMap !== null) {
+            $player->setMap($originMap);
+            $player->setCoordinates($originCoords ?? '1.1');
+            // Clear origin to avoid re-triggering
+            $run->setOriginMap(null);
+            $run->setOriginCoordinates(null);
+        }
+
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Abandonne un run de donjon (defaite ou abandon volontaire) et teleporte le joueur.
+     */
+    public function abandonRun(DungeonRun $run): void
+    {
+        $this->completeRun($run);
+        $this->teleportPlayerBack($run);
     }
 
     /**

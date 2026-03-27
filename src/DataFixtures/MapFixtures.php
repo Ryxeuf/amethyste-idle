@@ -62,6 +62,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($mines);
         $this->addReference('map_4', $mines);
 
+        // Donjon : Racines de la foret — carte instanciee pour le donjon
+        $dungeonRoots = new Map();
+        $dungeonRoots->setName('Racines de la foret (donjon)');
+        $dungeonRoots->setWorld($this->getReference('world_1', World::class));
+        $dungeonRoots->setAreaWidth(20);
+        $dungeonRoots->setAreaHeight(20);
+        $dungeonRoots->setCreatedAt(new \DateTime());
+        $dungeonRoots->setUpdatedAt(new \DateTime());
+
+        $manager->persist($dungeonRoots);
+        $this->addReference('map_dungeon_racines', $dungeonRoots);
+
         $manager->flush();
     }
 

@@ -398,6 +398,14 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'stone_golem', 'item' => 'golem_heart_shield', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'troll', 'item' => 'troll_king_belt', 'probability' => 3, 'minDifficulty' => 3],
+
+            // --- Boss de donjon : Racine Ancienne (tache 84) ---
+            ['monster' => 'ancient_root', 'item' => 'healing_potion_major', 'probability' => 80],
+            ['monster' => 'ancient_root', 'item' => 'energy_potion_small', 'probability' => 60],
+            ['monster' => 'ancient_root', 'item' => 'ancient_scroll', 'probability' => 40],
+            ['monster' => 'ancient_root', 'item' => 'materia_stone_throw', 'probability' => 15],
+            // Drop garanti du boss
+            ['monster' => 'ancient_root', 'item' => 'guardian_thorn_staff', 'probability' => 10, 'guaranteed' => true],
         ];
 
         foreach ($monsterItems as $data) {

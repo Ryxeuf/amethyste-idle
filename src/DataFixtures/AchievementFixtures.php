@@ -128,6 +128,12 @@ class AchievementFixtures extends Fixture
             ['slug' => 'quest-10', 'title' => 'Aventurier confirmé', 'description' => 'Compléter 10 quêtes', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'count' => 10], 'reward' => ['gils' => 300]],
             ['slug' => 'quest-25', 'title' => 'Aventurier aguerri', 'description' => 'Compléter 25 quêtes', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'count' => 25], 'reward' => ['gils' => 800]],
             ['slug' => 'quest-50', 'title' => 'Héros légendaire', 'description' => 'Compléter 50 quêtes', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'count' => 50], 'reward' => ['gils' => 2000, 'title' => 'Héros légendaire']],
+
+            // === DONJONS (tache 84) ===
+            ['slug' => 'dungeon-clear-1', 'title' => 'Premier donjon', 'description' => 'Terminer un donjon', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear', 'count' => 1], 'reward' => ['gils' => 500]],
+            ['slug' => 'dungeon-clear-5', 'title' => 'Explorateur de donjons', 'description' => 'Terminer 5 donjons', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear', 'count' => 5], 'reward' => ['gils' => 1500]],
+            ['slug' => 'dungeon-clear-10', 'title' => 'Maître des profondeurs', 'description' => 'Terminer 10 donjons', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear', 'count' => 10], 'reward' => ['gils' => 3000, 'title' => 'Maître des profondeurs']],
+            ['slug' => 'dungeon-clear-mythic-1', 'title' => 'Défi mythique', 'description' => 'Terminer un donjon en difficulté Mythique', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear_mythic', 'count' => 1], 'reward' => ['gils' => 2000, 'title' => 'Conquérant mythique']],
         ];
 
         foreach ($achievements as $data) {

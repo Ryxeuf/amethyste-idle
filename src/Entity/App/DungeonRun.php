@@ -33,6 +33,13 @@ class DungeonRun
     #[ORM\Column(name: 'completed_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $completedAt = null;
 
+    #[ORM\ManyToOne(targetEntity: Map::class)]
+    #[ORM\JoinColumn(name: 'origin_map_id', referencedColumnName: 'id', nullable: true)]
+    private ?Map $originMap = null;
+
+    #[ORM\Column(name: 'origin_coordinates', type: 'string', length: 20, nullable: true)]
+    private ?string $originCoordinates = null;
+
     public function __construct()
     {
         $this->startedAt = new \DateTimeImmutable();
@@ -111,5 +118,29 @@ class DungeonRun
     public function isInProgress(): bool
     {
         return $this->completedAt === null;
+    }
+
+    public function getOriginMap(): ?Map
+    {
+        return $this->originMap;
+    }
+
+    public function setOriginMap(?Map $originMap): self
+    {
+        $this->originMap = $originMap;
+
+        return $this;
+    }
+
+    public function getOriginCoordinates(): ?string
+    {
+        return $this->originCoordinates;
+    }
+
+    public function setOriginCoordinates(?string $originCoordinates): self
+    {
+        $this->originCoordinates = $originCoordinates;
+
+        return $this;
     }
 }
