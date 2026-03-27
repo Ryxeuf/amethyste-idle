@@ -10,7 +10,6 @@ use App\GameEngine\Terrain\Generator\MapGenerator;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
