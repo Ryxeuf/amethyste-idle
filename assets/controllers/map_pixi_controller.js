@@ -55,6 +55,7 @@ export default class extends Controller {
         this._lastEntityLoadY = this.playerYValue;
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
         this._pendingPortal = null; // Portal data from move response
+        this._pendingHarvestSpot = null; // Harvest spot to open after walk
 
         // Camera shake system
         this._shakeIntensity = 0;
@@ -116,6 +117,7 @@ export default class extends Controller {
         this._initZoneAmbiance();
         this._detectZone(this._playerX, this._playerY, true);
         this._updateCamera(true);
+        this._checkHarvestSpotInteraction();
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
         }
@@ -713,14 +715,19 @@ export default class extends Controller {
         const sprite = new PIXI.Sprite(texture);
         sprite.position.set(spot.x * s, spot.y * s);
         sprite.zIndex = spot.y * s - 1;
-        sprite.alpha = spot.available ? 1.0 : 0.3;
+        // Dim spots that are on cooldown or that the player can't harvest (no skill)
+        if (!spot.available || spot.canHarvest === false) {
+            sprite.alpha = 0.3;
+        } else {
+            sprite.alpha = 1.0;
+        }
         this._entityContainer.addChild(sprite);
 
         const key = `harvest_${spot.id}`;
         this._entitySprites[key] = {
             container: sprite, x: spot.x, y: spot.y,
             type: 'harvest', animator: null, spotData: spot,
-            meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds },
+            meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds, canHarvest: spot.canHarvest },
         };
         this._addToSpatialHash(key, spot.x, spot.y);
     }
@@ -1994,8 +2001,73 @@ export default class extends Controller {
             return;
         }
 
+        // Check if the tapped cell (or its neighbors) is a harvest spot
+        const harvestSpot = this._findHarvestSpotAt(tileX, tileY);
+        if (harvestSpot) {
+            this._walkToHarvestSpot(harvestSpot);
+            return;
+        }
+
         if (!isWalkable) return;
         this._requestMove(tileX, tileY);
+    }
+
+    /**
+     * Find a harvest spot at the given tile coordinates.
+     */
+    _findHarvestSpotAt(x, y) {
+        const entities = this._getEntitiesAt(x, y);
+        for (const key of entities) {
+            if (!key.startsWith('harvest_')) continue;
+            const entry = this._entitySprites[key];
+            if (entry && entry.spotData) {
+                return entry.spotData;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find the nearest walkable cell adjacent to a harvest spot, walk there,
+     * then trigger the harvest interaction.
+     */
+    _walkToHarvestSpot(spot) {
+        const px = Math.floor(this._playerX);
+        const py = Math.floor(this._playerY);
+
+        // If player is already adjacent to the spot, open panel directly
+        if (Math.abs(px - spot.x) + Math.abs(py - spot.y) <= 1) {
+            this.dispatch('harvestSpot', { detail: spot });
+            return;
+        }
+
+        // Find the best walkable adjacent cell (closest to player)
+        const adjacent = [
+            [spot.x - 1, spot.y],
+            [spot.x + 1, spot.y],
+            [spot.x, spot.y - 1],
+            [spot.x, spot.y + 1],
+        ];
+
+        let best = null;
+        let bestDist = Infinity;
+        for (const [ax, ay] of adjacent) {
+            const ck = `${ax},${ay}`;
+            const c = this._cellCache.get(ck);
+            if (c && c.w) {
+                const dist = Math.abs(ax - px) + Math.abs(ay - py);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = { x: ax, y: ay };
+                }
+            }
+        }
+
+        if (!best) return; // No walkable adjacent cell
+
+        // Mark that we want to open harvest panel after arriving
+        this._pendingHarvestSpot = spot;
+        this._requestMove(best.x, best.y);
     }
 
     async _requestMove(targetX, targetY, fromX = null, fromY = null) {
@@ -2159,6 +2231,15 @@ export default class extends Controller {
 
         await this._loadCells(this._playerX, this._playerY);
         await this._refreshEntitiesIfNeeded();
+
+        // If we walked to a harvest spot via click, open the panel directly
+        if (this._pendingHarvestSpot) {
+            const spot = this._pendingHarvestSpot;
+            this._pendingHarvestSpot = null;
+            this.dispatch('harvestSpot', { detail: spot });
+            return;
+        }
+
         this._checkPnjInteraction();
         this._checkHarvestSpotInteraction();
     }
@@ -2307,10 +2388,9 @@ export default class extends Controller {
                 const entry = this._entitySprites[key];
                 if (!entry || !entry.spotData) continue;
                 const spot = entry.spotData;
-                if (spot.available) {
-                    this.dispatch('harvestSpot', { detail: spot });
-                    return;
-                }
+                // Always dispatch — the harvest panel handles availability and skill checks
+                this.dispatch('harvestSpot', { detail: spot });
+                return;
             }
         }
     }

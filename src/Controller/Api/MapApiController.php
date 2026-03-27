@@ -37,6 +37,7 @@ class MapApiController extends AbstractController
         private readonly GameTimeService $gameTimeService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly TilesetRegistry $tilesetRegistry,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -286,6 +287,7 @@ class MapApiController extends AbstractController
                 'toolType' => $spot->getRequiredToolType(),
                 'respawnDelay' => $spot->getRespawnDelay(),
                 'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
+                'canHarvest' => $this->playerActionHelper->canHarvest($spot->getSlug()),
             ];
         }
 
