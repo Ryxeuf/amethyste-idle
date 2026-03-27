@@ -2525,7 +2525,7 @@ export default class extends Controller {
             return
         }
 
-        this._flash('Generation en cours...', 'info')
+        this._showFlash('Generation en cours...', 'info')
 
         try {
             const body = { biome, difficulty }
@@ -2539,14 +2539,14 @@ export default class extends Controller {
 
             const data = await res.json()
             if (!res.ok) {
-                this._flash(data.error || 'Erreur de generation', 'error')
+                this._showFlash(data.error || 'Erreur de generation', 'error')
                 return
             }
 
-            this._flash('Terrain genere ! Rechargement...', 'success')
+            this._showFlash('Terrain genere ! Rechargement...', 'success')
             setTimeout(() => window.location.reload(), 1000)
         } catch (e) {
-            this._flash('Erreur reseau : ' + e.message, 'error')
+            this._showFlash('Erreur reseau : ' + e.message, 'error')
         }
     }
 }
