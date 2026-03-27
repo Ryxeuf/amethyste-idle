@@ -7,6 +7,7 @@ use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
+use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,6 +18,7 @@ class FightHandler
         private readonly LoggerInterface $logger,
         private readonly CombatLogger $combatLogger,
         private readonly EnchantmentManager $enchantmentManager,
+        private readonly DungeonRunRepository $dungeonRunRepository,
     ) {
     }
 
@@ -37,7 +39,15 @@ class FightHandler
         $fight->addPlayer($player);
         $player->setFight($fight);
 
+        // Scale mob stats for dungeon difficulty
+        $activeRun = $this->dungeonRunRepository->findActiveRun($player);
+        $difficultyMultiplier = $activeRun?->getDifficulty()->statMultiplier() ?? 1.0;
+
         foreach ($mobs as $mob) {
+            if ($difficultyMultiplier > 1.0) {
+                $scaledLife = (int) round($mob->getLife() * $difficultyMultiplier);
+                $mob->setLife($scaledLife);
+            }
             $fight->addMob($mob);
             $mob->setFight($fight);
         }

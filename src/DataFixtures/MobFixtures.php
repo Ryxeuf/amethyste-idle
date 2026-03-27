@@ -498,6 +498,28 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'monster' => 'forge_lord',
                 'map' => 'map_4',
             ],
+            // === Donjon : Racines de la foret (tache 84) ===
+            'dungeon_ochu_1' => [
+                'coordinates' => '5.5',
+                'monster' => 'ochu',
+                'map' => 'map_dungeon_racines',
+            ],
+            'dungeon_spider_1' => [
+                'coordinates' => '8.10',
+                'monster' => 'spider',
+                'map' => 'map_dungeon_racines',
+            ],
+            'dungeon_taiju_1' => [
+                'coordinates' => '12.8',
+                'monster' => 'taiju',
+                'map' => 'map_dungeon_racines',
+            ],
+            // Boss du donjon
+            'dungeon_ancient_root_boss' => [
+                'coordinates' => '15.15',
+                'monster' => 'ancient_root',
+                'map' => 'map_dungeon_racines',
+            ],
         ];
 
         foreach ($mobs as $key => $data) {

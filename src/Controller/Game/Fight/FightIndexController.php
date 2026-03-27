@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Player;
+use App\GameEngine\Dungeon\DungeonManager;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
@@ -10,6 +11,7 @@ use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\PlayerHelper;
+use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,6 +29,8 @@ class FightIndexController extends AbstractController
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly FightTurnResolver $turnResolver,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
+        private readonly DungeonRunRepository $dungeonRunRepository,
+        private readonly DungeonManager $dungeonManager,
     ) {
     }
 
@@ -194,6 +198,12 @@ class FightIndexController extends AbstractController
 
         $this->entityManager->persist($player);
         $this->entityManager->flush();
+
+        // Abandon du donjon en cas de defaite
+        $activeRun = $this->dungeonRunRepository->findActiveRun($player);
+        if ($activeRun !== null) {
+            $this->dungeonManager->abandonRun($activeRun);
+        }
 
         return $this->render('game/fight/defeat.html.twig', [
             'player' => $player,

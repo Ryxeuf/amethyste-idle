@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -18,6 +19,7 @@ class FightHandlerWorldBossTest extends TestCase
     private EntityManagerInterface&MockObject $em;
     private CombatLogger&MockObject $combatLogger;
     private EnchantmentManager&MockObject $enchantmentManager;
+    private DungeonRunRepository&MockObject $dungeonRunRepository;
     private FightHandler $handler;
 
     protected function setUp(): void
@@ -25,12 +27,14 @@ class FightHandlerWorldBossTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
         $this->enchantmentManager = $this->createMock(EnchantmentManager::class);
+        $this->dungeonRunRepository = $this->createMock(DungeonRunRepository::class);
 
         $this->handler = new FightHandler(
             $this->em,
             new NullLogger(),
             $this->combatLogger,
             $this->enchantmentManager,
+            $this->dungeonRunRepository,
         );
     }
 
