@@ -5,10 +5,16 @@ namespace App\Tests\Unit\GameEngine\Terrain\Generator;
 use App\Entity\App\Area;
 use App\Entity\App\Map;
 use App\Entity\App\World;
+use App\GameEngine\Terrain\Generator\Biome\CaveBiome;
+use App\GameEngine\Terrain\Generator\Biome\DesertBiome;
 use App\GameEngine\Terrain\Generator\Biome\ForestBiome;
+use App\GameEngine\Terrain\Generator\Biome\JungleBiome;
 use App\GameEngine\Terrain\Generator\Biome\PlainsBiome;
 use App\GameEngine\Terrain\Generator\Biome\SwampBiome;
+use App\GameEngine\Terrain\Generator\Biome\TundraBiome;
+use App\GameEngine\Terrain\Generator\Biome\VolcanoBiome;
 use App\GameEngine\Terrain\Generator\MapGenerator;
+use App\GameEngine\Terrain\Generator\ObjectPlacer;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
@@ -29,8 +35,9 @@ class MapGeneratorTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $tilesetRegistry = new TilesetRegistry($packages, $this->em);
         $wangTileResolver = new WangTileResolver();
+        $objectPlacer = new ObjectPlacer($this->em);
 
-        $this->generator = new MapGenerator($tilesetRegistry, $wangTileResolver, $this->em);
+        $this->generator = new MapGenerator($tilesetRegistry, $wangTileResolver, $this->em, $objectPlacer);
     }
 
     public function testGenerateProducesValidFullData(): void
@@ -41,7 +48,7 @@ class MapGeneratorTest extends TestCase
         $map = $this->createMap($width, $height);
         $area = $map->getAreas()->first();
 
-        $this->em->expects($this->once())->method('flush');
+        $this->em->expects($this->exactly(2))->method('flush');
 
         $this->generator->generate($map, new PlainsBiome(), 1, 42);
 
@@ -255,6 +262,113 @@ class MapGeneratorTest extends TestCase
 
         // Plains has 10% density, after cellular automaton smoothing should be low
         $this->assertLessThan($totalCells * 0.30, $treeCells, 'Plains should have few trees');
+    }
+
+    public function testGenerateDesertBiome(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new DesertBiome(), 3, 42);
+
+        $area = $map->getAreas()->first();
+        $fullData = json_decode($area->getFullData(), true);
+
+        $this->assertSame(30, $fullData['width']);
+        $this->assertCount(30, $fullData['cells']);
+        $this->assertSame('desert', $area->getBiome());
+        $this->assertSame('heat', $area->getWeather());
+    }
+
+    public function testGenerateTundraBiome(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new TundraBiome(), 3, 42);
+
+        $area = $map->getAreas()->first();
+        $this->assertSame('tundra', $area->getBiome());
+        $this->assertSame('snow', $area->getWeather());
+    }
+
+    public function testGenerateVolcanoBiome(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new VolcanoBiome(), 5, 42);
+
+        $area = $map->getAreas()->first();
+        $this->assertSame('volcano', $area->getBiome());
+        $this->assertSame('ash', $area->getWeather());
+    }
+
+    public function testGenerateJungleBiome(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new JungleBiome(), 4, 42);
+
+        $area = $map->getAreas()->first();
+        $this->assertSame('jungle', $area->getBiome());
+        $this->assertSame('rain', $area->getWeather());
+    }
+
+    public function testGenerateCaveBiome(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new CaveBiome(), 6, 42);
+
+        $area = $map->getAreas()->first();
+        $this->assertSame('cave', $area->getBiome());
+        $this->assertNull($area->getWeather());
+    }
+
+    public function testSpawnZoneIsWalkable(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new PlainsBiome(), 1, 42);
+
+        $fullData = json_decode($map->getAreas()->first()->getFullData(), true);
+
+        $centerX = 15;
+        $centerY = 10;
+
+        // Le carre 5x5 au centre doit etre walkable
+        for ($x = $centerX - 2; $x <= $centerX + 2; ++$x) {
+            for ($y = $centerY - 2; $y <= $centerY + 2; ++$y) {
+                $cell = $fullData['cells'][$x][$y];
+                $this->assertSame(
+                    CellHelper::MOVE_DEFAULT,
+                    $cell['mouvement'],
+                    "Spawn zone cell ($x, $y) should be walkable"
+                );
+            }
+        }
+    }
+
+    public function testDecorationsArePlacedOnOverlayLayer(): void
+    {
+        $map = $this->createMap(60, 60);
+
+        // Le desert a des decorations definies
+        $this->generator->generate($map, new DesertBiome(), 1, 42);
+
+        $fullData = json_decode($map->getAreas()->first()->getFullData(), true);
+
+        $decoCount = 0;
+        foreach ($fullData['cells'] as $column) {
+            foreach ($column as $cell) {
+                if ($cell['layers'][3] !== null) {
+                    ++$decoCount;
+                    // Les decorations ne bloquent pas le passage
+                    $this->assertSame(CellHelper::MOVE_DEFAULT, $cell['mouvement']);
+                }
+            }
+        }
+
+        // Avec ~5% de chance sur une carte 60x60, on s'attend a des decorations
+        $this->assertGreaterThan(0, $decoCount, 'Desert biome should place decorations on overlay layer');
     }
 
     private function createMap(int $width, int $height): Map

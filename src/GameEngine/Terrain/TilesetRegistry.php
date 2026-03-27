@@ -24,6 +24,14 @@ class TilesetRegistry
     public const GID_GRASS_ALT2 = 355;   // 1 + 354
     public const GID_GRASS_ALT3 = 356;   // 1 + 355
 
+    // --- First GID tilesets thematiques (decorations biomes) ---
+    public const FIRST_GID_ASHLANDS_B = 6001;
+    public const FIRST_GID_BEACH_B = 7001;
+    public const FIRST_GID_JUNGLE_B = 8001;
+    public const FIRST_GID_DARKDIM_B = 9001;
+    public const FIRST_GID_DARKDIM_A5 = 10001;
+    public const FIRST_GID_ASHLANDS_A5 = 11001;
+
     // --- GID cles : collision ---
     public const GID_COLLISION_WALL = 5162;  // 5161 + 1 = mur impassable
 
@@ -72,6 +80,66 @@ class TilesetRegistry
             'tileHeight' => 32,
             'imageFile' => 'collisions.png',
             'imagePrefix' => 'terrain/',
+        ],
+        self::FIRST_GID_ASHLANDS_B => [
+            'name' => 'ashlands_b',
+            'firstGid' => self::FIRST_GID_ASHLANDS_B,
+            'columns' => 16,
+            'tileCount' => 256,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'tf_B_ashlands_2.png',
+            'imagePrefix' => 'tf_ashlands/2x_RMVX/',
+        ],
+        self::FIRST_GID_BEACH_B => [
+            'name' => 'beach_b',
+            'firstGid' => self::FIRST_GID_BEACH_B,
+            'columns' => 16,
+            'tileCount' => 256,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'tf_beach_tileB.png',
+            'imagePrefix' => 'tf_beach_tileset/RMVX/',
+        ],
+        self::FIRST_GID_JUNGLE_B => [
+            'name' => 'jungle_b',
+            'firstGid' => self::FIRST_GID_JUNGLE_B,
+            'columns' => 16,
+            'tileCount' => 256,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'tf_jungle_b.png',
+            'imagePrefix' => 'tf_jungle/rpgmaker/RMVX/',
+        ],
+        self::FIRST_GID_DARKDIM_B => [
+            'name' => 'darkdim_b',
+            'firstGid' => self::FIRST_GID_DARKDIM_B,
+            'columns' => 16,
+            'tileCount' => 256,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'tf_dd_B_2.png',
+            'imagePrefix' => 'tf_darkdimension/RMVX/',
+        ],
+        self::FIRST_GID_DARKDIM_A5 => [
+            'name' => 'darkdim_a5',
+            'firstGid' => self::FIRST_GID_DARKDIM_A5,
+            'columns' => 8,
+            'tileCount' => 128,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'tf_dd_A5_2.png',
+            'imagePrefix' => 'tf_darkdimension/RMVX/',
+        ],
+        self::FIRST_GID_ASHLANDS_A5 => [
+            'name' => 'ashlands_a5',
+            'firstGid' => self::FIRST_GID_ASHLANDS_A5,
+            'columns' => 8,
+            'tileCount' => 128,
+            'tileWidth' => 32,
+            'tileHeight' => 32,
+            'imageFile' => 'tf_A5_ashlands_2.png',
+            'imagePrefix' => 'tf_ashlands/2x_RMVX/',
         ],
     ];
 

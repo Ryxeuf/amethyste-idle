@@ -6,50 +6,50 @@ use App\GameEngine\Terrain\Generator\BiomeDefinition;
 use App\GameEngine\Terrain\TilesetRegistry;
 
 /**
- * Biome foret : herbe sombre, densite d'arbres elevee (30-50%), clustering naturel.
+ * Biome jungle : vegetation dense, herbes hautes, fleurs tropicales, pluie.
  */
-class ForestBiome implements BiomeDefinition
+class JungleBiome implements BiomeDefinition
 {
     public function getSlug(): string
     {
-        return 'forest';
+        return 'jungle';
     }
 
     public function getLabel(): string
     {
-        return 'Forêt';
+        return 'Jungle';
     }
 
     public function getBackgroundGids(): array
     {
-        // dark_grass center = FIRST_GID_TERRAIN + 295 = 296
-        // + variantes herbe classiques pour diversite
+        // dark_grass center = FIRST_GID_TERRAIN + 295
+        // long_grass center = FIRST_GID_TERRAIN + 301
         return [
-            TilesetRegistry::FIRST_GID_TERRAIN + 295, // dark_grass center
+            TilesetRegistry::FIRST_GID_TERRAIN + 295, // dark_grass
             TilesetRegistry::FIRST_GID_TERRAIN + 295,
-            TilesetRegistry::GID_GRASS_BASE,
-            TilesetRegistry::GID_GRASS_ALT1,
+            TilesetRegistry::FIRST_GID_TERRAIN + 301, // long_grass
+            TilesetRegistry::FIRST_GID_TERRAIN + 301,
         ];
     }
 
     public function getWaterThreshold(): float
     {
-        return 0.20;
+        return 0.18;
     }
 
     public function getSandThreshold(): float
     {
-        return 0.28;
+        return 0.26;
     }
 
     public function getTreeDensity(): float
     {
-        return 0.40;
+        return 0.45;
     }
 
     public function getTreeGids(): array
     {
-        // Tiles du tileset forest (arbres feuillus, differentes variantes)
+        // Arbres feuillus denses du tileset forest
         return [
             TilesetRegistry::FIRST_GID_FOREST + 0,
             TilesetRegistry::FIRST_GID_FOREST + 1,
@@ -63,20 +63,20 @@ class ForestBiome implements BiomeDefinition
     {
         return [
             ['slug' => 'slime', 'minDifficulty' => 1, 'maxDifficulty' => 3],
-            ['slug' => 'goblin', 'minDifficulty' => 4, 'maxDifficulty' => 6],
-            ['slug' => 'spider', 'minDifficulty' => 5, 'maxDifficulty' => 7],
-            ['slug' => 'skeleton', 'minDifficulty' => 7, 'maxDifficulty' => 10],
+            ['slug' => 'spider', 'minDifficulty' => 3, 'maxDifficulty' => 6],
+            ['slug' => 'venom_snake', 'minDifficulty' => 5, 'maxDifficulty' => 8],
+            ['slug' => 'goblin', 'minDifficulty' => 6, 'maxDifficulty' => 9],
         ];
     }
 
     public function getHarvestItems(): array
     {
-        return ['healing-herb', 'sage', 'rosemary', 'wood'];
+        return ['tropical-flower', 'vine-rope', 'healing-herb'];
     }
 
     public function getWeather(): ?string
     {
-        return null;
+        return 'rain';
     }
 
     public function getMusic(): ?string
@@ -91,12 +91,12 @@ class ForestBiome implements BiomeDefinition
 
     public function getSandTerrainSlug(): string
     {
-        return 'dark_grass';
+        return 'earth';
     }
 
     public function getPerlinScale(): float
     {
-        return 0.05;
+        return 0.06;
     }
 
     public function getPerlinOctaves(): int
@@ -106,11 +106,19 @@ class ForestBiome implements BiomeDefinition
 
     public function getGrassThreshold(): float
     {
-        return 0.28;
+        return 0.26;
     }
 
     public function getDecorationGids(): array
     {
-        return [];
+        // Fleurs et champignons du tileset jungle
+        return [
+            TilesetRegistry::FIRST_GID_JUNGLE_B + 0,
+            TilesetRegistry::FIRST_GID_JUNGLE_B + 1,
+            TilesetRegistry::FIRST_GID_JUNGLE_B + 2,
+            TilesetRegistry::FIRST_GID_JUNGLE_B + 3,
+            TilesetRegistry::FIRST_GID_JUNGLE_B + 16,
+            TilesetRegistry::FIRST_GID_JUNGLE_B + 17,
+        ];
     }
 }

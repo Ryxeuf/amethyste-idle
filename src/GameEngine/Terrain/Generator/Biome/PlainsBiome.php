@@ -89,4 +89,24 @@ class PlainsBiome implements BiomeDefinition
     {
         return 'sand';
     }
+
+    public function getPerlinScale(): float
+    {
+        return 0.05;
+    }
+
+    public function getPerlinOctaves(): int
+    {
+        return 4;
+    }
+
+    public function getGrassThreshold(): float
+    {
+        return 0.35;
+    }
+
+    public function getDecorationGids(): array
+    {
+        return [];
+    }
 }

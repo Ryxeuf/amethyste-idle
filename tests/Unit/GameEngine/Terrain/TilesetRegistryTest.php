@@ -22,11 +22,11 @@ class TilesetRegistryTest extends TestCase
         $this->registry = new TilesetRegistry($packages, $em);
     }
 
-    public function testGetTilesetsReturnsFourTilesets(): void
+    public function testGetTilesetsReturnsTenTilesets(): void
     {
         $tilesets = $this->registry->getTilesets();
 
-        $this->assertCount(4, $tilesets);
+        $this->assertCount(10, $tilesets);
     }
 
     public function testGetTilesetsOrderedByFirstGid(): void
@@ -46,7 +46,7 @@ class TilesetRegistryTest extends TestCase
 
         foreach ($tilesets as $tileset) {
             $this->assertArrayHasKey('imagePath', $tileset);
-            $this->assertStringContainsString('terrain/', $tileset['imagePath']);
+            $this->assertStringContainsString('styles/images/', $tileset['imagePath']);
         }
     }
 
@@ -166,7 +166,7 @@ class TilesetRegistryTest extends TestCase
     {
         $tilesets = $this->registry->getTilesetsForApi();
 
-        $this->assertCount(4, $tilesets);
+        $this->assertCount(10, $tilesets);
 
         foreach ($tilesets as $tileset) {
             $this->assertArrayHasKey('name', $tileset);
