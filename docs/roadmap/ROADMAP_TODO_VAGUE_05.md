@@ -12,7 +12,7 @@
 > A decouper en 4 sous-phases (1 par fragment/zone) quand les zones seront pretes.
 - [x] Fragment Foret : chaine de 4 quetes (talk_to, combat, collect, exploration) + item cle Fragment Sylvestre
 - [x] Fragment Mines : chaine de 4 quetes (talk_to, collect, boss_challenge, exploration) + item cle Fragment de la Forge
-- [ ] Fragment Marais : chaine de 3-4 quetes (enquete, livraison, combat)
+- [x] Fragment Marais : chaine de 4 quetes (talk_to, combat, collect, exploration) + item cle Fragment des Brumes + map Marais Brumeux + 2 PNJ + mobs
 - [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
 - [ ] Chaque fragment donne un item cle collectible
 

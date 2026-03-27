@@ -62,6 +62,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($mines);
         $this->addReference('map_4', $mines);
 
+        // Marais Brumeux — zone lvl 12-20, brumes, étangs, créatures des marais
+        $marais = new Map();
+        $marais->setName('Marais Brumeux');
+        $marais->setWorld($this->getReference('world_1', World::class));
+        $marais->setAreaWidth(50);
+        $marais->setAreaHeight(50);
+        $marais->setCreatedAt(new \DateTime());
+        $marais->setUpdatedAt(new \DateTime());
+
+        $manager->persist($marais);
+        $this->addReference('map_6', $marais);
+
         // Donjon : Racines de la foret — carte instanciee pour le donjon
         $dungeonRoots = new Map();
         $dungeonRoots->setName('Racines de la foret (donjon)');

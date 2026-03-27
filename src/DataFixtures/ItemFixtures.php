@@ -1309,6 +1309,19 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'boundToPlayer' => true,
             ],
 
+            'quest_item_fragment_marais' => [
+                'name' => 'Fragment des Brumes',
+                'description' => 'Un éclat de cristal bleuté suintant une brume glaciale. Il pulse au rythme des marées invisibles du marais. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
+                'type' => 'quest',
+                'slug' => 'quest-fragment-marais',
+                'price' => 0,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Epic,
+                'boundToPlayer' => true,
+            ],
+
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',

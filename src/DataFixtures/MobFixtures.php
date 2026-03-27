@@ -498,6 +498,77 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'monster' => 'forge_lord',
                 'map' => 'map_4',
             ],
+            // === Marais Brumeux (map_6) — zone lvl 12-20 ===
+            // Mobs faciles — bordure sud
+            'marais_zombie_1' => [
+                'coordinates' => '15.42',
+                'monster' => 'zombie',
+                'map' => 'map_6',
+            ],
+            'marais_spider_1' => [
+                'coordinates' => '20.38',
+                'monster' => 'spider',
+                'map' => 'map_6',
+            ],
+            'marais_spider_2' => [
+                'coordinates' => '35.40',
+                'monster' => 'spider',
+                'map' => 'map_6',
+            ],
+            // Mobs intermediaires — sentiers brumeux
+            'marais_banshee_1' => [
+                'coordinates' => '12.25',
+                'monster' => 'banshee',
+                'map' => 'map_6',
+                'nocturnal' => true,
+            ],
+            'marais_banshee_2' => [
+                'coordinates' => '38.20',
+                'monster' => 'banshee',
+                'map' => 'map_6',
+                'nocturnal' => true,
+            ],
+            'marais_ochu_1' => [
+                'coordinates' => '18.18',
+                'monster' => 'ochu',
+                'map' => 'map_6',
+            ],
+            'marais_ochu_2' => [
+                'coordinates' => '32.15',
+                'monster' => 'ochu',
+                'map' => 'map_6',
+            ],
+            // Mobs avances — coeur du marais
+            'marais_hydra_1' => [
+                'coordinates' => '25.12',
+                'monster' => 'swamp_hydra',
+                'map' => 'map_6',
+            ],
+            'marais_specter_1' => [
+                'coordinates' => '22.20',
+                'monster' => 'specter',
+                'map' => 'map_6',
+                'nocturnal' => true,
+            ],
+            // Groupe multi-mob marais
+            'marais_spider_group_1' => [
+                'coordinates' => '28.30',
+                'monster' => 'spider',
+                'map' => 'map_6',
+                'groupTag' => 'swamp_nest_1',
+            ],
+            'marais_spider_group_2' => [
+                'coordinates' => '29.30',
+                'monster' => 'spider',
+                'map' => 'map_6',
+                'groupTag' => 'swamp_nest_1',
+            ],
+            'marais_ochu_group_1' => [
+                'coordinates' => '28.31',
+                'monster' => 'ochu',
+                'map' => 'map_6',
+                'groupTag' => 'swamp_nest_1',
+            ],
             // === Donjon : Racines de la foret (tache 84) ===
             'dungeon_ochu_1' => [
                 'coordinates' => '5.5',

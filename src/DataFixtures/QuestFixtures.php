@@ -870,6 +870,79 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 // prerequisiteQuests set after flush
             ],
+            // --- Chaîne narrative Acte 2 : Fragment Marais (4 quêtes) ---
+            'quest_acte2_marais_brumes' => [
+                'name' => 'Les Fragments — Brumes inquiétantes',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des murmures portés par le brouillard du Marais Brumeux. Morwenna la Voyante, à l\'entrée du marais, semble vous attendre.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Morwenna la Voyante'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_marais_creatures' => [
+                'name' => 'Les Fragments — Purger les brumes',
+                'description' => 'Morwenna a senti une corruption ancienne émaner du coeur du marais. Des créatures hostiles s\'y sont rassemblées, nourries par une énergie mystérieuse. Éliminez-les pour affaiblir la brume.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Banshee', 'slug' => 'banshee', 'count' => 3],
+                        ['name' => 'Araignée', 'slug' => 'spider', 'count' => 3],
+                        ['name' => 'Ochu', 'slug' => 'ochu', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 80,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_marais_livraison' => [
+                'name' => 'Les Fragments — L\'Offrande au marais',
+                'description' => 'Morwenna a besoin d\'ingrédients rares pour accomplir un rituel de divination et localiser la source de l\'énergie. Récoltez de la sauge et de la mandragore et apportez-les-lui.',
+                'requirements' => [
+                    'collect' => [
+                        'plant-sage' => 4,
+                        'plant-mandrake' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 60,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_marais_fragment' => [
+                'name' => 'Les Fragments — Le Fragment des Brumes',
+                'description' => 'Le rituel de Morwenna a révélé l\'emplacement d\'un éclat de cristal bleuté, enfoui sous l\'îlot central du marais. Rendez-vous là-bas pour le récupérer avant que les brumes ne le recouvrent à jamais.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 6,
+                            'coordinates' => '25.25',
+                            'name' => 'Îlot central du marais',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-marais'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
@@ -1046,6 +1119,21 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $acte2MinesForge->setPrerequisiteQuests([$acte2MinesMinerai->getId()]);
         $acte2MinesFragment->setPrerequisiteQuests([$acte2MinesForge->getId()]);
 
+        // Chaîne Acte 2 : Fragment Marais (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MaraisBrumes */
+        $acte2MaraisBrumes = $this->getReference('quest_acte2_marais_brumes', Quest::class);
+        /** @var Quest $acte2MaraisCreatures */
+        $acte2MaraisCreatures = $this->getReference('quest_acte2_marais_creatures', Quest::class);
+        /** @var Quest $acte2MaraisLivraison */
+        $acte2MaraisLivraison = $this->getReference('quest_acte2_marais_livraison', Quest::class);
+        /** @var Quest $acte2MaraisFragment */
+        $acte2MaraisFragment = $this->getReference('quest_acte2_marais_fragment', Quest::class);
+
+        $acte2MaraisBrumes->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MaraisCreatures->setPrerequisiteQuests([$acte2MaraisBrumes->getId()]);
+        $acte2MaraisLivraison->setPrerequisiteQuests([$acte2MaraisCreatures->getId()]);
+        $acte2MaraisFragment->setPrerequisiteQuests([$acte2MaraisLivraison->getId()]);
+
         // Fix PNJ ID in talk_to requirements (needs PnjFixtures loaded first)
         /** @var Pnj $thadeus */
         $thadeus = $this->getReference('forest_pnj_2', Pnj::class);
@@ -1059,6 +1147,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $requirementsMines['talk_to'][0]['pnj_id'] = $grimmur->getId();
         $acte2MinesTremblements->setRequirements($requirementsMines);
 
+        /** @var Pnj $morwenna */
+        $morwenna = $this->getReference('marais_pnj_0', Pnj::class);
+        $requirementsMarais = $acte2MaraisBrumes->getRequirements();
+        $requirementsMarais['talk_to'][0]['pnj_id'] = $morwenna->getId();
+        $acte2MaraisBrumes->setRequirements($requirementsMarais);
+
         $manager->flush();
     }
 
@@ -1068,6 +1162,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             GameEventFixtures::class,
             ForestPnjFixtures::class,
             MinesPnjFixtures::class,
+            MaraisPnjFixtures::class,
         ];
     }
 }
