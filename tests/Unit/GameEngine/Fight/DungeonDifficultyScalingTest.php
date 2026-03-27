@@ -5,14 +5,22 @@ namespace App\Tests\Unit\GameEngine\Fight;
 use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\Game\Monster;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class DungeonDifficultyScalingTest extends TestCase
 {
+    private function createMonsterMock(int $life = 100): Monster&MockObject
+    {
+        $monster = $this->createMock(Monster::class);
+        $monster->method('getLife')->willReturn($life);
+
+        return $monster;
+    }
+
     public function testMobMaxLifeWithoutFightReturnsBaseLife(): void
     {
-        $monster = new Monster();
-        $monster->setLife(100);
+        $monster = $this->createMonsterMock(100);
 
         $mob = new Mob();
         $mob->setMonster($monster);
@@ -23,25 +31,21 @@ class DungeonDifficultyScalingTest extends TestCase
 
     public function testMobMaxLifeWithNormalDifficultyReturnsBaseLife(): void
     {
-        $monster = new Monster();
-        $monster->setLife(100);
+        $monster = $this->createMonsterMock(100);
 
         $fight = new Fight();
-        // No difficulty metadata = normal (1.0)
 
         $mob = new Mob();
         $mob->setMonster($monster);
         $mob->setLife(100);
         $mob->setFight($fight);
-        $fight->addMob($mob);
 
         $this->assertSame(100, $mob->getMaxLife());
     }
 
     public function testMobMaxLifeWithHeroicDifficultyIsScaled(): void
     {
-        $monster = new Monster();
-        $monster->setLife(100);
+        $monster = $this->createMonsterMock(100);
 
         $fight = new Fight();
         $fight->setMetadataValue('difficulty_multiplier', 1.5);
@@ -50,15 +54,13 @@ class DungeonDifficultyScalingTest extends TestCase
         $mob->setMonster($monster);
         $mob->setLife(150);
         $mob->setFight($fight);
-        $fight->addMob($mob);
 
         $this->assertSame(150, $mob->getMaxLife());
     }
 
     public function testMobMaxLifeWithMythicDifficultyIsScaled(): void
     {
-        $monster = new Monster();
-        $monster->setLife(100);
+        $monster = $this->createMonsterMock(100);
 
         $fight = new Fight();
         $fight->setMetadataValue('difficulty_multiplier', 2.5);
@@ -67,7 +69,6 @@ class DungeonDifficultyScalingTest extends TestCase
         $mob->setMonster($monster);
         $mob->setLife(250);
         $mob->setFight($fight);
-        $fight->addMob($mob);
 
         $this->assertSame(250, $mob->getMaxLife());
     }
