@@ -57,6 +57,15 @@ class FightHandler
             }
             $fight->addMob($mob);
             $mob->setFight($fight);
+
+            // Initialize boss phase tracking
+            $monster = $mob->getMonster();
+            if ($monster->isBoss() && $monster->getBossPhases()) {
+                $phase = $monster->getCurrentBossPhase(100);
+                if ($phase !== null && isset($phase['name'])) {
+                    $fight->setMetadataValue('boss_phase_' . $mob->getId(), $phase['name']);
+                }
+            }
         }
 
         $player->setIsMoving(false);
