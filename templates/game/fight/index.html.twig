@@ -73,6 +73,8 @@
 		<span class="text-yellow-400">&#9812;</span>
 	{% elseif type == 'defeat' %}
 		<span class="text-red-600">&#9760;</span>
+	{% elseif type == 'boss_phase' %}
+		<span class="text-yellow-400">&#9888;</span>
 	{% elseif type == 'fight_start' %}
 		<span class="text-purple-400">&#9876;</span>
 	{% else %}
@@ -274,7 +276,7 @@
 										<span class="text-[9px] text-yellow-400 uppercase">Boss</span>
 									{% endif %}
 								</h2>
-								<div class="flex items-center gap-1">
+								<div class="flex items-center gap-1 flex-wrap">
 									<span class="text-[10px] text-gray-400">{{ 'game.fight.level_short'|trans }}{{ mob.level ?? 0 }}</span>
 									<span class="text-[9px]" title="{{ 'game.fight.difficulty'|trans({'%level%': mob.monster.difficulty}) }}">
 										{% for i in 1..5 %}
@@ -285,6 +287,11 @@
 											{% endif %}
 										{% endfor %}
 									</span>
+									{% if bossPhases[mob.id] is defined %}
+										<span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] sm:text-[9px] bg-yellow-900/40 text-yellow-300 border border-yellow-700/50">
+											{{ bossPhases[mob.id].name }}
+										</span>
+									{% endif %}
 								</div>
 							</div>
 						</div>

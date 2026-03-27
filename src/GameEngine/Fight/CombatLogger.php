@@ -330,6 +330,25 @@ class CombatLogger
         );
     }
 
+    public function logBossPhaseChange(Fight $fight, CharacterInterface $boss, string $phaseName): void
+    {
+        $this->log(
+            $fight,
+            $fight->getStep(),
+            FightLog::ACTOR_SYSTEM,
+            null,
+            'Systeme',
+            FightLog::TYPE_BOSS_PHASE,
+            sprintf('%s entre en %s !', $this->getCharacterName($boss), $phaseName),
+            [
+                'boss_id' => $boss->getId(),
+                'boss_type' => $this->getActorType($boss),
+                'boss_name' => $this->getCharacterName($boss),
+                'phase_name' => $phaseName,
+            ]
+        );
+    }
+
     public function logPlayerJoined(Fight $fight, Player $player): void
     {
         $this->log(
