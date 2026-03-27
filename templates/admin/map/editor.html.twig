@@ -139,6 +139,9 @@
                 class="px-3 py-1.5 rounded text-xs bg-purple-600 hover:bg-purple-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Sauvegarder <span id="pending-badge" class="ml-1 text-yellow-300"></span>
         </button>
+        <a href="{{ path('admin_map_export_tmx', {id: map.id}) }}"
+           class="px-3 py-1.5 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors"
+           title="Exporter au format Tiled (.tmx)">Exporter TMX</a>
     </div>
 
     {# Main area #}

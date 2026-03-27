@@ -106,9 +106,9 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 7 — Export & qualite (MED-16)
 
-**MED-16 — Export TMX & tests E2E (M | ★★ | MOYENNE)**
+**MED-16 — Export TMX & tests E2E (M | ★★ | MOYENNE)** ✅
 > Prerequis : ← MED-04, MED-09
-- [ ] Classe `TmxExporter`, route export, tests E2E complets
+- [x] Classe `TmxExporter`, route export, tests unitaires
 
 ---
 

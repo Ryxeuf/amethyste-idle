@@ -11,6 +11,7 @@ use App\GameEngine\Terrain\Generator\BiomeRegistry;
 use App\GameEngine\Terrain\Generator\MapGenerator;
 use App\GameEngine\Terrain\Generator\ObjectPlacer;
 use App\GameEngine\Terrain\TilesetRegistry;
+use App\GameEngine\Terrain\TmxExporter;
 use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
@@ -35,6 +36,7 @@ class MapEditorController extends AbstractController
         private readonly MapGenerator $mapGenerator,
         private readonly BiomeRegistry $biomeRegistry,
         private readonly ObjectPlacer $objectPlacer,
+        private readonly TmxExporter $tmxExporter,
     ) {
     }
 
@@ -1141,6 +1143,18 @@ class MapEditorController extends AbstractController
     {
         return $this->json([
             'biomes' => $this->biomeRegistry->getChoices(),
+        ]);
+    }
+
+    #[Route('/{id}/export-tmx', name: 'export_tmx', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function exportTmx(Map $map): Response
+    {
+        $tmxContent = $this->tmxExporter->export($map);
+        $filename = $this->tmxExporter->getFilename($map);
+
+        return new Response($tmxContent, 200, [
+            'Content-Type' => 'application/xml',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
         ]);
     }
 }
