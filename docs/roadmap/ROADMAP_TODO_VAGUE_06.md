@@ -69,12 +69,8 @@
 - [ ] Dashboard Grafana minimal (4-5 panels : requetes, latence, erreurs, joueurs connectes)
 - [ ] Alertes basiques (latence > 2s, erreurs > 5/min)
 
-### 102 — Index DB composites (S | ★★)
-> Ameliore les performances sur les tables critiques sans changement de code.
-- [ ] Migration : index composite `(player_id, map_id)` sur table player/position
-- [ ] Migration : index composite `(fight_id, turn)` sur FightLog
-- [ ] Migration : index sur `(player_id, quest_id)` sur PlayerQuest
-- [ ] Migration : index sur `(monster_slug, player_id)` sur BestiaryEntry
+### ~~102 — Index DB composites (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~103 — Achievements caches & categories succes (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

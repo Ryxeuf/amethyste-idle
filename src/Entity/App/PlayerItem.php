@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'player_item')]
+#[ORM\Index(columns: ['inventory_id', 'item_id'], name: 'idx_player_item_inventory_item')]
 #[ORM\Entity()]
 class PlayerItem
 {

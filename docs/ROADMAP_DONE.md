@@ -1301,3 +1301,12 @@
 - [x] Nouvel evenement CombatFleeEvent dispatche depuis FightFleeController
 - [x] Template : succes caches masques jusqu'a decouverte, affichage "???" et badge "Secret" ambre
 - [x] Recompenses cachees invisibles tant que non completes
+
+## 102 — Index DB composites (2026-03-27) ✅
+
+> Index composites sur les tables critiques pour ameliorer les performances des requetes.
+- [x] Index composite `(channel, created_at)` sur ChatMessage — listing pagine par canal
+- [x] Index composite `(guild_id, created_at)` sur ChatMessage — chat de guilde
+- [x] Index composite `(inventory_id, item_id)` sur PlayerItem — recherche d'items
+- [x] Index composite `(player_id, expires_at)` sur PlayerStatusEffect — effets actifs
+- [x] Deja en place : `(fight_id, turn)` sur FightLog, `(player_id, quest_id)` sur PlayerQuest, `(player_id, monster_id)` sur PlayerBestiary
