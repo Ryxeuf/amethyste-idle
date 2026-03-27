@@ -127,7 +127,7 @@ class MinesActe2DialogFixtures extends Fixture implements DependentFixtureInterf
             ],
             // 11 — Dialogue normal (pas encore Acte 2)
             [
-                'text' => "Les golems se sont réveillés et les automates ont perdu leur contrôle. Plus vous descendez, plus les créatures sont dangereuses. Au fond se cache le Seigneur de la Forge, un ancien gardien devenu fou. Soyez prudent.",
+                'text' => 'Les golems se sont réveillés et les automates ont perdu leur contrôle. Plus vous descendez, plus les créatures sont dangereuses. Au fond se cache le Seigneur de la Forge, un ancien gardien devenu fou. Soyez prudent.',
                 'choices' => [
                     ['text' => 'Merci pour les avertissements.', 'action' => 'close'],
                 ],
@@ -140,7 +140,7 @@ class MinesActe2DialogFixtures extends Fixture implements DependentFixtureInterf
         return [
             // 0 — Accueil
             [
-                'text' => "Ah, un visiteur ! Je suis Hilda, la dernière ingénieure encore en poste ici. Je répare ce que je peux et je vends du matériel de survie. Ça vous intéresse ?",
+                'text' => 'Ah, un visiteur ! Je suis Hilda, la dernière ingénieure encore en poste ici. Je répare ce que je peux et je vends du matériel de survie. Ça vous intéresse ?',
                 'choices' => [
                     ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
                     ['text' => 'Parlez-moi des mines', 'action' => 'next'],
