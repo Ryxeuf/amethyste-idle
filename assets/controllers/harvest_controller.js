@@ -30,8 +30,20 @@ export default class extends Controller {
         this.toolTypeTarget.textContent = this._toolLabel(spot.toolType);
         this.messageTarget.textContent = '';
         this.resultListTarget.innerHTML = '';
-        this.harvestBtnTarget.disabled = false;
-        this.harvestBtnTarget.textContent = this._harvestLabel(spot.toolType);
+
+        // Check if player has the skill to harvest this spot
+        if (spot.canHarvest === false) {
+            this.harvestBtnTarget.disabled = true;
+            this.harvestBtnTarget.textContent = 'Compétence requise';
+            this.messageTarget.textContent = 'Vous n\'avez pas la compétence pour récolter ce spot.';
+            this.messageTarget.className = 'text-yellow-400 text-sm mt-2';
+        } else if (!spot.available) {
+            this.harvestBtnTarget.disabled = true;
+            this.harvestBtnTarget.textContent = `Respawn ${spot.remainingSeconds || '...'}s`;
+        } else {
+            this.harvestBtnTarget.disabled = false;
+            this.harvestBtnTarget.textContent = this._harvestLabel(spot.toolType);
+        }
 
         this.panelTarget.classList.remove('hidden');
         this.panelTarget.style.transform = 'translateY(10px)';
@@ -54,6 +66,7 @@ export default class extends Controller {
 
     async harvest() {
         if (!this._currentSpot || this._harvesting) return;
+        if (this._currentSpot.canHarvest === false) return;
 
         this._harvesting = true;
         this.harvestBtnTarget.disabled = true;
