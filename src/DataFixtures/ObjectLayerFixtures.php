@@ -355,6 +355,7 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
         $map2 = $this->getReference('map_2', Map::class);
         $map3 = $this->getReference('map_3', Map::class);
         $map4 = $this->getReference('map_4', Map::class);
+        $map6 = $this->getReference('map_6', Map::class);
 
         $portals = [
             // Depuis carte principale → village (entrée sud du village)
@@ -429,6 +430,31 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '3.28',
                 'destinationMapId' => $map2->getId(),
                 'destinationCoordinates' => '2.20',
+            ],
+
+            // === Crête de Ventombre ↔ Village (bidirectionnels) ===
+            // Village → Montagne (sortie nord du village)
+            'portal-village-to-mountain' => [
+                'name' => 'Sentier vers la Crête de Ventombre',
+                'map' => $map2,
+                'coordinates' => '20.1',
+                'destinationMapId' => $map6->getId(),
+                'destinationCoordinates' => '25.48',
+            ],
+            // Montagne → Village (entrée sud de la montagne)
+            'portal-mountain-to-village' => [
+                'name' => 'Retour au Village de Lumière',
+                'map' => $map6,
+                'coordinates' => '25.49',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '20.2',
+            ],
+            'portal-mountain-to-village-2' => [
+                'name' => 'Retour au Village de Lumière',
+                'map' => $map6,
+                'coordinates' => '26.49',
+                'destinationMapId' => $map2->getId(),
+                'destinationCoordinates' => '20.2',
             ],
         ];
 

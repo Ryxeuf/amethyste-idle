@@ -520,6 +520,57 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'monster' => 'ancient_root',
                 'map' => 'map_dungeon_racines',
             ],
+
+            // === Crête de Ventombre (map_6) — zone montagneuse lvl 15-25 ===
+            // Mobs d'entrée — base de la montagne
+            'mountain_griffin_1' => [
+                'coordinates' => '20.42',
+                'monster' => 'griffin',
+                'map' => 'map_6',
+            ],
+            'mountain_gargoyle_1' => [
+                'coordinates' => '30.38',
+                'monster' => 'gargoyle',
+                'map' => 'map_6',
+            ],
+            'mountain_fire_elemental_1' => [
+                'coordinates' => '15.35',
+                'monster' => 'fire_elemental',
+                'map' => 'map_6',
+            ],
+            // Mobs intermédiaires — sentiers escarpés
+            'mountain_griffin_2' => [
+                'coordinates' => '35.28',
+                'monster' => 'griffin',
+                'map' => 'map_6',
+            ],
+            'mountain_gargoyle_2' => [
+                'coordinates' => '18.22',
+                'monster' => 'gargoyle',
+                'map' => 'map_6',
+            ],
+            'mountain_fire_elemental_2' => [
+                'coordinates' => '28.18',
+                'monster' => 'fire_elemental',
+                'map' => 'map_6',
+            ],
+            // Mobs avancés — proches du sommet
+            'mountain_minotaur_1' => [
+                'coordinates' => '22.15',
+                'monster' => 'minotaur',
+                'map' => 'map_6',
+            ],
+            'mountain_troll_1' => [
+                'coordinates' => '30.12',
+                'monster' => 'troll',
+                'map' => 'map_6',
+            ],
+            // Boss — Dragon ancestral au sommet
+            'mountain_dragon_1' => [
+                'coordinates' => '25.8',
+                'monster' => 'dragon',
+                'map' => 'map_6',
+            ],
         ];
 
         foreach ($mobs as $key => $data) {
