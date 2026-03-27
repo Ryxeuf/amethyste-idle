@@ -90,4 +90,24 @@ class SwampBiome implements BiomeDefinition
     {
         return 'earth';
     }
+
+    public function getPerlinScale(): float
+    {
+        return 0.04;
+    }
+
+    public function getPerlinOctaves(): int
+    {
+        return 5;
+    }
+
+    public function getGrassThreshold(): float
+    {
+        return 0.42;
+    }
+
+    public function getDecorationGids(): array
+    {
+        return [];
+    }
 }

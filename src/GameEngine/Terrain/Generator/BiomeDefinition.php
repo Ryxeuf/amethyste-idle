@@ -53,4 +53,24 @@ interface BiomeDefinition
     public function getWaterTerrainSlug(): string;
 
     public function getSandTerrainSlug(): string;
+
+    /**
+     * Echelle du bruit Perlin (0.03 = collines larges, 0.08 = terrain chaotique).
+     */
+    public function getPerlinScale(): float;
+
+    /**
+     * Nombre d'octaves Perlin (2 = lisse, 6 = detaille).
+     */
+    public function getPerlinOctaves(): int;
+
+    /**
+     * Seuil au-dessus duquel la heightmap produit du terrain principal (herbe/sol du biome).
+     */
+    public function getGrassThreshold(): float;
+
+    /**
+     * @return int[] GID de decorations non-bloquantes (rochers, fleurs, etc.) placees sur layer 3
+     */
+    public function getDecorationGids(): array;
 }
