@@ -10,6 +10,7 @@ class DomainModel
     public int $id;
     public string $title;
     public string $slug;
+    public ?string $element;
 
     /**
      * @var SkillModel[]
@@ -21,5 +22,6 @@ class DomainModel
         $this->id = $domain->getId();
         $this->title = $domain->getTitle();
         $this->slug = $domain->getSlug();
+        $this->element = $domain->getElement();
     }
 }
