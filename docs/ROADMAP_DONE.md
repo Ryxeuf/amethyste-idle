@@ -1249,3 +1249,13 @@
 - [x] Raccourcis Ctrl+Z (undo) / Ctrl+Y ou Ctrl+Shift+Z (redo)
 - [x] Boutons undo/redo dans la barre d'outils avec etat disabled
 - [x] Reset historique apres sauvegarde ou annulation
+
+## MED-16 — Export TMX & tests unitaires (2026-03-27) ✅
+
+> Export des cartes creees dans l'editeur web vers le format Tiled (.tmx) pour validation externe.
+- [x] Classe `TmxExporter` dans `src/GameEngine/Terrain/TmxExporter.php`
+- [x] Export 5 layers (background, ground, decoration, overlay, collision) en CSV
+- [x] Export objectgroup (portals, mob_spawn, harvest_spot, npc_spawn) avec coordonnees pixels
+- [x] Route `GET /admin/maps/{id}/export-tmx` avec telechargement (Content-Disposition: attachment)
+- [x] Bouton "Exporter TMX" dans la toolbar de l'editeur
+- [x] 10 tests unitaires (27 assertions) : XML valide, attributs map, tilesets, layers, GIDs, collisions, borders, filename

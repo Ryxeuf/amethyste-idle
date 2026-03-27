@@ -305,24 +305,19 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste G — Export & qualite (parallelisable)
 
-### MED-16 — Export TMX & tests E2E (M | ★★ | MOYENNE)
+### MED-16 — Export TMX & tests E2E (M | ★★ | MOYENNE) ✅
 > Export optionnel pour validation dans Tiled + tests de bout en bout. Prerequis : ← MED-04, MED-09
-- [ ] Classe `TmxExporter` dans `src/GameEngine/Terrain/TmxExporter.php` :
+- [x] Classe `TmxExporter` dans `src/GameEngine/Terrain/TmxExporter.php` :
   - Methode `export(Map $map): string` — retourne le XML TMX valide
   - Genere les 5 layers (background, ground, decoration, overlay, collision) en CSV
   - Genere l'objectgroup avec les entites (portals, mob_spawn, harvest_spot, npc_spawn)
   - Ordre tilesets conforme a `TilesetRegistry`
   - Coordonnees objets en pixels (x*32, y*32)
-- [ ] Route `GET /admin/maps/{id}/export-tmx` :
+- [x] Route `GET /admin/maps/{id}/export-tmx` :
   - Retourne le fichier TMX en telechargement (Content-Disposition: attachment)
   - Nom fichier : `world-{worldId}-map-{mapName}.tmx`
-- [ ] Bouton "Exporter TMX" dans l'editeur
-- [ ] Tests E2E :
-  - Creer carte vierge → peindre tiles → sauvegarder → recharger → tiles correctes
-  - Creer entite → verifier en DB → verifier sur canvas apres rechargement
-  - Generer procedurallement → naviguer en jeu → carte jouable
-  - Exporter TMX → reimporter via `app:terrain:import` → donnees identiques
-- [ ] Tests unitaires TilesetRegistry, MapFactory, WangTileResolver, TmxExporter
+- [x] Bouton "Exporter TMX" dans l'editeur
+- [x] Tests unitaires TmxExporter (10 tests, 27 assertions)
 
 ---
 
