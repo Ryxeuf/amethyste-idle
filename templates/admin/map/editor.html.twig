@@ -18,6 +18,8 @@
      data-admin-map-editor-update-entity-url-value="{{ path('admin_map_editor_update_entity', {id: map.id}) }}"
      data-admin-map-editor-create-entity-url-value="{{ path('admin_map_editor_create_entity', {id: map.id}) }}"
      data-admin-map-editor-entity-options-url-value="{{ path('admin_map_editor_entity_options', {id: map.id}) }}"
+     data-admin-map-editor-wangsets-url-value="{{ path('admin_map_editor_wangsets', {id: map.id}) }}"
+     data-admin-map-editor-auto-tile-url-value="{{ path('admin_map_editor_auto_tile', {id: map.id}) }}"
      data-action="admin-tileset-picker:tileSelected->admin-map-editor#onTileSelected admin-tileset-picker:layerChanged->admin-map-editor#onLayerChanged"
      class="flex flex-col h-[calc(100vh-130px)]">
 
@@ -50,6 +52,46 @@
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Gomme (E)</button>
         <button data-tool="fill" data-action="admin-map-editor#setToolFill"
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Remplir (G)</button>
+
+        <div class="h-6 border-r border-gray-700 mx-1"></div>
+
+        {# Auto-tile #}
+        <span class="text-xs text-gray-500 uppercase mr-1">Auto-tile:</span>
+        <button id="auto-tile-toggle" data-action="admin-map-editor#toggleAutoTile"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors"
+                title="Auto-tiling (T)">OFF</button>
+        <select id="auto-tile-terrain" data-action="change->admin-map-editor#setAutoTileSlug"
+                class="px-1 py-1 rounded text-xs bg-gray-700 text-gray-300 border border-gray-600 opacity-50">
+            <option value="">-- Terrain --</option>
+            <option value="water">Water</option>
+            <option value="sand">Sand</option>
+            <option value="dark_dirt">Dark Dirt</option>
+            <option value="red_dirt">Red Dirt</option>
+            <option value="earth">Earth</option>
+            <option value="grass">Grass</option>
+            <option value="dark_grass">Dark Grass</option>
+            <option value="short_grass">Short Grass</option>
+            <option value="long_grass">Long Grass</option>
+            <option value="snow">Snow</option>
+            <option value="ice">Ice</option>
+            <option value="lava">Lava</option>
+            <option value="sand_water">Sand Water</option>
+            <option value="snow_water">Snow Water</option>
+            <option value="snow_ice">Snow Ice</option>
+            <option value="brick_road">Brick Road</option>
+            <option value="sewer">Sewer</option>
+            <option value="sewer_water">Sewer Water</option>
+            <option value="wheat">Wheat</option>
+            <option value="trans_dirt">Trans Dirt</option>
+            <option value="black_dirt">Black Dirt</option>
+            <option value="grey_dirt">Grey Dirt</option>
+            <option value="hole">Hole</option>
+            <option value="red_hole">Red Hole</option>
+            <option value="black_hole">Black Hole</option>
+        </select>
+        <button id="auto-tile-zone-btn" data-action="admin-map-editor#autoTileSelection" disabled
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors opacity-50"
+                title="Auto-tiler la selection">Zone</button>
 
         <div class="h-6 border-r border-gray-700 mx-1"></div>
 
@@ -257,6 +299,7 @@
                     <p><kbd class="bg-gray-700 px-1 rounded">P</kbd> Peindre</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">E</kbd> Gomme</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">G</kbd> Remplir (Bucket Fill)</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">T</kbd> Auto-tile (toggle)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">B</kbd> Bloquer</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">U</kbd> Debloquer</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">W</kbd> Mur</p>
