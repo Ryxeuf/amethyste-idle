@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Fight;
 
+use App\Event\Fight\CombatFleeEvent;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/game/fight/flee', name: 'app_game_fight_flee', methods: ['POST'])]
 class FightFleeController extends AbstractController
@@ -25,6 +27,7 @@ class FightFleeController extends AbstractController
         private readonly FightTurnResolver $turnResolver,
         private readonly MobActionHandler $mobActionHandler,
         private readonly FightTurnPublisher $fightTurnPublisher,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -124,6 +127,8 @@ class FightFleeController extends AbstractController
                 $this->entityManager->persist($fight);
                 $this->entityManager->flush();
             }
+
+            $this->eventDispatcher->dispatch(new CombatFleeEvent($player), CombatFleeEvent::NAME);
 
             return new JsonResponse([
                 'success' => true,

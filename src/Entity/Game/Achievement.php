@@ -37,6 +37,9 @@ class Achievement
     #[ORM\Column(name: 'icon', type: 'string', length: 255, nullable: true)]
     private ?string $icon = null;
 
+    #[ORM\Column(name: 'hidden', type: 'boolean', options: ['default' => false])]
+    private bool $hidden = false;
+
     public function getId(): int
     {
         return $this->id;
@@ -122,6 +125,18 @@ class Achievement
     public function setIcon(?string $icon): self
     {
         $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function isHidden(): bool
+    {
+        return $this->hidden;
+    }
+
+    public function setHidden(bool $hidden): self
+    {
+        $this->hidden = $hidden;
 
         return $this;
     }

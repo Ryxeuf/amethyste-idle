@@ -6,9 +6,13 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerAchievement;
 use App\Entity\Game\Achievement;
 use App\Enum\DungeonDifficulty;
+use App\Event\CraftEvent;
+use App\Event\Fight\CombatFleeEvent;
 use App\Event\Fight\MobDeadEvent;
+use App\Event\Fight\PlayerDeadEvent;
 use App\Event\Game\DungeonCompletedEvent;
 use App\Event\Game\QuestCompletedEvent;
+use App\Event\GatheringEvent;
 use App\Repository\PlayerAchievementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -27,6 +31,10 @@ class AchievementTracker implements EventSubscriberInterface
             MobDeadEvent::NAME => 'onMobDead',
             QuestCompletedEvent::NAME => 'onQuestCompleted',
             DungeonCompletedEvent::NAME => 'onDungeonCompleted',
+            GatheringEvent::NAME => 'onGathering',
+            CraftEvent::NAME => 'onCraft',
+            PlayerDeadEvent::NAME => 'onPlayerDead',
+            CombatFleeEvent::NAME => 'onCombatFlee',
         ];
     }
 
@@ -74,7 +82,27 @@ class AchievementTracker implements EventSubscriberInterface
         }
     }
 
-    private function progressAchievements(Player $player, string $criteriaType, ?string $monsterSlug = null): void
+    public function onGathering(GatheringEvent $event): void
+    {
+        $this->progressAchievements($event->getPlayer(), 'gathering', null, $event->getQuantity());
+    }
+
+    public function onCraft(CraftEvent $event): void
+    {
+        $this->progressAchievements($event->getPlayer(), 'craft', null, $event->getQuantity());
+    }
+
+    public function onPlayerDead(PlayerDeadEvent $event): void
+    {
+        $this->progressAchievements($event->getPlayer(), 'player_death');
+    }
+
+    public function onCombatFlee(CombatFleeEvent $event): void
+    {
+        $this->progressAchievements($event->getPlayer(), 'combat_flee');
+    }
+
+    private function progressAchievements(Player $player, string $criteriaType, ?string $monsterSlug = null, int $increment = 1): void
     {
         $achievements = $this->entityManager->getRepository(Achievement::class)->findBy([]);
 
@@ -101,7 +129,7 @@ class AchievementTracker implements EventSubscriberInterface
                 continue;
             }
 
-            $newProgress = $playerAchievement->getProgress() + 1;
+            $newProgress = $playerAchievement->getProgress() + $increment;
             $playerAchievement->setProgress($newProgress);
 
             if ($newProgress >= $achievement->getCriteriaCount()) {
