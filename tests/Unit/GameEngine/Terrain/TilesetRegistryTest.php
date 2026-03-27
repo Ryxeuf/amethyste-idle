@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\GameEngine\Terrain;
 
 use App\GameEngine\Terrain\TilesetRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
 
@@ -16,7 +17,9 @@ class TilesetRegistryTest extends TestCase
         $packages->method('getUrl')
             ->willReturnCallback(fn (string $path) => '/assets/' . $path);
 
-        $this->registry = new TilesetRegistry($packages);
+        $em = $this->createMock(EntityManagerInterface::class);
+
+        $this->registry = new TilesetRegistry($packages, $em);
     }
 
     public function testGetTilesetsReturnsFourTilesets(): void
@@ -172,8 +175,8 @@ class TilesetRegistryTest extends TestCase
             $this->assertArrayHasKey('tileWidth', $tileset);
             $this->assertArrayHasKey('tileHeight', $tileset);
             $this->assertArrayHasKey('firstGid', $tileset);
-            // Ne doit PAS contenir tileCount ou imageFile
-            $this->assertArrayNotHasKey('tileCount', $tileset);
+            $this->assertArrayHasKey('tileCount', $tileset);
+            // Ne doit PAS contenir imageFile
             $this->assertArrayNotHasKey('imageFile', $tileset);
         }
     }
