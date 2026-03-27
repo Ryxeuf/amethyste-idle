@@ -214,6 +214,86 @@ html, body {
   border-color: rgba(139, 92, 246, 0.5);
 }
 
+/* ── Skills page – Option A layout ────────────────────────────── */
+
+/* Sidebar */
+.skills-sidebar {
+  flex-shrink: 0;
+}
+
+/* Domain button (desktop sidebar) */
+.skills-domain-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.skills-domain-btn:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+.skills-domain-btn--active,
+.skills-domain-btn[aria-selected="true"] {
+  background: rgba(139, 92, 246, 0.2) !important;
+  border-color: rgba(139, 92, 246, 0.55) !important;
+}
+
+/* Domain chip (mobile horizontal) */
+.skills-domain-chip {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.skills-domain-chip[aria-selected="true"] {
+  background: rgba(139, 92, 246, 0.25) !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  color: #e9d5ff;
+}
+
+/* Skill node states */
+.skill-node {
+  background: rgba(17, 24, 39, 0.6);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.skill-node--available {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.07);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.15);
+}
+
+.skill-node--acquired {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.skill-node--locked {
+  border-color: rgba(75, 85, 99, 0.4);
+  opacity: 0.5;
+}
+
+/* Stat badges */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+}
+
+.stat-badge-damage   { background: rgba(239, 68, 68, 0.18);  color: #fca5a5; }
+.stat-badge-heal     { background: rgba(34, 197, 94, 0.18);  color: #86efac; }
+.stat-badge-hit      { background: rgba(59, 130, 246, 0.18); color: #93c5fd; }
+.stat-badge-critical { background: rgba(234, 179, 8, 0.18);  color: #fde047; }
+.stat-badge-life     { background: rgba(244, 114, 182, 0.18);color: #f9a8d4; }
+
 /* Fight layout mobile stacking */
 .fight-grid {
   display: flex;
