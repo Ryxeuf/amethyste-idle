@@ -20,6 +20,7 @@
      data-admin-map-editor-entity-options-url-value="{{ path('admin_map_editor_entity_options', {id: map.id}) }}"
      data-admin-map-editor-wangsets-url-value="{{ path('admin_map_editor_wangsets', {id: map.id}) }}"
      data-admin-map-editor-auto-tile-url-value="{{ path('admin_map_editor_auto_tile', {id: map.id}) }}"
+     data-admin-map-editor-generate-url-value="{{ path('admin_map_editor_generate', {id: map.id}) }}"
      data-action="admin-tileset-picker:tileSelected->admin-map-editor#onTileSelected admin-tileset-picker:layerChanged->admin-map-editor#onLayerChanged"
      class="flex flex-col h-[calc(100vh-130px)]">
 
@@ -226,6 +227,34 @@
                     <p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>
                 </div>
             </div>
+
+            {# Generateur procedural (collapsible) #}
+            <details class="bg-gray-900 border border-gray-800 rounded-xl">
+                <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Generateur procedural</summary>
+                <div class="px-4 pb-4 space-y-3">
+                    <p class="text-xs text-yellow-400">Ecrase tout le contenu existant de la carte.</p>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Biome</label>
+                        <select id="generate-biome" class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
+                            <option value="plains">Plaines</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Difficulte (1-10)</label>
+                        <input id="generate-difficulty" type="number" min="1" max="10" value="1"
+                               class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Seed (vide = aleatoire)</label>
+                        <input id="generate-seed" type="number" placeholder="Auto"
+                               class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
+                    </div>
+                    <button data-action="admin-map-editor#generateProcedural"
+                            class="w-full px-3 py-2 rounded text-xs bg-emerald-600 hover:bg-emerald-700 text-white transition-colors font-semibold">
+                        Generer le terrain
+                    </button>
+                </div>
+            </details>
 
             {# Legend (collapsible) #}
             <details class="bg-gray-900 border border-gray-800 rounded-xl">
