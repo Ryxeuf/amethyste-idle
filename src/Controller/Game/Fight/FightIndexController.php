@@ -82,8 +82,9 @@ class FightIndexController extends AbstractController
             $playerCooldowns[$spell->getSlug()] = $fight->getSpellCooldown($entityKey, $spell->getSlug());
         }
 
-        // Danger alert check from mob AI (check all alive mobs)
+        // Danger alert + current boss phase for UI display
         $dangerAlert = null;
+        $bossPhases = [];
         foreach ($fight->getMobs() as $fightMob) {
             if ($fightMob->isDead()) {
                 continue;
@@ -94,19 +95,18 @@ class FightIndexController extends AbstractController
 
             if ($monster->isBoss() && $monster->getBossPhases()) {
                 $phase = $monster->getCurrentBossPhase((int) $hpPercent);
-                if ($phase && isset($phase['danger_message'])) {
-                    $dangerAlert = $phase['danger_message'];
-                    break;
+                if ($phase !== null) {
+                    $bossPhases[$fightMob->getId()] = $phase;
+                    if ($dangerAlert === null && isset($phase['danger_message'])) {
+                        $dangerAlert = $phase['danger_message'];
+                    }
                 }
             }
 
-            if ($aiPattern !== null && isset($aiPattern['danger_alert'])) {
+            if ($dangerAlert === null && $aiPattern !== null && isset($aiPattern['danger_alert'])) {
                 $alertThreshold = $aiPattern['danger_alert']['threshold'] ?? 30;
                 if ($hpPercent <= $alertThreshold) {
                     $dangerAlert = $aiPattern['danger_alert']['message'] ?? null;
-                    if ($dangerAlert !== null) {
-                        break;
-                    }
                 }
             }
         }
@@ -130,6 +130,7 @@ class FightIndexController extends AbstractController
             'materiaSpells' => $materiaSpells,
             'playerCooldowns' => $playerCooldowns,
             'dangerAlert' => $dangerAlert,
+            'bossPhases' => $bossPhases,
             'fightLogs' => $fightLogs,
             'timeline' => $timeline,
             'currentRound' => $currentRound,

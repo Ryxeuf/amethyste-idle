@@ -1270,3 +1270,12 @@
 - [x] `getControllingGuild(Region)` : retourne Guild ou null via controle actif (ends_at IS NULL)
 - [x] Migration PostgreSQL `region_control` (3 FK, 3 index)
 - [x] 8 tests unitaires (25 assertions) : winner unique, aucun influence, egalite tenant conserve, non-contestable ignore, 0 points, controle actif, pas de controle, fermeture ancien controle
+
+## 84 — Donjons mecaniques & loot (2026-03-27) ✅
+
+> Rend les donjons interessants avec des mecaniques propres et un boss final avec phases.
+- [x] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
+- [x] Boss de fin de donjon avec mecaniques de phase (indicateur de phase dans l'UI, log de transition de phase dans le combat log, tracking via metadata fight)
+- [x] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
+- [x] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
+- [x] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)

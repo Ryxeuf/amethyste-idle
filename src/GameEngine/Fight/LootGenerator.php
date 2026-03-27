@@ -42,6 +42,11 @@ class LootGenerator implements EventSubscriberInterface
         }
 
         $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
+
+        // Dungeon difficulty drop bonus
+        $dungeonDropMultiplier = (float) ($mob->getFight()?->getMetadataValue('difficulty_drop_multiplier', 1.0) ?? 1.0);
+        $dropMultiplier *= $dungeonDropMultiplier;
+
         $monsterDifficulty = $mob->getMonster()->getDifficulty();
 
         $items = [];

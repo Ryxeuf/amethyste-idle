@@ -34,6 +34,7 @@ class FightLog
     public const TYPE_DEFEAT = 'defeat';
     public const TYPE_SUMMON = 'summon';
     public const TYPE_PLAYER_JOINED = 'player_joined';
+    public const TYPE_BOSS_PHASE = 'boss_phase';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]

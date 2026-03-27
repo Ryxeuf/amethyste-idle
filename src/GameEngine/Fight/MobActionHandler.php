@@ -86,6 +86,9 @@ class MobActionHandler
             return $result;
         }
 
+        // Detect boss phase transition before action
+        $this->checkBossPhaseTransition($fight, $mob);
+
         $action = $this->generateAction($fight, $mob);
 
         // Invocation : court-circuite le flux normal d'attaque
@@ -427,6 +430,35 @@ class MobActionHandler
         $this->logger->debug(sprintf('[MobActionHandler] Mob #%d summoned %d %s', $summoner->getId(), $actualCount, $monsterSlug));
 
         return $messages;
+    }
+
+    /**
+     * Detect and log boss phase transitions.
+     */
+    private function checkBossPhaseTransition(Fight $fight, Mob $mob): void
+    {
+        $monster = $mob->getMonster();
+        if (!$monster->isBoss() || !$monster->getBossPhases()) {
+            return;
+        }
+
+        $hpPercent = (int) (($mob->getLife() / $mob->getMaxLife()) * 100);
+        $phase = $monster->getCurrentBossPhase($hpPercent);
+        if ($phase === null) {
+            return;
+        }
+
+        $metaKey = 'boss_phase_' . $mob->getId();
+        $previousPhaseName = $fight->getMetadataValue($metaKey);
+        $currentPhaseName = $phase['name'] ?? null;
+
+        if ($currentPhaseName !== null && $currentPhaseName !== $previousPhaseName) {
+            $fight->setMetadataValue($metaKey, $currentPhaseName);
+            // Don't log the initial phase (first encounter)
+            if ($previousPhaseName !== null) {
+                $this->combatLogger->logBossPhaseChange($fight, $mob, $currentPhaseName);
+            }
+        }
     }
 
     /**

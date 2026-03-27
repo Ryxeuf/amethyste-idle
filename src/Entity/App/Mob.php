@@ -50,7 +50,7 @@ class Mob implements CharacterInterface
      */
     #[ORM\ManyToOne(targetEntity: Fight::class, inversedBy: 'mobs')]
     #[ORM\JoinColumn(name: 'fight_id', referencedColumnName: 'id')]
-    private ?Fight $fight;
+    private ?Fight $fight = null;
 
     /**
      * Items générés à la mort du mob.
@@ -148,7 +148,10 @@ class Mob implements CharacterInterface
 
     public function getMaxLife(): int
     {
-        return $this->getMonster()->getLife();
+        $base = $this->getMonster()->getLife();
+        $multiplier = $this->fight?->getMetadataValue('difficulty_multiplier', 1.0) ?? 1.0;
+
+        return (int) round($base * $multiplier);
     }
 
     public function getAttack(): Spell
