@@ -63,11 +63,14 @@ class FightAttackController extends AbstractController
         }
 
         $messages = [];
+        $hit = false;
         $mobResult = ['messages' => [], 'dangerAlert' => null];
 
         if ($fight->isCoopFight()) {
             // Coop: player acts, then advance turn (mobs auto-resolve)
-            $messages = $this->doPlayerAttack($player, $target, $fight);
+            $attackResult = $this->doPlayerAttack($player, $target, $fight);
+            $messages = $attackResult['messages'];
+            $hit = $attackResult['hit'];
             $fight->setStep($fight->getStep() + 1);
 
             if (!$fight->isTerminated()) {
@@ -85,7 +88,9 @@ class FightAttackController extends AbstractController
             }
 
             if (!$player->isDead()) {
-                $messages = $this->doPlayerAttack($player, $target, $fight);
+                $attackResult = $this->doPlayerAttack($player, $target, $fight);
+                $messages = $attackResult['messages'];
+                $hit = $attackResult['hit'];
             }
 
             $fight->setStep($fight->getStep() + 1);
@@ -122,7 +127,7 @@ class FightAttackController extends AbstractController
 
         return new JsonResponse([
             'success' => true,
-            'hit' => true,
+            'hit' => $hit,
             'messages' => $messages,
             'dangerAlert' => $mobResult['dangerAlert'],
             'fight' => [
@@ -134,7 +139,7 @@ class FightAttackController extends AbstractController
     }
 
     /**
-     * @return string[]
+     * @return array{messages: string[], hit: bool}
      */
     private function doPlayerAttack(Player $player, CharacterInterface $target, Fight $fight): array
     {
@@ -162,7 +167,7 @@ class FightAttackController extends AbstractController
             $messages[] = sprintf('%s rate son attaque !', $player->getName());
         }
 
-        return $messages;
+        return ['messages' => $messages, 'hit' => $hit];
     }
 
     private function findTarget(Fight $fight, int $targetId, string $targetType): ?CharacterInterface

@@ -10,8 +10,10 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,12 +39,17 @@ class FightItemControllerTest extends TestCase
         $this->mobActionHandler = $this->createMock(MobActionHandler::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
 
+        $turnResolver = $this->createMock(FightTurnResolver::class);
+        $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
+
         $this->controller = new FightItemController(
             $this->playerHelper,
             $this->entityManager,
             $this->spellApplicator,
             $this->mobActionHandler,
             $this->combatLogger,
+            $turnResolver,
+            $fightTurnPublisher,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
