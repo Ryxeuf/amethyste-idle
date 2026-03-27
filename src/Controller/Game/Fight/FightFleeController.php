@@ -3,7 +3,10 @@
 namespace App\Controller\Game\Fight;
 
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\FightTurnResolver;
+use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +22,9 @@ class FightFleeController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly CombatLogger $combatLogger,
+        private readonly FightTurnResolver $turnResolver,
+        private readonly MobActionHandler $mobActionHandler,
+        private readonly FightTurnPublisher $fightTurnPublisher,
     ) {
     }
 
@@ -32,9 +38,15 @@ class FightFleeController extends AbstractController
         }
 
         $fight = $player->getFight();
+        $isCoop = $fight->isCoopFight();
+        $isWorldBoss = $fight->isWorldBossFight();
+
+        // Coop turn validation
+        if ($isCoop && !$this->turnResolver->isPlayerTurn($fight, $player->getId())) {
+            return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
+        }
 
         // Cannot flee from boss fights (sauf world boss — on peut quitter le raid)
-        $isWorldBoss = $fight->isWorldBossFight();
         if (!$isWorldBoss) {
             foreach ($fight->getMobs() as $fightMob) {
                 if (!$fightMob->isDead() && $fightMob->getMonster()->isBoss()) {
@@ -76,12 +88,33 @@ class FightFleeController extends AbstractController
             $player->setFight(null);
             $fight->removePlayer($player);
 
-            if ($isWorldBoss) {
-                // World boss : le joueur quitte, le combat continue pour les autres
+            if ($isWorldBoss || $isCoop) {
+                // Coop / World boss : le joueur quitte, le combat continue pour les autres
                 $this->entityManager->persist($player);
+
+                if ($isCoop) {
+                    // Advance coop turn since this player left
+                    $remainingPlayers = $fight->getPlayers()->filter(fn ($p) => !$p->isDead() && $p->getFight() !== null);
+                    if ($remainingPlayers->count() === 0) {
+                        // All players fled or dead — end the fight
+                        $fight->setInProgress(false);
+                        $fight->setCurrentTurnKey(null);
+                    } elseif ($remainingPlayers->count() === 1) {
+                        // Only one player left — switch to solo mode
+                        $fight->setCurrentTurnKey(null);
+                    } else {
+                        // Advance to next player
+                        $this->turnResolver->advanceCoopTurn($fight, $this->mobActionHandler);
+                    }
+                }
+
                 $this->entityManager->flush();
+
+                if ($isCoop && $fight->getCurrentTurnKey() !== null) {
+                    $this->fightTurnPublisher->publishTurnChange($fight);
+                }
             } else {
-                // Combat classique : fin complète du combat
+                // Combat classique solo : fin complète du combat
                 $fight->setInProgress(false);
                 foreach ($fight->getMobs() as $fightMob) {
                     $fightMob->setFight(null);
@@ -95,14 +128,34 @@ class FightFleeController extends AbstractController
             return new JsonResponse([
                 'success' => true,
                 'fled' => true,
-                'message' => $isWorldBoss
-                    ? 'Vous quittez le raid !'
+                'message' => ($isWorldBoss || $isCoop)
+                    ? 'Vous quittez le combat !'
                     : 'Vous avez réussi à fuir !',
             ]);
         }
 
-        // Failed flee - mob gets a free hit, advance step
+        // Failed flee - advance step
         $fight->setStep($fight->getStep() + 1);
+
+        // Coop: advance turn after failed flee
+        if ($isCoop && !$fight->isTerminated()) {
+            $turnResult = $this->turnResolver->advanceCoopTurn($fight, $this->mobActionHandler);
+            $this->entityManager->flush();
+            $this->fightTurnPublisher->publishTurnChange($fight);
+
+            return new JsonResponse([
+                'success' => true,
+                'fled' => false,
+                'message' => 'La fuite a échoué !',
+                'messages' => $turnResult['messages'],
+                'fleeChance' => $fleeChance,
+                'fight' => [
+                    'step' => $fight->getStep(),
+                    'terminated' => $fight->isTerminated(),
+                ],
+            ]);
+        }
+
         $this->entityManager->flush();
 
         return new JsonResponse([

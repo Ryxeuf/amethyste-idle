@@ -55,11 +55,11 @@ class FightLootProceedController extends AbstractController
         $this->entityManager->persist($player);
         $fight->removePlayer($player);
 
-        // Si c'est un world boss et qu'il reste des joueurs, ne pas supprimer le combat
+        // Si c'est un world boss ou coop et qu'il reste des joueurs, ne pas supprimer le combat
         $remainingPlayers = $fight->getPlayers()->filter(fn (Player $p) => $p->getFight() !== null);
-        $isWorldBoss = $fight->isWorldBossFight();
+        $isMultiPlayer = $fight->isWorldBossFight() || $fight->isCoopFight();
 
-        if ($isWorldBoss && $remainingPlayers->count() > 0) {
+        if ($isMultiPlayer && $remainingPlayers->count() > 0) {
             $this->entityManager->flush();
 
             return new JsonResponse(['success' => true]);
