@@ -1344,6 +1344,19 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'boundToPlayer' => true,
             ],
 
+            'quest_item_fragment_montagne' => [
+                'name' => 'Fragment du Sommet',
+                'description' => 'Un éclat de cristal blanc strié de veines argentées, glacé au toucher. Il vibre au rythme des vents qui balaient les cimes. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
+                'type' => 'quest',
+                'slug' => 'quest-fragment-montagne',
+                'price' => 0,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Epic,
+                'boundToPlayer' => true,
+            ],
+
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',

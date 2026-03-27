@@ -942,6 +942,65 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 // prerequisiteQuests set after flush
             ],
+            // --- Chaîne narrative Acte 2 : Fragment Montagne (3 quêtes) ---
+            'quest_acte2_montagne_echos' => [
+                'name' => 'Les Fragments — Les Échos du Sommet',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, des visions de pics enneigés et de vents hurlants vous hantent. Aldric l\'Ancien, un ermite qui vit sur la Crête de Ventombre, pourrait comprendre ces échos.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Aldric l\'Ancien'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_montagne_gardien' => [
+                'name' => 'Les Fragments — Le Gardien des Cimes',
+                'description' => 'Aldric vous a révélé qu\'un fragment ancien est prisonnier du sommet, gardé par le Dragon ancestral qui sommeille dans sa tanière depuis des siècles. Il faut le vaincre pour accéder au pic sacré.',
+                'requirements' => [
+                    'boss_challenge' => [
+                        [
+                            'monster_slug' => 'dragon',
+                            'name' => 'Dragon ancestral',
+                            'conditions' => [
+                                'solo' => true,
+                            ],
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 120,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_montagne_fragment' => [
+                'name' => 'Les Fragments — Le Fragment du Sommet',
+                'description' => 'Le Dragon ancestral est vaincu. Le chemin vers le pic sacré est libre. Un éclat de cristal blanc brille au sommet, battu par les vents éternels. Grimpez et récupérez-le.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 6,
+                            'coordinates' => '25.5',
+                            'name' => 'Pic sacré de Ventombre',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-montagne'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
@@ -1153,6 +1212,25 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $requirementsMarais['talk_to'][0]['pnj_id'] = $morwen->getId();
         $acte2MaraisBrumes->setRequirements($requirementsMarais);
 
+        // Chaîne Acte 2 : Fragment Montagne (3 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MontagneEchos */
+        $acte2MontagneEchos = $this->getReference('quest_acte2_montagne_echos', Quest::class);
+        /** @var Quest $acte2MontagneGardien */
+        $acte2MontagneGardien = $this->getReference('quest_acte2_montagne_gardien', Quest::class);
+        /** @var Quest $acte2MontagneFragment */
+        $acte2MontagneFragment = $this->getReference('quest_acte2_montagne_fragment', Quest::class);
+
+        $acte2MontagneEchos->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MontagneGardien->setPrerequisiteQuests([$acte2MontagneEchos->getId()]);
+        $acte2MontagneFragment->setPrerequisiteQuests([$acte2MontagneGardien->getId()]);
+
+        // Fix PNJ ID for Aldric l'Ancien (montagne)
+        /** @var Pnj $aldric */
+        $aldric = $this->getReference('montagne_pnj_0', Pnj::class);
+        $requirementsMontagne = $acte2MontagneEchos->getRequirements();
+        $requirementsMontagne['talk_to'][0]['pnj_id'] = $aldric->getId();
+        $acte2MontagneEchos->setRequirements($requirementsMontagne);
+
         $manager->flush();
     }
 
@@ -1163,6 +1241,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ForestPnjFixtures::class,
             MinesPnjFixtures::class,
             MaraisPnjFixtures::class,
+            MontagnePnjFixtures::class,
         ];
     }
 }

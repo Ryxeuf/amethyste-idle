@@ -1279,3 +1279,14 @@
 - [x] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
 - [x] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
 - [x] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
+
+## 80 — Trame Acte 2 : Fragment Montagne (2026-03-27) ✅
+
+> Dernier fragment de l'Acte 2. Chaine de 3 quetes sur la Crete de Ventombre (zone montagneuse lvl 15-25).
+- [x] Carte map_6 Crete de Ventombre (50x50) + portails Village ↔ Montagne
+- [x] Item cle Fragment du Sommet (quest-fragment-montagne, epic, bound)
+- [x] Chaine de 3 quetes sequentielles : talk_to (Aldric l'Ancien), boss_challenge (Dragon ancestral), explore (Pic sacre)
+- [x] 2 PNJ montagne : Aldric l'Ancien (ermite, lance la chaine), Seren la Guide (marchande)
+- [x] Dialogues conditionnels Acte 2 pour Aldric (aiguillage par progression de quete)
+- [x] 9 mobs sur map_6 (griffons, gargouilles, elementaires, minotaure, troll, dragon boss)
+- [x] Les 4 fragments donnent chacun un item cle collectible (foret, mines, marais, montagne)

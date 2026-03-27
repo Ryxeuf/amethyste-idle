@@ -74,6 +74,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($swamp);
         $this->addReference('map_5', $swamp);
 
+        // Crête de Ventombre — zone montagneuse lvl 15-25, pics, grottes, vents violents
+        $mountain = new Map();
+        $mountain->setName('Crête de Ventombre');
+        $mountain->setWorld($this->getReference('world_1', World::class));
+        $mountain->setAreaWidth(50);
+        $mountain->setAreaHeight(50);
+        $mountain->setCreatedAt(new \DateTime());
+        $mountain->setUpdatedAt(new \DateTime());
+
+        $manager->persist($mountain);
+        $this->addReference('map_6', $mountain);
+
         // Donjon : Racines de la foret — carte instanciee pour le donjon
         $dungeonRoots = new Map();
         $dungeonRoots->setName('Racines de la foret (donjon)');

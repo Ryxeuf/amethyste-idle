@@ -13,8 +13,8 @@
 - [x] Fragment Foret : chaine de 4 quetes (talk_to, combat, collect, exploration) + item cle Fragment Sylvestre
 - [x] Fragment Mines : chaine de 4 quetes (talk_to, collect, boss_challenge, exploration) + item cle Fragment de la Forge
 - [x] Fragment Marais : chaine de 4 quetes (talk_to, collect, combat, exploration) + item cle Fragment des Brumes
-- [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
-- [ ] Chaque fragment donne un item cle collectible
+- [x] Fragment Montagne : chaine de 3 quetes (talk_to, boss_challenge, exploration) + item cle Fragment du Sommet
+- [x] Chaque fragment donne un item cle collectible
 
 ### ~~86 — Quetes de decouverte cachees (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
