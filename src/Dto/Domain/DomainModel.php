@@ -23,5 +23,6 @@ class DomainModel
         $this->title = $domain->getTitle();
         $this->slug = $domain->getSlug();
         $this->element = $domain->getElement();
+        $this->skills = [];
     }
 }
