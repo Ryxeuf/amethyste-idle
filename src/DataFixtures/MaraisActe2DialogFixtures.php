@@ -107,7 +107,7 @@ class MaraisActe2DialogFixtures extends Fixture implements DependentFixtureInter
             ],
             // 7 — Gardiens en cours
             [
-                'text' => "Les gardiens rôdent encore dans les profondeurs du marais. Éliminez les banshees et les ochus pour dégager le passage. Soyez prudent, leurs cris sont mortels.",
+                'text' => 'Les gardiens rôdent encore dans les profondeurs du marais. Éliminez les banshees et les ochus pour dégager le passage. Soyez prudent, leurs cris sont mortels.',
             ],
             // 8 — Proposer quête "Le Fragment des Brumes"
             [
@@ -127,7 +127,7 @@ class MaraisActe2DialogFixtures extends Fixture implements DependentFixtureInter
             ],
             // 11 — Dialogue normal (avant Acte 2)
             [
-                'text' => "Ce marais est ancien, bien plus que les villages alentour. Des esprits y errent, prisonniers de leur propre chagrin. Les banshees que vous croiserez ne sont pas de simples monstres — ce sont des âmes brisées. Et au cœur des eaux stagnantes dort quelque chose de plus ancien encore...",
+                'text' => 'Ce marais est ancien, bien plus que les villages alentour. Des esprits y errent, prisonniers de leur propre chagrin. Les banshees que vous croiserez ne sont pas de simples monstres — ce sont des âmes brisées. Et au cœur des eaux stagnantes dort quelque chose de plus ancien encore...',
                 'choices' => [
                     ['text' => 'Merci pour ces mises en garde.', 'action' => 'close'],
                 ],
@@ -140,7 +140,7 @@ class MaraisActe2DialogFixtures extends Fixture implements DependentFixtureInter
         return [
             // 0 — Accueil
             [
-                'text' => "Les plantes de ce marais sont redoutables pour les novices, mais entre de bonnes mains, elles guérissent presque tout. Je suis Fergus, herboriste depuis trois générations. Besoin de quelque chose ?",
+                'text' => 'Les plantes de ce marais sont redoutables pour les novices, mais entre de bonnes mains, elles guérissent presque tout. Je suis Fergus, herboriste depuis trois générations. Besoin de quelque chose ?',
                 'choices' => [
                     ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
                     ['text' => 'Parlez-moi du marais', 'action' => 'next'],
@@ -167,7 +167,7 @@ class MaraisActe2DialogFixtures extends Fixture implements DependentFixtureInter
             ],
             // 3 — Ingrédients en cours
             [
-                'text' => "Vous cherchez encore les champignons et les racines ? Les champignons vénéneux sont reconnaissables à leur chapeau violet, près des eaux stagnantes. Les racines de marais sont noueuses et brunâtres, enfoncées dans la vase. Bonne cueillette !",
+                'text' => 'Vous cherchez encore les champignons et les racines ? Les champignons vénéneux sont reconnaissables à leur chapeau violet, près des eaux stagnantes. Les racines de marais sont noueuses et brunâtres, enfoncées dans la vase. Bonne cueillette !',
                 'choices' => [
                     ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
                     ['text' => 'Merci !', 'action' => 'close'],

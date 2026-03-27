@@ -85,7 +85,7 @@ class MaraisPnjFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'text' => "Ce marais est ancien, bien plus que les villages alentour. Des esprits y errent, prisonniers de leur propre chagrin. Les banshees que vous croiserez ne sont pas de simples monstres — ce sont des âmes brisées. Et au cœur des eaux stagnantes dort quelque chose de plus ancien encore...",
+                        'text' => 'Ce marais est ancien, bien plus que les villages alentour. Des esprits y errent, prisonniers de leur propre chagrin. Les banshees que vous croiserez ne sont pas de simples monstres — ce sont des âmes brisées. Et au cœur des eaux stagnantes dort quelque chose de plus ancien encore...',
                         'choices' => [
                             [
                                 'text' => 'Merci pour ces mises en garde.',
@@ -113,7 +113,7 @@ class MaraisPnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'dialog' => [
                     [
-                        'text' => "Les plantes de ce marais sont redoutables pour les novices, mais entre de bonnes mains, elles guérissent presque tout. Je suis Fergus, herboriste depuis trois générations. Besoin de quelque chose ?",
+                        'text' => 'Les plantes de ce marais sont redoutables pour les novices, mais entre de bonnes mains, elles guérissent presque tout. Je suis Fergus, herboriste depuis trois générations. Besoin de quelque chose ?',
                         'choices' => [
                             [
                                 'text' => 'Voir la boutique',
@@ -163,7 +163,7 @@ class MaraisPnjFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'text' => "Les zombies sont lents mais résistants. Les araignées empoisonnent — ayez toujours des antidotes. Quant aux banshees, elles attaquent à distance avec des ondes de choc. Et les ochus... ne les sous-estimez jamais, ils se régénèrent. Les profondeurs du marais cachent bien pire encore, croyez-moi.",
+                        'text' => 'Les zombies sont lents mais résistants. Les araignées empoisonnent — ayez toujours des antidotes. Quant aux banshees, elles attaquent à distance avec des ondes de choc. Et les ochus... ne les sous-estimez jamais, ils se régénèrent. Les profondeurs du marais cachent bien pire encore, croyez-moi.',
                         'choices' => [
                             [
                                 'text' => 'Merci pour les conseils.',
