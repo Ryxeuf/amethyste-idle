@@ -45,8 +45,8 @@ class ObjectPlacerTest extends TestCase
             return $this->createMock(EntityRepository::class);
         });
 
-        $this->mapGenerator = new MapGenerator($tilesetRegistry, $wangTileResolver, $this->em);
         $this->objectPlacer = new ObjectPlacer($this->em);
+        $this->mapGenerator = new MapGenerator($tilesetRegistry, $wangTileResolver, $this->em, $this->objectPlacer);
     }
 
     public function testPlaceMobSpawnsPlacesBetween8And15Mobs(): void
