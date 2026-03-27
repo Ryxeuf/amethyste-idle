@@ -793,6 +793,83 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 // prerequisiteQuests set after flush
             ],
+            // --- Chaîne narrative Acte 2 : Fragment Mines (4 quêtes) ---
+            'quest_acte2_mines_tremblements' => [
+                'name' => 'Les Fragments — Tremblements souterrains',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Grimmur le Contremaître'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_mines_minerai' => [
+                'name' => 'Les Fragments — Le Minerai Ancien',
+                'description' => 'Grimmur a senti une énergie étrange émaner des filons profonds. Il vous demande de récolter du minerai de fer et de l\'or enfoui pour analyser la source de ces vibrations.',
+                'requirements' => [
+                    'collect' => [
+                        'ore-iron' => 5,
+                        'ore-gold' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 80,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'healing-potion-small'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_mines_forge' => [
+                'name' => 'Les Fragments — Le Seigneur de la Forge',
+                'description' => 'L\'énergie provient des profondeurs, là où règne le Seigneur de la Forge. Ce gardien devenu fou protège quelque chose d\'ancien. Vous devez le vaincre pour atteindre la source des vibrations.',
+                'requirements' => [
+                    'boss_challenge' => [
+                        [
+                            'monster_slug' => 'forge_lord',
+                            'name' => 'Seigneur de la Forge',
+                            'conditions' => [
+                                'solo' => true,
+                            ],
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 120,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_mines_fragment' => [
+                'name' => 'Les Fragments — Le Fragment de la Forge',
+                'description' => 'La défaite du Seigneur de la Forge a révélé une fissure dans le mur de sa salle. Un éclat de cristal orangé pulse au fond, irradiant une chaleur ancienne. Récupérez-le.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 4,
+                            'coordinates' => '55.5',
+                            'name' => 'Salle secrète de la Forge',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-mines'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
@@ -954,12 +1031,33 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $acte2ForetRemede->setPrerequisiteQuests([$acte2ForetPurification->getId()]);
         $acte2ForetFragment->setPrerequisiteQuests([$acte2ForetRemede->getId()]);
 
-        // Fix PNJ ID in talk_to requirement (needs ForestPnjFixtures loaded first)
+        // Chaîne Acte 2 : Fragment Mines (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MinesTremblements */
+        $acte2MinesTremblements = $this->getReference('quest_acte2_mines_tremblements', Quest::class);
+        /** @var Quest $acte2MinesMinerai */
+        $acte2MinesMinerai = $this->getReference('quest_acte2_mines_minerai', Quest::class);
+        /** @var Quest $acte2MinesForge */
+        $acte2MinesForge = $this->getReference('quest_acte2_mines_forge', Quest::class);
+        /** @var Quest $acte2MinesFragment */
+        $acte2MinesFragment = $this->getReference('quest_acte2_mines_fragment', Quest::class);
+
+        $acte2MinesTremblements->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MinesMinerai->setPrerequisiteQuests([$acte2MinesTremblements->getId()]);
+        $acte2MinesForge->setPrerequisiteQuests([$acte2MinesMinerai->getId()]);
+        $acte2MinesFragment->setPrerequisiteQuests([$acte2MinesForge->getId()]);
+
+        // Fix PNJ ID in talk_to requirements (needs PnjFixtures loaded first)
         /** @var Pnj $thadeus */
         $thadeus = $this->getReference('forest_pnj_2', Pnj::class);
         $requirements = $acte2ForetMurmures->getRequirements();
         $requirements['talk_to'][0]['pnj_id'] = $thadeus->getId();
         $acte2ForetMurmures->setRequirements($requirements);
+
+        /** @var Pnj $grimmur */
+        $grimmur = $this->getReference('mines_pnj_0', Pnj::class);
+        $requirementsMines = $acte2MinesTremblements->getRequirements();
+        $requirementsMines['talk_to'][0]['pnj_id'] = $grimmur->getId();
+        $acte2MinesTremblements->setRequirements($requirementsMines);
 
         $manager->flush();
     }
@@ -969,6 +1067,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         return [
             GameEventFixtures::class,
             ForestPnjFixtures::class,
+            MinesPnjFixtures::class,
         ];
     }
 }

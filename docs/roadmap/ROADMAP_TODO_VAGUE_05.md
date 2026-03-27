@@ -11,7 +11,7 @@
 > 4 chaines de quetes dans 4 zones. Prerequis : ← 46, 67, 68
 > A decouper en 4 sous-phases (1 par fragment/zone) quand les zones seront pretes.
 - [x] Fragment Foret : chaine de 4 quetes (talk_to, combat, collect, exploration) + item cle Fragment Sylvestre
-- [ ] Fragment Mines : chaine de 3-4 quetes (recolte, craft, boss minier)
+- [x] Fragment Mines : chaine de 4 quetes (talk_to, collect, boss_challenge, exploration) + item cle Fragment de la Forge
 - [ ] Fragment Marais : chaine de 3-4 quetes (enquete, livraison, combat)
 - [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
 - [ ] Chaque fragment donne un item cle collectible
