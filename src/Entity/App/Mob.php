@@ -50,7 +50,7 @@ class Mob implements CharacterInterface
      */
     #[ORM\ManyToOne(targetEntity: Fight::class, inversedBy: 'mobs')]
     #[ORM\JoinColumn(name: 'fight_id', referencedColumnName: 'id')]
-    private ?Fight $fight;
+    private ?Fight $fight = null;
 
     /**
      * Items générés à la mort du mob.
