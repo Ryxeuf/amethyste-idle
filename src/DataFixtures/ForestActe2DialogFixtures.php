@@ -138,7 +138,7 @@ class ForestActe2DialogFixtures extends Fixture implements DependentFixtureInter
             ],
             // 11 — Dialogue normal (pas encore Acte 2)
             [
-                'text' => "Oh oui. Cette forêt est ancienne, bien plus ancienne que le Village de Lumière. Elle garde en mémoire les échos du passé. Parfois, la nuit, on peut apercevoir des esprits errants entre les arbres... Les feux follets ne sont pas de simples créatures, ce sont des fragments de souvenirs oubliés.",
+                'text' => 'Oh oui. Cette forêt est ancienne, bien plus ancienne que le Village de Lumière. Elle garde en mémoire les échos du passé. Parfois, la nuit, on peut apercevoir des esprits errants entre les arbres... Les feux follets ne sont pas de simples créatures, ce sont des fragments de souvenirs oubliés.',
                 'choices' => [
                     ['text' => "C'est fascinant. Merci, vieil homme.", 'action' => 'close'],
                 ],
@@ -151,7 +151,7 @@ class ForestActe2DialogFixtures extends Fixture implements DependentFixtureInter
         return [
             // 0 — Accueil
             [
-                'text' => "Les herbes de cette forêt possèdent des propriétés curatives remarquables. Je prépare des potions à partir de ce que je récolte ici. Puis-je vous aider ?",
+                'text' => 'Les herbes de cette forêt possèdent des propriétés curatives remarquables. Je prépare des potions à partir de ce que je récolte ici. Puis-je vous aider ?',
                 'choices' => [
                     ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
                     ['text' => 'Parlez-moi de la forêt', 'action' => 'next'],
@@ -182,7 +182,7 @@ class ForestActe2DialogFixtures extends Fixture implements DependentFixtureInter
             ],
             // 3 — Remède en cours
             [
-                'text' => "Vous cherchez de la sauge et de la mandragore ? La sauge pousse près de la clairière sud, et la mandragore se trouve dans le sous-bois au nord. Bonne cueillette !",
+                'text' => 'Vous cherchez de la sauge et de la mandragore ? La sauge pousse près de la clairière sud, et la mandragore se trouve dans le sous-bois au nord. Bonne cueillette !',
                 'choices' => [
                     ['text' => 'Voir la boutique', 'action' => 'open_shop', 'datas' => []],
                     ['text' => 'Merci !', 'action' => 'close'],
