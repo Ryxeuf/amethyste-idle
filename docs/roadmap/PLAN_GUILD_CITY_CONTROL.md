@@ -82,12 +82,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste B — Regions & villes (sequentiel)
 
-### GCC-05 — Regions & villes — entites (S | ★★★ | CRITIQUE)
+### ~~GCC-05 — Regions & villes — entites (S | ★★★ | CRITIQUE)~~ ✅
 > Zones contestables avec ville chef-lieu. Prerequis roadmap globale : **48** (hub), **GCC-01** (ou tache globale **52** une fois le socle guilde en place)
-- [ ] Entite `Region` : name, slug (unique), description, icon (nullable), taxRate (decimal, default 0.05), isContestable (bool, default true)
-- [ ] Relation Region → Map (OneToMany), champ `capitalMapId` (FK Map nullable)
-- [ ] Champ `region_id` (FK Region, nullable) sur `Map`
-- [ ] Migration + fixtures : 2-3 regions de test
+- [x] Entite `Region` : name, slug (unique), description, icon (nullable), taxRate (decimal, default 0.05), isContestable (bool, default true)
+- [x] Relation Region → Map (OneToMany), champ `capitalMapId` (FK Map nullable)
+- [x] Champ `region_id` (FK Region, nullable) sur `Map`
+- [x] Migration + fixtures : 2-3 regions de test
 
 ### ~~GCC-06 — Saisons d'influence — entites & SeasonManager (S | ★★★ | CRITIQUE)~~ ✅
 > Cycles de competition mensuels. Prerequis : ← GCC-05
@@ -130,14 +130,14 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [ ] Constantes configurables dans services.yaml
 - [ ] Tests unitaires (5 tests)
 
-### GCC-10 — Controle de ville — attribution fin de saison (S | ★★★ | CRITIQUE)
+### ~~GCC-10 — Controle de ville — attribution fin de saison (S | ★★★ | CRITIQUE)~~ ✅
 > Attribution du controle a la guilde gagnante. Prerequis : ← GCC-08
-- [ ] Entite `RegionControl` : region, guild (nullable), season, startedAt, endsAt (nullable). 1 controle actif/region (WHERE ends_at IS NULL)
-- [ ] `TownControlManager::attributeControl(InfluenceSeason)` : pour chaque region, SELECT guild max points, cree RegionControl
-- [ ] Egalite : la guilde tenant conserve le controle
-- [ ] Aucune guilde : region reste libre
-- [ ] `getControllingGuild(Region)` : retourne Guild ou null
-- [ ] Migration + tests (5+ tests)
+- [x] Entite `RegionControl` : region, guild (nullable), season, startedAt, endsAt (nullable). 1 controle actif/region (WHERE ends_at IS NULL)
+- [x] `TownControlManager::attributeControl(InfluenceSeason)` : pour chaque region, SELECT guild max points, cree RegionControl
+- [x] Egalite : la guilde tenant conserve le controle
+- [x] Aucune guilde : region reste libre
+- [x] `getControllingGuild(Region)` : retourne Guild ou null
+- [x] Migration + tests (8 tests)
 
 ---
 
