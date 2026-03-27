@@ -36,7 +36,7 @@ enum DungeonDifficulty: string
     }
 
     /**
-     * Multiplicateur HP/degats des mobs dans le donjon.
+     * Multiplicateur HP des mobs dans le donjon.
      */
     public function statMultiplier(): float
     {
@@ -44,6 +44,30 @@ enum DungeonDifficulty: string
             self::Normal => 1.0,
             self::Heroic => 1.5,
             self::Mythic => 2.5,
+        };
+    }
+
+    /**
+     * Multiplicateur degats des mobs (moins agressif que le HP).
+     */
+    public function damageMultiplier(): float
+    {
+        return match ($this) {
+            self::Normal => 1.0,
+            self::Heroic => 1.25,
+            self::Mythic => 1.75,
+        };
+    }
+
+    /**
+     * Multiplicateur de taux de drop en donjon.
+     */
+    public function dropMultiplier(): float
+    {
+        return match ($this) {
+            self::Normal => 1.0,
+            self::Heroic => 1.25,
+            self::Mythic => 1.5,
         };
     }
 

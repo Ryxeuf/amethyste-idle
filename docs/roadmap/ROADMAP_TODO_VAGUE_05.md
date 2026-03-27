@@ -47,11 +47,11 @@
 ### 84 — Donjons mecaniques & loot (L | ★★★)
 > Rend les donjons interessants avec des mecaniques propres. Prerequis : ← 72, 37
 > A decouper en sous-phases si necessaire.
-- [ ] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
+- [x] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
 - [ ] Boss de fin de donjon avec mecaniques de phase (reutiliser bossPhases existant)
-- [ ] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
-- [ ] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
-- [ ] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
+- [x] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
+- [x] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
+- [x] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
 
 ### ~~85 — Evenements aleatoires (M | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
