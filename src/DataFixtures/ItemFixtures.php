@@ -1283,6 +1283,20 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'nb_usages' => 1,
             ],
 
+            // Fragments Acte 2
+            'quest_item_fragment_foret' => [
+                'name' => 'Fragment Sylvestre',
+                'description' => 'Un éclat de cristal vert pulsant d\'énergie ancienne. Il vibre au rythme des murmures de la forêt. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
+                'type' => 'quest',
+                'slug' => 'quest-fragment-foret',
+                'price' => 0,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Epic,
+                'boundToPlayer' => true,
+            ],
+
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',

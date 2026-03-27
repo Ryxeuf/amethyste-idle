@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\GameEvent;
+use App\Entity\App\Pnj;
 use App\Entity\Game\Quest;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -719,6 +720,79 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'monster_slug' => 'goblin',
                 ],
             ],
+            // --- Chaîne narrative Acte 2 : Fragment Forêt (4 quêtes) ---
+            'quest_acte2_foret_murmures' => [
+                'name' => 'Les Fragments — Les Murmures s\'intensifient',
+                'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Thadeus l\'Ermite'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_foret_purification' => [
+                'name' => 'Les Fragments — Purifier la Corruption',
+                'description' => 'Thadeus a senti une corruption ancienne se réveiller dans la forêt. Des créatures corrompues rôdent près de l\'Arbre-Mère. Éliminez-les pour affaiblir la corruption.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Ondine', 'slug' => 'forest_undine', 'count' => 2],
+                        ['name' => 'Ochu', 'slug' => 'forest_ochu', 'count' => 2],
+                        ['name' => 'Feu follet', 'slug' => 'will_o_wisp', 'count' => 1],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 80,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_foret_remede' => [
+                'name' => 'Les Fragments — Le Remède Ancestral',
+                'description' => 'La corruption a été affaiblie, mais l\'Arbre-Mère reste malade. Thadeus a besoin de sauge et de mandragore pour préparer un remède ancestral. Récoltez-les et apportez-les à Elara l\'Herboriste qui saura les préparer.',
+                'requirements' => [
+                    'collect' => [
+                        'plant-sage' => 3,
+                        'plant-mandrake' => 2,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 60,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_foret_fragment' => [
+                'name' => 'Les Fragments — Le Fragment Sylvestre',
+                'description' => 'Le remède a guéri l\'Arbre-Mère. En remerciement, ses racines ont révélé un éclat de cristal vert enfoui depuis des siècles. Rendez-vous au cœur de la forêt pour le récupérer.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 3,
+                            'coordinates' => '30.15',
+                            'name' => 'Racines de l\'Arbre-Mère',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-foret'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
@@ -865,6 +939,28 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $acte1Recolte->setPrerequisiteQuests([$acte1Bapteme->getId()]);
         $acte1Cristal->setPrerequisiteQuests([$acte1Recolte->getId()]);
 
+        // Chaîne Acte 2 : Fragment Forêt (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2ForetMurmures */
+        $acte2ForetMurmures = $this->getReference('quest_acte2_foret_murmures', Quest::class);
+        /** @var Quest $acte2ForetPurification */
+        $acte2ForetPurification = $this->getReference('quest_acte2_foret_purification', Quest::class);
+        /** @var Quest $acte2ForetRemede */
+        $acte2ForetRemede = $this->getReference('quest_acte2_foret_remede', Quest::class);
+        /** @var Quest $acte2ForetFragment */
+        $acte2ForetFragment = $this->getReference('quest_acte2_foret_fragment', Quest::class);
+
+        $acte2ForetMurmures->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2ForetPurification->setPrerequisiteQuests([$acte2ForetMurmures->getId()]);
+        $acte2ForetRemede->setPrerequisiteQuests([$acte2ForetPurification->getId()]);
+        $acte2ForetFragment->setPrerequisiteQuests([$acte2ForetRemede->getId()]);
+
+        // Fix PNJ ID in talk_to requirement (needs ForestPnjFixtures loaded first)
+        /** @var Pnj $thadeus */
+        $thadeus = $this->getReference('forest_pnj_2', Pnj::class);
+        $requirements = $acte2ForetMurmures->getRequirements();
+        $requirements['talk_to'][0]['pnj_id'] = $thadeus->getId();
+        $acte2ForetMurmures->setRequirements($requirements);
+
         $manager->flush();
     }
 
@@ -872,6 +968,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             GameEventFixtures::class,
+            ForestPnjFixtures::class,
         ];
     }
 }
