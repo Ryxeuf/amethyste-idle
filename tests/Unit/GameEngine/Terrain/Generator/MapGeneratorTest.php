@@ -26,9 +26,9 @@ class MapGeneratorTest extends TestCase
         $packages = $this->createMock(Packages::class);
         $packages->method('getUrl')->willReturnArgument(0);
 
-        $tilesetRegistry = new TilesetRegistry($packages);
-        $wangTileResolver = new WangTileResolver();
         $this->em = $this->createMock(EntityManagerInterface::class);
+        $tilesetRegistry = new TilesetRegistry($packages, $this->em);
+        $wangTileResolver = new WangTileResolver();
 
         $this->generator = new MapGenerator($tilesetRegistry, $wangTileResolver, $this->em);
     }
