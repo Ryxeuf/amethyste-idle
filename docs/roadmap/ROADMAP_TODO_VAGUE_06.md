@@ -5,12 +5,12 @@
 
 ---
 
-### 92 — Classement guildes (S | ★)
+### ~~92 — Classement guildes (S | ★)~~ ✅
 > Tableau de classement simple par points de guilde. Prerequis : ← 52
-- [ ] Champ `points` sur Guild (incremente par succes membres, quetes)
-- [ ] Route `GET /game/guilds/ranking` : classement pagine
-- [ ] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent
-- [ ] Tests : attribution points, classement ordonne
+- [x] Champ `points` sur Guild (incremente par succes membres, quetes)
+- [x] Route `GET /game/guilds/ranking` : classement pagine
+- [x] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent
+- [x] Tests : attribution points, classement ordonne
 
 ### 93 — Quetes de guilde (M | ★★)
 > Objectifs collectifs hebdomadaires. Prerequis : ← 52, 92

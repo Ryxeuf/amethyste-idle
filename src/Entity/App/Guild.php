@@ -27,6 +27,9 @@ class Guild
     #[ORM\Column(name: 'description', type: 'text', nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(name: 'points', type: 'integer', options: ['default' => 0])]
+    private int $points = 0;
+
     #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: 'leader_id', referencedColumnName: 'id', nullable: false)]
     private Player $leader;
@@ -134,6 +137,25 @@ class Guild
     public function setVault(?GuildVault $vault): self
     {
         $this->vault = $vault;
+
+        return $this;
+    }
+
+    public function getPoints(): int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): self
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+
+    public function addPoints(int $points): self
+    {
+        $this->points += $points;
 
         return $this;
     }

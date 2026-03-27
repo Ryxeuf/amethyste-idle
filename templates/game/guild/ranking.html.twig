@@ -1,0 +1,79 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Classement des guildes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">Classement des guildes</h2>
+            <a href="{{ path('app_game_guild') }}" class="text-xs text-amber-400 hover:text-amber-300 transition-colors">
+                Ma guilde
+            </a>
+        </div>
+        <div class="game-card-body">
+            {% if guilds is empty %}
+                <p class="text-gray-400 text-sm text-center py-4">Aucune guilde n'a encore ete creee.</p>
+            {% else %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="text-left text-gray-400 text-xs py-2 px-2 w-10">#</th>
+                                <th class="text-left text-gray-400 text-xs py-2 px-2">Guilde</th>
+                                <th class="text-center text-gray-400 text-xs py-2 px-2">Membres</th>
+                                <th class="text-right text-gray-400 text-xs py-2 px-2">Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for guild in guilds %}
+                                {% set rank = offset + loop.index %}
+                                <tr class="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors {{ playerGuildId is not null and playerGuildId == guild.id ? 'bg-amber-900/20' : '' }}">
+                                    <td class="py-2 px-2 text-center">
+                                        {% if rank == 1 %}
+                                            <span class="text-yellow-400 font-bold">1</span>
+                                        {% elseif rank == 2 %}
+                                            <span class="text-gray-300 font-bold">2</span>
+                                        {% elseif rank == 3 %}
+                                            <span class="text-amber-600 font-bold">3</span>
+                                        {% else %}
+                                            <span class="text-gray-500">{{ rank }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-2 px-2">
+                                        <span class="text-white font-medium">{{ guild.name }}</span>
+                                        <span class="text-gray-500 text-xs ml-1">[{{ guild.tag }}]</span>
+                                    </td>
+                                    <td class="py-2 px-2 text-center text-gray-400">{{ guild.memberCount }}</td>
+                                    <td class="py-2 px-2 text-right font-medium text-amber-400">{{ guild.points|number_format(0, ',', ' ') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {# Pagination #}
+                {% if totalPages > 1 %}
+                    <div class="flex justify-center gap-2 mt-4">
+                        {% if page > 1 %}
+                            <a href="{{ path('app_game_guild_ranking', {page: page - 1}) }}"
+                               class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors">
+                                Precedent
+                            </a>
+                        {% endif %}
+                        <span class="px-3 py-1.5 text-gray-400 text-xs">
+                            Page {{ page }} / {{ totalPages }}
+                        </span>
+                        {% if page < totalPages %}
+                            <a href="{{ path('app_game_guild_ranking', {page: page + 1}) }}"
+                               class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors">
+                                Suivant
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
