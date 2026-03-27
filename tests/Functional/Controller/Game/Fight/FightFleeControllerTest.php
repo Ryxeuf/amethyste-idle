@@ -8,7 +8,10 @@ use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\Game\Monster;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\FightTurnResolver;
+use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -30,11 +33,18 @@ class FightFleeControllerTest extends TestCase
         $this->statusEffectManager = $this->createMock(StatusEffectManager::class);
         $this->combatLogger = $this->createMock(CombatLogger::class);
 
+        $turnResolver = $this->createMock(FightTurnResolver::class);
+        $mobActionHandler = $this->createMock(MobActionHandler::class);
+        $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
+
         $this->controller = new FightFleeController(
             $this->playerHelper,
             $this->entityManager,
             $this->statusEffectManager,
             $this->combatLogger,
+            $turnResolver,
+            $mobActionHandler,
+            $fightTurnPublisher,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

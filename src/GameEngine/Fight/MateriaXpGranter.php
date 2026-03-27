@@ -53,6 +53,12 @@ class MateriaXpGranter implements EventSubscriberInterface
         $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($mob->getMap());
         $xpGain = (int) round($xpGain * $xpMultiplier);
 
+        // Coop: split XP equally between participants (minimum 1)
+        $alivePlayers = $fight->getPlayers()->filter(fn ($p) => !$p->isDead());
+        if ($fight->isCoopFight() && $alivePlayers->count() > 1) {
+            $xpGain = max(1, (int) round($xpGain / $alivePlayers->count()));
+        }
+
         foreach ($fight->getPlayers() as $player) {
             if ($player->isDead()) {
                 continue;

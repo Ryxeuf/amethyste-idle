@@ -49,6 +49,19 @@ class LootGenerator implements EventSubscriberInterface
 
         $monsterDifficulty = $mob->getMonster()->getDifficulty();
 
+        // Determine if this is a coop fight for round-robin loot distribution
+        $fight = $mob->getFight();
+        $coopPlayerIds = [];
+        if ($fight !== null && $fight->isCoopFight()) {
+            foreach ($fight->getPlayers() as $player) {
+                if (!$player->isDead()) {
+                    $coopPlayerIds[] = $player->getId();
+                }
+            }
+        }
+        $isCoopLoot = count($coopPlayerIds) > 1;
+        $roundRobinIndex = 0;
+
         $items = [];
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
             if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
@@ -59,6 +72,10 @@ class LootGenerator implements EventSubscriberInterface
                 $item = new PlayerItem();
                 $item->setMob($mob);
                 $item->setGenericItem($monsterItem->getItem());
+                if ($isCoopLoot) {
+                    $item->setBoundToPlayerId($coopPlayerIds[$roundRobinIndex % count($coopPlayerIds)]);
+                    ++$roundRobinIndex;
+                }
                 $mob->addItem($item);
                 $this->entityManager->persist($item);
 
@@ -70,6 +87,10 @@ class LootGenerator implements EventSubscriberInterface
                 $item = new PlayerItem();
                 $item->setMob($mob);
                 $item->setGenericItem($monsterItem->getItem());
+                if ($isCoopLoot) {
+                    $item->setBoundToPlayerId($coopPlayerIds[$roundRobinIndex % count($coopPlayerIds)]);
+                    ++$roundRobinIndex;
+                }
                 $mob->addItem($item);
                 $this->entityManager->persist($item);
             }

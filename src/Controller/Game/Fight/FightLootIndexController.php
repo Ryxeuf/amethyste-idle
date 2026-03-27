@@ -43,13 +43,14 @@ class FightLootIndexController extends AbstractController
         $experience = 0;
         $items = [];
         $isWorldBoss = $fight->isWorldBossFight();
+        $isCoop = $fight->isCoopFight();
         $contributions = $isWorldBoss ? $fight->getRankedContributors() : [];
 
         /** @var Mob $mob */
         foreach ($fight->getMobs() as $mob) {
             foreach ($mob->getItems() as $item) {
-                // World boss : ne montrer que les items liés à ce joueur
-                if ($isWorldBoss && $item->getBoundToPlayerId() !== $player->getId()) {
+                // World boss / coop : ne montrer que les items liés à ce joueur
+                if (($isWorldBoss || $isCoop) && $item->getBoundToPlayerId() !== $player->getId()) {
                     continue;
                 }
 

@@ -28,14 +28,13 @@
 
 ### 81 — Combat cooperatif (L | ★★★)
 > Combat a plusieurs joueurs contre des groupes de monstres. Prerequis : ← 53, 49
-> **Attention** : phase large, a re-decouper au moment de l'implementation.
-- [ ] FightController : creer un combat avec plusieurs joueurs du meme groupe
-- [ ] Timeline multi-joueurs dans FightTurnResolver
-- [ ] Chaque joueur joue son tour independamment (Mercure pour notifier le tour actif)
-- [ ] Template combat : afficher tous les joueurs allies avec leurs barres de vie
-- [ ] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
-- [ ] XP partagee (repartition equitable entre participants)
-- [ ] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
+- [x] FightController : creer un combat avec plusieurs joueurs du meme groupe
+- [x] Timeline multi-joueurs dans FightTurnResolver
+- [x] Chaque joueur joue son tour independamment (Mercure pour notifier le tour actif)
+- [x] Template combat : afficher tous les joueurs allies avec leurs barres de vie
+- [x] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
+- [x] XP partagee (repartition equitable entre participants)
+- [x] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
 
 ### ~~83 — Invasions (M | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

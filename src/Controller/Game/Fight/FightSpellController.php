@@ -17,6 +17,7 @@ use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,6 +44,7 @@ class FightSpellController extends AbstractController
         private readonly GearHelper $gearHelper,
         private readonly EnchantmentManager $enchantmentManager,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
+        private readonly FightTurnPublisher $fightTurnPublisher,
     ) {
     }
 
@@ -56,14 +58,20 @@ class FightSpellController extends AbstractController
         }
 
         $fight = $player->getFight();
+        $isCoop = $fight->isCoopFight();
         $data = json_decode($request->getContent(), true);
 
         if (!$data || !isset($data['spellSlug']) || !isset($data['targetId']) || !isset($data['targetType'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
         }
 
-        // Priorite de vitesse : le mob agit en premier s'il est plus rapide
-        $mobFirst = $this->turnResolver->isMobFirst($fight);
+        // Coop turn validation
+        if ($isCoop && !$this->turnResolver->isPlayerTurn($fight, $player->getId())) {
+            return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
+        }
+
+        // Solo: Priorite de vitesse : le mob agit en premier s'il est plus rapide
+        $mobFirst = !$isCoop && $this->turnResolver->isMobFirst($fight);
         $mobResult = ['messages' => [], 'dangerAlert' => null];
 
         if ($mobFirst && !$fight->isTerminated()) {
@@ -248,11 +256,21 @@ class FightSpellController extends AbstractController
         $energyRegen = max(1, (int) ($player->getMaxEnergy() * 0.05));
         $player->setEnergy(min($player->getMaxEnergy(), $player->getEnergy() + $energyRegen));
 
-        // Tour du mob — apres le joueur si le joueur est plus rapide
-        $mobResult = ['messages' => [], 'dangerAlert' => null];
-        if (!$mobFirst && !$fight->isTerminated()) {
-            $mobResult = $this->mobActionHandler->doAction($fight);
-            $fight->setStep($fight->getStep() + 1);
+        // Tour du mob / avancement coop
+        if ($isCoop) {
+            // Coop: advance turn (mobs auto-resolve in advanceCoopTurn)
+            if (!$fight->isTerminated()) {
+                $turnResult = $this->turnResolver->advanceCoopTurn($fight, $this->mobActionHandler);
+                $messages = array_merge($messages, $turnResult['messages']);
+                $mobResult['dangerAlert'] = $turnResult['dangerAlert'];
+            }
+        } else {
+            // Solo: mob acts after player if player was faster
+            $mobResult = ['messages' => [], 'dangerAlert' => null];
+            if (!$mobFirst && !$fight->isTerminated()) {
+                $mobResult = $this->mobActionHandler->doAction($fight);
+                $fight->setStep($fight->getStep() + 1);
+            }
         }
 
         // Log victoire/defaite
@@ -266,6 +284,15 @@ class FightSpellController extends AbstractController
 
         $this->entityManager->persist($player);
         $this->entityManager->flush();
+
+        // Publish turn change via Mercure for coop
+        if ($isCoop) {
+            if ($fight->isTerminated()) {
+                $this->fightTurnPublisher->publishFightEnd($fight);
+            } else {
+                $this->fightTurnPublisher->publishTurnChange($fight);
+            }
+        }
 
         return new JsonResponse([
             'success' => true,

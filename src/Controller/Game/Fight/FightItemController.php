@@ -4,8 +4,10 @@ namespace App\Controller\Game\Fight;
 
 use App\Entity\App\PlayerItem;
 use App\GameEngine\Fight\CombatLogger;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +25,8 @@ class FightItemController extends AbstractController
         private readonly SpellApplicator $spellApplicator,
         private readonly MobActionHandler $mobActionHandler,
         private readonly CombatLogger $combatLogger,
+        private readonly FightTurnResolver $turnResolver,
+        private readonly FightTurnPublisher $fightTurnPublisher,
     ) {
     }
 
@@ -41,6 +45,12 @@ class FightItemController extends AbstractController
         }
 
         $fight = $player->getFight();
+        $isCoop = $fight->isCoopFight();
+
+        // Coop turn validation
+        if ($isCoop && !$this->turnResolver->isPlayerTurn($fight, $player->getId())) {
+            return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
+        }
 
         // Find the item in player's inventory
         $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find((int) $data['itemId']);
@@ -97,11 +107,19 @@ class FightItemController extends AbstractController
         // Advance fight step
         $fight->setStep($fight->getStep() + 1);
 
-        // Tour du mob (si le combat continue)
+        // Tour du mob / avancement coop
         $mobResult = ['messages' => [], 'dangerAlert' => null];
-        if (!$fight->isTerminated()) {
-            $mobResult = $this->mobActionHandler->doAction($fight);
-            $fight->setStep($fight->getStep() + 1);
+        if ($isCoop) {
+            if (!$fight->isTerminated()) {
+                $turnResult = $this->turnResolver->advanceCoopTurn($fight, $this->mobActionHandler);
+                $messages = array_merge($messages, $turnResult['messages']);
+                $mobResult['dangerAlert'] = $turnResult['dangerAlert'];
+            }
+        } else {
+            if (!$fight->isTerminated()) {
+                $mobResult = $this->mobActionHandler->doAction($fight);
+                $fight->setStep($fight->getStep() + 1);
+            }
         }
 
         // Log victoire/defaite
@@ -115,6 +133,15 @@ class FightItemController extends AbstractController
 
         $this->entityManager->persist($player);
         $this->entityManager->flush();
+
+        // Publish turn change via Mercure for coop
+        if ($isCoop) {
+            if ($fight->isTerminated()) {
+                $this->fightTurnPublisher->publishFightEnd($fight);
+            } else {
+                $this->fightTurnPublisher->publishTurnChange($fight);
+            }
+        }
 
         return new JsonResponse([
             'success' => true,

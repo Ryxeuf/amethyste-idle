@@ -50,10 +50,10 @@ class FightIndexController extends AbstractController
         if ($player->getFight()->isVictory()) {
             return $this->redirectToRoute('app_game_fight_loot');
         }
-        // World boss : si ce joueur est mort mais d'autres joueurs sont vivants,
+        // World boss / coop : si ce joueur est mort mais d'autres joueurs sont vivants,
         // le retirer du combat et le respawn
-        if ($player->isDead() && $player->getFight()->isWorldBossFight()) {
-            return $this->handleWorldBossPlayerDeath($player);
+        if ($player->isDead() && ($player->getFight()->isWorldBossFight() || $player->getFight()->isCoopFight())) {
+            return $this->handleMultiPlayerDeath($player);
         }
 
         if ($player->getFight()->isDefeat()) {
@@ -123,6 +123,10 @@ class FightIndexController extends AbstractController
             $effectiveMaxLifeByPlayer[$fightPlayerEntity->getId()] = $this->playerEffectiveStatsCalculator->getEffectiveMaxLife($fightPlayerEntity);
         }
 
+        // Coop fight data
+        $isCoop = $fight->isCoopFight();
+        $isMyTurn = !$isCoop || $this->turnResolver->isPlayerTurn($fight, $player->getId());
+
         return $this->render('game/fight/index.html.twig', [
             'player' => $player,
             'fight' => $fight,
@@ -135,14 +139,17 @@ class FightIndexController extends AbstractController
             'timeline' => $timeline,
             'currentRound' => $currentRound,
             'effectiveMaxLifeByPlayer' => $effectiveMaxLifeByPlayer,
+            'isCoop' => $isCoop,
+            'isMyTurn' => $isMyTurn,
+            'currentTurnKey' => $fight->getCurrentTurnKey(),
         ]);
     }
 
     /**
-     * Gère la mort d'un joueur dans un combat world boss : le retire du combat
-     * et le respawn, tandis que le combat continue pour les autres participants.
+     * Gère la mort d'un joueur dans un combat multi-joueurs (world boss ou coop) :
+     * le retire du combat et le respawn, tandis que le combat continue pour les autres.
      */
-    private function handleWorldBossPlayerDeath(Player $player): Response
+    private function handleMultiPlayerDeath(Player $player): Response
     {
         $fight = $player->getFight();
 
@@ -177,9 +184,13 @@ class FightIndexController extends AbstractController
         // Nettoyer les effets de statut
         $this->statusEffectManager->clearAllEffects($fight);
 
-        // Dissocier tous les joueurs du combat
+        // Dissocier tous les joueurs du combat et les respawn
         foreach ($fight->getPlayers() as $fightPlayer) {
             $fightPlayer->setFight(null);
+            if ($fightPlayer->isDead()) {
+                $fightPlayer->setLife((int) round($fightPlayer->getMaxLife() / 2));
+                $fightPlayer->setDiedAt(null);
+            }
             $this->entityManager->persist($fightPlayer);
         }
 
@@ -191,19 +202,20 @@ class FightIndexController extends AbstractController
         // Supprimer le combat
         $this->entityManager->remove($fight);
 
-        // Respawn du joueur (restaurer HP si pas deja fait par le PlayerRespawnHandler)
-        if ($player->isDead()) {
-            $player->setLife((int) round($player->getMaxLife() / 2));
-            $player->setDiedAt(null);
-        }
-
-        $this->entityManager->persist($player);
         $this->entityManager->flush();
 
         // Abandon du donjon en cas de defaite
         $activeRun = $this->dungeonRunRepository->findActiveRun($player);
         if ($activeRun !== null) {
             $this->dungeonManager->abandonRun($activeRun);
+        }
+
+        // Respawn du joueur si pas fait dans la boucle ci-dessus
+        if ($player->isDead()) {
+            $player->setLife((int) round($player->getMaxLife() / 2));
+            $player->setDiedAt(null);
+            $this->entityManager->persist($player);
+            $this->entityManager->flush();
         }
 
         return $this->render('game/fight/defeat.html.twig', [

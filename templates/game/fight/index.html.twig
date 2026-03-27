@@ -186,7 +186,29 @@
 		.death-fade { animation: deathFade 0.8s ease-out forwards; }
 	</style>
 
-	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800">
+	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800"
+		{% if isCoop is defined and isCoop %}data-coop="true" data-fight-id="{{ fight.id }}" data-my-turn="{{ isMyTurn ? 'true' : 'false' }}" data-current-turn-key="{{ currentTurnKey }}" data-player-key="player_{{ player.id }}"{% endif %}>
+
+		{# Coop turn indicator #}
+		{% if isCoop is defined and isCoop %}
+			<div id="coop-turn-banner" class="mb-2 p-2 rounded-lg text-center border
+				{% if isMyTurn %}bg-green-900/60 border-green-500 animate-pulse{% else %}bg-yellow-900/40 border-yellow-600{% endif %}">
+				{% if isMyTurn %}
+					<span class="text-green-200 font-bold text-xs sm:text-sm">C'est votre tour !</span>
+				{% else %}
+					{% set currentTurnName = '' %}
+					{% for fp in fight.players %}
+						{% if ('player_' ~ fp.id) == currentTurnKey %}
+							{% set currentTurnName = fp.name %}
+						{% endif %}
+					{% endfor %}
+					<span class="text-yellow-200 font-bold text-xs sm:text-sm">
+						Tour de {{ currentTurnName }}... En attente.
+					</span>
+				{% endif %}
+			</div>
+		{% endif %}
+
 		{# Danger alert #}
 		{% if dangerAlert is defined and dangerAlert %}
 			<div class="mb-2 p-2 bg-red-900/60 border border-red-500 rounded-lg text-center animate-pulse">
@@ -547,6 +569,56 @@
 	{{ parent() }}
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
+			// ===== COOP TURN STATE =====
+			const gamePage = document.querySelector('.game-page');
+			const isCoop = gamePage?.dataset.coop === 'true';
+			let isMyTurn = gamePage?.dataset.myTurn === 'true';
+			const fightId = gamePage?.dataset.fightId;
+			const myKey = gamePage?.dataset.playerKey;
+
+			// ===== MERCURE SSE FOR COOP TURN CHANGES =====
+			if (isCoop && fightId) {
+				const mercureUrl = document.body.dataset.mercureUrl || document.querySelector('[data-event-notification-mercure-url-value]')?.dataset.eventNotificationMercureUrlValue;
+				if (mercureUrl) {
+					const topic = 'fight/' + fightId + '/turn';
+					const url = new URL(mercureUrl);
+					url.searchParams.append('topic', topic);
+					const eventSource = new EventSource(url, { withCredentials: true });
+					eventSource.onmessage = function(event) {
+						try {
+							const data = JSON.parse(event.data);
+							if (data.type === 'fight_end' || data.type === 'turn_change') {
+								// Reload the page to get fresh state
+								window.location.reload();
+							}
+						} catch (e) {
+							console.error('[coop] SSE parse error', e);
+						}
+					};
+					eventSource.onerror = function() {
+						console.warn('[coop] SSE connection lost, will retry');
+					};
+				}
+			}
+
+			function setCoopActionsEnabled(enabled) {
+				if (!isCoop) return;
+				const actionsPanel = document.getElementById('panel-actions');
+				if (!actionsPanel) return;
+				if (enabled) {
+					actionsPanel.style.opacity = '1';
+					actionsPanel.style.pointerEvents = '';
+				} else {
+					actionsPanel.style.opacity = '0.5';
+					actionsPanel.style.pointerEvents = 'none';
+				}
+			}
+
+			// Disable actions if not my turn
+			if (isCoop && !isMyTurn) {
+				setCoopActionsEnabled(false);
+			}
+
 			// ===== TAB SWITCHING (mobile) =====
 			const tabs = document.querySelectorAll('.fight-tab');
 			const panelActions = document.getElementById('panel-actions');

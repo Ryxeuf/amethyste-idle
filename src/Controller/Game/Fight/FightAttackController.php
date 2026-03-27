@@ -10,6 +10,7 @@ use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightCalculator;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,6 +29,7 @@ class FightAttackController extends AbstractController
         private readonly CombatLogger $combatLogger,
         private readonly FightTurnResolver $turnResolver,
         private readonly EnchantmentManager $enchantmentManager,
+        private readonly FightTurnPublisher $fightTurnPublisher,
     ) {
     }
 
@@ -45,6 +47,11 @@ class FightAttackController extends AbstractController
             return new JsonResponse(['error' => 'Fight not found'], Response::HTTP_NOT_FOUND);
         }
 
+        // Coop turn validation
+        if ($fight->isCoopFight() && !$this->turnResolver->isPlayerTurn($fight, $player->getId())) {
+            return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
+        }
+
         $data = json_decode($request->getContent(), true);
         if (!$data || !isset($data['targetId']) || !isset($data['targetType'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
@@ -56,47 +63,46 @@ class FightAttackController extends AbstractController
         }
 
         $messages = [];
+        $hit = false;
         $mobResult = ['messages' => [], 'dangerAlert' => null];
-        $mobFirst = $this->turnResolver->isMobFirst($fight);
 
-        // --- Mob agit en premier si plus rapide ---
-        if ($mobFirst && !$fight->isTerminated()) {
-            $mobResult = $this->mobActionHandler->doAction($fight);
+        if ($fight->isCoopFight()) {
+            // Coop: player acts, then advance turn (mobs auto-resolve)
+            $attackResult = $this->doPlayerAttack($player, $target, $fight);
+            $messages = $attackResult['messages'];
+            $hit = $attackResult['hit'];
             $fight->setStep($fight->getStep() + 1);
-        }
 
-        // --- Tour du joueur (s'il est encore vivant) ---
-        if (!$player->isDead()) {
-            $hit = FightCalculator::hasAttackHit($player->getHit());
-
-            if ($hit) {
-                $damage = $this->calculateDamage($player, $target);
-                $target->setLife(max(0, $target->getLife() - $damage));
-                $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
-
-                $this->combatLogger->logAttack($fight, $player, $target, $damage);
-
-                // Tracker la contribution pour les combats world boss
-                if ($fight->isWorldBossFight()) {
-                    $fight->addContribution($player->getId(), $damage);
-                }
-
-                if ($target->getLife() === 0) {
-                    $target->setDiedAt(new \DateTime());
-                    $messages[] = sprintf('%s est vaincu !', $target->getName());
-                    $this->combatLogger->logDeath($fight, $target);
-                }
-            } else {
-                $messages[] = sprintf('%s rate son attaque !', $player->getName());
+            if (!$fight->isTerminated()) {
+                $turnResult = $this->turnResolver->advanceCoopTurn($fight, $this->mobActionHandler);
+                $messages = array_merge($messages, $turnResult['messages']);
+                $mobResult['dangerAlert'] = $turnResult['dangerAlert'];
             }
-        }
+        } else {
+            // Solo: original behavior
+            $mobFirst = $this->turnResolver->isMobFirst($fight);
 
-        $fight->setStep($fight->getStep() + 1);
+            if ($mobFirst && !$fight->isTerminated()) {
+                $mobResult = $this->mobActionHandler->doAction($fight);
+                $fight->setStep($fight->getStep() + 1);
+            }
 
-        // --- Mob agit apres si plus lent ---
-        if (!$mobFirst && !$fight->isTerminated()) {
-            $mobResult = $this->mobActionHandler->doAction($fight);
+            if (!$player->isDead()) {
+                $attackResult = $this->doPlayerAttack($player, $target, $fight);
+                $messages = $attackResult['messages'];
+                $hit = $attackResult['hit'];
+            }
+
             $fight->setStep($fight->getStep() + 1);
+
+            if (!$mobFirst && !$fight->isTerminated()) {
+                $mobResult = $this->mobActionHandler->doAction($fight);
+                $fight->setStep($fight->getStep() + 1);
+            }
+
+            $messages = $mobFirst
+                ? array_merge($mobResult['messages'], $messages)
+                : array_merge($messages, $mobResult['messages']);
         }
 
         // Log victoire/defaite
@@ -110,12 +116,19 @@ class FightAttackController extends AbstractController
 
         $this->entityManager->flush();
 
+        // Publish turn change via Mercure for coop
+        if ($fight->isCoopFight()) {
+            if ($fight->isTerminated()) {
+                $this->fightTurnPublisher->publishFightEnd($fight);
+            } else {
+                $this->fightTurnPublisher->publishTurnChange($fight);
+            }
+        }
+
         return new JsonResponse([
             'success' => true,
-            'hit' => $hit ?? false,
-            'messages' => $mobFirst
-                ? array_merge($mobResult['messages'], $messages)
-                : array_merge($messages, $mobResult['messages']),
+            'hit' => $hit,
+            'messages' => $messages,
             'dangerAlert' => $mobResult['dangerAlert'],
             'fight' => [
                 'step' => $fight->getStep(),
@@ -123,6 +136,38 @@ class FightAttackController extends AbstractController
                 'victory' => $fight->isVictory(),
             ],
         ]);
+    }
+
+    /**
+     * @return array{messages: string[], hit: bool}
+     */
+    private function doPlayerAttack(Player $player, CharacterInterface $target, Fight $fight): array
+    {
+        $messages = [];
+        $hit = FightCalculator::hasAttackHit($player->getHit());
+
+        if ($hit) {
+            $damage = $this->calculateDamage($player, $target);
+            $target->setLife(max(0, $target->getLife() - $damage));
+            $messages[] = sprintf('%s attaque %s pour %d degats !', $player->getName(), $target->getName(), $damage);
+
+            $this->combatLogger->logAttack($fight, $player, $target, $damage);
+
+            // Tracker la contribution pour les combats world boss
+            if ($fight->isWorldBossFight()) {
+                $fight->addContribution($player->getId(), $damage);
+            }
+
+            if ($target->getLife() === 0) {
+                $target->setDiedAt(new \DateTime());
+                $messages[] = sprintf('%s est vaincu !', $target->getName());
+                $this->combatLogger->logDeath($fight, $target);
+            }
+        } else {
+            $messages[] = sprintf('%s rate son attaque !', $player->getName());
+        }
+
+        return ['messages' => $messages, 'hit' => $hit];
     }
 
     private function findTarget(Fight $fight, int $targetId, string $targetType): ?CharacterInterface
