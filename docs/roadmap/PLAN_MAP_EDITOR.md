@@ -216,18 +216,18 @@ Piste G — Export & qualite                : MED-16
 - [x] Route `GET /{id}/editor/wangsets` — export des definitions pour le frontend
 - [x] Tests unitaires : 21 tests (detection terrain, ile, voisins, bord, peninsule, zone, idempotence)
 
-### MED-12 — Auto-tiling frontend (M | ★★ | HAUTE)
+### MED-12 — Auto-tiling frontend (M | ★★ | HAUTE) ✅
 > Preview temps reel des transitions cote client. Prerequis : ← MED-11, MED-04
-- [ ] Module `assets/lib/WangTileResolverJs.js` :
+- [x] Module `assets/lib/WangTileResolverJs.js` :
   - Meme logique que le PHP (table de lookup 4-corners → GID)
   - Export des definitions wangsets comme constantes JS
-- [ ] Mode auto-tile dans la toolbar (toggle on/off, raccourci T) :
+- [x] Mode auto-tile dans la toolbar (toggle on/off, raccourci T) :
   - Quand actif : le stamp brush applique le terrain type choisi
   - Apres peinture d'une tile, recalcul automatique des transitions sur les 8 voisins
   - Preview immediat sur le canvas
-- [ ] Synchronisation serveur : lors du "Sauvegarder", envoi des tiles + zones auto-tiled
-- [ ] Terrains supportes en v1 : herbe/eau, herbe/sable, herbe/terre, herbe/chemin
-- [ ] Tester : activer auto-tile, peindre de l'eau → transitions bordures correctes
+- [x] Synchronisation serveur : lors du "Sauvegarder", envoi des tiles + zones auto-tiled
+- [x] 25 terrains supportes (tous les types du WangTileResolver PHP)
+- [x] Tester : activer auto-tile, peindre de l'eau → transitions bordures correctes
 
 ---
 

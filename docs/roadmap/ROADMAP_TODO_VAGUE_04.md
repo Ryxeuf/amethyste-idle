@@ -85,9 +85,9 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 - [x] Route `POST /{id}/editor/auto-tile`
 - [x] Tests unitaires
 
-**MED-12 — Auto-tiling frontend (M | ★★ | HAUTE)**
+**MED-12 — Auto-tiling frontend (M | ★★ | HAUTE)** ✅
 > Preview temps reel. Prerequis : ← MED-11, MED-04
-- [ ] Module `WangTileResolverJs.js`, mode auto-tile toggle (raccourci T)
+- [x] Module `WangTileResolverJs.js`, mode auto-tile toggle (raccourci T)
 
 #### Phase 6 — Generateur procedural (MED-13 a MED-15)
 

@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import WangTileResolverJs from '../lib/WangTileResolverJs.js'
 
 export default class extends Controller {
     static values = {
@@ -15,6 +16,8 @@ export default class extends Controller {
         createEntityUrl: String,
         updateEntityUrl: String,
         entityOptionsUrl: String,
+        wangsetsUrl: String,
+        autoTileUrl: String,
     }
 
     static targets = ['canvas', 'info', 'coords', 'legend', 'stats', 'contextMenu']
@@ -75,6 +78,11 @@ export default class extends Controller {
     _layerVisibility = [true, true, true, true] // per-layer visibility
     _layerOpacity = [1, 1, 1, 1] // per-layer opacity (0..1)
 
+    // Auto-tiling
+    _autoTileEnabled = false
+    _autoTileSlug = null // selected terrain slug (e.g. 'water', 'sand')
+    _wangResolver = null // WangTileResolverJs instance
+
     connect() {
         this._canvas = this.canvasTarget
         this._ctx = this._canvas.getContext('2d')
@@ -82,6 +90,9 @@ export default class extends Controller {
 
         // Expose controller instance for inline onclick handlers
         this.element.__stimulus_controller = this
+
+        // Initialize auto-tiling resolver
+        this._wangResolver = new WangTileResolverJs()
 
         this._bindEvents()
         this._loadData()
@@ -323,6 +334,26 @@ export default class extends Controller {
                 ctx.moveTo(hx + ts * 0.75, hy + ts * 0.25)
                 ctx.lineTo(hx + ts * 0.25, hy + ts * 0.75)
                 ctx.stroke()
+            } else if (this._tool === 'paint' && this._autoTileEnabled && this._autoTileSlug && this._tilesetsLoaded) {
+                // Auto-tile ghost preview: show center tile with teal tint
+                const centerGid = this._wangResolver ? this._wangResolver.getCenterGid(this._autoTileSlug) : 0
+                if (centerGid > 0) {
+                    const tileset = this._findTileset(centerGid)
+                    if (tileset) {
+                        const img = this._tilesetImages[tileset.name]
+                        if (img) {
+                            const localId = centerGid - tileset.firstGid
+                            const srcX = (localId % tileset.columns) * tileset.tileWidth
+                            const srcY = Math.floor(localId / tileset.columns) * tileset.tileHeight
+                            ctx.globalAlpha = 0.5
+                            ctx.drawImage(img, srcX, srcY, tileset.tileWidth, tileset.tileHeight, hx, hy, ts, ts)
+                            ctx.globalAlpha = 1
+                        }
+                    }
+                }
+                ctx.strokeStyle = '#14b8a6'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, ts, ts)
             } else if (this._tool === 'paint' && this._pickerGid > 0 && this._tilesetsLoaded) {
                 // Ghost preview of stamp
                 ctx.globalAlpha = 0.5
@@ -798,6 +829,7 @@ export default class extends Controller {
         if (e.key === 'u' || e.key === 'U') { this.setToolUnblock(); e.preventDefault() }
         if (e.key === 'w' || e.key === 'W') { this.setToolWall(); e.preventDefault() }
         if (e.key === 'g' || e.key === 'G') { this.setToolFill(); e.preventDefault() }
+        if (e.key === 't' || e.key === 'T') { this.toggleAutoTile(); e.preventDefault() }
 
         // Layer shortcuts: 1/2/3/4 (select active layer)
         if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
@@ -1867,6 +1899,11 @@ export default class extends Controller {
                     this._pendingTileChanges[key] = {}
                 }
                 this._pendingTileChanges[key][this._pickerLayer] = gid
+
+                // Auto-tiling: recalculate transitions on neighbors
+                if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver) {
+                    this._applyAutoTileNeighbors(tx, ty)
+                }
             }
         }
 
@@ -1922,6 +1959,11 @@ export default class extends Controller {
             this._pendingTileChanges[key] = {}
         }
         this._pendingTileChanges[key][this._pickerLayer] = 0
+
+        // Auto-tiling: recalculate transitions on neighbors after erasing
+        if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver) {
+            this._applyAutoTileNeighbors(x, y)
+        }
 
         this._updatePendingCount()
         this._render()
@@ -1985,9 +2027,180 @@ export default class extends Controller {
             }
         }
 
+        // Auto-tiling: resolve the filled zone + borders
+        if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver && visited.size > 0) {
+            let fMinX = Infinity, fMinY = Infinity, fMaxX = -Infinity, fMaxY = -Infinity
+            for (const k of visited) {
+                const [fx, fy] = k.split('.').map(Number)
+                if (fx < fMinX) fMinX = fx
+                if (fy < fMinY) fMinY = fy
+                if (fx > fMaxX) fMaxX = fx
+                if (fy > fMaxY) fMaxY = fy
+            }
+            const zoneChanges = this._wangResolver.resolveZone(this._cells, fMinX, fMinY, fMaxX, fMaxY, layer, this._autoTileSlug)
+            for (const change of zoneChanges) {
+                const ck = change.x + '.' + change.y
+                const cc = this._cells[ck]
+                if (!cc) continue
+                if (!cc.l) cc.l = []
+                while (cc.l.length <= layer) cc.l.push(0)
+                const bGid = cc.l[layer]
+                cc.l[layer] = change.gid
+                this._recordTileChange(ck, layer, bGid, change.gid)
+                if (!this._pendingTileChanges[ck]) this._pendingTileChanges[ck] = {}
+                this._pendingTileChanges[ck][layer] = change.gid
+            }
+        }
+
         this._endStroke()
         this._updatePendingCount()
         this._render()
+    }
+
+    // --- Auto-tiling ---
+
+    _applyAutoTileNeighbors(x, y) {
+        if (!this._wangResolver || !this._autoTileSlug) return
+
+        const layer = this._pickerLayer
+        const changes = this._wangResolver.resolveNeighbors(this._cells, x, y, layer, this._autoTileSlug)
+
+        for (const change of changes) {
+            const key = change.x + '.' + change.y
+            const cell = this._cells[key]
+            if (!cell) continue
+
+            if (!cell.l) cell.l = []
+            while (cell.l.length <= layer) cell.l.push(0)
+
+            const beforeGid = cell.l[layer]
+            cell.l[layer] = change.gid
+            this._recordTileChange(key, layer, beforeGid, change.gid)
+
+            if (!this._pendingTileChanges[key]) {
+                this._pendingTileChanges[key] = {}
+            }
+            this._pendingTileChanges[key][layer] = change.gid
+        }
+    }
+
+    toggleAutoTile() {
+        this._autoTileEnabled = !this._autoTileEnabled
+        this._updateAutoTileUI()
+
+        if (this._autoTileEnabled && this._autoTileSlug) {
+            // Set picker to center GID of current terrain
+            const centerGid = this._wangResolver.getCenterGid(this._autoTileSlug)
+            if (centerGid > 0) {
+                this._pickerGid = centerGid
+                this._pickerStampWidth = 1
+                this._pickerStampHeight = 1
+                this._pickerStampGids = [centerGid]
+                this._tool = 'paint'
+                this._updateToolButtons()
+            }
+        }
+
+        this._render()
+    }
+
+    setAutoTileSlug(e) {
+        const slug = e.target ? e.target.value : e
+        this._autoTileSlug = slug || null
+
+        if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver) {
+            const centerGid = this._wangResolver.getCenterGid(this._autoTileSlug)
+            if (centerGid > 0) {
+                this._pickerGid = centerGid
+                this._pickerStampWidth = 1
+                this._pickerStampHeight = 1
+                this._pickerStampGids = [centerGid]
+            }
+        }
+    }
+
+    async autoTileSelection() {
+        if (this._selection.size === 0) {
+            this._showFlash('Selectionnez une zone pour auto-tiler', 'error')
+            return
+        }
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        for (const key of this._selection) {
+            const [x, y] = key.split('.').map(Number)
+            if (x < minX) minX = x
+            if (y < minY) minY = y
+            if (x > maxX) maxX = x
+            if (y > maxY) maxY = y
+        }
+
+        const layer = this._pickerLayer
+        const terrainSlug = this._autoTileSlug || null
+
+        // Use the backend auto-tile route for zone-level operations
+        try {
+            const body = { startX: minX, startY: minY, endX: maxX, endY: maxY, layer }
+            if (terrainSlug) body.terrainSlug = terrainSlug
+
+            const res = await fetch(this.autoTileUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+            const data = await res.json()
+
+            if (!data.success) {
+                this._showFlash('Erreur auto-tile: ' + (data.error || 'inconnue'), 'error')
+                return
+            }
+
+            // Apply returned changes locally
+            this._beginStroke()
+            for (const change of (data.cells || [])) {
+                const key = change.x + '.' + change.y
+                const cell = this._cells[key]
+                if (!cell) continue
+
+                if (!cell.l) cell.l = []
+                while (cell.l.length <= change.layer) cell.l.push(0)
+
+                const beforeGid = cell.l[change.layer]
+                cell.l[change.layer] = change.gid
+                this._recordTileChange(key, change.layer, beforeGid, change.gid)
+
+                if (!this._pendingTileChanges[key]) {
+                    this._pendingTileChanges[key] = {}
+                }
+                this._pendingTileChanges[key][change.layer] = change.gid
+            }
+            this._endStroke()
+
+            this._updatePendingCount()
+            this._showFlash(`Auto-tile: ${data.count} cellule(s) modifiee(s)`, 'success')
+            this._render()
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+    }
+
+    _updateAutoTileUI() {
+        const btn = document.getElementById('auto-tile-toggle')
+        if (btn) {
+            btn.textContent = this._autoTileEnabled ? 'ON' : 'OFF'
+            btn.classList.toggle('bg-teal-700', this._autoTileEnabled)
+            btn.classList.toggle('text-white', this._autoTileEnabled)
+            btn.classList.toggle('bg-gray-700', !this._autoTileEnabled)
+            btn.classList.toggle('text-gray-300', !this._autoTileEnabled)
+        }
+        const selector = document.getElementById('auto-tile-terrain')
+        if (selector) {
+            selector.classList.toggle('opacity-50', !this._autoTileEnabled)
+        }
+        const zoneBtn = document.getElementById('auto-tile-zone-btn')
+        if (zoneBtn) {
+            zoneBtn.classList.toggle('opacity-50', !this._autoTileEnabled)
+            zoneBtn.disabled = !this._autoTileEnabled
+        }
     }
 
     _updatePendingCount() {
