@@ -8,6 +8,8 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Table(name: 'chat_message')]
 #[ORM\Index(columns: ['channel'], name: 'idx_chat_channel')]
 #[ORM\Index(columns: ['created_at'], name: 'idx_chat_created_at')]
+#[ORM\Index(columns: ['channel', 'created_at'], name: 'idx_chat_channel_created')]
+#[ORM\Index(columns: ['guild_id', 'created_at'], name: 'idx_chat_guild_created')]
 #[ORM\Entity()]
 class ChatMessage
 {
