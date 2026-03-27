@@ -14,7 +14,10 @@
             {% set category_labels = {
                 'combat': 'Combat',
                 'exploration': 'Exploration',
-                'quests': 'Quetes'
+                'quests': 'Quetes',
+                'gathering': 'Recolte',
+                'craft': 'Artisanat',
+                'secrets': 'Secrets'
             } %}
 
             {% set category_keys = categories|keys %}
@@ -43,23 +46,43 @@
                             {% for achievement in achievementList %}
                                 {% set pa = playerAchievementMap[achievement.id]|default(null) %}
                                 {% set isCompleted = pa and pa.completedAt is not null %}
+                                {% set isHidden = achievement.hidden %}
+                                {% set isDiscovered = pa is not null %}
+
+                                {# Skip hidden achievements that haven't been discovered yet #}
+                                {% if not isHidden or isDiscovered %}
+
                                 {% set progress = pa ? pa.progress : 0 %}
                                 {% set target = achievement.criteriaCount %}
                                 {% set progressPercent = target > 0 ? ((progress / target) * 100)|round(0, 'floor') : 0 %}
                                 {% if progressPercent > 100 %}{% set progressPercent = 100 %}{% endif %}
 
-                                <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border {% if isCompleted %}border-green-600/50{% else %}border-gray-600{% endif %}">
+                                <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border {% if isCompleted %}border-green-600/50{% elseif isHidden %}border-amber-600/50{% else %}border-gray-600{% endif %}">
                                     <div class="flex items-start justify-between gap-2 mb-1">
                                         <div class="min-w-0">
                                             <div class="flex items-center gap-2">
-                                                <h3 class="text-white font-semibold text-sm sm:text-base {% if isCompleted %}text-green-300{% endif %}">
-                                                    {{ achievement.title }}
-                                                </h3>
-                                                {% if isCompleted %}
-                                                    <span class="text-green-500 text-xs font-mono flex-shrink-0">Debloque</span>
+                                                {% if isHidden and not isCompleted %}
+                                                    <h3 class="text-amber-300 font-semibold text-sm sm:text-base">???</h3>
+                                                    <span class="text-amber-500 text-xs font-mono flex-shrink-0">Secret</span>
+                                                {% else %}
+                                                    <h3 class="text-white font-semibold text-sm sm:text-base {% if isCompleted %}text-green-300{% endif %}">
+                                                        {{ achievement.title }}
+                                                    </h3>
+                                                    {% if isCompleted %}
+                                                        <span class="text-green-500 text-xs font-mono flex-shrink-0">Debloque</span>
+                                                        {% if isHidden %}
+                                                            <span class="text-amber-500 text-xs font-mono flex-shrink-0">Secret</span>
+                                                        {% endif %}
+                                                    {% endif %}
                                                 {% endif %}
                                             </div>
-                                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ achievement.description }}</p>
+                                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">
+                                                {% if isHidden and not isCompleted %}
+                                                    Ce succes est secret. Continuez a jouer pour le decouvrir...
+                                                {% else %}
+                                                    {{ achievement.description }}
+                                                {% endif %}
+                                            </p>
                                         </div>
                                     </div>
 
@@ -68,10 +91,14 @@
                                         <div class="mt-2">
                                             <div class="flex justify-between text-[10px] sm:text-xs text-gray-400 mb-1">
                                                 <span>Progression</span>
-                                                <span>{{ progress }}/{{ target }}</span>
+                                                {% if isHidden %}
+                                                    <span>???</span>
+                                                {% else %}
+                                                    <span>{{ progress }}/{{ target }}</span>
+                                                {% endif %}
                                             </div>
                                             <div class="progress-bar">
-                                                <div class="progress-bar-fill bg-purple-500"
+                                                <div class="progress-bar-fill {% if isHidden %}bg-amber-500{% else %}bg-purple-500{% endif %}"
                                                      style="width: {{ progressPercent }}%"></div>
                                             </div>
                                         </div>
@@ -79,7 +106,7 @@
 
                                     {# Reward #}
                                     {% set reward = achievement.reward %}
-                                    {% if reward is not empty %}
+                                    {% if reward is not empty and (not isHidden or isCompleted) %}
                                         <div class="mt-2 pt-2 border-t border-gray-600">
                                             <span class="text-[10px] text-gray-500">Recompense :</span>
                                             <div class="flex gap-3 mt-0.5">
@@ -93,6 +120,8 @@
                                         </div>
                                     {% endif %}
                                 </div>
+
+                                {% endif %}{# end if not hidden or discovered #}
                             {% endfor %}
                         </div>
                     {% endif %}

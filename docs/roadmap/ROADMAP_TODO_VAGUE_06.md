@@ -76,10 +76,8 @@
 - [ ] Migration : index sur `(player_id, quest_id)` sur PlayerQuest
 - [ ] Migration : index sur `(monster_slug, player_id)` sur BestiaryEntry
 
-### 103 — Achievements caches & categories succes (S | ★★)
-> Enrichissement du systeme de succes existant.
-- [ ] Achievements caches : decouverts par des actions inhabituelles
-- [ ] Categories de succes additionnelles : Recolte, Craft, Social, Secrets
+### ~~103 — Achievements caches & categories succes (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

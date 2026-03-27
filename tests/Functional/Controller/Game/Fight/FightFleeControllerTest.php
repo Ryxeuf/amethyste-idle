@@ -17,6 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class FightFleeControllerTest extends TestCase
 {
@@ -36,6 +37,7 @@ class FightFleeControllerTest extends TestCase
         $turnResolver = $this->createMock(FightTurnResolver::class);
         $mobActionHandler = $this->createMock(MobActionHandler::class);
         $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $this->controller = new FightFleeController(
             $this->playerHelper,
@@ -45,6 +47,7 @@ class FightFleeControllerTest extends TestCase
             $turnResolver,
             $mobActionHandler,
             $fightTurnPublisher,
+            $eventDispatcher,
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);

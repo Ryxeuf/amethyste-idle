@@ -1290,3 +1290,14 @@
 - [x] Dialogues conditionnels Acte 2 pour Aldric (aiguillage par progression de quete)
 - [x] 9 mobs sur map_6 (griffons, gargouilles, elementaires, minotaure, troll, dragon boss)
 - [x] Les 4 fragments donnent chacun un item cle collectible (foret, mines, marais, montagne)
+
+## 103 — Achievements caches & categories succes (2026-03-27) ✅
+
+> Enrichissement du systeme de succes : achievements secrets et nouvelles categories.
+- [x] Champ `hidden` sur l'entite Achievement + migration
+- [x] Nouvelles categories : Recolte (gathering), Artisanat (craft), Secrets
+- [x] Fixtures : 4 succes recolte, 4 succes craft, 7 succes secrets (mort, fuite, recolte 1000, craft 500, quetes 100)
+- [x] AchievementTracker ecoute GatheringEvent, CraftEvent, PlayerDeadEvent, CombatFleeEvent
+- [x] Nouvel evenement CombatFleeEvent dispatche depuis FightFleeController
+- [x] Template : succes caches masques jusqu'a decouverte, affichage "???" et badge "Secret" ambre
+- [x] Recompenses cachees invisibles tant que non completes
