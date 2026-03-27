@@ -41,11 +41,18 @@ class FightHandler
 
         // Scale mob stats for dungeon difficulty
         $activeRun = $this->dungeonRunRepository->findActiveRun($player);
-        $difficultyMultiplier = $activeRun?->getDifficulty()->statMultiplier() ?? 1.0;
+        $difficulty = $activeRun?->getDifficulty();
+        $statMultiplier = $difficulty?->statMultiplier() ?? 1.0;
+
+        if ($difficulty !== null && $statMultiplier > 1.0) {
+            $fight->setMetadataValue('difficulty_multiplier', $statMultiplier);
+            $fight->setMetadataValue('difficulty_damage_multiplier', $difficulty->damageMultiplier());
+            $fight->setMetadataValue('difficulty_drop_multiplier', $difficulty->dropMultiplier());
+        }
 
         foreach ($mobs as $mob) {
-            if ($difficultyMultiplier > 1.0) {
-                $scaledLife = (int) round($mob->getLife() * $difficultyMultiplier);
+            if ($statMultiplier > 1.0) {
+                $scaledLife = (int) round($mob->getLife() * $statMultiplier);
                 $mob->setLife($scaledLife);
             }
             $fight->addMob($mob);

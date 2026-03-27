@@ -48,6 +48,14 @@ class SpellApplicator
         $damage = $this->damageCalculator->computeBaseDamage($spell, $domainDamage, $target, $effectiveMaxLife);
         $heal = $this->damageCalculator->computeBaseHeal($spell, $domainHeal, $target, $effectiveMaxLife);
 
+        // Dungeon difficulty: scale mob damage output
+        if ($damage > 0 && $sender instanceof Mob && $fight !== null) {
+            $damageMultiplier = (float) $fight->getMetadataValue('difficulty_damage_multiplier', 1.0);
+            if ($damageMultiplier > 1.0) {
+                $damage = (int) round($damage * $damageMultiplier);
+            }
+        }
+
         // Critical hit check
         if ($this->criticalCalculator->isCritical($spell, $domainCritical)) {
             $heal = $this->criticalCalculator->applyCriticalModifier($heal);
