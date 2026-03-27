@@ -213,13 +213,13 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste G — Infrastructure & qualite (parallelisable)
 
-### GCC-19 — Commande CRON app:season:tick (S | ★★★ | HAUTE)
+### ~~GCC-19 — Commande CRON app:season:tick (S | ★★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-06, GCC-10
-- [ ] Commande `app:season:tick` (Symfony Scheduler, 1x/jour)
-- [ ] Demarre saisons scheduled, termine saisons actives → attributeControl()
-- [ ] Auto-genere la prochaine saison si aucune scheduled
-- [ ] "Ruee des 3 derniers jours" : points × 1.5 dans les 72 dernieres heures
-- [ ] Tests (4 tests)
+- [x] Commande `app:season:tick` (Symfony Scheduler, 1x/jour)
+- [x] Demarre saisons scheduled, termine saisons actives → attributeControl()
+- [x] Auto-genere la prochaine saison si aucune scheduled
+- [x] "Ruee des 3 derniers jours" : points × 1.5 dans les 72 dernieres heures
+- [x] Tests (9 tests)
 
 ### GCC-20 — Tests unitaires controle de cite (M | ★★ | HAUTE)
 > Prerequis : ← GCC-08, GCC-10
