@@ -8,6 +8,7 @@ use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Monster;
 use App\GameEngine\Terrain\TilesetRegistry;
+use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
 use App\Service\AdminLogger;
@@ -26,6 +27,7 @@ class MapEditorController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TilesetRegistry $tilesetRegistry,
+        private readonly WangTileResolver $wangTileResolver,
         private readonly AdminLogger $adminLogger,
     ) {
     }
@@ -899,5 +901,153 @@ class MapEditorController extends AbstractController
             ]),
             default => $base,
         };
+    }
+
+    #[Route('/{id}/editor/auto-tile', name: 'editor_auto_tile', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function autoTile(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['startX'], $data['startY'], $data['endX'], $data['endY'])) {
+            return $this->json(['error' => 'Missing zone parameters (startX, startY, endX, endY)'], 400);
+        }
+
+        $startX = (int) $data['startX'];
+        $startY = (int) $data['startY'];
+        $endX = (int) $data['endX'];
+        $endY = (int) $data['endY'];
+        $layer = isset($data['layer']) ? (int) $data['layer'] : 1;
+        $terrainSlug = $data['terrainSlug'] ?? null;
+
+        if ($layer < 0 || $layer > 3) {
+            return $this->json(['error' => 'Invalid layer (0-3)'], 400);
+        }
+
+        $areaWidth = $map->getAreaWidth();
+        $areaHeight = $map->getAreaHeight();
+
+        // Charger toutes les areas et construire une vue "flat" des cellules
+        $areasCache = [];
+        foreach ($map->getAreas() as $a) {
+            $areasCache[$a->getCoordinates()] = $a;
+        }
+
+        $areaDataCache = [];
+        $cells = [];
+
+        foreach ($areasCache as $coordStr => $area) {
+            $areaCoords = explode('.', $coordStr);
+            $areaX = (int) $areaCoords[0];
+            $areaY = (int) ($areaCoords[1] ?? 0);
+            $areaMinGlobalX = $areaX * $areaWidth;
+            $areaMinGlobalY = $areaY * $areaHeight;
+
+            $areaData = $area->getFullDataArray();
+            $areaDataCache[$coordStr] = $areaData;
+
+            foreach ($areaData['cells'] ?? [] as $lx => $column) {
+                foreach ($column as $ly => $cellData) {
+                    if ($cellData === null) {
+                        continue;
+                    }
+                    $gx = $areaMinGlobalX + (int) $lx;
+                    $gy = $areaMinGlobalY + (int) $ly;
+                    $cells[$gx . '.' . $gy] = $cellData;
+                }
+            }
+        }
+
+        // Auto-detecter le terrain si non specifie
+        if ($terrainSlug === null) {
+            for ($y = $startY; $y <= $endY && $terrainSlug === null; ++$y) {
+                for ($x = $startX; $x <= $endX && $terrainSlug === null; ++$x) {
+                    $key = $x . '.' . $y;
+                    if (!isset($cells[$key]['layers'][$layer]) || !\is_array($cells[$key]['layers'][$layer])) {
+                        continue;
+                    }
+                    $layerData = $cells[$key]['layers'][$layer];
+                    $gid = (int) ($layerData['mapIdx'] ?? 0) + (int) ($layerData['idxInMap'] ?? 0);
+                    if ($gid > 0) {
+                        $terrainSlug = $this->wangTileResolver->detectTerrainSlug($gid);
+                    }
+                }
+            }
+        }
+
+        if ($terrainSlug === null) {
+            return $this->json(['error' => 'Could not detect terrain type in the specified zone'], 400);
+        }
+
+        $modified = $this->wangTileResolver->resolveZone($cells, $startX, $startY, $endX, $endY, $layer, $terrainSlug);
+
+        if ($modified === []) {
+            return $this->json(['success' => true, 'count' => 0, 'cells' => []]);
+        }
+
+        // Appliquer les modifications dans les area data
+        foreach ($modified as $change) {
+            $gx = $change['x'];
+            $gy = $change['y'];
+            $changeLayer = $change['layer'];
+            $gid = $change['gid'];
+
+            $areaCoordStr = intval($gx / $areaWidth) . '.' . intval($gy / $areaHeight);
+            if (!isset($areaDataCache[$areaCoordStr])) {
+                continue;
+            }
+
+            $localX = $gx % $areaWidth;
+            $localY = $gy % $areaHeight;
+
+            if (!isset($areaDataCache[$areaCoordStr]['cells'][$localX][$localY])) {
+                continue;
+            }
+
+            $cellData = &$areaDataCache[$areaCoordStr]['cells'][$localX][$localY];
+            if (!isset($cellData['layers'])) {
+                $cellData['layers'] = [null, null, null, null];
+            }
+            while (\count($cellData['layers']) <= $changeLayer) {
+                $cellData['layers'][] = null;
+            }
+
+            if ($gid > 0) {
+                $tileset = $this->tilesetRegistry->getTilesetForGid($gid);
+                if ($tileset) {
+                    $cellData['layers'][$changeLayer] = [
+                        'mapIdx' => $tileset['firstGid'],
+                        'idxInMap' => $gid - $tileset['firstGid'],
+                    ];
+                }
+            }
+        }
+
+        // Sauvegarder les areas modifiees
+        foreach ($areaDataCache as $coordStr => $areaData) {
+            $areasCache[$coordStr]->setFullData(json_encode($areaData));
+        }
+
+        $this->em->flush();
+
+        $this->adminLogger->log(
+            'update',
+            'AutoTile',
+            null,
+            sprintf('Auto-tiling %s : %d cells sur %s', $terrainSlug, \count($modified), $map->getName())
+        );
+
+        return $this->json([
+            'success' => true,
+            'count' => \count($modified),
+            'cells' => $modified,
+        ]);
+    }
+
+    #[Route('/{id}/editor/wangsets', name: 'editor_wangsets', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function editorWangsets(Map $map): JsonResponse
+    {
+        return $this->json([
+            'terrains' => $this->wangTileResolver->getAllTerrainData(),
+            'supportedSlugs' => $this->wangTileResolver->getSupportedTerrains(),
+        ]);
     }
 }

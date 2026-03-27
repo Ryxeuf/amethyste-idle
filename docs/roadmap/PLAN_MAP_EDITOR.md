@@ -203,25 +203,18 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste E — Auto-tiling (sequentiel)
 
-### MED-11 — WangTileResolver — backend (M | ★★★ | HAUTE)
+### MED-11 — WangTileResolver — backend (M | ★★★ | HAUTE) ✅
 > Moteur d'auto-tiling pour les transitions de terrain. Prerequis : ← MED-01
-- [ ] Classe `WangTileResolver` dans `src/GameEngine/Terrain/WangTileResolver.php`
-- [ ] Definitions de wangsets (extraits de `Terrain.tsx`) en PHP :
-  - Chaque terrain type (eau, sable, terre, chemin, neige) a 16 tiles de transition
+- [x] Classe `WangTileResolver` dans `src/GameEngine/Terrain/WangTileResolver.php`
+- [x] Definitions de wangsets (extraits de `Terrain.tsx`) en PHP :
+  - 25 terrain types supportes (eau, sable, terre, chemin, neige, etc.)
   - Table de lookup : configuration 4-corners → GID correspondant
   - Corners : chaque cell a 4 coins, chaque coin touche 4 cells voisines
-- [ ] Methode `resolve(array $cells, int $x, int $y, string $terrainType): int` :
-  - Analyse les 8 voisins de la cell (x, y)
-  - Calcule l'index 4-corners (bitfield 0-15)
-  - Retourne le GID de transition correct
-- [ ] Methode `resolveZone(array &$cells, int $startX, int $startY, int $endX, int $endY): array` :
-  - Applique `resolve()` sur toute la zone
-  - Retourne la liste des cells modifiees
-- [ ] Route `POST /{id}/editor/auto-tile` dans `MapEditorController` :
-  - Body : `{startX, startY, endX, endY}`
-  - Applique le WangTileResolver sur la zone
-  - Retourne les cells modifiees
-- [ ] Tests unitaires : cas de base (coin, bord, centre, ile, peninsule)
+- [x] Methode `resolve(array $cells, int $x, int $y, int $layer, string $terrainSlug): int`
+- [x] Methode `resolveZone(array &$cells, ...): array`
+- [x] Route `POST /{id}/editor/auto-tile` dans `MapEditorController`
+- [x] Route `GET /{id}/editor/wangsets` — export des definitions pour le frontend
+- [x] Tests unitaires : 21 tests (detection terrain, ile, voisins, bord, peninsule, zone, idempotence)
 
 ### MED-12 — Auto-tiling frontend (M | ★★ | HAUTE)
 > Preview temps reel des transitions cote client. Prerequis : ← MED-11, MED-04
