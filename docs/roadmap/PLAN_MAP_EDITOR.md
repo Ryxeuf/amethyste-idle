@@ -233,20 +233,20 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste F — Generateur procedural (sequentiel)
 
-### MED-13 — Generateur procedural — moteur (M | ★★★ | HAUTE)
+### MED-13 — Generateur procedural — moteur (M | ★★★ | HAUTE) ✅
 > Genere du terrain naturel via bruit de Perlin. Prerequis : ← MED-01, MED-02
-- [ ] Classe `PerlinNoise` dans `src/GameEngine/Terrain/Generator/PerlinNoise.php` :
+- [x] Classe `PerlinNoise` dans `src/GameEngine/Terrain/Generator/PerlinNoise.php` :
   - Bruit 2D deterministe (seed configurable)
   - Methode `noise(float $x, float $y): float` — retourne [-1, 1]
   - Support octaves pour detail (lacunarite, persistence)
-- [ ] Classe `MapGenerator` dans `src/GameEngine/Terrain/Generator/MapGenerator.php` :
+- [x] Classe `MapGenerator` dans `src/GameEngine/Terrain/Generator/MapGenerator.php` :
   - Methode `generate(Map $map, BiomeDefinition $biome, int $difficulty, ?int $seed): void`
-  - Pipeline : heightmap → layers background/ground → collisions
+  - Pipeline : heightmap → layers background/ground → collisions → arbres
   - Layer background : remplissage variantes herbe du biome (selection aleatoire ponderee)
   - Layer ground : eau (height < 0.25), sable (0.25-0.35), terrain biome (0.35+)
   - Collisions auto-derivees : eau = -1, bords de carte optionnels
   - Ecrit directement dans `Area.fullData`
-- [ ] Interface `BiomeDefinition` dans `src/GameEngine/Terrain/Generator/BiomeDefinition.php` :
+- [x] Interface `BiomeDefinition` dans `src/GameEngine/Terrain/Generator/BiomeDefinition.php` :
   - `getBackgroundGids(): array` — variantes de sol
   - `getWaterThreshold(): float`
   - `getTreeDensity(): float`
@@ -254,30 +254,28 @@ Piste G — Export & qualite                : MED-16
   - `getAvailableMobs(): array` — slugs de monstres par difficulte
   - `getHarvestItems(): array` — items recoltables
   - `getWeather(): ?string`, `getMusic(): ?string`
-- [ ] Tester : generer une carte 60x60 avec heightmap, verifier visuellement
+- [x] Tester : tests unitaires PerlinNoise + MapGenerator
 
-### MED-14 — Generateur procedural — biomes (M | ★★ | HAUTE)
+### MED-14 — Generateur procedural — biomes (M | ★★ | HAUTE) ✅
 > Definitions de biomes pour le generateur. Prerequis : ← MED-13
-- [ ] `ForestBiome` dans `src/GameEngine/Terrain/Generator/Biome/ForestBiome.php` :
-  - Herbe variantes (GID 293, 353, 354, 355)
-  - Densite arbres : 30-50%, clustering via automate cellulaire
-  - Tiles arbres : forest.tsx (selection de GID representatifs pour troncs et feuillage)
+- [x] `ForestBiome` dans `src/GameEngine/Terrain/Generator/Biome/ForestBiome.php` :
+  - Herbe dark_grass + variantes classiques
+  - Densite arbres : 40%, clustering via automate cellulaire (3 iterations)
+  - Tiles arbres : forest tileset (feuillus)
   - Mobs : slime (diff 1-3), goblin (4-6), spider (5-7), skeleton (7-10)
   - Items : healing-herb, sage, rosemary, wood
-  - Musique : foret, weather : clear/rain
-- [ ] `PlainsBiome` dans `src/GameEngine/Terrain/Generator/Biome/PlainsBiome.php` :
-  - Herbe variantes, densite arbres : 5-15%
+- [x] `PlainsBiome` dans `src/GameEngine/Terrain/Generator/Biome/PlainsBiome.php` :
+  - Herbe variantes, densite arbres : 10%
   - Mobs : slime (1-3), giant_rat (2-4), bat (3-5), venom_snake (5-7)
   - Items : dandelion, mint, lavender
-  - Musique : plaines, weather : clear/wind
-- [ ] `SwampBiome` dans `src/GameEngine/Terrain/Generator/Biome/SwampBiome.php` :
-  - Herbe sombre + zones eau etendues (water threshold plus haut : 0.35)
-  - Densite arbres morts : 15-25%
+- [x] `SwampBiome` dans `src/GameEngine/Terrain/Generator/Biome/SwampBiome.php` :
+  - Herbe long_grass/dark_grass + zones eau etendues (water threshold 0.35)
+  - Densite arbres morts : 20%, terrain sewer_water/earth
   - Mobs : zombie (5-8), banshee (7-10), spider (5-7), ochu (8-12)
   - Items : poisonous-mushroom, swamp-root
-  - Musique : marecage, weather : fog
-- [ ] Layer decoration : placement arbres via automate cellulaire (3-4 iterations de lissage)
-- [ ] Tester : generer 3 cartes (foret, plaines, marecage), comparer visuellement
+  - Weather : fog
+- [x] Layer decoration : placement arbres via automate cellulaire (3 iterations de lissage)
+- [x] Tester : tests unitaires ForestBiome, SwampBiome, MapGenerator avec les 3 biomes
 
 ### MED-15 — Generateur procedural — objets & connectivite (M | ★★★ | HAUTE)
 > Placement automatique d'entites et verification de jouabilite. Prerequis : ← MED-14

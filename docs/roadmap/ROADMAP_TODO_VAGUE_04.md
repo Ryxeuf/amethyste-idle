@@ -91,13 +91,13 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 6 — Generateur procedural (MED-13 a MED-15)
 
-**MED-13 — Generateur procedural — moteur (M | ★★★ | HAUTE)**
+**MED-13 — Generateur procedural — moteur (M | ★★★ | HAUTE)** ✅
 > Bruit de Perlin + pipeline generation. Prerequis : ← MED-01, MED-02
-- [ ] Classes `PerlinNoise`, `MapGenerator`, `BiomeDefinition`
+- [x] Classes `PerlinNoise`, `MapGenerator`, `BiomeDefinition`
 
-**MED-14 — Generateur procedural — biomes (M | ★★ | HAUTE)**
+**MED-14 — Generateur procedural — biomes (M | ★★ | HAUTE)** ✅
 > Foret, plaines, marecage. Prerequis : ← MED-13
-- [ ] `ForestBiome`, `PlainsBiome`, `SwampBiome`
+- [x] `ForestBiome`, `PlainsBiome`, `SwampBiome`
 
 **MED-15 — Generateur procedural — objets & connectivite (M | ★★★ | HAUTE)**
 > Placement entites + verification jouabilite. Prerequis : ← MED-14

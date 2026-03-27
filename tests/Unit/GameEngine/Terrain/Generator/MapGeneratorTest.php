@@ -5,7 +5,9 @@ namespace App\Tests\Unit\GameEngine\Terrain\Generator;
 use App\Entity\App\Area;
 use App\Entity\App\Map;
 use App\Entity\App\World;
+use App\GameEngine\Terrain\Generator\Biome\ForestBiome;
 use App\GameEngine\Terrain\Generator\Biome\PlainsBiome;
+use App\GameEngine\Terrain\Generator\Biome\SwampBiome;
 use App\GameEngine\Terrain\Generator\MapGenerator;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\Terrain\WangTileResolver;
@@ -151,6 +153,108 @@ class MapGeneratorTest extends TestCase
         }
 
         $this->assertNotEmpty($foundGrassVariants, 'Background should contain grass GIDs');
+    }
+
+    public function testGenerateForestBiomeProducesValidFullData(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new ForestBiome(), 3, 42);
+
+        $fullData = json_decode($map->getAreas()->first()->getFullData(), true);
+
+        $this->assertSame(30, $fullData['width']);
+        $this->assertSame(20, $fullData['height']);
+        $this->assertCount(30, $fullData['cells']);
+        $this->assertSame('forest', $map->getAreas()->first()->getBiome());
+    }
+
+    public function testGenerateSwampBiomeProducesValidFullData(): void
+    {
+        $map = $this->createMap(30, 20);
+
+        $this->generator->generate($map, new SwampBiome(), 5, 42);
+
+        $fullData = json_decode($map->getAreas()->first()->getFullData(), true);
+
+        $this->assertSame(30, $fullData['width']);
+        $this->assertSame(20, $fullData['height']);
+        $this->assertCount(30, $fullData['cells']);
+        $this->assertSame('swamp', $map->getAreas()->first()->getBiome());
+        $this->assertSame('fog', $map->getAreas()->first()->getWeather());
+    }
+
+    public function testForestBiomePlacesTrees(): void
+    {
+        $map = $this->createMap(40, 40);
+
+        $this->generator->generate($map, new ForestBiome(), 1, 42);
+
+        $fullData = json_decode($map->getAreas()->first()->getFullData(), true);
+
+        $treeCells = 0;
+        foreach ($fullData['cells'] as $column) {
+            foreach ($column as $cell) {
+                if ($cell['layers'][2] !== null) {
+                    ++$treeCells;
+                    // Les arbres doivent bloquer le passage
+                    $this->assertSame(CellHelper::MOVE_UNREACHABLE, $cell['mouvement']);
+                }
+            }
+        }
+
+        // Avec une densite de 40%, on attend des arbres apres lissage
+        $this->assertGreaterThan(0, $treeCells, 'Forest biome should place trees on decoration layer');
+    }
+
+    public function testSwampBiomeHasMoreWaterThanPlains(): void
+    {
+        $map1 = $this->createMap(40, 40);
+        $map2 = $this->createMap(40, 40);
+
+        $this->generator->generate($map1, new PlainsBiome(), 1, 42);
+        $this->generator->generate($map2, new SwampBiome(), 1, 42);
+
+        $countWater = function (string $fullDataJson): int {
+            $fullData = json_decode($fullDataJson, true);
+            $water = 0;
+            foreach ($fullData['cells'] as $column) {
+                foreach ($column as $cell) {
+                    if ($cell['mouvement'] === CellHelper::MOVE_UNREACHABLE && $cell['layers'][2] === null) {
+                        ++$water;
+                    }
+                }
+            }
+
+            return $water;
+        };
+
+        $plainsWater = $countWater($map1->getAreas()->first()->getFullData());
+        $swampWater = $countWater($map2->getAreas()->first()->getFullData());
+
+        $this->assertGreaterThan($plainsWater, $swampWater, 'Swamp should have more water than plains');
+    }
+
+    public function testPlainsBiomeFewTrees(): void
+    {
+        $map = $this->createMap(40, 40);
+
+        $this->generator->generate($map, new PlainsBiome(), 1, 42);
+
+        $fullData = json_decode($map->getAreas()->first()->getFullData(), true);
+
+        $totalCells = 40 * 40;
+        $treeCells = 0;
+        foreach ($fullData['cells'] as $column) {
+            foreach ($column as $cell) {
+                if ($cell['layers'][2] !== null) {
+                    ++$treeCells;
+                }
+            }
+        }
+
+        // Plains has 10% density, after cellular automaton smoothing should be low
+        $this->assertLessThan($totalCells * 0.30, $treeCells, 'Plains should have few trees');
     }
 
     private function createMap(int $width, int $height): Map
