@@ -128,6 +128,7 @@ class MapEditorController extends AbstractController
             $mobs[] = [
                 'id' => $mob->getId(),
                 'name' => $mob->getMonster()->getName(),
+                'monsterId' => $mob->getMonster()->getId(),
                 'level' => $mob->getLevel(),
                 'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
@@ -140,6 +141,7 @@ class MapEditorController extends AbstractController
             $pnjs[] = [
                 'id' => $pnj->getId(),
                 'name' => $pnj->getName(),
+                'classType' => $pnj->getClassType(),
                 'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
@@ -164,6 +166,8 @@ class MapEditorController extends AbstractController
             $harvestSpots[] = [
                 'id' => $spot->getId(),
                 'name' => $spot->getName(),
+                'requiredToolType' => $spot->getRequiredToolType(),
+                'respawnDelay' => $spot->getRespawnDelay(),
                 'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
@@ -603,6 +607,66 @@ class MapEditorController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/editor/update-entity', name: 'editor_update_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function updateEntity(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['entityType'], $data['entityId'], $data['properties'])) {
+            return $this->json(['error' => 'Parametres manquants (entityType, entityId, properties)'], 400);
+        }
+
+        $entityType = $data['entityType'];
+        $entityId = (int) $data['entityId'];
+        $properties = $data['properties'];
+
+        $entity = match ($entityType) {
+            'mob' => $this->em->getRepository(Mob::class)->find($entityId),
+            'harvestSpot', 'portal', 'craftStation' => $this->em->getRepository(ObjectLayer::class)->find($entityId),
+            'pnj' => $this->em->getRepository(Pnj::class)->find($entityId),
+            default => null,
+        };
+
+        if (!$entity) {
+            return $this->json(['error' => 'Entite introuvable'], 404);
+        }
+
+        if ($entity->getMap()?->getId() !== $map->getId()) {
+            return $this->json(['error' => 'L\'entite n\'appartient pas a cette carte'], 403);
+        }
+
+        try {
+            match ($entityType) {
+                'mob' => $this->updateMob($entity, $properties),
+                'portal' => $this->updatePortal($entity, $properties),
+                'harvestSpot' => $this->updateHarvestSpot($entity, $properties),
+                'pnj' => $this->updatePnj($entity, $properties),
+                'craftStation' => $this->updateCraftStation($entity, $properties),
+                default => throw new \InvalidArgumentException("Type d'entite inconnu : {$entityType}"),
+            };
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+
+        $this->em->flush();
+
+        $coords = explode('.', $entity->getCoordinates());
+        $x = (int) $coords[0];
+        $y = (int) ($coords[1] ?? 0);
+        $result = $this->buildEntityResult($entity, $entityType, $x, $y);
+
+        $this->adminLogger->log(
+            'update',
+            ucfirst($entityType),
+            $entityId,
+            sprintf('%s "%s" modifie sur %s', $entityType, $entity->getName(), $map->getName())
+        );
+
+        return $this->json([
+            'success' => true,
+            'entity' => $result,
+        ]);
+    }
+
     #[Route('/{id}/editor/create-entity', name: 'editor_create_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function createEntity(Request $request, Map $map): JsonResponse
     {
@@ -740,6 +804,65 @@ class MapEditorController extends AbstractController
         return $pnj;
     }
 
+    private function updateMob(Mob $mob, array $properties): void
+    {
+        if (isset($properties['monsterId'])) {
+            $monster = $this->em->getRepository(Monster::class)->find((int) $properties['monsterId']);
+            if (!$monster) {
+                throw new \InvalidArgumentException('Monstre introuvable');
+            }
+            $mob->setMonster($monster);
+            $mob->setLife($monster->getLife());
+        }
+
+        if (isset($properties['level'])) {
+            $mob->setLevel(max(1, (int) $properties['level']));
+        }
+    }
+
+    private function updatePortal(ObjectLayer $portal, array $properties): void
+    {
+        if (isset($properties['name'])) {
+            $portal->setName($properties['name']);
+        }
+        if (\array_key_exists('destMapId', $properties)) {
+            $portal->setDestinationMapId($properties['destMapId'] !== null ? (int) $properties['destMapId'] : null);
+        }
+        if (\array_key_exists('destCoords', $properties)) {
+            $portal->setDestinationCoordinates($properties['destCoords'] ?: null);
+        }
+    }
+
+    private function updateHarvestSpot(ObjectLayer $spot, array $properties): void
+    {
+        if (isset($properties['name'])) {
+            $spot->setName($properties['name']);
+        }
+        if (\array_key_exists('requiredToolType', $properties)) {
+            $spot->setRequiredToolType($properties['requiredToolType'] ?: null);
+        }
+        if (isset($properties['respawnDelay'])) {
+            $spot->setRespawnDelay((int) $properties['respawnDelay']);
+        }
+    }
+
+    private function updatePnj(Pnj $pnj, array $properties): void
+    {
+        if (isset($properties['name']) && $properties['name'] !== '') {
+            $pnj->setName($properties['name']);
+        }
+        if (isset($properties['classType']) && $properties['classType'] !== '') {
+            $pnj->setClassType($properties['classType']);
+        }
+    }
+
+    private function updateCraftStation(ObjectLayer $station, array $properties): void
+    {
+        if (isset($properties['name'])) {
+            $station->setName($properties['name']);
+        }
+    }
+
     private function buildEntityResult(Mob|ObjectLayer|Pnj $entity, string $type, int $x, int $y): array
     {
         $base = [
@@ -754,6 +877,7 @@ class MapEditorController extends AbstractController
             'mob' => array_merge($base, [
                 'listKey' => 'mobs',
                 'level' => $entity->getLevel(),
+                'monsterId' => $entity->getMonster()->getId(),
             ]),
             'portal' => array_merge($base, [
                 'listKey' => 'portals',
@@ -762,9 +886,16 @@ class MapEditorController extends AbstractController
             ]),
             'harvestSpot' => array_merge($base, [
                 'listKey' => 'harvestSpots',
+                'requiredToolType' => $entity->getRequiredToolType(),
+                'respawnDelay' => $entity->getRespawnDelay(),
             ]),
             'pnj' => array_merge($base, [
                 'listKey' => 'pnjs',
+                'classType' => $entity->getClassType(),
+            ]),
+            'craftStation' => array_merge($base, [
+                'listKey' => 'craftStations',
+                'stationType' => $entity->getType(),
             ]),
             default => $base,
         };

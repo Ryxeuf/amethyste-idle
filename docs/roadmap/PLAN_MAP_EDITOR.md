@@ -188,15 +188,16 @@ Piste G — Export & qualite                : MED-16
 - [x] Listes de choix alimentees par l'API (monsters, maps existantes)
 - [x] Tester : clic droit → creer mob → visible sur canvas → verifier en DB
 
-### MED-10 — Edition d'entites inline (S | ★★ | MOYENNE)
+### MED-10 — Edition d'entites inline (S | ★★ | MOYENNE) ✅
 > Modifier les proprietes des entites directement depuis l'editeur. Prerequis : ← MED-09
-- [ ] Clic sur une entite existante → panneau lateral affiche ses proprietes editables
-- [ ] Route `POST /{id}/editor/update-entity` dans `MapEditorController` :
+- [x] Clic sur une entite existante → panneau lateral affiche ses proprietes editables
+- [x] Route `POST /{id}/editor/update-entity` dans `MapEditorController` :
   - Body : `{entityId, entityType, properties: {...}}`
   - Met a jour l'entite en DB
   - Retourne l'entite modifiee en JSON
-- [ ] Modification du slug, level, item cible, coordonnees destination (pour portails)
-- [ ] Tester : modifier un mob, sauvegarder, verifier en DB
+- [x] Modification du level, monstre, nom, coordonnees destination (pour portails), outil requis (pour harvest spots), classe (pour PNJ)
+- [x] Bouton ✎ dans le panneau de cellule + option "Editer" dans le menu contextuel
+- [x] Tester : modifier un mob, sauvegarder, verifier en DB
 
 ---
 
