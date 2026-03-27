@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-26
+> Derniere mise a jour : 2026-03-27
 
 ---
 
@@ -1259,3 +1259,14 @@
 - [x] Route `GET /admin/maps/{id}/export-tmx` avec telechargement (Content-Disposition: attachment)
 - [x] Bouton "Exporter TMX" dans la toolbar de l'editeur
 - [x] 10 tests unitaires (27 assertions) : XML valide, attributs map, tilesets, layers, GIDs, collisions, borders, filename
+
+## GCC-10 — Controle de ville — attribution fin de saison (2026-03-27) ✅
+
+> Attribution du controle de region a la guilde gagnante a la fin d'une saison d'influence.
+- [x] Entite `RegionControl` : region, guild (nullable), season, startedAt, endsAt (nullable). Index actif (region_id, ends_at)
+- [x] `TownControlManager::attributeControl(InfluenceSeason)` : pour chaque region contestable, SELECT guild max points, cree RegionControl
+- [x] Egalite : la guilde tenant conserve le controle
+- [x] Aucune guilde / 0 points : region reste libre (guild = null)
+- [x] `getControllingGuild(Region)` : retourne Guild ou null via controle actif (ends_at IS NULL)
+- [x] Migration PostgreSQL `region_control` (3 FK, 3 index)
+- [x] 8 tests unitaires (25 assertions) : winner unique, aucun influence, egalite tenant conserve, non-contestable ignore, 0 points, controle actif, pas de controle, fermeture ancien controle
