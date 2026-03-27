@@ -4,6 +4,13 @@
 
 {% block game_content %}
 <div class="game-page">
+    {# Navigation #}
+    <div class="mb-3 text-right">
+        <a href="{{ path('app_game_guild_ranking') }}" class="text-xs text-amber-400 hover:text-amber-300 transition-colors">
+            Classement des guildes
+        </a>
+    </div>
+
     {# Messages area #}
     <div id="guild-messages" class="mb-3 hidden">
         <div class="rounded-lg p-3 text-sm" id="guild-message-text"></div>

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\Guild;
 use App\Entity\App\GuildInvitation;
 use App\Entity\App\GuildMember;
 use App\Entity\App\Player;
@@ -306,5 +307,43 @@ class GuildController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    #[Route('/ranking', name: 'app_game_guild_ranking', methods: ['GET'])]
+    public function ranking(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 20;
+        $offset = ($page - 1) * $limit;
+
+        $repo = $this->entityManager->getRepository(Guild::class);
+
+        $guilds = $repo->createQueryBuilder('g')
+            ->orderBy('g.points', 'DESC')
+            ->addOrderBy('g.name', 'ASC')
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        $total = $repo->createQueryBuilder('g')
+            ->select('COUNT(g.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $totalPages = max(1, (int) ceil($total / $limit));
+
+        $player = $this->playerHelper->getPlayer();
+        $playerGuild = $this->guildManager->getPlayerGuild($player);
+
+        return $this->render('game/guild/ranking.html.twig', [
+            'guilds' => $guilds,
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'offset' => $offset,
+            'playerGuildId' => $playerGuild?->getId(),
+        ]);
     }
 }
