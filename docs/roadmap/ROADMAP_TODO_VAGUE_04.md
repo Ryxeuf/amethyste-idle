@@ -79,11 +79,11 @@ Editeur web complet remplacant Tiled : peinture de tiles, auto-tiling, creation 
 
 #### Phase 5 — Auto-tiling (MED-11, MED-12)
 
-**MED-11 — WangTileResolver backend (M | ★★★ | HAUTE)**
+**MED-11 — WangTileResolver backend (M | ★★★ | HAUTE)** ✅
 > Moteur d'auto-tiling pour les transitions de terrain. Prerequis : ← MED-01
-- [ ] Classe `WangTileResolver`, table lookup 4-corners
-- [ ] Route `POST /{id}/editor/auto-tile`
-- [ ] Tests unitaires
+- [x] Classe `WangTileResolver`, table lookup 4-corners
+- [x] Route `POST /{id}/editor/auto-tile`
+- [x] Tests unitaires
 
 **MED-12 — Auto-tiling frontend (M | ★★ | HAUTE)**
 > Preview temps reel. Prerequis : ← MED-11, MED-04
