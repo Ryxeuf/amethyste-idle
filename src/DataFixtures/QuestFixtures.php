@@ -870,6 +870,78 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 // prerequisiteQuests set after flush
             ],
+            // --- Chaîne narrative Acte 2 : Fragment Marais (4 quêtes) ---
+            'quest_acte2_marais_brumes' => [
+                'name' => 'Les Fragments — Les Brumes s\'épaississent',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, une brume surnaturelle semble vous appeler depuis le Marais Brumeux. Morwen la Voyante, qui vit à la lisière du marais, pourrait déchiffrer ces visions.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Morwen la Voyante'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_marais_ingredients' => [
+                'name' => 'Les Fragments — Remèdes des Profondeurs',
+                'description' => 'Morwen a besoin d\'ingrédients spécifiques du marais pour préparer un onguent qui dissipera les brumes enchantées protégeant le cœur du marais. Récoltez des champignons vénéneux et des racines de marais.',
+                'requirements' => [
+                    'collect' => [
+                        'poisonous-mushroom' => 4,
+                        'swamp-root' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 130,
+                    'gold' => 70,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_marais_gardiens' => [
+                'name' => 'Les Fragments — Les Gardiens des Eaux Mortes',
+                'description' => 'L\'onguent a dissipé une partie de la brume, révélant des créatures anciennes qui protègent le passage vers le cœur du marais. Éliminez-les pour ouvrir la voie.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Banshee', 'slug' => 'banshee', 'count' => 3],
+                        ['name' => 'Ochu', 'slug' => 'ochu', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 170,
+                    'gold' => 90,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_marais_fragment' => [
+                'name' => 'Les Fragments — Le Fragment des Brumes',
+                'description' => 'Les gardiens vaincus, le chemin vers le cœur du marais est libre. Un éclat de cristal bleu-gris scintille au fond d\'un bassin d\'eau stagnante, enveloppé de vapeur glaciale. Récupérez-le.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 5,
+                            'coordinates' => '25.42',
+                            'name' => 'Bassin des Brumes éternelles',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-marais'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
@@ -1059,6 +1131,28 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $requirementsMines['talk_to'][0]['pnj_id'] = $grimmur->getId();
         $acte2MinesTremblements->setRequirements($requirementsMines);
 
+        // Chaîne Acte 2 : Fragment Marais (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MaraisBrumes */
+        $acte2MaraisBrumes = $this->getReference('quest_acte2_marais_brumes', Quest::class);
+        /** @var Quest $acte2MaraisIngredients */
+        $acte2MaraisIngredients = $this->getReference('quest_acte2_marais_ingredients', Quest::class);
+        /** @var Quest $acte2MaraisGardiens */
+        $acte2MaraisGardiens = $this->getReference('quest_acte2_marais_gardiens', Quest::class);
+        /** @var Quest $acte2MaraisFragment */
+        $acte2MaraisFragment = $this->getReference('quest_acte2_marais_fragment', Quest::class);
+
+        $acte2MaraisBrumes->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MaraisIngredients->setPrerequisiteQuests([$acte2MaraisBrumes->getId()]);
+        $acte2MaraisGardiens->setPrerequisiteQuests([$acte2MaraisIngredients->getId()]);
+        $acte2MaraisFragment->setPrerequisiteQuests([$acte2MaraisGardiens->getId()]);
+
+        // Fix PNJ ID for Morwen la Voyante (marais)
+        /** @var Pnj $morwen */
+        $morwen = $this->getReference('marais_pnj_0', Pnj::class);
+        $requirementsMarais = $acte2MaraisBrumes->getRequirements();
+        $requirementsMarais['talk_to'][0]['pnj_id'] = $morwen->getId();
+        $acte2MaraisBrumes->setRequirements($requirementsMarais);
+
         $manager->flush();
     }
 
@@ -1068,6 +1162,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             GameEventFixtures::class,
             ForestPnjFixtures::class,
             MinesPnjFixtures::class,
+            MaraisPnjFixtures::class,
         ];
     }
 }
