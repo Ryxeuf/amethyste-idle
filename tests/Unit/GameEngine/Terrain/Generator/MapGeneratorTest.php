@@ -182,6 +182,10 @@ class MapGeneratorTest extends TestCase
         $area->setCreatedAt(new \DateTime());
         $area->setUpdatedAt(new \DateTime());
 
+        // Synchroniser manuellement la collection (pas de addArea() dans Map)
+        $ref = new \ReflectionProperty(Map::class, 'areas');
+        $ref->getValue($map)->add($area);
+
         return $map;
     }
 }

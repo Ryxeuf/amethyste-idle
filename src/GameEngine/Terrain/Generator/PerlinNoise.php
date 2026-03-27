@@ -19,9 +19,7 @@ class PerlinNoise
     }
 
     /**
-     * Bruit de Perlin 2D brut.
-     *
-     * @return float Valeur entre -1 et 1
+     * Bruit de Perlin 2D brut, retourne une valeur entre -1 et 1.
      */
     public function noise(float $x, float $y): float
     {
@@ -60,14 +58,7 @@ class PerlinNoise
 
     /**
      * Bruit avec octaves (fBm — fractional Brownian motion).
-     *
-     * @param float $x           Coordonnee X
-     * @param float $y           Coordonnee Y
-     * @param int   $octaves     Nombre d'octaves (detail)
-     * @param float $lacunarity  Facteur de frequence entre octaves (defaut 2.0)
-     * @param float $persistence Facteur d'amplitude entre octaves (defaut 0.5)
-     *
-     * @return float Valeur normalisee entre -1 et 1
+     * Retourne une valeur normalisee entre -1 et 1.
      */
     public function octaveNoise(float $x, float $y, int $octaves = 4, float $lacunarity = 2.0, float $persistence = 0.5): float
     {
@@ -88,11 +79,6 @@ class PerlinNoise
 
     /**
      * Genere une heightmap 2D normalisee entre 0 et 1.
-     *
-     * @param int   $width    Largeur en tiles
-     * @param int   $height   Hauteur en tiles
-     * @param float $scale    Echelle du bruit (plus grand = plus zoom out)
-     * @param int   $octaves  Nombre d'octaves
      *
      * @return float[][] Tableau [x][y] de valeurs entre 0 et 1
      */

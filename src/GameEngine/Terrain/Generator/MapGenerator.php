@@ -25,11 +25,6 @@ class MapGenerator
 
     /**
      * Genere le terrain procedural pour une carte existante.
-     *
-     * @param Map             $map        La carte a remplir (doit avoir au moins une Area)
-     * @param BiomeDefinition $biome      Definition du biome a appliquer
-     * @param int             $difficulty Difficulte (1-10), influence les mobs places
-     * @param int|null        $seed       Seed pour la reproductibilite (null = aleatoire)
      */
     public function generate(Map $map, BiomeDefinition $biome, int $difficulty = 1, ?int $seed = null): void
     {
@@ -72,11 +67,7 @@ class MapGenerator
     /**
      * Construit le tableau de cellules a partir de la heightmap et du biome.
      *
-     * @param int             $width     Largeur en tiles
-     * @param int             $height    Hauteur en tiles
-     * @param float[][]       $heightmap Heightmap [x][y] entre 0 et 1
-     * @param BiomeDefinition $biome     Definition du biome
-     * @param int             $seed      Seed pour le PRNG des variantes
+     * @param float[][] $heightmap Heightmap [x][y] entre 0 et 1
      *
      * @return array<int, array<int, array{x: int, y: int, layers: list<array{mapIdx: int, idxInMap: int}|null>, mouvement: int, slug: string}>>
      */
@@ -131,10 +122,7 @@ class MapGenerator
     /**
      * Applique l'auto-tiling Wang pour les transitions eau et sable.
      *
-     * @param array<int, array<int, mixed>> &$cells  Cellules a modifier
-     * @param int                           $width   Largeur
-     * @param int                           $height  Hauteur
-     * @param BiomeDefinition               $biome   Definition du biome
+     * @param array<int, array<int, mixed>> $cells Cellules a modifier
      */
     private function applyAutoTiling(array &$cells, int $width, int $height, BiomeDefinition $biome): void
     {
@@ -253,11 +241,11 @@ class MapGenerator
     {
         $terrainData = $this->wangTileResolver->getAllTerrainData();
 
-        if (isset($terrainData[$slug]['centerLocalId'])) {
-            return TilesetRegistry::FIRST_GID_TERRAIN + $terrainData[$slug]['centerLocalId'];
+        if (isset($terrainData[$slug]['centerGid'])) {
+            return $terrainData[$slug]['centerGid'];
         }
 
-        // Fallback : water
+        // Fallback : water center GID
         return TilesetRegistry::FIRST_GID_TERRAIN + 124;
     }
 }
