@@ -2,7 +2,9 @@
 
 namespace App\GameEngine\Terrain\Generator;
 
+use App\GameEngine\Terrain\Generator\Biome\ForestBiome;
 use App\GameEngine\Terrain\Generator\Biome\PlainsBiome;
+use App\GameEngine\Terrain\Generator\Biome\SwampBiome;
 
 /**
  * Registre des biomes disponibles pour le generateur procedural.
@@ -15,6 +17,8 @@ class BiomeRegistry
     public function __construct()
     {
         $this->register(new PlainsBiome());
+        $this->register(new ForestBiome());
+        $this->register(new SwampBiome());
     }
 
     public function register(BiomeDefinition $biome): void

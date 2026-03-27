@@ -42,7 +42,10 @@ class MapGenerator
         // 3. Appliquer l'auto-tiling pour les transitions eau
         $this->applyAutoTiling($cells, $width, $height, $biome);
 
-        // 4. Ecrire dans fullData de la premiere Area
+        // 4. Placer la vegetation (arbres) via automate cellulaire
+        $this->placeTreesWithCellularAutomaton($cells, $width, $height, $biome, $seed);
+
+        // 5. Ecrire dans fullData de la premiere Area
         $area = $map->getAreas()->first();
         if (!$area) {
             return;
@@ -247,5 +250,97 @@ class MapGenerator
 
         // Fallback : water center GID
         return TilesetRegistry::FIRST_GID_TERRAIN + 124;
+    }
+
+    /**
+     * Place des arbres sur le layer decoration (index 2) via automate cellulaire.
+     *
+     * 1. Initialisation aleatoire selon la densite du biome (uniquement sur les cells walkables sans ground layer)
+     * 2. Lissage par 3 iterations de l'automate cellulaire (regle 4-5 : une cell reste/devient arbre
+     *    si elle a >= 4 voisins arbres sur 8)
+     * 3. Attribution de GID d'arbres aleatoires du biome
+     *
+     * @param array<int, array<int, mixed>> $cells
+     */
+    private function placeTreesWithCellularAutomaton(array &$cells, int $width, int $height, BiomeDefinition $biome, int $seed): void
+    {
+        $density = $biome->getTreeDensity();
+        $treeGids = $biome->getTreeGids();
+
+        if ($density <= 0.0 || $treeGids === []) {
+            return;
+        }
+
+        // 1. Initialisation : grille booleenne (true = arbre candidat)
+        $grid = [];
+        $rng = $seed ^ 0x5A5A5A5A; // XOR pour avoir un RNG different de buildCells
+
+        for ($x = 0; $x < $width; ++$x) {
+            for ($y = 0; $y < $height; ++$y) {
+                $canPlace = false;
+
+                if (isset($cells[$x][$y])) {
+                    $cell = $cells[$x][$y];
+                    // Uniquement sur les cells walkables sans ground layer (pas eau, pas sable)
+                    $canPlace = $cell['mouvement'] === CellHelper::MOVE_DEFAULT
+                        && $cell['layers'][1] === null;
+                }
+
+                if ($canPlace) {
+                    $rng = ($rng * 1103515245 + 12345) & 0x7FFFFFFF;
+                    $grid[$x][$y] = ($rng % 1000) < (int) ($density * 1000);
+                } else {
+                    $grid[$x][$y] = false;
+                }
+            }
+        }
+
+        // 2. Lissage : 3 iterations d'automate cellulaire (regle 4-5)
+        for ($iteration = 0; $iteration < 3; ++$iteration) {
+            $newGrid = [];
+            for ($x = 0; $x < $width; ++$x) {
+                for ($y = 0; $y < $height; ++$y) {
+                    if (!isset($cells[$x][$y]) || $cells[$x][$y]['mouvement'] !== CellHelper::MOVE_DEFAULT || $cells[$x][$y]['layers'][1] !== null) {
+                        $newGrid[$x][$y] = false;
+                        continue;
+                    }
+
+                    $neighbors = 0;
+                    for ($dx = -1; $dx <= 1; ++$dx) {
+                        for ($dy = -1; $dy <= 1; ++$dy) {
+                            if ($dx === 0 && $dy === 0) {
+                                continue;
+                            }
+                            $nx = $x + $dx;
+                            $ny = $y + $dy;
+                            if ($nx >= 0 && $nx < $width && $ny >= 0 && $ny < $height && ($grid[$nx][$ny] ?? false)) {
+                                ++$neighbors;
+                            }
+                        }
+                    }
+
+                    $newGrid[$x][$y] = $neighbors >= 4;
+                }
+            }
+            $grid = $newGrid;
+        }
+
+        // 3. Attribuer les GID d'arbres sur le layer decoration (index 2)
+        $treeCount = \count($treeGids);
+        for ($x = 0; $x < $width; ++$x) {
+            for ($y = 0; $y < $height; ++$y) {
+                if (!($grid[$x][$y] ?? false)) {
+                    continue;
+                }
+
+                $rng = ($rng * 1103515245 + 12345) & 0x7FFFFFFF;
+                $treeGid = $treeGids[$rng % $treeCount];
+
+                $cells[$x][$y]['layers'][2] = $this->gidToLayerData($treeGid);
+                // Les arbres bloquent le passage
+                $cells[$x][$y]['mouvement'] = CellHelper::MOVE_UNREACHABLE;
+                $cells[$x][$y]['slug'] = $x . '.' . $y . '_-1_0:0:0:0';
+            }
+        }
     }
 }
