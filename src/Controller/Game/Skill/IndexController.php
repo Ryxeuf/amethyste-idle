@@ -4,6 +4,7 @@ namespace App\Controller\Game\Skill;
 
 use App\Dto\Domain\DomainModel;
 use App\Dto\Domain\PlayerDomain;
+use App\Dto\Skill\SkillPlayer;
 use App\Entity\Game\Domain;
 use App\GameEngine\Progression\BuildPresetManager;
 use App\GameEngine\Progression\SkillRespecManager;
@@ -39,8 +40,11 @@ class IndexController extends AbstractController
 
         $player = $this->playerHelper->getPlayer();
 
+        $buildStats = $this->computeBuildStats($domainsModels);
+
         return $this->render('game/skills/index.html.twig', [
             'domains' => $domainsModels,
+            'buildStats' => $buildStats,
             'respecCost' => $player ? $this->respecManager->getRespecCost($player) : 0,
             'canRespec' => $player ? $this->respecManager->canRespec($player) : false,
             'playerGils' => $player ? $player->getGils() : 0,
@@ -51,6 +55,32 @@ class IndexController extends AbstractController
             'canSavePreset' => $player ? $this->presetManager->canSave($player) : false,
             'maxPresets' => BuildPresetManager::MAX_PRESETS_PER_PLAYER,
         ]);
+    }
+
+    /**
+     * @param DomainModel[] $domainsModels
+     *
+     * @return array{damage: int, heal: int, hit: int, critical: int, life: int, count: int}
+     */
+    private function computeBuildStats(array $domainsModels): array
+    {
+        $stats = ['damage' => 0, 'heal' => 0, 'hit' => 0, 'critical' => 0, 'life' => 0, 'count' => 0];
+
+        foreach ($domainsModels as $domain) {
+            foreach ($domain->skills as $skill) {
+                if (!($skill instanceof SkillPlayer) || !$skill->acquired) {
+                    continue;
+                }
+                $stats['damage'] += $skill->damage;
+                $stats['heal'] += $skill->heal;
+                $stats['hit'] += $skill->hit;
+                $stats['critical'] += $skill->critical;
+                $stats['life'] += $skill->life;
+                ++$stats['count'];
+            }
+        }
+
+        return $stats;
     }
 
     private function transformDomain(Domain $domain): DomainModel
