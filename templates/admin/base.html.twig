@@ -108,6 +108,10 @@
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
                             Cartes
                         </a>
+                        <a href="{{ path('admin_tileset_index') }}" data-action="click->admin-sidebar#close" class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium {% if app.request.attributes.get('_route') starts with 'admin_tileset' %}bg-purple-900 text-purple-200{% else %}text-gray-400 hover:bg-gray-800 hover:text-gray-200{% endif %} transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+                            Tilesets
+                        </a>
                     {% endif %}
 
                     {# Players - visible to Moderators and above #}

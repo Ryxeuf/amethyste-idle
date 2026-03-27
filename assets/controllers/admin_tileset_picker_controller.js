@@ -16,8 +16,9 @@ export default class extends Controller {
 
     static targets = ['canvas', 'tabs', 'gidDisplay', 'layerRadio', 'stampPreview']
 
-    // Tilesets editables (on exclut "collisions" qui est gere automatiquement)
-    _editableTilesets = ['terrain', 'forest', 'BaseChip_pipo']
+    // Tilesets editables : on exclut "collisions" qui est gere automatiquement
+    // Les tilesets custom sont automatiquement inclus (detectes dynamiquement)
+    _excludedTilesets = ['collisions']
     _tilesets = []
     _tilesetImages = {}
     _activeTileset = null
@@ -48,7 +49,7 @@ export default class extends Controller {
     async _loadTilesets() {
         const res = await fetch(this.tilesetsUrlValue)
         const data = await res.json()
-        this._tilesets = data.tilesets.filter(ts => this._editableTilesets.includes(ts.name))
+        this._tilesets = data.tilesets.filter(ts => !this._excludedTilesets.includes(ts.name))
 
         await this._loadTilesetImages()
 
