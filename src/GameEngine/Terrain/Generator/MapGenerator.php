@@ -20,6 +20,7 @@ class MapGenerator
         private readonly TilesetRegistry $tilesetRegistry,
         private readonly WangTileResolver $wangTileResolver,
         private readonly EntityManagerInterface $em,
+        private readonly ObjectPlacer $objectPlacer,
     ) {
     }
 
@@ -32,20 +33,31 @@ class MapGenerator
         $width = $map->getAreaWidth();
         $height = $map->getAreaHeight();
 
-        // 1. Generer la heightmap
+        // 1. Generer la heightmap avec les parametres Perlin du biome
         $perlin = new PerlinNoise($seed);
-        $heightmap = $perlin->generateHeightmap($width, $height, 0.05, 4);
+        $heightmap = $perlin->generateHeightmap(
+            $width,
+            $height,
+            $biome->getPerlinScale(),
+            $biome->getPerlinOctaves()
+        );
 
         // 2. Construire les cellules
         $cells = $this->buildCells($width, $height, $heightmap, $biome, $seed);
 
-        // 3. Appliquer l'auto-tiling pour les transitions eau
+        // 3. Garantir une zone de spawn walkable au centre (5x5)
+        $this->ensureSpawnZone($cells, $width, $height, $biome, $seed);
+
+        // 4. Appliquer l'auto-tiling pour les transitions eau
         $this->applyAutoTiling($cells, $width, $height, $biome);
 
-        // 4. Placer la vegetation (arbres) via automate cellulaire
+        // 5. Placer la vegetation (arbres) via automate cellulaire
         $this->placeTreesWithCellularAutomaton($cells, $width, $height, $biome, $seed);
 
-        // 5. Ecrire dans fullData de la premiere Area
+        // 6. Placer les decorations non-bloquantes sur les cellules vides
+        $this->placeDecorations($cells, $width, $height, $biome, $seed);
+
+        // 7. Ecrire dans fullData de la premiere Area
         $area = $map->getAreas()->first();
         if (!$area) {
             return;
@@ -63,6 +75,11 @@ class MapGenerator
         $area->setBiome($biome->getSlug());
         $area->setWeather($biome->getWeather());
         $area->setMusic($biome->getMusic());
+
+        $this->em->flush();
+
+        // 8. Assurer la connectivite (creuser des passages entre ilots isoles)
+        $this->objectPlacer->ensureConnectivity($map);
 
         $this->em->flush();
     }
@@ -250,6 +267,88 @@ class MapGenerator
 
         // Fallback : water center GID
         return TilesetRegistry::FIRST_GID_TERRAIN + 124;
+    }
+
+    /**
+     * Garantit une zone de spawn walkable au centre de la carte.
+     * Force un carre 5x5 en terrain principal du biome, sans eau ni obstacle.
+     *
+     * @param array<int, array<int, mixed>> $cells
+     */
+    private function ensureSpawnZone(array &$cells, int $width, int $height, BiomeDefinition $biome, int $seed): void
+    {
+        $centerX = (int) ($width / 2);
+        $centerY = (int) ($height / 2);
+        $radius = 2; // 5x5 zone
+
+        $backgroundGids = $biome->getBackgroundGids();
+        $rng = $seed ^ 0xAAAAAAAA;
+
+        for ($x = $centerX - $radius; $x <= $centerX + $radius; ++$x) {
+            for ($y = $centerY - $radius; $y <= $centerY + $radius; ++$y) {
+                if ($x < 0 || $x >= $width || $y < 0 || $y >= $height) {
+                    continue;
+                }
+
+                $rng = ($rng * 1103515245 + 12345) & 0x7FFFFFFF;
+                $bgGid = $backgroundGids[$rng % \count($backgroundGids)];
+
+                $cells[$x][$y] = [
+                    'x' => $x,
+                    'y' => $y,
+                    'layers' => [$this->gidToLayerData($bgGid), null, null, null],
+                    'mouvement' => CellHelper::MOVE_DEFAULT,
+                    'slug' => $x . '.' . $y . '_0_0:0:0:0',
+                ];
+            }
+        }
+    }
+
+    /**
+     * Place des decorations non-bloquantes sur le layer overlay (index 3).
+     * Utilise les GID de decorationGids du biome, places aleatoirement
+     * sur ~5% des cellules walkables vides.
+     *
+     * @param array<int, array<int, mixed>> $cells
+     */
+    private function placeDecorations(array &$cells, int $width, int $height, BiomeDefinition $biome, int $seed): void
+    {
+        $decoGids = $biome->getDecorationGids();
+        if ($decoGids === []) {
+            return;
+        }
+
+        $decoCount = \count($decoGids);
+        $rng = $seed ^ 0x12345678;
+
+        for ($x = 0; $x < $width; ++$x) {
+            for ($y = 0; $y < $height; ++$y) {
+                if (!isset($cells[$x][$y])) {
+                    continue;
+                }
+
+                $cell = $cells[$x][$y];
+
+                // Uniquement sur les cellules walkables sans decoration ni arbre
+                if ($cell['mouvement'] !== CellHelper::MOVE_DEFAULT
+                    || $cell['layers'][2] !== null
+                    || $cell['layers'][3] !== null) {
+                    continue;
+                }
+
+                $rng = ($rng * 1103515245 + 12345) & 0x7FFFFFFF;
+
+                // ~5% de chance de placer une decoration
+                if (($rng % 100) >= 5) {
+                    continue;
+                }
+
+                $rng = ($rng * 1103515245 + 12345) & 0x7FFFFFFF;
+                $gid = $decoGids[$rng % $decoCount];
+
+                $cells[$x][$y]['layers'][3] = $this->gidToLayerData($gid);
+            }
+        }
     }
 
     /**
