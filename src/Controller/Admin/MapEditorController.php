@@ -7,6 +7,8 @@ use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Monster;
+use App\GameEngine\Terrain\Generator\BiomeRegistry;
+use App\GameEngine\Terrain\Generator\MapGenerator;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
@@ -29,6 +31,8 @@ class MapEditorController extends AbstractController
         private readonly TilesetRegistry $tilesetRegistry,
         private readonly WangTileResolver $wangTileResolver,
         private readonly AdminLogger $adminLogger,
+        private readonly MapGenerator $mapGenerator,
+        private readonly BiomeRegistry $biomeRegistry,
     ) {
     }
 
@@ -1048,6 +1052,43 @@ class MapEditorController extends AbstractController
         return $this->json([
             'terrains' => $this->wangTileResolver->getAllTerrainData(),
             'supportedSlugs' => $this->wangTileResolver->getSupportedTerrains(),
+        ]);
+    }
+
+    #[Route('/{id}/editor/generate', name: 'editor_generate', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function generate(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['biome'])) {
+            return $this->json(['error' => 'Parametre biome requis'], 400);
+        }
+
+        $biomeSlug = $data['biome'];
+        $difficulty = isset($data['difficulty']) ? max(1, min(10, (int) $data['difficulty'])) : 1;
+        $seed = isset($data['seed']) && $data['seed'] !== '' ? (int) $data['seed'] : null;
+
+        $biome = $this->biomeRegistry->get($biomeSlug);
+        if (!$biome) {
+            return $this->json(['error' => 'Biome inconnu : ' . $biomeSlug], 400);
+        }
+
+        $this->mapGenerator->generate($map, $biome, $difficulty, $seed);
+
+        $this->adminLogger->log(
+            'update',
+            'Map',
+            $map->getId(),
+            sprintf('Generation procedurale %s (diff %d, seed %s) sur %s', $biomeSlug, $difficulty, $seed ?? 'auto', $map->getName())
+        );
+
+        return $this->json(['success' => true, 'biome' => $biomeSlug, 'difficulty' => $difficulty]);
+    }
+
+    #[Route('/{id}/editor/biomes', name: 'editor_biomes', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function editorBiomes(Map $map): JsonResponse
+    {
+        return $this->json([
+            'biomes' => $this->biomeRegistry->getChoices(),
         ]);
     }
 }

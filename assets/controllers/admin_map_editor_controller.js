@@ -18,6 +18,7 @@ export default class extends Controller {
         entityOptionsUrl: String,
         wangsetsUrl: String,
         autoTileUrl: String,
+        generateUrl: String,
     }
 
     static targets = ['canvas', 'info', 'coords', 'legend', 'stats', 'contextMenu']
@@ -2512,5 +2513,40 @@ export default class extends Controller {
 
         container.innerHTML = `<div class="px-4 py-2 rounded-lg text-sm border ${colors}">${message}</div>`
         setTimeout(() => { container.innerHTML = '' }, 4000)
+    }
+
+    async generateProcedural() {
+        const biome = document.getElementById('generate-biome')?.value || 'plains'
+        const difficulty = parseInt(document.getElementById('generate-difficulty')?.value || '1', 10)
+        const seedInput = document.getElementById('generate-seed')?.value
+        const seed = seedInput !== '' ? parseInt(seedInput, 10) : null
+
+        if (!confirm('Attention : cette operation ecrase tout le contenu existant de la carte. Continuer ?')) {
+            return
+        }
+
+        this._flash('Generation en cours...', 'info')
+
+        try {
+            const body = { biome, difficulty }
+            if (seed !== null) body.seed = seed
+
+            const res = await fetch(this.generateUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+
+            const data = await res.json()
+            if (!res.ok) {
+                this._flash(data.error || 'Erreur de generation', 'error')
+                return
+            }
+
+            this._flash('Terrain genere ! Rechargement...', 'success')
+            setTimeout(() => window.location.reload(), 1000)
+        } catch (e) {
+            this._flash('Erreur reseau : ' + e.message, 'error')
+        }
     }
 }
