@@ -35,14 +35,14 @@
 ### ~~99 — Transitions de zone (S | ★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 100 — Sons basiques (L | ★★)
-> Optionnel. Ajoute de l'immersion mais necessite des assets sonores.
-- [ ] Integrer Howler.js via importmap
-- [ ] Sons d'interface : clic bouton, ouverture menu, notification
-- [ ] Sons de combat : attaque, sort, critique, mort
-- [ ] Sons d'ambiance : loop par biome (foret, grotte, village)
-- [ ] Bouton mute/volume dans les parametres joueur
-- [ ] Persistance preference son en localStorage
+### ~~100 — Sons basiques (L | ★★)~~ ✅
+> Sons proceduraux via Web Audio API (sans fichiers audio externes).
+- [x] SoundManager procedural (Web Audio API) — remplace Howler.js, zero dependance
+- [x] Sons d'interface : clic bouton, ouverture menu, notification, succes, erreur
+- [x] Sons de combat : attaque, sort, critique, miss, mort, victoire, defaite, fuite, bouclier, statut, boss phase
+- [x] Sons exploration : pas, recolte, dialogue, level up, quete completee, item pickup
+- [x] Bouton mute/volume dans les parametres joueur
+- [x] Persistance preference son en localStorage
 
 ### ~~101 — Monitoring basique (M | ★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

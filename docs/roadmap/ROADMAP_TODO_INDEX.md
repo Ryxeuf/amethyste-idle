@@ -76,8 +76,8 @@ VAGUE 6 (long terme)
   ├─ ✅ 95 Saisonnalite & festivals ← 20, 85
   ├─ ✅ 98 Rendu tiles animees ← 97
   ├─ ✅ 99 Transitions de zone ← 30
-  ├─ 100 Sons basiques
-  ├─ 101 Monitoring basique
+  ├─ ✅ 100 Sons basiques
+  ├─ ✅ 101 Monitoring basique
   ├─ ✅ 102 Index DB composites
   └─ ✅ 103 Achievements caches
 ```
