@@ -3,15 +3,14 @@
 namespace App\Service\Monitoring;
 
 use Doctrine\DBAL\Connection;
-use Symfony\Component\Mercure\HubInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class HealthChecker
 {
     public function __construct(
         private readonly Connection $connection,
-        private readonly HubInterface $mercureHub,
         private readonly CacheInterface $cache,
+        private readonly string $mercureUrl,
     ) {
     }
 
@@ -82,12 +81,8 @@ class HealthChecker
      */
     private function checkMercure(): array
     {
-        try {
-            $this->mercureHub->getUrl();
-
-            return ['status' => 'ok'];
-        } catch (\Throwable $e) {
-            return ['status' => 'error', 'message' => 'Hub unreachable'];
-        }
+        return $this->mercureUrl !== ''
+            ? ['status' => 'ok']
+            : ['status' => 'error', 'message' => 'Hub URL not configured'];
     }
 }
