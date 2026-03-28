@@ -26,6 +26,7 @@ final class Version20260325Dungeons extends AbstractMigration
             max_players INT NOT NULL DEFAULT 1,
             icon VARCHAR(255) DEFAULT NULL,
             loot_preview JSONB DEFAULT NULL,
+            entry_requirements JSON DEFAULT NULL,
             created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
             updated_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
             CONSTRAINT uniq_dungeon_slug UNIQUE (slug),
