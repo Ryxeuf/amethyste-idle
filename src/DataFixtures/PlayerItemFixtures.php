@@ -260,6 +260,11 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
             'sickle_bronze', 'sickle_iron', 'sickle_steel', 'sickle_mithril',
             'fishing_rod_bronze', 'fishing_rod_iron', 'fishing_rod_steel', 'fishing_rod_mithril',
             'skinning_knife_bronze', 'skinning_knife_iron', 'skinning_knife_steel', 'skinning_knife_mithril',
+            // Outils de craft
+            'hammer_bronze', 'hammer_iron', 'hammer_steel', 'hammer_mithril',
+            'tanning_kit_bronze', 'tanning_kit_iron', 'tanning_kit_steel', 'tanning_kit_mithril',
+            'mortar_bronze', 'mortar_iron', 'mortar_steel', 'mortar_mithril',
+            'chisel_bronze', 'chisel_iron', 'chisel_steel', 'chisel_mithril',
         ];
 
         foreach ($remyBagItems as $itemRef) {

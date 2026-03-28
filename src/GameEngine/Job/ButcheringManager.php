@@ -8,6 +8,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\ButcheringEvent;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -19,15 +20,39 @@ class ButcheringManager
         private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly InventoryHelper $inventoryHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly GearHelper $gearHelper,
     ) {
     }
 
     /**
-     * Vérifie si le joueur possède un couteau de dépeçage fonctionnel.
+     * Vérifie si le joueur possède un couteau de dépeçage fonctionnel équipé.
      */
     public function canButcher(Player $player): bool
     {
-        return $this->getPlayerSkinningKnife($player) !== null;
+        $knife = $this->getPlayerSkinningKnife($player);
+
+        return $knife !== null && ($knife->getCurrentDurability() === null || $knife->getCurrentDurability() > 0);
+    }
+
+    /**
+     * Retourne un message d'erreur précis expliquant pourquoi le joueur ne peut pas dépecer.
+     */
+    public function getButcherError(Player $player): string
+    {
+        if (!$player->hasToolSlot(Item::TOOL_TYPE_SKINNING_KNIFE)) {
+            return 'Vous devez débloquer l\'emplacement de couteau de dépeçage via l\'arbre de compétences.';
+        }
+
+        $knife = $this->getPlayerSkinningKnife($player);
+        if ($knife === null) {
+            return 'Équipez un couteau de dépeçage dans votre emplacement d\'outil.';
+        }
+
+        if ($knife->getCurrentDurability() !== null && $knife->getCurrentDurability() <= 0) {
+            return 'Votre couteau de dépeçage est cassé. Réparez-le avant de continuer.';
+        }
+
+        return 'Impossible de dépecer.';
     }
 
     /**
@@ -38,11 +63,11 @@ class ButcheringManager
     public function butcher(Player $player, Mob $mob): array
     {
         $knife = $this->getPlayerSkinningKnife($player);
-        if ($knife === null) {
+        if ($knife === null || ($knife->getCurrentDurability() !== null && $knife->getCurrentDurability() <= 0)) {
             return [
                 'success' => false,
                 'items' => [],
-                'message' => 'Vous n\'avez pas de couteau de dépeçage.',
+                'message' => $this->getButcherError($player),
             ];
         }
 
@@ -111,25 +136,10 @@ class ButcheringManager
     }
 
     /**
-     * Récupère le couteau de dépeçage du joueur.
+     * Récupère le couteau de dépeçage équipé dans l'emplacement d'outil.
      */
     private function getPlayerSkinningKnife(Player $player): ?PlayerItem
     {
-        foreach ($player->getInventories() as $inventory) {
-            if (!$inventory->isBag()) {
-                continue;
-            }
-            foreach ($inventory->getItems() as $playerItem) {
-                $genericItem = $playerItem->getGenericItem();
-                if ($genericItem->isTool()
-                    && $genericItem->getToolType() === Item::TOOL_TYPE_SKINNING_KNIFE
-                    && ($playerItem->getCurrentDurability() === null || $playerItem->getCurrentDurability() > 0)
-                ) {
-                    return $playerItem;
-                }
-            }
-        }
-
-        return null;
+        return $this->gearHelper->getEquippedToolByType(Item::TOOL_TYPE_SKINNING_KNIFE);
     }
 }

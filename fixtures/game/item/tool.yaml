@@ -137,6 +137,190 @@ App\Entity\Game\Item:
     toolTier: 4
     durability: 400
 
+  # --- Marteaux de forge (Forge) ---
+  hammer_bronze (extends item):
+    id: 70
+    name: 'Marteau de forge en bronze'
+    description: 'Un marteau basique en bronze pour la forge'
+    type: 'tool'
+    slug: 'hammer-bronze'
+    price: 50
+    domain: '@blacksmith'
+    toolType: 'hammer'
+    toolTier: 1
+    durability: 100
+  hammer_iron (extends item):
+    id: 71
+    name: 'Marteau de forge en fer'
+    description: 'Un marteau solide en fer pour la forge'
+    type: 'tool'
+    slug: 'hammer-iron'
+    price: 150
+    domain: '@blacksmith'
+    toolType: 'hammer'
+    toolTier: 2
+    durability: 200
+  hammer_steel (extends item):
+    id: 72
+    name: 'Marteau de forge en acier'
+    description: 'Un marteau renforcé en acier pour la forge'
+    type: 'tool'
+    slug: 'hammer-steel'
+    price: 400
+    domain: '@blacksmith'
+    toolType: 'hammer'
+    toolTier: 3
+    durability: 350
+  hammer_mithril (extends item):
+    id: 73
+    name: 'Marteau de forge en mithril'
+    description: 'Un marteau légendaire en mithril, forge inégalée'
+    type: 'tool'
+    slug: 'hammer-mithril'
+    price: 1000
+    domain: '@blacksmith'
+    toolType: 'hammer'
+    toolTier: 4
+    durability: 500
+
+  # --- Kits de tannage (Tannerie) ---
+  tanning_kit_bronze (extends item):
+    id: 74
+    name: 'Kit de tannage en bronze'
+    description: 'Un kit de tannage basique avec outils en bronze'
+    type: 'tool'
+    slug: 'tanning-kit-bronze'
+    price: 50
+    domain: '@leatherworker'
+    toolType: 'tanning_kit'
+    toolTier: 1
+    durability: 100
+  tanning_kit_iron (extends item):
+    id: 75
+    name: 'Kit de tannage en fer'
+    description: 'Un kit de tannage solide avec outils en fer'
+    type: 'tool'
+    slug: 'tanning-kit-iron'
+    price: 150
+    domain: '@leatherworker'
+    toolType: 'tanning_kit'
+    toolTier: 2
+    durability: 200
+  tanning_kit_steel (extends item):
+    id: 76
+    name: 'Kit de tannage en acier'
+    description: 'Un kit de tannage professionnel avec outils en acier'
+    type: 'tool'
+    slug: 'tanning-kit-steel'
+    price: 400
+    domain: '@leatherworker'
+    toolType: 'tanning_kit'
+    toolTier: 3
+    durability: 350
+  tanning_kit_mithril (extends item):
+    id: 77
+    name: 'Kit de tannage en mithril'
+    description: 'Un kit de tannage légendaire en mithril'
+    type: 'tool'
+    slug: 'tanning-kit-mithril'
+    price: 1000
+    domain: '@leatherworker'
+    toolType: 'tanning_kit'
+    toolTier: 4
+    durability: 500
+
+  # --- Mortiers d'alchimie (Alchimie) ---
+  mortar_bronze (extends item):
+    id: 78
+    name: "Mortier d'alchimie en bronze"
+    description: 'Un mortier basique en bronze pour broyer les ingrédients'
+    type: 'tool'
+    slug: 'mortar-bronze'
+    price: 50
+    domain: '@alchimist'
+    toolType: 'mortar'
+    toolTier: 1
+    durability: 100
+  mortar_iron (extends item):
+    id: 79
+    name: "Mortier d'alchimie en fer"
+    description: 'Un mortier solide en fer pour broyer les ingrédients'
+    type: 'tool'
+    slug: 'mortar-iron'
+    price: 150
+    domain: '@alchimist'
+    toolType: 'mortar'
+    toolTier: 2
+    durability: 200
+  mortar_steel (extends item):
+    id: 80
+    name: "Mortier d'alchimie en acier"
+    description: "Un mortier professionnel en acier pour l'alchimie avancée"
+    type: 'tool'
+    slug: 'mortar-steel'
+    price: 400
+    domain: '@alchimist'
+    toolType: 'mortar'
+    toolTier: 3
+    durability: 350
+  mortar_mithril (extends item):
+    id: 81
+    name: "Mortier d'alchimie en mithril"
+    description: 'Un mortier légendaire en mithril, précision alchimique parfaite'
+    type: 'tool'
+    slug: 'mortar-mithril'
+    price: 1000
+    domain: '@alchimist'
+    toolType: 'mortar'
+    toolTier: 4
+    durability: 500
+
+  # --- Burins de joaillier (Joaillerie) ---
+  chisel_bronze (extends item):
+    id: 82
+    name: 'Burin de joaillier en bronze'
+    description: 'Un burin basique en bronze pour tailler les gemmes'
+    type: 'tool'
+    slug: 'chisel-bronze'
+    price: 50
+    domain: '@jeweller'
+    toolType: 'chisel'
+    toolTier: 1
+    durability: 100
+  chisel_iron (extends item):
+    id: 83
+    name: 'Burin de joaillier en fer'
+    description: 'Un burin solide en fer pour tailler les gemmes'
+    type: 'tool'
+    slug: 'chisel-iron'
+    price: 150
+    domain: '@jeweller'
+    toolType: 'chisel'
+    toolTier: 2
+    durability: 200
+  chisel_steel (extends item):
+    id: 84
+    name: 'Burin de joaillier en acier'
+    description: "Un burin professionnel en acier pour la joaillerie de précision"
+    type: 'tool'
+    slug: 'chisel-steel'
+    price: 400
+    domain: '@jeweller'
+    toolType: 'chisel'
+    toolTier: 3
+    durability: 350
+  chisel_mithril (extends item):
+    id: 85
+    name: 'Burin de joaillier en mithril'
+    description: 'Un burin légendaire en mithril, taille parfaite garantie'
+    type: 'tool'
+    slug: 'chisel-mithril'
+    price: 1000
+    domain: '@jeweller'
+    toolType: 'chisel'
+    toolTier: 4
+    durability: 500
+
   # --- Couteaux de dépeçage (Dépeçage) ---
   skinning_knife_bronze (extends item):
     id: 62
