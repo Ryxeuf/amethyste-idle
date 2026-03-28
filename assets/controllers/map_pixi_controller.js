@@ -34,6 +34,11 @@ export default class extends Controller {
 
         // Performance: texture cache per GID to avoid recreating PIXI.Texture
         this._tileTextureCache = new Map();
+        // Animated tiles: map of GID -> array of PIXI.Texture frames
+        this._tileAnimations = {};
+        this._animatedTileFrames = new Map();
+        // Track animated tile sprites for cleanup
+        this._animatedTileSprites = [];
         // Performance: sprite object pool for reuse
         this._spritePool = [];
         // Performance: entity container pool for reuse
@@ -145,6 +150,13 @@ export default class extends Controller {
                 entity.animator.destroy();
             }
         }
+        // Release animated tile sprites
+        for (const s of this._animatedTileSprites) {
+            s.stop();
+            s.destroy();
+        }
+        this._animatedTileSprites = [];
+        this._animatedTileFrames.clear();
         // Release pooled sprites
         for (const s of this._spritePool) {
             s.destroy();
@@ -322,6 +334,41 @@ export default class extends Controller {
         }
 
         await Promise.all(loadPromises);
+
+        // Build animated tile frame textures from config
+        this._tileAnimations = config.tileAnimations || {};
+        for (const [gidKey, frames] of Object.entries(this._tileAnimations)) {
+            const textures = [];
+            for (const frame of frames) {
+                const frameGid = frame.tileid;
+                let texture = this._tileTextureCache.get(frameGid);
+                if (!texture) {
+                    const ts = this._findTileset(frameGid);
+                    if (!ts) continue;
+                    const baseTexture = this._tilesetTextures[ts.name];
+                    if (!baseTexture) continue;
+                    const localId = frameGid - ts.firstGid;
+                    const col = localId % ts.columns;
+                    const row = Math.floor(localId / ts.columns);
+                    const rect = new PIXI.Rectangle(
+                        col * ts.tileWidth,
+                        row * ts.tileHeight,
+                        ts.tileWidth,
+                        ts.tileHeight,
+                    );
+                    try {
+                        texture = new PIXI.Texture({ source: baseTexture.source, frame: rect });
+                    } catch {
+                        continue;
+                    }
+                    this._tileTextureCache.set(frameGid, texture);
+                }
+                textures.push({ texture, time: frame.duration });
+            }
+            if (textures.length > 0) {
+                this._animatedTileFrames.set(parseInt(gidKey, 10), textures);
+            }
+        }
     }
 
     // --- Cell Loading & Rendering ---
@@ -353,6 +400,20 @@ export default class extends Controller {
 
             const baseTexture = this._tilesetTextures[ts.name];
             if (!baseTexture) continue;
+
+            // Check if this tile has animation frames
+            const animFrames = this._animatedTileFrames.get(gid);
+            if (animFrames) {
+                const animSprite = new PIXI.AnimatedSprite(animFrames);
+                animSprite.position.set(px, py);
+                animSprite.roundPixels = true;
+                animSprite.animationSpeed = 1;
+                animSprite.play();
+                this._tileContainer.addChild(animSprite);
+                sprites.push(animSprite);
+                this._animatedTileSprites.push(animSprite);
+                continue;
+            }
 
             // Cache texture per GID to avoid recreating PIXI.Texture each cell
             let texture = this._tileTextureCache.get(gid);
@@ -397,6 +458,13 @@ export default class extends Controller {
     }
 
     _releaseSprite(sprite) {
+        if (sprite instanceof PIXI.AnimatedSprite) {
+            sprite.stop();
+            sprite.destroy();
+            const idx = this._animatedTileSprites.indexOf(sprite);
+            if (idx !== -1) this._animatedTileSprites.splice(idx, 1);
+            return;
+        }
         sprite.visible = false;
         this._tileContainer.removeChild(sprite);
         this._spritePool.push(sprite);

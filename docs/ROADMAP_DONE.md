@@ -1322,3 +1322,11 @@
 - [x] Lien dans la page guilde vers les quetes
 - [x] Migration PostgreSQL : table `guild_quest`
 - [x] Tests unitaires : GuildQuestManagerTest (progression, completion, distribution gils), GuildQuestListenerTest (events)
+
+## 98 — Rendu tiles animees PixiJS (2026-03-28) ✅
+
+> Remplacement de PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees (eau, torches, etc.). Les donnees d'animation etaient deja parsees (tache 97) et transmises par l'API `/api/map/config`.
+- [x] Dans `_loadConfig()` : construction des textures de frames animees depuis `config.tileAnimations`
+- [x] Dans `_renderCell()` : detection des tiles animees et creation de `PIXI.AnimatedSprite` avec frames/durations
+- [x] Gestion du cycle d'animation via le ticker natif PixiJS (`animSprite.play()`)
+- [x] Cleanup : arret et destruction des AnimatedSprite dans `_releaseSprite()` et `disconnect()`

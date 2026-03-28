@@ -34,12 +34,8 @@
 ### ~~97 — Parsing animations tiles (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 98 — Rendu tiles animees PixiJS (M | ★★★)
-> Remplacer PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees. Prerequis : ← 97
-- [ ] Dans `_renderCell()` : detecter les tiles animees depuis les donnees API
-- [ ] Creer des `PIXI.AnimatedSprite` avec les frames/durations pour ces tiles
-- [ ] Gerer le cycle d'animation (elapsed time, frame index) dans le ticker
-- [ ] Tester visuellement (eau animee, torches, etc.)
+### ~~98 — Rendu tiles animees PixiJS (M | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 99 — Transitions de zone (S | ★)
 > Fondu au noir lors du changement de carte/teleportation. Prerequis : ← 30
