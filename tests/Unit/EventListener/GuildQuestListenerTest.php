@@ -6,7 +6,6 @@ use App\Entity\App\Fight;
 use App\Entity\App\Guild;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
-use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Recipe;
