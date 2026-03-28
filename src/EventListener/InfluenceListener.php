@@ -12,6 +12,7 @@ use App\Event\Map\ButcheringEvent;
 use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
 use App\GameEngine\Guild\InfluenceManager;
+use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,6 +23,7 @@ class InfluenceListener implements EventSubscriberInterface
         private readonly InfluenceManager $influenceManager,
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly InfluenceMercurePublisher $mercurePublisher,
     ) {
     }
 
@@ -181,6 +183,17 @@ class InfluenceListener implements EventSubscriberInterface
         ?Region $region = null,
         ?array $details = null,
     ): void {
-        $this->influenceManager->awardInfluence($player, $activityType, $context, $region, $details);
+        $result = $this->influenceManager->awardInfluence($player, $activityType, $context, $region, $details);
+
+        if ($result['awarded']) {
+            $this->mercurePublisher->onInfluenceAwarded(
+                $result['guild'],
+                $result['region'],
+                $result['season'],
+                $player,
+                $activityType,
+                $result['points'],
+            );
+        }
     }
 }

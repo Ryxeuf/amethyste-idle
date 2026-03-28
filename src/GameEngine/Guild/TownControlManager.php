@@ -8,12 +8,14 @@ use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Region;
 use App\Entity\App\RegionControl;
 use App\Entity\App\RegionUpgrade;
+use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TownControlManager
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly InfluenceMercurePublisher $mercurePublisher,
     ) {
     }
 
@@ -58,6 +60,8 @@ class TownControlManager
         }
 
         $this->entityManager->flush();
+
+        $this->mercurePublisher->publishCityControlChange($season, $results);
 
         return $results;
     }

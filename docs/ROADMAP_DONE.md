@@ -1361,3 +1361,14 @@
 - [x] Dashboard Grafana JSON (5 panels : req/s, latence p50/p95/p99, erreurs/min, joueurs, combats/mobs)
 - [x] Regles d'alerte Prometheus (latence > 2s, erreurs > 5/min, health check KO)
 - [x] Tests unitaires (HealthChecker, MetricsCollector, RequestMetricsListener)
+
+## GCC-16 — Notifications Mercure influence (2026-03-28) ✅
+
+> Notifications temps reel Mercure pour le systeme d'influence des guildes : gains de points batches, alertes de depassement, annonces de controle de ville.
+- [x] `InfluenceMercurePublisher` : publication batchee (1/5min) via cache PSR-6, detection de depassement au classement
+- [x] Topic `guild/influence/{guildId}` : notifications de points accumules avec details (activite, region, joueur)
+- [x] Alerte `influence_overtake` : notification a la guilde depassee quand une rivale prend la tete
+- [x] Annonce globale `guild/city_control` : diffusion des changements de controle en fin de saison
+- [x] Controller Stimulus `influence_notification_controller.js` : souscription Mercure + toasts
+- [x] Integration dans le layout de jeu (`game.html.twig`) avec ID de guilde via extension Twig
+- [x] Tests existants adaptes au nouveau retour enrichi de `InfluenceManager::awardInfluence()`

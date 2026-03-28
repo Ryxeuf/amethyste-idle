@@ -115,7 +115,7 @@ class InfluenceManager
      * @param array<string, mixed>      $context
      * @param array<string, mixed>|null $details
      *
-     * @return bool true si des points ont ete attribues
+     * @return array{awarded: bool, points: int, guild: ?Guild, region: ?Region, season: ?InfluenceSeason}
      */
     public function awardInfluence(
         Player $player,
@@ -123,20 +123,22 @@ class InfluenceManager
         array $context = [],
         ?Region $region = null,
         ?array $details = null,
-    ): bool {
+    ): array {
+        $noAward = ['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null];
+
         $guild = $this->getPlayerGuild($player);
         if ($guild === null) {
-            return false;
+            return $noAward;
         }
 
         $season = $this->seasonManager->getCurrentSeason();
         if ($season === null) {
-            return false;
+            return $noAward;
         }
 
         $region ??= $this->getPlayerRegion($player);
         if ($region === null) {
-            return false;
+            return $noAward;
         }
 
         $antiExploitFactor = $this->antiExploit->computeFactor(
@@ -150,18 +152,18 @@ class InfluenceManager
         );
 
         if ($antiExploitFactor <= 0.0) {
-            return false;
+            return $noAward;
         }
 
         $points = $this->calculatePoints($activityType, $context);
         $points = (int) round($points * $antiExploitFactor);
 
         if ($points <= 0) {
-            return false;
+            return $noAward;
         }
 
         $this->addPoints($guild, $region, $season, $points, $player, $activityType, $details);
 
-        return true;
+        return ['awarded' => true, 'points' => $points, 'guild' => $guild, 'region' => $region, 'season' => $season];
     }
 }

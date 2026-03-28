@@ -177,7 +177,7 @@ class InfluenceManagerTest extends TestCase
         $this->memberRepo->method('findOneBy')->willReturn(null);
 
         $result = $this->manager->awardInfluence($player, InfluenceActivityType::MobKill);
-        $this->assertFalse($result);
+        $this->assertFalse($result['awarded']);
     }
 
     public function testAwardInfluenceNoActiveSeason(): void
@@ -193,7 +193,7 @@ class InfluenceManagerTest extends TestCase
         $this->seasonManager->method('getCurrentSeason')->willReturn(null);
 
         $result = $this->manager->awardInfluence($player, InfluenceActivityType::MobKill);
-        $this->assertFalse($result);
+        $this->assertFalse($result['awarded']);
     }
 
     public function testAwardInfluenceNoRegion(): void
@@ -210,7 +210,7 @@ class InfluenceManagerTest extends TestCase
         $this->seasonManager->method('getCurrentSeason')->willReturn($season);
 
         $result = $this->manager->awardInfluence($player, InfluenceActivityType::MobKill);
-        $this->assertFalse($result);
+        $this->assertFalse($result['awarded']);
     }
 
     public function testAwardInfluenceSuccess(): void
@@ -234,7 +234,7 @@ class InfluenceManagerTest extends TestCase
             InfluenceActivityType::MobKill,
             ['mob_level' => 5],
         );
-        $this->assertTrue($result);
+        $this->assertTrue($result['awarded']);
     }
 
     public function testAwardInfluenceBlockedByAntiExploit(): void
@@ -263,7 +263,7 @@ class InfluenceManagerTest extends TestCase
             InfluenceActivityType::MobKill,
             ['mob_level' => 5],
         );
-        $this->assertFalse($result);
+        $this->assertFalse($result['awarded']);
     }
 
     public function testAwardInfluenceWithExplicitRegion(): void
@@ -289,7 +289,7 @@ class InfluenceManagerTest extends TestCase
             [],
             $region,
         );
-        $this->assertTrue($result);
+        $this->assertTrue($result['awarded']);
     }
 
     private function createPlayer(bool $withMap = false): Player

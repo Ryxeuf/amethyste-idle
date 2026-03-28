@@ -185,12 +185,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [ ] Stimulus controller `region_control_controller.js`
 - [ ] Mise a jour dynamique via Mercure
 
-### GCC-16 — Notifications Mercure influence (S | ★★ | MOYENNE)
+### ~~GCC-16 — Notifications Mercure influence (S | ★★ | MOYENNE)~~ ✅
 > Prerequis : ← GCC-08
-- [ ] Topic `guild/influence/{guildId}` — notifs points significatifs (batch 1/5min)
-- [ ] Alerte depassement par une autre guilde
-- [ ] Annonce globale `guild/city_control` changement de controle fin de saison
-- [ ] Integration toasts existants
+- [x] Topic `guild/influence/{guildId}` — notifs points significatifs (batch 1/5min)
+- [x] Alerte depassement par une autre guilde
+- [x] Annonce globale `guild/city_control` changement de controle fin de saison
+- [x] Integration toasts existants
 
 ---
 

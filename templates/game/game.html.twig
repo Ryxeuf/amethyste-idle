@@ -315,6 +315,14 @@
         </div>
     </div>
 
+    {# ===== INFLUENCE NOTIFICATIONS (Mercure) ===== #}
+    {% if app.user and app.user.player %}
+        <div data-controller="influence-notification"
+             data-influence-notification-mercure-url-value="{{ (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure') }}"
+             data-influence-notification-guild-id-value="{{ player_guild_id(app.user.player) ?? 0 }}">
+        </div>
+    {% endif %}
+
     {# ===== TOAST NOTIFICATION SYSTEM ===== #}
     <div data-controller="toast" data-toast-duration-value="4000" data-toast-max-visible-value="5">
         <div data-toast-target="container" class="toast-container"></div>
