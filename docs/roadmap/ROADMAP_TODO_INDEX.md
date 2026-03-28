@@ -64,15 +64,15 @@ VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
   PRIORITE 3 — Guildes
   └─ GCC-01..20 Controle cite ← 38, 48, 52
 
-VAGUE 5 (depend de Vague 4)
-  ┌─ 80 Trame Acte 2 ← 46, 67, 68
-  ├─ 81 Combat cooperatif ← 53, 49
-  └─ 84 Donjons mecaniques & loot ← 72, 37
+VAGUE 5 (depend de Vague 4) ✅
+  ┌─ ✅ 80 Trame Acte 2 ← 46, 67, 68
+  ├─ ✅ 81 Combat cooperatif ← 53, 49
+  └─ ✅ 84 Donjons mecaniques & loot ← 72, 37
 
 VAGUE 6 (long terme)
   ┌─ ✅ 92 Classement guildes ← 52
   ├─ ✅ 93 Quetes de guilde ← 52, 92
-  ├─ 94 Trame Acte 3 ← 80, 72
+  ├─ ✅ 94 Trame Acte 3 ← 80, 72
   ├─ ✅ 95 Saisonnalite & festivals ← 20, 85
   ├─ ✅ 98 Rendu tiles animees ← 97
   ├─ ✅ 99 Transitions de zone ← 30

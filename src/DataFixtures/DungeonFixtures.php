@@ -28,6 +28,31 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($dungeon);
         $this->addReference('dungeon_racines', $dungeon);
 
+        // Donjon final : Le Nexus de la Convergence (tache 94 — Acte 3)
+        $mapConvergence = $this->getReference('map_dungeon_convergence', Map::class);
+
+        $convergence = new Dungeon();
+        $convergence->setSlug('nexus-de-la-convergence');
+        $convergence->setName('Le Nexus de la Convergence');
+        $convergence->setDescription('Le coeur du cristal d\'Amethyste bat au plus profond de ce sanctuaire oublie. Les quatre fragments resonent, attirant leur porteur vers une verite ancienne. Seuls ceux qui ont rassemble les fragments peuvent penetrer ces lieux et affronter le Gardien de la Convergence.');
+        $convergence->setMap($mapConvergence);
+        $convergence->setMinLevel(25);
+        $convergence->setMaxPlayers(1);
+        $convergence->setLootPreview(['Equipement Amethyste', 'Titre exclusif', 'Epilogue de la trame']);
+        $convergence->setEntryRequirements([
+            'items' => [
+                ['slug' => 'quest-fragment-foret', 'name' => 'Fragment Sylvestre'],
+                ['slug' => 'quest-fragment-mines', 'name' => 'Fragment de la Forge'],
+                ['slug' => 'quest-fragment-marais', 'name' => 'Fragment des Brumes'],
+                ['slug' => 'quest-fragment-montagne', 'name' => 'Fragment du Sommet'],
+            ],
+        ]);
+        $convergence->setCreatedAt(new \DateTime());
+        $convergence->setUpdatedAt(new \DateTime());
+
+        $manager->persist($convergence);
+        $this->addReference('dungeon_convergence', $convergence);
+
         $manager->flush();
     }
 

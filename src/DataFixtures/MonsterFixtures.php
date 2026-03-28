@@ -804,6 +804,57 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // === Boss final : Gardien de la Convergence (tache 94 — Acte 3) ===
+            'convergence_guardian' => [
+                'name' => 'Gardien de la Convergence',
+                'life' => 800,
+                'hit' => 90,
+                'speed' => 10,
+                'attack' => 'holy_light',
+                'level' => 30,
+                'difficulty' => 5,
+                'isBoss' => true,
+                'spells' => ['convergence_pulse', 'amethyst_shatter', 'fragment_barrier', 'meteor_strike', 'shadow_bolt'],
+                'aiPattern' => [
+                    'spell_chance' => 60,
+                    'preferred_element' => 'light',
+                    'danger_alert' => [
+                        'threshold' => 40,
+                        'message' => 'Le Gardien absorbe l\'énergie des quatre fragments — le Nexus tremble !',
+                        'spell' => 'convergence-pulse',
+                    ],
+                ],
+                'elementalResistances' => [
+                    'light' => 0.5,
+                    'dark' => 0.3,
+                    'fire' => 0.2,
+                    'water' => 0.2,
+                    'earth' => 0.2,
+                    'beast' => -0.3,
+                    'metal' => -0.2,
+                ],
+                'bossPhases' => [
+                    [
+                        'hpThreshold' => 100,
+                        'name' => 'Phase 1 — Le Gardien s\'éveille',
+                        'action' => 'spell',
+                    ],
+                    [
+                        'hpThreshold' => 60,
+                        'name' => 'Phase 2 — Résonance des fragments',
+                        'action' => 'spell',
+                        'preferred_spell' => 'convergence-pulse',
+                        'danger_message' => 'Les quatre fragments résonnent — une lumière aveuglante envahit le Nexus !',
+                    ],
+                    [
+                        'hpThreshold' => 30,
+                        'name' => 'Phase 3 — Fracture de l\'Améthyste',
+                        'action' => 'spell',
+                        'preferred_spell' => 'amethyst-shatter',
+                        'danger_message' => 'Le cristal d\'Améthyste se fissure — le Gardien libère toute sa puissance !',
+                    ],
+                ],
+            ],
             // === Boss de donjon : Racines de la foret (tache 84) ===
             'ancient_root' => [
                 'name' => 'Racine Ancienne',

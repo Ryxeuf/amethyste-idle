@@ -48,35 +48,33 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste A — Guildes : service & UI (sequentiel)
 
-### GCC-01 — Guildes — entites & enum (S | ★★★ | CRITIQUE)
+### ~~GCC-01 — Guildes — entites & enum (S | ★★★ | CRITIQUE)~~ ✅
 > Fondation du systeme. Prerequis roadmap globale : **38**
-- [ ] Enum `GuildRank` : leader, officer, veteran, member
-- [ ] Entite `Guild` : name (unique), slug (unique), tag (5 chars, unique), description, emblem (nullable), color (hex), maxMembers (default 20), gilsTreasury (default 0), leader (ManyToOne Player), createdAt/updatedAt
-- [ ] Entite `GuildMember` : guild (ManyToOne), player (ManyToOne, UNIQUE), rank (GuildRank), joinedAt, contributionTotal (default 0)
-- [ ] Migration PostgreSQL
-- [ ] Fixtures : 3 guildes de test avec 2-3 membres chacune
+- [x] Enum `GuildRank` : leader, officer, member, recruit
+- [x] Entite `Guild` : name (unique), tag (unique), color (hex), gilsTreasury, leader, points
+- [x] Entite `GuildMember` : guild, player (UNIQUE), rank, joinedAt
+- [x] Migration PostgreSQL
+- [x] Fixtures
 
-### GCC-02 — Guildes — GuildManager service (S | ★★★ | HAUTE)
+### ~~GCC-02 — Guildes — GuildManager service (S | ★★★ | HAUTE)~~ ✅
 > Logique metier. Prerequis : ← GCC-01
-- [ ] `GuildManager` : createGuild(Player, name, tag, color) — verifie unicite nom/tag
-- [ ] invitePlayer, acceptInvite, promoteToOfficer/Veteran, demote
-- [ ] kickMember (permissions leader/officer), transferLeadership, dissolveGuild
-- [ ] Validation : 1 joueur = 1 guilde max, tag 3-5 chars alphanum
-- [ ] Tests unitaires GuildManagerTest (8+ tests)
+- [x] `GuildManager` : createGuild, invitePlayer, acceptInvitation, leaveGuild
+- [x] kickMember, promote, demote (permissions par rang)
+- [x] Validation : 1 joueur = 1 guilde max, tag alphanum
+- [x] Tests unitaires
 
-### GCC-03 — Guildes — controller & templates (S | ★★ | HAUTE)
+### ~~GCC-03 — Guildes — controller & templates (S | ★★ | HAUTE)~~ ✅
 > Interface utilisateur. Prerequis : ← GCC-02
-- [ ] `GuildController` : routes /game/guild/*
-- [ ] Pages : index (creer/rejoindre ou vue guilde), create, view/{slug}, members
-- [ ] Actions POST : create, invite, accept, leave, kick, promote
-- [ ] Lien dans la navigation principale
+- [x] `GuildController` : routes /game/guild/* (index, create, invite, accept, leave, kick, promote, demote, vault, quests, ranking, influence, challenges, upgrades)
+- [x] Pages completes avec templates Twig
+- [x] Actions POST : create, invite, accept, leave, kick, promote, demote
+- [x] Navigation principale
 
-### GCC-04 — Guildes — chat guilde Mercure (S | ★★ | MOYENNE)
+### ~~GCC-04 — Guildes — chat guilde Mercure (S | ★★ | MOYENNE)~~ ✅
 > Canal chat dedie. Prerequis : ← GCC-02
-- [ ] Channel `guild` dans ChatManager + topic `chat/guild/{guildId}`
-- [ ] Commande `/guild` ou `/g` dans ChatCommandHandler
-- [ ] Onglet "Guilde" dans le panneau chat (Stimulus)
-- [ ] Verification appartenance avant envoi/reception
+- [x] Channel `guild` dans ChatManager + topic Mercure
+- [x] Chat guilde integre avec verification appartenance
+- [x] Onglet "Guilde" dans le panneau chat
 
 ---
 
@@ -177,13 +175,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] Onglet historique : saisons passees + vainqueurs
 - [x] Section "Ma guilde" : contribution, rang, top contributeurs internes
 
-### GCC-15 — Indicateurs visuels carte PixiJS (M | ★★ | MOYENNE)
+### ~~GCC-15 — Indicateurs visuels carte PixiJS (M | ★★ | MOYENNE)~~ ✅
 > Prerequis : ← GCC-10, GCC-14
-- [ ] Extension `/api/map/entities` : champ `regionControl` {guildName, guildTag, guildColor}
-- [ ] Sprite banniere guilde au centre de la ville chef-lieu (overlay PixiJS)
-- [ ] Overlay couleur de guilde sur bords de carte (subtil)
-- [ ] Stimulus controller `region_control_controller.js`
-- [ ] Mise a jour dynamique via Mercure
+- [x] Extension `/api/map/entities` : champ `regionControl` {guildColor, guildTag, regionName}
+- [x] Banniere guilde PixiJS (overlay top-left, tag + couleur + nom region)
+- [x] Overlay couleur de guilde sur bords de carte (3px, 35% alpha)
+- [x] Mise a jour dynamique via Mercure topic `guild/city_control`
 
 ### ~~GCC-16 — Notifications Mercure influence (S | ★★ | MOYENNE)~~ ✅
 > Prerequis : ← GCC-08

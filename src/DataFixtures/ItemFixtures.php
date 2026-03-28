@@ -1357,6 +1357,42 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'boundToPlayer' => true,
             ],
 
+            // === Recompenses Acte 3 — La Convergence (tache 94) ===
+            'convergence_blade' => [
+                'name' => 'Lame de la Convergence',
+                'description' => 'Une epee forgee dans le cristal d\'amethyste purifie. Les quatre fragments fusionnes resonnent dans la lame, lui conferant une puissance qui transcende les elements.',
+                'type' => 'gear',
+                'element' => Element::Light,
+                'spell' => 'none_attack_2',
+                'slug' => 'convergence-blade',
+                'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
+                'domain' => 'soldier',
+                'price' => 0,
+                'space' => 3,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Amethyst,
+                'materiaSlots' => 3,
+                'boundToPlayer' => true,
+                'level' => 25,
+            ],
+            'convergence_amulet' => [
+                'name' => 'Amulette de la Convergence',
+                'description' => 'Un pendentif taille dans le coeur du cristal d\'amethyste. Il pulse d\'une lumiere douce qui renforce les capacites magiques de son porteur.',
+                'type' => 'gear',
+                'element' => Element::Light,
+                'slug' => 'convergence-amulet',
+                'gear_location' => Item::GEAR_LOCATION_NECK,
+                'price' => 0,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Amethyst,
+                'materiaSlots' => 2,
+                'boundToPlayer' => true,
+                'level' => 25,
+            ],
+
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',

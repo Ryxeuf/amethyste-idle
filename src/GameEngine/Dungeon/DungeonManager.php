@@ -30,6 +30,15 @@ class DungeonManager
             return ['run' => null, 'error' => 'Vous etes deja dans un donjon.'];
         }
 
+        // Verifier les prerequis d'items (ex. fragments)
+        $missingItems = $this->getMissingEntryItems($player, $dungeon);
+        if ($missingItems !== []) {
+            return ['run' => null, 'error' => sprintf(
+                'Il vous manque des objets requis : %s',
+                implode(', ', $missingItems),
+            )];
+        }
+
         // Verifier le niveau minimum
         if (!$this->meetsLevelRequirement($player, $dungeon)) {
             return ['run' => null, 'error' => sprintf(
@@ -141,6 +150,36 @@ class DungeonManager
         }
 
         return $requiredXp <= 0;
+    }
+
+    /**
+     * Retourne la liste des noms d'items manquants pour entrer dans le donjon.
+     *
+     * @return string[] noms d'items manquants (vide si tout est bon)
+     */
+    public function getMissingEntryItems(Player $player, Dungeon $dungeon): array
+    {
+        $requirements = $dungeon->getEntryRequirements();
+        if ($requirements === null || !isset($requirements['items'])) {
+            return [];
+        }
+
+        $ownedSlugs = [];
+        foreach ($player->getInventories() as $inventory) {
+            foreach ($inventory->getItems() as $playerItem) {
+                $ownedSlugs[$playerItem->getGenericItem()->getSlug()] = true;
+            }
+        }
+
+        $missing = [];
+        foreach ($requirements['items'] as $entry) {
+            $slug = $entry['slug'] ?? '';
+            if (!isset($ownedSlugs[$slug])) {
+                $missing[] = $entry['name'] ?? $slug;
+            }
+        }
+
+        return $missing;
     }
 
     /**

@@ -15,13 +15,14 @@
 ### ~~93 — Quetes de guilde (M | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 94 — Trame Acte 3 : La Convergence (L | ★★★)
+### ~~94 — Trame Acte 3 : La Convergence (L | ★★★)~~ ✅
 > Donjon final. Prerequis : ← 80, 72
-> A detailler quand les prerequis seront prets.
-- [ ] Donjon final accessible apres les 4 fragments
-- [ ] 3-5 salles avec puzzles, mobs, boss final
-- [ ] Dialogues de conclusion et epilogue
-- [ ] Recompenses de fin de trame (titre, equipement legendaire unique)
+- [x] Donjon final accessible apres les 4 fragments (entryRequirements JSON sur Dungeon, verification dans DungeonManager)
+- [x] Boss final "Gardien de la Convergence" (800 PV, 3 phases, 5 sorts, resistances multi-element)
+- [x] Chaine de 3 quetes (L'Appel des Fragments → Le Gardien du Nexus → Epilogue), prerequis = 4 fragments
+- [x] Recompenses de fin de trame : Lame de la Convergence (Amethyst), Amulette de la Convergence (Amethyst), titre "Heros de la Convergence"
+- [x] Achievement "La Convergence" (10 000 gils + titre)
+- [x] Migration PostgreSQL entry_requirements
 
 ### ~~95 — Saisonnalite & festivals (S | ★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

@@ -147,6 +147,9 @@ class AchievementFixtures extends Fixture
             ['slug' => 'craft-100', 'title' => 'Maître artisan', 'description' => 'Fabriquer 100 objets', 'category' => 'craft', 'criteria' => ['type' => 'craft', 'count' => 100], 'reward' => ['gils' => 1000, 'title' => 'Maître artisan']],
             ['slug' => 'craft-250', 'title' => 'Légende de la forge', 'description' => 'Fabriquer 250 objets', 'category' => 'craft', 'criteria' => ['type' => 'craft', 'count' => 250], 'reward' => ['gils' => 3000, 'title' => 'Légende de la forge']],
 
+            // === TRAME NARRATIVE ===
+            ['slug' => 'acte3-convergence', 'title' => 'La Convergence', 'description' => 'Terminer la trame de l\'Acte 3 — vaincre le Gardien de la Convergence et decouvrir la verite du cristal d\'Amethyste', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'quest_slug' => 'quest_acte3_epilogue', 'count' => 1], 'reward' => ['gils' => 10000, 'title' => 'Heros de la Convergence']],
+
             // === SECRETS (hidden achievements) ===
             ['slug' => 'secret-first-death', 'title' => 'Première chute', 'description' => 'Mourir pour la première fois', 'category' => 'secrets', 'criteria' => ['type' => 'player_death', 'count' => 1], 'reward' => ['gils' => 25], 'hidden' => true],
             ['slug' => 'secret-death-10', 'title' => 'Habitué de l\'au-delà', 'description' => 'Mourir 10 fois', 'category' => 'secrets', 'criteria' => ['type' => 'player_death', 'count' => 10], 'reward' => ['gils' => 100], 'hidden' => true],

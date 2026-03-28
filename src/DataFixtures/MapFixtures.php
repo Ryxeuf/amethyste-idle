@@ -98,6 +98,18 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($dungeonRoots);
         $this->addReference('map_dungeon_racines', $dungeonRoots);
 
+        // Donjon : Le Nexus de la Convergence — donjon final Acte 3 (tache 94)
+        $dungeonConvergence = new Map();
+        $dungeonConvergence->setName('Nexus de la Convergence (donjon)');
+        $dungeonConvergence->setWorld($this->getReference('world_1', World::class));
+        $dungeonConvergence->setAreaWidth(30);
+        $dungeonConvergence->setAreaHeight(30);
+        $dungeonConvergence->setCreatedAt(new \DateTime());
+        $dungeonConvergence->setUpdatedAt(new \DateTime());
+
+        $manager->persist($dungeonConvergence);
+        $this->addReference('map_dungeon_convergence', $dungeonConvergence);
+
         $manager->flush();
     }
 
