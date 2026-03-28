@@ -5,52 +5,65 @@ declare(strict_types=1);
 namespace App\GameEngine\World;
 
 /**
- * Converts real-world time to in-game time.
+ * Temps de jeu aligne sur le fuseau UTC : l'heure utilisee pour le cycle jour/nuit est
+ * derivee des secondes ecoulees depuis minuit UTC, multipliees par un facteur configurable
+ * (defaut 1.0 = meme rythme que l'horloge UTC).
  *
- * Default ratio: 1 real hour = 1 in-game day (24h).
- * The epoch (in-game midnight) is aligned to Unix epoch (1970-01-01 00:00 UTC).
+ * Saisons : calendrier gregorien UTC (hemisphere nord).
+ * Jour in-game (1-28) : derive du jour de l'annee UTC.
  */
-final class GameTimeService
+class GameTimeService
 {
-    private const int DEFAULT_TIME_RATIO = 24;
-
-    /** How many in-game hours pass per 1 real hour. */
-    private readonly int $timeRatio;
-
-    public function __construct(int $gameTimeRatio = self::DEFAULT_TIME_RATIO)
-    {
-        $this->timeRatio = $gameTimeRatio;
+    public function __construct(
+        private readonly UtcDayCycleFactorProviderInterface $utcDayCycleFactorProvider,
+    ) {
     }
 
     /**
-     * Returns the current in-game hour (0-23).
+     * Secondes depuis minuit UTC (0 .. 86399).
      */
+    public function getUtcSecondsSinceMidnight(?\DateTimeInterface $realTime = null): int
+    {
+        $utc = $this->toUtcImmutable($realTime);
+        $midnight = $utc->setTime(0, 0, 0);
+
+        return $utc->getTimestamp() - $midnight->getTimestamp();
+    }
+
+    /**
+     * Position dans le cycle jour/nuit « jeu » (0 .. 86400), apres application du facteur.
+     */
+    public function getVirtualSecondsSinceMidnight(?\DateTimeInterface $realTime = null): float
+    {
+        $factor = $this->utcDayCycleFactorProvider->getUtcDayCycleFactor();
+        $offset = $this->getUtcSecondsSinceMidnight($realTime);
+        $scaled = fmod($offset * $factor, 86400.0);
+        if ($scaled < 0) {
+            $scaled += 86400.0;
+        }
+
+        return $scaled;
+    }
+
     public function getHour(?\DateTimeInterface $realTime = null): int
     {
-        $ts = $this->getRealTimestamp($realTime);
-        $inGameSeconds = $ts * $this->timeRatio;
+        $scaled = $this->getVirtualSecondsSinceMidnight($realTime);
 
-        return ((int) ($inGameSeconds / 3600)) % 24;
+        return (int) floor($scaled / 3600) % 24;
     }
 
-    /**
-     * Returns the current in-game minute (0-59).
-     */
     public function getMinute(?\DateTimeInterface $realTime = null): int
     {
-        $ts = $this->getRealTimestamp($realTime);
-        $inGameSeconds = $ts * $this->timeRatio;
+        $scaled = $this->getVirtualSecondsSinceMidnight($realTime);
 
-        return ((int) ($inGameSeconds / 60)) % 60;
+        return (int) floor(fmod($scaled, 3600.0) / 60) % 60;
     }
 
     /**
-     * Returns the time-of-day period.
-     *
      * - dawn:  6h-8h
      * - day:   8h-18h
      * - dusk:  18h-20h
-     * - night: 20h-6h
+     * - night: 20h-6h.
      */
     public function getTimeOfDay(?\DateTimeInterface $realTime = null): string
     {
@@ -70,50 +83,45 @@ final class GameTimeService
     }
 
     /**
-     * Returns the current in-game season.
-     *
-     * Each season lasts 7 real days (= 168 in-game days with default ratio).
-     * Cycle: spring -> summer -> autumn -> winter (28 real days total).
+     * Saisons selon le mois UTC (hemisphere nord).
      */
     public function getSeason(?\DateTimeInterface $realTime = null): string
     {
-        $ts = $this->getRealTimestamp($realTime);
-        $realDays = (int) ($ts / 86400);
-        $seasonIndex = ((int) ($realDays / 7)) % 4;
+        $m = (int) $this->toUtcImmutable($realTime)->format('n');
 
-        return match ($seasonIndex) {
-            0 => 'spring',
-            1 => 'summer',
-            2 => 'autumn',
-            3 => 'winter',
-            default => 'spring',
+        return match (true) {
+            \in_array($m, [12, 1, 2], true) => 'winter',
+            \in_array($m, [3, 4, 5], true) => 'spring',
+            \in_array($m, [6, 7, 8], true) => 'summer',
+            default => 'autumn',
         };
     }
 
     /**
-     * Returns the current in-game day number (1-based, cycles 1-28).
+     * Jour in-game 1-28 (cycle sur l'annee UTC).
      */
     public function getDay(?\DateTimeInterface $realTime = null): int
     {
-        $ts = $this->getRealTimestamp($realTime);
-        $inGameSeconds = $ts * $this->timeRatio;
-        $inGameDays = (int) ($inGameSeconds / 86400);
+        $doy = (int) $this->toUtcImmutable($realTime)->format('z');
 
-        return ($inGameDays % 28) + 1;
+        return ($doy % 28) + 1;
     }
 
-    /**
-     * Returns the configured time ratio.
-     */
-    public function getTimeRatio(): int
+    public function getUtcDayCycleFactor(): float
     {
-        return $this->timeRatio;
+        return $this->utcDayCycleFactorProvider->getUtcDayCycleFactor();
     }
 
     /**
-     * Returns a full snapshot of the current in-game time.
-     *
-     * @return array{hour: int, minute: int, timeOfDay: string, season: string, day: int, timeRatio: int}
+     * @return array{
+     *     hour: int,
+     *     minute: int,
+     *     timeOfDay: string,
+     *     season: string,
+     *     day: int,
+     *     utcDayCycleFactor: float,
+     *     utcSecondsSinceMidnight: int
+     * }
      */
     public function getSnapshot(?\DateTimeInterface $realTime = null): array
     {
@@ -123,12 +131,15 @@ final class GameTimeService
             'timeOfDay' => $this->getTimeOfDay($realTime),
             'season' => $this->getSeason($realTime),
             'day' => $this->getDay($realTime),
-            'timeRatio' => $this->timeRatio,
+            'utcDayCycleFactor' => $this->getUtcDayCycleFactor(),
+            'utcSecondsSinceMidnight' => $this->getUtcSecondsSinceMidnight($realTime),
         ];
     }
 
-    private function getRealTimestamp(?\DateTimeInterface $realTime): int
+    private function toUtcImmutable(?\DateTimeInterface $realTime): \DateTimeImmutable
     {
-        return $realTime?->getTimestamp() ?? time();
+        $ts = $realTime?->getTimestamp() ?? time();
+
+        return (new \DateTimeImmutable('@' . $ts))->setTimezone(new \DateTimeZone('UTC'));
     }
 }

@@ -41,12 +41,14 @@ class CraftingController extends AbstractController
         $recipesByCraft = [];
         $canCraftByCraft = [];
         $craftLevels = [];
+        $craftToolStatus = [];
 
         foreach ($crafts as $craft) {
             $recipes = $this->craftingManager->getAvailableRecipes($player, $craft);
             $recipesByCraft[$craft] = $recipes;
             $canCraftByCraft[$craft] = [];
             $craftLevels[$craft] = $this->craftingManager->getCraftingLevel($player, $craft);
+            $craftToolStatus[$craft] = $this->craftingManager->checkCraftTool($player, $craft);
 
             foreach ($recipes as $recipe) {
                 $canCraftByCraft[$craft][$recipe->getId()] = $this->craftingManager->canCraft($player, $recipe);
@@ -88,6 +90,7 @@ class CraftingController extends AbstractController
             'recipesByCraft' => $recipesByCraft,
             'canCraftByCraft' => $canCraftByCraft,
             'craftLevels' => $craftLevels,
+            'craftToolStatus' => $craftToolStatus,
             'player' => $player,
             'playerItems' => array_values($playerItems),
             'enchantmentDefinitions' => $enchantmentDefinitions,

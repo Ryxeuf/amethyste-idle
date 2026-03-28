@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-26
+> Derniere mise a jour : 2026-03-28
 
 ---
 
@@ -1230,18 +1230,134 @@
 - [x] Portails bidirectionnels Village ↔ Foret (3 portails)
 - [x] 6 spots de recolte (menthe, sauge, pissenlit/lavande, romarin, mandragore, peche riviere)
 
-## 100 — Sons basiques (2026-03-28) ✅
+## 68 — Mines profondes (2026-03-26) ✅
 
-> Systeme audio procedural complet via Web Audio API (pas de fichiers son externes).
-- [x] SoundManager.js : gestionnaire central (AudioContext, volume, mute, localStorage)
-- [x] Sons d'interface : clic bouton, notification toast, erreur
-- [x] Sons de combat : attaque, sort, critique, miss, mort, victoire, defaite, fuite, bouclier, invocation
-- [x] Sons de recolte : harvest, peche
-- [x] Sons de navigation : portail
-- [x] Ambiance procedurale par biome : foret, plaines, marais, village, dark, collines, grotte
-- [x] Stimulus controller `sound_controller.js` : unlock AudioContext au premier geste utilisateur
-- [x] Parametres : toggle mute + slider volume dans la page settings, persistance localStorage
-- [x] Integration combat : fight_start, hit/miss/critical/spell, victory/defeat/flee, loot
-- [x] Integration carte : ambiance biome sur changement de zone, son portail
-- [x] Integration recolte/peche : son sur succes
-- [x] Integration toast : son notification/erreur
+> Carte de contenu lvl 10-25 : mines 60x30 avec tunnels, boss de mine, filons et PNJ.
+- [x] Map entity `map_4` dans MapFixtures (60x30)
+- [x] 11 mobs adaptes lvl 10-25 (stone_golem, rusty_automaton, clay_golem, crystal_golem, gargoyle, cursed_knight nocturne, abyssal_blacksmith, lesser_lich nocturne, groupe patrouille automates)
+- [x] Boss de mine : Seigneur de la Forge (forge_lord) en salle profonde
+- [x] 3 PNJ : Grimmur le Contremaître, Hilda l'Ingenieure (boutique potions + pioche), Noric le Marchand souterrain (boutique minerais)
+- [x] Portails bidirectionnels Village ↔ Mines (3 portails)
+- [x] 6 spots de recolte minerais (cuivre, fer x2, argent, or, rubis) repartis par profondeur
+
+## MED-08 — Undo / Redo editeur de carte (2026-03-26) ✅
+
+> Historique des modifications dans l'editeur de carte web (tiles, collisions, murs). 50 operations max.
+- [x] Systeme d'historique integre au controller Stimulus (stack undo/redo, 50 ops)
+- [x] Capture des changements par stroke (mousedown→mouseup = 1 entree)
+- [x] Support tiles, collisions, murs et bucket fill
+- [x] Raccourcis Ctrl+Z (undo) / Ctrl+Y ou Ctrl+Shift+Z (redo)
+- [x] Boutons undo/redo dans la barre d'outils avec etat disabled
+- [x] Reset historique apres sauvegarde ou annulation
+
+## MED-16 — Export TMX & tests unitaires (2026-03-27) ✅
+
+> Export des cartes creees dans l'editeur web vers le format Tiled (.tmx) pour validation externe.
+- [x] Classe `TmxExporter` dans `src/GameEngine/Terrain/TmxExporter.php`
+- [x] Export 5 layers (background, ground, decoration, overlay, collision) en CSV
+- [x] Export objectgroup (portals, mob_spawn, harvest_spot, npc_spawn) avec coordonnees pixels
+- [x] Route `GET /admin/maps/{id}/export-tmx` avec telechargement (Content-Disposition: attachment)
+- [x] Bouton "Exporter TMX" dans la toolbar de l'editeur
+- [x] 10 tests unitaires (27 assertions) : XML valide, attributs map, tilesets, layers, GIDs, collisions, borders, filename
+
+## GCC-10 — Controle de ville — attribution fin de saison (2026-03-27) ✅
+
+> Attribution du controle de region a la guilde gagnante a la fin d'une saison d'influence.
+- [x] Entite `RegionControl` : region, guild (nullable), season, startedAt, endsAt (nullable). Index actif (region_id, ends_at)
+- [x] `TownControlManager::attributeControl(InfluenceSeason)` : pour chaque region contestable, SELECT guild max points, cree RegionControl
+- [x] Egalite : la guilde tenant conserve le controle
+- [x] Aucune guilde / 0 points : region reste libre (guild = null)
+- [x] `getControllingGuild(Region)` : retourne Guild ou null via controle actif (ends_at IS NULL)
+- [x] Migration PostgreSQL `region_control` (3 FK, 3 index)
+- [x] 8 tests unitaires (25 assertions) : winner unique, aucun influence, egalite tenant conserve, non-contestable ignore, 0 points, controle actif, pas de controle, fermeture ancien controle
+
+## 84 — Donjons mecaniques & loot (2026-03-27) ✅
+
+> Rend les donjons interessants avec des mecaniques propres et un boss final avec phases.
+- [x] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
+- [x] Boss de fin de donjon avec mecaniques de phase (indicateur de phase dans l'UI, log de transition de phase dans le combat log, tracking via metadata fight)
+- [x] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
+- [x] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
+- [x] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
+
+## 80 — Trame Acte 2 : Fragment Montagne (2026-03-27) ✅
+
+> Dernier fragment de l'Acte 2. Chaine de 3 quetes sur la Crete de Ventombre (zone montagneuse lvl 15-25).
+- [x] Carte map_6 Crete de Ventombre (50x50) + portails Village ↔ Montagne
+- [x] Item cle Fragment du Sommet (quest-fragment-montagne, epic, bound)
+- [x] Chaine de 3 quetes sequentielles : talk_to (Aldric l'Ancien), boss_challenge (Dragon ancestral), explore (Pic sacre)
+- [x] 2 PNJ montagne : Aldric l'Ancien (ermite, lance la chaine), Seren la Guide (marchande)
+- [x] Dialogues conditionnels Acte 2 pour Aldric (aiguillage par progression de quete)
+- [x] 9 mobs sur map_6 (griffons, gargouilles, elementaires, minotaure, troll, dragon boss)
+- [x] Les 4 fragments donnent chacun un item cle collectible (foret, mines, marais, montagne)
+
+## 103 — Achievements caches & categories succes (2026-03-27) ✅
+
+> Enrichissement du systeme de succes : achievements secrets et nouvelles categories.
+- [x] Champ `hidden` sur l'entite Achievement + migration
+- [x] Nouvelles categories : Recolte (gathering), Artisanat (craft), Secrets
+- [x] Fixtures : 4 succes recolte, 4 succes craft, 7 succes secrets (mort, fuite, recolte 1000, craft 500, quetes 100)
+- [x] AchievementTracker ecoute GatheringEvent, CraftEvent, PlayerDeadEvent, CombatFleeEvent
+- [x] Nouvel evenement CombatFleeEvent dispatche depuis FightFleeController
+- [x] Template : succes caches masques jusqu'a decouverte, affichage "???" et badge "Secret" ambre
+- [x] Recompenses cachees invisibles tant que non completes
+
+## 102 — Index DB composites (2026-03-27) ✅
+
+> Index composites sur les tables critiques pour ameliorer les performances des requetes.
+- [x] Index composite `(channel, created_at)` sur ChatMessage — listing pagine par canal
+- [x] Index composite `(guild_id, created_at)` sur ChatMessage — chat de guilde
+- [x] Index composite `(inventory_id, item_id)` sur PlayerItem — recherche d'items
+- [x] Index composite `(player_id, expires_at)` sur PlayerStatusEffect — effets actifs
+- [x] Deja en place : `(fight_id, turn)` sur FightLog, `(player_id, quest_id)` sur PlayerQuest, `(player_id, monster_id)` sur PlayerBestiary
+
+## 93 — Quetes de guilde (2026-03-28) ✅
+
+> Objectifs collectifs hebdomadaires pour les guildes. Tous les membres contribuent, les recompenses sont partagees.
+- [x] Entite `GuildQuest` (guild, type kill/collect/craft, target, progress, goal, gilsReward, pointsReward, expiresAt)
+- [x] Enum `GuildQuestType` (Kill, Collect, Craft)
+- [x] `GuildQuestManager` : generation de 3 quetes hebdomadaires, suivi de progression, distribution des recompenses (gils repartis entre membres + points de guilde)
+- [x] `GuildQuestListener` : ecoute MobDeadEvent, SpotHarvestEvent, CraftEvent pour progression collective
+- [x] Route `GET /game/guild/quests` : liste quetes actives avec barres de progression + historique completees
+- [x] Lien dans la page guilde vers les quetes
+- [x] Migration PostgreSQL : table `guild_quest`
+- [x] Tests unitaires : GuildQuestManagerTest (progression, completion, distribution gils), GuildQuestListenerTest (events)
+
+## 95 — Saisonnalite & festivals (2026-03-28) ✅
+
+> Contenu evenementiel saisonnier. Poids meteo ajustes par saison, entite Festival, 4 festivals de base, decorations saisonnieres PixiJS.
+- [x] Detection de la saison reelle (printemps/ete/automne/hiver) dans `GameTimeService` (existait deja)
+- [x] Poids meteo ajustes par saison dans `WeatherService` (neige x4 en hiver, orages x2.5 en ete, etc.)
+- [x] Entite `Festival` (slug, name, season, startDay, endDay, rewards) + migration
+- [x] 4 festivals de base (Fete du Renouveau, Solstice de Flamme, Moisson des Ames, Nuit Eternelle)
+- [x] API `/api/game/time` enrichie avec les festivals actifs
+- [x] Decorations saisonnieres PixiJS : petales (printemps), lucioles (ete), feuilles (automne) + HUD festival
+- [x] Tests unitaires : FestivalTest, WeatherServiceSeasonTest
+
+## 98 — Rendu tiles animees PixiJS (2026-03-28) ✅
+
+> Remplacement de PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees (eau, torches, etc.). Les donnees d'animation etaient deja parsees (tache 97) et transmises par l'API `/api/map/config`.
+- [x] Dans `_loadConfig()` : construction des textures de frames animees depuis `config.tileAnimations`
+- [x] Dans `_renderCell()` : detection des tiles animees et creation de `PIXI.AnimatedSprite` avec frames/durations
+- [x] Gestion du cycle d'animation via le ticker natif PixiJS (`animSprite.play()`)
+- [x] Cleanup : arret et destruction des AnimatedSprite dans `_releaseSprite()` et `disconnect()`
+
+## 99 — Transitions de zone (2026-03-28) ✅
+
+> Fondu au noir lors des changements de carte et teleportations portail. Overlay PIXI.Graphics plein ecran avec animation alpha 0→1→0 via requestAnimationFrame.
+- [x] Overlay noir plein ecran (PIXI.Graphics, zIndex 1000) cree opaque dans `_initPixi()`
+- [x] Fade-in automatique apres chargement complet de la carte dans `connect()`
+- [x] Fade-out sur teleportation portail (deja existant dans `_handlePortalTransition()`)
+- [x] Fade-out avant navigation Turbo (listener `turbo:before-visit` avec `preventDefault` + reprise navigation)
+- [x] Redimensionnement du fade overlay dans `_onResize()` + cleanup dans `disconnect()`
+
+## 101 — Monitoring basique (2026-03-28) ✅
+
+> Endpoints `/health` et `/metrics` (format Prometheus), listener de metriques HTTP, dashboard Grafana et alertes.
+- [x] Endpoint `/health` verifiant BDD (latence), cache et hub Mercure
+- [x] Service `MetricsCollector` : compteurs, jauges et histogrammes stockes en cache
+- [x] Endpoint `/metrics` en format Prometheus (joueurs connectes, combats actifs, mobs vivants)
+- [x] `RequestMetricsListener` : comptage requetes/s, temps de reponse, erreurs par code HTTP
+- [x] Dashboard Grafana JSON (5 panels : req/s, latence p50/p95/p99, erreurs/min, joueurs, combats/mobs)
+- [x] Regles d'alerte Prometheus (latence > 2s, erreurs > 5/min, health check KO)
+- [x] Tests unitaires (HealthChecker, MetricsCollector, RequestMetricsListener)

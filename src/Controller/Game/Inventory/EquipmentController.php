@@ -4,6 +4,7 @@ namespace App\Controller\Game\Inventory;
 
 use App\Entity\Game\Item;
 use App\GameEngine\Fight\EquipmentSetResolver;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
@@ -19,6 +20,7 @@ class EquipmentController extends AbstractController
         private readonly GearHelper $gearHelper,
         private readonly EquipmentSetResolver $equipmentSetResolver,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -35,9 +37,13 @@ class EquipmentController extends AbstractController
         }
 
         $availableGear = [];
+        $availableTools = [];
         foreach ($bagInventory->getItems() as $item) {
             if ($item->getGenericItem()->isGear() && !$this->gearHelper->isEquipped($item)) {
                 $availableGear[] = $item;
+            }
+            if ($item->getGenericItem()->isTool() && !$this->gearHelper->isToolEquipped($item)) {
+                $availableTools[] = $item;
             }
         }
 
@@ -55,13 +61,29 @@ class EquipmentController extends AbstractController
 
         $stats = $this->playerEffectiveStatsCalculator->getInventorySheetStats($player, $totalProtection);
 
+        // Tool slots data
+        $unlockedToolSlots = $player->getUnlockedToolSlots();
+        // Also check from skills in case sync hasn't happened yet
+        $skillToolSlots = $this->playerActionHelper->getUnlockedToolSlots();
+        $allToolSlots = array_unique(array_merge($unlockedToolSlots, $skillToolSlots));
+
+        $toolSlots = [];
+        foreach ($allToolSlots as $toolType) {
+            $toolSlots[$toolType] = [
+                'equipped' => $this->gearHelper->getEquippedToolByType($toolType),
+                'label' => Item::TOOL_TYPE_LABELS[$toolType] ?? $toolType,
+            ];
+        }
+
         return $this->render('game/inventory/equipment/_list.html.twig', [
             'equipped' => $equipped,
             'availableGear' => $availableGear,
+            'availableTools' => $availableTools,
             'stats' => $stats,
             'player' => $player,
             'activeSets' => $activeSets,
             'setBonuses' => $setBonuses,
+            'toolSlots' => $toolSlots,
         ]);
     }
 }

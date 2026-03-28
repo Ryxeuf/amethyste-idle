@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game\Inventory;
 
+use App\Entity\App\PlayerItem;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,6 +25,7 @@ class EquipItemController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $bagInventory = $this->playerHelper->getBagInventory();
+        $player = $this->playerHelper->getPlayer();
 
         $itemToEquip = null;
         foreach ($bagInventory->getItems() as $item) {
@@ -37,11 +39,39 @@ class EquipItemController extends AbstractController
             throw $this->createNotFoundException('Item non trouvé');
         }
 
-        if (!$itemToEquip->getGenericItem()->isGear()) {
+        $genericItem = $itemToEquip->getGenericItem();
+
+        // Handle tool equipping
+        if ($genericItem->isTool()) {
+            $toolType = $genericItem->getToolType();
+            if ($toolType === null || !$player->hasToolSlot($toolType)) {
+                $this->addFlash('warning', 'Vous n\'avez pas débloqué cet emplacement d\'outil.');
+
+                return $this->redirectToRoute('app_game_inventory_equipment_list');
+            }
+
+            $gearValue = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType] ?? null;
+            if ($gearValue === null) {
+                throw new \LogicException('Type d\'outil invalide');
+            }
+
+            // Déséquiper l'outil actuel du même type
+            $currentTool = $this->gearHelper->getEquippedToolByType($toolType);
+            if ($currentTool) {
+                $currentTool->setGear(0);
+            }
+
+            $itemToEquip->setGear($gearValue);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('app_game_inventory_equipment_list');
+        }
+
+        if (!$genericItem->isGear()) {
             throw new \LogicException('Cet item n\'est pas un équipement');
         }
 
-        $slotType = $itemToEquip->getGenericItem()->getGearLocation();
+        $slotType = $genericItem->getGearLocation();
         $gearValue = $this->gearHelper->getPlayerItemGearByLocation($slotType);
 
         if ($gearValue === null) {

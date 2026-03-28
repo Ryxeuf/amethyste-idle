@@ -10,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Table(name: 'player_status_effects')]
 #[ORM\Index(columns: ['player_id'], name: 'IDX_player_status_effect_player')]
 #[ORM\Index(columns: ['expires_at'], name: 'IDX_player_status_effect_expires')]
+#[ORM\Index(columns: ['player_id', 'expires_at'], name: 'idx_player_status_effect_player_expires')]
 class PlayerStatusEffect
 {
     use TimestampableEntity;

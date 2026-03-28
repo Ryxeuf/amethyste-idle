@@ -42,7 +42,25 @@ class LootGenerator implements EventSubscriberInterface
         }
 
         $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
+
+        // Dungeon difficulty drop bonus
+        $dungeonDropMultiplier = (float) ($mob->getFight()?->getMetadataValue('difficulty_drop_multiplier', 1.0) ?? 1.0);
+        $dropMultiplier *= $dungeonDropMultiplier;
+
         $monsterDifficulty = $mob->getMonster()->getDifficulty();
+
+        // Determine if this is a coop fight for round-robin loot distribution
+        $fight = $mob->getFight();
+        $coopPlayerIds = [];
+        if ($fight !== null && $fight->isCoopFight()) {
+            foreach ($fight->getPlayers() as $player) {
+                if (!$player->isDead()) {
+                    $coopPlayerIds[] = $player->getId();
+                }
+            }
+        }
+        $isCoopLoot = count($coopPlayerIds) > 1;
+        $roundRobinIndex = 0;
 
         $items = [];
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
@@ -54,6 +72,10 @@ class LootGenerator implements EventSubscriberInterface
                 $item = new PlayerItem();
                 $item->setMob($mob);
                 $item->setGenericItem($monsterItem->getItem());
+                if ($isCoopLoot) {
+                    $item->setBoundToPlayerId($coopPlayerIds[$roundRobinIndex % count($coopPlayerIds)]);
+                    ++$roundRobinIndex;
+                }
                 $mob->addItem($item);
                 $this->entityManager->persist($item);
 
@@ -65,6 +87,10 @@ class LootGenerator implements EventSubscriberInterface
                 $item = new PlayerItem();
                 $item->setMob($mob);
                 $item->setGenericItem($monsterItem->getItem());
+                if ($isCoopLoot) {
+                    $item->setBoundToPlayerId($coopPlayerIds[$roundRobinIndex % count($coopPlayerIds)]);
+                    ++$roundRobinIndex;
+                }
                 $mob->addItem($item);
                 $this->entityManager->persist($item);
             }

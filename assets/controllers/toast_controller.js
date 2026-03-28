@@ -55,12 +55,6 @@ export default class extends Controller {
     }
 
     _addToast(type, message, duration) {
-        // Play sound for toast notifications
-        if (window.Sound) {
-            if (type === 'error') window.Sound.play('error');
-            else window.Sound.play('notification');
-        }
-
         const toast = document.createElement('div');
         toast.className = `toast-item toast-${type}`;
         toast.setAttribute('role', 'alert');

@@ -1,0 +1,38 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Temps monde (UTC) - Admin{% endblock %}
+{% block page_title %}Temps monde — cycle jour / nuit{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl">
+        <p class="text-gray-400 text-sm mb-6">
+            L’heure utilisée pour l’aube, le jour, le crepuscule et la nuit en jeu est calculée à partir du
+            <strong class="text-gray-300">temps réel UTC</strong>, en multipliant les secondes écoulées depuis
+            minuit UTC par le facteur ci-dessous.
+        </p>
+        <ul class="text-gray-500 text-sm list-disc pl-5 mb-6 space-y-1">
+            <li><strong class="text-gray-400">1</strong> (défaut) : le cycle suit l’horloge UTC (une journée de jeu = 24 h réelles UTC).</li>
+            <li><strong class="text-gray-400">&lt; 1</strong> : cycle plus lent (ex. 0,5 → une journée de jeu dure 48 h réelles).</li>
+            <li><strong class="text-gray-400">&gt; 1</strong> : cycle plus rapide que l’UTC.</li>
+        </ul>
+        <p class="text-gray-500 text-xs mb-6">
+            Cle technique en base : <code class="text-purple-400">world.utc_day_cycle_factor</code>
+        </p>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <form method="post" class="space-y-4">
+                <input type="hidden" name="_token" value="{{ csrf_token('admin_world_time') }}">
+                <div>
+                    <label for="utc_day_cycle_factor" class="block text-sm font-medium text-gray-300 mb-2">Facteur UTC</label>
+                    <input type="text" inputmode="decimal" id="utc_day_cycle_factor" name="utc_day_cycle_factor"
+                           value="{{ currentFactor }}"
+                           class="w-full max-w-xs bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-gray-200"
+                           placeholder="1">
+                </div>
+                <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-5 py-2 rounded-lg text-sm font-medium">
+                    Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

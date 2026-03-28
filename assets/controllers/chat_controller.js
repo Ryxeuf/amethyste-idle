@@ -261,6 +261,30 @@ export default class extends Controller {
         time.className = 'text-gray-500 text-xs mr-1';
         time.textContent = `[${data.createdAt}]`;
 
+        // Guild tag (shown on global and map channels)
+        if (data.sender.guildTag && data.channel !== 'guild' && data.channel !== 'private') {
+            const tag = document.createElement('span');
+            tag.className = 'text-xs font-bold mr-0.5';
+            if (data.sender.guildColor) {
+                tag.style.color = data.sender.guildColor;
+            } else {
+                tag.classList.add('text-amber-400');
+            }
+            tag.textContent = `[${this._escapeHtml(data.sender.guildTag)}]`;
+            div.appendChild(time);
+            div.appendChild(tag);
+        } else {
+            div.appendChild(time);
+        }
+
+        // Prestige title
+        if (data.sender.prestigeTitle) {
+            const title = document.createElement('span');
+            title.className = 'text-yellow-300 text-xs italic mr-0.5';
+            title.textContent = this._escapeHtml(data.sender.prestigeTitle);
+            div.appendChild(title);
+        }
+
         const name = document.createElement('a');
         name.href = this.profileUrlValue.replace('__ID__', data.sender.id);
         name.className = `font-semibold text-sm mr-1 hover:underline ${isSelf ? 'text-purple-400' : 'text-blue-400'}`;
@@ -280,7 +304,6 @@ export default class extends Controller {
         content.className = 'chat-content text-sm text-gray-200';
         content.textContent = ` ${data.content}`;
 
-        div.appendChild(time);
         div.appendChild(name);
         div.appendChild(content);
         container.appendChild(div);

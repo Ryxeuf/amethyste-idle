@@ -1,0 +1,92 @@
+{# Liste de choix (sertir / remplacer) — inclus dans la page complète ou le frame materia-pick #}
+<div class="materia-pick-panel rounded-xl border border-slate-700/50 bg-slate-900/40 p-3 sm:p-4">
+    <h3 class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center justify-between gap-2">
+        <span class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            {{ 'game.inventory.materia_socket.list_title'|trans }}
+        </span>
+        {% if materiaRows|length > 0 %}
+            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">{{ materiaRows|length }}</span>
+        {% endif %}
+    </h3>
+
+    {% if materiaRows is empty %}
+        <div class="text-center text-slate-500 py-10">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-slate-800/50 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-35" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+            </div>
+            <p class="text-xs sm:text-sm">{{ 'game.inventory.materia_socket.empty'|trans }}</p>
+        </div>
+    {% else %}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+            {% for row in materiaRows %}
+                {% set materia = row.materia %}
+                {% set gi = materia.genericItem %}
+                {% set canSocket = row.canSocket %}
+                {% set blockMessage = row.blockMessage %}
+                {% set isElementMatch = row.isElementMatch %}
+                {% set showNoBonus = canSocket and slot.element is not null and slot.element.value != 'none' and not isElementMatch %}
+
+                {% if canSocket %}
+                    <form method="post" action="{{ path('app_game_inventory_materia_set', {slotId: slot.id, materiaId: materia.id}) }}"
+                          data-turbo-frame="inventory-content" class="block">
+                        <button type="submit"
+                                class="materia-pick-card materia-pick-card--active w-full text-left group
+                                    {% if isElementMatch %}materia-pick-card--match{% endif %}">
+                            <div class="materia-pick-card__inner">
+                                <div class="materia-pick-card__orb materia-orb materia-sphere materia-sphere--{{ gi.element.value }} shrink-0"></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="text-xs sm:text-sm font-semibold text-white truncate">{{ gi.name }}</span>
+                                        <span class="text-[10px] bg-slate-800/90 text-slate-300 px-1.5 py-0.5 rounded shrink-0">Niv.{{ materia.materiaLevel }}</span>
+                                        {% if isElementMatch %}
+                                            <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/20">{{ 'game.inventory.materia_socket.badge_bonus'|trans }}</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                                        {% if gi.spell %}
+                                            <span class="text-[10px] text-slate-400">{{ gi.spell.name }}</span>
+                                        {% endif %}
+                                        {% if materia.nbUsages > 0 %}
+                                            <span class="text-[10px] text-slate-600">{{ materia.nbUsages }} {{ 'game.inventory.materia_socket.uses'|trans }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if showNoBonus %}
+                                        <p class="text-[10px] text-slate-500 mt-1.5">{{ 'game.inventory.materia_socket.no_element_bonus'|trans }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="flex flex-col items-end gap-1 shrink-0">
+                                    <span class="element-pill element-pill--{{ gi.element.value }}">{{ gi.element.label }}</span>
+                                    <span class="materia-pick-card__plus text-cyan-300 group-hover:text-white transition-colors">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="materia-pick-card materia-pick-card--locked" role="group" aria-disabled="true">
+                        <div class="materia-pick-card__inner">
+                            <div class="materia-pick-card__orb materia-orb materia-sphere materia-sphere--{{ gi.element.value }} shrink-0 opacity-40 grayscale"></div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-1.5 flex-wrap">
+                                    <span class="text-xs sm:text-sm font-medium text-slate-500 truncate">{{ gi.name }}</span>
+                                    <span class="text-[10px] bg-slate-800/60 text-slate-600 px-1.5 py-0.5 rounded">Niv.{{ materia.materiaLevel }}</span>
+                                    <span class="inline-flex items-center gap-0.5 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-red-950/50 text-red-400 border border-red-900/40">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                                        {{ 'game.inventory.materia_socket.blocked_badge'|trans }}
+                                    </span>
+                                </div>
+                                <p class="text-[10px] text-red-400/95 mt-1.5 leading-snug">{{ blockMessage }}</p>
+                            </div>
+                            <div class="flex flex-col items-end gap-1 shrink-0 opacity-40">
+                                <span class="element-pill element-pill--{{ gi.element.value }}">{{ gi.element.label }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>

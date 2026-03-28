@@ -59,7 +59,7 @@ VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
       MED-16 Export TMX & tests E2E ← MED-04, MED-09                 │
                                                                       │
   PRIORITE 2 — Contenu (debloque par editeur)                         │
-  ┌─ 68 Mines profondes ← 30, 47, 66, MED-02 ───────────────────────┘
+  ┌─ ✅ 68 Mines profondes (FAIT) ← 30, 47, 66 ─────────────────────┘
   │
   PRIORITE 3 — Guildes
   └─ GCC-01..20 Controle cite ← 38, 48, 52
@@ -70,16 +70,16 @@ VAGUE 5 (depend de Vague 4)
   └─ 84 Donjons mecaniques & loot ← 72, 37
 
 VAGUE 6 (long terme)
-  ┌─ 92 Classement guildes ← 52
-  ├─ 93 Quetes de guilde ← 52, 92
+  ┌─ ✅ 92 Classement guildes ← 52
+  ├─ ✅ 93 Quetes de guilde ← 52, 92
   ├─ 94 Trame Acte 3 ← 80, 72
-  ├─ 95 Saisonnalite & festivals ← 20, 85
-  ├─ 98 Rendu tiles animees ← 97
-  ├─ 99 Transitions de zone ← 30
-  ├─ ✅ 100 Sons basiques
+  ├─ ✅ 95 Saisonnalite & festivals ← 20, 85
+  ├─ ✅ 98 Rendu tiles animees ← 97
+  ├─ ✅ 99 Transitions de zone ← 30
+  ├─ 100 Sons basiques
   ├─ 101 Monitoring basique
-  ├─ 102 Index DB composites
-  └─ 103 Achievements caches
+  ├─ ✅ 102 Index DB composites
+  └─ ✅ 103 Achievements caches
 ```
 
 ---

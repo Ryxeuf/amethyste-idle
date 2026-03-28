@@ -1,0 +1,37 @@
+{% import 'game/inventory/equipment/_list.html.twig' as eq %}
+{# Réponse pour Turbo-Frame materia-pick : choix de materia sans quitter la fiche équipement #}
+<turbo-frame id="materia-pick">
+    <div class="rounded-xl border border-slate-700/50 bg-slate-900/50 overflow-hidden shadow-[0_8px_32px_rgba(15,23,42,0.45)] mb-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 px-3 py-2.5 border-b border-slate-700/50 bg-slate-900/90">
+            <a href="{{ path('app_game_inventory_equipment_modify', {id: gearItem.id}) }}"
+               data-turbo-frame="materia-pick"
+               data-turbo-action="advance"
+               class="inline-flex items-center gap-1.5 text-[10px] sm:text-xs text-cyan-300/90 hover:text-cyan-200 transition-colors font-medium shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                {{ 'game.inventory.materia_socket.back'|trans }}
+            </a>
+            <div class="text-[10px] sm:text-xs text-slate-400 text-right min-w-0 flex-1">
+                <span class="text-slate-500">{{ 'game.inventory.materia_socket.title'|trans }}</span>
+                <span class="text-white font-medium ml-1 truncate inline-block max-w-[12rem] sm:max-w-none align-bottom">{{ gearItem.genericItem.name }}</span>
+            </div>
+        </div>
+        <div class="px-0 sm:px-0">
+            <div class="px-3 pt-3 pb-2 border-b border-slate-800/60">
+                <p class="text-[10px] sm:text-xs text-slate-400 flex flex-wrap items-center gap-1.5">
+                    {% if slot.element is not null and slot.element.value != 'none' %}
+                        <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-900/60 border border-white/10">
+                            <span class="w-1.5 h-1.5 rounded-full {{ eq.element_dot_class(slot.element) }}"></span>
+                            {{ 'game.inventory.materia_socket.slot_element'|trans({ '%element%': slot.element.label }) }}
+                        </span>
+                    {% else %}
+                        <span class="text-slate-500">{{ 'game.inventory.materia_socket.slot_any'|trans }}</span>
+                    {% endif %}
+                </p>
+                {% if slot.element is not null and slot.element.value != 'none' %}
+                    <p class="mt-2 text-[10px] text-amber-200/85 leading-snug">{{ 'game.inventory.materia_socket.element_bonus_hint'|trans }}</p>
+                {% endif %}
+            </div>
+            {% include 'game/inventory/materia/_slot_select_panel.html.twig' %}
+        </div>
+    </div>
+</turbo-frame>

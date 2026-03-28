@@ -9,6 +9,7 @@ use App\Entity\Game\Item;
 use App\Event\Map\SpotHarvestEvent;
 use App\GameEngine\Generator\HarvestItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
+use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -22,6 +23,7 @@ class HarvestManager
         private readonly EntityManagerInterface $entityManager,
         private readonly InventoryHelper $inventoryHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly GearHelper $gearHelper,
     ) {
     }
 
@@ -58,16 +60,22 @@ class HarvestManager
             return null;
         }
 
-        $tool = $this->findPlayerTool($player, $requiredToolType);
+        $toolName = Item::TOOL_TYPE_LABELS[$requiredToolType] ?? 'un outil adapté';
+
+        // Vérifier que l'emplacement d'outil est débloqué
+        if (!$player->hasToolSlot($requiredToolType)) {
+            throw new UnauthorizedHttpException("Vous devez débloquer l'emplacement de {$toolName} via l'arbre de compétences correspondant.");
+        }
+
+        // Vérifier qu'un outil est équipé dans le slot
+        $tool = $this->gearHelper->getEquippedToolByType($requiredToolType);
         if ($tool === null) {
-            $toolNames = [
-                Item::TOOL_TYPE_PICKAXE => 'une pioche',
-                Item::TOOL_TYPE_SICKLE => 'une faucille',
-                Item::TOOL_TYPE_FISHING_ROD => 'une canne à pêche',
-                Item::TOOL_TYPE_SKINNING_KNIFE => 'un couteau de dépeçage',
-            ];
-            $toolName = $toolNames[$requiredToolType] ?? 'un outil adapté';
-            throw new UnauthorizedHttpException("Vous avez besoin de {$toolName} pour récolter ici.");
+            throw new UnauthorizedHttpException("Équipez {$toolName} dans votre emplacement d'outil pour récolter ici.");
+        }
+
+        // Vérifier la durabilité
+        if ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
+            throw new UnauthorizedHttpException('Votre outil est cassé. Réparez-le avant de continuer.');
         }
 
         return $tool;
@@ -86,8 +94,8 @@ class HarvestManager
 
         // Vérifier et réduire la durabilité de l'outil si nécessaire
         $toolBroken = false;
-        if ($player !== null) {
-            $tool = $this->findPlayerTool($player, $objectLayer->getRequiredToolType());
+        if ($player !== null && $objectLayer->getRequiredToolType() !== null) {
+            $tool = $this->gearHelper->getEquippedToolByType($objectLayer->getRequiredToolType());
             if ($tool !== null) {
                 $toolBroken = $tool->reduceDurability(1);
                 $this->entityManager->persist($tool);
@@ -109,32 +117,5 @@ class HarvestManager
             'items' => $items,
             'toolBroken' => $toolBroken,
         ];
-    }
-
-    /**
-     * Trouve un outil fonctionnel du type demandé dans l'inventaire du joueur.
-     */
-    private function findPlayerTool(Player $player, ?string $toolType): ?PlayerItem
-    {
-        if ($toolType === null) {
-            return null;
-        }
-
-        foreach ($player->getInventories() as $inventory) {
-            if (!$inventory->isBag()) {
-                continue;
-            }
-            foreach ($inventory->getItems() as $playerItem) {
-                $genericItem = $playerItem->getGenericItem();
-                if ($genericItem->isTool()
-                    && $genericItem->getToolType() === $toolType
-                    && ($playerItem->getCurrentDurability() === null || $playerItem->getCurrentDurability() > 0)
-                ) {
-                    return $playerItem;
-                }
-            }
-        }
-
-        return null;
     }
 }

@@ -37,6 +37,7 @@ class SetMateriaController extends AbstractController
         }
 
         // Verify the slot belongs to the current player's gear
+        /** @var \App\Entity\App\PlayerItem $gearItem */
         $gearItem = $slot->getItem();
         $bagInventory = $this->playerHelper->getBagInventory();
         $ownsGear = false;
@@ -53,6 +54,8 @@ class SetMateriaController extends AbstractController
             return $this->redirectToRoute('app_game_inventory_equipment_list');
         }
 
+        $redirectToGear = fn (): Response => $this->redirectToRoute('app_game_inventory_equipment_modify', ['id' => $gearItem->getId()]);
+
         // Find the materia in the player's materia inventory
         $materiaInventory = $this->playerHelper->getMateriaInventory();
         $materia = null;
@@ -66,21 +69,21 @@ class SetMateriaController extends AbstractController
         if (!$materia) {
             $this->addFlash('error', 'Materia introuvable dans votre inventaire.');
 
-            return $this->redirectToRoute('app_game_inventory_equipment_list');
+            return $redirectToGear();
         }
 
         // Check the materia isn't already socketed somewhere
         if ($materia->getSlotSet() !== null) {
             $this->addFlash('error', 'Cette materia est déjà équipée dans un autre slot.');
 
-            return $this->redirectToRoute('app_game_inventory_equipment_list');
+            return $redirectToGear();
         }
 
         $block = $this->playerItemHelper->getMateriaSocketBlockMessage($materia);
         if ($block !== null) {
             $this->addFlash('error', $block);
 
-            return $this->redirectToRoute('app_game_inventory_equipment_list');
+            return $redirectToGear();
         }
 
         try {
@@ -96,6 +99,6 @@ class SetMateriaController extends AbstractController
             $this->addFlash('error', 'Impossible d\'équiper cette materia. Réessayez.');
         }
 
-        return $this->redirectToRoute('app_game_inventory_equipment_list');
+        return $redirectToGear();
     }
 }

@@ -1,0 +1,164 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Tilesets - Admin{% endblock %}
+{% block page_title %}Gestion des Tilesets{% endblock %}
+
+{% block body %}
+<div data-controller="admin-tileset-manager"
+     data-admin-tileset-manager-browse-url-value="{{ path('admin_tileset_browse_images') }}"
+     data-admin-tileset-manager-preview-url-value="{{ path('admin_tileset_preview_image') }}">
+
+    {# Tilesets enregistres #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-200 mb-4">Tilesets enregistres</h2>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs uppercase text-gray-500 border-b border-gray-800">
+                    <tr>
+                        <th class="px-4 py-3">Apercu</th>
+                        <th class="px-4 py-3">Nom</th>
+                        <th class="px-4 py-3">Image</th>
+                        <th class="px-4 py-3">Colonnes</th>
+                        <th class="px-4 py-3">Tiles</th>
+                        <th class="px-4 py-3">Taille tile</th>
+                        <th class="px-4 py-3">First GID</th>
+                        <th class="px-4 py-3">Type</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for tileset in tilesets %}
+                    <tr class="hover:bg-gray-800/50">
+                        <td class="px-4 py-3">
+                            <img src="{{ asset('styles/images/' ~ tileset.imagePath) }}"
+                                 alt="{{ tileset.name }}"
+                                 class="h-12 w-12 object-cover rounded border border-gray-700"
+                                 style="image-rendering: pixelated;">
+                        </td>
+                        <td class="px-4 py-3 font-medium text-gray-200">{{ tileset.name }}</td>
+                        <td class="px-4 py-3 text-gray-400 text-xs">{{ tileset.imagePath }}</td>
+                        <td class="px-4 py-3 text-gray-300">{{ tileset.columnsCount }}</td>
+                        <td class="px-4 py-3 text-gray-300">{{ tileset.tileCount }}</td>
+                        <td class="px-4 py-3 text-gray-300">{{ tileset.tileWidth }}x{{ tileset.tileHeight }}</td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-0.5 rounded text-xs bg-purple-900 text-purple-300">{{ tileset.firstGid }}</span>
+                        </td>
+                        <td class="px-4 py-3">
+                            {% if tileset.isBuiltin %}
+                                <span class="px-2 py-0.5 rounded-full text-xs bg-blue-900 text-blue-300">Built-in</span>
+                            {% else %}
+                                <span class="px-2 py-0.5 rounded-full text-xs bg-green-900 text-green-300">Custom</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3">
+                            {% if not tileset.isBuiltin %}
+                                <form action="{{ path('admin_tileset_delete', {id: tileset.id}) }}" method="POST"
+                                      onsubmit="return confirm('Supprimer le tileset {{ tileset.name }} ?')">
+                                    <button type="submit" class="px-2 py-1 rounded text-xs bg-red-900 text-red-300 hover:bg-red-800">Supprimer</button>
+                                </form>
+                            {% else %}
+                                <span class="text-gray-600 text-xs">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {# Ajouter un tileset #}
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {# Formulaire d'ajout #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Ajouter un tileset</h2>
+
+            <form action="{{ path('admin_tileset_create') }}" method="POST" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Nom du tileset</label>
+                    <input type="text" name="name" required placeholder="ex: pipoya_grass"
+                           data-admin-tileset-manager-target="nameInput"
+                           class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:border-purple-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm text-gray-400 mb-1">Chemin image (relatif a assets/styles/images/)</label>
+                    <input type="text" name="image_path" required placeholder="ex: Pipoya RPG Tileset 32x32/[A]_type1/[A]Grass1_pipo.png"
+                           data-admin-tileset-manager-target="imagePathInput"
+                           class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:border-purple-500 focus:outline-none">
+                    <p class="text-xs text-gray-500 mt-1">Cliquez sur une image dans le navigateur pour remplir automatiquement.</p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Colonnes</label>
+                        <input type="number" name="columns" required min="1" placeholder="8"
+                               data-admin-tileset-manager-target="columnsInput"
+                               class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:border-purple-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Largeur tile</label>
+                        <input type="number" name="tile_width" value="32" min="1"
+                               data-admin-tileset-manager-target="tileWidthInput"
+                               class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:border-purple-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-1">Hauteur tile</label>
+                        <input type="number" name="tile_height" value="32" min="1"
+                               data-admin-tileset-manager-target="tileHeightInput"
+                               class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:border-purple-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div data-admin-tileset-manager-target="previewInfo" class="hidden bg-gray-800 rounded-lg p-3 text-xs text-gray-400">
+                </div>
+
+                <button type="submit" class="w-full px-4 py-2 rounded-lg text-sm bg-purple-600 hover:bg-purple-700 text-white font-semibold transition-colors">
+                    Enregistrer le tileset
+                </button>
+            </form>
+        </div>
+
+        {# Navigateur d'images #}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Navigateur d'images</h2>
+
+            <div class="mb-3">
+                <input type="text" placeholder="Filtrer par nom..."
+                       data-admin-tileset-manager-target="searchInput"
+                       data-action="input->admin-tileset-manager#filterImages"
+                       class="w-full bg-gray-800 text-white text-sm rounded-lg px-3 py-2 border border-gray-700 focus:border-purple-500 focus:outline-none">
+            </div>
+
+            <div class="mb-3 flex gap-2">
+                <button data-action="admin-tileset-manager#loadImages"
+                        class="px-3 py-1.5 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">
+                    Charger les images
+                </button>
+                <span data-admin-tileset-manager-target="imageCount" class="text-xs text-gray-500 self-center"></span>
+            </div>
+
+            {# Image preview #}
+            <div data-admin-tileset-manager-target="selectedPreview" class="hidden mb-4 bg-gray-800 rounded-lg p-3">
+                <div class="flex gap-3">
+                    <img data-admin-tileset-manager-target="previewImg" src="" alt=""
+                         class="h-24 w-24 object-contain rounded border border-gray-700"
+                         style="image-rendering: pixelated;">
+                    <div class="text-xs text-gray-400 space-y-1">
+                        <p data-admin-tileset-manager-target="previewPath" class="font-mono"></p>
+                        <p data-admin-tileset-manager-target="previewDims"></p>
+                        <p data-admin-tileset-manager-target="previewSuggestion"></p>
+                    </div>
+                </div>
+            </div>
+
+            {# Image list (grouped by directory) #}
+            <div data-admin-tileset-manager-target="imageList"
+                 class="max-h-96 overflow-y-auto space-y-1 text-sm">
+                <p class="text-gray-500 text-sm">Cliquez sur "Charger les images" pour scanner le repertoire assets/styles/images/</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

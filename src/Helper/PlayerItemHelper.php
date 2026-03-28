@@ -82,7 +82,7 @@ class PlayerItemHelper
             $missingNames = [];
             foreach ($requirements as $skill) {
                 if (!$player->getSkills()->contains($skill)) {
-                    $missingNames[] = $skill->getName();
+                    $missingNames[] = $skill->getTitle();
                 }
             }
             if ($missingNames !== []) {

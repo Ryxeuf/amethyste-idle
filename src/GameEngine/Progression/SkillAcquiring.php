@@ -3,6 +3,7 @@
 namespace App\GameEngine\Progression;
 
 use App\Entity\Game\Skill;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerSkillHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,6 +15,7 @@ class SkillAcquiring
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerSkillHelper $skillHelper,
         private readonly CrossDomainSkillResolver $crossDomainSkillResolver,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -28,6 +30,9 @@ class SkillAcquiring
 
             $player->setLife($player->getLife() + $skill->getLife());
             $player->setMaxLife($player->getMaxLife() + $skill->getLife());
+
+            // Synchroniser les emplacements d'outils débloqués
+            $this->playerActionHelper->syncToolSlots();
 
             $this->entityManager->persist($player);
             $this->entityManager->flush();

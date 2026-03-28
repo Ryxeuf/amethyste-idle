@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\App\Fight;
 use App\Entity\App\Map;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
@@ -36,6 +37,7 @@ class MapApiController extends AbstractController
         private readonly GameTimeService $gameTimeService,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly TilesetRegistry $tilesetRegistry,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -134,6 +136,7 @@ class MapApiController extends AbstractController
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $player = $this->playerHelper->getPlayer();
+        $this->reconcilePlayerFromPersistedRow($player, true, true);
         $map = $player->getMap();
         $radius = $request->query->getInt('radius', 0);
 
@@ -284,6 +287,7 @@ class MapApiController extends AbstractController
                 'toolType' => $spot->getRequiredToolType(),
                 'respawnDelay' => $spot->getRespawnDelay(),
                 'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
+                'canHarvest' => $this->playerActionHelper->canHarvest($spot->getSlug()),
             ];
         }
 
@@ -311,6 +315,9 @@ class MapApiController extends AbstractController
         $targetY = (int) ($data['targetY'] ?? 0);
         $fromX = isset($data['fromX']) ? (int) $data['fromX'] : null;
         $fromY = isset($data['fromY']) ? (int) $data['fromY'] : null;
+
+        // Même instance Player que dans User#getPlayer() : aligner sur la BDD avant le pathfinding.
+        $this->reconcilePlayerFromPersistedRow($player, $fromX === null && $fromY === null, true);
 
         $coords = explode('.', $player->getCoordinates() ?? '0.0');
         $currentX = (int) ($coords[0] ?? 0);
@@ -522,6 +529,31 @@ class MapApiController extends AbstractController
         }
 
         return $animations;
+    }
+
+    /**
+     * Aligne coordinates / fight_id sur la table player (source de vérité).
+     * Contourne l'identity map quand le même Player est partagé via User#getPlayer().
+     */
+    private function reconcilePlayerFromPersistedRow(Player $player, bool $applyCoordinates, bool $applyFight): void
+    {
+        $row = $this->entityManager->getConnection()->fetchAssociative(
+            'SELECT coordinates, fight_id FROM player WHERE id = ?',
+            [$player->getId()],
+        );
+        if (!\is_array($row)) {
+            return;
+        }
+        if ($applyFight) {
+            if ($row['fight_id'] === null || $row['fight_id'] === '') {
+                $player->setFight(null);
+            } else {
+                $player->setFight($this->entityManager->getReference(Fight::class, (int) $row['fight_id']));
+            }
+        }
+        if ($applyCoordinates && isset($row['coordinates']) && \is_string($row['coordinates']) && str_contains($row['coordinates'], '.')) {
+            $player->setCoordinates($row['coordinates']);
+        }
     }
 
     private function loadRawCells(Map $map, int $centerX, int $centerY, int $radius): array

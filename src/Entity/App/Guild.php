@@ -27,6 +27,15 @@ class Guild
     #[ORM\Column(name: 'description', type: 'text', nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(name: 'color', type: 'string', length: 7, options: ['default' => '#9333EA'])]
+    private string $color = '#9333EA';
+
+    #[ORM\Column(name: 'points', type: 'integer', options: ['default' => 0])]
+    private int $points = 0;
+
+    #[ORM\Column(name: 'gils_treasury', type: 'integer', options: ['default' => 0])]
+    private int $gilsTreasury = 0;
+
     #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: 'leader_id', referencedColumnName: 'id', nullable: false)]
     private Player $leader;
@@ -84,6 +93,21 @@ class Guild
         return $this;
     }
 
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): self
+    {
+        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
+            throw new \InvalidArgumentException('La couleur doit être au format hexadécimal (#RRGGBB).');
+        }
+        $this->color = strtoupper($color);
+
+        return $this;
+    }
+
     public function getLeader(): Player
     {
         return $this->leader;
@@ -134,6 +158,44 @@ class Guild
     public function setVault(?GuildVault $vault): self
     {
         $this->vault = $vault;
+
+        return $this;
+    }
+
+    public function getPoints(): int
+    {
+        return $this->points;
+    }
+
+    public function setPoints(int $points): self
+    {
+        $this->points = $points;
+
+        return $this;
+    }
+
+    public function addPoints(int $points): self
+    {
+        $this->points += $points;
+
+        return $this;
+    }
+
+    public function getGilsTreasury(): int
+    {
+        return $this->gilsTreasury;
+    }
+
+    public function setGilsTreasury(int $gilsTreasury): self
+    {
+        $this->gilsTreasury = $gilsTreasury;
+
+        return $this;
+    }
+
+    public function addGilsTreasury(int $amount): self
+    {
+        $this->gilsTreasury += $amount;
 
         return $this;
     }

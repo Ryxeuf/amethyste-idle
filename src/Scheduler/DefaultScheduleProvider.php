@@ -31,6 +31,8 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 RecurringMessage::cron('1 0 * * *', new RunCommandMessage('app:daily-quest:rotate')),
                 // RandomEvent : tente de générer un événement aléatoire (toutes les 30 min)
                 RecurringMessage::cron('*/30 * * * *', new RunCommandMessage('app:events:random')),
+                // SeasonTick : gère le cycle de vie des saisons d'influence (1x/jour à 00h05)
+                RecurringMessage::cron('5 0 * * *', new RunCommandMessage('app:season:tick')),
             );
     }
 }

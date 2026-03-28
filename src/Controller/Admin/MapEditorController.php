@@ -6,7 +6,13 @@ use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Pnj;
+use App\Entity\Game\Monster;
+use App\GameEngine\Terrain\Generator\BiomeRegistry;
+use App\GameEngine\Terrain\Generator\MapGenerator;
+use App\GameEngine\Terrain\Generator\ObjectPlacer;
 use App\GameEngine\Terrain\TilesetRegistry;
+use App\GameEngine\Terrain\TmxExporter;
+use App\GameEngine\Terrain\WangTileResolver;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
 use App\Service\AdminLogger;
@@ -25,7 +31,12 @@ class MapEditorController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly TilesetRegistry $tilesetRegistry,
+        private readonly WangTileResolver $wangTileResolver,
         private readonly AdminLogger $adminLogger,
+        private readonly MapGenerator $mapGenerator,
+        private readonly BiomeRegistry $biomeRegistry,
+        private readonly ObjectPlacer $objectPlacer,
+        private readonly TmxExporter $tmxExporter,
     ) {
     }
 
@@ -127,6 +138,7 @@ class MapEditorController extends AbstractController
             $mobs[] = [
                 'id' => $mob->getId(),
                 'name' => $mob->getMonster()->getName(),
+                'monsterId' => $mob->getMonster()->getId(),
                 'level' => $mob->getLevel(),
                 'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
@@ -139,6 +151,7 @@ class MapEditorController extends AbstractController
             $pnjs[] = [
                 'id' => $pnj->getId(),
                 'name' => $pnj->getName(),
+                'classType' => $pnj->getClassType(),
                 'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
@@ -163,6 +176,8 @@ class MapEditorController extends AbstractController
             $harvestSpots[] = [
                 'id' => $spot->getId(),
                 'name' => $spot->getName(),
+                'requiredToolType' => $spot->getRequiredToolType(),
+                'respawnDelay' => $spot->getRespawnDelay(),
                 'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ];
@@ -383,6 +398,99 @@ class MapEditorController extends AbstractController
         return $this->json(['success' => true, 'count' => $count]);
     }
 
+    #[Route('/{id}/editor/paint-tiles', name: 'editor_paint_tiles', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function paintTiles(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['cells']) || !is_array($data['cells'])) {
+            return $this->json(['error' => 'Missing cells parameter'], 400);
+        }
+
+        $areaWidth = $map->getAreaWidth();
+        $areaHeight = $map->getAreaHeight();
+
+        $areasCache = [];
+        foreach ($map->getAreas() as $a) {
+            $areasCache[$a->getCoordinates()] = $a;
+        }
+
+        $areaDataCache = [];
+        $count = 0;
+
+        foreach ($data['cells'] as $cell) {
+            if (!isset($cell['x'], $cell['y'], $cell['layer'], $cell['gid'])) {
+                continue;
+            }
+
+            $globalX = (int) $cell['x'];
+            $globalY = (int) $cell['y'];
+            $layer = (int) $cell['layer'];
+            $gid = (int) $cell['gid'];
+
+            if ($layer < 0 || $layer > 3) {
+                continue;
+            }
+
+            $areaCoordStr = intval($globalX / $areaWidth) . '.' . intval($globalY / $areaHeight);
+
+            if (!isset($areasCache[$areaCoordStr])) {
+                continue;
+            }
+
+            $area = $areasCache[$areaCoordStr];
+
+            if (!isset($areaDataCache[$areaCoordStr])) {
+                $areaDataCache[$areaCoordStr] = $area->getFullDataArray();
+            }
+
+            $localX = $globalX % $areaWidth;
+            $localY = $globalY % $areaHeight;
+
+            if (!isset($areaDataCache[$areaCoordStr]['cells'][$localX][$localY])) {
+                continue;
+            }
+
+            $cellData = &$areaDataCache[$areaCoordStr]['cells'][$localX][$localY];
+            if (!isset($cellData['layers'])) {
+                $cellData['layers'] = [null, null, null, null];
+            }
+
+            // Ensure layers array has enough entries
+            while (\count($cellData['layers']) <= $layer) {
+                $cellData['layers'][] = null;
+            }
+
+            if ($gid > 0) {
+                $tileset = $this->tilesetRegistry->getTilesetForGid($gid);
+                if ($tileset) {
+                    $cellData['layers'][$layer] = [
+                        'mapIdx' => $tileset['firstGid'],
+                        'idxInMap' => $gid - $tileset['firstGid'],
+                    ];
+                }
+            } else {
+                $cellData['layers'][$layer] = null;
+            }
+
+            ++$count;
+        }
+
+        foreach ($areaDataCache as $coordStr => $areaData) {
+            $areasCache[$coordStr]->setFullData(json_encode($areaData));
+        }
+
+        $this->em->flush();
+
+        $this->adminLogger->log(
+            'update',
+            'Tile',
+            null,
+            sprintf('%d tiles peintes sur %s', $count, $map->getName())
+        );
+
+        return $this->json(['success' => true, 'count' => $count]);
+    }
+
     #[Route('/{id}/editor/delete-entity', name: 'editor_delete_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function deleteEntity(Request $request, Map $map): JsonResponse
     {
@@ -468,5 +576,585 @@ class MapEditorController extends AbstractController
         );
 
         return $this->json(['success' => true]);
+    }
+
+    #[Route('/{id}/editor/entity-options', name: 'editor_entity_options', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function entityOptions(Map $map): JsonResponse
+    {
+        $monsters = $this->em->getRepository(Monster::class)->findAll();
+        $monsterOptions = [];
+        foreach ($monsters as $monster) {
+            $monsterOptions[] = ['id' => $monster->getId(), 'name' => $monster->getName(), 'slug' => $monster->getSlug()];
+        }
+
+        usort($monsterOptions, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        $maps = $this->em->getRepository(Map::class)->findAll();
+        $mapOptions = [];
+        foreach ($maps as $m) {
+            $mapOptions[] = ['id' => $m->getId(), 'name' => $m->getName()];
+        }
+
+        usort($mapOptions, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        $pnjs = $this->em->getRepository(Pnj::class)->findAll();
+        $pnjOptions = [];
+        $seen = [];
+        foreach ($pnjs as $pnj) {
+            $name = $pnj->getName();
+            if (!isset($seen[$name])) {
+                $pnjOptions[] = ['name' => $name, 'classType' => $pnj->getClassType()];
+                $seen[$name] = true;
+            }
+        }
+
+        usort($pnjOptions, fn ($a, $b) => $a['name'] <=> $b['name']);
+
+        return $this->json([
+            'monsters' => $monsterOptions,
+            'maps' => $mapOptions,
+            'pnjs' => $pnjOptions,
+        ]);
+    }
+
+    #[Route('/{id}/editor/update-entity', name: 'editor_update_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function updateEntity(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['entityType'], $data['entityId'], $data['properties'])) {
+            return $this->json(['error' => 'Parametres manquants (entityType, entityId, properties)'], 400);
+        }
+
+        $entityType = $data['entityType'];
+        $entityId = (int) $data['entityId'];
+        $properties = $data['properties'];
+
+        $entity = match ($entityType) {
+            'mob' => $this->em->getRepository(Mob::class)->find($entityId),
+            'harvestSpot', 'portal', 'craftStation' => $this->em->getRepository(ObjectLayer::class)->find($entityId),
+            'pnj' => $this->em->getRepository(Pnj::class)->find($entityId),
+            default => null,
+        };
+
+        if (!$entity) {
+            return $this->json(['error' => 'Entite introuvable'], 404);
+        }
+
+        if ($entity->getMap()?->getId() !== $map->getId()) {
+            return $this->json(['error' => 'L\'entite n\'appartient pas a cette carte'], 403);
+        }
+
+        try {
+            match ($entityType) {
+                'mob' => $this->updateMob($entity, $properties),
+                'portal' => $this->updatePortal($entity, $properties),
+                'harvestSpot' => $this->updateHarvestSpot($entity, $properties),
+                'pnj' => $this->updatePnj($entity, $properties),
+                'craftStation' => $this->updateCraftStation($entity, $properties),
+                default => throw new \InvalidArgumentException("Type d'entite inconnu : {$entityType}"),
+            };
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+
+        $this->em->flush();
+
+        $coords = explode('.', $entity->getCoordinates());
+        $x = (int) $coords[0];
+        $y = (int) ($coords[1] ?? 0);
+        $result = $this->buildEntityResult($entity, $entityType, $x, $y);
+
+        $this->adminLogger->log(
+            'update',
+            ucfirst($entityType),
+            $entityId,
+            sprintf('%s "%s" modifie sur %s', $entityType, $entity->getName(), $map->getName())
+        );
+
+        return $this->json([
+            'success' => true,
+            'entity' => $result,
+        ]);
+    }
+
+    #[Route('/{id}/editor/create-entity', name: 'editor_create_entity', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function createEntity(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['type'], $data['x'], $data['y'])) {
+            return $this->json(['error' => 'Parametres manquants (type, x, y)'], 400);
+        }
+
+        $type = $data['type'];
+        $x = (int) $data['x'];
+        $y = (int) $data['y'];
+        $properties = $data['properties'] ?? [];
+
+        if (!MapCellValidator::isCellWalkable($map, $x, $y)) {
+            return $this->json(['error' => 'La case cible est bloquee ou inexistante'], 400);
+        }
+
+        $coordinates = $x . '.' . $y;
+
+        try {
+            $entity = match ($type) {
+                'mob' => $this->createMob($map, $coordinates, $properties),
+                'portal' => $this->createPortal($map, $coordinates, $properties),
+                'harvestSpot' => $this->createHarvestSpot($map, $coordinates, $properties),
+                'pnj' => $this->createPnj($map, $coordinates, $properties),
+                default => throw new \InvalidArgumentException("Type d'entite inconnu : {$type}"),
+            };
+        } catch (\InvalidArgumentException $e) {
+            return $this->json(['error' => $e->getMessage()], 400);
+        }
+
+        $this->em->flush();
+
+        $result = $this->buildEntityResult($entity, $type, $x, $y);
+
+        $this->adminLogger->log(
+            'create',
+            ucfirst($type),
+            $result['id'],
+            sprintf('%s "%s" cree en %d,%d sur %s', $type, $result['name'], $x, $y, $map->getName())
+        );
+
+        return $this->json([
+            'success' => true,
+            'entity' => $result,
+        ]);
+    }
+
+    private function createMob(Map $map, string $coordinates, array $properties): Mob
+    {
+        if (!isset($properties['monsterId'])) {
+            throw new \InvalidArgumentException('monsterId requis');
+        }
+
+        $monster = $this->em->getRepository(Monster::class)->find((int) $properties['monsterId']);
+        if (!$monster) {
+            throw new \InvalidArgumentException('Monstre introuvable');
+        }
+
+        $level = max(1, (int) ($properties['level'] ?? 1));
+
+        $mob = new Mob();
+        $mob->setMonster($monster);
+        $mob->setMap($map);
+        $mob->setCoordinates($coordinates);
+        $mob->setLevel($level);
+        $mob->setLife($monster->getLife());
+
+        $this->em->persist($mob);
+
+        return $mob;
+    }
+
+    private function createPortal(Map $map, string $coordinates, array $properties): ObjectLayer
+    {
+        $name = !empty($properties['name']) ? $properties['name'] : 'Portail';
+        $destMapId = isset($properties['destMapId']) ? (int) $properties['destMapId'] : null;
+        $destCoords = $properties['destCoords'] ?? null;
+
+        $portal = new ObjectLayer();
+        $portal->setType(ObjectLayer::TYPE_PORTAL);
+        $portal->setName($name);
+        $portal->setSlug('portal-' . time() . '-' . random_int(100, 999));
+        $portal->setMap($map);
+        $portal->setCoordinates($coordinates);
+        $portal->setDestinationMapId($destMapId);
+        $portal->setDestinationCoordinates($destCoords);
+        $portal->setUsedAt(null);
+        $portal->setItems(null);
+        $portal->setActions(null);
+
+        $this->em->persist($portal);
+
+        return $portal;
+    }
+
+    private function createHarvestSpot(Map $map, string $coordinates, array $properties): ObjectLayer
+    {
+        $name = !empty($properties['name']) ? $properties['name'] : 'Spot de recolte';
+        $slug = !empty($properties['slug']) ? $properties['slug'] : 'harvest-' . time() . '-' . random_int(100, 999);
+
+        $spot = new ObjectLayer();
+        $spot->setType(ObjectLayer::TYPE_HARVEST_SPOT);
+        $spot->setName($name);
+        $spot->setSlug($slug);
+        $spot->setMap($map);
+        $spot->setCoordinates($coordinates);
+        $spot->setRespawnDelay(isset($properties['respawnDelay']) ? (int) $properties['respawnDelay'] : 300);
+        $spot->setRequiredToolType($properties['requiredToolType'] ?? null);
+        $spot->setUsedAt(null);
+        $spot->setItems($properties['items'] ?? null);
+        $spot->setActions(null);
+
+        $this->em->persist($spot);
+
+        return $spot;
+    }
+
+    private function createPnj(Map $map, string $coordinates, array $properties): Pnj
+    {
+        $name = !empty($properties['name']) ? $properties['name'] : 'PNJ';
+        $classType = !empty($properties['classType']) ? $properties['classType'] : 'npc';
+
+        $pnj = new Pnj();
+        $pnj->setName($name);
+        $pnj->setClassType($classType);
+        $pnj->setLife(100);
+        $pnj->setMaxLife(100);
+        $pnj->setMap($map);
+        $pnj->setCoordinates($coordinates);
+        $pnj->setDialog([]);
+
+        $this->em->persist($pnj);
+
+        return $pnj;
+    }
+
+    private function updateMob(Mob $mob, array $properties): void
+    {
+        if (isset($properties['monsterId'])) {
+            $monster = $this->em->getRepository(Monster::class)->find((int) $properties['monsterId']);
+            if (!$monster) {
+                throw new \InvalidArgumentException('Monstre introuvable');
+            }
+            $mob->setMonster($monster);
+            $mob->setLife($monster->getLife());
+        }
+
+        if (isset($properties['level'])) {
+            $mob->setLevel(max(1, (int) $properties['level']));
+        }
+    }
+
+    private function updatePortal(ObjectLayer $portal, array $properties): void
+    {
+        if (isset($properties['name'])) {
+            $portal->setName($properties['name']);
+        }
+        if (\array_key_exists('destMapId', $properties)) {
+            $portal->setDestinationMapId($properties['destMapId'] !== null ? (int) $properties['destMapId'] : null);
+        }
+        if (\array_key_exists('destCoords', $properties)) {
+            $portal->setDestinationCoordinates($properties['destCoords'] ?: null);
+        }
+    }
+
+    private function updateHarvestSpot(ObjectLayer $spot, array $properties): void
+    {
+        if (isset($properties['name'])) {
+            $spot->setName($properties['name']);
+        }
+        if (\array_key_exists('requiredToolType', $properties)) {
+            $spot->setRequiredToolType($properties['requiredToolType'] ?: null);
+        }
+        if (isset($properties['respawnDelay'])) {
+            $spot->setRespawnDelay((int) $properties['respawnDelay']);
+        }
+    }
+
+    private function updatePnj(Pnj $pnj, array $properties): void
+    {
+        if (isset($properties['name']) && $properties['name'] !== '') {
+            $pnj->setName($properties['name']);
+        }
+        if (isset($properties['classType']) && $properties['classType'] !== '') {
+            $pnj->setClassType($properties['classType']);
+        }
+    }
+
+    private function updateCraftStation(ObjectLayer $station, array $properties): void
+    {
+        if (isset($properties['name'])) {
+            $station->setName($properties['name']);
+        }
+    }
+
+    private function buildEntityResult(Mob|ObjectLayer|Pnj $entity, string $type, int $x, int $y): array
+    {
+        $base = [
+            'id' => $entity->getId(),
+            'type' => $type,
+            'name' => $entity->getName(),
+            'x' => $x,
+            'y' => $y,
+        ];
+
+        return match ($type) {
+            'mob' => array_merge($base, [
+                'listKey' => 'mobs',
+                'level' => $entity->getLevel(),
+                'monsterId' => $entity->getMonster()->getId(),
+            ]),
+            'portal' => array_merge($base, [
+                'listKey' => 'portals',
+                'destMapId' => $entity->getDestinationMapId(),
+                'destCoords' => $entity->getDestinationCoordinates(),
+            ]),
+            'harvestSpot' => array_merge($base, [
+                'listKey' => 'harvestSpots',
+                'requiredToolType' => $entity->getRequiredToolType(),
+                'respawnDelay' => $entity->getRespawnDelay(),
+            ]),
+            'pnj' => array_merge($base, [
+                'listKey' => 'pnjs',
+                'classType' => $entity->getClassType(),
+            ]),
+            'craftStation' => array_merge($base, [
+                'listKey' => 'craftStations',
+                'stationType' => $entity->getType(),
+            ]),
+            default => $base,
+        };
+    }
+
+    #[Route('/{id}/editor/auto-tile', name: 'editor_auto_tile', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function autoTile(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['startX'], $data['startY'], $data['endX'], $data['endY'])) {
+            return $this->json(['error' => 'Missing zone parameters (startX, startY, endX, endY)'], 400);
+        }
+
+        $startX = (int) $data['startX'];
+        $startY = (int) $data['startY'];
+        $endX = (int) $data['endX'];
+        $endY = (int) $data['endY'];
+        $layer = isset($data['layer']) ? (int) $data['layer'] : 1;
+        $terrainSlug = $data['terrainSlug'] ?? null;
+
+        if ($layer < 0 || $layer > 3) {
+            return $this->json(['error' => 'Invalid layer (0-3)'], 400);
+        }
+
+        $areaWidth = $map->getAreaWidth();
+        $areaHeight = $map->getAreaHeight();
+
+        // Charger toutes les areas et construire une vue "flat" des cellules
+        $areasCache = [];
+        foreach ($map->getAreas() as $a) {
+            $areasCache[$a->getCoordinates()] = $a;
+        }
+
+        $areaDataCache = [];
+        $cells = [];
+
+        foreach ($areasCache as $coordStr => $area) {
+            $areaCoords = explode('.', $coordStr);
+            $areaX = (int) $areaCoords[0];
+            $areaY = (int) ($areaCoords[1] ?? 0);
+            $areaMinGlobalX = $areaX * $areaWidth;
+            $areaMinGlobalY = $areaY * $areaHeight;
+
+            $areaData = $area->getFullDataArray();
+            $areaDataCache[$coordStr] = $areaData;
+
+            foreach ($areaData['cells'] ?? [] as $lx => $column) {
+                foreach ($column as $ly => $cellData) {
+                    if ($cellData === null) {
+                        continue;
+                    }
+                    $gx = $areaMinGlobalX + (int) $lx;
+                    $gy = $areaMinGlobalY + (int) $ly;
+                    $cells[$gx . '.' . $gy] = $cellData;
+                }
+            }
+        }
+
+        // Auto-detecter le terrain si non specifie
+        if ($terrainSlug === null) {
+            for ($y = $startY; $y <= $endY && $terrainSlug === null; ++$y) {
+                for ($x = $startX; $x <= $endX && $terrainSlug === null; ++$x) {
+                    $key = $x . '.' . $y;
+                    if (!isset($cells[$key]['layers'][$layer]) || !\is_array($cells[$key]['layers'][$layer])) {
+                        continue;
+                    }
+                    $layerData = $cells[$key]['layers'][$layer];
+                    $gid = (int) ($layerData['mapIdx'] ?? 0) + (int) ($layerData['idxInMap'] ?? 0);
+                    if ($gid > 0) {
+                        $terrainSlug = $this->wangTileResolver->detectTerrainSlug($gid);
+                    }
+                }
+            }
+        }
+
+        if ($terrainSlug === null) {
+            return $this->json(['error' => 'Could not detect terrain type in the specified zone'], 400);
+        }
+
+        $modified = $this->wangTileResolver->resolveZone($cells, $startX, $startY, $endX, $endY, $layer, $terrainSlug);
+
+        if ($modified === []) {
+            return $this->json(['success' => true, 'count' => 0, 'cells' => []]);
+        }
+
+        // Appliquer les modifications dans les area data
+        foreach ($modified as $change) {
+            $gx = $change['x'];
+            $gy = $change['y'];
+            $changeLayer = $change['layer'];
+            $gid = $change['gid'];
+
+            $areaCoordStr = intval($gx / $areaWidth) . '.' . intval($gy / $areaHeight);
+            if (!isset($areaDataCache[$areaCoordStr])) {
+                continue;
+            }
+
+            $localX = $gx % $areaWidth;
+            $localY = $gy % $areaHeight;
+
+            if (!isset($areaDataCache[$areaCoordStr]['cells'][$localX][$localY])) {
+                continue;
+            }
+
+            $cellData = &$areaDataCache[$areaCoordStr]['cells'][$localX][$localY];
+            if (!isset($cellData['layers'])) {
+                $cellData['layers'] = [null, null, null, null];
+            }
+            while (\count($cellData['layers']) <= $changeLayer) {
+                $cellData['layers'][] = null;
+            }
+
+            if ($gid > 0) {
+                $tileset = $this->tilesetRegistry->getTilesetForGid($gid);
+                if ($tileset) {
+                    $cellData['layers'][$changeLayer] = [
+                        'mapIdx' => $tileset['firstGid'],
+                        'idxInMap' => $gid - $tileset['firstGid'],
+                    ];
+                }
+            }
+        }
+
+        // Sauvegarder les areas modifiees
+        foreach ($areaDataCache as $coordStr => $areaData) {
+            $areasCache[$coordStr]->setFullData(json_encode($areaData));
+        }
+
+        $this->em->flush();
+
+        $this->adminLogger->log(
+            'update',
+            'AutoTile',
+            null,
+            sprintf('Auto-tiling %s : %d cells sur %s', $terrainSlug, \count($modified), $map->getName())
+        );
+
+        return $this->json([
+            'success' => true,
+            'count' => \count($modified),
+            'cells' => $modified,
+        ]);
+    }
+
+    #[Route('/{id}/editor/wangsets', name: 'editor_wangsets', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function editorWangsets(Map $map): JsonResponse
+    {
+        return $this->json([
+            'terrains' => $this->wangTileResolver->getAllTerrainData(),
+            'supportedSlugs' => $this->wangTileResolver->getSupportedTerrains(),
+        ]);
+    }
+
+    #[Route('/{id}/editor/generate', name: 'editor_generate', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function generate(Request $request, Map $map): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!$data || !isset($data['biome'])) {
+            return $this->json(['error' => 'Parametre biome requis'], 400);
+        }
+
+        $biomeSlug = $data['biome'];
+        $difficulty = isset($data['difficulty']) ? max(1, min(10, (int) $data['difficulty'])) : 1;
+        $seed = isset($data['seed']) && $data['seed'] !== '' ? (int) $data['seed'] : null;
+        $placeEntities = (bool) ($data['placeEntities'] ?? true);
+
+        $biome = $this->biomeRegistry->get($biomeSlug);
+        if (!$biome) {
+            return $this->json(['error' => 'Biome inconnu : ' . $biomeSlug], 400);
+        }
+
+        $actualSeed = $seed ?? random_int(0, 2147483647);
+
+        // Supprimer les entites generees precedemment (mobs + harvest spots)
+        if ($placeEntities) {
+            $this->removeGeneratedEntities($map);
+        }
+
+        // 1. Generer le terrain
+        $this->mapGenerator->generate($map, $biome, $difficulty, $actualSeed);
+
+        $result = [
+            'success' => true,
+            'biome' => $biomeSlug,
+            'difficulty' => $difficulty,
+            'seed' => $actualSeed,
+        ];
+
+        if ($placeEntities) {
+            // 2. Verifier et corriger la connectivite
+            $passages = $this->objectPlacer->ensureConnectivity($map);
+
+            // 3. Placer les entites
+            $entityCounts = $this->objectPlacer->placeAll($map, $biome, $difficulty, $actualSeed);
+
+            $this->em->flush();
+
+            $result['passages'] = $passages;
+            $result['entities'] = $entityCounts;
+        }
+
+        $this->adminLogger->log(
+            'update',
+            'Map',
+            $map->getId(),
+            sprintf('Generation procedurale %s (diff %d, seed %d) sur %s', $biomeSlug, $difficulty, $actualSeed, $map->getName())
+        );
+
+        return $this->json($result);
+    }
+
+    /**
+     * Supprime les mobs et harvest spots generes sur la carte.
+     */
+    private function removeGeneratedEntities(Map $map): void
+    {
+        $mobs = $this->em->getRepository(Mob::class)->findBy(['map' => $map]);
+        foreach ($mobs as $mob) {
+            $this->em->remove($mob);
+        }
+
+        $harvestSpots = $this->em->getRepository(ObjectLayer::class)->findBy([
+            'map' => $map,
+            'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+        ]);
+        foreach ($harvestSpots as $spot) {
+            $this->em->remove($spot);
+        }
+
+        $this->em->flush();
+    }
+
+    #[Route('/{id}/editor/biomes', name: 'editor_biomes', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function editorBiomes(Map $map): JsonResponse
+    {
+        return $this->json([
+            'biomes' => $this->biomeRegistry->getChoices(),
+        ]);
+    }
+
+    #[Route('/{id}/export-tmx', name: 'export_tmx', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function exportTmx(Map $map): Response
+    {
+        $tmxContent = $this->tmxExporter->export($map);
+        $filename = $this->tmxExporter->getFilename($map);
+
+        return new Response($tmxContent, 200, [
+            'Content-Type' => 'application/xml',
+            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+        ]);
     }
 }

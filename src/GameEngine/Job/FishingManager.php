@@ -8,6 +8,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\FishingEvent;
 use App\GameEngine\Generator\HarvestItemGenerator;
+use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ class FishingManager
         private readonly InventoryHelper $inventoryHelper,
         private readonly PlayerHelper $playerHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly GearHelper $gearHelper,
     ) {
     }
 
@@ -41,7 +43,9 @@ class FishingManager
             return false;
         }
 
-        return $this->getPlayerFishingRod($player) !== null;
+        $rod = $this->getPlayerFishingRod($player);
+
+        return $rod !== null && ($rod->getCurrentDurability() === null || $rod->getCurrentDurability() > 0);
     }
 
     /**
@@ -52,6 +56,19 @@ class FishingManager
     public function startFishing(Player $player, ObjectLayer $spot): array
     {
         if (!$this->canFish($player, $spot)) {
+            // Donner un message d'erreur précis
+            $rod = $this->getPlayerFishingRod($player);
+            if ($rod === null) {
+                if (!$player->hasToolSlot(Item::TOOL_TYPE_FISHING_ROD)) {
+                    return ['started' => false, 'error' => 'Vous devez débloquer l\'emplacement de canne à pêche via l\'arbre de compétences.'];
+                }
+
+                return ['started' => false, 'error' => 'Équipez une canne à pêche dans votre emplacement d\'outil.'];
+            }
+            if ($rod->getCurrentDurability() !== null && $rod->getCurrentDurability() <= 0) {
+                return ['started' => false, 'error' => 'Votre canne à pêche est cassée. Réparez-la avant de continuer.'];
+            }
+
             return ['started' => false, 'error' => 'Impossible de pêcher ici.'];
         }
 
@@ -147,25 +164,10 @@ class FishingManager
     }
 
     /**
-     * Récupère la canne à pêche équipée ou dans l'inventaire du joueur.
+     * Récupère la canne à pêche équipée dans l'emplacement d'outil.
      */
     private function getPlayerFishingRod(Player $player): ?PlayerItem
     {
-        foreach ($player->getInventories() as $inventory) {
-            if (!$inventory->isBag()) {
-                continue;
-            }
-            foreach ($inventory->getItems() as $playerItem) {
-                $genericItem = $playerItem->getGenericItem();
-                if ($genericItem->isTool()
-                    && $genericItem->getToolType() === Item::TOOL_TYPE_FISHING_ROD
-                    && ($playerItem->getCurrentDurability() === null || $playerItem->getCurrentDurability() > 0)
-                ) {
-                    return $playerItem;
-                }
-            }
-        }
-
-        return null;
+        return $this->gearHelper->getEquippedToolByType(Item::TOOL_TYPE_FISHING_ROD);
     }
 }

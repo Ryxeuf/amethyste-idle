@@ -3,16 +3,14 @@
 namespace App\Command;
 
 use App\Entity\App\Map;
+use App\GameEngine\World\MapWeatherMercurePublisher;
 use App\GameEngine\World\WeatherService;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Mercure\HubInterface;
-use Symfony\Component\Mercure\Update;
 
 #[AsCommand(
     name: 'app:weather:tick',
@@ -23,8 +21,7 @@ class WeatherTickCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly WeatherService $weatherService,
-        private readonly HubInterface $hub,
-        private readonly LoggerInterface $logger,
+        private readonly MapWeatherMercurePublisher $mapWeatherMercurePublisher,
     ) {
         parent::__construct();
     }
@@ -39,7 +36,7 @@ class WeatherTickCommand extends Command
         foreach ($maps as $map) {
             if ($this->weatherService->changeWeather($map)) {
                 ++$changed;
-                $this->publishWeatherChange($map);
+                $this->mapWeatherMercurePublisher->publish($map);
             }
         }
 
@@ -50,29 +47,5 @@ class WeatherTickCommand extends Command
         }
 
         return Command::SUCCESS;
-    }
-
-    private function publishWeatherChange(Map $map): void
-    {
-        $weather = $map->getCurrentWeather();
-
-        $update = new Update(
-            'map/weather',
-            json_encode([
-                'topic' => 'map/weather',
-                'mapId' => $map->getId(),
-                'weather' => $weather->value,
-                'label' => $weather->label(),
-                'icon' => $weather->icon(),
-                'changedAt' => $map->getWeatherChangedAt()?->format('c'),
-            ], JSON_THROW_ON_ERROR),
-        );
-
-        $this->hub->publish($update);
-
-        $this->logger->info('Météo changée sur {map} : {weather}', [
-            'map' => $map->getName(),
-            'weather' => $weather->value,
-        ]);
     }
 }

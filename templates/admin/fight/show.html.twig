@@ -1,0 +1,128 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Combat #{{ fight.id }} - Admin{% endblock %}
+{% block page_title %}Combat #{{ fight.id }}{% endblock %}
+
+{% block body %}
+    <div class="mb-4">
+        <a href="{{ path('admin_fight_index') }}" class="text-gray-400 hover:text-gray-300 text-sm">&larr; Liste des combats</a>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Etat</h2>
+            <dl class="space-y-3 text-sm">
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">En cours (in_progress)</dt>
+                    <dd>
+                        {% if fight.inProgress %}
+                            <span class="text-orange-300">Oui</span>
+                        {% else %}
+                            <span class="text-gray-400">Non</span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Tour (step)</dt>
+                    <dd class="text-gray-200 font-mono">{{ fight.step }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Termine (morts)</dt>
+                    <dd class="text-gray-200">{{ fight.terminated ? 'Oui' : 'Non' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Victoire / defaite</dt>
+                    <dd class="text-gray-200">
+                        {% if fight.victory %}Victoire joueurs
+                        {% elseif fight.defeat %}Defaite joueurs
+                        {% else %}—{% endif %}
+                    </dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">World boss</dt>
+                    <dd class="text-gray-200">{{ fight.isWorldBossFight ? 'Oui' : 'Non' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500">Cree / maj</dt>
+                    <dd class="text-gray-400 text-xs">{{ fight.createdAt ? fight.createdAt|date('Y-m-d H:i') : '—' }} / {{ fight.updatedAt ? fight.updatedAt|date('Y-m-d H:i') : '—' }}</dd>
+                </div>
+            </dl>
+
+            <div class="mt-6 pt-6 border-t border-gray-800">
+                <h3 class="text-sm font-medium text-gray-400 mb-3">Modifier tour / en cours</h3>
+                <form method="post" action="{{ path('admin_fight_update', {id: fight.id}) }}" class="flex flex-col sm:flex-row gap-2 items-start sm:items-end">
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_fight_update' ~ fight.id) }}">
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">Step</label>
+                        <input type="number" name="step" value="{{ fight.step }}" min="0" class="w-28 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-500 mb-1">En cours</label>
+                        <select name="in_progress" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                            <option value="1" {% if fight.inProgress %}selected{% endif %}>Oui</option>
+                            <option value="0" {% if not fight.inProgress %}selected{% endif %}>Non</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-purple-700 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Enregistrer</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Actions de moderation</h2>
+            <p class="text-gray-500 text-sm mb-4">Liberer tout le monde et remettre les mobs sur la carte (combat laisse en base, in_progress = non).</p>
+            <form method="post" action="{{ path('admin_fight_release', {id: fight.id}) }}" class="mb-6">
+                <input type="hidden" name="_token" value="{{ csrf_token('admin_fight_release' ~ fight.id) }}">
+                <button type="submit" class="w-full sm:w-auto bg-amber-700 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                        onclick="return confirm('Detacher tous les joueurs et liberer les mobs sur la carte ?');">
+                    Liberer combat (garder les mobs)
+                </button>
+            </form>
+
+            {% if is_granted('ROLE_ADMIN') %}
+                <p class="text-red-400/90 text-sm mb-2">Zone admin : supprime le combat et les entites mob associees.</p>
+                <form method="post" action="{{ path('admin_fight_force_delete', {id: fight.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_fight_force_delete' ~ fight.id) }}">
+                    <button type="submit" class="w-full sm:w-auto bg-red-800 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                            onclick="return confirm('SUPPRIMER ce combat et tous les mobs ? Irreversible.');">
+                        Supprimer combat + mobs
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Joueurs ({{ fight.players|length }})</h2>
+            {% if fight.players|length > 0 %}
+                <ul class="space-y-2 text-sm">
+                    {% for p in fight.players %}
+                        <li class="flex justify-between items-center bg-gray-800 rounded-lg px-3 py-2">
+                            <span class="text-gray-200">{{ p.name }}</span>
+                            <a href="{{ path('admin_player_show', {id: p.id}) }}" class="text-purple-400 hover:text-purple-300 text-xs">Fiche</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-sm">Aucun joueur rattache.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Mobs ({{ fight.mobs|length }})</h2>
+            {% if fight.mobs|length > 0 %}
+                <ul class="space-y-2 text-sm">
+                    {% for mob in fight.mobs %}
+                        <li class="bg-gray-800 rounded-lg px-3 py-2">
+                            <span class="text-gray-200">{{ mob.name }}</span>
+                            <span class="text-gray-500 text-xs ml-2">Niv. {{ mob.level }} — PV {{ mob.life }}/{{ mob.maxLife }}{% if mob.dead %} <span class="text-red-400">(mort)</span>{% endif %}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-500 text-sm">Aucun mob rattache.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

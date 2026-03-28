@@ -8,6 +8,7 @@ use App\Entity\Game\Recipe;
 use App\Event\CraftEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class CraftingManager
         private readonly QualityCalculator $qualityCalculator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GameEventBonusProvider $gameEventBonusProvider,
+        private readonly GearHelper $gearHelper,
     ) {
     }
 
@@ -75,12 +77,53 @@ class CraftingManager
     }
 
     /**
+     * Vérifie que le joueur a l'outil de craft requis équipé.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function checkCraftTool(Player $player, string $craft): array
+    {
+        $requiredToolType = Item::CRAFT_TOOL_TYPES[$craft] ?? null;
+        if ($requiredToolType === null) {
+            return ['ok' => true, 'message' => ''];
+        }
+
+        $toolLabel = Item::TOOL_TYPE_LABELS[$requiredToolType];
+
+        if (!$player->hasToolSlot($requiredToolType)) {
+            return ['ok' => false, 'message' => "Vous devez débloquer l'emplacement de {$toolLabel} via l'arbre de compétences."];
+        }
+
+        $tool = $this->gearHelper->getEquippedToolByType($requiredToolType);
+        if ($tool === null) {
+            return ['ok' => false, 'message' => "Équipez {$toolLabel} dans votre emplacement d'outil pour fabriquer."];
+        }
+
+        if ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
+            return ['ok' => false, 'message' => 'Votre outil est cassé. Réparez-le avant de continuer.'];
+        }
+
+        return ['ok' => true, 'message' => ''];
+    }
+
+    /**
      * Execute la fabrication : consomme les ingredients, cree l'item, accorde l'XP.
      *
      * @return array{success: bool, item: ?Item, quality: ?string, message: string}
      */
     public function craft(Player $player, Recipe $recipe): array
     {
+        // Vérifier l'outil de craft
+        $toolCheck = $this->checkCraftTool($player, $recipe->getCraft());
+        if (!$toolCheck['ok']) {
+            return [
+                'success' => false,
+                'item' => null,
+                'quality' => null,
+                'message' => $toolCheck['message'],
+            ];
+        }
+
         $check = $this->canCraft($player, $recipe);
 
         if (!$check['possible']) {
@@ -113,6 +156,16 @@ class CraftingManager
             $playerItem = $this->playerItemGenerator->generateFromItemId($resultItem->getId());
             $this->inventoryHelper->addItem($playerItem, false);
             $lastPlayerItem = $playerItem;
+        }
+
+        // Réduire la durabilité de l'outil de craft
+        $requiredToolType = Item::CRAFT_TOOL_TYPES[$recipe->getCraft()] ?? null;
+        if ($requiredToolType !== null) {
+            $craftTool = $this->gearHelper->getEquippedToolByType($requiredToolType);
+            if ($craftTool !== null) {
+                $craftTool->reduceDurability(1);
+                $this->entityManager->persist($craftTool);
+            }
         }
 
         // Accorder l'XP de domaine (avec bonus evenement)

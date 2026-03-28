@@ -15,7 +15,7 @@
         {% block javascripts %}{% endblock %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     </head>
-    <body class="bg-gray-900 text-white min-h-screen antialiased" data-controller="sound"{% if mercure_url is defined and mercure_url %} data-mercure-url="{{ mercure_url }}"{% endif %}>
+    <body class="bg-gray-900 text-white min-h-screen antialiased"{% if mercure_url is defined and mercure_url %} data-mercure-url="{{ mercure_url }}"{% endif %}>
     {% block site_navbar %}
         <nav class="bg-gray-800 border-b border-purple-900">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -13,16 +13,20 @@
                 <a href="{{ path('admin_map_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
             {% endif %}
         </form>
-        {% if is_granted('ROLE_ADMIN') %}
-            <a href="{{ path('admin_map_import') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap">Importer TMX</a>
-        {% endif %}
+        <div class="flex gap-2">
+            <a href="{{ path('admin_map_create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap">Nouvelle carte</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('admin_map_import') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors whitespace-nowrap">Importer TMX</a>
+            {% endif %}
+        </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {% for map in maps %}
             {% set stats = mapStats[map.id] %}
             <a href="{{ path('admin_map_show', {id: map.id}) }}" class="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-purple-700 transition-colors block">
-                <h3 class="text-gray-200 font-semibold mb-3">{{ map.name }}</h3>
+                <h3 class="text-gray-200 font-semibold mb-2">{{ map.name }}</h3>
+                <p class="text-sm text-gray-400 mb-3"><span aria-hidden="true">{{ map.currentWeather.icon() }}</span> {{ map.currentWeather.label() }}</p>
                 <div class="grid grid-cols-3 gap-3">
                     <div>
                         <p class="text-xs text-gray-500 uppercase">Joueurs</p>

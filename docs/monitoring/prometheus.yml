@@ -1,0 +1,22 @@
+# Prometheus configuration for Amethyste-Idle
+# Deploy alongside Prometheus instance, then import the Grafana dashboard.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alerts.yml"
+
+scrape_configs:
+  - job_name: "amethyste"
+    metrics_path: "/metrics"
+    scheme: "https"
+    static_configs:
+      - targets: ["amethyste.best"]
+        labels:
+          environment: "production"
+    # If authentication is needed, uncomment:
+    # basic_auth:
+    #   username: "prometheus"
+    #   password_file: "/etc/prometheus/password"

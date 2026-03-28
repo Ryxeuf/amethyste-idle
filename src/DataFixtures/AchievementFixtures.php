@@ -128,6 +128,33 @@ class AchievementFixtures extends Fixture
             ['slug' => 'quest-10', 'title' => 'Aventurier confirmé', 'description' => 'Compléter 10 quêtes', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'count' => 10], 'reward' => ['gils' => 300]],
             ['slug' => 'quest-25', 'title' => 'Aventurier aguerri', 'description' => 'Compléter 25 quêtes', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'count' => 25], 'reward' => ['gils' => 800]],
             ['slug' => 'quest-50', 'title' => 'Héros légendaire', 'description' => 'Compléter 50 quêtes', 'category' => 'quests', 'criteria' => ['type' => 'quest_complete', 'count' => 50], 'reward' => ['gils' => 2000, 'title' => 'Héros légendaire']],
+
+            // === DONJONS (tache 84) ===
+            ['slug' => 'dungeon-clear-1', 'title' => 'Premier donjon', 'description' => 'Terminer un donjon', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear', 'count' => 1], 'reward' => ['gils' => 500]],
+            ['slug' => 'dungeon-clear-5', 'title' => 'Explorateur de donjons', 'description' => 'Terminer 5 donjons', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear', 'count' => 5], 'reward' => ['gils' => 1500]],
+            ['slug' => 'dungeon-clear-10', 'title' => 'Maître des profondeurs', 'description' => 'Terminer 10 donjons', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear', 'count' => 10], 'reward' => ['gils' => 3000, 'title' => 'Maître des profondeurs']],
+            ['slug' => 'dungeon-clear-mythic-1', 'title' => 'Défi mythique', 'description' => 'Terminer un donjon en difficulté Mythique', 'category' => 'combat', 'criteria' => ['type' => 'dungeon_clear_mythic', 'count' => 1], 'reward' => ['gils' => 2000, 'title' => 'Conquérant mythique']],
+
+            // === RECOLTE ===
+            ['slug' => 'gather-10', 'title' => 'Cueilleur du dimanche', 'description' => 'Récolter 10 ressources', 'category' => 'gathering', 'criteria' => ['type' => 'gathering', 'count' => 10], 'reward' => ['gils' => 50]],
+            ['slug' => 'gather-50', 'title' => 'Récolteur assidu', 'description' => 'Récolter 50 ressources', 'category' => 'gathering', 'criteria' => ['type' => 'gathering', 'count' => 50], 'reward' => ['gils' => 200]],
+            ['slug' => 'gather-200', 'title' => 'Maître récolteur', 'description' => 'Récolter 200 ressources', 'category' => 'gathering', 'criteria' => ['type' => 'gathering', 'count' => 200], 'reward' => ['gils' => 800, 'title' => 'Maître récolteur']],
+            ['slug' => 'gather-500', 'title' => 'Pilleur de la nature', 'description' => 'Récolter 500 ressources', 'category' => 'gathering', 'criteria' => ['type' => 'gathering', 'count' => 500], 'reward' => ['gils' => 2000, 'title' => 'Pilleur de la nature']],
+
+            // === CRAFT ===
+            ['slug' => 'craft-5', 'title' => 'Apprenti artisan', 'description' => 'Fabriquer 5 objets', 'category' => 'craft', 'criteria' => ['type' => 'craft', 'count' => 5], 'reward' => ['gils' => 50]],
+            ['slug' => 'craft-25', 'title' => 'Artisan confirmé', 'description' => 'Fabriquer 25 objets', 'category' => 'craft', 'criteria' => ['type' => 'craft', 'count' => 25], 'reward' => ['gils' => 300]],
+            ['slug' => 'craft-100', 'title' => 'Maître artisan', 'description' => 'Fabriquer 100 objets', 'category' => 'craft', 'criteria' => ['type' => 'craft', 'count' => 100], 'reward' => ['gils' => 1000, 'title' => 'Maître artisan']],
+            ['slug' => 'craft-250', 'title' => 'Légende de la forge', 'description' => 'Fabriquer 250 objets', 'category' => 'craft', 'criteria' => ['type' => 'craft', 'count' => 250], 'reward' => ['gils' => 3000, 'title' => 'Légende de la forge']],
+
+            // === SECRETS (hidden achievements) ===
+            ['slug' => 'secret-first-death', 'title' => 'Première chute', 'description' => 'Mourir pour la première fois', 'category' => 'secrets', 'criteria' => ['type' => 'player_death', 'count' => 1], 'reward' => ['gils' => 25], 'hidden' => true],
+            ['slug' => 'secret-death-10', 'title' => 'Habitué de l\'au-delà', 'description' => 'Mourir 10 fois', 'category' => 'secrets', 'criteria' => ['type' => 'player_death', 'count' => 10], 'reward' => ['gils' => 100], 'hidden' => true],
+            ['slug' => 'secret-flee-1', 'title' => 'La fuite est un art', 'description' => 'Fuir un combat', 'category' => 'secrets', 'criteria' => ['type' => 'combat_flee', 'count' => 1], 'reward' => ['gils' => 50], 'hidden' => true],
+            ['slug' => 'secret-flee-10', 'title' => 'Couard professionnel', 'description' => 'Fuir 10 combats', 'category' => 'secrets', 'criteria' => ['type' => 'combat_flee', 'count' => 10], 'reward' => ['gils' => 200, 'title' => 'Couard professionnel'], 'hidden' => true],
+            ['slug' => 'secret-gather-1000', 'title' => 'L\'infatigable', 'description' => 'Récolter 1000 ressources', 'category' => 'secrets', 'criteria' => ['type' => 'gathering', 'count' => 1000], 'reward' => ['gils' => 5000, 'title' => 'L\'infatigable'], 'hidden' => true],
+            ['slug' => 'secret-craft-500', 'title' => 'Forgeron des dieux', 'description' => 'Fabriquer 500 objets', 'category' => 'secrets', 'criteria' => ['type' => 'craft', 'count' => 500], 'reward' => ['gils' => 5000, 'title' => 'Forgeron des dieux'], 'hidden' => true],
+            ['slug' => 'secret-quest-100', 'title' => 'L\'éternel aventurier', 'description' => 'Compléter 100 quêtes', 'category' => 'secrets', 'criteria' => ['type' => 'quest_complete', 'count' => 100], 'reward' => ['gils' => 5000, 'title' => 'L\'éternel aventurier'], 'hidden' => true],
         ];
 
         foreach ($achievements as $data) {
@@ -138,6 +165,7 @@ class AchievementFixtures extends Fixture
             $achievement->setCategory($data['category']);
             $achievement->setCriteria($data['criteria']);
             $achievement->setReward($data['reward']);
+            $achievement->setHidden($data['hidden'] ?? false);
             $achievement->setCreatedAt(new \DateTime());
             $achievement->setUpdatedAt(new \DateTime());
 

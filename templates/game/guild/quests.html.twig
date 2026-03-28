@@ -1,0 +1,102 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Quetes de guilde{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card mb-4">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">
+                Quetes de {{ guild.name }}
+            </h2>
+            <a href="{{ path('app_game_guild') }}" class="px-2.5 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
+                Retour guilde
+            </a>
+        </div>
+        <div class="game-card-body">
+            <p class="text-gray-500 text-xs mb-4">
+                Objectifs collectifs hebdomadaires. Tous les membres contribuent, les recompenses sont partagees.
+            </p>
+
+            {% if activeQuests is empty %}
+                <p class="text-gray-500 text-sm text-center py-4">Aucune quete active.</p>
+            {% else %}
+                <div class="space-y-3">
+                    {% for quest in activeQuests %}
+                        <div class="bg-gray-700/30 rounded-lg p-3 border border-gray-700">
+                            <div class="flex items-start justify-between mb-2">
+                                <div>
+                                    <span class="{{ quest.type.cssClass }} text-xs font-medium uppercase">{{ quest.type.label }}</span>
+                                    <h3 class="text-white text-sm font-medium mt-0.5">
+                                        {% if quest.type.value == 'kill' %}
+                                            Eliminer {{ quest.goal }} {{ quest.targetLabel }}
+                                        {% elseif quest.type.value == 'collect' %}
+                                            Recolter {{ quest.goal }} {{ quest.targetLabel }}
+                                        {% else %}
+                                            Fabriquer {{ quest.goal }} {{ quest.targetLabel }}
+                                        {% endif %}
+                                    </h3>
+                                </div>
+                                <div class="text-right flex-shrink-0 ml-2">
+                                    <div class="text-amber-400 text-xs">{{ quest.gilsReward|number_format(0, ',', ' ') }} Gils</div>
+                                    <div class="text-purple-400 text-[10px]">+{{ quest.pointsReward }} pts guilde</div>
+                                </div>
+                            </div>
+
+                            {# Progress bar #}
+                            <div class="mb-1.5">
+                                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                                    <span>{{ quest.progress }}/{{ quest.goal }}</span>
+                                    <span>{{ quest.progressPercent }}%</span>
+                                </div>
+                                <div class="w-full bg-gray-800 rounded-full h-2">
+                                    <div class="h-2 rounded-full transition-all duration-300 {% if quest.progressPercent >= 100 %}bg-green-500{% elseif quest.progressPercent >= 50 %}bg-amber-500{% else %}bg-purple-500{% endif %}"
+                                         style="width: {{ quest.progressPercent }}%"></div>
+                                </div>
+                            </div>
+
+                            <div class="text-[10px] text-gray-500">
+                                Expire {{ quest.expiresAt|date('d/m/Y H:i') }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Completed quests #}
+    {% if completedQuests is not empty %}
+        <div class="game-card">
+            <div class="game-card-header">
+                <h2 class="text-base font-semibold text-white">Quetes terminees</h2>
+            </div>
+            <div class="game-card-body">
+                <div class="space-y-2">
+                    {% for quest in completedQuests %}
+                        <div class="bg-gray-700/20 rounded-lg p-2.5 border border-gray-700/50 opacity-75">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="{{ quest.type.cssClass }} text-[10px] font-medium uppercase">{{ quest.type.label }}</span>
+                                    <span class="text-gray-300 text-xs ml-1">
+                                        {% if quest.type.value == 'kill' %}
+                                            Eliminer {{ quest.goal }} {{ quest.targetLabel }}
+                                        {% elseif quest.type.value == 'collect' %}
+                                            Recolter {{ quest.goal }} {{ quest.targetLabel }}
+                                        {% else %}
+                                            Fabriquer {{ quest.goal }} {{ quest.targetLabel }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="text-right flex-shrink-0 ml-2">
+                                    <span class="text-green-400 text-[10px]">Termine {{ quest.completedAt|date('d/m') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

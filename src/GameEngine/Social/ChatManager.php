@@ -4,6 +4,7 @@ namespace App\GameEngine\Social;
 
 use App\Entity\App\ChatMessage;
 use App\Entity\App\Guild;
+use App\Entity\App\GuildMember;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
 use Doctrine\ORM\EntityManagerInterface;
@@ -306,15 +307,28 @@ class ChatManager
      */
     private function serializeMessage(ChatMessage $message): array
     {
+        $sender = $message->getSender();
+        $senderData = [
+            'id' => $sender->getId(),
+            'name' => $sender->getName(),
+        ];
+
+        $guildMember = $this->em->getRepository(GuildMember::class)->findOneBy(['player' => $sender]);
+        if ($guildMember !== null) {
+            $senderData['guildTag'] = $guildMember->getGuild()->getTag();
+            $senderData['guildColor'] = $guildMember->getGuild()->getColor();
+        }
+
+        if ($sender->getPrestigeTitle() !== null) {
+            $senderData['prestigeTitle'] = $sender->getPrestigeTitle();
+        }
+
         $data = [
             'type' => 'chat_message',
             'id' => $message->getId(),
             'channel' => $message->getChannel(),
             'content' => $message->getContent(),
-            'sender' => [
-                'id' => $message->getSender()->getId(),
-                'name' => $message->getSender()->getName(),
-            ],
+            'sender' => $senderData,
             'createdAt' => $message->getCreatedAt()?->format('H:i') ?? '',
         ];
 

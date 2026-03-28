@@ -12,7 +12,7 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $map = $this->getReference('map_1', Map::class);
+        $map = $this->getReference('map_dungeon_racines', Map::class);
 
         $dungeon = new Dungeon();
         $dungeon->setSlug('racines-de-la-foret');

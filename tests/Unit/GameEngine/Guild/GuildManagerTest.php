@@ -202,6 +202,74 @@ class GuildManagerTest extends TestCase
         $this->manager->leaveGuild($player);
     }
 
+    public function testLeaveGuildRevokesPrestigeTitle(): void
+    {
+        $player = $this->createPlayer(2);
+        $player->expects($this->once())->method('setPrestigeTitle')->with(null);
+
+        $guild = $this->createGuildWithLeader($this->createPlayer(1));
+        $membership = $this->createMembership($guild, $player, GuildRank::Member);
+
+        $this->memberRepo->method('findOneBy')->willReturn($membership);
+        $this->em->expects($this->once())->method('remove');
+        $this->em->expects($this->once())->method('flush');
+
+        $this->manager->leaveGuild($player);
+    }
+
+    public function testKickMemberRevokesPrestigeTitle(): void
+    {
+        $officer = $this->createPlayer(1);
+        $recruit = $this->createPlayer(2);
+
+        $guild = $this->createGuildWithLeader($this->createPlayer(3));
+        $officerMembership = $this->createMembership($guild, $officer, GuildRank::Officer);
+        $recruitMembership = $this->createMembership($guild, $recruit, GuildRank::Recruit);
+
+        $recruit->expects($this->once())->method('setPrestigeTitle')->with(null);
+
+        $this->memberRepo->method('findOneBy')
+            ->willReturnCallback(fn (array $criteria) => match ($criteria['player']) {
+                $officer => $officerMembership,
+                default => null,
+            });
+
+        $this->em->expects($this->once())->method('remove');
+        $this->em->expects($this->once())->method('flush');
+
+        $this->manager->kickMember($officer, $recruitMembership);
+    }
+
+    public function testCreateGuildWithColor(): void
+    {
+        $player = $this->createPlayer(1, 10000);
+
+        $this->memberRepo->method('findOneBy')->willReturn(null);
+        $this->guildRepo->method('findOneBy')->willReturn(null);
+
+        $this->em->expects($this->exactly(3))->method('persist');
+        $this->em->expects($this->once())->method('flush');
+
+        $guild = $this->manager->createGuild($player, 'Color Guild', 'CLR', null, '#FF5733');
+
+        $this->assertSame('#FF5733', $guild->getColor());
+    }
+
+    public function testCreateGuildDefaultColor(): void
+    {
+        $player = $this->createPlayer(1, 10000);
+
+        $this->memberRepo->method('findOneBy')->willReturn(null);
+        $this->guildRepo->method('findOneBy')->willReturn(null);
+
+        $this->em->expects($this->exactly(3))->method('persist');
+        $this->em->expects($this->once())->method('flush');
+
+        $guild = $this->manager->createGuild($player, 'Default Guild', 'DFT');
+
+        $this->assertSame('#9333EA', $guild->getColor());
+    }
+
     public function testPromoteMember(): void
     {
         $leader = $this->createPlayer(1);

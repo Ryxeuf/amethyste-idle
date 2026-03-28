@@ -48,6 +48,24 @@ class DungeonRunRepository extends ServiceEntityRepository
     }
 
     /**
+     * Trouve le dernier run complete pour ce joueur dont le retour n'a pas encore ete effectue
+     * (origin_map_id est encore renseigne et le joueur est sur la carte du donjon).
+     */
+    public function findLastCompletedRunForPlayer(Player $player): ?DungeonRun
+    {
+        return $this->createQueryBuilder('dr')
+            ->join('dr.dungeon', 'd')->addSelect('d')
+            ->where('dr.player = :player')
+            ->andWhere('dr.completedAt IS NOT NULL')
+            ->andWhere('dr.originMap IS NOT NULL')
+            ->setParameter('player', $player)
+            ->orderBy('dr.completedAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @return DungeonRun[]
      */
     public function findPlayerHistory(Player $player, int $limit = 20): array

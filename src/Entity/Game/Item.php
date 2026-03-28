@@ -25,6 +25,39 @@ class Item
     public const TOOL_TYPE_SICKLE = 'sickle';
     public const TOOL_TYPE_FISHING_ROD = 'fishing_rod';
     public const TOOL_TYPE_SKINNING_KNIFE = 'skinning_knife';
+    public const TOOL_TYPE_HAMMER = 'hammer';
+    public const TOOL_TYPE_TANNING_KIT = 'tanning_kit';
+    public const TOOL_TYPE_MORTAR = 'mortar';
+    public const TOOL_TYPE_CHISEL = 'chisel';
+
+    public const TOOL_GEAR_LOCATIONS = [
+        self::TOOL_TYPE_PICKAXE => 'tool_pickaxe',
+        self::TOOL_TYPE_SICKLE => 'tool_sickle',
+        self::TOOL_TYPE_FISHING_ROD => 'tool_fishing_rod',
+        self::TOOL_TYPE_SKINNING_KNIFE => 'tool_skinning_knife',
+        self::TOOL_TYPE_HAMMER => 'tool_hammer',
+        self::TOOL_TYPE_TANNING_KIT => 'tool_tanning_kit',
+        self::TOOL_TYPE_MORTAR => 'tool_mortar',
+        self::TOOL_TYPE_CHISEL => 'tool_chisel',
+    ];
+
+    public const CRAFT_TOOL_TYPES = [
+        'forgeron' => self::TOOL_TYPE_HAMMER,
+        'tanneur' => self::TOOL_TYPE_TANNING_KIT,
+        'alchimiste' => self::TOOL_TYPE_MORTAR,
+        'joaillier' => self::TOOL_TYPE_CHISEL,
+    ];
+
+    public const TOOL_TYPE_LABELS = [
+        self::TOOL_TYPE_PICKAXE => 'une pioche',
+        self::TOOL_TYPE_SICKLE => 'une faucille',
+        self::TOOL_TYPE_FISHING_ROD => 'une canne à pêche',
+        self::TOOL_TYPE_SKINNING_KNIFE => 'un couteau de dépeçage',
+        self::TOOL_TYPE_HAMMER => 'un marteau de forge',
+        self::TOOL_TYPE_TANNING_KIT => 'un kit de tannage',
+        self::TOOL_TYPE_MORTAR => 'un mortier d\'alchimie',
+        self::TOOL_TYPE_CHISEL => 'un burin de joaillier',
+    ];
 
     public const TOOL_TIER_BRONZE = 1;
     public const TOOL_TIER_IRON = 2;

@@ -87,8 +87,34 @@
                     </dd>
                 </div>
                 <div class="flex justify-between">
-                    <dt class="text-gray-500 text-sm">En combat</dt>
-                    <dd class="text-gray-200 text-sm">{{ player.fight ? 'Oui (combat #' ~ player.fight.id ~ ')' : 'Non' }}</dd>
+                    <dt class="text-gray-500 text-sm">Derniere case (last)</dt>
+                    <dd class="text-gray-200 text-sm font-mono">{{ player.lastCoordinates }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Deplacement (is_moving)</dt>
+                    <dd class="text-gray-200 text-sm">{{ player.moving ? 'Oui' : 'Non' }}</dd>
+                </div>
+                <div class="flex justify-between">
+                    <dt class="text-gray-500 text-sm">Mort</dt>
+                    <dd class="text-gray-200 text-sm">
+                        {% if player.dead %}
+                            <span class="text-red-400">Oui</span>
+                        {% else %}
+                            <span class="text-green-400">Non</span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div class="flex justify-between items-start gap-2">
+                    <dt class="text-gray-500 text-sm shrink-0">Combat</dt>
+                    <dd class="text-gray-200 text-sm text-right">
+                        {% if player.fight %}
+                            <span class="block">Combat #{{ player.fight.id }}</span>
+                            <span class="block text-xs text-gray-500">Tour {{ player.fight.step }} — {% if player.fight.inProgress %}en cours{% else %}termine (flag){% endif %}</span>
+                            <a href="{{ path('admin_fight_show', {id: player.fight.id}) }}" class="text-purple-400 hover:text-purple-300 text-xs">Ouvrir la fiche combat</a>
+                        {% else %}
+                            Non
+                        {% endif %}
+                    </dd>
                 </div>
             </dl>
         </div>
@@ -241,6 +267,16 @@
                 Deplacer sur la carte
             </a>
 
+            {% if player.fight %}
+                <form method="post" action="{{ path('admin_player_combat_detach', {id: player.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('combat_detach' ~ player.id) }}">
+                    <button type="submit" class="w-full bg-orange-800 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            onclick="return confirm('Retirer ce joueur de son combat ?');">
+                        Retirer du combat
+                    </button>
+                </form>
+            {% endif %}
+
             {# Change role #}
             <form method="post" action="{{ path('admin_player_change_role', {id: player.id}) }}" class="flex gap-2">
                 <input type="hidden" name="_token" value="{{ csrf_token('role' ~ player.id) }}">
@@ -272,6 +308,19 @@
                 <button type="submit" class="bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex-shrink-0">
                     Donner
                 </button>
+            </form>
+        </div>
+
+        {# Session carte (is_moving) #}
+        <div class="mt-4 pt-4 border-t border-gray-800">
+            <h3 class="text-sm font-medium text-gray-400 mb-3">Etat deplacement carte (is_moving)</h3>
+            <form method="post" action="{{ path('admin_player_session_moving', {id: player.id}) }}" class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                <input type="hidden" name="_token" value="{{ csrf_token('session_moving' ~ player.id) }}">
+                <select name="is_moving" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200">
+                    <option value="0" {% if not player.moving %}selected{% endif %}>Non (par defaut)</option>
+                    <option value="1" {% if player.moving %}selected{% endif %}>Oui</option>
+                </select>
+                <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Appliquer</button>
             </form>
         </div>
 

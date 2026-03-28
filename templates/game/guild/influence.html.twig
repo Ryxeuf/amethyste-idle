@@ -1,0 +1,173 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Influence des guildes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base font-semibold text-white">Influence des guildes</h2>
+            <div class="flex gap-2">
+                <a href="{{ path('app_game_guild_ranking') }}" class="text-xs text-amber-400 hover:text-amber-300 transition-colors">
+                    Classement general
+                </a>
+                <a href="{{ path('app_game_guild') }}" class="text-xs text-amber-400 hover:text-amber-300 transition-colors">
+                    Ma guilde
+                </a>
+            </div>
+        </div>
+        <div class="game-card-body">
+            {# Region selector #}
+            {% if regions is not empty %}
+                <div class="flex flex-wrap gap-1.5 mb-4">
+                    {% for region in regions %}
+                        <a href="{{ path('app_game_guild_influence', {region: region.slug, season: season ? season.slug : ''}) }}"
+                           class="px-2.5 py-1 text-xs rounded transition-colors {{ selectedRegion is not null and selectedRegion.slug == region.slug ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
+                            {{ region.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {# Season info #}
+            {% if season is not null %}
+                <div class="flex items-center justify-between mb-4 bg-gray-800/50 rounded-lg p-2.5">
+                    <div>
+                        <span class="text-white text-sm font-medium">{{ season.name }}</span>
+                        <span class="ml-2 px-1.5 py-0.5 text-[10px] rounded {{ season.status.bgClass }}">
+                            {{ season.status.label }}
+                        </span>
+                    </div>
+                    <div class="text-gray-400 text-xs">
+                        {{ season.startsAt|date('d/m/Y') }} — {{ season.endsAt|date('d/m/Y') }}
+                    </div>
+                </div>
+
+                {# Season history dropdown #}
+                {% if completedSeasons is not empty %}
+                    <div class="mb-4">
+                        <details class="group">
+                            <summary class="text-xs text-gray-400 cursor-pointer hover:text-gray-300 transition-colors">
+                                Saisons passees ({{ completedSeasons|length }})
+                            </summary>
+                            <div class="mt-2 flex flex-wrap gap-1.5">
+                                {% for past in completedSeasons %}
+                                    <a href="{{ path('app_game_guild_influence', {region: selectedRegion ? selectedRegion.slug : '', season: past.slug}) }}"
+                                       class="px-2 py-1 text-[10px] rounded transition-colors {{ season.slug == past.slug ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600' }}">
+                                        {{ past.name }}
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </details>
+                    </div>
+                {% endif %}
+
+                {# Current region control #}
+                {% if regionControl is not null and regionControl.guild is not null %}
+                    <div class="mb-4 bg-purple-900/20 border border-purple-700/30 rounded-lg p-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-purple-400 text-xs">Controlee par</span>
+                            <span class="text-white text-sm font-medium">{{ regionControl.guild.name }}</span>
+                            <span class="text-gray-400 text-xs">[{{ regionControl.guild.tag }}]</span>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {# Rankings table #}
+                {% if rankings is not empty %}
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="text-left text-gray-400 text-xs py-2 px-2 w-10">#</th>
+                                    <th class="text-left text-gray-400 text-xs py-2 px-2">Guilde</th>
+                                    <th class="text-right text-gray-400 text-xs py-2 px-2 w-28">Points</th>
+                                    <th class="text-left text-gray-400 text-xs py-2 px-2 hidden sm:table-cell">Progression</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for gi in rankings %}
+                                    {% set rank = loop.index %}
+                                    <tr class="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors {{ playerGuild is not null and playerGuild.id == gi.guild.id ? 'bg-amber-900/20' : '' }}">
+                                        <td class="py-2 px-2 text-center">
+                                            {% if rank == 1 %}
+                                                <span class="text-yellow-400 font-bold">1</span>
+                                            {% elseif rank == 2 %}
+                                                <span class="text-gray-300 font-bold">2</span>
+                                            {% elseif rank == 3 %}
+                                                <span class="text-amber-600 font-bold">3</span>
+                                            {% else %}
+                                                <span class="text-gray-500">{{ rank }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="py-2 px-2">
+                                            <span class="text-white font-medium">{{ gi.guild.name }}</span>
+                                            <span class="text-gray-500 text-xs ml-1">[{{ gi.guild.tag }}]</span>
+                                        </td>
+                                        <td class="py-2 px-2 text-right font-medium text-amber-400">
+                                            {{ gi.points|number_format(0, ',', ' ') }}
+                                        </td>
+                                        <td class="py-2 px-2 hidden sm:table-cell">
+                                            {% if maxPoints > 0 %}
+                                                <div class="w-full bg-gray-700 rounded-full h-1.5">
+                                                    <div class="h-1.5 rounded-full {{ rank == 1 ? 'bg-yellow-400' : (rank == 2 ? 'bg-gray-300' : (rank == 3 ? 'bg-amber-600' : 'bg-blue-500')) }}"
+                                                         style="width: {{ (gi.points / maxPoints * 100)|round }}%"></div>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-gray-400 text-sm text-center py-4">
+                        Aucune guilde n'a accumule d'influence dans cette region pour cette saison.
+                    </p>
+                {% endif %}
+
+                {# Player guild section #}
+                {% if playerGuild is not null and playerGuildInfluence is not null and playerGuildRank is not null %}
+                    <div class="mt-4 game-card">
+                        <div class="game-card-header">
+                            <h3 class="text-sm font-semibold text-white">Ma guilde — {{ playerGuild.name }}</h3>
+                        </div>
+                        <div class="game-card-body">
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div class="bg-gray-800/50 rounded-lg p-2.5 text-center">
+                                    <div class="text-amber-400 text-lg font-bold">{{ playerGuildInfluence.points|number_format(0, ',', ' ') }}</div>
+                                    <div class="text-gray-400 text-[10px]">Points d'influence</div>
+                                </div>
+                                <div class="bg-gray-800/50 rounded-lg p-2.5 text-center">
+                                    <div class="text-white text-lg font-bold">#{{ playerGuildRank }}</div>
+                                    <div class="text-gray-400 text-[10px]">Rang regional</div>
+                                </div>
+                            </div>
+
+                            {% if topContributors is not empty %}
+                                <h4 class="text-xs text-gray-400 mb-2">Top contributeurs</h4>
+                                <div class="space-y-1">
+                                    {% for contributor in topContributors %}
+                                        <div class="flex items-center justify-between bg-gray-700/30 rounded px-2 py-1">
+                                            <span class="text-white text-xs">{{ contributor.playerName }}</span>
+                                            <span class="text-amber-400 text-xs font-medium">{{ contributor.totalPoints|number_format(0, ',', ' ') }} pts</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% elseif playerGuild is not null %}
+                    <div class="mt-4 bg-gray-800/50 rounded-lg p-3 text-center">
+                        <p class="text-gray-400 text-sm">Votre guilde n'a pas encore d'influence dans cette region.</p>
+                    </div>
+                {% endif %}
+            {% else %}
+                <p class="text-gray-400 text-sm text-center py-4">
+                    Aucune saison d'influence n'est actuellement active.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

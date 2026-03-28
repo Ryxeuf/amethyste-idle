@@ -59,6 +59,13 @@ class Fight
     #[ORM\Column(name: 'metadata', type: 'json', nullable: true)]
     private ?array $metadata = null;
 
+    /**
+     * Clé du participant dont c'est le tour en combat coopératif.
+     * Format : "player_<id>" ou "mob_<id>". Null pour les combats solo/world boss.
+     */
+    #[ORM\Column(name: 'current_turn_key', type: 'string', length: 50, nullable: true)]
+    private ?string $currentTurnKey = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -302,5 +309,23 @@ class Fight
             }
         }
         $this->cooldowns = $cooldowns;
+    }
+
+    public function getCurrentTurnKey(): ?string
+    {
+        return $this->currentTurnKey;
+    }
+
+    public function setCurrentTurnKey(?string $currentTurnKey): void
+    {
+        $this->currentTurnKey = $currentTurnKey;
+    }
+
+    /**
+     * Vérifie si ce combat est un combat coopératif (groupe de joueurs, hors world boss).
+     */
+    public function isCoopFight(): bool
+    {
+        return $this->currentTurnKey !== null && !$this->isWorldBossFight();
     }
 }

@@ -82,12 +82,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste B — Regions & villes (sequentiel)
 
-### GCC-05 — Regions & villes — entites (S | ★★★ | CRITIQUE)
+### ~~GCC-05 — Regions & villes — entites (S | ★★★ | CRITIQUE)~~ ✅
 > Zones contestables avec ville chef-lieu. Prerequis roadmap globale : **48** (hub), **GCC-01** (ou tache globale **52** une fois le socle guilde en place)
-- [ ] Entite `Region` : name, slug (unique), description, icon (nullable), taxRate (decimal, default 0.05), isContestable (bool, default true)
-- [ ] Relation Region → Map (OneToMany), champ `capitalMapId` (FK Map nullable)
-- [ ] Champ `region_id` (FK Region, nullable) sur `Map`
-- [ ] Migration + fixtures : 2-3 regions de test
+- [x] Entite `Region` : name, slug (unique), description, icon (nullable), taxRate (decimal, default 0.05), isContestable (bool, default true)
+- [x] Relation Region → Map (OneToMany), champ `capitalMapId` (FK Map nullable)
+- [x] Champ `region_id` (FK Region, nullable) sur `Map`
+- [x] Migration + fixtures : 2-3 regions de test
 
 ### ~~GCC-06 — Saisons d'influence — entites & SeasonManager (S | ★★★ | CRITIQUE)~~ ✅
 > Cycles de competition mensuels. Prerequis : ← GCC-05
@@ -121,40 +121,40 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] Ignore si joueur pas en guilde ou map sans region
 - [x] Tests unitaires (12+ tests)
 
-### GCC-09 — Anti-exploit — plafonds & diminishing returns (S | ★★ | HAUTE)
+### ~~GCC-09 — Anti-exploit — plafonds & diminishing returns (S | ★★ | HAUTE)~~ ✅
 > Protections anti-farming. Prerequis : ← GCC-08
-- [ ] Plafond journalier : 500 pts max/jour/joueur/region
-- [ ] Diminishing returns : >10 kills meme monstre en 10min → points × 0.1
-- [ ] Decroissance bas niveau : ecart domain XP vs mob_level > 10 → points ÷ 5
-- [ ] Minimum 3 membres actifs (lastActivityAt < 7j) pour accumuler des points
-- [ ] Constantes configurables dans services.yaml
-- [ ] Tests unitaires (5 tests)
+- [x] Plafond journalier : 500 pts max/jour/joueur/region
+- [x] Diminishing returns : >10 kills meme monstre en 10min → points × 0.1
+- [x] Decroissance bas niveau : ecart domain XP vs mob_level > 10 → points ÷ 5
+- [x] Minimum 3 membres actifs (lastActivityAt < 7j) pour accumuler des points
+- [x] Constantes configurables dans services.yaml
+- [x] Tests unitaires (5 tests)
 
-### GCC-10 — Controle de ville — attribution fin de saison (S | ★★★ | CRITIQUE)
+### ~~GCC-10 — Controle de ville — attribution fin de saison (S | ★★★ | CRITIQUE)~~ ✅
 > Attribution du controle a la guilde gagnante. Prerequis : ← GCC-08
-- [ ] Entite `RegionControl` : region, guild (nullable), season, startedAt, endsAt (nullable). 1 controle actif/region (WHERE ends_at IS NULL)
-- [ ] `TownControlManager::attributeControl(InfluenceSeason)` : pour chaque region, SELECT guild max points, cree RegionControl
-- [ ] Egalite : la guilde tenant conserve le controle
-- [ ] Aucune guilde : region reste libre
-- [ ] `getControllingGuild(Region)` : retourne Guild ou null
-- [ ] Migration + tests (5+ tests)
+- [x] Entite `RegionControl` : region, guild (nullable), season, startedAt, endsAt (nullable). 1 controle actif/region (WHERE ends_at IS NULL)
+- [x] `TownControlManager::attributeControl(InfluenceSeason)` : pour chaque region, SELECT guild max points, cree RegionControl
+- [x] Egalite : la guilde tenant conserve le controle
+- [x] Aucune guilde : region reste libre
+- [x] `getControllingGuild(Region)` : retourne Guild ou null
+- [x] Migration + tests (8 tests)
 
 ---
 
 ## Piste D — Benefices du controle (parallelisable)
 
-### GCC-11 — Benefices economiques — taxe & reductions (S | ★★ | HAUTE)
+### ~~GCC-11 — Benefices economiques — taxe & reductions (S | ★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-10
-- [ ] Taxe commerciale : ShopController::buy() preleve region.taxRate (5%) → gilsTreasury de la guilde
-- [ ] Reduction membre : -10% sur prix PNJ si joueur dans la guilde controlante
-- [ ] `RegionBonusProvider` : getShopDiscount(Player, Map), getTaxAmount(int, Map)
-- [ ] Tests (3 tests)
+- [x] Taxe commerciale : ShopController::buy() preleve region.taxRate (5%) → gilsTreasury de la guilde
+- [x] Reduction membre : -10% sur prix PNJ si joueur dans la guilde controlante
+- [x] `RegionBonusProvider` : getShopDiscount(Player, Map), getTaxAmount(int, Map)
+- [x] Tests (7 tests)
 
-### GCC-12 — Benefices prestige — titres & cosmetiques (S | ★★ | MOYENNE)
+### ~~GCC-12 — Benefices prestige — titres & cosmetiques (S | ★★ | MOYENNE)~~ ✅
 > Prerequis : ← GCC-10
-- [ ] Titre "Protecteur de [NomRegion]" auto-attribue aux membres controlants
-- [ ] Tag "[TAG]" + couleur de guilde dans le chat
-- [ ] Retrait automatique quand le controle change
+- [x] Titre "Protecteur de [NomRegion]" auto-attribue aux membres controlants
+- [x] Tag "[TAG]" + couleur de guilde dans le chat
+- [x] Retrait automatique quand le controle change
 
 ### GCC-13 — Upgrades de ville — investissement tresor (M | ★★ | MOYENNE)
 > Prerequis : ← GCC-11
@@ -170,12 +170,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste E — Classement & visibilite (parallelisable)
 
-### GCC-14 — Classement d'influence — page & API (S | ★★★ | HAUTE)
+### ~~GCC-14 — Classement d'influence — page & API (S | ★★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-08
-- [ ] Route GET /game/guild/influence — classement par region (top 10, barre de progression)
-- [ ] API JSON GET /api/guild/influence/{regionSlug}
-- [ ] Onglet historique : saisons passees + vainqueurs
-- [ ] Section "Ma guilde" : contribution, rang, top contributeurs internes
+- [x] Route GET /game/guild/influence — classement par region (top 10, barre de progression)
+- [x] API JSON GET /game/guild/influence/api/{regionSlug}
+- [x] Onglet historique : saisons passees + vainqueurs
+- [x] Section "Ma guilde" : contribution, rang, top contributeurs internes
 
 ### GCC-15 — Indicateurs visuels carte PixiJS (M | ★★ | MOYENNE)
 > Prerequis : ← GCC-10, GCC-14
@@ -213,13 +213,13 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste G — Infrastructure & qualite (parallelisable)
 
-### GCC-19 — Commande CRON app:season:tick (S | ★★★ | HAUTE)
+### ~~GCC-19 — Commande CRON app:season:tick (S | ★★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-06, GCC-10
-- [ ] Commande `app:season:tick` (Symfony Scheduler, 1x/jour)
-- [ ] Demarre saisons scheduled, termine saisons actives → attributeControl()
-- [ ] Auto-genere la prochaine saison si aucune scheduled
-- [ ] "Ruee des 3 derniers jours" : points × 1.5 dans les 72 dernieres heures
-- [ ] Tests (4 tests)
+- [x] Commande `app:season:tick` (Symfony Scheduler, 1x/jour)
+- [x] Demarre saisons scheduled, termine saisons actives → attributeControl()
+- [x] Auto-genere la prochaine saison si aucune scheduled
+- [x] "Ruee des 3 derniers jours" : points × 1.5 dans les 72 dernieres heures
+- [x] Tests (9 tests)
 
 ### GCC-20 — Tests unitaires controle de cite (M | ★★ | HAUTE)
 > Prerequis : ← GCC-08, GCC-10

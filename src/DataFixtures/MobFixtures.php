@@ -432,6 +432,145 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'map' => 'map_3',
                 'nocturnal' => true,
             ],
+
+            // === Mines profondes (map_4) — zone lvl 10-25 ===
+            // Entrée des mines — mobs lvl 10-12
+            'mines_stone_golem_1' => [
+                'coordinates' => '10.25',
+                'monster' => 'stone_golem',
+                'map' => 'map_4',
+            ],
+            'mines_rusty_automaton_1' => [
+                'coordinates' => '15.22',
+                'monster' => 'rusty_automaton',
+                'map' => 'map_4',
+            ],
+            'mines_clay_golem_1' => [
+                'coordinates' => '8.18',
+                'monster' => 'clay_golem',
+                'map' => 'map_4',
+            ],
+            // Tunnels centraux — mobs lvl 13-18
+            'mines_crystal_golem_1' => [
+                'coordinates' => '28.15',
+                'monster' => 'crystal_golem',
+                'map' => 'map_4',
+            ],
+            'mines_gargoyle_1' => [
+                'coordinates' => '35.12',
+                'monster' => 'gargoyle',
+                'map' => 'map_4',
+            ],
+            'mines_cursed_knight_1' => [
+                'coordinates' => '30.20',
+                'monster' => 'cursed_knight',
+                'map' => 'map_4',
+                'nocturnal' => true,
+            ],
+            // Salles profondes — mobs lvl 18-24
+            'mines_abyssal_blacksmith_1' => [
+                'coordinates' => '45.10',
+                'monster' => 'abyssal_blacksmith',
+                'map' => 'map_4',
+            ],
+            'mines_lesser_lich_1' => [
+                'coordinates' => '50.8',
+                'monster' => 'lesser_lich',
+                'map' => 'map_4',
+                'nocturnal' => true,
+            ],
+            // Groupe multi-mob minier
+            'mines_automaton_group_1' => [
+                'coordinates' => '40.15',
+                'monster' => 'rusty_automaton',
+                'map' => 'map_4',
+                'groupTag' => 'mine_patrol_1',
+            ],
+            'mines_automaton_group_2' => [
+                'coordinates' => '41.15',
+                'monster' => 'rusty_automaton',
+                'map' => 'map_4',
+                'groupTag' => 'mine_patrol_1',
+            ],
+            // Boss de mine — Seigneur de la Forge
+            'mines_forge_lord_1' => [
+                'coordinates' => '55.5',
+                'monster' => 'forge_lord',
+                'map' => 'map_4',
+            ],
+            // === Donjon : Racines de la foret (tache 84) ===
+            'dungeon_ochu_1' => [
+                'coordinates' => '5.5',
+                'monster' => 'ochu',
+                'map' => 'map_dungeon_racines',
+            ],
+            'dungeon_spider_1' => [
+                'coordinates' => '8.10',
+                'monster' => 'spider',
+                'map' => 'map_dungeon_racines',
+            ],
+            'dungeon_taiju_1' => [
+                'coordinates' => '12.8',
+                'monster' => 'taiju',
+                'map' => 'map_dungeon_racines',
+            ],
+            // Boss du donjon
+            'dungeon_ancient_root_boss' => [
+                'coordinates' => '15.15',
+                'monster' => 'ancient_root',
+                'map' => 'map_dungeon_racines',
+            ],
+
+            // === Crête de Ventombre (map_6) — zone montagneuse lvl 15-25 ===
+            // Mobs d'entrée — base de la montagne
+            'mountain_griffin_1' => [
+                'coordinates' => '20.42',
+                'monster' => 'griffin',
+                'map' => 'map_6',
+            ],
+            'mountain_gargoyle_1' => [
+                'coordinates' => '30.38',
+                'monster' => 'gargoyle',
+                'map' => 'map_6',
+            ],
+            'mountain_fire_elemental_1' => [
+                'coordinates' => '15.35',
+                'monster' => 'fire_elemental',
+                'map' => 'map_6',
+            ],
+            // Mobs intermédiaires — sentiers escarpés
+            'mountain_griffin_2' => [
+                'coordinates' => '35.28',
+                'monster' => 'griffin',
+                'map' => 'map_6',
+            ],
+            'mountain_gargoyle_2' => [
+                'coordinates' => '18.22',
+                'monster' => 'gargoyle',
+                'map' => 'map_6',
+            ],
+            'mountain_fire_elemental_2' => [
+                'coordinates' => '28.18',
+                'monster' => 'fire_elemental',
+                'map' => 'map_6',
+            ],
+            // Mobs avancés — proches du sommet
+            'mountain_minotaur_1' => [
+                'coordinates' => '22.15',
+                'monster' => 'minotaur',
+                'map' => 'map_6',
+            ],
+            'mountain_troll_1' => [
+                'coordinates' => '30.12',
+                'monster' => 'troll',
+                'map' => 'map_6',
+            ],
+            // Boss — Dragon ancestral au sommet
+            'mountain_dragon_1' => [
+                'coordinates' => '25.8',
+                'monster' => 'dragon',
+                'map' => 'map_6',
+            ],
         ];
 
         foreach ($mobs as $key => $data) {

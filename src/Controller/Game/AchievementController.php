@@ -51,10 +51,18 @@ class AchievementController extends AbstractController
             }
         }
 
+        // Count visible achievements (non-hidden + hidden that have been discovered)
+        $totalVisible = 0;
+        foreach ($achievements as $achievement) {
+            if (!$achievement->isHidden() || isset($playerAchievementMap[$achievement->getId()])) {
+                ++$totalVisible;
+            }
+        }
+
         return $this->render('game/achievements/index.html.twig', [
             'categories' => $categories,
             'playerAchievementMap' => $playerAchievementMap,
-            'totalAchievements' => \count($achievements),
+            'totalAchievements' => $totalVisible,
             'completedCount' => $completedCount,
             'player' => $player,
         ]);

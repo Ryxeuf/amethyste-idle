@@ -172,8 +172,11 @@ class InfluenceSeason
     public function getMultiplier(string $activityType): float
     {
         $multipliers = $this->parameters['multipliers'] ?? [];
+        $base = (float) ($multipliers[$activityType] ?? 1.0);
 
-        return (float) ($multipliers[$activityType] ?? 1.0);
+        $rushMultiplier = (float) ($this->parameters['rush_multiplier'] ?? 1.0);
+
+        return $base * $rushMultiplier;
     }
 
     public function __toString(): string

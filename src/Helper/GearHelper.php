@@ -51,19 +51,38 @@ class GearHelper
 
     public function isEquipped(PlayerItem $item): bool
     {
-        return
-               $item->getGear() & PlayerItem::GEAR_HEAD
-            || $item->getGear() & PlayerItem::GEAR_NECK
-            || $item->getGear() & PlayerItem::GEAR_CHEST
-            || $item->getGear() & PlayerItem::GEAR_HAND
-            || $item->getGear() & PlayerItem::GEAR_MAIN_WEAPON
-            || $item->getGear() & PlayerItem::GEAR_SIDE_WEAPON
-            || $item->getGear() & PlayerItem::GEAR_BELT
-            || $item->getGear() & PlayerItem::GEAR_LEG
-            || $item->getGear() & PlayerItem::GEAR_FOOT
-            || $item->getGear() & PlayerItem::GEAR_RING_1
-            || $item->getGear() & PlayerItem::GEAR_RING_2
-            || $item->getGear() & PlayerItem::GEAR_SHOULDER;
+        if ($item->getGear() === 0) {
+            return false;
+        }
+
+        foreach (PlayerItem::GEARS as $gear) {
+            if ($item->getGear() & $gear) {
+                return true;
+            }
+        }
+
+        foreach (PlayerItem::TOOL_GEARS as $gear) {
+            if ($item->getGear() & $gear) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isToolEquipped(PlayerItem $item): bool
+    {
+        if ($item->getGear() === 0) {
+            return false;
+        }
+
+        foreach (PlayerItem::TOOL_GEARS as $gear) {
+            if ($item->getGear() & $gear) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getEquippedGearByLocation(string $location): ?PlayerItem
@@ -106,8 +125,29 @@ class GearHelper
             Item::GEAR_LOCATION_RING_1, Item::GEAR_LOCATION_FINGER => PlayerItem::GEAR_RING_1,
             Item::GEAR_LOCATION_RING_2 => PlayerItem::GEAR_RING_2,
             Item::GEAR_LOCATION_SHOULDER => PlayerItem::GEAR_SHOULDER,
+            'tool_pickaxe' => PlayerItem::GEAR_TOOL_PICKAXE,
+            'tool_sickle' => PlayerItem::GEAR_TOOL_SICKLE,
+            'tool_fishing_rod' => PlayerItem::GEAR_TOOL_FISHING_ROD,
+            'tool_skinning_knife' => PlayerItem::GEAR_TOOL_SKINNING_KNIFE,
+            'tool_hammer' => PlayerItem::GEAR_TOOL_HAMMER,
+            'tool_tanning_kit' => PlayerItem::GEAR_TOOL_TANNING_KIT,
+            'tool_mortar' => PlayerItem::GEAR_TOOL_MORTAR,
+            'tool_chisel' => PlayerItem::GEAR_TOOL_CHISEL,
             default => null,
         };
+    }
+
+    /**
+     * Retourne l'outil équipé pour un type d'outil donné (pickaxe, hammer, etc.).
+     */
+    public function getEquippedToolByType(string $toolType): ?PlayerItem
+    {
+        $gearBit = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType] ?? null;
+        if ($gearBit === null) {
+            return null;
+        }
+
+        return $this->getEquippedItem($gearBit);
     }
 
     protected function getEquippedItem(int $gear): ?PlayerItem

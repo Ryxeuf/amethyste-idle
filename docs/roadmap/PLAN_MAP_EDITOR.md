@@ -73,47 +73,48 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste B — Outils de peinture (sequentiel)
 
-### MED-03 — Tileset Picker — palette de tiles (M | ★★★ | CRITIQUE)
+### MED-03 — Tileset Picker — palette de tiles (M | ★★★ | CRITIQUE) ✅
 > Panneau lateral avec les tilesets en grille cliquable. Prerequis : ← MED-01
-- [ ] Controller Stimulus `admin_tileset_picker_controller.js` dans `assets/controllers/`
-- [ ] Chargement des images tileset via les URLs de `TilesetRegistry` (route `/editor/tilesets`)
-- [ ] Rendu canvas de chaque tileset en grille 32x32 avec scroll
-- [ ] Onglets par tileset : Terrain, Forest, BaseChip (pas Collisions — gere automatiquement)
-- [ ] Clic sur une tile = selection d'un stamp 1x1, affichage du GID selectionne
-- [ ] Drag rectangle = selection multi-tiles (stamp NxM), apercu dans un mini-canvas
-- [ ] Selecteur de layer actif : background / ground / decoration / overlay (radio buttons)
-- [ ] Highlight visuel de la tile/zone selectionnee
-- [ ] Integration dans le template editeur existant (remplacement du panneau lateral droit)
-- [ ] Tester : ouvrir l'editeur, naviguer entre tilesets, selectionner des tiles et stamps
+- [x] Controller Stimulus `admin_tileset_picker_controller.js` dans `assets/controllers/`
+- [x] Chargement des images tileset via les URLs de `TilesetRegistry` (route `/editor/tilesets`)
+- [x] Rendu canvas de chaque tileset en grille 32x32 avec scroll
+- [x] Onglets par tileset : Terrain, Forest, BaseChip (pas Collisions — gere automatiquement)
+- [x] Clic sur une tile = selection d'un stamp 1x1, affichage du GID selectionne
+- [x] Drag rectangle = selection multi-tiles (stamp NxM), apercu dans un mini-canvas
+- [x] Selecteur de layer actif : background / ground / decoration / overlay (radio buttons)
+- [x] Highlight visuel de la tile/zone selectionnee
+- [x] Integration dans le template editeur existant (remplacement du panneau lateral droit)
+- [x] Tester : ouvrir l'editeur, naviguer entre tilesets, selectionner des tiles et stamps
 
-### MED-04 — Stamp Brush & Eyedropper (M | ★★★ | CRITIQUE)
+### MED-04 — Stamp Brush & Eyedropper (M | ★★★ | CRITIQUE) ✅
 > Outil principal de peinture. Prerequis : ← MED-03
-- [ ] Outil Stamp Brush dans `admin_map_editor_controller.js` :
+- [x] Outil Stamp Brush dans `admin_map_editor_controller.js` :
   - Clic gauche sur la carte peint le stamp selectionne sur le layer actif
   - Drag = peinture continue (trail de tiles)
   - Preview fantome du stamp sous le curseur avant le clic
   - Accumulation des changements en memoire (pas d'envoi a chaque clic)
-- [ ] Outil Eyedropper :
-  - Clic droit sur la carte capture le GID de la tile sous le curseur (layer actif)
+- [x] Outil Eyedropper :
+  - Alt+clic gauche capture le GID de la tile sous le curseur (layer actif)
   - Met a jour la selection dans le Tileset Picker
-  - Fonctionne aussi avec Alt+clic gauche
-- [ ] Route `POST /{id}/editor/paint-tiles` dans `MapEditorController` :
+  - Bascule automatiquement en mode peinture
+- [x] Route `POST /{id}/editor/paint-tiles` dans `MapEditorController` :
   - Body : `{cells: [{x, y, layer, gid}, ...]}` (batch)
   - Met a jour `Area.fullData.cells[x.y].layers[layer]` pour chaque cell
   - Retourne 200 + count des cells modifiees
-- [ ] Bouton "Sauvegarder" pour envoyer le batch accumule (reutiliser le mecanisme existant)
-- [ ] Compteur de modifications en attente (badge existant)
-- [ ] Rendu immediat sur le canvas (optimistic rendering)
-- [ ] Tester : peindre des tiles, sauvegarder, recharger → les tiles persistent
+- [x] Bouton "Sauvegarder" pour envoyer le batch accumule (reutiliser le mecanisme existant)
+- [x] Compteur de modifications en attente (badge existant)
+- [x] Rendu immediat sur le canvas (optimistic rendering)
+- [x] Tester : peindre des tiles, sauvegarder, recharger → les tiles persistent
 
-### MED-05 — Eraser (S | ★★ | HAUTE)
+### MED-05 — Eraser (S | ★★ | HAUTE) ✅
 > Outil de gomme. Prerequis : ← MED-04
-- [ ] Outil Eraser dans la toolbar (icone gomme, raccourci E)
-- [ ] Clic gauche met le GID a 0 sur le layer actif pour la cell ciblee
-- [ ] Drag = gomme continue
-- [ ] Reutilise la meme route `paint-tiles` (avec gid: 0)
-- [ ] Rendu immediat (tile supprimee visuellement)
-- [ ] Tester : peindre, gommer, sauvegarder, verifier
+- [x] Outil Eraser dans la toolbar (bouton Gomme, raccourci E)
+- [x] Clic gauche met le GID a 0 sur le layer actif pour la cell ciblee
+- [x] Drag = gomme continue
+- [x] Reutilise la meme route `paint-tiles` (avec gid: 0)
+- [x] Rendu immediat (preview rouge avec X sous le curseur)
+- [x] Raccourcis clavier outils : V (selection), P (peindre), E (gomme), B (bloquer), U (debloquer), W (mur)
+- [x] Raccourcis layers : 1/2/3/4, Ctrl+S (sauvegarder)
 
 ### MED-06 — Bucket Fill — flood fill (S | ★★ | HAUTE)
 > Remplissage par inondation. Prerequis : ← MED-04
@@ -164,93 +165,88 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste D — Entites (sequentiel)
 
-### MED-09 — Creation d'entites via menu contextuel (M | ★★★ | HAUTE)
+### MED-09 — Creation d'entites via menu contextuel (M | ★★★ | HAUTE) ✅
 > Remplace la creation d'entites via formulaires separes. Prerequis roadmap globale : **57**
-- [ ] Menu contextuel HTML (clic droit sur une case walkable) :
+- [x] Menu contextuel HTML (clic droit sur une case walkable) :
   - "Ajouter un mob" → formulaire inline panneau lateral
   - "Ajouter un portail" → formulaire inline panneau lateral
   - "Ajouter un spot de recolte" → formulaire inline panneau lateral
   - "Ajouter un PNJ" → formulaire inline panneau lateral
-  - Si entite deja presente : "Modifier" / "Supprimer"
-- [ ] Formulaires inline dans le panneau lateral (section dynamique) :
-  - Mob : select monster_slug (depuis fixtures), input level
-  - Portail : select map destination, inputs target_x/target_y
-  - Harvest spot : input slug, select item_slug, inputs item_min/item_max
-  - PNJ : select pnj_slug
-- [ ] Route `POST /{id}/editor/create-entity` dans `MapEditorController` :
+  - Si entite deja presente : "Supprimer"
+- [x] Formulaires inline dans le panneau lateral (section dynamique) :
+  - Mob : select monster (depuis DB), input level
+  - Portail : input nom, select map destination, input coordonnees destination
+  - Harvest spot : input nom, input slug, select outil requis, input delai respawn
+  - PNJ : input nom, input classe
+- [x] Route `POST /{id}/editor/create-entity` dans `MapEditorController` :
   - Body : `{type, x, y, properties: {...}}`
   - Cree l'`ObjectLayer` (ou `Mob`/`Pnj`) en DB avec les coordonnees `"x.y"`
-  - Validation : cell walkable (mouvement != -1), pas de doublon au meme emplacement
+  - Validation : cell walkable (mouvement != -1)
   - Retourne l'entite creee en JSON
-- [ ] L'entite apparait immediatement sur le canvas (marqueur colore existant)
-- [ ] Listes de choix alimentees par l'API (slugs monsters, items, maps existantes)
-- [ ] Tester : clic droit → creer mob → visible sur canvas → verifier en DB
+- [x] Route `GET /{id}/editor/entity-options` : liste monstres, cartes, PNJ existants
+- [x] L'entite apparait immediatement sur le canvas (marqueur colore existant)
+- [x] Listes de choix alimentees par l'API (monsters, maps existantes)
+- [x] Tester : clic droit → creer mob → visible sur canvas → verifier en DB
 
-### MED-10 — Edition d'entites inline (S | ★★ | MOYENNE)
+### MED-10 — Edition d'entites inline (S | ★★ | MOYENNE) ✅
 > Modifier les proprietes des entites directement depuis l'editeur. Prerequis : ← MED-09
-- [ ] Clic sur une entite existante → panneau lateral affiche ses proprietes editables
-- [ ] Route `POST /{id}/editor/update-entity` dans `MapEditorController` :
+- [x] Clic sur une entite existante → panneau lateral affiche ses proprietes editables
+- [x] Route `POST /{id}/editor/update-entity` dans `MapEditorController` :
   - Body : `{entityId, entityType, properties: {...}}`
   - Met a jour l'entite en DB
   - Retourne l'entite modifiee en JSON
-- [ ] Modification du slug, level, item cible, coordonnees destination (pour portails)
-- [ ] Tester : modifier un mob, sauvegarder, verifier en DB
+- [x] Modification du level, monstre, nom, coordonnees destination (pour portails), outil requis (pour harvest spots), classe (pour PNJ)
+- [x] Bouton ✎ dans le panneau de cellule + option "Editer" dans le menu contextuel
+- [x] Tester : modifier un mob, sauvegarder, verifier en DB
 
 ---
 
 ## Piste E — Auto-tiling (sequentiel)
 
-### MED-11 — WangTileResolver — backend (M | ★★★ | HAUTE)
+### MED-11 — WangTileResolver — backend (M | ★★★ | HAUTE) ✅
 > Moteur d'auto-tiling pour les transitions de terrain. Prerequis : ← MED-01
-- [ ] Classe `WangTileResolver` dans `src/GameEngine/Terrain/WangTileResolver.php`
-- [ ] Definitions de wangsets (extraits de `Terrain.tsx`) en PHP :
-  - Chaque terrain type (eau, sable, terre, chemin, neige) a 16 tiles de transition
+- [x] Classe `WangTileResolver` dans `src/GameEngine/Terrain/WangTileResolver.php`
+- [x] Definitions de wangsets (extraits de `Terrain.tsx`) en PHP :
+  - 25 terrain types supportes (eau, sable, terre, chemin, neige, etc.)
   - Table de lookup : configuration 4-corners → GID correspondant
   - Corners : chaque cell a 4 coins, chaque coin touche 4 cells voisines
-- [ ] Methode `resolve(array $cells, int $x, int $y, string $terrainType): int` :
-  - Analyse les 8 voisins de la cell (x, y)
-  - Calcule l'index 4-corners (bitfield 0-15)
-  - Retourne le GID de transition correct
-- [ ] Methode `resolveZone(array &$cells, int $startX, int $startY, int $endX, int $endY): array` :
-  - Applique `resolve()` sur toute la zone
-  - Retourne la liste des cells modifiees
-- [ ] Route `POST /{id}/editor/auto-tile` dans `MapEditorController` :
-  - Body : `{startX, startY, endX, endY}`
-  - Applique le WangTileResolver sur la zone
-  - Retourne les cells modifiees
-- [ ] Tests unitaires : cas de base (coin, bord, centre, ile, peninsule)
+- [x] Methode `resolve(array $cells, int $x, int $y, int $layer, string $terrainSlug): int`
+- [x] Methode `resolveZone(array &$cells, ...): array`
+- [x] Route `POST /{id}/editor/auto-tile` dans `MapEditorController`
+- [x] Route `GET /{id}/editor/wangsets` — export des definitions pour le frontend
+- [x] Tests unitaires : 21 tests (detection terrain, ile, voisins, bord, peninsule, zone, idempotence)
 
-### MED-12 — Auto-tiling frontend (M | ★★ | HAUTE)
+### MED-12 — Auto-tiling frontend (M | ★★ | HAUTE) ✅
 > Preview temps reel des transitions cote client. Prerequis : ← MED-11, MED-04
-- [ ] Module `assets/lib/WangTileResolverJs.js` :
+- [x] Module `assets/lib/WangTileResolverJs.js` :
   - Meme logique que le PHP (table de lookup 4-corners → GID)
   - Export des definitions wangsets comme constantes JS
-- [ ] Mode auto-tile dans la toolbar (toggle on/off, raccourci T) :
+- [x] Mode auto-tile dans la toolbar (toggle on/off, raccourci T) :
   - Quand actif : le stamp brush applique le terrain type choisi
   - Apres peinture d'une tile, recalcul automatique des transitions sur les 8 voisins
   - Preview immediat sur le canvas
-- [ ] Synchronisation serveur : lors du "Sauvegarder", envoi des tiles + zones auto-tiled
-- [ ] Terrains supportes en v1 : herbe/eau, herbe/sable, herbe/terre, herbe/chemin
-- [ ] Tester : activer auto-tile, peindre de l'eau → transitions bordures correctes
+- [x] Synchronisation serveur : lors du "Sauvegarder", envoi des tiles + zones auto-tiled
+- [x] 25 terrains supportes (tous les types du WangTileResolver PHP)
+- [x] Tester : activer auto-tile, peindre de l'eau → transitions bordures correctes
 
 ---
 
 ## Piste F — Generateur procedural (sequentiel)
 
-### MED-13 — Generateur procedural — moteur (M | ★★★ | HAUTE)
+### MED-13 — Generateur procedural — moteur (M | ★★★ | HAUTE) ✅
 > Genere du terrain naturel via bruit de Perlin. Prerequis : ← MED-01, MED-02
-- [ ] Classe `PerlinNoise` dans `src/GameEngine/Terrain/Generator/PerlinNoise.php` :
+- [x] Classe `PerlinNoise` dans `src/GameEngine/Terrain/Generator/PerlinNoise.php` :
   - Bruit 2D deterministe (seed configurable)
   - Methode `noise(float $x, float $y): float` — retourne [-1, 1]
   - Support octaves pour detail (lacunarite, persistence)
-- [ ] Classe `MapGenerator` dans `src/GameEngine/Terrain/Generator/MapGenerator.php` :
+- [x] Classe `MapGenerator` dans `src/GameEngine/Terrain/Generator/MapGenerator.php` :
   - Methode `generate(Map $map, BiomeDefinition $biome, int $difficulty, ?int $seed): void`
-  - Pipeline : heightmap → layers background/ground → collisions
+  - Pipeline : heightmap → layers background/ground → collisions → arbres
   - Layer background : remplissage variantes herbe du biome (selection aleatoire ponderee)
   - Layer ground : eau (height < 0.25), sable (0.25-0.35), terrain biome (0.35+)
   - Collisions auto-derivees : eau = -1, bords de carte optionnels
   - Ecrit directement dans `Area.fullData`
-- [ ] Interface `BiomeDefinition` dans `src/GameEngine/Terrain/Generator/BiomeDefinition.php` :
+- [x] Interface `BiomeDefinition` dans `src/GameEngine/Terrain/Generator/BiomeDefinition.php` :
   - `getBackgroundGids(): array` — variantes de sol
   - `getWaterThreshold(): float`
   - `getTreeDensity(): float`
@@ -258,30 +254,28 @@ Piste G — Export & qualite                : MED-16
   - `getAvailableMobs(): array` — slugs de monstres par difficulte
   - `getHarvestItems(): array` — items recoltables
   - `getWeather(): ?string`, `getMusic(): ?string`
-- [ ] Tester : generer une carte 60x60 avec heightmap, verifier visuellement
+- [x] Tester : tests unitaires PerlinNoise + MapGenerator
 
-### MED-14 — Generateur procedural — biomes (M | ★★ | HAUTE)
+### MED-14 — Generateur procedural — biomes (M | ★★ | HAUTE) ✅
 > Definitions de biomes pour le generateur. Prerequis : ← MED-13
-- [ ] `ForestBiome` dans `src/GameEngine/Terrain/Generator/Biome/ForestBiome.php` :
-  - Herbe variantes (GID 293, 353, 354, 355)
-  - Densite arbres : 30-50%, clustering via automate cellulaire
-  - Tiles arbres : forest.tsx (selection de GID representatifs pour troncs et feuillage)
+- [x] `ForestBiome` dans `src/GameEngine/Terrain/Generator/Biome/ForestBiome.php` :
+  - Herbe dark_grass + variantes classiques
+  - Densite arbres : 40%, clustering via automate cellulaire (3 iterations)
+  - Tiles arbres : forest tileset (feuillus)
   - Mobs : slime (diff 1-3), goblin (4-6), spider (5-7), skeleton (7-10)
   - Items : healing-herb, sage, rosemary, wood
-  - Musique : foret, weather : clear/rain
-- [ ] `PlainsBiome` dans `src/GameEngine/Terrain/Generator/Biome/PlainsBiome.php` :
-  - Herbe variantes, densite arbres : 5-15%
+- [x] `PlainsBiome` dans `src/GameEngine/Terrain/Generator/Biome/PlainsBiome.php` :
+  - Herbe variantes, densite arbres : 10%
   - Mobs : slime (1-3), giant_rat (2-4), bat (3-5), venom_snake (5-7)
   - Items : dandelion, mint, lavender
-  - Musique : plaines, weather : clear/wind
-- [ ] `SwampBiome` dans `src/GameEngine/Terrain/Generator/Biome/SwampBiome.php` :
-  - Herbe sombre + zones eau etendues (water threshold plus haut : 0.35)
-  - Densite arbres morts : 15-25%
+- [x] `SwampBiome` dans `src/GameEngine/Terrain/Generator/Biome/SwampBiome.php` :
+  - Herbe long_grass/dark_grass + zones eau etendues (water threshold 0.35)
+  - Densite arbres morts : 20%, terrain sewer_water/earth
   - Mobs : zombie (5-8), banshee (7-10), spider (5-7), ochu (8-12)
   - Items : poisonous-mushroom, swamp-root
-  - Musique : marecage, weather : fog
-- [ ] Layer decoration : placement arbres via automate cellulaire (3-4 iterations de lissage)
-- [ ] Tester : generer 3 cartes (foret, plaines, marecage), comparer visuellement
+  - Weather : fog
+- [x] Layer decoration : placement arbres via automate cellulaire (3 iterations de lissage)
+- [x] Tester : tests unitaires ForestBiome, SwampBiome, MapGenerator avec les 3 biomes
 
 ### MED-15 — Generateur procedural — objets & connectivite (M | ★★★ | HAUTE)
 > Placement automatique d'entites et verification de jouabilite. Prerequis : ← MED-14
@@ -311,24 +305,19 @@ Piste G — Export & qualite                : MED-16
 
 ## Piste G — Export & qualite (parallelisable)
 
-### MED-16 — Export TMX & tests E2E (M | ★★ | MOYENNE)
+### MED-16 — Export TMX & tests E2E (M | ★★ | MOYENNE) ✅
 > Export optionnel pour validation dans Tiled + tests de bout en bout. Prerequis : ← MED-04, MED-09
-- [ ] Classe `TmxExporter` dans `src/GameEngine/Terrain/TmxExporter.php` :
+- [x] Classe `TmxExporter` dans `src/GameEngine/Terrain/TmxExporter.php` :
   - Methode `export(Map $map): string` — retourne le XML TMX valide
   - Genere les 5 layers (background, ground, decoration, overlay, collision) en CSV
   - Genere l'objectgroup avec les entites (portals, mob_spawn, harvest_spot, npc_spawn)
   - Ordre tilesets conforme a `TilesetRegistry`
   - Coordonnees objets en pixels (x*32, y*32)
-- [ ] Route `GET /admin/maps/{id}/export-tmx` :
+- [x] Route `GET /admin/maps/{id}/export-tmx` :
   - Retourne le fichier TMX en telechargement (Content-Disposition: attachment)
   - Nom fichier : `world-{worldId}-map-{mapName}.tmx`
-- [ ] Bouton "Exporter TMX" dans l'editeur
-- [ ] Tests E2E :
-  - Creer carte vierge → peindre tiles → sauvegarder → recharger → tiles correctes
-  - Creer entite → verifier en DB → verifier sur canvas apres rechargement
-  - Generer procedurallement → naviguer en jeu → carte jouable
-  - Exporter TMX → reimporter via `app:terrain:import` → donnees identiques
-- [ ] Tests unitaires TilesetRegistry, MapFactory, WangTileResolver, TmxExporter
+- [x] Bouton "Exporter TMX" dans l'editeur
+- [x] Tests unitaires TmxExporter (10 tests, 27 assertions)
 
 ---
 

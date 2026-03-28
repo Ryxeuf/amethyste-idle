@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\GameEvent;
+use App\Entity\App\Pnj;
 use App\Entity\Game\Quest;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -719,6 +720,287 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'monster_slug' => 'goblin',
                 ],
             ],
+            // --- Chaîne narrative Acte 2 : Fragment Forêt (4 quêtes) ---
+            'quest_acte2_foret_murmures' => [
+                'name' => 'Les Fragments — Les Murmures s\'intensifient',
+                'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Thadeus l\'Ermite'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_foret_purification' => [
+                'name' => 'Les Fragments — Purifier la Corruption',
+                'description' => 'Thadeus a senti une corruption ancienne se réveiller dans la forêt. Des créatures corrompues rôdent près de l\'Arbre-Mère. Éliminez-les pour affaiblir la corruption.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Ondine', 'slug' => 'forest_undine', 'count' => 2],
+                        ['name' => 'Ochu', 'slug' => 'forest_ochu', 'count' => 2],
+                        ['name' => 'Feu follet', 'slug' => 'will_o_wisp', 'count' => 1],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 80,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_foret_remede' => [
+                'name' => 'Les Fragments — Le Remède Ancestral',
+                'description' => 'La corruption a été affaiblie, mais l\'Arbre-Mère reste malade. Thadeus a besoin de sauge et de mandragore pour préparer un remède ancestral. Récoltez-les et apportez-les à Elara l\'Herboriste qui saura les préparer.',
+                'requirements' => [
+                    'collect' => [
+                        'plant-sage' => 3,
+                        'plant-mandrake' => 2,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 60,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_foret_fragment' => [
+                'name' => 'Les Fragments — Le Fragment Sylvestre',
+                'description' => 'Le remède a guéri l\'Arbre-Mère. En remerciement, ses racines ont révélé un éclat de cristal vert enfoui depuis des siècles. Rendez-vous au cœur de la forêt pour le récupérer.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 3,
+                            'coordinates' => '30.15',
+                            'name' => 'Racines de l\'Arbre-Mère',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-foret'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            // --- Chaîne narrative Acte 2 : Fragment Mines (4 quêtes) ---
+            'quest_acte2_mines_tremblements' => [
+                'name' => 'Les Fragments — Tremblements souterrains',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Grimmur le Contremaître'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_mines_minerai' => [
+                'name' => 'Les Fragments — Le Minerai Ancien',
+                'description' => 'Grimmur a senti une énergie étrange émaner des filons profonds. Il vous demande de récolter du minerai de fer et de l\'or enfoui pour analyser la source de ces vibrations.',
+                'requirements' => [
+                    'collect' => [
+                        'ore-iron' => 5,
+                        'ore-gold' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 80,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'healing-potion-small'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_mines_forge' => [
+                'name' => 'Les Fragments — Le Seigneur de la Forge',
+                'description' => 'L\'énergie provient des profondeurs, là où règne le Seigneur de la Forge. Ce gardien devenu fou protège quelque chose d\'ancien. Vous devez le vaincre pour atteindre la source des vibrations.',
+                'requirements' => [
+                    'boss_challenge' => [
+                        [
+                            'monster_slug' => 'forge_lord',
+                            'name' => 'Seigneur de la Forge',
+                            'conditions' => [
+                                'solo' => true,
+                            ],
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 120,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_mines_fragment' => [
+                'name' => 'Les Fragments — Le Fragment de la Forge',
+                'description' => 'La défaite du Seigneur de la Forge a révélé une fissure dans le mur de sa salle. Un éclat de cristal orangé pulse au fond, irradiant une chaleur ancienne. Récupérez-le.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 4,
+                            'coordinates' => '55.5',
+                            'name' => 'Salle secrète de la Forge',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-mines'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            // --- Chaîne narrative Acte 2 : Fragment Marais (4 quêtes) ---
+            'quest_acte2_marais_brumes' => [
+                'name' => 'Les Fragments — Les Brumes s\'épaississent',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, une brume surnaturelle semble vous appeler depuis le Marais Brumeux. Morwen la Voyante, qui vit à la lisière du marais, pourrait déchiffrer ces visions.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Morwen la Voyante'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_marais_ingredients' => [
+                'name' => 'Les Fragments — Remèdes des Profondeurs',
+                'description' => 'Morwen a besoin d\'ingrédients spécifiques du marais pour préparer un onguent qui dissipera les brumes enchantées protégeant le cœur du marais. Récoltez des champignons vénéneux et des racines de marais.',
+                'requirements' => [
+                    'collect' => [
+                        'poisonous-mushroom' => 4,
+                        'swamp-root' => 3,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 130,
+                    'gold' => 70,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_marais_gardiens' => [
+                'name' => 'Les Fragments — Les Gardiens des Eaux Mortes',
+                'description' => 'L\'onguent a dissipé une partie de la brume, révélant des créatures anciennes qui protègent le passage vers le cœur du marais. Éliminez-les pour ouvrir la voie.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Banshee', 'slug' => 'banshee', 'count' => 3],
+                        ['name' => 'Ochu', 'slug' => 'ochu', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 170,
+                    'gold' => 90,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_marais_fragment' => [
+                'name' => 'Les Fragments — Le Fragment des Brumes',
+                'description' => 'Les gardiens vaincus, le chemin vers le cœur du marais est libre. Un éclat de cristal bleu-gris scintille au fond d\'un bassin d\'eau stagnante, enveloppé de vapeur glaciale. Récupérez-le.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 5,
+                            'coordinates' => '25.42',
+                            'name' => 'Bassin des Brumes éternelles',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-marais'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            // --- Chaîne narrative Acte 2 : Fragment Montagne (3 quêtes) ---
+            'quest_acte2_montagne_echos' => [
+                'name' => 'Les Fragments — Les Échos du Sommet',
+                'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, des visions de pics enneigés et de vents hurlants vous hantent. Aldric l\'Ancien, un ermite qui vit sur la Crête de Ventombre, pourrait comprendre ces échos.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Aldric l\'Ancien'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 80,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests set after flush (needs quest_acte1_cristal ID)
+            ],
+            'quest_acte2_montagne_gardien' => [
+                'name' => 'Les Fragments — Le Gardien des Cimes',
+                'description' => 'Aldric vous a révélé qu\'un fragment ancien est prisonnier du sommet, gardé par le Dragon ancestral qui sommeille dans sa tanière depuis des siècles. Il faut le vaincre pour accéder au pic sacré.',
+                'requirements' => [
+                    'boss_challenge' => [
+                        [
+                            'monster_slug' => 'dragon',
+                            'name' => 'Dragon ancestral',
+                            'conditions' => [
+                                'solo' => true,
+                            ],
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 120,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte2_montagne_fragment' => [
+                'name' => 'Les Fragments — Le Fragment du Sommet',
+                'description' => 'Le Dragon ancestral est vaincu. Le chemin vers le pic sacré est libre. Un éclat de cristal blanc brille au sommet, battu par les vents éternels. Grimpez et récupérez-le.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 6,
+                            'coordinates' => '25.5',
+                            'name' => 'Pic sacré de Ventombre',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'quest', 'count' => 1, 'genericItemSlug' => 'quest-fragment-montagne'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
@@ -865,6 +1147,90 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $acte1Recolte->setPrerequisiteQuests([$acte1Bapteme->getId()]);
         $acte1Cristal->setPrerequisiteQuests([$acte1Recolte->getId()]);
 
+        // Chaîne Acte 2 : Fragment Forêt (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2ForetMurmures */
+        $acte2ForetMurmures = $this->getReference('quest_acte2_foret_murmures', Quest::class);
+        /** @var Quest $acte2ForetPurification */
+        $acte2ForetPurification = $this->getReference('quest_acte2_foret_purification', Quest::class);
+        /** @var Quest $acte2ForetRemede */
+        $acte2ForetRemede = $this->getReference('quest_acte2_foret_remede', Quest::class);
+        /** @var Quest $acte2ForetFragment */
+        $acte2ForetFragment = $this->getReference('quest_acte2_foret_fragment', Quest::class);
+
+        $acte2ForetMurmures->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2ForetPurification->setPrerequisiteQuests([$acte2ForetMurmures->getId()]);
+        $acte2ForetRemede->setPrerequisiteQuests([$acte2ForetPurification->getId()]);
+        $acte2ForetFragment->setPrerequisiteQuests([$acte2ForetRemede->getId()]);
+
+        // Chaîne Acte 2 : Fragment Mines (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MinesTremblements */
+        $acte2MinesTremblements = $this->getReference('quest_acte2_mines_tremblements', Quest::class);
+        /** @var Quest $acte2MinesMinerai */
+        $acte2MinesMinerai = $this->getReference('quest_acte2_mines_minerai', Quest::class);
+        /** @var Quest $acte2MinesForge */
+        $acte2MinesForge = $this->getReference('quest_acte2_mines_forge', Quest::class);
+        /** @var Quest $acte2MinesFragment */
+        $acte2MinesFragment = $this->getReference('quest_acte2_mines_fragment', Quest::class);
+
+        $acte2MinesTremblements->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MinesMinerai->setPrerequisiteQuests([$acte2MinesTremblements->getId()]);
+        $acte2MinesForge->setPrerequisiteQuests([$acte2MinesMinerai->getId()]);
+        $acte2MinesFragment->setPrerequisiteQuests([$acte2MinesForge->getId()]);
+
+        // Fix PNJ ID in talk_to requirements (needs PnjFixtures loaded first)
+        /** @var Pnj $thadeus */
+        $thadeus = $this->getReference('forest_pnj_2', Pnj::class);
+        $requirements = $acte2ForetMurmures->getRequirements();
+        $requirements['talk_to'][0]['pnj_id'] = $thadeus->getId();
+        $acte2ForetMurmures->setRequirements($requirements);
+
+        /** @var Pnj $grimmur */
+        $grimmur = $this->getReference('mines_pnj_0', Pnj::class);
+        $requirementsMines = $acte2MinesTremblements->getRequirements();
+        $requirementsMines['talk_to'][0]['pnj_id'] = $grimmur->getId();
+        $acte2MinesTremblements->setRequirements($requirementsMines);
+
+        // Chaîne Acte 2 : Fragment Marais (4 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MaraisBrumes */
+        $acte2MaraisBrumes = $this->getReference('quest_acte2_marais_brumes', Quest::class);
+        /** @var Quest $acte2MaraisIngredients */
+        $acte2MaraisIngredients = $this->getReference('quest_acte2_marais_ingredients', Quest::class);
+        /** @var Quest $acte2MaraisGardiens */
+        $acte2MaraisGardiens = $this->getReference('quest_acte2_marais_gardiens', Quest::class);
+        /** @var Quest $acte2MaraisFragment */
+        $acte2MaraisFragment = $this->getReference('quest_acte2_marais_fragment', Quest::class);
+
+        $acte2MaraisBrumes->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MaraisIngredients->setPrerequisiteQuests([$acte2MaraisBrumes->getId()]);
+        $acte2MaraisGardiens->setPrerequisiteQuests([$acte2MaraisIngredients->getId()]);
+        $acte2MaraisFragment->setPrerequisiteQuests([$acte2MaraisGardiens->getId()]);
+
+        // Fix PNJ ID for Morwen la Voyante (marais)
+        /** @var Pnj $morwen */
+        $morwen = $this->getReference('marais_pnj_0', Pnj::class);
+        $requirementsMarais = $acte2MaraisBrumes->getRequirements();
+        $requirementsMarais['talk_to'][0]['pnj_id'] = $morwen->getId();
+        $acte2MaraisBrumes->setRequirements($requirementsMarais);
+
+        // Chaîne Acte 2 : Fragment Montagne (3 quêtes séquentielles, après Acte 1)
+        /** @var Quest $acte2MontagneEchos */
+        $acte2MontagneEchos = $this->getReference('quest_acte2_montagne_echos', Quest::class);
+        /** @var Quest $acte2MontagneGardien */
+        $acte2MontagneGardien = $this->getReference('quest_acte2_montagne_gardien', Quest::class);
+        /** @var Quest $acte2MontagneFragment */
+        $acte2MontagneFragment = $this->getReference('quest_acte2_montagne_fragment', Quest::class);
+
+        $acte2MontagneEchos->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte2MontagneGardien->setPrerequisiteQuests([$acte2MontagneEchos->getId()]);
+        $acte2MontagneFragment->setPrerequisiteQuests([$acte2MontagneGardien->getId()]);
+
+        // Fix PNJ ID for Aldric l'Ancien (montagne)
+        /** @var Pnj $aldric */
+        $aldric = $this->getReference('montagne_pnj_0', Pnj::class);
+        $requirementsMontagne = $acte2MontagneEchos->getRequirements();
+        $requirementsMontagne['talk_to'][0]['pnj_id'] = $aldric->getId();
+        $acte2MontagneEchos->setRequirements($requirementsMontagne);
+
         $manager->flush();
     }
 
@@ -872,6 +1238,10 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             GameEventFixtures::class,
+            ForestPnjFixtures::class,
+            MinesPnjFixtures::class,
+            MaraisPnjFixtures::class,
+            MontagnePnjFixtures::class,
         ];
     }
 }

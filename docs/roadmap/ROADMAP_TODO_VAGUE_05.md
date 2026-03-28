@@ -10,11 +10,11 @@
 ### 80 — Trame Acte 2 : Les Fragments (L | ★★★)
 > 4 chaines de quetes dans 4 zones. Prerequis : ← 46, 67, 68
 > A decouper en 4 sous-phases (1 par fragment/zone) quand les zones seront pretes.
-- [ ] Fragment Foret : chaine de 3-4 quetes (exploration, combat, enigme PNJ)
-- [ ] Fragment Mines : chaine de 3-4 quetes (recolte, craft, boss minier)
-- [ ] Fragment Marais : chaine de 3-4 quetes (enquete, livraison, combat)
-- [ ] Fragment Montagne : chaine de 3-4 quetes (exploration, defi de boss)
-- [ ] Chaque fragment donne un item cle collectible
+- [x] Fragment Foret : chaine de 4 quetes (talk_to, combat, collect, exploration) + item cle Fragment Sylvestre
+- [x] Fragment Mines : chaine de 4 quetes (talk_to, collect, boss_challenge, exploration) + item cle Fragment de la Forge
+- [x] Fragment Marais : chaine de 4 quetes (talk_to, collect, combat, exploration) + item cle Fragment des Brumes
+- [x] Fragment Montagne : chaine de 3 quetes (talk_to, boss_challenge, exploration) + item cle Fragment du Sommet
+- [x] Chaque fragment donne un item cle collectible
 
 ### ~~86 — Quetes de decouverte cachees (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
@@ -28,14 +28,13 @@
 
 ### 81 — Combat cooperatif (L | ★★★)
 > Combat a plusieurs joueurs contre des groupes de monstres. Prerequis : ← 53, 49
-> **Attention** : phase large, a re-decouper au moment de l'implementation.
-- [ ] FightController : creer un combat avec plusieurs joueurs du meme groupe
-- [ ] Timeline multi-joueurs dans FightTurnResolver
-- [ ] Chaque joueur joue son tour independamment (Mercure pour notifier le tour actif)
-- [ ] Template combat : afficher tous les joueurs allies avec leurs barres de vie
-- [ ] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
-- [ ] XP partagee (repartition equitable entre participants)
-- [ ] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
+- [x] FightController : creer un combat avec plusieurs joueurs du meme groupe
+- [x] Timeline multi-joueurs dans FightTurnResolver
+- [x] Chaque joueur joue son tour independamment (Mercure pour notifier le tour actif)
+- [x] Template combat : afficher tous les joueurs allies avec leurs barres de vie
+- [x] Loot partage : round-robin par defaut (chaque joueur a son ecran de loot)
+- [x] XP partagee (repartition equitable entre participants)
+- [x] Tests : combat 2 joueurs, mort d'un joueur, loot repartition
 
 ### ~~83 — Invasions (M | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
@@ -44,14 +43,8 @@
 
 ### Piste C — Donjons & events (‖)
 
-### 84 — Donjons mecaniques & loot (L | ★★★)
-> Rend les donjons interessants avec des mecaniques propres. Prerequis : ← 72, 37
-> A decouper en sous-phases si necessaire.
-- [ ] Mobs du donjon : spawns specifiques au DungeonRun, stats scalees selon difficulte
-- [ ] Boss de fin de donjon avec mecaniques de phase (reutiliser bossPhases existant)
-- [ ] LootTable specifique donjon : items exclusifs par difficulte (utiliser minDifficulty de EG-5)
-- [ ] Completion du donjon : marquer DungeonRun completed, teleporter le joueur hors du donjon
-- [ ] Succes lies aux donjons (premier clear, clear Mythique, clear sans mort)
+### ~~84 — Donjons mecaniques & loot (L | ★★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~85 — Evenements aleatoires (M | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

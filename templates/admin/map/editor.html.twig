@@ -12,8 +12,16 @@
      data-admin-map-editor-update-cell-url-value="{{ path('admin_map_editor_update_cell', {id: map.id}) }}"
      data-admin-map-editor-update-cells-url-value="{{ path('admin_map_editor_update_cells', {id: map.id}) }}"
      data-admin-map-editor-update-borders-url-value="{{ path('admin_map_editor_update_borders', {id: map.id}) }}"
+     data-admin-map-editor-paint-tiles-url-value="{{ path('admin_map_editor_paint_tiles', {id: map.id}) }}"
      data-admin-map-editor-delete-entity-url-value="{{ path('admin_map_editor_delete_entity', {id: map.id}) }}"
      data-admin-map-editor-move-entity-url-value="{{ path('admin_map_editor_move_entity', {id: map.id}) }}"
+     data-admin-map-editor-update-entity-url-value="{{ path('admin_map_editor_update_entity', {id: map.id}) }}"
+     data-admin-map-editor-create-entity-url-value="{{ path('admin_map_editor_create_entity', {id: map.id}) }}"
+     data-admin-map-editor-entity-options-url-value="{{ path('admin_map_editor_entity_options', {id: map.id}) }}"
+     data-admin-map-editor-wangsets-url-value="{{ path('admin_map_editor_wangsets', {id: map.id}) }}"
+     data-admin-map-editor-auto-tile-url-value="{{ path('admin_map_editor_auto_tile', {id: map.id}) }}"
+     data-admin-map-editor-generate-url-value="{{ path('admin_map_editor_generate', {id: map.id}) }}"
+     data-action="admin-tileset-picker:tileSelected->admin-map-editor#onTileSelected admin-tileset-picker:layerChanged->admin-map-editor#onLayerChanged"
      class="flex flex-col h-[calc(100vh-130px)]">
 
     {# Toolbar #}
@@ -39,6 +47,52 @@
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Mur</button>
         <button data-tool="eraseWall" data-action="admin-map-editor#setToolEraseWall"
                 class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Gomme mur</button>
+        <button data-tool="paint" data-action="admin-map-editor#setToolPaint"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Peindre (P)</button>
+        <button data-tool="eraser" data-action="admin-map-editor#setToolEraser"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Gomme (E)</button>
+        <button data-tool="fill" data-action="admin-map-editor#setToolFill"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors">Remplir (G)</button>
+
+        <div class="h-6 border-r border-gray-700 mx-1"></div>
+
+        {# Auto-tile #}
+        <span class="text-xs text-gray-500 uppercase mr-1">Auto-tile:</span>
+        <button id="auto-tile-toggle" data-action="admin-map-editor#toggleAutoTile"
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors"
+                title="Auto-tiling (T)">OFF</button>
+        <select id="auto-tile-terrain" data-action="change->admin-map-editor#setAutoTileSlug"
+                class="px-1 py-1 rounded text-xs bg-gray-700 text-gray-300 border border-gray-600 opacity-50">
+            <option value="">-- Terrain --</option>
+            <option value="water">Water</option>
+            <option value="sand">Sand</option>
+            <option value="dark_dirt">Dark Dirt</option>
+            <option value="red_dirt">Red Dirt</option>
+            <option value="earth">Earth</option>
+            <option value="grass">Grass</option>
+            <option value="dark_grass">Dark Grass</option>
+            <option value="short_grass">Short Grass</option>
+            <option value="long_grass">Long Grass</option>
+            <option value="snow">Snow</option>
+            <option value="ice">Ice</option>
+            <option value="lava">Lava</option>
+            <option value="sand_water">Sand Water</option>
+            <option value="snow_water">Snow Water</option>
+            <option value="snow_ice">Snow Ice</option>
+            <option value="brick_road">Brick Road</option>
+            <option value="sewer">Sewer</option>
+            <option value="sewer_water">Sewer Water</option>
+            <option value="wheat">Wheat</option>
+            <option value="trans_dirt">Trans Dirt</option>
+            <option value="black_dirt">Black Dirt</option>
+            <option value="grey_dirt">Grey Dirt</option>
+            <option value="hole">Hole</option>
+            <option value="red_hole">Red Hole</option>
+            <option value="black_hole">Black Hole</option>
+        </select>
+        <button id="auto-tile-zone-btn" data-action="admin-map-editor#autoTileSelection" disabled
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors opacity-50"
+                title="Auto-tiler la selection">Zone</button>
 
         <div class="h-6 border-r border-gray-700 mx-1"></div>
 
@@ -67,6 +121,16 @@
 
         <div class="flex-1"></div>
 
+        {# Undo / Redo #}
+        <button id="undo-btn" data-action="admin-map-editor#undo" disabled
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Annuler (Ctrl+Z)">↩</button>
+        <button id="redo-btn" data-action="admin-map-editor#redo" disabled
+                class="px-2 py-1 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Retablir (Ctrl+Y)">↪</button>
+
+        <div class="h-6 border-r border-gray-700 mx-1"></div>
+
         {# Save #}
         <div id="editor-flash" class="inline-block mr-2"></div>
         <button data-action="admin-map-editor#discardChanges"
@@ -75,6 +139,9 @@
                 class="px-3 py-1.5 rounded text-xs bg-purple-600 hover:bg-purple-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             Sauvegarder <span id="pending-badge" class="ml-1 text-yellow-300"></span>
         </button>
+        <a href="{{ path('admin_map_export_tmx', {id: map.id}) }}"
+           class="px-3 py-1.5 rounded text-xs bg-gray-700 text-gray-300 hover:bg-gray-600 transition-colors"
+           title="Exporter au format Tiled (.tmx)">Exporter TMX</a>
     </div>
 
     {# Main area #}
@@ -82,6 +149,11 @@
         {# Canvas #}
         <div class="flex-1 bg-gray-900 border border-gray-800 rounded-xl overflow-hidden relative">
             <canvas data-admin-map-editor-target="canvas" class="block w-full h-full"></canvas>
+
+            {# Context menu #}
+            <div data-admin-map-editor-target="contextMenu"
+                 class="hidden absolute z-50 bg-gray-800 border border-gray-600 rounded-lg shadow-xl py-1 min-w-[180px]">
+            </div>
 
             {# Coords overlay #}
             <div class="absolute bottom-2 left-2 bg-gray-900/80 px-2 py-1 rounded text-xs text-gray-400">
@@ -93,7 +165,64 @@
         </div>
 
         {# Side panel #}
-        <div class="w-72 flex-shrink-0 flex flex-col gap-3">
+        <div class="w-72 flex-shrink-0 flex flex-col gap-3 overflow-y-auto">
+            {# Tileset Picker #}
+            <div class="bg-gray-900 border border-gray-800 rounded-xl p-3"
+                 data-controller="admin-tileset-picker"
+                 data-admin-tileset-picker-tilesets-url-value="{{ path('admin_map_editor_tilesets', {id: map.id}) }}">
+                <h3 class="text-sm font-semibold text-gray-300 mb-2">Tileset</h3>
+
+                {# Tabs #}
+                <div data-admin-tileset-picker-target="tabs" class="flex gap-1 mb-2"></div>
+
+                {# Canvas #}
+                <div class="overflow-hidden rounded border border-gray-700" style="max-height: 400px;">
+                    <canvas data-admin-tileset-picker-target="canvas"
+                            data-action="mousedown->admin-tileset-picker#canvasMouseDown mousemove->admin-tileset-picker#canvasMouseMove mouseup->admin-tileset-picker#canvasMouseUp wheel->admin-tileset-picker#canvasScroll"
+                            class="block cursor-crosshair"></canvas>
+                </div>
+
+                {# Selection info #}
+                <div class="flex items-center gap-2 mt-2">
+                    <span data-admin-tileset-picker-target="gidDisplay" class="text-xs text-gray-400">GID: —</span>
+                    <div data-admin-tileset-picker-target="stampPreview" class="ml-auto"></div>
+                </div>
+
+                {# Layer panel #}
+                <div id="layer-panel" class="mt-3">
+                    <span class="text-xs text-gray-500 uppercase mb-1 block">Layers</span>
+                    <div class="flex flex-col gap-1">
+                        {% for layer in [
+                            {idx: 0, name: 'Background', key: '1'},
+                            {idx: 1, name: 'Ground', key: '2'},
+                            {idx: 2, name: 'Decoration', key: '3'},
+                            {idx: 3, name: 'Overlay', key: '4'}
+                        ] %}
+                        <div data-layer-row="{{ layer.idx }}"
+                             class="flex items-center gap-1.5 px-2 py-1 rounded border cursor-pointer transition-colors {{ layer.idx == 1 ? 'bg-purple-900/30 border-purple-500/50' : 'border-transparent' }} hover:bg-gray-800/50"
+                             data-action="click->admin-map-editor#selectActiveLayer"
+                             data-layer="{{ layer.idx }}">
+                            {# Visibility toggle #}
+                            <button data-eye-btn
+                                    data-layer="{{ layer.idx }}"
+                                    data-action="click->admin-map-editor#toggleLayerVisibility:stop"
+                                    class="text-sm text-gray-300 w-5 text-center flex-shrink-0 hover:text-white"
+                                    title="Visibilite ({{ layer.name }})">&#128065;</button>
+                            {# Layer name + shortcut #}
+                            <span class="text-xs text-gray-400 flex-1">{{ layer.name }}</span>
+                            <kbd class="text-[10px] text-gray-600 bg-gray-700/50 px-1 rounded">{{ layer.key }}</kbd>
+                            {# Opacity slider #}
+                            <input type="range" min="0" max="1" step="0.1" value="1"
+                                   data-layer="{{ layer.idx }}"
+                                   data-action="input->admin-map-editor#setLayerOpacity click->admin-map-editor#setLayerOpacity:stop"
+                                   class="w-14 h-1 accent-purple-500 cursor-pointer"
+                                   title="Opacite ({{ layer.name }})">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
             {# Cell info #}
             <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
                 <h3 class="text-sm font-semibold text-gray-300 mb-2">Cellule selectionnee</h3>
@@ -102,10 +231,38 @@
                 </div>
             </div>
 
-            {# Legend #}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h3 class="text-sm font-semibold text-gray-300 mb-2">Legende</h3>
-                <div class="space-y-1.5 text-xs">
+            {# Generateur procedural (collapsible) #}
+            <details class="bg-gray-900 border border-gray-800 rounded-xl">
+                <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Generateur procedural</summary>
+                <div class="px-4 pb-4 space-y-3">
+                    <p class="text-xs text-yellow-400">Ecrase tout le contenu existant de la carte.</p>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Biome</label>
+                        <select id="generate-biome" class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
+                            <option value="plains">Plaines</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Difficulte (1-10)</label>
+                        <input id="generate-difficulty" type="number" min="1" max="10" value="1"
+                               class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 block mb-1">Seed (vide = aleatoire)</label>
+                        <input id="generate-seed" type="number" placeholder="Auto"
+                               class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
+                    </div>
+                    <button data-action="admin-map-editor#generateProcedural"
+                            class="w-full px-3 py-2 rounded text-xs bg-emerald-600 hover:bg-emerald-700 text-white transition-colors font-semibold">
+                        Generer le terrain
+                    </button>
+                </div>
+            </details>
+
+            {# Legend (collapsible) #}
+            <details class="bg-gray-900 border border-gray-800 rounded-xl">
+                <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Legende</summary>
+                <div class="px-4 pb-4 space-y-1.5 text-xs">
                     <div class="flex items-center gap-2">
                         <span class="w-4 h-4 rounded bg-red-500/50 border border-red-500 inline-block"></span>
                         <span class="text-gray-400">Case bloquee (mur)</span>
@@ -151,23 +308,40 @@
                         <span class="text-gray-400">Mur (sens unique)</span>
                     </div>
                 </div>
-            </div>
+            </details>
 
-            {# Shortcuts #}
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
-                <h3 class="text-sm font-semibold text-gray-300 mb-2">Raccourcis</h3>
-                <div class="space-y-1 text-xs text-gray-400">
+            {# Shortcuts (collapsible) #}
+            <details class="bg-gray-900 border border-gray-800 rounded-xl">
+                <summary class="p-4 text-sm font-semibold text-gray-300 cursor-pointer select-none">Raccourcis</summary>
+                <div class="px-4 pb-4 space-y-1 text-xs text-gray-400">
                     <p><kbd class="bg-gray-700 px-1 rounded">Molette</kbd> Zoom</p>
-                    <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer vue</p>
-                    <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Deplacer vue</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Clic droit</kbd> Deplacer vue / Menu contextuel (mode Selection)</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Alt + clic</kbd> Pipette (Eyedropper)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic</kbd> Selectionner / Peindre</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Clic + glisser</kbd> Multi-selection (mode Selection)</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Shift + mur</kbd> Mur sens unique</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Ctrl + clic</kbd> Deplacer entite selectionnee</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Ctrl + Z</kbd> Annuler</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Ctrl + Y</kbd> Retablir</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">Ctrl + S</kbd> Sauvegarder</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Suppr</kbd> Supprimer entite selectionnee</p>
                     <p><kbd class="bg-gray-700 px-1 rounded">Echap</kbd> Vider la selection</p>
+                    <p class="mt-2 text-gray-500 font-semibold">Outils</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">V</kbd> Selection</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">P</kbd> Peindre</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">E</kbd> Gomme</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">G</kbd> Remplir (Bucket Fill)</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">T</kbd> Auto-tile (toggle)</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">B</kbd> Bloquer</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">U</kbd> Debloquer</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">W</kbd> Mur</p>
+                    <p class="mt-2 text-gray-500 font-semibold">Layers</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">1</kbd> Background</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">2</kbd> Ground</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">3</kbd> Decoration</p>
+                    <p><kbd class="bg-gray-700 px-1 rounded">4</kbd> Overlay</p>
                 </div>
-            </div>
+            </details>
         </div>
     </div>
 </div>

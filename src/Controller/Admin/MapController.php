@@ -7,8 +7,13 @@ use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
+use App\Entity\App\World;
+use App\Enum\WeatherType;
 use App\Form\Admin\MobSpawnType;
 use App\Form\Admin\PnjPositionType;
+use App\GameEngine\Terrain\MapFactory;
+use App\GameEngine\World\MapWeatherMercurePublisher;
+use App\GameEngine\World\WeatherService;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +29,9 @@ class MapController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
+        private readonly MapFactory $mapFactory,
+        private readonly WeatherService $weatherService,
+        private readonly MapWeatherMercurePublisher $mapWeatherMercurePublisher,
     ) {
     }
 
@@ -72,7 +80,38 @@ class MapController extends AbstractController
             'mobs' => $mobs,
             'pnjs' => $pnjs,
             'portals' => $portals,
+            'weatherChoices' => array_map(static fn (WeatherType $w) => [
+                'value' => $w->value,
+                'label' => $w->label(),
+                'icon' => $w->icon(),
+            ], WeatherType::cases()),
         ]);
+    }
+
+    #[Route('/{id}/weather', name: 'weather', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function setWeather(Request $request, Map $map): Response
+    {
+        if (!$this->isCsrfTokenValid('map_weather' . $map->getId(), (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+        }
+
+        $weather = WeatherType::tryFrom($request->request->getString('weather'));
+        if ($weather === null) {
+            $this->addFlash('error', 'Type de meteo invalide.');
+
+            return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+        }
+
+        $this->weatherService->applyWeather($map, $weather);
+        $this->em->flush();
+        $this->mapWeatherMercurePublisher->publish($map);
+
+        $this->adminLogger->log('update', 'Map', $map->getId(), 'Meteo: ' . $weather->label() . ' sur ' . $map->getName());
+        $this->addFlash('success', sprintf('Meteo definie : %s %s.', $weather->icon(), $weather->label()));
+
+        return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
     }
 
     // --- Mob Spawn Management ---
@@ -294,6 +333,74 @@ class MapController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+    }
+
+    // --- Map Creation ---
+
+    #[Route('/create', name: 'create')]
+    public function create(Request $request): Response
+    {
+        $worlds = $this->em->getRepository(World::class)->findBy([], ['name' => 'ASC']);
+
+        if ($request->isMethod('POST')) {
+            $name = trim($request->request->getString('name'));
+            $width = $request->request->getInt('width');
+            $height = $request->request->getInt('height');
+            $worldId = $request->request->getInt('world_id');
+
+            $errors = [];
+            if ($name === '') {
+                $errors[] = 'Le nom est obligatoire.';
+            }
+            if ($width < 10 || $width > 200) {
+                $errors[] = 'La largeur doit etre entre 10 et 200.';
+            }
+            if ($height < 10 || $height > 200) {
+                $errors[] = 'La hauteur doit etre entre 10 et 200.';
+            }
+
+            $world = $worldId ? $this->em->getRepository(World::class)->find($worldId) : null;
+            if (!$world) {
+                $errors[] = 'Veuillez selectionner un monde valide.';
+            }
+
+            if (!$errors) {
+                $existing = $this->em->getRepository(Map::class)->findOneBy(['name' => $name]);
+                if ($existing) {
+                    $errors[] = 'Une carte avec ce nom existe deja.';
+                }
+            }
+
+            if ($errors) {
+                foreach ($errors as $error) {
+                    $this->addFlash('error', $error);
+                }
+
+                return $this->render('admin/map/create.html.twig', [
+                    'worlds' => $worlds,
+                    'name' => $name,
+                    'width' => $width,
+                    'height' => $height,
+                    'world_id' => $worldId,
+                ]);
+            }
+
+            $map = $this->mapFactory->createBlankMap($name, $width, $height, $world);
+            $this->em->flush();
+
+            $this->adminLogger->log('create', 'Map', $map->getId(), sprintf('Carte "%s" (%dx%d) creee', $name, $width, $height));
+            $this->addFlash('success', sprintf('Carte "%s" (%dx%d) creee avec succes.', $name, $width, $height));
+
+            return $this->redirectToRoute('admin_map_editor', ['id' => $map->getId()]);
+        }
+
+        return $this->render('admin/map/create.html.twig', [
+            'worlds' => $worlds,
+            'name' => '',
+            'width' => 40,
+            'height' => 30,
+            'world_id' => null,
+        ]);
     }
 
     // --- TMX Import ---

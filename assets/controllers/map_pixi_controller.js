@@ -34,6 +34,11 @@ export default class extends Controller {
 
         // Performance: texture cache per GID to avoid recreating PIXI.Texture
         this._tileTextureCache = new Map();
+        // Animated tiles: map of GID -> array of PIXI.Texture frames
+        this._tileAnimations = {};
+        this._animatedTileFrames = new Map();
+        // Track animated tile sprites for cleanup
+        this._animatedTileSprites = [];
         // Performance: sprite object pool for reuse
         this._spritePool = [];
         // Performance: entity container pool for reuse
@@ -55,6 +60,7 @@ export default class extends Controller {
         this._lastEntityLoadY = this.playerYValue;
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
         this._pendingPortal = null; // Portal data from move response
+        this._pendingHarvestSpot = null; // Harvest spot to open after walk
 
         // Camera shake system
         this._shakeIntensity = 0;
@@ -65,7 +71,7 @@ export default class extends Controller {
         this._dayNightEnabled = true;
         this._ambientOverlay = null;
         this._timeOfDay = 'day';
-        this._gameTimeData = null; // { hour, minute, timeOfDay, season, day, timeRatio }
+        this._gameTimeData = null; // { hour, minute, timeOfDay, season, day, utcDayCycleFactor, utcSecondsSinceMidnight }
 
         // Particle system for environmental effects
         this._particles = [];
@@ -97,6 +103,14 @@ export default class extends Controller {
         this._zoneLightModifier = 1.0;
         this._zoneTargetLightModifier = 1.0;
 
+        // Seasonal decoration system
+        this._seasonParticles = [];
+        this._seasonParticleContainer = null;
+        this._seasonSpawnTimer = 0;
+        this._currentSeason = 'spring';
+        this._activeFestivals = [];
+        this._festivalHudText = null;
+
         // Minimap state
         this._minimapVisible = true;
         this._minimapSize = 150;
@@ -113,18 +127,37 @@ export default class extends Controller {
         this._initWeather();
         this._initTimeHud();
         this._initMinimap();
+        this._initSeasonDecorations();
         this._initZoneAmbiance();
         this._detectZone(this._playerX, this._playerY, true);
         this._updateCamera(true);
+        this._checkHarvestSpotInteraction();
+
+        // Fade in from black after map is fully loaded
+        await this._fadeTransition(false);
+
+        // Listen for Turbo navigation to fade out before leaving the map
+        this._isFadingOut = false;
+        this._onTurboBeforeVisit = async (event) => {
+            if (!this._app || this._isFadingOut) return;
+            this._isFadingOut = true;
+            event.preventDefault();
+            const url = event.detail.url;
+            await this._fadeTransition(true);
+            window.location.href = url;
+        };
+        document.addEventListener('turbo:before-visit', this._onTurboBeforeVisit);
+
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
         }
     }
 
     disconnect() {
-        // Stop ambient sound when leaving map
-        if (window.Sound) window.Sound.stopAmbient();
-
+        if (this._onTurboBeforeVisit) {
+            document.removeEventListener('turbo:before-visit', this._onTurboBeforeVisit);
+            this._onTurboBeforeVisit = null;
+        }
         if (this._resizeObserver) {
             this._resizeObserver.disconnect();
             this._resizeObserver = null;
@@ -146,6 +179,13 @@ export default class extends Controller {
                 entity.animator.destroy();
             }
         }
+        // Release animated tile sprites
+        for (const s of this._animatedTileSprites) {
+            s.stop();
+            s.destroy();
+        }
+        this._animatedTileSprites = [];
+        this._animatedTileFrames.clear();
         // Release pooled sprites
         for (const s of this._spritePool) {
             s.destroy();
@@ -186,6 +226,19 @@ export default class extends Controller {
         if (this._timeHudText) {
             this._timeHudText.destroy();
             this._timeHudText = null;
+        }
+        if (this._seasonParticleContainer) {
+            this._seasonParticleContainer.destroy({ children: true });
+            this._seasonParticleContainer = null;
+        }
+        if (this._festivalHudText) {
+            this._festivalHudText.destroy();
+            this._festivalHudText = null;
+        }
+        this._seasonParticles = [];
+        if (this._fadeOverlay) {
+            this._fadeOverlay.destroy();
+            this._fadeOverlay = null;
         }
 
         if (this._tooltipEl && this._tooltipEl.parentNode) {
@@ -264,6 +317,14 @@ export default class extends Controller {
         // Resize observer for responsive canvas
         this._resizeObserver = new ResizeObserver(() => this._onResize());
         this._resizeObserver.observe(this.element);
+
+        // Create fade overlay opaque to hide initial loading
+        this._fadeOverlay = new PIXI.Graphics();
+        this._fadeOverlay.rect(0, 0, w, h);
+        this._fadeOverlay.fill({ color: 0x000000 });
+        this._fadeOverlay.zIndex = 1000;
+        this._fadeOverlay.alpha = 1;
+        this._app.stage.addChild(this._fadeOverlay);
     }
 
     _onResize() {
@@ -277,6 +338,12 @@ export default class extends Controller {
         this._currentHeight = h;
         this._app.renderer.resize(w, h);
         this._updateCamera(true);
+        // Resize fade overlay to match new dimensions
+        if (this._fadeOverlay) {
+            this._fadeOverlay.clear();
+            this._fadeOverlay.rect(0, 0, w, h);
+            this._fadeOverlay.fill({ color: 0x000000 });
+        }
         // Reapply weather overlay to match new dimensions
         if (this._weatherOverlay) {
             this._applyWeatherEffect(this._currentWeather);
@@ -323,6 +390,41 @@ export default class extends Controller {
         }
 
         await Promise.all(loadPromises);
+
+        // Build animated tile frame textures from config
+        this._tileAnimations = config.tileAnimations || {};
+        for (const [gidKey, frames] of Object.entries(this._tileAnimations)) {
+            const textures = [];
+            for (const frame of frames) {
+                const frameGid = frame.tileid;
+                let texture = this._tileTextureCache.get(frameGid);
+                if (!texture) {
+                    const ts = this._findTileset(frameGid);
+                    if (!ts) continue;
+                    const baseTexture = this._tilesetTextures[ts.name];
+                    if (!baseTexture) continue;
+                    const localId = frameGid - ts.firstGid;
+                    const col = localId % ts.columns;
+                    const row = Math.floor(localId / ts.columns);
+                    const rect = new PIXI.Rectangle(
+                        col * ts.tileWidth,
+                        row * ts.tileHeight,
+                        ts.tileWidth,
+                        ts.tileHeight,
+                    );
+                    try {
+                        texture = new PIXI.Texture({ source: baseTexture.source, frame: rect });
+                    } catch {
+                        continue;
+                    }
+                    this._tileTextureCache.set(frameGid, texture);
+                }
+                textures.push({ texture, time: frame.duration });
+            }
+            if (textures.length > 0) {
+                this._animatedTileFrames.set(parseInt(gidKey, 10), textures);
+            }
+        }
     }
 
     // --- Cell Loading & Rendering ---
@@ -354,6 +456,20 @@ export default class extends Controller {
 
             const baseTexture = this._tilesetTextures[ts.name];
             if (!baseTexture) continue;
+
+            // Check if this tile has animation frames
+            const animFrames = this._animatedTileFrames.get(gid);
+            if (animFrames) {
+                const animSprite = new PIXI.AnimatedSprite(animFrames);
+                animSprite.position.set(px, py);
+                animSprite.roundPixels = true;
+                animSprite.animationSpeed = 1;
+                animSprite.play();
+                this._tileContainer.addChild(animSprite);
+                sprites.push(animSprite);
+                this._animatedTileSprites.push(animSprite);
+                continue;
+            }
 
             // Cache texture per GID to avoid recreating PIXI.Texture each cell
             let texture = this._tileTextureCache.get(gid);
@@ -398,6 +514,13 @@ export default class extends Controller {
     }
 
     _releaseSprite(sprite) {
+        if (sprite instanceof PIXI.AnimatedSprite) {
+            sprite.stop();
+            sprite.destroy();
+            const idx = this._animatedTileSprites.indexOf(sprite);
+            if (idx !== -1) this._animatedTileSprites.splice(idx, 1);
+            return;
+        }
         sprite.visible = false;
         this._tileContainer.removeChild(sprite);
         this._spritePool.push(sprite);
@@ -716,14 +839,19 @@ export default class extends Controller {
         const sprite = new PIXI.Sprite(texture);
         sprite.position.set(spot.x * s, spot.y * s);
         sprite.zIndex = spot.y * s - 1;
-        sprite.alpha = spot.available ? 1.0 : 0.3;
+        // Dim spots that are on cooldown or that the player can't harvest (no skill)
+        if (!spot.available || spot.canHarvest === false) {
+            sprite.alpha = 0.3;
+        } else {
+            sprite.alpha = 1.0;
+        }
         this._entityContainer.addChild(sprite);
 
         const key = `harvest_${spot.id}`;
         this._entitySprites[key] = {
             container: sprite, x: spot.x, y: spot.y,
             type: 'harvest', animator: null, spotData: spot,
-            meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds },
+            meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds, canHarvest: spot.canHarvest },
         };
         this._addToSpatialHash(key, spot.x, spot.y);
     }
@@ -890,6 +1018,9 @@ export default class extends Controller {
         // Update zone ambiance effects
         this._updateZoneAmbiance(dt);
 
+        // Update seasonal decoration particles
+        this._updateSeasonDecorations(dt);
+
         // Pulse world boss auras
         if (this._worldBossAuras) {
             for (const aura of this._worldBossAuras) {
@@ -923,35 +1054,47 @@ export default class extends Controller {
             if (resp.ok) {
                 this._gameTimeData = await resp.json();
                 this._timeOfDay = this._gameTimeData.timeOfDay;
-                this._gameTimeFetchedAt = Date.now();
+                if (this._gameTimeData.season) {
+                    this._currentSeason = this._gameTimeData.season;
+                }
+                if (this._gameTimeData.festivals) {
+                    this._activeFestivals = this._gameTimeData.festivals;
+                    this._updateFestivalHud();
+                }
             }
         } catch (e) {
             console.warn('[map_pixi] Failed to fetch game time, using fallback');
         }
     }
 
-    _computeTimeOfDay() {
-        if (this._gameTimeData && this._gameTimeFetchedAt) {
-            // Extrapolate from last fetch using timeRatio
-            const elapsed = (Date.now() - this._gameTimeFetchedAt) / 1000; // real seconds since fetch
-            const ratio = this._gameTimeData.timeRatio || 24;
-            const inGameSecondsSinceFetch = elapsed * ratio;
-            const baseInGameSeconds = this._gameTimeData.hour * 3600 + this._gameTimeData.minute * 60;
-            const totalInGameSeconds = baseInGameSeconds + inGameSecondsSinceFetch;
-            const hour = Math.floor(totalInGameSeconds / 3600) % 24;
-            const minute = Math.floor(totalInGameSeconds / 60) % 60;
+    _utcSecondsSinceMidnightFromDate(d) {
+        return d.getUTCHours() * 3600 + d.getUTCMinutes() * 60 + d.getUTCSeconds();
+    }
 
-            // Update cached display values
+    /**
+     * Meme logique que GameTimeService : secondes depuis minuit UTC * facteur, modulo 86400.
+     */
+    _computeTimeOfDay() {
+        const factor =
+            this._gameTimeData && typeof this._gameTimeData.utcDayCycleFactor === 'number'
+                ? this._gameTimeData.utcDayCycleFactor
+                : 1;
+        if (factor <= 0) {
+            return this._timeOfDay || 'day';
+        }
+
+        const d = new Date();
+        let utcSec = this._utcSecondsSinceMidnightFromDate(d);
+        let scaled = (utcSec * factor) % 86400;
+        if (scaled < 0) scaled += 86400;
+        const hour = Math.floor(scaled / 3600) % 24;
+        const minute = Math.floor((scaled % 3600) / 60) % 60;
+
+        if (this._gameTimeData) {
             this._gameTimeData.hour = hour;
             this._gameTimeData.minute = minute;
-
-            if (hour >= 8 && hour < 18) return 'day';
-            if (hour >= 6 && hour < 8) return 'dawn';
-            if (hour >= 18 && hour < 20) return 'dusk';
-            return 'night';
         }
-        // Fallback to local time
-        const hour = new Date().getHours();
+
         if (hour >= 8 && hour < 18) return 'day';
         if (hour >= 6 && hour < 8) return 'dawn';
         if (hour >= 18 && hour < 20) return 'dusk';
@@ -1355,6 +1498,191 @@ export default class extends Controller {
         }
     }
 
+    // --- Seasonal Decoration System ---
+
+    _initSeasonDecorations() {
+        if (!this._app) return;
+
+        this._seasonParticleContainer = new PIXI.Container();
+        this._seasonParticleContainer.zIndex = 390;
+        this._app.stage.addChild(this._seasonParticleContainer);
+
+        // Festival HUD text (displayed below the time HUD)
+        this._festivalHudText = new PIXI.Text({
+            text: '',
+            style: {
+                fontFamily: 'monospace',
+                fontSize: 10,
+                fill: 0xfbbf24,
+                dropShadow: true,
+                dropShadowColor: 0x000000,
+                dropShadowDistance: 1,
+            },
+        });
+        this._festivalHudText.zIndex = 600;
+        this._festivalHudText.position.set(6, 20);
+        this._app.stage.addChild(this._festivalHudText);
+        this._updateFestivalHud();
+    }
+
+    _updateFestivalHud() {
+        if (!this._festivalHudText) return;
+        if (this._activeFestivals && this._activeFestivals.length > 0) {
+            const names = this._activeFestivals.map(f => f.name).join(', ');
+            this._festivalHudText.text = '\u2726 ' + names;
+        } else {
+            this._festivalHudText.text = '';
+        }
+    }
+
+    _updateSeasonDecorations(dt) {
+        if (!this._seasonParticleContainer) return;
+
+        this._seasonSpawnTimer += dt;
+        const interval = this._getSeasonSpawnInterval();
+        if (interval > 0 && this._seasonSpawnTimer >= interval) {
+            this._seasonSpawnTimer = 0;
+            this._spawnSeasonParticle();
+        }
+
+        // Update existing season particles
+        for (let i = this._seasonParticles.length - 1; i >= 0; i--) {
+            const p = this._seasonParticles[i];
+            p.life -= dt;
+
+            if (p.life <= 0) {
+                if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+                p.sprite.destroy();
+                this._seasonParticles.splice(i, 1);
+                continue;
+            }
+
+            p.sprite.position.y += p.vy * dt;
+            p.sprite.position.x += p.vx * dt;
+
+            // Oscillation for floating effect
+            if (p.oscillation !== undefined) {
+                p.oscillation += (p.oscillationSpeed || 0.002) * dt;
+                p.sprite.position.x += Math.sin(p.oscillation) * (p.oscillationAmplitude || 0.01) * dt;
+            }
+
+            // Rotation for leaves
+            if (p.rotSpeed) {
+                p.sprite.rotation += p.rotSpeed * dt;
+            }
+
+            // Fade out near end of life
+            if (p.life < 1000) {
+                p.sprite.alpha = Math.max(0, (p.life / 1000) * p.baseAlpha);
+            }
+
+            // Firefly glow pulse (summer)
+            if (p.type === 'firefly') {
+                p.glowPhase = (p.glowPhase || 0) + dt * 0.004;
+                p.sprite.alpha = p.baseAlpha * (0.4 + 0.6 * Math.abs(Math.sin(p.glowPhase)));
+            }
+        }
+    }
+
+    _getSeasonSpawnInterval() {
+        switch (this._currentSeason) {
+            case 'spring': return 400;   // petals
+            case 'autumn': return 350;   // falling leaves
+            case 'summer': return 800;   // fireflies (less frequent)
+            case 'winter': return 0;     // handled by weather snow
+            default: return 0;
+        }
+    }
+
+    _spawnSeasonParticle() {
+        if (this._seasonParticles.length > 60) return;
+
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+
+        switch (this._currentSeason) {
+            case 'spring':
+                this._spawnPetal(viewW, viewH);
+                break;
+            case 'autumn':
+                this._spawnLeaf(viewW, viewH);
+                break;
+            case 'summer':
+                this._spawnFirefly(viewW, viewH);
+                break;
+        }
+    }
+
+    _spawnPetal(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const colors = [0xffb7c5, 0xffc1cc, 0xffe0e6, 0xffa0b4];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        g.ellipse(0, 0, 2, 1.2);
+        g.fill({ color, alpha: 0.7 });
+        g.position.set(Math.random() * viewW, -5);
+        this._seasonParticleContainer.addChild(g);
+
+        this._seasonParticles.push({
+            sprite: g,
+            vx: 0.01 + Math.random() * 0.01,
+            vy: 0.02 + Math.random() * 0.015,
+            life: 8000 + Math.random() * 4000,
+            maxLife: 12000,
+            baseAlpha: 0.7,
+            type: 'petal',
+            oscillation: Math.random() * Math.PI * 2,
+            oscillationSpeed: 0.002 + Math.random() * 0.001,
+            oscillationAmplitude: 0.02,
+            rotSpeed: (Math.random() - 0.5) * 0.003,
+        });
+    }
+
+    _spawnLeaf(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const colors = [0xcc6600, 0xdd8833, 0xbb4400, 0xe6a020, 0x996633];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        g.ellipse(0, 0, 2.5, 1.5);
+        g.fill({ color, alpha: 0.75 });
+        g.position.set(Math.random() * viewW, -5);
+        this._seasonParticleContainer.addChild(g);
+
+        this._seasonParticles.push({
+            sprite: g,
+            vx: 0.015 + Math.random() * 0.015,
+            vy: 0.025 + Math.random() * 0.02,
+            life: 7000 + Math.random() * 3000,
+            maxLife: 10000,
+            baseAlpha: 0.75,
+            type: 'leaf',
+            oscillation: Math.random() * Math.PI * 2,
+            oscillationSpeed: 0.0025 + Math.random() * 0.001,
+            oscillationAmplitude: 0.025,
+            rotSpeed: (Math.random() - 0.5) * 0.004,
+        });
+    }
+
+    _spawnFirefly(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        g.circle(0, 0, 1.5);
+        g.fill({ color: 0xeeff44, alpha: 0.8 });
+        g.position.set(Math.random() * viewW, Math.random() * viewH);
+        this._seasonParticleContainer.addChild(g);
+
+        this._seasonParticles.push({
+            sprite: g,
+            vx: (Math.random() - 0.5) * 0.01,
+            vy: (Math.random() - 0.5) * 0.008,
+            life: 5000 + Math.random() * 5000,
+            maxLife: 10000,
+            baseAlpha: 0.8,
+            type: 'firefly',
+            glowPhase: Math.random() * Math.PI * 2,
+            oscillation: Math.random() * Math.PI * 2,
+            oscillationSpeed: 0.001,
+            oscillationAmplitude: 0.008,
+        });
+    }
+
     // --- Zone Ambiance System ---
 
     _initZoneAmbiance() {
@@ -1391,15 +1719,6 @@ export default class extends Controller {
 
         this._currentZone = newZone;
         this._applyZoneEffect(newZone, instant);
-
-        // Ambient sound per biome
-        if (window.Sound) {
-            if (newZone && newZone.biome) {
-                window.Sound.startAmbient(newZone.biome);
-            } else {
-                window.Sound.stopAmbient();
-            }
-        }
     }
 
     _applyZoneEffect(zone, instant = false) {
@@ -1884,6 +2203,98 @@ export default class extends Controller {
         }
     }
 
+    // --- Mobile Tap Info Banner ---
+
+    _showMobileBanner(icon, name, detail, borderColor = 'border-amber-500/50') {
+        const banner = document.getElementById('mobile-tap-banner');
+        if (!banner) return;
+
+        const iconEl = document.getElementById('mobile-tap-icon');
+        const nameEl = document.getElementById('mobile-tap-name');
+        const detailEl = document.getElementById('mobile-tap-detail');
+        const inner = banner.querySelector('div');
+
+        if (iconEl) iconEl.textContent = icon;
+        if (nameEl) nameEl.textContent = name;
+        if (detailEl) detailEl.textContent = detail;
+
+        // Update border color based on entity type
+        if (inner) {
+            inner.className = inner.className.replace(/border-\S+\/50/g, borderColor);
+        }
+
+        banner.style.display = 'flex';
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateY(8px)';
+        banner.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
+        requestAnimationFrame(() => {
+            banner.style.opacity = '1';
+            banner.style.transform = 'translateY(0)';
+        });
+
+        // Auto-hide after 3s
+        if (this._mobileBannerTimer) clearTimeout(this._mobileBannerTimer);
+        this._mobileBannerTimer = setTimeout(() => this._hideMobileBanner(), 3000);
+    }
+
+    _hideMobileBanner() {
+        const banner = document.getElementById('mobile-tap-banner');
+        if (!banner) return;
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateY(8px)';
+        setTimeout(() => { banner.style.display = 'none'; }, 200);
+    }
+
+    _showMobileBannerForEntity(tileX, tileY) {
+        // Check tapped tile + neighbors (same fuzzy logic as harvest detection)
+        const tilesToCheck = [
+            [tileX, tileY],
+            [tileX-1, tileY], [tileX+1, tileY], [tileX, tileY-1], [tileX, tileY+1],
+        ];
+        let entities = new Set();
+        for (const [tx, ty] of tilesToCheck) {
+            const e = this._getEntitiesAt(tx, ty);
+            if (e.size > 0) { entities = e; break; }
+        }
+        if (entities.size === 0) return;
+
+        for (const key of entities) {
+            const entry = this._entitySprites[key];
+            if (!entry) continue;
+
+            if (entry.type === 'harvest') {
+                const spot = entry.spotData || entry.meta;
+                const toolLabels = {
+                    pickaxe: 'Pioche requise',
+                    sickle: 'Faucille requise',
+                    fishing_rod: 'Canne à pêche requise',
+                    skinning_knife: 'Couteau requis',
+                };
+                let detail = toolLabels[spot.toolType] || 'Outil requis';
+                if (spot.canHarvest === false) {
+                    detail = 'Compétence manquante';
+                } else if (!spot.available && spot.remainingSeconds > 0) {
+                    detail = `Cooldown ${spot.remainingSeconds}s`;
+                }
+                this._showMobileBanner('✦', spot.name || 'Spot de récolte', detail, 'border-amber-500/50');
+                return;
+            }
+            if (entry.type === 'mob') {
+                const lvl = entry.meta?.level ? ` Nv.${entry.meta.level}` : '';
+                this._showMobileBanner('💀', (entry.meta?.name || '???') + lvl, 'Monstre', 'border-red-500/50');
+                return;
+            }
+            if (entry.type === 'pnj') {
+                this._showMobileBanner('💬', entry.meta?.name || '???', 'PNJ', 'border-purple-500/50');
+                return;
+            }
+            if (entry.type === 'portal') {
+                this._showMobileBanner('🌀', entry.meta?.name || 'Portail', 'Téléportation', 'border-purple-500/50');
+                return;
+            }
+        }
+    }
+
     _escHtml(str) {
         const div = document.createElement('div');
         div.textContent = str;
@@ -2001,8 +2412,138 @@ export default class extends Controller {
             return;
         }
 
+        // Check if the tapped cell (or its neighbors) is a harvest spot
+        // Use fuzzy detection on touch devices to compensate for finger imprecision
+        const isTouch = e.pointerType === 'touch';
+
+        // Show mobile info banner on touch (replaces desktop hover tooltip)
+        if (isTouch) {
+            this._showMobileBannerForEntity(tileX, tileY);
+        }
+
+        const harvestSpot = this._findHarvestSpotAt(tileX, tileY, isTouch);
+        if (harvestSpot) {
+            if (isTouch) this._pulseHarvestSpot(harvestSpot);
+            this._walkToHarvestSpot(harvestSpot);
+            return;
+        }
+
         if (!isWalkable) return;
         this._requestMove(tileX, tileY);
+    }
+
+    /**
+     * Brief scale pulse on a harvest spot marker to confirm tap recognition.
+     */
+    _pulseHarvestSpot(spot) {
+        const key = `harvest_${spot.id}`;
+        const entry = this._entitySprites[key];
+        if (!entry || !entry.container) return;
+
+        const sprite = entry.container;
+        const origScaleX = sprite.scale?.x ?? 1;
+        const origScaleY = sprite.scale?.y ?? 1;
+        const cx = spot.x * this._tileSize + this._tileSize / 2;
+        const cy = spot.y * this._tileSize + this._tileSize / 2;
+
+        // Set pivot to center for scale-from-center
+        sprite.pivot.set(this._tileSize / 2, this._tileSize / 2);
+        sprite.position.set(cx, cy);
+
+        // Scale up
+        sprite.scale.set(origScaleX * 1.3, origScaleY * 1.3);
+        setTimeout(() => {
+            sprite.scale.set(origScaleX, origScaleY);
+            // Reset pivot/position
+            sprite.pivot.set(0, 0);
+            sprite.position.set(spot.x * this._tileSize, spot.y * this._tileSize);
+        }, 150);
+    }
+
+    /**
+     * Find a harvest spot at the given tile coordinates.
+     * On touch devices, also checks the 4 neighboring tiles (fuzzy tap).
+     */
+    _findHarvestSpotAt(x, y, fuzzy = false) {
+        // Check exact tile first
+        const entities = this._getEntitiesAt(x, y);
+        for (const key of entities) {
+            if (!key.startsWith('harvest_')) continue;
+            const entry = this._entitySprites[key];
+            if (entry && entry.spotData) {
+                return entry.spotData;
+            }
+        }
+
+        // Fuzzy: check 4 neighbors (for mobile finger imprecision)
+        if (fuzzy) {
+            const neighbors = [[x-1, y], [x+1, y], [x, y-1], [x, y+1]];
+            let best = null;
+            let bestDist = Infinity;
+            const px = Math.floor(this._playerX);
+            const py = Math.floor(this._playerY);
+            for (const [nx, ny] of neighbors) {
+                const nEntities = this._getEntitiesAt(nx, ny);
+                for (const key of nEntities) {
+                    if (!key.startsWith('harvest_')) continue;
+                    const entry = this._entitySprites[key];
+                    if (entry && entry.spotData) {
+                        const dist = Math.abs(nx - px) + Math.abs(ny - py);
+                        if (dist < bestDist) {
+                            bestDist = dist;
+                            best = entry.spotData;
+                        }
+                    }
+                }
+            }
+            return best;
+        }
+
+        return null;
+    }
+
+    /**
+     * Find the nearest walkable cell adjacent to a harvest spot, walk there,
+     * then trigger the harvest interaction.
+     */
+    _walkToHarvestSpot(spot) {
+        const px = Math.floor(this._playerX);
+        const py = Math.floor(this._playerY);
+
+        // If player is already adjacent to the spot, open panel directly
+        if (Math.abs(px - spot.x) + Math.abs(py - spot.y) <= 1) {
+            this._hideMobileBanner();
+            this.dispatch('harvestSpot', { detail: spot });
+            return;
+        }
+
+        // Find the best walkable adjacent cell (closest to player)
+        const adjacent = [
+            [spot.x - 1, spot.y],
+            [spot.x + 1, spot.y],
+            [spot.x, spot.y - 1],
+            [spot.x, spot.y + 1],
+        ];
+
+        let best = null;
+        let bestDist = Infinity;
+        for (const [ax, ay] of adjacent) {
+            const ck = `${ax},${ay}`;
+            const c = this._cellCache.get(ck);
+            if (c && c.w) {
+                const dist = Math.abs(ax - px) + Math.abs(ay - py);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    best = { x: ax, y: ay };
+                }
+            }
+        }
+
+        if (!best) return; // No walkable adjacent cell
+
+        // Mark that we want to open harvest panel after arriving
+        this._pendingHarvestSpot = spot;
+        this._requestMove(best.x, best.y);
     }
 
     async _requestMove(targetX, targetY, fromX = null, fromY = null) {
@@ -2053,6 +2594,9 @@ export default class extends Controller {
             } else if (fromX !== null && fromY !== null) {
                 await this._loadCells(fromX, fromY);
                 await this._loadEntities();
+            } else if (!data.error) {
+                // path vide sans erreur (ex. désync client/serveur après fuite) : resync position serveur
+                await this._syncPlayerPositionFromServer();
             }
         } catch (err) {
             console.error('[map_pixi] Move error:', err);
@@ -2163,15 +2707,22 @@ export default class extends Controller {
 
         await this._loadCells(this._playerX, this._playerY);
         await this._refreshEntitiesIfNeeded();
+
+        // If we walked to a harvest spot via click, open the panel directly
+        if (this._pendingHarvestSpot) {
+            const spot = this._pendingHarvestSpot;
+            this._pendingHarvestSpot = null;
+            this._hideMobileBanner();
+            this.dispatch('harvestSpot', { detail: spot });
+            return;
+        }
+
         this._checkPnjInteraction();
         this._checkHarvestSpotInteraction();
     }
 
     async _handlePortalTransition(portal) {
         console.debug('[map_pixi] Portal triggered → map', portal.destinationMapId, 'at', portal.destinationCoordinates);
-
-        // Portal sound
-        if (window.Sound) window.Sound.play('portal');
 
         // Sparkle effect + camera shake on portal
         this.spawnParticles(
@@ -2314,10 +2865,10 @@ export default class extends Controller {
                 const entry = this._entitySprites[key];
                 if (!entry || !entry.spotData) continue;
                 const spot = entry.spotData;
-                if (spot.available) {
-                    this.dispatch('harvestSpot', { detail: spot });
-                    return;
-                }
+                // Always dispatch — the harvest panel handles availability and skill checks
+                this._hideMobileBanner();
+                this.dispatch('harvestSpot', { detail: spot });
+                return;
             }
         }
     }
@@ -2685,6 +3236,30 @@ export default class extends Controller {
         const vpY = (py - mapMinY - vpTiles / 2) * scale;
         this._minimapViewport.rect(vpX, vpY, vpW, vpH);
         this._minimapViewport.stroke({ color: 0xffffff, width: 1, alpha: 0.5 });
+    }
+
+    async _syncPlayerPositionFromServer() {
+        try {
+            const resp = await fetch(`/api/map/entities?radius=${this._viewRadius}`);
+            if (!resp.ok) return;
+            const data = await resp.json();
+            const me = data.players?.find((p) => p.self);
+            if (!me) return;
+
+            this._playerX = me.x;
+            this._playerY = me.y;
+            if (this._playerMarker) {
+                this._playerMarker.position.set(me.x * this._tileSize, me.y * this._tileSize);
+            }
+            this._lastEntityLoadX = me.x;
+            this._lastEntityLoadY = me.y;
+            this._updateCamera(true);
+            await this._loadCells(me.x, me.y);
+            await this._loadEntities();
+            this._detectZone(me.x, me.y, true);
+        } catch (e) {
+            console.warn('[map_pixi] Resync position impossible :', e);
+        }
     }
 
     _wait(ms) {

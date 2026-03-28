@@ -10,6 +10,7 @@ use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
+use App\GameEngine\Realtime\Fight\FightTurnPublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,6 +41,8 @@ class FightAttackControllerTest extends TestCase
         $enchantmentManager = $this->createMock(EnchantmentManager::class);
         $enchantmentManager->method('getEnchantmentBonuses')->willReturn([]);
 
+        $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
+
         $this->controller = new FightAttackController(
             $this->playerHelper,
             $this->mobActionHandler,
@@ -47,6 +50,7 @@ class FightAttackControllerTest extends TestCase
             $this->combatLogger,
             $this->turnResolver,
             $enchantmentManager,
+            $fightTurnPublisher,
         );
 
         // Stub the container for security checks

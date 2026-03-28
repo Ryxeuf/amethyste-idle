@@ -1,4 +1,5 @@
 import { Controller } from '@hotwired/stimulus'
+import WangTileResolverJs from '../lib/WangTileResolverJs.js'
 
 export default class extends Controller {
     static values = {
@@ -9,11 +10,18 @@ export default class extends Controller {
         updateCellUrl: String,
         updateCellsUrl: String,
         updateBordersUrl: String,
+        paintTilesUrl: String,
         deleteEntityUrl: String,
         moveEntityUrl: String,
+        createEntityUrl: String,
+        updateEntityUrl: String,
+        entityOptionsUrl: String,
+        wangsetsUrl: String,
+        autoTileUrl: String,
+        generateUrl: String,
     }
 
-    static targets = ['canvas', 'info', 'coords', 'legend', 'stats']
+    static targets = ['canvas', 'info', 'coords', 'legend', 'stats', 'contextMenu']
 
     _tileSize = 32
     _zoom = 1
@@ -44,12 +52,37 @@ export default class extends Controller {
     _showWalls = true
     _tilesetsLoaded = false
     _renderTiles = true
-    _tool = 'select' // select, block, unblock, water, wall, eraseWall
+    _tool = 'select' // select, block, unblock, water, wall, eraseWall, paint, eraser, fill
     _pendingChanges = {}
     _pendingBorderChanges = {} // key: "x.y", value: [n, e, s, w]
+    _pendingTileChanges = {} // key: "x.y", value: {layer, gid} — tile GID changes
     _ctx = null
     _animFrame = null
     _hoveredCell = null
+
+    // Entity creation
+    _entityOptions = null // Cached options from server {monsters, maps, pnjs}
+    _contextMenuCell = null // {x, y} cell where context menu was opened
+
+    // Undo / Redo history
+    _undoStack = [] // Array of {tiles: {key: {layer: {before, after}}}, collisions: {key: {before, after}}, borders: {key: {before, after}}}
+    _redoStack = []
+    _maxHistory = 50
+    _currentStroke = null // Accumulates changes during a single mouse drag
+
+    // Tileset picker state (received via events)
+    _pickerGid = 0
+    _pickerStampWidth = 1
+    _pickerStampHeight = 1
+    _pickerStampGids = []
+    _pickerLayer = 1 // 0=background, 1=ground, 2=decoration, 3=overlay
+    _layerVisibility = [true, true, true, true] // per-layer visibility
+    _layerOpacity = [1, 1, 1, 1] // per-layer opacity (0..1)
+
+    // Auto-tiling
+    _autoTileEnabled = false
+    _autoTileSlug = null // selected terrain slug (e.g. 'water', 'sand')
+    _wangResolver = null // WangTileResolverJs instance
 
     connect() {
         this._canvas = this.canvasTarget
@@ -58,6 +91,9 @@ export default class extends Controller {
 
         // Expose controller instance for inline onclick handlers
         this.element.__stimulus_controller = this
+
+        // Initialize auto-tiling resolver
+        this._wangResolver = new WangTileResolverJs()
 
         this._bindEvents()
         this._loadData()
@@ -68,6 +104,7 @@ export default class extends Controller {
     disconnect() {
         window.removeEventListener('resize', this._onResize)
         document.removeEventListener('keydown', this._onKeyDown)
+        document.removeEventListener('mousedown', this._onDocumentMouseDown)
         if (this._animFrame) {
             cancelAnimationFrame(this._animFrame)
         }
@@ -90,8 +127,9 @@ export default class extends Controller {
         this._canvas.addEventListener('mousemove', this._onMouseMove)
         this._canvas.addEventListener('mouseup', this._onMouseUp)
         this._canvas.addEventListener('mouseleave', this._onMouseLeave)
-        this._canvas.addEventListener('contextmenu', e => e.preventDefault())
+        this._canvas.addEventListener('contextmenu', this._onContextMenu)
         document.addEventListener('keydown', this._onKeyDown)
+        document.addEventListener('mousedown', this._onDocumentMouseDown)
     }
 
     async _loadData() {
@@ -278,13 +316,76 @@ export default class extends Controller {
             this._drawEntities(ctx, ts, minTileX, minTileY, maxTileX, maxTileY)
         }
 
-        // Hovered cell
+        // Hovered cell + paint ghost preview
         if (this._hoveredCell) {
             const hx = this._hoveredCell.x * ts + this._offsetX
             const hy = this._hoveredCell.y * ts + this._offsetY
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-            ctx.lineWidth = 2
-            ctx.strokeRect(hx, hy, ts, ts)
+
+            if (this._tool === 'eraser') {
+                // Eraser ghost preview: red overlay
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.3)'
+                ctx.fillRect(hx, hy, ts, ts)
+                ctx.strokeStyle = '#ef4444'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, ts, ts)
+                // X mark
+                ctx.beginPath()
+                ctx.moveTo(hx + ts * 0.25, hy + ts * 0.25)
+                ctx.lineTo(hx + ts * 0.75, hy + ts * 0.75)
+                ctx.moveTo(hx + ts * 0.75, hy + ts * 0.25)
+                ctx.lineTo(hx + ts * 0.25, hy + ts * 0.75)
+                ctx.stroke()
+            } else if (this._tool === 'paint' && this._autoTileEnabled && this._autoTileSlug && this._tilesetsLoaded) {
+                // Auto-tile ghost preview: show center tile with teal tint
+                const centerGid = this._wangResolver ? this._wangResolver.getCenterGid(this._autoTileSlug) : 0
+                if (centerGid > 0) {
+                    const tileset = this._findTileset(centerGid)
+                    if (tileset) {
+                        const img = this._tilesetImages[tileset.name]
+                        if (img) {
+                            const localId = centerGid - tileset.firstGid
+                            const srcX = (localId % tileset.columns) * tileset.tileWidth
+                            const srcY = Math.floor(localId / tileset.columns) * tileset.tileHeight
+                            ctx.globalAlpha = 0.5
+                            ctx.drawImage(img, srcX, srcY, tileset.tileWidth, tileset.tileHeight, hx, hy, ts, ts)
+                            ctx.globalAlpha = 1
+                        }
+                    }
+                }
+                ctx.strokeStyle = '#14b8a6'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, ts, ts)
+            } else if (this._tool === 'paint' && this._pickerGid > 0 && this._tilesetsLoaded) {
+                // Ghost preview of stamp
+                ctx.globalAlpha = 0.5
+                for (let dy = 0; dy < this._pickerStampHeight; dy++) {
+                    for (let dx = 0; dx < this._pickerStampWidth; dx++) {
+                        const stampIdx = dy * this._pickerStampWidth + dx
+                        const gid = this._pickerStampGids[stampIdx]
+                        if (!gid) continue
+
+                        const tileset = this._findTileset(gid)
+                        if (!tileset) continue
+                        const img = this._tilesetImages[tileset.name]
+                        if (!img) continue
+
+                        const localId = gid - tileset.firstGid
+                        const srcX = (localId % tileset.columns) * tileset.tileWidth
+                        const srcY = Math.floor(localId / tileset.columns) * tileset.tileHeight
+                        const px = (this._hoveredCell.x + dx) * ts + this._offsetX
+                        const py = (this._hoveredCell.y + dy) * ts + this._offsetY
+                        ctx.drawImage(img, srcX, srcY, tileset.tileWidth, tileset.tileHeight, px, py, ts, ts)
+                    }
+                }
+                ctx.globalAlpha = 1
+                ctx.strokeStyle = '#a855f7'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, this._pickerStampWidth * ts, this._pickerStampHeight * ts)
+            } else {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
+                ctx.lineWidth = 2
+                ctx.strokeRect(hx, hy, ts, ts)
+            }
         }
 
         // Multi-selection overlay
@@ -402,7 +503,10 @@ export default class extends Controller {
     }
 
     _drawTileLayers(ctx, cell, px, py, ts) {
-        for (const gid of cell.l) {
+        for (let i = 0; i < cell.l.length; i++) {
+            if (!this._layerVisibility[i]) continue
+
+            const gid = cell.l[i]
             const tileset = this._findTileset(gid)
             if (!tileset) continue
 
@@ -413,7 +517,14 @@ export default class extends Controller {
             const srcX = (localId % tileset.columns) * tileset.tileWidth
             const srcY = Math.floor(localId / tileset.columns) * tileset.tileHeight
 
+            const opacity = this._layerOpacity[i]
+            if (opacity < 1) {
+                ctx.globalAlpha = opacity
+            }
             ctx.drawImage(img, srcX, srcY, tileset.tileWidth, tileset.tileHeight, px, py, ts, ts)
+            if (opacity < 1) {
+                ctx.globalAlpha = 1
+            }
         }
     }
 
@@ -524,8 +635,17 @@ export default class extends Controller {
         const mouseX = e.clientX - rect.left
         const mouseY = e.clientY - rect.top
 
-        if (e.button === 1 || e.button === 2 || (e.button === 0 && e.altKey)) {
-            // Middle click or right click or alt+click: pan
+        // Alt+click: eyedropper (pick tile GID under cursor)
+        if (e.button === 0 && e.altKey) {
+            const tileCoords = this._screenToTile(mouseX, mouseY)
+            if (tileCoords) {
+                this._eyedropperPick(tileCoords.x, tileCoords.y)
+            }
+            return
+        }
+
+        if (e.button === 1 || (e.button === 2 && this._tool !== 'select')) {
+            // Middle click or right click (non-select mode): pan
             this._isDragging = true
             this._dragStartX = mouseX
             this._dragStartY = mouseY
@@ -551,21 +671,36 @@ export default class extends Controller {
                 this._isSelecting = true
                 // Single click handled on mouseup
             } else if (this._tool === 'block') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, -1)
                 this._isPainting = true
             } else if (this._tool === 'unblock') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, 0)
                 this._isPainting = true
             } else if (this._tool === 'water') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, 2)
                 this._isPainting = true
             } else if (this._tool === 'climb') {
+                this._beginStroke()
                 this._paintCell(tileCoords.x, tileCoords.y, 4)
                 this._isPainting = true
             } else if (this._tool === 'wall' || this._tool === 'eraseWall') {
+                this._beginStroke()
                 this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, e.shiftKey)
                 this._isPainting = true
                 this._isPaintingOneWay = e.shiftKey
+            } else if (this._tool === 'paint') {
+                this._beginStroke()
+                this._paintTile(tileCoords.x, tileCoords.y)
+                this._isPainting = true
+            } else if (this._tool === 'eraser') {
+                this._beginStroke()
+                this._eraseTile(tileCoords.x, tileCoords.y)
+                this._isPainting = true
+            } else if (this._tool === 'fill') {
+                this._fillBucket(tileCoords.x, tileCoords.y)
             }
         }
     }
@@ -592,6 +727,10 @@ export default class extends Controller {
             } else if (this._isPainting) {
                 if (this._tool === 'wall' || this._tool === 'eraseWall') {
                     this._paintWallAtMouse(mouseX, mouseY, this._tool === 'wall' ? -1 : 0, this._isPaintingOneWay)
+                } else if (this._tool === 'paint') {
+                    this._paintTile(tileCoords.x, tileCoords.y)
+                } else if (this._tool === 'eraser') {
+                    this._eraseTile(tileCoords.x, tileCoords.y)
                 } else {
                     const movementMap = { block: -1, unblock: 0, water: 2, climb: 4 }
                     const movement = movementMap[this._tool] ?? 0
@@ -644,12 +783,18 @@ export default class extends Controller {
             return
         }
 
+        if (this._isPainting) {
+            this._endStroke()
+        }
         this._isDragging = false
         this._isPainting = false
         this._canvas.style.cursor = 'default'
     }
 
     _onMouseLeave = () => {
+        if (this._isPainting) {
+            this._endStroke()
+        }
         this._isDragging = false
         this._isPainting = false
         this._isSelecting = false
@@ -661,16 +806,66 @@ export default class extends Controller {
     }
 
     _onKeyDown = (e) => {
+        // Ignore shortcuts when typing in an input/textarea
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return
+
         if (e.key === 'Delete' && this._selectedEntity) {
             e.preventDefault()
             this._deleteSelectedEntity()
         }
         if (e.key === 'Escape') {
+            this._hideContextMenu()
             this._selection = new Set()
             this._selectedCell = null
             this._selectedEntity = null
             this.infoTarget.innerHTML = '<p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>'
             this._render()
+        }
+
+        // Tool shortcuts
+        if (e.key === 'e' || e.key === 'E') { this.setToolEraser(); e.preventDefault() }
+        if (e.key === 'p' || e.key === 'P') { this.setToolPaint(); e.preventDefault() }
+        if (e.key === 'v' || e.key === 'V') { this.setToolSelect(); e.preventDefault() }
+        if (e.key === 'b' || e.key === 'B') { this.setToolBlock(); e.preventDefault() }
+        if (e.key === 'u' || e.key === 'U') { this.setToolUnblock(); e.preventDefault() }
+        if (e.key === 'w' || e.key === 'W') { this.setToolWall(); e.preventDefault() }
+        if (e.key === 'g' || e.key === 'G') { this.setToolFill(); e.preventDefault() }
+        if (e.key === 't' || e.key === 'T') { this.toggleAutoTile(); e.preventDefault() }
+
+        // Layer shortcuts: 1/2/3/4 (select active layer)
+        if (e.key === '1' || e.key === '2' || e.key === '3' || e.key === '4') {
+            const layer = parseInt(e.key, 10) - 1
+            this._pickerLayer = layer
+            // Notify the tileset picker
+            const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
+            if (pickerEl) {
+                const pickerCtrl = this.application.getControllerForElementAndIdentifier(pickerEl, 'admin-tileset-picker')
+                if (pickerCtrl) {
+                    pickerCtrl._activeLayer = layer
+                }
+            }
+            this._updateLayerPanel()
+            e.preventDefault()
+        }
+
+        // Ctrl+Z: undo
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey && (e.key === 'z' || e.key === 'Z')) {
+            e.preventDefault()
+            this.undo()
+            return
+        }
+
+        // Ctrl+Y or Ctrl+Shift+Z: redo
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y' || (e.shiftKey && (e.key === 'z' || e.key === 'Z')))) {
+            e.preventDefault()
+            this.redo()
+            return
+        }
+
+        // Ctrl+S: save
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault()
+            this.saveChanges()
         }
     }
 
@@ -732,8 +927,10 @@ export default class extends Controller {
 
         // Update this cell's border
         const borders = this._pendingBorderChanges[key] || [...cell.b]
+        const beforeBorders = [...borders]
         borders[idx] = value
         this._pendingBorderChanges[key] = borders
+        this._recordBorderChange(key, beforeBorders, borders)
 
         // Also update the neighbor's reciprocal border (unless one-way)
         if (!oneWay) {
@@ -748,8 +945,10 @@ export default class extends Controller {
             if (neighborCell && neighborCell.b) {
                 const neighborIdx = dirIndex[opposites[edge.direction]]
                 const neighborBorders = this._pendingBorderChanges[neighborKey] || [...neighborCell.b]
+                const beforeNeighborBorders = [...neighborBorders]
                 neighborBorders[neighborIdx] = value
                 this._pendingBorderChanges[neighborKey] = neighborBorders
+                this._recordBorderChange(neighborKey, beforeNeighborBorders, neighborBorders)
             }
         }
 
@@ -810,6 +1009,9 @@ export default class extends Controller {
                         entitiesHtml += `<button onclick="this.closest('[data-controller]').__stimulus_controller._startMoveEntity('${ent.type}', ${ent.id}, '${ent.name.replace(/'/g, "\\'")}', ${ent.x}, ${ent.y}, '${ent.listKey}')"
                             class="px-1.5 py-0.5 bg-blue-800 hover:bg-blue-700 rounded text-xs" title="Deplacer (puis Ctrl+clic)">↗</button>`
                     }
+
+                    entitiesHtml += `<button onclick="this.closest('[data-controller]').__stimulus_controller._showEditForm('${ent.type}', ${ent.id})"
+                        class="px-1.5 py-0.5 bg-yellow-800 hover:bg-yellow-700 rounded text-xs" title="Editer">✎</button>`
 
                     entitiesHtml += '</div>'
                 }
@@ -890,13 +1092,16 @@ export default class extends Controller {
     }
 
     _applyToSelection(movement) {
+        this._beginStroke()
         for (const key of this._selection) {
             const cell = this._cells[key]
             if (!cell) continue
             if (cell.m === movement && this._pendingChanges[key] === undefined) continue
+            this._recordCollisionChange(key, cell.m, movement)
             this._pendingChanges[key] = movement
             cell.m = movement
         }
+        this._endStroke()
         this._updatePendingCount()
         this._updateSelectionPanel()
         this._render()
@@ -1026,6 +1231,624 @@ export default class extends Controller {
         }[type] || type
     }
 
+    // --- Context Menu & Entity Creation ---
+
+    _onContextMenu = (e) => {
+        e.preventDefault()
+
+        if (this._tool !== 'select') return
+
+        const rect = this._canvas.getBoundingClientRect()
+        const mouseX = e.clientX - rect.left
+        const mouseY = e.clientY - rect.top
+        const tileCoords = this._screenToTile(mouseX, mouseY)
+        if (!tileCoords) return
+
+        this._contextMenuCell = tileCoords
+        const cell = this._cells[tileCoords.x + '.' + tileCoords.y]
+        const isWalkable = cell && cell.m !== -1
+        const entitiesHere = this._getEntitiesAt(tileCoords.x, tileCoords.y)
+
+        let html = `<div class="px-3 py-1.5 text-xs text-gray-400 border-b border-gray-700">Case ${tileCoords.x}, ${tileCoords.y}</div>`
+
+        if (isWalkable) {
+            html += this._contextMenuItem('Ajouter un mob', '_showCreateForm', 'mob')
+            html += this._contextMenuItem('Ajouter un portail', '_showCreateForm', 'portal')
+            html += this._contextMenuItem('Ajouter un spot de recolte', '_showCreateForm', 'harvestSpot')
+            html += this._contextMenuItem('Ajouter un PNJ', '_showCreateForm', 'pnj')
+        } else {
+            html += '<div class="px-3 py-1.5 text-xs text-gray-500 italic">Case non-praticable</div>'
+        }
+
+        if (entitiesHere.length > 0) {
+            html += '<div class="border-t border-gray-700 mt-1 pt-1">'
+            for (const ent of entitiesHere) {
+                html += `<div class="px-3 py-1 text-xs text-gray-300">${ent.label}: ${ent.name}</div>`
+                html += this._contextMenuItem('Editer', '_ctxEditEntity', `${ent.type},${ent.id}`)
+                if (ent.canDelete) {
+                    html += this._contextMenuItem('Supprimer', '_ctxDeleteEntity', `${ent.type},${ent.id}`)
+                }
+            }
+            html += '</div>'
+        }
+
+        const menu = this.contextMenuTarget
+        menu.innerHTML = html
+        menu.classList.remove('hidden')
+
+        // Position relative to canvas container
+        const container = this._canvas.parentElement
+        const containerRect = container.getBoundingClientRect()
+        let left = e.clientX - containerRect.left
+        let top = e.clientY - containerRect.top
+
+        // Keep menu within container bounds
+        requestAnimationFrame(() => {
+            if (left + menu.offsetWidth > container.clientWidth) {
+                left = container.clientWidth - menu.offsetWidth - 4
+            }
+            if (top + menu.offsetHeight > container.clientHeight) {
+                top = container.clientHeight - menu.offsetHeight - 4
+            }
+            menu.style.left = left + 'px'
+            menu.style.top = top + 'px'
+        })
+
+        menu.style.left = left + 'px'
+        menu.style.top = top + 'px'
+    }
+
+    _contextMenuItem(label, method, arg) {
+        return `<button class="block w-full text-left px-3 py-1.5 text-sm text-gray-200 hover:bg-purple-700 hover:text-white transition-colors"
+                    onclick="this.closest('[data-controller]').__stimulus_controller.${method}('${arg}')">${label}</button>`
+    }
+
+    _hideContextMenu() {
+        if (this.hasContextMenuTarget) {
+            this.contextMenuTarget.classList.add('hidden')
+        }
+    }
+
+    _onDocumentMouseDown = (e) => {
+        // Hide context menu on any click outside it
+        if (this.hasContextMenuTarget && !this.contextMenuTarget.contains(e.target)) {
+            this._hideContextMenu()
+        }
+    }
+
+    _ctxDeleteEntity(args) {
+        this._hideContextMenu()
+        const [type, idStr] = args.split(',')
+        this._deleteEntityById(type, parseInt(idStr, 10))
+    }
+
+    _ctxEditEntity(args) {
+        this._hideContextMenu()
+        const [type, idStr] = args.split(',')
+        this._showEditForm(type, parseInt(idStr, 10))
+    }
+
+    _findEntityData(type, id) {
+        const listKey = this._entityListKey(type)
+        const list = this._entities[listKey] || []
+        return list.find(e => e.id === id) || null
+    }
+
+    async _showEditForm(entityType, entityId) {
+        if (!this._entityOptions) {
+            this._showFlash('Chargement des options...', 'info')
+            try {
+                const res = await fetch(this.entityOptionsUrlValue)
+                this._entityOptions = await res.json()
+            } catch {
+                this._showFlash('Erreur chargement options', 'error')
+                return
+            }
+        }
+
+        const entity = this._findEntityData(entityType, entityId)
+        if (!entity) {
+            this._showFlash('Entite introuvable', 'error')
+            return
+        }
+
+        let formHtml = `<div class="text-sm">
+            <h4 class="font-semibold text-gray-200 mb-2">Editer ${this._entityTypeLabel(entityType)}</h4>
+            <p class="text-xs text-gray-400 mb-3">Position: ${entity.x}, ${entity.y} — ID: ${entityId}</p>`
+
+        if (entityType === 'mob') {
+            const currentMonsterId = entity.monsterId || ''
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Monstre</label>
+                    <select id="edit-entity-monster" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        ${this._entityOptions.monsters.map(m => `<option value="${m.id}" ${m.id === currentMonsterId ? 'selected' : ''}>${m.name} (${m.slug})</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Niveau</label>
+                    <input type="number" id="edit-entity-level" value="${entity.level || 1}" min="1" max="100"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'portal') {
+            const currentDestMapId = entity.destMapId || ''
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-name" value="${this._escapeHtml(entity.name || '')}"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Carte destination</label>
+                    <select id="edit-entity-dest-map" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="">— Aucune —</option>
+                        ${this._entityOptions.maps.map(m => `<option value="${m.id}" ${m.id === currentDestMapId ? 'selected' : ''}>${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Coordonnees destination (x.y)</label>
+                    <input type="text" id="edit-entity-dest-coords" value="${entity.destCoords || ''}" placeholder="10.15"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'harvestSpot') {
+            const currentTool = entity.requiredToolType || ''
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-name" value="${this._escapeHtml(entity.name || '')}"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Outil requis</label>
+                    <select id="edit-entity-tool" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="" ${!currentTool ? 'selected' : ''}>— Aucun —</option>
+                        <option value="pickaxe" ${currentTool === 'pickaxe' ? 'selected' : ''}>Pioche</option>
+                        <option value="sickle" ${currentTool === 'sickle' ? 'selected' : ''}>Faucille</option>
+                        <option value="fishing_rod" ${currentTool === 'fishing_rod' ? 'selected' : ''}>Canne a peche</option>
+                        <option value="skinning_knife" ${currentTool === 'skinning_knife' ? 'selected' : ''}>Couteau de depecage</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Delai respawn (sec)</label>
+                    <input type="number" id="edit-entity-respawn" value="${entity.respawnDelay ?? 300}" min="0"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'pnj') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-pnj-name" value="${this._escapeHtml(entity.name || '')}"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Classe</label>
+                    <input type="text" id="edit-entity-pnj-class" value="${entity.classType || 'npc'}" placeholder="npc, merchant, quest..."
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'craftStation') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="edit-entity-name" value="${this._escapeHtml(entity.name || '')}"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        }
+
+        formHtml += `<div class="mt-3 flex gap-2">
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._submitUpdateEntity('${entityType}', ${entityId})"
+                        class="px-3 py-1.5 bg-yellow-600 hover:bg-yellow-700 rounded text-xs text-white">Sauvegarder</button>
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._cancelCreateForm()"
+                        class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-300">Annuler</button>
+            </div>
+        </div>`
+
+        this.infoTarget.innerHTML = formHtml
+    }
+
+    _escapeHtml(str) {
+        const div = document.createElement('div')
+        div.textContent = str
+        return div.innerHTML
+    }
+
+    async _submitUpdateEntity(entityType, entityId) {
+        let properties = {}
+
+        if (entityType === 'mob') {
+            const monsterEl = document.getElementById('edit-entity-monster')
+            const levelEl = document.getElementById('edit-entity-level')
+            if (!monsterEl) return
+            properties = {
+                monsterId: parseInt(monsterEl.value, 10),
+                level: parseInt(levelEl?.value || '1', 10),
+            }
+        } else if (entityType === 'portal') {
+            const nameEl = document.getElementById('edit-entity-name')
+            const destMapEl = document.getElementById('edit-entity-dest-map')
+            const destCoordsEl = document.getElementById('edit-entity-dest-coords')
+            properties = {
+                name: nameEl?.value || '',
+                destMapId: destMapEl?.value ? parseInt(destMapEl.value, 10) : null,
+                destCoords: destCoordsEl?.value || null,
+            }
+        } else if (entityType === 'harvestSpot') {
+            const nameEl = document.getElementById('edit-entity-name')
+            const toolEl = document.getElementById('edit-entity-tool')
+            const respawnEl = document.getElementById('edit-entity-respawn')
+            properties = {
+                name: nameEl?.value || '',
+                requiredToolType: toolEl?.value || null,
+                respawnDelay: parseInt(respawnEl?.value || '300', 10),
+            }
+        } else if (entityType === 'pnj') {
+            const nameEl = document.getElementById('edit-entity-pnj-name')
+            const classEl = document.getElementById('edit-entity-pnj-class')
+            if (!nameEl?.value) {
+                this._showFlash('Le nom du PNJ est requis', 'error')
+                return
+            }
+            properties = {
+                name: nameEl.value,
+                classType: classEl?.value || 'npc',
+            }
+        } else if (entityType === 'craftStation') {
+            const nameEl = document.getElementById('edit-entity-name')
+            properties = {
+                name: nameEl?.value || '',
+            }
+        }
+
+        try {
+            const res = await fetch(this.updateEntityUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ entityType, entityId, properties }),
+            })
+            const data = await res.json()
+            if (data.success && data.entity) {
+                const ent = data.entity
+                const listKey = this._entityListKey(entityType)
+                const list = this._entities[listKey] || []
+                const idx = list.findIndex(e => e.id === entityId)
+                if (idx !== -1) {
+                    list[idx] = { ...list[idx], ...ent }
+                }
+                this._showFlash(`${this._entityTypeLabel(entityType)} modifie`, 'success')
+                this._selectCell(ent.x, ent.y)
+            } else {
+                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+            }
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+
+        this._render()
+    }
+
+    async _showCreateForm(entityType) {
+        this._hideContextMenu()
+
+        if (!this._entityOptions) {
+            this._showFlash('Chargement des options...', 'info')
+            try {
+                const res = await fetch(this.entityOptionsUrlValue)
+                this._entityOptions = await res.json()
+            } catch {
+                this._showFlash('Erreur chargement options', 'error')
+                return
+            }
+        }
+
+        const cell = this._contextMenuCell
+        if (!cell) return
+
+        let formHtml = `<div class="text-sm">
+            <h4 class="font-semibold text-gray-200 mb-2">Creer ${this._entityTypeLabel(entityType)}</h4>
+            <p class="text-xs text-gray-400 mb-3">Position: ${cell.x}, ${cell.y}</p>`
+
+        if (entityType === 'mob') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Monstre</label>
+                    <select id="create-entity-monster" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        ${this._entityOptions.monsters.map(m => `<option value="${m.id}">${m.name} (${m.slug})</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Niveau</label>
+                    <input type="number" id="create-entity-level" value="1" min="1" max="100"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'portal') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="create-entity-name" value="Portail" placeholder="Nom du portail"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Carte destination</label>
+                    <select id="create-entity-dest-map" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="">— Aucune —</option>
+                        ${this._entityOptions.maps.map(m => `<option value="${m.id}">${m.name}</option>`).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Coordonnees destination (x.y)</label>
+                    <input type="text" id="create-entity-dest-coords" placeholder="10.15"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'harvestSpot') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="create-entity-name" value="Spot de recolte" placeholder="Nom"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Slug</label>
+                    <input type="text" id="create-entity-slug" placeholder="herb-spot-01"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Outil requis</label>
+                    <select id="create-entity-tool" class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                        <option value="">— Aucun —</option>
+                        <option value="pickaxe">Pioche</option>
+                        <option value="sickle">Faucille</option>
+                        <option value="fishing_rod">Canne a peche</option>
+                        <option value="skinning_knife">Couteau de depecage</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Delai respawn (sec)</label>
+                    <input type="number" id="create-entity-respawn" value="300" min="0"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        } else if (entityType === 'pnj') {
+            formHtml += `<div class="space-y-2">
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Nom</label>
+                    <input type="text" id="create-entity-pnj-name" placeholder="Nom du PNJ"
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400 block mb-1">Classe</label>
+                    <input type="text" id="create-entity-pnj-class" value="npc" placeholder="npc, merchant, quest..."
+                           class="w-full bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200">
+                </div>
+            </div>`
+        }
+
+        formHtml += `<div class="mt-3 flex gap-2">
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._submitCreateEntity('${entityType}')"
+                        class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 rounded text-xs text-white">Creer</button>
+                <button onclick="this.closest('[data-controller]').__stimulus_controller._cancelCreateForm()"
+                        class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded text-xs text-gray-300">Annuler</button>
+            </div>
+        </div>`
+
+        this.infoTarget.innerHTML = formHtml
+    }
+
+    _cancelCreateForm() {
+        if (this._selectedCell) {
+            this._selectCell(this._selectedCell.x, this._selectedCell.y)
+        } else {
+            this.infoTarget.innerHTML = '<p class="text-gray-500 text-sm">Cliquez sur une cellule pour voir ses details.</p>'
+        }
+    }
+
+    _entityTypeLabel(type) {
+        return { mob: 'un mob', portal: 'un portail', harvestSpot: 'un spot de recolte', pnj: 'un PNJ' }[type] || type
+    }
+
+    async _submitCreateEntity(entityType) {
+        const cell = this._contextMenuCell
+        if (!cell) return
+
+        let properties = {}
+
+        if (entityType === 'mob') {
+            const monsterEl = document.getElementById('create-entity-monster')
+            const levelEl = document.getElementById('create-entity-level')
+            if (!monsterEl) return
+            properties = {
+                monsterId: parseInt(monsterEl.value, 10),
+                level: parseInt(levelEl?.value || '1', 10),
+            }
+        } else if (entityType === 'portal') {
+            const nameEl = document.getElementById('create-entity-name')
+            const destMapEl = document.getElementById('create-entity-dest-map')
+            const destCoordsEl = document.getElementById('create-entity-dest-coords')
+            properties = {
+                name: nameEl?.value || 'Portail',
+                destMapId: destMapEl?.value ? parseInt(destMapEl.value, 10) : null,
+                destCoords: destCoordsEl?.value || null,
+            }
+        } else if (entityType === 'harvestSpot') {
+            const nameEl = document.getElementById('create-entity-name')
+            const slugEl = document.getElementById('create-entity-slug')
+            const toolEl = document.getElementById('create-entity-tool')
+            const respawnEl = document.getElementById('create-entity-respawn')
+            properties = {
+                name: nameEl?.value || 'Spot de recolte',
+                slug: slugEl?.value || '',
+                requiredToolType: toolEl?.value || null,
+                respawnDelay: parseInt(respawnEl?.value || '300', 10),
+            }
+        } else if (entityType === 'pnj') {
+            const nameEl = document.getElementById('create-entity-pnj-name')
+            const classEl = document.getElementById('create-entity-pnj-class')
+            if (!nameEl?.value) {
+                this._showFlash('Le nom du PNJ est requis', 'error')
+                return
+            }
+            properties = {
+                name: nameEl.value,
+                classType: classEl?.value || 'npc',
+            }
+        }
+
+        try {
+            const res = await fetch(this.createEntityUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: entityType, x: cell.x, y: cell.y, properties }),
+            })
+            const data = await res.json()
+            if (data.success && data.entity) {
+                const ent = data.entity
+                const listKey = ent.listKey
+                if (!this._entities[listKey]) {
+                    this._entities[listKey] = []
+                }
+                this._entities[listKey].push(ent)
+                this._showFlash(`${this._entityTypeLabel(entityType)} cree en ${cell.x},${cell.y}`, 'success')
+                this._selectCell(cell.x, cell.y)
+            } else {
+                this._showFlash('Erreur: ' + (data.error || 'inconnue'), 'error')
+            }
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+
+        this._render()
+    }
+
+    // --- Undo / Redo ---
+
+    _beginStroke() {
+        this._currentStroke = { tiles: {}, collisions: {}, borders: {} }
+    }
+
+    _endStroke() {
+        if (!this._currentStroke) return
+
+        // Only push if there were actual changes
+        const hasChanges = Object.keys(this._currentStroke.tiles).length > 0
+            || Object.keys(this._currentStroke.collisions).length > 0
+            || Object.keys(this._currentStroke.borders).length > 0
+
+        if (hasChanges) {
+            this._undoStack.push(this._currentStroke)
+            if (this._undoStack.length > this._maxHistory) {
+                this._undoStack.shift()
+            }
+            this._redoStack = []
+            this._updateUndoRedoButtons()
+        }
+        this._currentStroke = null
+    }
+
+    _recordTileChange(key, layer, beforeGid, afterGid) {
+        if (!this._currentStroke) return
+        if (!this._currentStroke.tiles[key]) {
+            this._currentStroke.tiles[key] = {}
+        }
+        // Only record the first "before" value per key+layer in this stroke
+        if (this._currentStroke.tiles[key][layer] === undefined) {
+            this._currentStroke.tiles[key][layer] = { before: beforeGid, after: afterGid }
+        } else {
+            this._currentStroke.tiles[key][layer].after = afterGid
+        }
+    }
+
+    _recordCollisionChange(key, before, after) {
+        if (!this._currentStroke) return
+        if (this._currentStroke.collisions[key] === undefined) {
+            this._currentStroke.collisions[key] = { before, after }
+        } else {
+            this._currentStroke.collisions[key].after = after
+        }
+    }
+
+    _recordBorderChange(key, before, after) {
+        if (!this._currentStroke) return
+        if (this._currentStroke.borders[key] === undefined) {
+            this._currentStroke.borders[key] = { before: [...before], after: [...after] }
+        } else {
+            this._currentStroke.borders[key].after = [...after]
+        }
+    }
+
+    undo() {
+        if (this._undoStack.length === 0) return
+
+        const entry = this._undoStack.pop()
+        this._applyHistoryEntry(entry, true)
+        this._redoStack.push(entry)
+        this._updatePendingCount()
+        this._updateUndoRedoButtons()
+        this._render()
+    }
+
+    redo() {
+        if (this._redoStack.length === 0) return
+
+        const entry = this._redoStack.pop()
+        this._applyHistoryEntry(entry, false)
+        this._undoStack.push(entry)
+        this._updatePendingCount()
+        this._updateUndoRedoButtons()
+        this._render()
+    }
+
+    _applyHistoryEntry(entry, isUndo) {
+        // Restore tile changes
+        for (const [key, layers] of Object.entries(entry.tiles)) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            if (!cell.l) cell.l = []
+
+            for (const [layerStr, change] of Object.entries(layers)) {
+                const layer = parseInt(layerStr, 10)
+                while (cell.l.length <= layer) cell.l.push(0)
+                const value = isUndo ? change.before : change.after
+                cell.l[layer] = value
+
+                // Update pending tile changes
+                if (!this._pendingTileChanges[key]) {
+                    this._pendingTileChanges[key] = {}
+                }
+                this._pendingTileChanges[key][layer] = value
+            }
+        }
+
+        // Restore collision changes
+        for (const [key, change] of Object.entries(entry.collisions)) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            const value = isUndo ? change.before : change.after
+            cell.m = value
+            this._pendingChanges[key] = value
+        }
+
+        // Restore border changes
+        for (const [key, change] of Object.entries(entry.borders)) {
+            const cell = this._cells[key]
+            if (!cell) continue
+            const value = isUndo ? [...change.before] : [...change.after]
+            cell.b = value
+            this._pendingBorderChanges[key] = value
+        }
+    }
+
+    _updateUndoRedoButtons() {
+        const undoBtn = document.getElementById('undo-btn')
+        const redoBtn = document.getElementById('redo-btn')
+        if (undoBtn) undoBtn.disabled = this._undoStack.length === 0
+        if (redoBtn) redoBtn.disabled = this._redoStack.length === 0
+    }
+
     // --- Cell painting ---
 
     _paintCell(x, y, movement) {
@@ -1034,6 +1857,7 @@ export default class extends Controller {
         if (!cell) return
         if (cell.m === movement && this._pendingChanges[key] === undefined) return
 
+        this._recordCollisionChange(key, cell.m, movement)
         this._pendingChanges[key] = movement
         cell.m = movement
         this._updatePendingCount()
@@ -1041,12 +1865,347 @@ export default class extends Controller {
     }
 
     _setCellMovement(x, y, movement) {
+        this._beginStroke()
         this._paintCell(x, y, movement)
+        this._endStroke()
         this._selectCell(x, y)
     }
 
+    _paintTile(x, y) {
+        if (this._pickerGid === 0 || this._pickerStampGids.length === 0) return
+
+        for (let dy = 0; dy < this._pickerStampHeight; dy++) {
+            for (let dx = 0; dx < this._pickerStampWidth; dx++) {
+                const tx = x + dx
+                const ty = y + dy
+                const key = tx + '.' + ty
+                const cell = this._cells[key]
+                if (!cell) continue
+
+                const stampIdx = dy * this._pickerStampWidth + dx
+                const gid = this._pickerStampGids[stampIdx] || 0
+
+                // Update the layer GID in the local cell data
+                if (!cell.l) cell.l = []
+                // Ensure the layers array is long enough
+                while (cell.l.length <= this._pickerLayer) {
+                    cell.l.push(0)
+                }
+                const beforeGid = cell.l[this._pickerLayer]
+                cell.l[this._pickerLayer] = gid
+                this._recordTileChange(key, this._pickerLayer, beforeGid, gid)
+
+                // Track tile changes for save
+                if (!this._pendingTileChanges[key]) {
+                    this._pendingTileChanges[key] = {}
+                }
+                this._pendingTileChanges[key][this._pickerLayer] = gid
+
+                // Auto-tiling: recalculate transitions on neighbors
+                if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver) {
+                    this._applyAutoTileNeighbors(tx, ty)
+                }
+            }
+        }
+
+        this._updatePendingCount()
+        this._render()
+    }
+
+    _eyedropperPick(x, y) {
+        const key = x + '.' + y
+        const cell = this._cells[key]
+        if (!cell || !cell.l) return
+
+        const gid = cell.l[this._pickerLayer] || 0
+        if (gid <= 0) return
+
+        // Find the tileset picker controller and update its selection
+        const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
+        if (pickerEl) {
+            const pickerCtrl = this.application.getControllerForElementAndIdentifier(pickerEl, 'admin-tileset-picker')
+            if (pickerCtrl) {
+                pickerCtrl.selectGid(gid)
+            }
+        }
+
+        // Update local state
+        this._pickerGid = gid
+        this._pickerStampWidth = 1
+        this._pickerStampHeight = 1
+        this._pickerStampGids = [gid]
+
+        // Switch to paint tool
+        this._tool = 'paint'
+        this._updateToolButtons()
+        this._render()
+    }
+
+    _eraseTile(x, y) {
+        const key = x + '.' + y
+        const cell = this._cells[key]
+        if (!cell) return
+
+        // Set GID to 0 on the active layer
+        if (!cell.l) cell.l = []
+        while (cell.l.length <= this._pickerLayer) {
+            cell.l.push(0)
+        }
+        const beforeGid = cell.l[this._pickerLayer]
+        cell.l[this._pickerLayer] = 0
+        this._recordTileChange(key, this._pickerLayer, beforeGid, 0)
+
+        // Track tile change for save
+        if (!this._pendingTileChanges[key]) {
+            this._pendingTileChanges[key] = {}
+        }
+        this._pendingTileChanges[key][this._pickerLayer] = 0
+
+        // Auto-tiling: recalculate transitions on neighbors after erasing
+        if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver) {
+            this._applyAutoTileNeighbors(x, y)
+        }
+
+        this._updatePendingCount()
+        this._render()
+    }
+
+    _fillBucket(x, y) {
+        if (this._pickerGid === 0 || this._pickerStampGids.length === 0) return
+
+        const layer = this._pickerLayer
+        const fillGid = this._pickerStampGids[0]
+        const startKey = x + '.' + y
+        const startCell = this._cells[startKey]
+        if (!startCell) return
+
+        const targetGid = (startCell.l && startCell.l[layer]) || 0
+        if (targetGid === fillGid) return
+
+        // Fill is a single atomic operation
+        this._beginStroke()
+
+        const visited = new Set()
+        const queue = [startKey]
+        visited.add(startKey)
+
+        const maxFill = 10000
+
+        while (queue.length > 0 && visited.size <= maxFill) {
+            const key = queue.shift()
+            const cell = this._cells[key]
+            if (!cell) continue
+
+            if (!cell.l) cell.l = []
+            while (cell.l.length <= layer) {
+                cell.l.push(0)
+            }
+            const beforeGid = cell.l[layer]
+            cell.l[layer] = fillGid
+            this._recordTileChange(key, layer, beforeGid, fillGid)
+
+            if (!this._pendingTileChanges[key]) {
+                this._pendingTileChanges[key] = {}
+            }
+            this._pendingTileChanges[key][layer] = fillGid
+
+            const [cx, cy] = key.split('.').map(Number)
+            const neighbors = [
+                (cx - 1) + '.' + cy,
+                (cx + 1) + '.' + cy,
+                cx + '.' + (cy - 1),
+                cx + '.' + (cy + 1),
+            ]
+
+            for (const nk of neighbors) {
+                if (visited.has(nk)) continue
+                const nc = this._cells[nk]
+                if (!nc) continue
+                const ncGid = (nc.l && nc.l[layer]) || 0
+                if (ncGid !== targetGid) continue
+                visited.add(nk)
+                queue.push(nk)
+            }
+        }
+
+        // Auto-tiling: resolve the filled zone + borders
+        if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver && visited.size > 0) {
+            let fMinX = Infinity, fMinY = Infinity, fMaxX = -Infinity, fMaxY = -Infinity
+            for (const k of visited) {
+                const [fx, fy] = k.split('.').map(Number)
+                if (fx < fMinX) fMinX = fx
+                if (fy < fMinY) fMinY = fy
+                if (fx > fMaxX) fMaxX = fx
+                if (fy > fMaxY) fMaxY = fy
+            }
+            const zoneChanges = this._wangResolver.resolveZone(this._cells, fMinX, fMinY, fMaxX, fMaxY, layer, this._autoTileSlug)
+            for (const change of zoneChanges) {
+                const ck = change.x + '.' + change.y
+                const cc = this._cells[ck]
+                if (!cc) continue
+                if (!cc.l) cc.l = []
+                while (cc.l.length <= layer) cc.l.push(0)
+                const bGid = cc.l[layer]
+                cc.l[layer] = change.gid
+                this._recordTileChange(ck, layer, bGid, change.gid)
+                if (!this._pendingTileChanges[ck]) this._pendingTileChanges[ck] = {}
+                this._pendingTileChanges[ck][layer] = change.gid
+            }
+        }
+
+        this._endStroke()
+        this._updatePendingCount()
+        this._render()
+    }
+
+    // --- Auto-tiling ---
+
+    _applyAutoTileNeighbors(x, y) {
+        if (!this._wangResolver || !this._autoTileSlug) return
+
+        const layer = this._pickerLayer
+        const changes = this._wangResolver.resolveNeighbors(this._cells, x, y, layer, this._autoTileSlug)
+
+        for (const change of changes) {
+            const key = change.x + '.' + change.y
+            const cell = this._cells[key]
+            if (!cell) continue
+
+            if (!cell.l) cell.l = []
+            while (cell.l.length <= layer) cell.l.push(0)
+
+            const beforeGid = cell.l[layer]
+            cell.l[layer] = change.gid
+            this._recordTileChange(key, layer, beforeGid, change.gid)
+
+            if (!this._pendingTileChanges[key]) {
+                this._pendingTileChanges[key] = {}
+            }
+            this._pendingTileChanges[key][layer] = change.gid
+        }
+    }
+
+    toggleAutoTile() {
+        this._autoTileEnabled = !this._autoTileEnabled
+        this._updateAutoTileUI()
+
+        if (this._autoTileEnabled && this._autoTileSlug) {
+            // Set picker to center GID of current terrain
+            const centerGid = this._wangResolver.getCenterGid(this._autoTileSlug)
+            if (centerGid > 0) {
+                this._pickerGid = centerGid
+                this._pickerStampWidth = 1
+                this._pickerStampHeight = 1
+                this._pickerStampGids = [centerGid]
+                this._tool = 'paint'
+                this._updateToolButtons()
+            }
+        }
+
+        this._render()
+    }
+
+    setAutoTileSlug(e) {
+        const slug = e.target ? e.target.value : e
+        this._autoTileSlug = slug || null
+
+        if (this._autoTileEnabled && this._autoTileSlug && this._wangResolver) {
+            const centerGid = this._wangResolver.getCenterGid(this._autoTileSlug)
+            if (centerGid > 0) {
+                this._pickerGid = centerGid
+                this._pickerStampWidth = 1
+                this._pickerStampHeight = 1
+                this._pickerStampGids = [centerGid]
+            }
+        }
+    }
+
+    async autoTileSelection() {
+        if (this._selection.size === 0) {
+            this._showFlash('Selectionnez une zone pour auto-tiler', 'error')
+            return
+        }
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+        for (const key of this._selection) {
+            const [x, y] = key.split('.').map(Number)
+            if (x < minX) minX = x
+            if (y < minY) minY = y
+            if (x > maxX) maxX = x
+            if (y > maxY) maxY = y
+        }
+
+        const layer = this._pickerLayer
+        const terrainSlug = this._autoTileSlug || null
+
+        // Use the backend auto-tile route for zone-level operations
+        try {
+            const body = { startX: minX, startY: minY, endX: maxX, endY: maxY, layer }
+            if (terrainSlug) body.terrainSlug = terrainSlug
+
+            const res = await fetch(this.autoTileUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+            const data = await res.json()
+
+            if (!data.success) {
+                this._showFlash('Erreur auto-tile: ' + (data.error || 'inconnue'), 'error')
+                return
+            }
+
+            // Apply returned changes locally
+            this._beginStroke()
+            for (const change of (data.cells || [])) {
+                const key = change.x + '.' + change.y
+                const cell = this._cells[key]
+                if (!cell) continue
+
+                if (!cell.l) cell.l = []
+                while (cell.l.length <= change.layer) cell.l.push(0)
+
+                const beforeGid = cell.l[change.layer]
+                cell.l[change.layer] = change.gid
+                this._recordTileChange(key, change.layer, beforeGid, change.gid)
+
+                if (!this._pendingTileChanges[key]) {
+                    this._pendingTileChanges[key] = {}
+                }
+                this._pendingTileChanges[key][change.layer] = change.gid
+            }
+            this._endStroke()
+
+            this._updatePendingCount()
+            this._showFlash(`Auto-tile: ${data.count} cellule(s) modifiee(s)`, 'success')
+            this._render()
+        } catch (err) {
+            this._showFlash('Erreur reseau: ' + err.message, 'error')
+        }
+    }
+
+    _updateAutoTileUI() {
+        const btn = document.getElementById('auto-tile-toggle')
+        if (btn) {
+            btn.textContent = this._autoTileEnabled ? 'ON' : 'OFF'
+            btn.classList.toggle('bg-teal-700', this._autoTileEnabled)
+            btn.classList.toggle('text-white', this._autoTileEnabled)
+            btn.classList.toggle('bg-gray-700', !this._autoTileEnabled)
+            btn.classList.toggle('text-gray-300', !this._autoTileEnabled)
+        }
+        const selector = document.getElementById('auto-tile-terrain')
+        if (selector) {
+            selector.classList.toggle('opacity-50', !this._autoTileEnabled)
+        }
+        const zoneBtn = document.getElementById('auto-tile-zone-btn')
+        if (zoneBtn) {
+            zoneBtn.classList.toggle('opacity-50', !this._autoTileEnabled)
+            zoneBtn.disabled = !this._autoTileEnabled
+        }
+    }
+
     _updatePendingCount() {
-        const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length
+        const count = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length
         const btn = document.getElementById('save-btn')
         const badge = document.getElementById('pending-badge')
         if (btn) btn.disabled = count === 0
@@ -1092,6 +2251,65 @@ export default class extends Controller {
         this._render()
     }
 
+    toggleLayerVisibility(e) {
+        const layer = parseInt(e.currentTarget.dataset.layer, 10)
+        this._layerVisibility[layer] = !this._layerVisibility[layer]
+        this._updateLayerPanel()
+        this._render()
+    }
+
+    setLayerOpacity(e) {
+        const layer = parseInt(e.currentTarget.dataset.layer, 10)
+        this._layerOpacity[layer] = parseFloat(e.currentTarget.value)
+        this._render()
+    }
+
+    selectActiveLayer(e) {
+        const layer = parseInt(e.currentTarget.dataset.layer, 10)
+        this._pickerLayer = layer
+        this._updateLayerPanel()
+        // Sync with tileset picker
+        const pickerEl = this.element.querySelector('[data-controller="admin-tileset-picker"]')
+        if (pickerEl) {
+            const pickerCtrl = this.application.getControllerForElementAndIdentifier(pickerEl, 'admin-tileset-picker')
+            if (pickerCtrl) {
+                pickerCtrl._activeLayer = layer
+            }
+        }
+    }
+
+    _updateLayerPanel() {
+        const panel = this.element.querySelector('#layer-panel')
+        if (!panel) return
+
+        const layerNames = ['Background', 'Ground', 'Decoration', 'Overlay']
+        panel.querySelectorAll('[data-layer-row]').forEach(row => {
+            const layer = parseInt(row.dataset.layerRow, 10)
+            const isActive = layer === this._pickerLayer
+            const isVisible = this._layerVisibility[layer]
+
+            // Active layer highlight
+            row.classList.toggle('bg-purple-900/30', isActive)
+            row.classList.toggle('border-purple-500/50', isActive)
+            row.classList.toggle('border-transparent', !isActive)
+
+            // Visibility icon
+            const eyeBtn = row.querySelector('[data-eye-btn]')
+            if (eyeBtn) {
+                eyeBtn.innerHTML = isVisible ? '👁' : '—'
+                eyeBtn.classList.toggle('text-gray-300', isVisible)
+                eyeBtn.classList.toggle('text-gray-600', !isVisible)
+            }
+
+            // Opacity slider
+            const slider = row.querySelector('input[type="range"]')
+            if (slider) {
+                slider.disabled = !isVisible
+                slider.classList.toggle('opacity-30', !isVisible)
+            }
+        })
+    }
+
     setToolSelect() { this._tool = 'select'; this._updateToolButtons() }
     setToolBlock() { this._tool = 'block'; this._updateToolButtons() }
     setToolUnblock() { this._tool = 'unblock'; this._updateToolButtons() }
@@ -1099,6 +2317,30 @@ export default class extends Controller {
     setToolClimb() { this._tool = 'climb'; this._updateToolButtons() }
     setToolWall() { this._tool = 'wall'; this._updateToolButtons() }
     setToolEraseWall() { this._tool = 'eraseWall'; this._updateToolButtons() }
+    setToolPaint() { this._tool = 'paint'; this._updateToolButtons() }
+    setToolEraser() { this._tool = 'eraser'; this._updateToolButtons() }
+    setToolFill() { this._tool = 'fill'; this._updateToolButtons() }
+
+    // --- Tileset picker events ---
+
+    onTileSelected(e) {
+        const { gid, stampWidth, stampHeight, stampGids, layer } = e.detail
+        this._pickerGid = gid
+        this._pickerStampWidth = stampWidth
+        this._pickerStampHeight = stampHeight
+        this._pickerStampGids = stampGids
+        this._pickerLayer = layer
+
+        // Auto-switch to paint tool when a tile is selected
+        if (gid > 0) {
+            this._tool = 'paint'
+            this._updateToolButtons()
+        }
+    }
+
+    onLayerChanged(e) {
+        this._pickerLayer = e.detail.layer
+    }
 
     _updateToolButtons() {
         document.querySelectorAll('[data-tool]').forEach(btn => {
@@ -1144,7 +2386,8 @@ export default class extends Controller {
     async saveChanges() {
         const cellChanges = Object.entries(this._pendingChanges)
         const borderChanges = Object.entries(this._pendingBorderChanges)
-        if (cellChanges.length === 0 && borderChanges.length === 0) return
+        const tileChanges = Object.entries(this._pendingTileChanges)
+        if (cellChanges.length === 0 && borderChanges.length === 0 && tileChanges.length === 0) return
 
         const btn = document.getElementById('save-btn')
         if (btn) {
@@ -1201,8 +2444,34 @@ export default class extends Controller {
                 }
             }
 
+            // Save tile changes
+            if (tileChanges.length > 0) {
+                const cells = []
+                for (const [key, layers] of tileChanges) {
+                    const [x, y] = key.split('.').map(Number)
+                    for (const [layer, gid] of Object.entries(layers)) {
+                        cells.push({ x, y, layer: parseInt(layer, 10), gid })
+                    }
+                }
+                const res = await fetch(this.paintTilesUrlValue, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cells }),
+                })
+                const data = await res.json()
+                if (data.success) {
+                    totalSaved += data.count
+                    this._pendingTileChanges = {}
+                } else {
+                    this._showFlash('Erreur tiles: ' + (data.error || 'inconnue'), 'error')
+                }
+            }
+
             this._updatePendingCount()
             if (totalSaved > 0) {
+                this._undoStack = []
+                this._redoStack = []
+                this._updateUndoRedoButtons()
                 this._showFlash(`${totalSaved} modification(s) sauvegardee(s)`, 'success')
             }
         } catch (err) {
@@ -1210,7 +2479,7 @@ export default class extends Controller {
         }
 
         if (btn) {
-            btn.disabled = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length === 0
+            btn.disabled = Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length === 0
             btn.textContent = 'Sauvegarder'
         }
 
@@ -1218,13 +2487,17 @@ export default class extends Controller {
     }
 
     discardChanges() {
-        if (Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length === 0) return
+        if (Object.keys(this._pendingChanges).length + Object.keys(this._pendingBorderChanges).length + Object.keys(this._pendingTileChanges).length === 0) return
         if (!confirm('Annuler toutes les modifications non sauvegardees ?')) return
 
         // Reload to reset
         this._pendingChanges = {}
         this._pendingBorderChanges = {}
+        this._pendingTileChanges = {}
+        this._undoStack = []
+        this._redoStack = []
         this._updatePendingCount()
+        this._updateUndoRedoButtons()
         this._loadData()
     }
 
@@ -1240,5 +2513,40 @@ export default class extends Controller {
 
         container.innerHTML = `<div class="px-4 py-2 rounded-lg text-sm border ${colors}">${message}</div>`
         setTimeout(() => { container.innerHTML = '' }, 4000)
+    }
+
+    async generateProcedural() {
+        const biome = document.getElementById('generate-biome')?.value || 'plains'
+        const difficulty = parseInt(document.getElementById('generate-difficulty')?.value || '1', 10)
+        const seedInput = document.getElementById('generate-seed')?.value
+        const seed = seedInput !== '' ? parseInt(seedInput, 10) : null
+
+        if (!confirm('Attention : cette operation ecrase tout le contenu existant de la carte. Continuer ?')) {
+            return
+        }
+
+        this._showFlash('Generation en cours...', 'info')
+
+        try {
+            const body = { biome, difficulty }
+            if (seed !== null) body.seed = seed
+
+            const res = await fetch(this.generateUrlValue, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
+            })
+
+            const data = await res.json()
+            if (!res.ok) {
+                this._showFlash(data.error || 'Erreur de generation', 'error')
+                return
+            }
+
+            this._showFlash('Terrain genere ! Rechargement...', 'success')
+            setTimeout(() => window.location.reload(), 1000)
+        } catch (e) {
+            this._showFlash('Erreur reseau : ' + e.message, 'error')
+        }
     }
 }

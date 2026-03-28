@@ -130,11 +130,18 @@
         "action": "Action",
         "socket": "Socket"
       },
+      "equipment_modify": {
+        "title": "Edit equipment",
+        "back": "Back to equipment",
+        "section_materia": "Socketed materia",
+        "no_materia_slots": "This piece has no materia slots.",
+        "materia_pick_placeholder": "Click a materia slot above to socket or replace a materia."
+      },
       "materia_counter_link_title": "Choose a materia to socket in an empty slot",
       "effective_pv_bonus": "Bonus HP (sets, skills, enchantments)",
       "materia_socket": {
         "title": "Socket a materia",
-        "back": "Back to equipment",
+        "back": "Back to this piece",
         "slot_element": "%element% slot",
         "slot_any": "No elemental affinity on this link",
         "element_bonus_hint": "A materia matching the slot's element gets bonuses in combat and XP.",
@@ -320,8 +327,7 @@
         "show_tutorial": "Show tutorials",
         "show_tutorial_desc": "Show guides and tutorials for new features",
         "enable_sound": "Enable sound",
-        "enable_sound_desc": "Enable sound effects and background music",
-        "sound_volume": "Volume"
+        "enable_sound_desc": "Enable sound effects and background music"
       },
       "appearance": {
         "title": "Appearance",

@@ -214,6 +214,86 @@ html, body {
   border-color: rgba(139, 92, 246, 0.5);
 }
 
+/* ── Skills page – Option A layout ────────────────────────────── */
+
+/* Sidebar */
+.skills-sidebar {
+  flex-shrink: 0;
+}
+
+/* Domain button (desktop sidebar) */
+.skills-domain-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.5rem 0.625rem;
+  border-radius: 0.5rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.skills-domain-btn:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+.skills-domain-btn--active,
+.skills-domain-btn[aria-selected="true"] {
+  background: rgba(139, 92, 246, 0.2) !important;
+  border-color: rgba(139, 92, 246, 0.55) !important;
+}
+
+/* Domain chip (mobile horizontal) */
+.skills-domain-chip {
+  background: rgba(31, 41, 55, 0.8);
+}
+
+.skills-domain-chip[aria-selected="true"] {
+  background: rgba(139, 92, 246, 0.25) !important;
+  border-color: rgba(139, 92, 246, 0.6) !important;
+  color: #e9d5ff;
+}
+
+/* Skill node states */
+.skill-node {
+  background: rgba(17, 24, 39, 0.6);
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.skill-node--available {
+  border-color: rgba(139, 92, 246, 0.6);
+  background: rgba(139, 92, 246, 0.07);
+  box-shadow: 0 0 14px rgba(139, 92, 246, 0.15);
+}
+
+.skill-node--acquired {
+  border-color: rgba(34, 197, 94, 0.4);
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.skill-node--locked {
+  border-color: rgba(75, 85, 99, 0.4);
+  opacity: 0.5;
+}
+
+/* Stat badges */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+}
+
+.stat-badge-damage   { background: rgba(239, 68, 68, 0.18);  color: #fca5a5; }
+.stat-badge-heal     { background: rgba(34, 197, 94, 0.18);  color: #86efac; }
+.stat-badge-hit      { background: rgba(59, 130, 246, 0.18); color: #93c5fd; }
+.stat-badge-critical { background: rgba(234, 179, 8, 0.18);  color: #fde047; }
+.stat-badge-life     { background: rgba(244, 114, 182, 0.18);color: #f9a8d4; }
+
 /* Fight layout mobile stacking */
 .fight-grid {
   display: flex;
@@ -500,7 +580,17 @@ html, body {
   transition: all 0.15s ease;
   position: relative;
   min-height: 3rem; /* 48px touch target */
+  cursor: default;
+}
+.equip-slot-link {
   cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+.equip-slot--with-materia {
+  align-self: stretch;
+  width: 100%;
 }
 
 .equip-slot--filled {
@@ -628,6 +718,13 @@ html, body {
   box-shadow: inset 0 0 16px rgba(217, 70, 239, 0.06);
 }
 
+.materia-slots-track {
+  width: 100%;
+}
+.ff7-materia-track .materia-slots-bar {
+  margin-top: 0;
+}
+
 /* Available equipment item card */
 .equip-available-item {
   display: flex;
@@ -658,49 +755,122 @@ html, body {
 .equip-rarity-amethyst { border-color: rgba(217, 70, 239, 0.25); }
 .equip-rarity-amethyst:hover { border-color: rgba(217, 70, 239, 0.5); }
 
-/* ===== INVENTORY: Materia orb effects ===== */
+/* ===== INVENTORY: Sphères materia FF7 (CSS, sans sprite) ===== */
+.materia-sphere {
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.materia-sphere--fire {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.55) 0%, transparent 38%),
+    radial-gradient(circle at 72% 78%, rgba(80, 15, 15, 0.65) 0%, transparent 52%),
+    radial-gradient(circle at 48% 52%, #fb7185 0%, #7f1d1d 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35),
+    0 0 10px rgba(239, 68, 68, 0.45);
+}
+.materia-sphere--water {
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255, 255, 255, 0.5) 0%, transparent 40%),
+    radial-gradient(circle at 70% 75%, rgba(15, 40, 90, 0.6) 0%, transparent 50%),
+    radial-gradient(circle at 45% 50%, #60a5fa 0%, #1e3a8a 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3),
+    0 0 10px rgba(59, 130, 246, 0.5);
+}
+.materia-sphere--earth {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.45) 0%, transparent 38%),
+    radial-gradient(circle at 72% 78%, rgba(60, 35, 5, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 48% 50%, #fbbf24 0%, #78350f 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 2px 3px rgba(255, 255, 255, 0.28),
+    0 0 10px rgba(245, 158, 11, 0.45);
+}
+.materia-sphere--air {
+  background:
+    radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.55) 0%, transparent 40%),
+    radial-gradient(circle at 75% 78%, rgba(5, 50, 70, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 45% 48%, #22d3ee 0%, #0e7490 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.35),
+    0 0 10px rgba(6, 182, 212, 0.45);
+}
+.materia-sphere--light {
+  background:
+    radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.65) 0%, transparent 42%),
+    radial-gradient(circle at 70% 75%, rgba(90, 70, 10, 0.45) 0%, transparent 48%),
+    radial-gradient(circle at 48% 50%, #fde047 0%, #a16207 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.45),
+    0 0 12px rgba(253, 224, 71, 0.55);
+}
+.materia-sphere--dark {
+  background:
+    radial-gradient(circle at 28% 26%, rgba(200, 180, 255, 0.35) 0%, transparent 38%),
+    radial-gradient(circle at 75% 78%, rgba(20, 10, 45, 0.65) 0%, transparent 52%),
+    radial-gradient(circle at 48% 50%, #a78bfa 0%, #4c1d95 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6),
+    inset 0 2px 3px rgba(255, 255, 255, 0.15),
+    0 0 10px rgba(167, 139, 250, 0.45);
+}
+.materia-sphere--metal {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.55) 0%, transparent 40%),
+    radial-gradient(circle at 72% 75%, rgba(30, 30, 35, 0.6) 0%, transparent 50%),
+    radial-gradient(circle at 48% 50%, #d1d5db 0%, #374151 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.55),
+    inset 0 2px 3px rgba(255, 255, 255, 0.4),
+    0 0 8px rgba(156, 163, 175, 0.4);
+}
+.materia-sphere--beast {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.45) 0%, transparent 38%),
+    radial-gradient(circle at 72% 78%, rgba(10, 50, 25, 0.55) 0%, transparent 50%),
+    radial-gradient(circle at 48% 50%, #4ade80 0%, #14532d 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.5),
+    inset 0 2px 3px rgba(255, 255, 255, 0.25),
+    0 0 10px rgba(34, 197, 94, 0.45);
+}
+.materia-sphere--none {
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 70% 75%, rgba(15, 40, 25, 0.5) 0%, transparent 50%),
+    radial-gradient(circle at 48% 50%, #86efac 0%, #14532d 100%);
+  box-shadow:
+    inset 0 -3px 6px rgba(0, 0, 0, 0.45),
+    inset 0 2px 3px rgba(255, 255, 255, 0.22),
+    0 0 8px rgba(34, 197, 94, 0.35);
+}
+
+/* Liste inventaire materia : taille carte */
 .materia-orb {
   width: 2rem;
   height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
-  flex-shrink: 0;
-  background-image: url('images/materias_32.png');
-  background-size: 512px 512px;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
 }
-.materia-orb::after {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: 50%;
-  opacity: 0.4;
-  transition: opacity 0.2s;
+.materia-orb:hover {
+  filter: brightness(1.08);
 }
-.materia-orb:hover::after { opacity: 0.7; }
 
-/* Sprite positions: 512x512, 16x16 grid, 32px cells — col 3 for solid orb variant */
-.materia-orb-fire { background-position: -96px 0; }
-.materia-orb-fire::after { box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
-.materia-orb-water { background-position: -96px -288px; }
-.materia-orb-water::after { box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); }
-.materia-orb-earth { background-position: -96px -64px; }
-.materia-orb-earth::after { box-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
-.materia-orb-air { background-position: -96px -320px; }
-.materia-orb-air::after { box-shadow: 0 0 10px rgba(6, 182, 212, 0.5); }
-.materia-orb-light { background-position: -96px -32px; }
-.materia-orb-light::after { box-shadow: 0 0 10px rgba(253, 224, 71, 0.5); }
-.materia-orb-dark { background-position: -96px -416px; }
-.materia-orb-dark::after { box-shadow: 0 0 10px rgba(167, 139, 250, 0.5); }
-.materia-orb-metal { background-position: -96px -480px; }
-.materia-orb-metal::after { box-shadow: 0 0 10px rgba(156, 163, 175, 0.5); }
-.materia-orb-beast { background-position: -96px -160px; }
-.materia-orb-beast::after { box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
-.materia-orb-none { background-position: -96px -448px; }
-.materia-orb-none::after { box-shadow: 0 0 10px rgba(34, 197, 94, 0.5); }
+.materia-pick-card__orb {
+  width: 2.25rem;
+  height: 2.25rem;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+}
 
 /* ===== MATERIA SLOTS: FF7-style orb display on equipment ===== */
 
@@ -828,29 +998,23 @@ a.materia-slots-counter--link:hover {
   50% { opacity: 1; }
 }
 
-/* Filled slot orb — uses materia sprite as background */
+/* Orbe sertie : couleur = sphère CSS (.materia-sphere--*) */
 .materia-slot-orb--filled {
-  background-image: url('images/materias_32.png');
-  background-size: 512px 512px;
-  background-repeat: no-repeat;
-  image-rendering: pixelated;
-  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  background-color: transparent;
 }
 .materia-slot-orb--filled:hover {
   transform: scale(1.2);
   z-index: 2;
+  filter: brightness(1.08);
 }
 
-/* Element-specific filled orb positions (same as .materia-orb-*) */
-.materia-slot-orb--fire { background-position: -96px 0; }
-.materia-slot-orb--water { background-position: -96px -288px; }
-.materia-slot-orb--earth { background-position: -96px -64px; }
-.materia-slot-orb--air { background-position: -96px -320px; }
-.materia-slot-orb--light { background-position: -96px -32px; }
-.materia-slot-orb--dark { background-position: -96px -416px; }
-.materia-slot-orb--metal { background-position: -96px -480px; }
-.materia-slot-orb--beast { background-position: -96px -160px; }
-.materia-slot-orb--none { background-position: -96px -448px; }
+.materia-sphere--empty {
+  background:
+    radial-gradient(circle at 35% 30%, rgba(55, 65, 81, 0.5) 0%, transparent 45%),
+    radial-gradient(circle at 60% 65%, rgba(17, 24, 39, 0.95) 0%, #111827 100%);
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.06);
+}
 
 /* Element border on slot (slot's own element requirement) */
 .materia-slot-orb--elem-fire { border-color: rgba(239, 68, 68, 0.6); }

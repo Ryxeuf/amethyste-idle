@@ -5,21 +5,15 @@
 
 ---
 
-### 92 — Classement guildes (S | ★)
+### ~~92 — Classement guildes (S | ★)~~ ✅
 > Tableau de classement simple par points de guilde. Prerequis : ← 52
-- [ ] Champ `points` sur Guild (incremente par succes membres, quetes)
-- [ ] Route `GET /game/guilds/ranking` : classement pagine
-- [ ] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent
-- [ ] Tests : attribution points, classement ordonne
+- [x] Champ `points` sur Guild (incremente par succes membres, quetes)
+- [x] Route `GET /game/guilds/ranking` : classement pagine
+- [x] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent
+- [x] Tests : attribution points, classement ordonne
 
-### 93 — Quetes de guilde (M | ★★)
-> Objectifs collectifs hebdomadaires. Prerequis : ← 52, 92
-- [ ] Entite `GuildQuest` (guild, type: kill/collect/craft, target, progress, goal, reward, expiresAt)
-- [ ] GuildQuestManager : generer 3 quetes hebdomadaires, tracker progression, distribuer recompenses
-- [ ] Listeners sur MobDeadEvent, SpotHarvestEvent, CraftEvent pour progression collective
-- [ ] Route `GET /game/guild/quests` : liste quetes actives avec barres de progression
-- [ ] Recompenses : gils + points de guilde pour tous les membres
-- [ ] Tests : progression, completion, recompenses
+### ~~93 — Quetes de guilde (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 94 — Trame Acte 3 : La Convergence (L | ★★★)
 > Donjon final. Prerequis : ← 80, 72
@@ -29,51 +23,35 @@
 - [ ] Dialogues de conclusion et epilogue
 - [ ] Recompenses de fin de trame (titre, equipement legendaire unique)
 
-### 95 — Saisonnalite & festivals (S | ★)
-> Contenu evenementiel saisonnier. Prerequis : ← 20, 85
-- [ ] Detection de la saison reelle (printemps/ete/automne/hiver) dans `GameTimeService`
-- [ ] Poids meteo ajustes par saison (plus de neige en hiver, plus d'orages en ete)
-- [ ] Entite `Festival` (slug, name, season, startDay, endDay, quests, rewards)
-- [ ] 4 festivals de base (1 par saison) — contenu a definir plus tard
-- [ ] Decorations saisonnieres sur la carte (sprites overlays)
+### ~~95 — Saisonnalite & festivals (S | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~97 — Parsing animations tiles (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 98 — Rendu tiles animees PixiJS (M | ★★★)
-> Remplacer PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees. Prerequis : ← 97
-- [ ] Dans `_renderCell()` : detecter les tiles animees depuis les donnees API
-- [ ] Creer des `PIXI.AnimatedSprite` avec les frames/durations pour ces tiles
-- [ ] Gerer le cycle d'animation (elapsed time, frame index) dans le ticker
-- [ ] Tester visuellement (eau animee, torches, etc.)
-
-### 99 — Transitions de zone (S | ★)
-> Fondu au noir lors du changement de carte/teleportation. Prerequis : ← 30
-- [ ] Overlay noir plein ecran avec alpha 0→1→0 (PIXI.Graphics + GSAP ou requestAnimationFrame)
-- [ ] Declenchement sur teleportation portail
-- [ ] Declenchement sur changement de map
-
-### ~~100 — Sons basiques (L | ★★)~~ ✅
+### ~~98 — Rendu tiles animees PixiJS (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 101 — Monitoring basique (M | ★)
-> Utile en production pour detecter les problemes, mais pas bloquant pour le gameplay.
-- [ ] Endpoint `/health` (status BDD, Mercure, cache)
-- [ ] Metriques Prometheus via `prometheus-metrics-bundle` (requetes/s, temps reponse, erreurs)
-- [ ] Dashboard Grafana minimal (4-5 panels : requetes, latence, erreurs, joueurs connectes)
-- [ ] Alertes basiques (latence > 2s, erreurs > 5/min)
+### ~~99 — Transitions de zone (S | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
-### 102 — Index DB composites (S | ★★)
-> Ameliore les performances sur les tables critiques sans changement de code.
-- [ ] Migration : index composite `(player_id, map_id)` sur table player/position
-- [ ] Migration : index composite `(fight_id, turn)` sur FightLog
-- [ ] Migration : index sur `(player_id, quest_id)` sur PlayerQuest
-- [ ] Migration : index sur `(monster_slug, player_id)` sur BestiaryEntry
+### 100 — Sons basiques (L | ★★)
+> Optionnel. Ajoute de l'immersion mais necessite des assets sonores.
+- [ ] Integrer Howler.js via importmap
+- [ ] Sons d'interface : clic bouton, ouverture menu, notification
+- [ ] Sons de combat : attaque, sort, critique, mort
+- [ ] Sons d'ambiance : loop par biome (foret, grotte, village)
+- [ ] Bouton mute/volume dans les parametres joueur
+- [ ] Persistance preference son en localStorage
 
-### 103 — Achievements caches & categories succes (S | ★★)
-> Enrichissement du systeme de succes existant.
-- [ ] Achievements caches : decouverts par des actions inhabituelles
-- [ ] Categories de succes additionnelles : Recolte, Craft, Social, Secrets
+### ~~101 — Monitoring basique (M | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
+
+### ~~102 — Index DB composites (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
+
+### ~~103 — Achievements caches & categories succes (S | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

@@ -50,6 +50,54 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($forest);
         $this->addReference('map_3', $forest);
 
+        // Mines profondes — zone lvl 10-25, tunnels, salles, filons, boss
+        $mines = new Map();
+        $mines->setName('Mines profondes');
+        $mines->setWorld($this->getReference('world_1', World::class));
+        $mines->setAreaWidth(60);
+        $mines->setAreaHeight(30);
+        $mines->setCreatedAt(new \DateTime());
+        $mines->setUpdatedAt(new \DateTime());
+
+        $manager->persist($mines);
+        $this->addReference('map_4', $mines);
+
+        // Marais Brumeux — zone lvl 8-18, brume, eaux stagnantes, créatures corrompues
+        $swamp = new Map();
+        $swamp->setName('Marais Brumeux');
+        $swamp->setWorld($this->getReference('world_1', World::class));
+        $swamp->setAreaWidth(50);
+        $swamp->setAreaHeight(50);
+        $swamp->setCreatedAt(new \DateTime());
+        $swamp->setUpdatedAt(new \DateTime());
+
+        $manager->persist($swamp);
+        $this->addReference('map_5', $swamp);
+
+        // Crête de Ventombre — zone montagneuse lvl 15-25, pics, grottes, vents violents
+        $mountain = new Map();
+        $mountain->setName('Crête de Ventombre');
+        $mountain->setWorld($this->getReference('world_1', World::class));
+        $mountain->setAreaWidth(50);
+        $mountain->setAreaHeight(50);
+        $mountain->setCreatedAt(new \DateTime());
+        $mountain->setUpdatedAt(new \DateTime());
+
+        $manager->persist($mountain);
+        $this->addReference('map_6', $mountain);
+
+        // Donjon : Racines de la foret — carte instanciee pour le donjon
+        $dungeonRoots = new Map();
+        $dungeonRoots->setName('Racines de la foret (donjon)');
+        $dungeonRoots->setWorld($this->getReference('world_1', World::class));
+        $dungeonRoots->setAreaWidth(20);
+        $dungeonRoots->setAreaHeight(20);
+        $dungeonRoots->setCreatedAt(new \DateTime());
+        $dungeonRoots->setUpdatedAt(new \DateTime());
+
+        $manager->persist($dungeonRoots);
+        $this->addReference('map_dungeon_racines', $dungeonRoots);
+
         $manager->flush();
     }
 

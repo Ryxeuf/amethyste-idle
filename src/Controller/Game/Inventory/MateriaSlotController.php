@@ -7,6 +7,7 @@ use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -20,7 +21,7 @@ class MateriaSlotController extends AbstractController
     ) {
     }
 
-    public function __invoke(int $slotId): Response
+    public function __invoke(Request $request, int $slotId): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -86,10 +87,16 @@ class MateriaSlotController extends AbstractController
             return $a['materia']->getGenericItem()->getName() <=> $b['materia']->getGenericItem()->getName();
         });
 
-        return $this->render('game/inventory/materia/_slot_select.html.twig', [
+        $payload = [
             'slot' => $slot,
             'gearItem' => $gearItem,
             'materiaRows' => $materiaRows,
-        ]);
+        ];
+
+        if ($request->headers->get('Turbo-Frame') === 'materia-pick') {
+            return $this->render('game/inventory/materia/_slot_select_embed.html.twig', $payload);
+        }
+
+        return $this->render('game/inventory/materia/_slot_select.html.twig', $payload);
     }
 }
