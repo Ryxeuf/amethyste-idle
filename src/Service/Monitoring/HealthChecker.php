@@ -2,13 +2,13 @@
 
 namespace App\Service\Monitoring;
 
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class HealthChecker
 {
     public function __construct(
-        private readonly Connection $connection,
+        private readonly EntityManagerInterface $em,
         private readonly CacheInterface $cache,
         private readonly string $mercureUrl,
     ) {
@@ -47,7 +47,7 @@ class HealthChecker
         $start = microtime(true);
 
         try {
-            $this->connection->fetchOne('SELECT 1');
+            $this->em->getConnection()->executeStatement('SELECT 1');
             $latency = (microtime(true) - $start) * 1000;
 
             return ['status' => 'ok', 'latency_ms' => round($latency, 2)];

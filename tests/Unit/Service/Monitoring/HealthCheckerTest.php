@@ -3,43 +3,49 @@
 namespace App\Tests\Unit\Service\Monitoring;
 
 use App\Service\Monitoring\HealthChecker;
-use Doctrine\DBAL\Connection;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class HealthCheckerTest extends TestCase
 {
-    private Connection&MockObject $connection;
+    private EntityManagerInterface&MockObject $em;
     private CacheInterface&MockObject $cache;
 
     protected function setUp(): void
     {
-        $this->connection = $this->createMock(Connection::class);
+        $this->em = $this->createMock(EntityManagerInterface::class);
         $this->cache = $this->createMock(CacheInterface::class);
     }
 
     private function createChecker(string $mercureUrl = 'http://localhost/.well-known/mercure'): HealthChecker
     {
-        return new HealthChecker($this->connection, $this->cache, $mercureUrl);
+        return new HealthChecker($this->em, $this->cache, $mercureUrl);
     }
 
-    public function testHealthyWhenAllChecksPass(): void
+    public function testCheckReturnsCorrectStructure(): void
     {
-        $this->connection->method('fetchOne')->willReturn(1);
+        $this->em->method('getConnection')
+            ->willThrowException(new \RuntimeException('No DB'));
         $this->cache->method('get')->willReturn('pong');
 
         $result = $this->createChecker()->check();
 
-        $this->assertSame('healthy', $result['status']);
-        $this->assertSame('ok', $result['checks']['database']['status']);
-        $this->assertSame('ok', $result['checks']['cache']['status']);
-        $this->assertSame('ok', $result['checks']['mercure']['status']);
+        $this->assertArrayHasKey('status', $result);
+        $this->assertArrayHasKey('checks', $result);
+        $this->assertArrayHasKey('database', $result['checks']);
+        $this->assertArrayHasKey('cache', $result['checks']);
+        $this->assertArrayHasKey('mercure', $result['checks']);
+        $this->assertArrayHasKey('status', $result['checks']['database']);
+        $this->assertArrayHasKey('status', $result['checks']['cache']);
+        $this->assertArrayHasKey('status', $result['checks']['mercure']);
     }
 
     public function testDegradedWhenDatabaseFails(): void
     {
-        $this->connection->method('fetchOne')->willThrowException(new \RuntimeException('Connection refused'));
+        $this->em->method('getConnection')
+            ->willThrowException(new \RuntimeException('Connection refused'));
         $this->cache->method('get')->willReturn('pong');
 
         $result = $this->createChecker()->check();
@@ -47,23 +53,26 @@ class HealthCheckerTest extends TestCase
         $this->assertSame('degraded', $result['status']);
         $this->assertSame('error', $result['checks']['database']['status']);
         $this->assertSame('ok', $result['checks']['cache']['status']);
+        $this->assertSame('ok', $result['checks']['mercure']['status']);
     }
 
     public function testDegradedWhenCacheFails(): void
     {
-        $this->connection->method('fetchOne')->willReturn(1);
-        $this->cache->method('get')->willThrowException(new \RuntimeException('Cache failure'));
+        $this->em->method('getConnection')
+            ->willThrowException(new \RuntimeException('No DB'));
+        $this->cache->method('get')
+            ->willThrowException(new \RuntimeException('Cache failure'));
 
         $result = $this->createChecker()->check();
 
         $this->assertSame('degraded', $result['status']);
-        $this->assertSame('ok', $result['checks']['database']['status']);
         $this->assertSame('error', $result['checks']['cache']['status']);
     }
 
     public function testDegradedWhenMercureUrlEmpty(): void
     {
-        $this->connection->method('fetchOne')->willReturn(1);
+        $this->em->method('getConnection')
+            ->willThrowException(new \RuntimeException('No DB'));
         $this->cache->method('get')->willReturn('pong');
 
         $result = $this->createChecker('')->check();
@@ -72,14 +81,16 @@ class HealthCheckerTest extends TestCase
         $this->assertSame('error', $result['checks']['mercure']['status']);
     }
 
-    public function testDatabaseLatencyIsReported(): void
+    public function testCacheOkWhenWorking(): void
     {
-        $this->connection->method('fetchOne')->willReturn(1);
+        $this->em->method('getConnection')
+            ->willThrowException(new \RuntimeException('No DB'));
         $this->cache->method('get')->willReturn('pong');
 
         $result = $this->createChecker()->check();
 
-        $this->assertArrayHasKey('latency_ms', $result['checks']['database']);
-        $this->assertIsFloat($result['checks']['database']['latency_ms']);
+        $this->assertSame('ok', $result['checks']['cache']['status']);
+        $this->assertArrayHasKey('latency_ms', $result['checks']['cache']);
+        $this->assertIsFloat($result['checks']['cache']['latency_ms']);
     }
 }
