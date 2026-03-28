@@ -7,6 +7,7 @@ use App\Entity\App\Map;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
+use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Map\MovementCalculator;
 use App\GameEngine\Map\SpriteConfigProvider;
 use App\GameEngine\Movement\PlayerMoveProcessor;
@@ -38,6 +39,7 @@ class MapApiController extends AbstractController
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly TilesetRegistry $tilesetRegistry,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly TownControlManager $townControlManager,
     ) {
     }
 
@@ -291,12 +293,28 @@ class MapApiController extends AbstractController
             ];
         }
 
+        $regionControl = null;
+        $region = $map->getRegion();
+        if ($region !== null) {
+            $controllingGuild = $this->townControlManager->getControllingGuild($region);
+            if ($controllingGuild !== null) {
+                $regionControl = [
+                    'guildName' => $controllingGuild->getName(),
+                    'guildTag' => $controllingGuild->getTag(),
+                    'guildColor' => $controllingGuild->getColor(),
+                    'regionName' => $region->getName(),
+                    'isCapital' => $region->getCapitalMap()?->getId() === $map->getId(),
+                ];
+            }
+        }
+
         return $this->json([
             'players' => $players,
             'mobs' => $mobs,
             'pnjs' => $pnjs,
             'portals' => $portals,
             'harvestSpots' => $harvestSpots,
+            'regionControl' => $regionControl,
         ]);
     }
 
