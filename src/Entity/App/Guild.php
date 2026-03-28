@@ -30,6 +30,9 @@ class Guild
     #[ORM\Column(name: 'points', type: 'integer', options: ['default' => 0])]
     private int $points = 0;
 
+    #[ORM\Column(name: 'gils_treasury', type: 'integer', options: ['default' => 0])]
+    private int $gilsTreasury = 0;
+
     #[ORM\ManyToOne(targetEntity: Player::class)]
     #[ORM\JoinColumn(name: 'leader_id', referencedColumnName: 'id', nullable: false)]
     private Player $leader;
@@ -156,6 +159,25 @@ class Guild
     public function addPoints(int $points): self
     {
         $this->points += $points;
+
+        return $this;
+    }
+
+    public function getGilsTreasury(): int
+    {
+        return $this->gilsTreasury;
+    }
+
+    public function setGilsTreasury(int $gilsTreasury): self
+    {
+        $this->gilsTreasury = $gilsTreasury;
+
+        return $this;
+    }
+
+    public function addGilsTreasury(int $amount): self
+    {
+        $this->gilsTreasury += $amount;
 
         return $this;
     }
