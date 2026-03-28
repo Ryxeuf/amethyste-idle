@@ -154,6 +154,9 @@ export default class extends Controller {
     }
 
     disconnect() {
+        // Stop ambient sound when leaving map
+        if (window.Sound) window.Sound.stopAmbient();
+
         if (this._onTurboBeforeVisit) {
             document.removeEventListener('turbo:before-visit', this._onTurboBeforeVisit);
             this._onTurboBeforeVisit = null;
@@ -1719,6 +1722,15 @@ export default class extends Controller {
 
         this._currentZone = newZone;
         this._applyZoneEffect(newZone, instant);
+
+        // Ambient sound per biome
+        if (window.Sound) {
+            if (newZone && newZone.biome) {
+                window.Sound.startAmbient(newZone.biome);
+            } else {
+                window.Sound.stopAmbient();
+            }
+        }
     }
 
     _applyZoneEffect(zone, instant = false) {
@@ -2723,6 +2735,9 @@ export default class extends Controller {
 
     async _handlePortalTransition(portal) {
         console.debug('[map_pixi] Portal triggered → map', portal.destinationMapId, 'at', portal.destinationCoordinates);
+
+        // Portal sound
+        if (window.Sound) window.Sound.play('portal');
 
         // Sparkle effect + camera shake on portal
         this.spawnParticles(

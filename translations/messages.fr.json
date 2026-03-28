@@ -329,7 +329,8 @@
         "show_tutorial": "Afficher les tutoriels",
         "show_tutorial_desc": "Afficher les guides et tutoriels pour les nouvelles fonctionnalités",
         "enable_sound": "Activer le son",
-        "enable_sound_desc": "Activer les effets sonores et la musique de fond"
+        "enable_sound_desc": "Activer les effets sonores et la musique de fond",
+        "sound_volume": "Volume"
       },
       "appearance": {
         "title": "Apparence",

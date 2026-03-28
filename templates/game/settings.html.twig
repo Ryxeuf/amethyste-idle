@@ -65,12 +65,23 @@
                             </div>
                         </label>
                         <label class="flex items-start gap-3 cursor-pointer">
-                            <input id="sound" name="sound" type="checkbox" class="mt-0.5 focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700" checked>
+                            <input id="sound" name="sound" type="checkbox" class="mt-0.5 focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-600 rounded bg-gray-700">
                             <div>
                                 <span class="text-sm font-medium text-gray-300">{{ 'game.settings.general.enable_sound'|trans }}</span>
                                 <p class="text-xs text-gray-400 mt-0.5">{{ 'game.settings.general.enable_sound_desc'|trans }}</p>
                             </div>
                         </label>
+                    </div>
+
+                    <div id="sound-volume-group">
+                        <label for="sound-volume" class="block text-sm font-medium text-gray-300 mb-2">{{ 'game.settings.general.sound_volume'|trans|default('Volume') }}</label>
+                        <div class="flex items-center gap-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M12 6.253v11.494m0 0A7.97 7.97 0 018.464 15.536M12 17.747A7.97 7.97 0 0015.536 15.536M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5.586v12.828a1 1 0 01-1.707.707L5.586 15z" />
+                            </svg>
+                            <input type="range" id="sound-volume" name="sound-volume" min="0" max="100" value="50" class="flex-1 h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-purple-500">
+                            <span id="sound-volume-value" class="text-xs text-gray-400 w-8 text-right">50%</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -226,6 +237,34 @@
                 document.getElementById(`${target}-content`).classList.remove('hidden');
             });
         });
+
+        // ===== SOUND SETTINGS =====
+        const soundToggle = document.getElementById('sound');
+        const volumeSlider = document.getElementById('sound-volume');
+        const volumeValue = document.getElementById('sound-volume-value');
+        const volumeGroup = document.getElementById('sound-volume-group');
+
+        if (window.Sound && soundToggle) {
+            // Init from SoundManager state
+            soundToggle.checked = window.Sound.isEnabled();
+            const vol = Math.round(window.Sound.getVolume() * 100);
+            if (volumeSlider) volumeSlider.value = vol;
+            if (volumeValue) volumeValue.textContent = vol + '%';
+            if (volumeGroup) volumeGroup.style.opacity = soundToggle.checked ? '1' : '0.4';
+
+            soundToggle.addEventListener('change', function() {
+                window.Sound.setEnabled(this.checked);
+                if (volumeGroup) volumeGroup.style.opacity = this.checked ? '1' : '0.4';
+            });
+
+            if (volumeSlider) {
+                volumeSlider.addEventListener('input', function() {
+                    const v = parseInt(this.value, 10);
+                    if (volumeValue) volumeValue.textContent = v + '%';
+                    window.Sound.setVolume(v / 100);
+                });
+            }
+        }
     });
 </script>
 {% endblock %}

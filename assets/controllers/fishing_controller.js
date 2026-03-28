@@ -80,6 +80,7 @@ export default class extends Controller {
             const result = await resp.json();
 
             if (result.success) {
+                if (window.Sound) window.Sound.play('fish_catch');
                 this.messageTarget.textContent = result.message || 'Prise !';
                 this.messageTarget.className = 'text-green-400 text-sm mt-2 font-bold';
             } else {

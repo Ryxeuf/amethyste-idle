@@ -1361,3 +1361,19 @@
 - [x] Dashboard Grafana JSON (5 panels : req/s, latence p50/p95/p99, erreurs/min, joueurs, combats/mobs)
 - [x] Regles d'alerte Prometheus (latence > 2s, erreurs > 5/min, health check KO)
 - [x] Tests unitaires (HealthChecker, MetricsCollector, RequestMetricsListener)
+
+## 100 — Sons basiques (2026-03-28) ✅
+
+> Systeme audio procedural complet via Web Audio API (pas de fichiers son externes).
+- [x] SoundManager.js : gestionnaire central (AudioContext, volume, mute, localStorage)
+- [x] Sons d'interface : clic bouton, notification toast, erreur
+- [x] Sons de combat : attaque, sort, critique, miss, mort, victoire, defaite, fuite, bouclier, invocation
+- [x] Sons de recolte : harvest, peche
+- [x] Sons de navigation : portail
+- [x] Ambiance procedurale par biome : foret, plaines, marais, village, dark, collines, grotte
+- [x] Stimulus controller `sound_controller.js` : unlock AudioContext au premier geste utilisateur
+- [x] Parametres : toggle mute + slider volume dans la page settings, persistance localStorage
+- [x] Integration combat : fight_start, hit/miss/critical/spell, victory/defeat/flee, loot
+- [x] Integration carte : ambiance biome sur changement de zone, son portail
+- [x] Integration recolte/peche : son sur succes
+- [x] Integration toast : son notification/erreur
