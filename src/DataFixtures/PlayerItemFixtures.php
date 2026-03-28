@@ -85,10 +85,11 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
             ],
-            'player_pickaxe' => [
-                'generic_item' => 'pickaxe',
+            'player_pickaxe_bronze' => [
+                'generic_item' => 'pickaxe_bronze',
                 'inventory' => 'inventory_bag',
-                'nb_usages' => 100,
+                'nb_usages' => -1,
+                'current_durability' => 100,
             ],
             'player_beer_pint' => [
                 'generic_item' => 'beer_pint',
@@ -110,10 +111,11 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
             ],
-            'player_fishing_rod' => [
-                'generic_item' => 'fishing_rod',
+            'player_fishing_rod_bronze' => [
+                'generic_item' => 'fishing_rod_bronze',
                 'inventory' => 'inventory_bag',
-                'nb_usages' => 1,
+                'nb_usages' => -1,
+                'current_durability' => 80,
             ],
         ];
 
@@ -205,6 +207,9 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
             $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
             $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
             $playerItem->setNbUsages($data['nb_usages']);
+            if (isset($data['current_durability'])) {
+                $playerItem->setCurrentDurability($data['current_durability']);
+            }
             $playerItem->setCreatedAt(new \DateTime());
             $playerItem->setUpdatedAt(new \DateTime());
 
@@ -267,6 +272,18 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
             'chisel_bronze', 'chisel_iron', 'chisel_steel', 'chisel_mithril',
         ];
 
+        // Outils bronze à équiper par défaut pour Rémy
+        $remyDefaultTools = [
+            'pickaxe_bronze' => PlayerItem::GEAR_TOOL_PICKAXE,
+            'sickle_bronze' => PlayerItem::GEAR_TOOL_SICKLE,
+            'fishing_rod_bronze' => PlayerItem::GEAR_TOOL_FISHING_ROD,
+            'skinning_knife_bronze' => PlayerItem::GEAR_TOOL_SKINNING_KNIFE,
+            'hammer_bronze' => PlayerItem::GEAR_TOOL_HAMMER,
+            'tanning_kit_bronze' => PlayerItem::GEAR_TOOL_TANNING_KIT,
+            'mortar_bronze' => PlayerItem::GEAR_TOOL_MORTAR,
+            'chisel_bronze' => PlayerItem::GEAR_TOOL_CHISEL,
+        ];
+
         foreach ($remyBagItems as $itemRef) {
             $playerItem = new PlayerItem();
             $playerItem->setGenericItem($this->getReference($itemRef, Item::class));
@@ -275,6 +292,9 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
             $playerItem->setNbUsages($genericItem->getNbUsages());
             if ($genericItem->getDurability() !== null) {
                 $playerItem->setCurrentDurability($genericItem->getDurability());
+            }
+            if (isset($remyDefaultTools[$itemRef])) {
+                $playerItem->setGear($remyDefaultTools[$itemRef]);
             }
             $playerItem->setCreatedAt(new \DateTime());
             $playerItem->setUpdatedAt(new \DateTime());

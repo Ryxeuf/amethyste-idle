@@ -35,6 +35,20 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setUpdatedAt(new \DateTime());
         $playerRemy->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
         $playerRemy->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
+        // Skills métier rang 1 (débloquent les emplacements d'outils)
+        $playerRemy->addSkill($this->getReference('miner_ruby_xs', Skill::class));
+        $playerRemy->addSkill($this->getReference('herbalist_dandelion', Skill::class));
+        $playerRemy->addSkill($this->getReference('fisher_trout_xs', Skill::class));
+        $playerRemy->addSkill($this->getReference('skinner_hide_xs', Skill::class));
+        $playerRemy->addSkill($this->getReference('smith_dagger', Skill::class));
+        $playerRemy->addSkill($this->getReference('leather_light_armor', Skill::class));
+        $playerRemy->addSkill($this->getReference('alchi_health_pot', Skill::class));
+        $playerRemy->addSkill($this->getReference('jewel_cut_basic', Skill::class));
+        // Déblocage des 8 emplacements d'outils
+        $playerRemy->setUnlockedToolSlots([
+            'pickaxe', 'sickle', 'fishing_rod', 'skinning_knife',
+            'hammer', 'tanning_kit', 'mortar', 'chisel',
+        ]);
         $manager->persist($playerRemy);
         $this->addReference('player_remy', $playerRemy);
 
@@ -57,6 +71,10 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         // Ajout des compétences
         $playerDemo->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
         $playerDemo->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
+        // Skills métier de base (pioche + canne)
+        $playerDemo->addSkill($this->getReference('miner_ruby_xs', Skill::class));
+        $playerDemo->addSkill($this->getReference('fisher_trout_xs', Skill::class));
+        $playerDemo->setUnlockedToolSlots(['pickaxe', 'fishing_rod']);
 
         $manager->persist($playerDemo);
         $this->addReference('player_demo', $playerDemo);
