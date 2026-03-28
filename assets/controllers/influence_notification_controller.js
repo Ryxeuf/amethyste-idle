@@ -57,6 +57,9 @@ export default class extends Controller {
         case 'city_control_change':
             this._onCityControlChange(data);
             break;
+        case 'challenge_completed':
+            this._onChallengeCompleted(data);
+            break;
         }
     }
 
@@ -72,6 +75,13 @@ export default class extends Controller {
 
         const msg = `\u26A0\uFE0F ${data.overtakenByGuild} [${data.overtakenByTag}] vous a depasse en ${data.regionName} !`;
         window.Toast.show('warning', msg, 8000);
+    }
+
+    _onChallengeCompleted(data) {
+        if (!window.Toast) return;
+
+        const msg = `Defi complete : "${data.challengeTitle}" (+${data.bonusPoints} pts influence)`;
+        window.Toast.show('success', msg, 8000);
     }
 
     _onCityControlChange(data) {

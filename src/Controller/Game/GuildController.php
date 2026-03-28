@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\Guild;
+use App\Entity\App\GuildChallengeProgress;
 use App\Entity\App\GuildInfluence;
 use App\Entity\App\GuildInvitation;
 use App\Entity\App\GuildMember;
@@ -12,6 +13,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Entity\App\RegionControl;
+use App\Entity\App\WeeklyChallenge;
 use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\GuildQuestManager;
@@ -581,6 +583,77 @@ class GuildController extends AbstractController
                 'endsAt' => $season->getEndsAt()->format('Y-m-d'),
             ],
             'rankings' => $data,
+        ]);
+    }
+
+    #[Route('/challenges', name: 'app_game_guild_challenges', methods: ['GET'])]
+    public function challenges(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $membership = $this->guildManager->getPlayerMembership($player);
+        if (!$membership) {
+            return $this->redirectToRoute('app_game_guild');
+        }
+
+        $guild = $membership->getGuild();
+        $season = $this->seasonManager->getCurrentSeason();
+
+        $activeChallenges = [];
+        $completedChallenges = [];
+
+        if ($season !== null) {
+            $now = new \DateTime();
+
+            $challenges = $this->entityManager->getRepository(WeeklyChallenge::class)
+                ->createQueryBuilder('wc')
+                ->where('wc.season = :season')
+                ->setParameter('season', $season)
+                ->orderBy('wc.weekNumber', 'DESC')
+                ->addOrderBy('wc.startsAt', 'ASC')
+                ->getQuery()
+                ->getResult();
+
+            $progressMap = [];
+            $progressRecords = $this->entityManager->getRepository(GuildChallengeProgress::class)
+                ->createQueryBuilder('gcp')
+                ->where('gcp.guild = :guild')
+                ->andWhere('gcp.challenge IN (:challenges)')
+                ->setParameter('guild', $guild)
+                ->setParameter('challenges', $challenges)
+                ->getQuery()
+                ->getResult();
+
+            foreach ($progressRecords as $p) {
+                $progressMap[$p->getChallenge()->getId()] = $p;
+            }
+
+            foreach ($challenges as $challenge) {
+                $progress = $progressMap[$challenge->getId()] ?? null;
+                $entry = [
+                    'challenge' => $challenge,
+                    'progress' => $progress,
+                    'current' => $progress ? $progress->getProgress() : 0,
+                    'target' => $challenge->getTarget(),
+                    'percentage' => $progress ? $progress->getPercentage() : 0,
+                    'completed' => $progress && $progress->isCompleted(),
+                ];
+
+                if ($challenge->getEndsAt() >= $now && !($progress && $progress->isCompleted())) {
+                    $activeChallenges[] = $entry;
+                } else {
+                    $completedChallenges[] = $entry;
+                }
+            }
+        }
+
+        return $this->render('game/guild/challenges.html.twig', [
+            'guild' => $guild,
+            'membership' => $membership,
+            'season' => $season,
+            'activeChallenges' => $activeChallenges,
+            'completedChallenges' => $completedChallenges,
         ]);
     }
 

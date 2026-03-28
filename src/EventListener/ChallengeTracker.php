@@ -14,6 +14,7 @@ use App\Event\Map\ButcheringEvent;
 use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
 use App\GameEngine\Guild\InfluenceManager;
+use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -24,6 +25,7 @@ class ChallengeTracker implements EventSubscriberInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly InfluenceManager $influenceManager,
         private readonly PlayerHelper $playerHelper,
+        private readonly InfluenceMercurePublisher $mercurePublisher,
     ) {
     }
 
@@ -166,6 +168,7 @@ class ChallengeTracker implements EventSubscriberInterface
         if ($progress->getProgress() >= $challenge->getTarget() && !$progress->isCompleted()) {
             $progress->setCompletedAt(new \DateTime());
             $this->awardBonusPoints($guild, $challenge, $player);
+            $this->mercurePublisher->publishChallengeCompleted($guild, $challenge, $player);
         }
 
         $this->entityManager->flush();
