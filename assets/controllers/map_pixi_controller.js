@@ -2203,6 +2203,98 @@ export default class extends Controller {
         }
     }
 
+    // --- Mobile Tap Info Banner ---
+
+    _showMobileBanner(icon, name, detail, borderColor = 'border-amber-500/50') {
+        const banner = document.getElementById('mobile-tap-banner');
+        if (!banner) return;
+
+        const iconEl = document.getElementById('mobile-tap-icon');
+        const nameEl = document.getElementById('mobile-tap-name');
+        const detailEl = document.getElementById('mobile-tap-detail');
+        const inner = banner.querySelector('div');
+
+        if (iconEl) iconEl.textContent = icon;
+        if (nameEl) nameEl.textContent = name;
+        if (detailEl) detailEl.textContent = detail;
+
+        // Update border color based on entity type
+        if (inner) {
+            inner.className = inner.className.replace(/border-\S+\/50/g, borderColor);
+        }
+
+        banner.style.display = 'flex';
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateY(8px)';
+        banner.style.transition = 'opacity 0.15s ease-out, transform 0.15s ease-out';
+        requestAnimationFrame(() => {
+            banner.style.opacity = '1';
+            banner.style.transform = 'translateY(0)';
+        });
+
+        // Auto-hide after 3s
+        if (this._mobileBannerTimer) clearTimeout(this._mobileBannerTimer);
+        this._mobileBannerTimer = setTimeout(() => this._hideMobileBanner(), 3000);
+    }
+
+    _hideMobileBanner() {
+        const banner = document.getElementById('mobile-tap-banner');
+        if (!banner) return;
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateY(8px)';
+        setTimeout(() => { banner.style.display = 'none'; }, 200);
+    }
+
+    _showMobileBannerForEntity(tileX, tileY) {
+        // Check tapped tile + neighbors (same fuzzy logic as harvest detection)
+        const tilesToCheck = [
+            [tileX, tileY],
+            [tileX-1, tileY], [tileX+1, tileY], [tileX, tileY-1], [tileX, tileY+1],
+        ];
+        let entities = new Set();
+        for (const [tx, ty] of tilesToCheck) {
+            const e = this._getEntitiesAt(tx, ty);
+            if (e.size > 0) { entities = e; break; }
+        }
+        if (entities.size === 0) return;
+
+        for (const key of entities) {
+            const entry = this._entitySprites[key];
+            if (!entry) continue;
+
+            if (entry.type === 'harvest') {
+                const spot = entry.spotData || entry.meta;
+                const toolLabels = {
+                    pickaxe: 'Pioche requise',
+                    sickle: 'Faucille requise',
+                    fishing_rod: 'Canne à pêche requise',
+                    skinning_knife: 'Couteau requis',
+                };
+                let detail = toolLabels[spot.toolType] || 'Outil requis';
+                if (spot.canHarvest === false) {
+                    detail = 'Compétence manquante';
+                } else if (!spot.available && spot.remainingSeconds > 0) {
+                    detail = `Cooldown ${spot.remainingSeconds}s`;
+                }
+                this._showMobileBanner('✦', spot.name || 'Spot de récolte', detail, 'border-amber-500/50');
+                return;
+            }
+            if (entry.type === 'mob') {
+                const lvl = entry.meta?.level ? ` Nv.${entry.meta.level}` : '';
+                this._showMobileBanner('💀', (entry.meta?.name || '???') + lvl, 'Monstre', 'border-red-500/50');
+                return;
+            }
+            if (entry.type === 'pnj') {
+                this._showMobileBanner('💬', entry.meta?.name || '???', 'PNJ', 'border-purple-500/50');
+                return;
+            }
+            if (entry.type === 'portal') {
+                this._showMobileBanner('🌀', entry.meta?.name || 'Portail', 'Téléportation', 'border-purple-500/50');
+                return;
+            }
+        }
+    }
+
     _escHtml(str) {
         const div = document.createElement('div');
         div.textContent = str;
@@ -2321,8 +2413,17 @@ export default class extends Controller {
         }
 
         // Check if the tapped cell (or its neighbors) is a harvest spot
-        const harvestSpot = this._findHarvestSpotAt(tileX, tileY);
+        // Use fuzzy detection on touch devices to compensate for finger imprecision
+        const isTouch = e.pointerType === 'touch';
+
+        // Show mobile info banner on touch (replaces desktop hover tooltip)
+        if (isTouch) {
+            this._showMobileBannerForEntity(tileX, tileY);
+        }
+
+        const harvestSpot = this._findHarvestSpotAt(tileX, tileY, isTouch);
         if (harvestSpot) {
+            if (isTouch) this._pulseHarvestSpot(harvestSpot);
             this._walkToHarvestSpot(harvestSpot);
             return;
         }
@@ -2332,9 +2433,39 @@ export default class extends Controller {
     }
 
     /**
-     * Find a harvest spot at the given tile coordinates.
+     * Brief scale pulse on a harvest spot marker to confirm tap recognition.
      */
-    _findHarvestSpotAt(x, y) {
+    _pulseHarvestSpot(spot) {
+        const key = `harvest_${spot.id}`;
+        const entry = this._entitySprites[key];
+        if (!entry || !entry.container) return;
+
+        const sprite = entry.container;
+        const origScaleX = sprite.scale?.x ?? 1;
+        const origScaleY = sprite.scale?.y ?? 1;
+        const cx = spot.x * this._tileSize + this._tileSize / 2;
+        const cy = spot.y * this._tileSize + this._tileSize / 2;
+
+        // Set pivot to center for scale-from-center
+        sprite.pivot.set(this._tileSize / 2, this._tileSize / 2);
+        sprite.position.set(cx, cy);
+
+        // Scale up
+        sprite.scale.set(origScaleX * 1.3, origScaleY * 1.3);
+        setTimeout(() => {
+            sprite.scale.set(origScaleX, origScaleY);
+            // Reset pivot/position
+            sprite.pivot.set(0, 0);
+            sprite.position.set(spot.x * this._tileSize, spot.y * this._tileSize);
+        }, 150);
+    }
+
+    /**
+     * Find a harvest spot at the given tile coordinates.
+     * On touch devices, also checks the 4 neighboring tiles (fuzzy tap).
+     */
+    _findHarvestSpotAt(x, y, fuzzy = false) {
+        // Check exact tile first
         const entities = this._getEntitiesAt(x, y);
         for (const key of entities) {
             if (!key.startsWith('harvest_')) continue;
@@ -2343,6 +2474,31 @@ export default class extends Controller {
                 return entry.spotData;
             }
         }
+
+        // Fuzzy: check 4 neighbors (for mobile finger imprecision)
+        if (fuzzy) {
+            const neighbors = [[x-1, y], [x+1, y], [x, y-1], [x, y+1]];
+            let best = null;
+            let bestDist = Infinity;
+            const px = Math.floor(this._playerX);
+            const py = Math.floor(this._playerY);
+            for (const [nx, ny] of neighbors) {
+                const nEntities = this._getEntitiesAt(nx, ny);
+                for (const key of nEntities) {
+                    if (!key.startsWith('harvest_')) continue;
+                    const entry = this._entitySprites[key];
+                    if (entry && entry.spotData) {
+                        const dist = Math.abs(nx - px) + Math.abs(ny - py);
+                        if (dist < bestDist) {
+                            bestDist = dist;
+                            best = entry.spotData;
+                        }
+                    }
+                }
+            }
+            return best;
+        }
+
         return null;
     }
 
@@ -2356,6 +2512,7 @@ export default class extends Controller {
 
         // If player is already adjacent to the spot, open panel directly
         if (Math.abs(px - spot.x) + Math.abs(py - spot.y) <= 1) {
+            this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
         }
@@ -2555,6 +2712,7 @@ export default class extends Controller {
         if (this._pendingHarvestSpot) {
             const spot = this._pendingHarvestSpot;
             this._pendingHarvestSpot = null;
+            this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
         }
@@ -2708,6 +2866,7 @@ export default class extends Controller {
                 if (!entry || !entry.spotData) continue;
                 const spot = entry.spotData;
                 // Always dispatch — the harvest panel handles availability and skill checks
+                this._hideMobileBanner();
                 this.dispatch('harvestSpot', { detail: spot });
                 return;
             }

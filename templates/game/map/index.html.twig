@@ -122,6 +122,19 @@
                     </p>
                 </div>
             </div>
+            {# Mobile tap info banner (replaces hover tooltip on touch devices) #}
+            <div id="mobile-tap-banner"
+                 class="absolute bottom-14 left-0 right-0 pointer-events-none flex justify-center px-2 z-20 sm:hidden"
+                 style="display: none;">
+                <div class="bg-gray-900/95 border border-amber-500/50 rounded-lg px-3 py-1.5 backdrop-blur-sm shadow-lg flex items-center gap-2 max-w-xs">
+                    <span id="mobile-tap-icon" class="text-sm"></span>
+                    <div class="flex flex-col min-w-0">
+                        <span id="mobile-tap-name" class="text-xs font-bold text-amber-400 truncate"></span>
+                        <span id="mobile-tap-detail" class="text-[10px] text-gray-400 truncate"></span>
+                    </div>
+                </div>
+            </div>
+
             {# Quick action bar #}
             <div {{ stimulus_controller('quickbar') }}
                  class="absolute bottom-0 left-0 right-0 pointer-events-auto flex justify-center p-1 sm:p-2"
