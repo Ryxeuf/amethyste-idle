@@ -53,14 +53,8 @@
 - [ ] Declenchement sur teleportation portail
 - [ ] Declenchement sur changement de map
 
-### 100 — Sons basiques (L | ★★)
-> Optionnel. Ajoute de l'immersion mais necessite des assets sonores.
-- [ ] Integrer Howler.js via importmap
-- [ ] Sons d'interface : clic bouton, ouverture menu, notification
-- [ ] Sons de combat : attaque, sort, critique, mort
-- [ ] Sons d'ambiance : loop par biome (foret, grotte, village)
-- [ ] Bouton mute/volume dans les parametres joueur
-- [ ] Persistance preference son en localStorage
+### ~~100 — Sons basiques (L | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 101 — Monitoring basique (M | ★)
 > Utile en production pour detecter les problemes, mais pas bloquant pour le gameplay.

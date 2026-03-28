@@ -540,6 +540,9 @@
 	{{ parent() }}
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
+			// ===== COMBAT SOUND =====
+			if (window.Sound) window.Sound.play('fight_start');
+
 			// ===== TAB SWITCHING (mobile) =====
 			const tabs = document.querySelectorAll('.fight-tab');
 			const panelActions = document.getElementById('panel-actions');
@@ -749,7 +752,14 @@
 							if (data.critical) {
 								spawnCriticalParticles(target);
 								shakeCombat();
+								if (window.Sound) window.Sound.play('critical');
+							} else if (spellSlug) {
+								if (window.Sound) window.Sound.play('spell');
+							} else {
+								if (window.Sound) window.Sound.play('hit');
 							}
+						} else if (!data.hit && !data.fled) {
+							if (window.Sound) window.Sound.play('miss');
 						}
 
 						// Fondu sur mort de la cible
@@ -773,14 +783,17 @@
 						const navigate = () => {
 							if (data.fight && data.fight.terminated) {
 								if (data.fight.victory) {
+									if (window.Sound) window.Sound.play('victory');
 									window.location.href = '{{ path("app_game_fight_loot") }}';
 								} else {
+									if (window.Sound) window.Sound.play('defeat');
 									window.location.href = '{{ path("app_game_fight") }}';
 								}
 								return;
 							}
 
 							if (data.fled) {
+								if (window.Sound) window.Sound.play('flee');
 								window.location.href = '{{ path("app_game_map") }}';
 								return;
 							}

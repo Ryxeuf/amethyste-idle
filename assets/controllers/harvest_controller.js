@@ -86,6 +86,7 @@ export default class extends Controller {
                 this.messageTarget.textContent = result.error;
                 this.messageTarget.className = 'text-red-400 text-sm mt-2';
             } else if (result.success) {
+                if (window.Sound) window.Sound.play('harvest');
                 this.messageTarget.textContent = 'Récolte réussie !';
                 this.messageTarget.className = 'text-green-400 text-sm mt-2';
 
