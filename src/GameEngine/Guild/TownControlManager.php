@@ -7,6 +7,7 @@ use App\Entity\App\GuildInfluence;
 use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Region;
 use App\Entity\App\RegionControl;
+use App\Entity\App\RegionUpgrade;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TownControlManager
@@ -30,6 +31,9 @@ class TownControlManager
         $results = [];
 
         foreach ($regions as $region) {
+            $previousControl = $this->getActiveControl($region);
+            $previousGuild = $previousControl?->getGuild();
+
             $this->closeActiveControl($region);
 
             $winnerGuild = $this->resolveWinner($region, $season);
@@ -43,6 +47,12 @@ class TownControlManager
             $control->setUpdatedAt(new \DateTime());
 
             $this->entityManager->persist($control);
+
+            // Carry over upgrades if the same guild retains control
+            if ($previousControl !== null && $winnerGuild !== null && $previousGuild !== null
+                && $winnerGuild->getId() === $previousGuild->getId()) {
+                $this->carryOverUpgrades($previousControl, $control);
+            }
 
             $results[$region->getSlug()] = $winnerGuild?->getName();
         }
@@ -129,6 +139,29 @@ class TownControlManager
         if ($current !== null) {
             $current->setEndsAt(new \DateTime());
             $current->setUpdatedAt(new \DateTime());
+        }
+    }
+
+    /**
+     * Copies upgrades from a previous RegionControl to a new one (same guild retains control).
+     */
+    private function carryOverUpgrades(RegionControl $previous, RegionControl $new): void
+    {
+        $upgrades = $this->entityManager->getRepository(RegionUpgrade::class)->findBy([
+            'regionControl' => $previous,
+        ]);
+
+        foreach ($upgrades as $oldUpgrade) {
+            $copy = new RegionUpgrade();
+            $copy->setRegionControl($new);
+            $copy->setUpgradeSlug($oldUpgrade->getUpgradeSlug());
+            $copy->setLevel($oldUpgrade->getLevel());
+            $copy->setCostGils($oldUpgrade->getCostGils());
+            $copy->setActivatedAt($oldUpgrade->getActivatedAt());
+            $copy->setCreatedAt(new \DateTime());
+            $copy->setUpdatedAt(new \DateTime());
+
+            $this->entityManager->persist($copy);
         }
     }
 }
