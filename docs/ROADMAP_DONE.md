@@ -1350,3 +1350,14 @@
 - [x] Fade-out sur teleportation portail (deja existant dans `_handlePortalTransition()`)
 - [x] Fade-out avant navigation Turbo (listener `turbo:before-visit` avec `preventDefault` + reprise navigation)
 - [x] Redimensionnement du fade overlay dans `_onResize()` + cleanup dans `disconnect()`
+
+## 101 — Monitoring basique (2026-03-28) ✅
+
+> Endpoints `/health` et `/metrics` (format Prometheus), listener de metriques HTTP, dashboard Grafana et alertes.
+- [x] Endpoint `/health` verifiant BDD (latence), cache et hub Mercure
+- [x] Service `MetricsCollector` : compteurs, jauges et histogrammes stockes en cache
+- [x] Endpoint `/metrics` en format Prometheus (joueurs connectes, combats actifs, mobs vivants)
+- [x] `RequestMetricsListener` : comptage requetes/s, temps de reponse, erreurs par code HTTP
+- [x] Dashboard Grafana JSON (5 panels : req/s, latence p50/p95/p99, erreurs/min, joueurs, combats/mobs)
+- [x] Regles d'alerte Prometheus (latence > 2s, erreurs > 5/min, health check KO)
+- [x] Tests unitaires (HealthChecker, MetricsCollector, RequestMetricsListener)
