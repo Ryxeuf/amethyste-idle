@@ -73,7 +73,7 @@ VAGUE 6 (long terme)
   ┌─ 92 Classement guildes ← 52
   ├─ 93 Quetes de guilde ← 52, 92
   ├─ 94 Trame Acte 3 ← 80, 72
-  ├─ 95 Saisonnalite & festivals ← 20, 85
+  ├─ ✅ 95 Saisonnalite & festivals ← 20, 85
   ├─ 98 Rendu tiles animees ← 97
   ├─ 99 Transitions de zone ← 30
   ├─ 100 Sons basiques

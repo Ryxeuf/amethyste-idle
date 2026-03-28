@@ -23,13 +23,8 @@
 - [ ] Dialogues de conclusion et epilogue
 - [ ] Recompenses de fin de trame (titre, equipement legendaire unique)
 
-### 95 — Saisonnalite & festivals (S | ★)
-> Contenu evenementiel saisonnier. Prerequis : ← 20, 85
-- [ ] Detection de la saison reelle (printemps/ete/automne/hiver) dans `GameTimeService`
-- [ ] Poids meteo ajustes par saison (plus de neige en hiver, plus d'orages en ete)
-- [ ] Entite `Festival` (slug, name, season, startDay, endDay, quests, rewards)
-- [ ] 4 festivals de base (1 par saison) — contenu a definir plus tard
-- [ ] Decorations saisonnieres sur la carte (sprites overlays)
+### ~~95 — Saisonnalite & festivals (S | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~97 — Parsing animations tiles (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

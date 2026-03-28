@@ -1323,6 +1323,17 @@
 - [x] Migration PostgreSQL : table `guild_quest`
 - [x] Tests unitaires : GuildQuestManagerTest (progression, completion, distribution gils), GuildQuestListenerTest (events)
 
+## 95 — Saisonnalite & festivals (2026-03-28) ✅
+
+> Contenu evenementiel saisonnier. Poids meteo ajustes par saison, entite Festival, 4 festivals de base, decorations saisonnieres PixiJS.
+- [x] Detection de la saison reelle (printemps/ete/automne/hiver) dans `GameTimeService` (existait deja)
+- [x] Poids meteo ajustes par saison dans `WeatherService` (neige x4 en hiver, orages x2.5 en ete, etc.)
+- [x] Entite `Festival` (slug, name, season, startDay, endDay, rewards) + migration
+- [x] 4 festivals de base (Fete du Renouveau, Solstice de Flamme, Moisson des Ames, Nuit Eternelle)
+- [x] API `/api/game/time` enrichie avec les festivals actifs
+- [x] Decorations saisonnieres PixiJS : petales (printemps), lucioles (ete), feuilles (automne) + HUD festival
+- [x] Tests unitaires : FestivalTest, WeatherServiceSeasonTest
+
 ## 98 — Rendu tiles animees PixiJS (2026-03-28) ✅
 
 > Remplacement de PIXI.Sprite par PIXI.AnimatedSprite pour les tiles animees (eau, torches, etc.). Les donnees d'animation etaient deja parsees (tache 97) et transmises par l'API `/api/map/config`.
