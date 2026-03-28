@@ -7,12 +7,11 @@ use App\Entity\App\GuildMember;
 use App\Entity\App\GuildQuest;
 use App\Entity\App\Player;
 use App\Enum\GuildQuestType;
-use App\Enum\GuildRank;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\GuildQuestManager;
-use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -222,7 +221,7 @@ class GuildQuestManagerTest extends TestCase
      */
     private function mockQuestQuery(array $results): void
     {
-        $query = $this->createMock(AbstractQuery::class);
+        $query = $this->createMock(Query::class);
         $query->method('getResult')->willReturn($results);
 
         $qb = $this->createMock(QueryBuilder::class);

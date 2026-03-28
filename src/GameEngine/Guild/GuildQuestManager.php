@@ -3,7 +3,6 @@
 namespace App\GameEngine\Guild;
 
 use App\Entity\App\Guild;
-use App\Entity\App\GuildMember;
 use App\Entity\App\GuildQuest;
 use App\Entity\App\Player;
 use App\Entity\Game\Monster;
