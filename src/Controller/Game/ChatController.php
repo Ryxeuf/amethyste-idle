@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\ChatMessage;
+use App\Entity\App\GuildMember;
 use App\Entity\App\Player;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Social\ChatCommandHandler;
@@ -125,14 +126,28 @@ class ChatController extends AbstractController
             default => [],
         };
 
-        $data = array_map(fn ($m) => [
-            'id' => $m->getId(),
-            'channel' => $m->getChannel(),
-            'content' => $m->getContent(),
-            'sender' => ['id' => $m->getSender()->getId(), 'name' => $m->getSender()->getName()],
-            'recipient' => $m->getRecipient() ? ['id' => $m->getRecipient()->getId(), 'name' => $m->getRecipient()->getName()] : null,
-            'createdAt' => $m->getCreatedAt()?->format('H:i') ?? '',
-        ], array_reverse($messages));
+        $data = array_map(function ($m) {
+            $sender = $m->getSender();
+            $senderData = ['id' => $sender->getId(), 'name' => $sender->getName()];
+
+            $guildMember = $this->em->getRepository(GuildMember::class)->findOneBy(['player' => $sender]);
+            if ($guildMember !== null) {
+                $senderData['guildTag'] = $guildMember->getGuild()->getTag();
+                $senderData['guildColor'] = $guildMember->getGuild()->getColor();
+            }
+            if ($sender->getPrestigeTitle() !== null) {
+                $senderData['prestigeTitle'] = $sender->getPrestigeTitle();
+            }
+
+            return [
+                'id' => $m->getId(),
+                'channel' => $m->getChannel(),
+                'content' => $m->getContent(),
+                'sender' => $senderData,
+                'recipient' => $m->getRecipient() ? ['id' => $m->getRecipient()->getId(), 'name' => $m->getRecipient()->getName()] : null,
+                'createdAt' => $m->getCreatedAt()?->format('H:i') ?? '',
+            ];
+        }, array_reverse($messages));
 
         return new JsonResponse(['messages' => $data]);
     }

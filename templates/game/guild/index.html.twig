@@ -58,7 +58,7 @@
                 <div>
                     <h2 class="text-base sm:text-lg font-semibold text-white">
                         {{ guild.name }}
-                        <span class="text-purple-400 text-sm ml-1">[{{ guild.tag }}]</span>
+                        <span class="text-sm ml-1 font-bold" style="color: {{ guild.color }}">[{{ guild.tag }}]</span>
                     </h2>
                 </div>
                 {% if membership.rank.value != 'leader' %}
@@ -175,6 +175,12 @@
                                class="w-full px-3 py-1.5 bg-gray-800 border border-gray-600 rounded text-white text-sm placeholder-gray-500 focus:border-purple-500 focus:outline-none uppercase">
                         <textarea id="guild-description" placeholder="Description (optionnel)" rows="2"
                                   class="w-full px-3 py-1.5 bg-gray-800 border border-gray-600 rounded text-white text-sm placeholder-gray-500 focus:border-purple-500 focus:outline-none resize-none"></textarea>
+                        <div class="flex items-center gap-2">
+                            <label for="guild-color" class="text-gray-400 text-xs">Couleur :</label>
+                            <input type="color" id="guild-color" value="#9333EA"
+                                   class="w-8 h-8 rounded cursor-pointer border border-gray-600 bg-transparent">
+                            <span id="guild-color-preview" class="text-xs font-bold" style="color: #9333EA">[TAG]</span>
+                        </div>
                         <button onclick="createGuild()"
                                 class="w-full px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded transition-colors touch-target {% if player.gils < creationCost %}opacity-50 cursor-not-allowed{% endif %}"
                                 {% if player.gils < creationCost %}disabled{% endif %}>
@@ -212,9 +218,24 @@ function createGuild() {
     const name = document.getElementById('guild-name').value.trim();
     const tag = document.getElementById('guild-tag').value.trim();
     const description = document.getElementById('guild-description').value.trim();
+    const color = document.getElementById('guild-color').value;
     if (!name || !tag) { showGuildMessage('Nom et tag requis.', true); return; }
-    guildAction('/game/guild/create', 'POST', { name, tag, description });
+    guildAction('/game/guild/create', 'POST', { name, tag, description, color });
 }
+
+(function() {
+    const colorInput = document.getElementById('guild-color');
+    const preview = document.getElementById('guild-color-preview');
+    const tagInput = document.getElementById('guild-tag');
+    if (colorInput && preview) {
+        colorInput.addEventListener('input', function() { preview.style.color = this.value; });
+    }
+    if (tagInput && preview) {
+        tagInput.addEventListener('input', function() {
+            preview.textContent = this.value ? '[' + this.value.toUpperCase() + ']' : '[TAG]';
+        });
+    }
+})();
 
 function invitePlayer() {
     const nameInput = document.getElementById('invite-player-name');

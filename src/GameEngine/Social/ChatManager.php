@@ -316,6 +316,7 @@ class ChatManager
         $guildMember = $this->em->getRepository(GuildMember::class)->findOneBy(['player' => $sender]);
         if ($guildMember !== null) {
             $senderData['guildTag'] = $guildMember->getGuild()->getTag();
+            $senderData['guildColor'] = $guildMember->getGuild()->getColor();
         }
 
         if ($sender->getPrestigeTitle() !== null) {

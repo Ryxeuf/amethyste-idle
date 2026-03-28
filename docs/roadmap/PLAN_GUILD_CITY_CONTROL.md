@@ -150,11 +150,11 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] `RegionBonusProvider` : getShopDiscount(Player, Map), getTaxAmount(int, Map)
 - [x] Tests (7 tests)
 
-### GCC-12 — Benefices prestige — titres & cosmetiques (S | ★★ | MOYENNE)
+### ~~GCC-12 — Benefices prestige — titres & cosmetiques (S | ★★ | MOYENNE)~~ ✅
 > Prerequis : ← GCC-10
-- [ ] Titre "Protecteur de [NomRegion]" auto-attribue aux membres controlants
-- [ ] Tag "[TAG]" + couleur de guilde dans le chat
-- [ ] Retrait automatique quand le controle change
+- [x] Titre "Protecteur de [NomRegion]" auto-attribue aux membres controlants
+- [x] Tag "[TAG]" + couleur de guilde dans le chat
+- [x] Retrait automatique quand le controle change
 
 ### GCC-13 — Upgrades de ville — investissement tresor (M | ★★ | MOYENNE)
 > Prerequis : ← GCC-11

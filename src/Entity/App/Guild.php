@@ -27,6 +27,9 @@ class Guild
     #[ORM\Column(name: 'description', type: 'text', nullable: true)]
     private ?string $description = null;
 
+    #[ORM\Column(name: 'color', type: 'string', length: 7, options: ['default' => '#9333EA'])]
+    private string $color = '#9333EA';
+
     #[ORM\Column(name: 'points', type: 'integer', options: ['default' => 0])]
     private int $points = 0;
 
@@ -86,6 +89,21 @@ class Guild
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    public function getColor(): string
+    {
+        return $this->color;
+    }
+
+    public function setColor(string $color): self
+    {
+        if (!preg_match('/^#[0-9A-Fa-f]{6}$/', $color)) {
+            throw new \InvalidArgumentException('La couleur doit être au format hexadécimal (#RRGGBB).');
+        }
+        $this->color = strtoupper($color);
 
         return $this;
     }

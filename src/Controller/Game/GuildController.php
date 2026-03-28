@@ -71,13 +71,14 @@ class GuildController extends AbstractController
         $name = trim($body['name'] ?? '');
         $tag = trim($body['tag'] ?? '');
         $description = trim($body['description'] ?? '') ?: null;
+        $color = trim($body['color'] ?? '') ?: null;
 
         if (!$name || !$tag) {
             return new JsonResponse(['error' => 'Nom et tag requis.'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $guild = $this->guildManager->createGuild($player, $name, $tag, $description);
+            $guild = $this->guildManager->createGuild($player, $name, $tag, $description, $color);
 
             return new JsonResponse([
                 'success' => true,
