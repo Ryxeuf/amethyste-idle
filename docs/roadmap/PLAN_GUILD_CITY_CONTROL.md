@@ -143,12 +143,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste D — Benefices du controle (parallelisable)
 
-### GCC-11 — Benefices economiques — taxe & reductions (S | ★★ | HAUTE)
+### ~~GCC-11 — Benefices economiques — taxe & reductions (S | ★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-10
-- [ ] Taxe commerciale : ShopController::buy() preleve region.taxRate (5%) → gilsTreasury de la guilde
-- [ ] Reduction membre : -10% sur prix PNJ si joueur dans la guilde controlante
-- [ ] `RegionBonusProvider` : getShopDiscount(Player, Map), getTaxAmount(int, Map)
-- [ ] Tests (3 tests)
+- [x] Taxe commerciale : ShopController::buy() preleve region.taxRate (5%) → gilsTreasury de la guilde
+- [x] Reduction membre : -10% sur prix PNJ si joueur dans la guilde controlante
+- [x] `RegionBonusProvider` : getShopDiscount(Player, Map), getTaxAmount(int, Map)
+- [x] Tests (7 tests)
 
 ### GCC-12 — Benefices prestige — titres & cosmetiques (S | ★★ | MOYENNE)
 > Prerequis : ← GCC-10

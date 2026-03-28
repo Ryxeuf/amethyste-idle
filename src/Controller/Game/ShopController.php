@@ -5,6 +5,7 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
+use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ class ShopController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly GameTimeService $gameTimeService,
+        private readonly RegionBonusProvider $regionBonusProvider,
     ) {
     }
 
@@ -101,7 +103,13 @@ class ShopController extends AbstractController
         }
 
         $player = $this->playerHelper->getPlayer();
-        $totalCost = ($item->getPrice() ?? 0) * $quantity;
+        $baseCost = ($item->getPrice() ?? 0) * $quantity;
+
+        // Apply guild region discount (10% if player is in controlling guild)
+        $discount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
+        $totalCost = $discount > 0
+            ? (int) ceil($baseCost * (1 - $discount))
+            : $baseCost;
 
         if ($player->getGils() < $totalCost) {
             return new JsonResponse([
@@ -111,6 +119,14 @@ class ShopController extends AbstractController
 
         // Debit gils
         $player->removeGils($totalCost);
+
+        // Collect region tax for controlling guild treasury
+        $taxAmount = $this->regionBonusProvider->getTaxAmount($baseCost, $player->getMap());
+        $controllingGuild = $this->regionBonusProvider->getControllingGuild($player->getMap());
+        if ($taxAmount > 0 && $controllingGuild !== null) {
+            $controllingGuild->addGilsTreasury($taxAmount);
+            $this->entityManager->persist($controllingGuild);
+        }
 
         // Decrement stock
         $pnj->decrementStock($itemSlug, $quantity);
@@ -134,9 +150,14 @@ class ShopController extends AbstractController
 
         $remainingStock = $pnj->getItemStock($itemSlug);
 
+        $message = sprintf('Vous avez acheté %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost);
+        if ($discount > 0) {
+            $message .= sprintf(' (-%d%% guilde)', (int) ($discount * 100));
+        }
+
         return new JsonResponse([
             'success' => true,
-            'message' => sprintf('Vous avez acheté %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost),
+            'message' => $message,
             'gils' => $player->getGils(),
             'stock' => $remainingStock,
         ]);
