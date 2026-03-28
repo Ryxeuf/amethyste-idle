@@ -48,7 +48,7 @@ class HealthChecker
         $start = microtime(true);
 
         try {
-            $this->connection->executeQuery('SELECT 1');
+            $this->connection->fetchOne('SELECT 1');
             $latency = (microtime(true) - $start) * 1000;
 
             return ['status' => 'ok', 'latency_ms' => round($latency, 2)];

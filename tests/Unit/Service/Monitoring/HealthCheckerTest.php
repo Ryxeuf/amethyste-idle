@@ -31,7 +31,7 @@ class HealthCheckerTest extends TestCase
 
     public function testHealthyWhenAllChecksPass(): void
     {
-        $this->connection->method('executeQuery')->willReturn($this->createMock(\Doctrine\DBAL\Result::class));
+        $this->connection->method('fetchOne')->willReturn(1);
         $this->cache->method('get')->willReturn('pong');
         $this->mercureHub->method('getUrl')->willReturn('https://mercure.example.com');
 
@@ -45,7 +45,7 @@ class HealthCheckerTest extends TestCase
 
     public function testDegradedWhenDatabaseFails(): void
     {
-        $this->connection->method('executeQuery')->willThrowException(new \RuntimeException('Connection refused'));
+        $this->connection->method('fetchOne')->willThrowException(new \RuntimeException('Connection refused'));
         $this->cache->method('get')->willReturn('pong');
         $this->mercureHub->method('getUrl')->willReturn('https://mercure.example.com');
 
@@ -58,7 +58,7 @@ class HealthCheckerTest extends TestCase
 
     public function testDegradedWhenCacheFails(): void
     {
-        $this->connection->method('executeQuery')->willReturn($this->createMock(\Doctrine\DBAL\Result::class));
+        $this->connection->method('fetchOne')->willReturn(1);
         $this->cache->method('get')->willThrowException(new \RuntimeException('Cache failure'));
         $this->mercureHub->method('getUrl')->willReturn('https://mercure.example.com');
 
@@ -71,7 +71,7 @@ class HealthCheckerTest extends TestCase
 
     public function testDatabaseLatencyIsReported(): void
     {
-        $this->connection->method('executeQuery')->willReturn($this->createMock(\Doctrine\DBAL\Result::class));
+        $this->connection->method('fetchOne')->willReturn(1);
         $this->cache->method('get')->willReturn('pong');
         $this->mercureHub->method('getUrl')->willReturn('https://mercure.example.com');
 

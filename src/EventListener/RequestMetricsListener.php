@@ -4,9 +4,9 @@ namespace App\EventListener;
 
 use App\Service\Monitoring\MetricsCollector;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 class RequestMetricsListener implements EventSubscriberInterface
@@ -43,7 +43,7 @@ class RequestMetricsListener implements EventSubscriberInterface
         }
 
         $start = $request->attributes->get('_metrics_start');
-        if (!$start) {
+        if (!\is_float($start)) {
             return;
         }
 
