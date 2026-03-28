@@ -18,7 +18,7 @@ class MetricsCollector
     {
         $metrics = $this->loadMetrics();
         $key = "counter:{$name}:{$labels}";
-        $metrics[$key] = ($metrics[$key] ?? 0) + $value;
+        $metrics[$key] = ($metrics[$key] ?? 0.0) + $value;
         $this->saveMetrics($metrics);
     }
 
@@ -28,18 +28,18 @@ class MetricsCollector
 
         $sumKey = "histogram_sum:{$name}:{$labels}";
         $countKey = "histogram_count:{$name}:{$labels}";
-        $metrics[$sumKey] = ($metrics[$sumKey] ?? 0) + $value;
-        $metrics[$countKey] = ($metrics[$countKey] ?? 0) + 1;
+        $metrics[$sumKey] = ($metrics[$sumKey] ?? 0.0) + $value;
+        $metrics[$countKey] = ($metrics[$countKey] ?? 0.0) + 1.0;
 
         foreach (self::HISTOGRAM_BUCKETS as $bucket) {
             $bucketKey = "histogram_bucket:{$name}:{$labels}:le={$bucket}";
             if ($value <= $bucket) {
-                $metrics[$bucketKey] = ($metrics[$bucketKey] ?? 0) + 1;
+                $metrics[$bucketKey] = ($metrics[$bucketKey] ?? 0.0) + 1.0;
             }
         }
 
         $infKey = "histogram_bucket:{$name}:{$labels}:le=+Inf";
-        $metrics[$infKey] = ($metrics[$infKey] ?? 0) + 1;
+        $metrics[$infKey] = ($metrics[$infKey] ?? 0.0) + 1.0;
 
         $this->saveMetrics($metrics);
     }
