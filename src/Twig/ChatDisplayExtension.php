@@ -16,6 +16,9 @@ class ChatDisplayExtension extends AbstractExtension
     /** @var array<int, string|null> */
     private array $guildColorCache = [];
 
+    /** @var array<int, int|null> */
+    private array $guildIdCache = [];
+
     public function __construct(
         private readonly EntityManagerInterface $em,
     ) {
@@ -26,6 +29,7 @@ class ChatDisplayExtension extends AbstractExtension
         return [
             new TwigFunction('player_guild_tag', $this->getPlayerGuildTag(...)),
             new TwigFunction('player_guild_color', $this->getPlayerGuildColor(...)),
+            new TwigFunction('player_guild_id', $this->getPlayerGuildId(...)),
         ];
     }
 
@@ -59,5 +63,21 @@ class ChatDisplayExtension extends AbstractExtension
         $this->guildColorCache[$playerId] = $color;
 
         return $color;
+    }
+
+    public function getPlayerGuildId(Player $player): ?int
+    {
+        $playerId = $player->getId();
+
+        if (\array_key_exists($playerId, $this->guildIdCache)) {
+            return $this->guildIdCache[$playerId];
+        }
+
+        $guildMember = $this->em->getRepository(GuildMember::class)->findOneBy(['player' => $player]);
+
+        $guildId = $guildMember?->getGuild()->getId();
+        $this->guildIdCache[$playerId] = $guildId;
+
+        return $guildId;
     }
 }

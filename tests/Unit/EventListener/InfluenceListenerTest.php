@@ -22,6 +22,7 @@ use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
 use App\EventListener\InfluenceListener;
 use App\GameEngine\Guild\InfluenceManager;
+use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,6 +34,7 @@ class InfluenceListenerTest extends TestCase
     private InfluenceManager&MockObject $influenceManager;
     private PlayerHelper&MockObject $playerHelper;
     private EntityManagerInterface&MockObject $em;
+    private InfluenceMercurePublisher&MockObject $mercurePublisher;
     private InfluenceListener $listener;
 
     protected function setUp(): void
@@ -40,11 +42,13 @@ class InfluenceListenerTest extends TestCase
         $this->influenceManager = $this->createMock(InfluenceManager::class);
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->mercurePublisher = $this->createMock(InfluenceMercurePublisher::class);
 
         $this->listener = new InfluenceListener(
             $this->influenceManager,
             $this->playerHelper,
             $this->em,
+            $this->mercurePublisher,
         );
     }
 
@@ -79,7 +83,8 @@ class InfluenceListenerTest extends TestCase
                 ['mob_level' => 8],
                 $region,
                 $this->callback(fn (array $d) => $d['monster'] === 'goblin' && $d['level'] === 8),
-            );
+            )
+            ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
         $this->em->expects($this->once())->method('flush');
 
@@ -148,7 +153,8 @@ class InfluenceListenerTest extends TestCase
                 ['recipe_level' => 3],
                 null,
                 $this->callback(fn (array $d) => $d['recipe'] === 'Epee de fer' && $d['item'] === 'iron_sword'),
-            );
+            )
+            ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
         $this->em->expects($this->once())->method('flush');
 
@@ -180,7 +186,8 @@ class InfluenceListenerTest extends TestCase
                 ['item_count' => 2],
                 $region,
                 $this->callback(fn (array $d) => $d['spot'] === 'herb_01' && $d['items'] === 2),
-            );
+            )
+            ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
         $this->em->expects($this->once())->method('flush');
 
@@ -230,7 +237,8 @@ class InfluenceListenerTest extends TestCase
 
         $this->influenceManager->expects($this->once())
             ->method('awardInfluence')
-            ->with($player, InfluenceActivityType::Fishing, [], $region, $this->isType('array'));
+            ->with($player, InfluenceActivityType::Fishing, [], $region, $this->isType('array'))
+            ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
         $this->em->expects($this->once())->method('flush');
 
@@ -276,7 +284,8 @@ class InfluenceListenerTest extends TestCase
                 ['item_count' => 1],
                 $region,
                 $this->callback(fn (array $d) => $d['mob'] === 'wolf' && $d['items'] === 1),
-            );
+            )
+            ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
         $this->em->expects($this->once())->method('flush');
 
@@ -299,7 +308,8 @@ class InfluenceListenerTest extends TestCase
                 ['quest_tier' => 1],
                 null,
                 $this->callback(fn (array $d) => $d['quest'] === 'Chasse aux loups'),
-            );
+            )
+            ->willReturn(['awarded' => false, 'points' => 0, 'guild' => null, 'region' => null, 'season' => null]);
 
         $this->em->expects($this->once())->method('flush');
 

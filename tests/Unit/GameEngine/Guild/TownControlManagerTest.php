@@ -9,6 +9,7 @@ use App\Entity\App\Region;
 use App\Entity\App\RegionControl;
 use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 class TownControlManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
+    private InfluenceMercurePublisher&MockObject $mercurePublisher;
     private TownControlManager $manager;
     private EntityRepository&MockObject $regionRepo;
     private EntityRepository&MockObject $influenceRepo;
@@ -25,6 +27,7 @@ class TownControlManagerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->mercurePublisher = $this->createMock(InfluenceMercurePublisher::class);
         $this->regionRepo = $this->createMock(EntityRepository::class);
         $this->influenceRepo = $this->createMock(EntityRepository::class);
         $this->controlRepo = $this->createMock(EntityRepository::class);
@@ -37,7 +40,7 @@ class TownControlManagerTest extends TestCase
                 default => $this->createMock(EntityRepository::class),
             });
 
-        $this->manager = new TownControlManager($this->em);
+        $this->manager = new TownControlManager($this->em, $this->mercurePublisher);
     }
 
     public function testAttributeControlSingleWinner(): void
