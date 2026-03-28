@@ -70,16 +70,16 @@ VAGUE 5 (depend de Vague 4)
   └─ 84 Donjons mecaniques & loot ← 72, 37
 
 VAGUE 6 (long terme)
-  ┌─ 92 Classement guildes ← 52
-  ├─ 93 Quetes de guilde ← 52, 92
+  ┌─ ✅ 92 Classement guildes ← 52
+  ├─ ✅ 93 Quetes de guilde ← 52, 92
   ├─ 94 Trame Acte 3 ← 80, 72
   ├─ ✅ 95 Saisonnalite & festivals ← 20, 85
-  ├─ 98 Rendu tiles animees ← 97
-  ├─ 99 Transitions de zone ← 30
+  ├─ ✅ 98 Rendu tiles animees ← 97
+  ├─ ✅ 99 Transitions de zone ← 30
   ├─ 100 Sons basiques
   ├─ 101 Monitoring basique
-  ├─ 102 Index DB composites
-  └─ 103 Achievements caches
+  ├─ ✅ 102 Index DB composites
+  └─ ✅ 103 Achievements caches
 ```
 
 ---
