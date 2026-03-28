@@ -113,6 +113,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'respec_count', type: 'integer', options: ['default' => 0])]
     private int $respecCount = 0;
 
+    #[ORM\Column(name: 'prestige_title', type: 'string', length: 100, nullable: true)]
+    private ?string $prestigeTitle = null;
+
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
 
@@ -449,6 +452,16 @@ class Player implements CharacterInterface
     public function incrementRespecCount(): void
     {
         ++$this->respecCount;
+    }
+
+    public function getPrestigeTitle(): ?string
+    {
+        return $this->prestigeTitle;
+    }
+
+    public function setPrestigeTitle(?string $prestigeTitle): void
+    {
+        $this->prestigeTitle = $prestigeTitle;
     }
 
     public function getRace(): ?Race

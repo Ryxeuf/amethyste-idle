@@ -5,6 +5,7 @@ namespace App\Tests\Unit\Command;
 use App\Command\SeasonTickCommand;
 use App\Entity\App\InfluenceSeason;
 use App\Enum\SeasonStatus;
+use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ class SeasonTickCommandTest extends TestCase
     private EntityManagerInterface&MockObject $em;
     private SeasonManager&MockObject $seasonManager;
     private TownControlManager&MockObject $townControlManager;
+    private PrestigeTitleManager&MockObject $prestigeTitleManager;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -27,6 +29,7 @@ class SeasonTickCommandTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->seasonManager = $this->createMock(SeasonManager::class);
         $this->townControlManager = $this->createMock(TownControlManager::class);
+        $this->prestigeTitleManager = $this->createMock(PrestigeTitleManager::class);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
         $this->em->method('getRepository')
@@ -37,6 +40,7 @@ class SeasonTickCommandTest extends TestCase
             $this->em,
             $this->seasonManager,
             $this->townControlManager,
+            $this->prestigeTitleManager,
         );
 
         $app = new Application();
