@@ -170,12 +170,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste E — Classement & visibilite (parallelisable)
 
-### GCC-14 — Classement d'influence — page & API (S | ★★★ | HAUTE)
+### ~~GCC-14 — Classement d'influence — page & API (S | ★★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-08
-- [ ] Route GET /game/guild/influence — classement par region (top 10, barre de progression)
-- [ ] API JSON GET /api/guild/influence/{regionSlug}
-- [ ] Onglet historique : saisons passees + vainqueurs
-- [ ] Section "Ma guilde" : contribution, rang, top contributeurs internes
+- [x] Route GET /game/guild/influence — classement par region (top 10, barre de progression)
+- [x] API JSON GET /game/guild/influence/api/{regionSlug}
+- [x] Onglet historique : saisons passees + vainqueurs
+- [x] Section "Ma guilde" : contribution, rang, top contributeurs internes
 
 ### GCC-15 — Indicateurs visuels carte PixiJS (M | ★★ | MOYENNE)
 > Prerequis : ← GCC-10, GCC-14

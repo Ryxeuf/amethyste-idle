@@ -5,7 +5,10 @@
 {% block game_content %}
 <div class="game-page">
     {# Navigation #}
-    <div class="mb-3 text-right">
+    <div class="mb-3 text-right flex justify-end gap-3">
+        <a href="{{ path('app_game_guild_influence') }}" class="text-xs text-amber-400 hover:text-amber-300 transition-colors">
+            Influence
+        </a>
         <a href="{{ path('app_game_guild_ranking') }}" class="text-xs text-amber-400 hover:text-amber-300 transition-colors">
             Classement des guildes
         </a>
