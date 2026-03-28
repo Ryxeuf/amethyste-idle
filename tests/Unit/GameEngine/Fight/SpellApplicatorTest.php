@@ -61,7 +61,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
-            new WeatherService(),
+            new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
         );
     }
@@ -275,7 +275,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
-            new WeatherService(),
+            new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
         );
 
@@ -323,7 +323,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
-            new WeatherService(),
+            new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
         );
 
@@ -371,7 +371,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
-            new WeatherService(),
+            new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
         );
 
@@ -417,7 +417,7 @@ class SpellApplicatorTest extends TestCase
             $this->combatLogger,
             new DamageCalculator(),
             new CriticalCalculator(),
-            new WeatherService(),
+            new WeatherService(new \App\GameEngine\World\GameTimeService(new \App\GameEngine\World\StaticUtcDayCycleFactorProvider(1.0))),
             $this->playerEffectiveStatsCalculator,
         );
 
