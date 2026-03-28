@@ -63,6 +63,7 @@ class DungeonController extends AbstractController
 
         $meetsLevel = $this->dungeonManager->meetsLevelRequirement($player, $dungeon);
         $activeRun = $this->dungeonRunRepository->findActiveRun($player);
+        $missingItems = $this->dungeonManager->getMissingEntryItems($player, $dungeon);
 
         $cooldowns = [];
         foreach (DungeonDifficulty::cases() as $diff) {
@@ -76,6 +77,7 @@ class DungeonController extends AbstractController
             'activeRun' => $activeRun,
             'cooldowns' => $cooldowns,
             'difficulties' => DungeonDifficulty::cases(),
+            'missingItems' => $missingItems,
         ]);
     }
 

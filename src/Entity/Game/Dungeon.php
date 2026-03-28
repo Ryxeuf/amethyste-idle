@@ -42,6 +42,9 @@ class Dungeon
     #[ORM\Column(name: 'loot_preview', type: 'json', nullable: true)]
     private ?array $lootPreview = null;
 
+    #[ORM\Column(name: 'entry_requirements', type: 'json', nullable: true)]
+    private ?array $entryRequirements = null;
+
     public function getId(): int
     {
         return $this->id;
@@ -139,6 +142,18 @@ class Dungeon
     public function setLootPreview(?array $lootPreview): self
     {
         $this->lootPreview = $lootPreview;
+
+        return $this;
+    }
+
+    public function getEntryRequirements(): ?array
+    {
+        return $this->entryRequirements;
+    }
+
+    public function setEntryRequirements(?array $entryRequirements): self
+    {
+        $this->entryRequirements = $entryRequirements;
 
         return $this;
     }

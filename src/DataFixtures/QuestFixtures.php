@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\GameEvent;
+use App\Entity\App\Map;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Quest;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -1044,6 +1045,65 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // === Acte 3 : La Convergence (tache 94) ===
+            'quest_acte3_appel' => [
+                'name' => 'La Convergence — L\'Appel des Fragments',
+                'description' => 'Les quatre fragments resonnent dans votre sac, pulsant a l\'unisson. Claire la Sage pourrait savoir ce que cela signifie.',
+                'requirements' => [
+                    'talk_to' => [
+                        ['pnj_id' => 0, 'name' => 'Claire la Sage'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 80,
+                ],
+                // prerequisiteQuests set after flush (needs all 4 fragment quest IDs)
+            ],
+            'quest_acte3_gardien' => [
+                'name' => 'La Convergence — Le Gardien du Nexus',
+                'description' => 'Les fragments vous guident vers le Nexus de la Convergence. Un gardien ancien protege le coeur du cristal d\'Amethyste. Vous devez le vaincre pour decouvrir la verite.',
+                'requirements' => [
+                    'boss_challenge' => [
+                        [
+                            'monster_slug' => 'convergence_guardian',
+                            'name' => 'Gardien de la Convergence',
+                            'conditions' => [
+                                'solo' => true,
+                            ],
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 500,
+                    'gold' => 300,
+                    'items' => [
+                        ['type' => 'gear', 'count' => 1, 'genericItemSlug' => 'convergence-blade'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
+            'quest_acte3_epilogue' => [
+                'name' => 'La Convergence — Epilogue',
+                'description' => 'Le Gardien est vaincu. Le cristal d\'Amethyste libere son secret ultime. Rendez-vous au coeur du Nexus pour decouvrir la verite sur votre passe.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 0,
+                            'coordinates' => '15.15',
+                            'name' => 'Coeur du Nexus',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 300,
+                    'gold' => 500,
+                    'items' => [
+                        ['type' => 'gear', 'count' => 1, 'genericItemSlug' => 'convergence-amulet'],
+                    ],
+                ],
+                // prerequisiteQuests set after flush
+            ],
             // --- Quêtes d'événement ---
             'quest_event_lunar_hunt' => [
                 'name' => 'Chasse sous la Lune',
@@ -1231,6 +1291,38 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $requirementsMontagne['talk_to'][0]['pnj_id'] = $aldric->getId();
         $acte2MontagneEchos->setRequirements($requirementsMontagne);
 
+        // Chaîne Acte 3 : La Convergence (3 quêtes séquentielles, après les 4 fragments)
+        /** @var Quest $acte3Appel */
+        $acte3Appel = $this->getReference('quest_acte3_appel', Quest::class);
+        /** @var Quest $acte3Gardien */
+        $acte3Gardien = $this->getReference('quest_acte3_gardien', Quest::class);
+        /** @var Quest $acte3Epilogue */
+        $acte3Epilogue = $this->getReference('quest_acte3_epilogue', Quest::class);
+
+        // L'Appel requiert les 4 quêtes de fragment terminées
+        $acte3Appel->setPrerequisiteQuests([
+            $acte2ForetFragment->getId(),
+            $acte2MinesFragment->getId(),
+            $acte2MaraisFragment->getId(),
+            $acte2MontagneFragment->getId(),
+        ]);
+        $acte3Gardien->setPrerequisiteQuests([$acte3Appel->getId()]);
+        $acte3Epilogue->setPrerequisiteQuests([$acte3Gardien->getId()]);
+
+        // Fix PNJ ID for Claire la Sage (Acte 3)
+        /** @var Pnj $claire */
+        $claire = $this->getReference('pnj_15', Pnj::class);
+        $requirementsAppel = $acte3Appel->getRequirements();
+        $requirementsAppel['talk_to'][0]['pnj_id'] = $claire->getId();
+        $acte3Appel->setRequirements($requirementsAppel);
+
+        // Fix map_id for the explore quest (Nexus dungeon map)
+        /** @var Map $convergenceMap */
+        $convergenceMap = $this->getReference('map_dungeon_convergence', Map::class);
+        $requirementsEpilogue = $acte3Epilogue->getRequirements();
+        $requirementsEpilogue['explore'][0]['map_id'] = $convergenceMap->getId();
+        $acte3Epilogue->setRequirements($requirementsEpilogue);
+
         $manager->flush();
     }
 
@@ -1242,6 +1334,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             MinesPnjFixtures::class,
             MaraisPnjFixtures::class,
             MontagnePnjFixtures::class,
+            MapFixtures::class,
         ];
     }
 }

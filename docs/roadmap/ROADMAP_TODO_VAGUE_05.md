@@ -7,9 +7,8 @@
 
 ### Piste A — Narration avancee (‖)
 
-### 80 — Trame Acte 2 : Les Fragments (L | ★★★)
+### ~~80 — Trame Acte 2 : Les Fragments (L | ★★★)~~ ✅
 > 4 chaines de quetes dans 4 zones. Prerequis : ← 46, 67, 68
-> A decouper en 4 sous-phases (1 par fragment/zone) quand les zones seront pretes.
 - [x] Fragment Foret : chaine de 4 quetes (talk_to, combat, collect, exploration) + item cle Fragment Sylvestre
 - [x] Fragment Mines : chaine de 4 quetes (talk_to, collect, boss_challenge, exploration) + item cle Fragment de la Forge
 - [x] Fragment Marais : chaine de 4 quetes (talk_to, collect, combat, exploration) + item cle Fragment des Brumes
@@ -26,7 +25,7 @@
 
 ### Piste B — Combat (‖)
 
-### 81 — Combat cooperatif (L | ★★★)
+### ~~81 — Combat cooperatif (L | ★★★)~~ ✅
 > Combat a plusieurs joueurs contre des groupes de monstres. Prerequis : ← 53, 49
 - [x] FightController : creer un combat avec plusieurs joueurs du meme groupe
 - [x] Timeline multi-joueurs dans FightTurnResolver
