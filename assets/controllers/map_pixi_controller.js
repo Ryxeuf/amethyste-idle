@@ -103,6 +103,14 @@ export default class extends Controller {
         this._zoneLightModifier = 1.0;
         this._zoneTargetLightModifier = 1.0;
 
+        // Seasonal decoration system
+        this._seasonParticles = [];
+        this._seasonParticleContainer = null;
+        this._seasonSpawnTimer = 0;
+        this._currentSeason = 'spring';
+        this._activeFestivals = [];
+        this._festivalHudText = null;
+
         // Minimap state
         this._minimapVisible = true;
         this._minimapSize = 150;
@@ -119,6 +127,7 @@ export default class extends Controller {
         this._initWeather();
         this._initTimeHud();
         this._initMinimap();
+        this._initSeasonDecorations();
         this._initZoneAmbiance();
         this._detectZone(this._playerX, this._playerY, true);
         this._updateCamera(true);
@@ -198,6 +207,15 @@ export default class extends Controller {
             this._timeHudText.destroy();
             this._timeHudText = null;
         }
+        if (this._seasonParticleContainer) {
+            this._seasonParticleContainer.destroy({ children: true });
+            this._seasonParticleContainer = null;
+        }
+        if (this._festivalHudText) {
+            this._festivalHudText.destroy();
+            this._festivalHudText = null;
+        }
+        this._seasonParticles = [];
 
         if (this._tooltipEl && this._tooltipEl.parentNode) {
             this._tooltipEl.parentNode.removeChild(this._tooltipEl);
@@ -962,6 +980,9 @@ export default class extends Controller {
         // Update zone ambiance effects
         this._updateZoneAmbiance(dt);
 
+        // Update seasonal decoration particles
+        this._updateSeasonDecorations(dt);
+
         // Pulse world boss auras
         if (this._worldBossAuras) {
             for (const aura of this._worldBossAuras) {
@@ -995,6 +1016,13 @@ export default class extends Controller {
             if (resp.ok) {
                 this._gameTimeData = await resp.json();
                 this._timeOfDay = this._gameTimeData.timeOfDay;
+                if (this._gameTimeData.season) {
+                    this._currentSeason = this._gameTimeData.season;
+                }
+                if (this._gameTimeData.festivals) {
+                    this._activeFestivals = this._gameTimeData.festivals;
+                    this._updateFestivalHud();
+                }
             }
         } catch (e) {
             console.warn('[map_pixi] Failed to fetch game time, using fallback');
@@ -1430,6 +1458,191 @@ export default class extends Controller {
                 p.sprite.alpha = Math.max(0, (p.life / 500) * 0.7);
             }
         }
+    }
+
+    // --- Seasonal Decoration System ---
+
+    _initSeasonDecorations() {
+        if (!this._app) return;
+
+        this._seasonParticleContainer = new PIXI.Container();
+        this._seasonParticleContainer.zIndex = 390;
+        this._app.stage.addChild(this._seasonParticleContainer);
+
+        // Festival HUD text (displayed below the time HUD)
+        this._festivalHudText = new PIXI.Text({
+            text: '',
+            style: {
+                fontFamily: 'monospace',
+                fontSize: 10,
+                fill: 0xfbbf24,
+                dropShadow: true,
+                dropShadowColor: 0x000000,
+                dropShadowDistance: 1,
+            },
+        });
+        this._festivalHudText.zIndex = 600;
+        this._festivalHudText.position.set(6, 20);
+        this._app.stage.addChild(this._festivalHudText);
+        this._updateFestivalHud();
+    }
+
+    _updateFestivalHud() {
+        if (!this._festivalHudText) return;
+        if (this._activeFestivals && this._activeFestivals.length > 0) {
+            const names = this._activeFestivals.map(f => f.name).join(', ');
+            this._festivalHudText.text = '\u2726 ' + names;
+        } else {
+            this._festivalHudText.text = '';
+        }
+    }
+
+    _updateSeasonDecorations(dt) {
+        if (!this._seasonParticleContainer) return;
+
+        this._seasonSpawnTimer += dt;
+        const interval = this._getSeasonSpawnInterval();
+        if (interval > 0 && this._seasonSpawnTimer >= interval) {
+            this._seasonSpawnTimer = 0;
+            this._spawnSeasonParticle();
+        }
+
+        // Update existing season particles
+        for (let i = this._seasonParticles.length - 1; i >= 0; i--) {
+            const p = this._seasonParticles[i];
+            p.life -= dt;
+
+            if (p.life <= 0) {
+                if (p.sprite.parent) p.sprite.parent.removeChild(p.sprite);
+                p.sprite.destroy();
+                this._seasonParticles.splice(i, 1);
+                continue;
+            }
+
+            p.sprite.position.y += p.vy * dt;
+            p.sprite.position.x += p.vx * dt;
+
+            // Oscillation for floating effect
+            if (p.oscillation !== undefined) {
+                p.oscillation += (p.oscillationSpeed || 0.002) * dt;
+                p.sprite.position.x += Math.sin(p.oscillation) * (p.oscillationAmplitude || 0.01) * dt;
+            }
+
+            // Rotation for leaves
+            if (p.rotSpeed) {
+                p.sprite.rotation += p.rotSpeed * dt;
+            }
+
+            // Fade out near end of life
+            if (p.life < 1000) {
+                p.sprite.alpha = Math.max(0, (p.life / 1000) * p.baseAlpha);
+            }
+
+            // Firefly glow pulse (summer)
+            if (p.type === 'firefly') {
+                p.glowPhase = (p.glowPhase || 0) + dt * 0.004;
+                p.sprite.alpha = p.baseAlpha * (0.4 + 0.6 * Math.abs(Math.sin(p.glowPhase)));
+            }
+        }
+    }
+
+    _getSeasonSpawnInterval() {
+        switch (this._currentSeason) {
+            case 'spring': return 400;   // petals
+            case 'autumn': return 350;   // falling leaves
+            case 'summer': return 800;   // fireflies (less frequent)
+            case 'winter': return 0;     // handled by weather snow
+            default: return 0;
+        }
+    }
+
+    _spawnSeasonParticle() {
+        if (this._seasonParticles.length > 60) return;
+
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+
+        switch (this._currentSeason) {
+            case 'spring':
+                this._spawnPetal(viewW, viewH);
+                break;
+            case 'autumn':
+                this._spawnLeaf(viewW, viewH);
+                break;
+            case 'summer':
+                this._spawnFirefly(viewW, viewH);
+                break;
+        }
+    }
+
+    _spawnPetal(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const colors = [0xffb7c5, 0xffc1cc, 0xffe0e6, 0xffa0b4];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        g.ellipse(0, 0, 2, 1.2);
+        g.fill({ color, alpha: 0.7 });
+        g.position.set(Math.random() * viewW, -5);
+        this._seasonParticleContainer.addChild(g);
+
+        this._seasonParticles.push({
+            sprite: g,
+            vx: 0.01 + Math.random() * 0.01,
+            vy: 0.02 + Math.random() * 0.015,
+            life: 8000 + Math.random() * 4000,
+            maxLife: 12000,
+            baseAlpha: 0.7,
+            type: 'petal',
+            oscillation: Math.random() * Math.PI * 2,
+            oscillationSpeed: 0.002 + Math.random() * 0.001,
+            oscillationAmplitude: 0.02,
+            rotSpeed: (Math.random() - 0.5) * 0.003,
+        });
+    }
+
+    _spawnLeaf(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        const colors = [0xcc6600, 0xdd8833, 0xbb4400, 0xe6a020, 0x996633];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        g.ellipse(0, 0, 2.5, 1.5);
+        g.fill({ color, alpha: 0.75 });
+        g.position.set(Math.random() * viewW, -5);
+        this._seasonParticleContainer.addChild(g);
+
+        this._seasonParticles.push({
+            sprite: g,
+            vx: 0.015 + Math.random() * 0.015,
+            vy: 0.025 + Math.random() * 0.02,
+            life: 7000 + Math.random() * 3000,
+            maxLife: 10000,
+            baseAlpha: 0.75,
+            type: 'leaf',
+            oscillation: Math.random() * Math.PI * 2,
+            oscillationSpeed: 0.0025 + Math.random() * 0.001,
+            oscillationAmplitude: 0.025,
+            rotSpeed: (Math.random() - 0.5) * 0.004,
+        });
+    }
+
+    _spawnFirefly(viewW, viewH) {
+        const g = new PIXI.Graphics();
+        g.circle(0, 0, 1.5);
+        g.fill({ color: 0xeeff44, alpha: 0.8 });
+        g.position.set(Math.random() * viewW, Math.random() * viewH);
+        this._seasonParticleContainer.addChild(g);
+
+        this._seasonParticles.push({
+            sprite: g,
+            vx: (Math.random() - 0.5) * 0.01,
+            vy: (Math.random() - 0.5) * 0.008,
+            life: 5000 + Math.random() * 5000,
+            maxLife: 10000,
+            baseAlpha: 0.8,
+            type: 'firefly',
+            glowPhase: Math.random() * Math.PI * 2,
+            oscillation: Math.random() * Math.PI * 2,
+            oscillationSpeed: 0.001,
+            oscillationAmplitude: 0.008,
+        });
     }
 
     // --- Zone Ambiance System ---
