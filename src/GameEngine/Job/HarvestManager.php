@@ -75,7 +75,7 @@ class HarvestManager
 
         // Vérifier la durabilité
         if ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
-            throw new UnauthorizedHttpException("Votre outil est cassé. Réparez-le avant de continuer.");
+            throw new UnauthorizedHttpException('Votre outil est cassé. Réparez-le avant de continuer.');
         }
 
         return $tool;

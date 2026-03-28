@@ -100,7 +100,7 @@ class CraftingManager
         }
 
         if ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
-            return ['ok' => false, 'message' => "Votre outil est cassé. Réparez-le avant de continuer."];
+            return ['ok' => false, 'message' => 'Votre outil est cassé. Réparez-le avant de continuer.'];
         }
 
         return ['ok' => true, 'message' => ''];
