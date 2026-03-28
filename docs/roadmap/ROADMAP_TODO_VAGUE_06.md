@@ -44,12 +44,8 @@
 - [ ] Bouton mute/volume dans les parametres joueur
 - [ ] Persistance preference son en localStorage
 
-### 101 — Monitoring basique (M | ★)
-> Utile en production pour detecter les problemes, mais pas bloquant pour le gameplay.
-- [ ] Endpoint `/health` (status BDD, Mercure, cache)
-- [ ] Metriques Prometheus via `prometheus-metrics-bundle` (requetes/s, temps reponse, erreurs)
-- [ ] Dashboard Grafana minimal (4-5 panels : requetes, latence, erreurs, joueurs connectes)
-- [ ] Alertes basiques (latence > 2s, erreurs > 5/min)
+### ~~101 — Monitoring basique (M | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### ~~102 — Index DB composites (S | ★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.

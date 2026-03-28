@@ -38,3 +38,11 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    App\Service\Monitoring\HealthChecker:
+        arguments:
+            $mercureUrl: '%env(MERCURE_URL)%'
+
+    App\Service\Monitoring\MetricsCollector:
+        arguments:
+            $cache: '@cache.app'
+
