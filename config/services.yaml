@@ -42,3 +42,7 @@ services:
         arguments:
             $mercureUrl: '%env(MERCURE_URL)%'
 
+    App\Service\Monitoring\MetricsCollector:
+        arguments:
+            $cache: '@cache.app'
+

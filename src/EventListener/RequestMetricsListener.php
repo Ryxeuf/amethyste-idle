@@ -52,17 +52,21 @@ class RequestMetricsListener implements EventSubscriberInterface
         $statusCode = $event->getResponse()->getStatusCode();
         $statusGroup = ((int) ($statusCode / 100)) . 'xx';
 
-        $this->metricsCollector->incrementCounter(
-            'http_requests_total',
-            1.0,
-            "method=\"{$method}\",status=\"{$statusGroup}\""
-        );
+        try {
+            $this->metricsCollector->incrementCounter(
+                'http_requests_total',
+                1.0,
+                "method=\"{$method}\",status=\"{$statusGroup}\""
+            );
 
-        $this->metricsCollector->observeHistogram(
-            'http_request_duration_seconds',
-            $duration,
-            "method=\"{$method}\""
-        );
+            $this->metricsCollector->observeHistogram(
+                'http_request_duration_seconds',
+                $duration,
+                "method=\"{$method}\""
+            );
+        } catch (\Throwable) {
+            // Metrics collection must never break the request
+        }
     }
 
     public function onKernelException(ExceptionEvent $event): void
@@ -71,7 +75,11 @@ class RequestMetricsListener implements EventSubscriberInterface
             return;
         }
 
-        $this->metricsCollector->incrementCounter('http_errors_total');
+        try {
+            $this->metricsCollector->incrementCounter('http_errors_total');
+        } catch (\Throwable) {
+            // Metrics collection must never break the request
+        }
     }
 
     public static function getSubscribedEvents(): array
