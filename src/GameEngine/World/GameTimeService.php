@@ -12,7 +12,7 @@ namespace App\GameEngine\World;
  * Saisons : calendrier gregorien UTC (hemisphere nord).
  * Jour in-game (1-28) : derive du jour de l'annee UTC.
  */
-final class GameTimeService
+class GameTimeService
 {
     public function __construct(
         private readonly UtcDayCycleFactorProviderInterface $utcDayCycleFactorProvider,
