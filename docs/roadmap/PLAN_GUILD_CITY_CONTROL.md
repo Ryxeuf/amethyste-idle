@@ -156,15 +156,15 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] Tag "[TAG]" + couleur de guilde dans le chat
 - [x] Retrait automatique quand le controle change
 
-### GCC-13 — Upgrades de ville — investissement tresor (M | ★★ | MOYENNE)
+### ~~GCC-13 — Upgrades de ville — investissement tresor (M | ★★ | MOYENNE)~~ ✅
 > Prerequis : ← GCC-11
-- [ ] Entite `RegionUpgrade` : regionControl, upgradeSlug, level, costGils, activatedAt
-- [ ] Upgrades : shop_discount (1-3), gathering_bonus (1-3), xp_bonus (1-2), monument (1)
-- [ ] `RegionUpgradeManager` : canPurchase, purchase (deduit du tresor)
-- [ ] Integration RegionBonusProvider
-- [ ] Route POST /game/guild/upgrade/{slug} (leader/officer)
-- [ ] Reset si changement de guilde controlante, conserve si meme guilde
-- [ ] Migration + tests (4 tests)
+- [x] Entite `RegionUpgrade` : regionControl, upgradeSlug, level, costGils, activatedAt
+- [x] Upgrades : shop_discount (1-3), gathering_bonus (1-3), xp_bonus (1-2), monument (1)
+- [x] `RegionUpgradeManager` : canPurchase, purchase (deduit du tresor)
+- [x] Integration RegionBonusProvider
+- [x] Route POST /game/guild/upgrade/{slug} (leader/officer)
+- [x] Reset si changement de guilde controlante, conserve si meme guilde
+- [x] Migration + tests (4 tests)
 
 ---
 
@@ -196,12 +196,12 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 
 ## Piste F — Defis & engagement (sequentiel)
 
-### GCC-17 — Defis hebdomadaires — entites & tracker (S | ★★ | BASSE)
+### ~~GCC-17 — Defis hebdomadaires — entites & tracker (S | ★★ | BASSE)~~ ✅
 > Prerequis : ← GCC-08
-- [ ] Entite `WeeklyChallenge` : season, title, description, activityType, criteria (JSON), bonusPoints, weekNumber, startsAt, endsAt
-- [ ] Entite `GuildChallengeProgress` : guild, challenge, progress, completedAt. UNIQUE (guild, challenge)
-- [ ] `ChallengeTracker` (EventSubscriber) : incremente progress, ajoute bonusPoints a completion
-- [ ] Migration + fixtures (4 defis de test)
+- [x] Entite `WeeklyChallenge` : season, title, description, activityType, criteria (JSON), bonusPoints, weekNumber, startsAt, endsAt
+- [x] Entite `GuildChallengeProgress` : guild, challenge, progress, completedAt. UNIQUE (guild, challenge)
+- [x] `ChallengeTracker` (EventSubscriber) : incremente progress, ajoute bonusPoints a completion
+- [x] Migration + fixtures (4 defis de test)
 
 ### GCC-18 — Defis hebdomadaires — UI & notifications (S | ★ | BASSE)
 > Prerequis : ← GCC-17
@@ -221,11 +221,11 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] "Ruee des 3 derniers jours" : points × 1.5 dans les 72 dernieres heures
 - [x] Tests (9 tests)
 
-### GCC-20 — Tests unitaires controle de cite (M | ★★ | HAUTE)
+### ~~GCC-20 — Tests unitaires controle de cite (M | ★★ | HAUTE)~~ ✅
 > Prerequis : ← GCC-08, GCC-10
-- [ ] Tests InfluenceManager, InfluenceListener (6 events × 2 cas)
-- [ ] Tests anti-exploit, TownControlManager, RegionBonusProvider, SeasonManager
-- [ ] Objectif : 30+ tests unitaires
+- [x] Tests InfluenceManager, InfluenceListener (6 events × 2 cas)
+- [x] Tests anti-exploit, TownControlManager, RegionBonusProvider, SeasonManager
+- [x] Objectif : 30+ tests unitaires (62+ tests existants)
 
 ---
 
