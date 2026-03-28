@@ -1381,3 +1381,13 @@
 - [x] Bouton "Defis hebdomadaires" dans la page guilde principale
 - [x] Publication Mercure `challenge_completed` dans `InfluenceMercurePublisher` declenchee par `ChallengeTracker`
 - [x] Handler `_onChallengeCompleted` dans `influence_notification_controller.js` : toast de succes
+
+## 100 — Sons basiques (2026-03-28) ✅
+
+> Systeme audio procedural via Web Audio API. Sons d'interface, combat et exploration generes sans fichiers audio externes.
+- [x] Module `SoundManager.js` : synthese procedurale (oscillateurs, bruit blanc, enveloppes)
+- [x] 25+ sons : interface (click, hover, open, close, error, success, notification), combat (hit, critical, miss, spell, heal, death, victory, defeat, flee, shield, status, boss_phase), exploration (step, harvest, dialog, level_up, quest_complete, item_pickup)
+- [x] Controller Stimulus `sound_controller.js` : integration globale (toasts, clics UI, events custom)
+- [x] Sons de combat integres dans `fight/index.html.twig` (hit, critical, miss, spell, death, victory, defeat, flee)
+- [x] Bouton mute + slider volume dans la page parametres
+- [x] Persistance localStorage (muted + volume)

@@ -327,7 +327,8 @@
         "show_tutorial": "Show tutorials",
         "show_tutorial_desc": "Show guides and tutorials for new features",
         "enable_sound": "Enable sound",
-        "enable_sound_desc": "Enable sound effects and background music"
+        "enable_sound_desc": "Enable game sound effects",
+        "sound_volume": "Sound effects volume"
       },
       "appearance": {
         "title": "Appearance",
