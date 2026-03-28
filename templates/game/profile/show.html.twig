@@ -14,11 +14,16 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 flex-wrap">
+                        {% set senderTag = player_guild_tag(targetPlayer) %}
+                        {% if senderTag %}<span class="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded-full border border-amber-500/30 font-bold">[{{ senderTag }}]</span>{% endif %}
                         <h2 class="text-lg font-bold text-white">{{ targetPlayer.name }}</h2>
                         {% if isOwnProfile %}
                             <span class="px-2 py-0.5 bg-purple-500/20 text-purple-400 text-xs rounded-full border border-purple-500/30">Vous</span>
                         {% endif %}
                     </div>
+                    {% if targetPlayer.prestigeTitle %}
+                    <div class="text-xs text-yellow-300 italic mt-0.5">{{ targetPlayer.prestigeTitle }}</div>
+                    {% endif %}
                     <div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
                         {% if targetPlayer.race %}
                             <span>{{ targetPlayer.race.name }}</span>

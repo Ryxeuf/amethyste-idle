@@ -45,6 +45,9 @@
             {% for message in globalMessages %}
                 <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
+                    {% set senderTag = player_guild_tag(message.sender) %}
+                    {% if senderTag %}<span class="text-amber-400 text-xs font-bold mr-0.5">[{{ senderTag }}]</span>{% endif %}
+                    {% if message.sender.prestigeTitle %}<span class="text-yellow-300 text-xs italic mr-0.5">{{ message.sender.prestigeTitle }}</span>{% endif %}
                     <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
                 </div>
@@ -58,6 +61,9 @@
             {% for message in mapMessages %}
                 <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
+                    {% set senderTag = player_guild_tag(message.sender) %}
+                    {% if senderTag %}<span class="text-amber-400 text-xs font-bold mr-0.5">[{{ senderTag }}]</span>{% endif %}
+                    {% if message.sender.prestigeTitle %}<span class="text-yellow-300 text-xs italic mr-0.5">{{ message.sender.prestigeTitle }}</span>{% endif %}
                     <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline {% if message.sender.id == player.id %}text-purple-400{% else %}text-blue-400{% endif %}">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
                 </div>
@@ -72,6 +78,7 @@
             {% for message in guildMessages %}
                 <div class="chat-line py-0.5 px-2" data-message-id="{{ message.id }}">
                     <span class="text-gray-500 text-xs mr-1">[{{ message.createdAt|date('H:i') }}]</span>
+                    {% if message.sender.prestigeTitle %}<span class="text-yellow-300 text-xs italic mr-0.5">{{ message.sender.prestigeTitle }}</span>{% endif %}
                     <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="font-semibold text-sm mr-1 hover:underline text-emerald-400">{{ message.sender.name }}:</a>
                     <span class="chat-content text-sm text-gray-200">{{ message.content }}</span>
                 </div>

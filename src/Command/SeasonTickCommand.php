@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\App\InfluenceSeason;
 use App\Enum\SeasonStatus;
+use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +27,7 @@ class SeasonTickCommand extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly SeasonManager $seasonManager,
         private readonly TownControlManager $townControlManager,
+        private readonly PrestigeTitleManager $prestigeTitleManager,
     ) {
         parent::__construct();
     }
@@ -64,6 +66,9 @@ class SeasonTickCommand extends Command
 
         // Attribute region control before ending the season
         $results = $this->townControlManager->attributeControl($activeSeason);
+
+        // Update prestige titles for controlling guild members
+        $this->prestigeTitleManager->updateTitles($activeSeason);
 
         $this->seasonManager->endSeason($activeSeason);
 
