@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
+use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use App\Helper\PlayerHelper;
@@ -24,6 +25,7 @@ class ShopControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private EntityManagerInterface&MockObject $entityManager;
     private GameTimeService $gameTimeService;
+    private RegionBonusProvider&MockObject $regionBonusProvider;
     private ShopController $controller;
 
     protected function setUp(): void
@@ -31,11 +33,13 @@ class ShopControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->gameTimeService = new GameTimeService(new StaticUtcDayCycleFactorProvider(1.0));
+        $this->regionBonusProvider = $this->createMock(RegionBonusProvider::class);
 
         $this->controller = new ShopController(
             $this->playerHelper,
             $this->entityManager,
             $this->gameTimeService,
+            $this->regionBonusProvider,
         );
 
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);

@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Guild;
 
+use App\Entity\App\Guild;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
 
@@ -70,7 +71,7 @@ class RegionBonusProvider
     /**
      * Returns the guild controlling the region of the given map, or null.
      */
-    public function getControllingGuild(?Map $map): ?\App\Entity\App\Guild
+    public function getControllingGuild(?Map $map): ?Guild
     {
         if ($map === null) {
             return null;

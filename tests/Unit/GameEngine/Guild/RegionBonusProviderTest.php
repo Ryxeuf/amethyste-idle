@@ -3,7 +3,6 @@
 namespace App\Tests\Unit\GameEngine\Guild;
 
 use App\Entity\App\Guild;
-use App\Entity\App\GuildMember;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\Region;
