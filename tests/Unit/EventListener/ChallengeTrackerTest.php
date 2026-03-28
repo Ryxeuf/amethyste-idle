@@ -24,6 +24,7 @@ use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
 use App\EventListener\ChallengeTracker;
 use App\GameEngine\Guild\InfluenceManager;
+use App\GameEngine\Realtime\Guild\InfluenceMercurePublisher;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,6 +39,7 @@ class ChallengeTrackerTest extends TestCase
     private EntityManagerInterface&MockObject $em;
     private InfluenceManager&MockObject $influenceManager;
     private PlayerHelper&MockObject $playerHelper;
+    private InfluenceMercurePublisher&MockObject $mercurePublisher;
     private ChallengeTracker $tracker;
 
     protected function setUp(): void
@@ -45,11 +47,13 @@ class ChallengeTrackerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->influenceManager = $this->createMock(InfluenceManager::class);
         $this->playerHelper = $this->createMock(PlayerHelper::class);
+        $this->mercurePublisher = $this->createMock(InfluenceMercurePublisher::class);
 
         $this->tracker = new ChallengeTracker(
             $this->em,
             $this->influenceManager,
             $this->playerHelper,
+            $this->mercurePublisher,
         );
     }
 
@@ -195,6 +199,10 @@ class ChallengeTrackerTest extends TestCase
                 InfluenceActivityType::Challenge,
                 $this->isType('array'),
             );
+
+        $this->mercurePublisher->expects($this->once())
+            ->method('publishChallengeCompleted')
+            ->with($guild, $challenge, $player);
 
         $this->em->expects($this->once())->method('flush');
 
