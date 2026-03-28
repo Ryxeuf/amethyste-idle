@@ -70,6 +70,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createStub(QualityCalculator::class),
             $this->createStub(EventDispatcherInterface::class),
             $bonusProvider,
+            $this->createMock(\App\Helper\GearHelper::class),
         );
 
         $result = $craftingManager->craft($player, $recipe);
@@ -122,6 +123,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createStub(QualityCalculator::class),
             $this->createStub(EventDispatcherInterface::class),
             $bonusProvider,
+            $this->createMock(\App\Helper\GearHelper::class),
         );
 
         $result = $manager->craft($player, $recipe);

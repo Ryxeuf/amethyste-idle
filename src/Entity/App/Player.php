@@ -119,6 +119,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
 
+    #[ORM\Column(name: 'unlocked_tool_slots', type: 'json', options: ['default' => '[]'])]
+    private array $unlockedToolSlots = [];
+
     #[ORM\OneToMany(targetEntity: PlayerStatusEffect::class, mappedBy: 'player', cascade: ['remove'])]
     private Collection $statusEffects;
 
@@ -474,5 +477,27 @@ class Player implements CharacterInterface
         $this->race = $race;
 
         return $this;
+    }
+
+    public function getUnlockedToolSlots(): array
+    {
+        return $this->unlockedToolSlots;
+    }
+
+    public function setUnlockedToolSlots(array $unlockedToolSlots): void
+    {
+        $this->unlockedToolSlots = $unlockedToolSlots;
+    }
+
+    public function hasToolSlot(string $toolType): bool
+    {
+        return \in_array($toolType, $this->unlockedToolSlots, true);
+    }
+
+    public function unlockToolSlot(string $toolType): void
+    {
+        if (!$this->hasToolSlot($toolType)) {
+            $this->unlockedToolSlots[] = $toolType;
+        }
     }
 }

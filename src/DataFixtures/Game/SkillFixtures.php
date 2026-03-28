@@ -3448,8 +3448,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'miner_ruby_xs' => [
                 'slug' => 'miner-ruby-xs',
                 'title' => 'Minage du rubis debutant',
-                'description' => 'Permet de miner les filons de rubis basiques',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xs']]],
+                'description' => 'Permet de miner les filons de rubis basiques et debloque l\'emplacement de pioche',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xs']], ['action' => 'tool_slot.unlock', 'slot' => 'pickaxe']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -3602,9 +3602,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'herbalist_dandelion' => [
                 'slug' => 'herbalist-dandelion-xs',
                 'title' => 'Recolte de pissenlit',
-                'description' => 'Permet de recolter les pissenlits basiques',
+                'description' => 'Permet de recolter les pissenlits basiques et debloque l\'emplacement de faucille',
                 'requiredPoints' => 0,
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-dandelion-xs']]],
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-dandelion-xs']], ['action' => 'tool_slot.unlock', 'slot' => 'sickle']],
                 'domain' => $d,
             ],
             'herbalist_mint' => [
@@ -3755,8 +3755,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'fisher_trout_xs' => [
                 'slug' => 'fisher-trout-xs',
                 'title' => 'Peche de la truite debutant',
-                'description' => 'Permet de pecher la truite dans les eaux calmes',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-xs']]],
+                'description' => 'Permet de pecher la truite dans les eaux calmes et debloque l\'emplacement de canne a peche',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-trout-xs']], ['action' => 'tool_slot.unlock', 'slot' => 'fishing_rod']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -3908,8 +3908,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'skinner_hide_xs' => [
                 'slug' => 'skinner-hide-xs',
                 'title' => 'Depecage de cuir brut',
-                'description' => 'Permet de depecer les creatures basiques pour obtenir du cuir brut',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-xs']]],
+                'description' => 'Permet de depecer les creatures basiques pour obtenir du cuir brut et debloque l\'emplacement de couteau de depecage',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-hide-xs']], ['action' => 'tool_slot.unlock', 'slot' => 'skinning_knife']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4061,8 +4061,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'smith_dagger' => [
                 'slug' => 'smith-dagger',
                 'title' => 'Forge de dagues',
-                'description' => 'Permet de forger des dagues en fer',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger']]],
+                'description' => 'Permet de forger des dagues en fer et debloque l\'emplacement de marteau de forge',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger']], ['action' => 'tool_slot.unlock', 'slot' => 'hammer']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4214,8 +4214,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'leather_light_armor' => [
                 'slug' => 'leather-light-armor',
                 'title' => 'Travail du cuir brut',
-                'description' => 'Permet de confectionner des armures legeres en cuir brut',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-vest']]],
+                'description' => 'Permet de confectionner des armures legeres en cuir brut et debloque l\'emplacement de kit de tannage',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-vest']], ['action' => 'tool_slot.unlock', 'slot' => 'tanning_kit']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4367,8 +4367,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'alchi_health_pot' => [
                 'slug' => 'alchi-health-pot',
                 'title' => 'Potion de soin mineure',
-                'description' => 'Permet de brasser des potions de soin mineures',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-minor']]],
+                'description' => 'Permet de brasser des potions de soin mineures et debloque l\'emplacement de mortier d\'alchimie',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-minor']], ['action' => 'tool_slot.unlock', 'slot' => 'mortar']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4521,8 +4521,8 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
             'jewel_cut_basic' => [
                 'slug' => 'jewel-cut-basic',
                 'title' => 'Taille de gemmes brutes',
-                'description' => 'Permet de tailler des gemmes brutes en pierres utilisables',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-basic']]],
+                'description' => 'Permet de tailler des gemmes brutes en pierres utilisables et debloque l\'emplacement de burin de joaillier',
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-basic']], ['action' => 'tool_slot.unlock', 'slot' => 'chisel']],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],

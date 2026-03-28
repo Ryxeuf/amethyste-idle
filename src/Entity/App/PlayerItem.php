@@ -27,6 +27,16 @@ class PlayerItem
     public const GEAR_RING_2 = 0b10000000000; // 1024
     public const GEAR_SHOULDER = 0b100000000000; // 2048
 
+    // Tool slots (craft & gathering)
+    public const GEAR_TOOL_PICKAXE = 0b1000000000000; // 4096
+    public const GEAR_TOOL_SICKLE = 0b10000000000000; // 8192
+    public const GEAR_TOOL_FISHING_ROD = 0b100000000000000; // 16384
+    public const GEAR_TOOL_SKINNING_KNIFE = 0b1000000000000000; // 32768
+    public const GEAR_TOOL_HAMMER = 0b10000000000000000; // 65536
+    public const GEAR_TOOL_TANNING_KIT = 0b100000000000000000; // 131072
+    public const GEAR_TOOL_MORTAR = 0b1000000000000000000; // 262144
+    public const GEAR_TOOL_CHISEL = 0b10000000000000000000; // 524288
+
     public const GEARS = [
         self::GEAR_HEAD,
         self::GEAR_NECK,
@@ -40,6 +50,28 @@ class PlayerItem
         self::GEAR_RING_1,
         self::GEAR_RING_2,
         self::GEAR_SHOULDER,
+    ];
+
+    public const TOOL_GEARS = [
+        self::GEAR_TOOL_PICKAXE,
+        self::GEAR_TOOL_SICKLE,
+        self::GEAR_TOOL_FISHING_ROD,
+        self::GEAR_TOOL_SKINNING_KNIFE,
+        self::GEAR_TOOL_HAMMER,
+        self::GEAR_TOOL_TANNING_KIT,
+        self::GEAR_TOOL_MORTAR,
+        self::GEAR_TOOL_CHISEL,
+    ];
+
+    public const TOOL_TYPE_TO_GEAR = [
+        Item::TOOL_TYPE_PICKAXE => self::GEAR_TOOL_PICKAXE,
+        Item::TOOL_TYPE_SICKLE => self::GEAR_TOOL_SICKLE,
+        Item::TOOL_TYPE_FISHING_ROD => self::GEAR_TOOL_FISHING_ROD,
+        Item::TOOL_TYPE_SKINNING_KNIFE => self::GEAR_TOOL_SKINNING_KNIFE,
+        Item::TOOL_TYPE_HAMMER => self::GEAR_TOOL_HAMMER,
+        Item::TOOL_TYPE_TANNING_KIT => self::GEAR_TOOL_TANNING_KIT,
+        Item::TOOL_TYPE_MORTAR => self::GEAR_TOOL_MORTAR,
+        Item::TOOL_TYPE_CHISEL => self::GEAR_TOOL_CHISEL,
     ];
 
     #[ORM\Column(name: 'id', type: 'integer')]

@@ -136,6 +136,115 @@
     </div>
     {% endif %}
 
+    {# ===== TOOL SLOTS ===== #}
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 mb-4 border border-gray-700/30">
+        <h2 class="text-xs sm:text-sm font-semibold text-amber-400 uppercase tracking-wide flex items-center gap-1.5 mb-3 pb-2.5 border-b border-gray-700/30">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Outils de métier
+        </h2>
+
+        {% if toolSlots is defined and toolSlots is not empty %}
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {% for toolType, slotData in toolSlots %}
+                    {% if slotData.equipped is not null %}
+                        {% set tool = slotData.equipped %}
+                        {% set gi = tool.genericItem %}
+                        {% set durabilityPercent = gi.durability > 0 and tool.currentDurability is not null ? (tool.currentDurability / gi.durability * 100)|round : 100 %}
+                        {% set isBroken = tool.currentDurability is not null and tool.currentDurability <= 0 %}
+                        <div class="bg-gray-900/40 rounded-lg p-2 border {{ isBroken ? 'border-red-500/40' : 'border-amber-500/30' }} flex flex-col gap-1.5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 {{ isBroken ? 'bg-red-900/50 text-red-400' : 'bg-amber-900/50 text-amber-400' }}">
+                                    {{ _self.tool_icon(toolType) }}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-[10px] text-gray-500 uppercase">{{ _self.tool_slot_label(toolType) }}</div>
+                                    <div class="text-xs font-medium truncate {{ isBroken ? 'text-red-400' : 'text-amber-200' }}">{{ gi.name }}</div>
+                                </div>
+                                <form method="post" action="{{ path('app_game_inventory_equipment_unequip', {id: tool.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
+                                    <button type="submit" class="w-6 h-6 rounded bg-gray-700/80 hover:bg-red-600/80 text-gray-400 hover:text-white flex items-center justify-center transition-all" title="Retirer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                            {# Durability bar #}
+                            {% if tool.currentDurability is not null %}
+                                <div class="flex items-center gap-1.5">
+                                    <div class="flex-1 h-1 bg-gray-900/60 rounded-full overflow-hidden">
+                                        <div class="h-full rounded-full transition-all {{ isBroken ? 'bg-red-500' : (durabilityPercent < 25 ? 'bg-orange-500' : 'bg-amber-400') }}" style="width: {{ durabilityPercent }}%"></div>
+                                    </div>
+                                    <span class="text-[9px] text-gray-500 tabular-nums">{{ tool.currentDurability }}/{{ gi.durability }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {# Empty unlocked slot #}
+                        <div class="bg-gray-900/40 rounded-lg p-2 border border-dashed border-gray-600/40 flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-gray-800/50 text-gray-600">
+                                {{ _self.tool_icon(toolType) }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-[10px] text-gray-500 uppercase">{{ _self.tool_slot_label(toolType) }}</div>
+                                <span class="text-[10px] text-gray-600 italic">Vide</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center text-gray-600 py-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto mb-1.5 opacity-30" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <p class="text-[10px] sm:text-xs">Apprenez un métier pour débloquer des emplacements d'outils</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ===== AVAILABLE TOOLS ===== #}
+    {% if availableTools is defined and availableTools is not empty %}
+    <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 mb-4 border border-gray-700/30">
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-xs sm:text-sm font-semibold text-amber-400 uppercase tracking-wide flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                Outils disponibles
+            </h2>
+            <span class="text-[10px] bg-gray-700 text-gray-400 px-2 py-0.5 rounded-full">{{ availableTools|length }}</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {% for item in availableTools %}
+                {% set gi = item.genericItem %}
+                {% set canEquip = toolSlots is defined and gi.toolType is not null and toolSlots[gi.toolType] is defined %}
+                <div class="equip-available-item group equip-rarity-common">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 bg-amber-900/50 text-amber-400">
+                        {{ _self.tool_icon(gi.toolType) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs sm:text-sm font-medium truncate text-amber-200">{{ gi.name }}</div>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-[10px] text-gray-500">{{ _self.tool_slot_label(gi.toolType) }}</span>
+                            {% if gi.durability is not null %}
+                                <span class="text-[10px] text-amber-400/80">{{ item.currentDurability ?? gi.durability }}/{{ gi.durability }}</span>
+                            {% endif %}
+                            {% if gi.toolTier is not null %}
+                                <span class="text-[10px] text-gray-500">T{{ gi.toolTier }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if canEquip %}
+                        <form method="post" action="{{ path('app_game_inventory_equipment_equip', {id: item.id}) }}" data-turbo-frame="inventory-content" class="shrink-0">
+                            <button type="submit" class="w-8 h-8 rounded-lg bg-amber-600/80 hover:bg-amber-500 text-white flex items-center justify-center transition-all" title="Équiper">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="w-8 h-8 rounded-lg bg-gray-700/40 text-gray-600 flex items-center justify-center shrink-0" title="Emplacement non débloqué">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     {# ===== AVAILABLE GEAR ===== #}
     <div class="bg-gray-800/50 rounded-xl p-3 sm:p-4 border border-gray-700/30">
         <div class="flex items-center justify-between mb-3">
@@ -401,6 +510,44 @@
 {% elseif type == 'life' %}PV
 {% elseif type == 'protection' %}Défense
 {% else %}{{ type }}{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{# ===== MACRO: Tool icon ===== #}
+{% macro tool_icon(toolType) %}
+{% if toolType == 'pickaxe' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2l4 4-8 8-4-4 8-8z"/><path d="M6 14l-4 8 8-4"/></svg>
+{% elseif toolType == 'sickle' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M20 4c-3 0-6 1-8 4-2 3-2 6-2 8"/><path d="M10 16l-6 6"/><path d="M20 4c0 3-2 7-6 9"/></svg>
+{% elseif toolType == 'fishing_rod' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 2l-4 14"/><path d="M14 16c0 2-2 4-4 4s-4-2-4-4"/><circle cx="6" cy="20" r="1.5" fill="currentColor"/></svg>
+{% elseif toolType == 'skinning_knife' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 3l6 6-12 12H3v-6L15 3z"/></svg>
+{% elseif toolType == 'hammer' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M15 12l-8 8-3-3 8-8"/><path d="M15 12l2-2 4 4-2 2"/><path d="M15 12l-2-6 6-2"/></svg>
+{% elseif toolType == 'tanning_kit' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18"/><path d="M8 6v4"/><path d="M16 6v4"/></svg>
+{% elseif toolType == 'mortar' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 10c0-4 3-7 7-7s7 3 7 7"/><path d="M4 10h16v2c0 4-3.5 8-8 8s-8-4-8-8v-2z"/><path d="M15 4l3-2"/></svg>
+{% elseif toolType == 'chisel' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2l2 8h-4l2-8z"/><path d="M10 10v10c0 1 1 2 2 2s2-1 2-2V10"/></svg>
+{% else %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+{% endif %}
+{% endmacro %}
+
+{# ===== MACRO: Tool slot label ===== #}
+{% macro tool_slot_label(toolType) %}
+{% apply spaceless %}
+{% if toolType == 'pickaxe' %}Pioche
+{% elseif toolType == 'sickle' %}Faucille
+{% elseif toolType == 'fishing_rod' %}Canne à pêche
+{% elseif toolType == 'skinning_knife' %}Couteau
+{% elseif toolType == 'hammer' %}Marteau
+{% elseif toolType == 'tanning_kit' %}Kit tannage
+{% elseif toolType == 'mortar' %}Mortier
+{% elseif toolType == 'chisel' %}Burin
+{% else %}Outil{% endif %}
 {% endapply %}
 {% endmacro %}
 {% endblock %}

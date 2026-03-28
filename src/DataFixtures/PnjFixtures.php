@@ -73,7 +73,7 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
             ],
             // Émilie la Marchande — outils variés et ressources de base (ouverte de 8h à 22h)
             13 => [
-                'items' => ['pickaxe-bronze', 'pickaxe-iron', 'sickle-bronze', 'fishing-rod-bronze', 'fishing-rod-iron', 'skinning-knife-bronze', 'skinning-knife-iron'],
+                'items' => ['pickaxe-bronze', 'pickaxe-iron', 'sickle-bronze', 'fishing-rod-bronze', 'fishing-rod-iron', 'skinning-knife-bronze', 'skinning-knife-iron', 'hammer-bronze', 'hammer-iron', 'tanning-kit-bronze', 'tanning-kit-iron', 'mortar-bronze', 'mortar-iron', 'chisel-bronze', 'chisel-iron'],
                 'greeting' => 'Bienvenue chez moi ! J\'ai tout ce dont un aventurier a besoin pour ses expéditions.',
                 'shop_prompt' => 'Voici mon inventaire d\'outils et de matériel.',
                 'opensAt' => 8,
@@ -86,6 +86,14 @@ class PnjFixtures extends Fixture implements DependentFixtureInterface
                     'fishing-rod-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
                     'skinning-knife-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
                     'skinning-knife-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'hammer-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'hammer-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'tanning-kit-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'tanning-kit-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'mortar-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'mortar-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
+                    'chisel-bronze' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'chisel-iron' => ['stock' => 2, 'maxStock' => 2, 'restockInterval' => 7200],
                 ],
             ],
         ];

@@ -27,7 +27,7 @@ class UnequipItemController extends AbstractController
 
         $itemToUnequip = null;
         foreach ($bagInventory->getItems() as $item) {
-            if ($item->getId() === $id && $item->getGenericItem()->isGear() && $this->gearHelper->isEquipped($item)) {
+            if ($item->getId() === $id && $this->gearHelper->isEquipped($item)) {
                 $itemToUnequip = $item;
                 break;
             }

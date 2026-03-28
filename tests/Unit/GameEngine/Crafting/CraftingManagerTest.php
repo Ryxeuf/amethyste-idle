@@ -14,6 +14,7 @@ use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\QualityCalculator;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,6 +33,7 @@ class CraftingManagerTest extends TestCase
     private QualityCalculator&MockObject $qualityCalculator;
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private GameEventBonusProvider&MockObject $gameEventBonusProvider;
+    private GearHelper&MockObject $gearHelper;
     private CraftingManager $craftingManager;
 
     protected function setUp(): void
@@ -44,6 +46,7 @@ class CraftingManagerTest extends TestCase
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->gameEventBonusProvider = $this->createMock(GameEventBonusProvider::class);
         $this->gameEventBonusProvider->method('getXpMultiplier')->willReturn(1.0);
+        $this->gearHelper = $this->createMock(GearHelper::class);
 
         $this->craftingManager = new CraftingManager(
             $this->entityManager,
@@ -53,6 +56,7 @@ class CraftingManagerTest extends TestCase
             $this->qualityCalculator,
             $this->eventDispatcher,
             $this->gameEventBonusProvider,
+            $this->gearHelper,
         );
     }
 
