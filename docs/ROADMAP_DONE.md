@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-27
+> Derniere mise a jour : 2026-03-28
 
 ---
 
@@ -1310,3 +1310,15 @@
 - [x] Index composite `(inventory_id, item_id)` sur PlayerItem — recherche d'items
 - [x] Index composite `(player_id, expires_at)` sur PlayerStatusEffect — effets actifs
 - [x] Deja en place : `(fight_id, turn)` sur FightLog, `(player_id, quest_id)` sur PlayerQuest, `(player_id, monster_id)` sur PlayerBestiary
+
+## 93 — Quetes de guilde (2026-03-28) ✅
+
+> Objectifs collectifs hebdomadaires pour les guildes. Tous les membres contribuent, les recompenses sont partagees.
+- [x] Entite `GuildQuest` (guild, type kill/collect/craft, target, progress, goal, gilsReward, pointsReward, expiresAt)
+- [x] Enum `GuildQuestType` (Kill, Collect, Craft)
+- [x] `GuildQuestManager` : generation de 3 quetes hebdomadaires, suivi de progression, distribution des recompenses (gils repartis entre membres + points de guilde)
+- [x] `GuildQuestListener` : ecoute MobDeadEvent, SpotHarvestEvent, CraftEvent pour progression collective
+- [x] Route `GET /game/guild/quests` : liste quetes actives avec barres de progression + historique completees
+- [x] Lien dans la page guilde vers les quetes
+- [x] Migration PostgreSQL : table `guild_quest`
+- [x] Tests unitaires : GuildQuestManagerTest (progression, completion, distribution gils), GuildQuestListenerTest (events)

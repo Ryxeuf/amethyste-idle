@@ -12,14 +12,8 @@
 - [x] GuildPointsListener : ajoute des points sur MobDeadEvent, QuestCompletedEvent
 - [x] Tests : attribution points, classement ordonne
 
-### 93 — Quetes de guilde (M | ★★)
-> Objectifs collectifs hebdomadaires. Prerequis : ← 52, 92
-- [ ] Entite `GuildQuest` (guild, type: kill/collect/craft, target, progress, goal, reward, expiresAt)
-- [ ] GuildQuestManager : generer 3 quetes hebdomadaires, tracker progression, distribuer recompenses
-- [ ] Listeners sur MobDeadEvent, SpotHarvestEvent, CraftEvent pour progression collective
-- [ ] Route `GET /game/guild/quests` : liste quetes actives avec barres de progression
-- [ ] Recompenses : gils + points de guilde pour tous les membres
-- [ ] Tests : progression, completion, recompenses
+### ~~93 — Quetes de guilde (M | ★★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 94 — Trame Acte 3 : La Convergence (L | ★★★)
 > Donjon final. Prerequis : ← 80, 72

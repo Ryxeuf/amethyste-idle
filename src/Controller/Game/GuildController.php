@@ -8,6 +8,7 @@ use App\Entity\App\GuildMember;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\GuildQuestManager;
 use App\GameEngine\Guild\GuildVaultManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +26,7 @@ class GuildController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly GuildManager $guildManager,
         private readonly GuildVaultManager $vaultManager,
+        private readonly GuildQuestManager $guildQuestManager,
     ) {
     }
 
@@ -307,6 +309,29 @@ class GuildController extends AbstractController
         } catch (\InvalidArgumentException $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    #[Route('/quests', name: 'app_game_guild_quests', methods: ['GET'])]
+    public function quests(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $membership = $this->guildManager->getPlayerMembership($player);
+        if (!$membership) {
+            return $this->redirectToRoute('app_game_guild');
+        }
+
+        $guild = $membership->getGuild();
+        $activeQuests = $this->guildQuestManager->generateWeeklyQuests($guild);
+        $completedQuests = $this->guildQuestManager->getCompletedQuests($guild);
+
+        return $this->render('game/guild/quests.html.twig', [
+            'guild' => $guild,
+            'membership' => $membership,
+            'activeQuests' => $activeQuests,
+            'completedQuests' => $completedQuests,
+        ]);
     }
 
     #[Route('/ranking', name: 'app_game_guild_ranking', methods: ['GET'])]
