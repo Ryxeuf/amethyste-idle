@@ -25,15 +25,17 @@ class AreaFixtures extends Fixture implements DependentFixtureInterface
             throw new \Exception("Aucune donnée d'area trouvée dans $jsonFile.");
         }
 
-        // Création des areas pour chaque map
+        // Création des areas pour chaque map — flush par area pour limiter la mémoire
         foreach ($areasData as $mapRef => $areas) {
+            $map = $this->getReference($mapRef, Map::class);
+
             foreach ($areas as $areaData) {
                 $area = new Area();
                 $area->setName($areaData['name']);
                 $area->setSlug($areaData['slug']);
                 $area->setCoordinates($areaData['coordinates']);
                 $area->setFullData(json_encode($areaData['data']));
-                $area->setMap($this->getReference($mapRef, Map::class));
+                $area->setMap($map);
                 $area->setCreatedAt(new \DateTime());
                 $area->setUpdatedAt(new \DateTime());
 
@@ -41,10 +43,16 @@ class AreaFixtures extends Fixture implements DependentFixtureInterface
 
                 // Créer une référence unique pour chaque area
                 $this->addReference('area_' . $mapRef . '_' . $areaData['coordinates'], $area);
+
+                // Flush et détacher chaque area pour libérer la mémoire
+                $manager->flush();
+                $manager->detach($area);
             }
         }
 
-        $manager->flush();
+        // Libérer la mémoire du JSON
+        unset($areasData);
+        gc_collect_cycles();
     }
 
     public function getDependencies(): array
