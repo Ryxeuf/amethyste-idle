@@ -1341,3 +1341,12 @@
 - [x] Dans `_renderCell()` : detection des tiles animees et creation de `PIXI.AnimatedSprite` avec frames/durations
 - [x] Gestion du cycle d'animation via le ticker natif PixiJS (`animSprite.play()`)
 - [x] Cleanup : arret et destruction des AnimatedSprite dans `_releaseSprite()` et `disconnect()`
+
+## 99 — Transitions de zone (2026-03-28) ✅
+
+> Fondu au noir lors des changements de carte et teleportations portail. Overlay PIXI.Graphics plein ecran avec animation alpha 0→1→0 via requestAnimationFrame.
+- [x] Overlay noir plein ecran (PIXI.Graphics, zIndex 1000) cree opaque dans `_initPixi()`
+- [x] Fade-in automatique apres chargement complet de la carte dans `connect()`
+- [x] Fade-out sur teleportation portail (deja existant dans `_handlePortalTransition()`)
+- [x] Fade-out avant navigation Turbo (listener `turbo:before-visit` avec `preventDefault` + reprise navigation)
+- [x] Redimensionnement du fade overlay dans `_onResize()` + cleanup dans `disconnect()`

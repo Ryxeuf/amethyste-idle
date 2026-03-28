@@ -132,12 +132,32 @@ export default class extends Controller {
         this._detectZone(this._playerX, this._playerY, true);
         this._updateCamera(true);
         this._checkHarvestSpotInteraction();
+
+        // Fade in from black after map is fully loaded
+        await this._fadeTransition(false);
+
+        // Listen for Turbo navigation to fade out before leaving the map
+        this._isFadingOut = false;
+        this._onTurboBeforeVisit = async (event) => {
+            if (!this._app || this._isFadingOut) return;
+            this._isFadingOut = true;
+            event.preventDefault();
+            const url = event.detail.url;
+            await this._fadeTransition(true);
+            window.location.href = url;
+        };
+        document.addEventListener('turbo:before-visit', this._onTurboBeforeVisit);
+
         if (typeof console !== 'undefined' && console.debug) {
             console.debug('[map_pixi] Carte chargée (annulation au clic activée)');
         }
     }
 
     disconnect() {
+        if (this._onTurboBeforeVisit) {
+            document.removeEventListener('turbo:before-visit', this._onTurboBeforeVisit);
+            this._onTurboBeforeVisit = null;
+        }
         if (this._resizeObserver) {
             this._resizeObserver.disconnect();
             this._resizeObserver = null;
@@ -216,6 +236,10 @@ export default class extends Controller {
             this._festivalHudText = null;
         }
         this._seasonParticles = [];
+        if (this._fadeOverlay) {
+            this._fadeOverlay.destroy();
+            this._fadeOverlay = null;
+        }
 
         if (this._tooltipEl && this._tooltipEl.parentNode) {
             this._tooltipEl.parentNode.removeChild(this._tooltipEl);
@@ -293,6 +317,14 @@ export default class extends Controller {
         // Resize observer for responsive canvas
         this._resizeObserver = new ResizeObserver(() => this._onResize());
         this._resizeObserver.observe(this.element);
+
+        // Create fade overlay opaque to hide initial loading
+        this._fadeOverlay = new PIXI.Graphics();
+        this._fadeOverlay.rect(0, 0, w, h);
+        this._fadeOverlay.fill({ color: 0x000000 });
+        this._fadeOverlay.zIndex = 1000;
+        this._fadeOverlay.alpha = 1;
+        this._app.stage.addChild(this._fadeOverlay);
     }
 
     _onResize() {
@@ -306,6 +338,12 @@ export default class extends Controller {
         this._currentHeight = h;
         this._app.renderer.resize(w, h);
         this._updateCamera(true);
+        // Resize fade overlay to match new dimensions
+        if (this._fadeOverlay) {
+            this._fadeOverlay.clear();
+            this._fadeOverlay.rect(0, 0, w, h);
+            this._fadeOverlay.fill({ color: 0x000000 });
+        }
         // Reapply weather overlay to match new dimensions
         if (this._weatherOverlay) {
             this._applyWeatherEffect(this._currentWeather);

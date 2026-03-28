@@ -32,11 +32,8 @@
 ### ~~98 — Rendu tiles animees PixiJS (M | ★★★)~~ ✅
 > Deplace dans `ROADMAP_DONE.md`.
 
-### 99 — Transitions de zone (S | ★)
-> Fondu au noir lors du changement de carte/teleportation. Prerequis : ← 30
-- [ ] Overlay noir plein ecran avec alpha 0→1→0 (PIXI.Graphics + GSAP ou requestAnimationFrame)
-- [ ] Declenchement sur teleportation portail
-- [ ] Declenchement sur changement de map
+### ~~99 — Transitions de zone (S | ★)~~ ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ### 100 — Sons basiques (L | ★★)
 > Optionnel. Ajoute de l'immersion mais necessite des assets sonores.
