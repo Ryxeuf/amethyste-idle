@@ -103,6 +103,11 @@ export default class extends Controller {
         this._zoneLightModifier = 1.0;
         this._zoneTargetLightModifier = 1.0;
 
+        // Region control (guild banner & overlay)
+        this._regionControl = null;
+        this._regionControlContainer = null;
+        this._regionBorderOverlay = null;
+
         // Seasonal decoration system
         this._seasonParticles = [];
         this._seasonParticleContainer = null;
@@ -198,6 +203,14 @@ export default class extends Controller {
         this._entityPool = [];
         this._tileTextureCache.clear();
         this._markerTextureCache.clear();
+        if (this._regionControlContainer) {
+            this._regionControlContainer.destroy({ children: true });
+            this._regionControlContainer = null;
+        }
+        if (this._regionBorderOverlay) {
+            this._regionBorderOverlay.destroy({ children: true });
+            this._regionBorderOverlay = null;
+        }
         this._entitySpatialHash.clear();
         this._animatedEntities = [];
         this._particles = [];
@@ -347,6 +360,11 @@ export default class extends Controller {
         // Reapply weather overlay to match new dimensions
         if (this._weatherOverlay) {
             this._applyWeatherEffect(this._currentWeather);
+        }
+        // Resize region control border overlay
+        if (this._regionBorderOverlay && this._regionControl) {
+            const borderColor = this._hexToNumber(this._regionControl.guildColor || '#9333EA');
+            this._drawRegionBorder(borderColor);
         }
     }
 
@@ -608,6 +626,9 @@ export default class extends Controller {
         for (const spot of (data.harvestSpots || [])) {
             this._createHarvestSpotMarker(spot);
         }
+
+        this._regionControl = data.regionControl || null;
+        this._updateRegionControlOverlay();
 
         this._createPlayerMarker();
     }
@@ -2950,6 +2971,7 @@ export default class extends Controller {
         url.searchParams.append('topic', 'map/move');
         url.searchParams.append('topic', 'map/respawn');
         url.searchParams.append('topic', 'map/weather');
+        url.searchParams.append('topic', 'guild/city_control');
 
         this._eventSource = new EventSource(url);
         this._eventSource.onmessage = (event) => {
@@ -2989,6 +3011,8 @@ export default class extends Controller {
             if (data.mapId === this.mapIdValue) {
                 this._transitionWeather(data.weather);
             }
+        } else if (topic === 'guild/city_control' && data.type === 'city_control_change') {
+            this._loadEntities();
         }
     }
 
@@ -3260,6 +3284,116 @@ export default class extends Controller {
         } catch (e) {
             console.warn('[map_pixi] Resync position impossible :', e);
         }
+    }
+
+    // --- Region Control Overlay (guild banner & border) ---
+
+    _updateRegionControlOverlay() {
+        // Clear previous overlay
+        if (this._regionControlContainer) {
+            this._app.stage.removeChild(this._regionControlContainer);
+            this._regionControlContainer.destroy({ children: true });
+            this._regionControlContainer = null;
+        }
+        if (this._regionBorderOverlay) {
+            this._app.stage.removeChild(this._regionBorderOverlay);
+            this._regionBorderOverlay.destroy({ children: true });
+            this._regionBorderOverlay = null;
+        }
+
+        if (!this._regionControl) return;
+
+        const rc = this._regionControl;
+        const color = this._hexToNumber(rc.guildColor || '#9333EA');
+
+        // Subtle border overlay on edges of the viewport
+        this._regionBorderOverlay = new PIXI.Graphics();
+        this._regionBorderOverlay.zIndex = 600;
+        this._drawRegionBorder(color);
+        this._app.stage.addChild(this._regionBorderOverlay);
+
+        // Guild banner (top-left, below minimap area)
+        this._regionControlContainer = new PIXI.Container();
+        this._regionControlContainer.zIndex = 650;
+        this._drawGuildBanner(rc);
+        this._app.stage.addChild(this._regionControlContainer);
+    }
+
+    _drawRegionBorder(color) {
+        const g = this._regionBorderOverlay;
+        if (!g) return;
+        g.clear();
+
+        const viewW = this._currentWidth || this._viewportPx;
+        const viewH = this._currentHeight || this._viewportPx;
+        const thickness = 3;
+        const alpha = 0.35;
+
+        // Top
+        g.rect(0, 0, viewW, thickness);
+        // Bottom
+        g.rect(0, viewH - thickness, viewW, thickness);
+        // Left
+        g.rect(0, 0, thickness, viewH);
+        // Right
+        g.rect(viewW - thickness, 0, thickness, viewH);
+        g.fill({ color, alpha });
+    }
+
+    _drawGuildBanner(rc) {
+        const container = this._regionControlContainer;
+        if (!container) return;
+
+        const color = this._hexToNumber(rc.guildColor || '#9333EA');
+        const pad = 8;
+
+        // Background pill
+        const bg = new PIXI.Graphics();
+        const bannerW = 140;
+        const bannerH = 32;
+        bg.roundRect(0, 0, bannerW, bannerH, 6);
+        bg.fill({ color: 0x111111, alpha: 0.8 });
+        bg.roundRect(0, 0, bannerW, bannerH, 6);
+        bg.stroke({ color, width: 2, alpha: 0.9 });
+        container.addChild(bg);
+
+        // Guild color badge
+        const badge = new PIXI.Graphics();
+        badge.circle(14, bannerH / 2, 6);
+        badge.fill({ color, alpha: 1 });
+        container.addChild(badge);
+
+        // Guild tag text
+        const tagText = new PIXI.Text({
+            text: `[${rc.guildTag}]`,
+            style: {
+                fontFamily: 'monospace',
+                fontSize: 11,
+                fontWeight: 'bold',
+                fill: color,
+            },
+        });
+        tagText.position.set(24, 4);
+        container.addChild(tagText);
+
+        // Region name text
+        const regionText = new PIXI.Text({
+            text: rc.regionName,
+            style: {
+                fontFamily: 'sans-serif',
+                fontSize: 9,
+                fill: 0xaaaaaa,
+            },
+        });
+        regionText.position.set(24, 18);
+        container.addChild(regionText);
+
+        // Position: top-left corner
+        container.position.set(pad, pad);
+    }
+
+    _hexToNumber(hex) {
+        return parseInt(hex.replace('#', ''), 16);
     }
 
     _wait(ms) {
