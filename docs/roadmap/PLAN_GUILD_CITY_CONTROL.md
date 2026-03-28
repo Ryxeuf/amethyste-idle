@@ -203,11 +203,11 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] `ChallengeTracker` (EventSubscriber) : incremente progress, ajoute bonusPoints a completion
 - [x] Migration + fixtures (4 defis de test)
 
-### GCC-18 — Defis hebdomadaires — UI & notifications (S | ★ | BASSE)
+### GCC-18 — Defis hebdomadaires — UI & notifications (S | ★ | BASSE) ✅
 > Prerequis : ← GCC-17
-- [ ] Section "Defis de la semaine" dans page guilde
-- [ ] Barre de progression, notification toast a completion
-- [ ] Historique des defis completes
+- [x] Section "Defis de la semaine" dans page guilde
+- [x] Barre de progression, notification toast a completion
+- [x] Historique des defis completes
 
 ---
 

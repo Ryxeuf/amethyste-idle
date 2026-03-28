@@ -1372,3 +1372,12 @@
 - [x] Controller Stimulus `influence_notification_controller.js` : souscription Mercure + toasts
 - [x] Integration dans le layout de jeu (`game.html.twig`) avec ID de guilde via extension Twig
 - [x] Tests existants adaptes au nouveau retour enrichi de `InfluenceManager::awardInfluence()`
+
+## GCC-18 — Defis hebdomadaires — UI & notifications (2026-03-28) ✅
+
+> Page dediee aux defis hebdomadaires de guilde avec barres de progression, historique des defis termines et notifications toast Mercure a la completion.
+- [x] Route `GET /game/guild/challenges` dans `GuildController` : recupere les defis de la saison active avec progression de la guilde
+- [x] Template `challenges.html.twig` : defis actifs avec barre de progression coloree, defis termines/expires
+- [x] Bouton "Defis hebdomadaires" dans la page guilde principale
+- [x] Publication Mercure `challenge_completed` dans `InfluenceMercurePublisher` declenchee par `ChallengeTracker`
+- [x] Handler `_onChallengeCompleted` dans `influence_notification_controller.js` : toast de succes

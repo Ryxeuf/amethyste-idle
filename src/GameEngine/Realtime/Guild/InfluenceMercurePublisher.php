@@ -7,6 +7,7 @@ use App\Entity\App\GuildInfluence;
 use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Player;
 use App\Entity\App\Region;
+use App\Entity\App\WeeklyChallenge;
 use App\Enum\InfluenceActivityType;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
@@ -95,6 +96,35 @@ class InfluenceMercurePublisher
         $this->logger->info('Mercure published guild/city_control for season "{season}"', [
             'season' => $season->getName(),
             'changes' => \count($changes),
+        ]);
+    }
+
+    /**
+     * Publie une notification de defi hebdomadaire complete pour la guilde.
+     */
+    public function publishChallengeCompleted(Guild $guild, WeeklyChallenge $challenge, Player $player): void
+    {
+        $topic = 'guild/influence/' . $guild->getId();
+
+        $update = new Update(
+            $topic,
+            json_encode([
+                'topic' => $topic,
+                'type' => 'challenge_completed',
+                'guildId' => $guild->getId(),
+                'guildName' => $guild->getName(),
+                'challengeTitle' => $challenge->getTitle(),
+                'bonusPoints' => $challenge->getBonusPoints(),
+                'playerName' => $player->getName(),
+                'activityLabel' => $challenge->getActivityType()->label(),
+            ], JSON_THROW_ON_ERROR),
+        );
+
+        $this->hub->publish($update);
+
+        $this->logger->info('Mercure published challenge_completed: "{title}" by guild {guild}', [
+            'title' => $challenge->getTitle(),
+            'guild' => $guild->getName(),
         ]);
     }
 
