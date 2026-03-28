@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Region;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\RegionBonusProvider;
+use App\GameEngine\Guild\RegionUpgradeManager;
 use App\GameEngine\Guild\TownControlManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,13 +17,15 @@ class RegionBonusProviderTest extends TestCase
 {
     private GuildManager&MockObject $guildManager;
     private TownControlManager&MockObject $townControlManager;
+    private RegionUpgradeManager&MockObject $regionUpgradeManager;
     private RegionBonusProvider $provider;
 
     protected function setUp(): void
     {
         $this->guildManager = $this->createMock(GuildManager::class);
         $this->townControlManager = $this->createMock(TownControlManager::class);
-        $this->provider = new RegionBonusProvider($this->guildManager, $this->townControlManager);
+        $this->regionUpgradeManager = $this->createMock(RegionUpgradeManager::class);
+        $this->provider = new RegionBonusProvider($this->guildManager, $this->townControlManager, $this->regionUpgradeManager);
     }
 
     public function testGetShopDiscountForControllingGuildMember(): void
@@ -39,6 +42,9 @@ class RegionBonusProviderTest extends TestCase
         $this->guildManager->method('getPlayerGuild')
             ->with($player)
             ->willReturn($guild);
+
+        $this->regionUpgradeManager->method('getUpgradeLevel')
+            ->willReturn(0);
 
         $discount = $this->provider->getShopDiscount($player, $map);
 

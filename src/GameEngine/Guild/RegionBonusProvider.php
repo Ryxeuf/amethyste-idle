@@ -11,38 +11,68 @@ class RegionBonusProvider
     /** Discount rate for members of the controlling guild. */
     private const MEMBER_DISCOUNT = 0.10;
 
+    /** Extra shop discount per upgrade level. */
+    private const UPGRADE_SHOP_DISCOUNT_PER_LEVEL = 0.05;
+
+    /** Gathering bonus per upgrade level. */
+    private const UPGRADE_GATHERING_BONUS_PER_LEVEL = 0.10;
+
+    /** XP bonus per upgrade level. */
+    private const UPGRADE_XP_BONUS_PER_LEVEL = 0.05;
+
     public function __construct(
         private readonly GuildManager $guildManager,
         private readonly TownControlManager $townControlManager,
+        private readonly RegionUpgradeManager $regionUpgradeManager,
     ) {
     }
 
     /**
      * Returns the shop discount rate for a player on a given map.
-     * 10% discount if the player belongs to the guild controlling the region.
+     * 10% base discount + up to 15% from shop_discount upgrade.
      */
     public function getShopDiscount(Player $player, ?Map $map): float
     {
-        if ($map === null) {
+        if (!$this->isPlayerInControllingGuild($player, $map)) {
             return 0.0;
         }
 
         $region = $map->getRegion();
-        if ($region === null) {
+        $upgradeLevel = $this->regionUpgradeManager->getUpgradeLevel($region, 'shop_discount');
+
+        return self::MEMBER_DISCOUNT + ($upgradeLevel * self::UPGRADE_SHOP_DISCOUNT_PER_LEVEL);
+    }
+
+    /**
+     * Returns the gathering bonus rate for a player on a given map.
+     * 0% base, up to 30% from gathering_bonus upgrade.
+     */
+    public function getGatheringBonus(Player $player, ?Map $map): float
+    {
+        if (!$this->isPlayerInControllingGuild($player, $map)) {
             return 0.0;
         }
 
-        $controllingGuild = $this->townControlManager->getControllingGuild($region);
-        if ($controllingGuild === null) {
+        $region = $map->getRegion();
+        $upgradeLevel = $this->regionUpgradeManager->getUpgradeLevel($region, 'gathering_bonus');
+
+        return $upgradeLevel * self::UPGRADE_GATHERING_BONUS_PER_LEVEL;
+    }
+
+    /**
+     * Returns the XP bonus rate for a player on a given map.
+     * 0% base, up to 10% from xp_bonus upgrade.
+     */
+    public function getXpBonus(Player $player, ?Map $map): float
+    {
+        if (!$this->isPlayerInControllingGuild($player, $map)) {
             return 0.0;
         }
 
-        $playerGuild = $this->guildManager->getPlayerGuild($player);
-        if ($playerGuild === null || $playerGuild->getId() !== $controllingGuild->getId()) {
-            return 0.0;
-        }
+        $region = $map->getRegion();
+        $upgradeLevel = $this->regionUpgradeManager->getUpgradeLevel($region, 'xp_bonus');
 
-        return self::MEMBER_DISCOUNT;
+        return $upgradeLevel * self::UPGRADE_XP_BONUS_PER_LEVEL;
     }
 
     /**
@@ -83,5 +113,29 @@ class RegionBonusProvider
         }
 
         return $this->townControlManager->getControllingGuild($region);
+    }
+
+    /**
+     * Checks if a player belongs to the guild controlling the region of a map.
+     */
+    private function isPlayerInControllingGuild(Player $player, ?Map $map): bool
+    {
+        if ($map === null) {
+            return false;
+        }
+
+        $region = $map->getRegion();
+        if ($region === null) {
+            return false;
+        }
+
+        $controllingGuild = $this->townControlManager->getControllingGuild($region);
+        if ($controllingGuild === null) {
+            return false;
+        }
+
+        $playerGuild = $this->guildManager->getPlayerGuild($player);
+
+        return $playerGuild !== null && $playerGuild->getId() === $controllingGuild->getId();
     }
 }

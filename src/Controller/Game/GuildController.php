@@ -16,7 +16,9 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\GuildQuestManager;
 use App\GameEngine\Guild\GuildVaultManager;
+use App\GameEngine\Guild\RegionUpgradeManager;
 use App\GameEngine\Guild\SeasonManager;
+use App\GameEngine\Guild\TownControlManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,6 +37,8 @@ class GuildController extends AbstractController
         private readonly GuildVaultManager $vaultManager,
         private readonly GuildQuestManager $guildQuestManager,
         private readonly SeasonManager $seasonManager,
+        private readonly RegionUpgradeManager $regionUpgradeManager,
+        private readonly TownControlManager $townControlManager,
     ) {
     }
 
@@ -577,5 +581,81 @@ class GuildController extends AbstractController
             ],
             'rankings' => $data,
         ]);
+    }
+
+    #[Route('/upgrades', name: 'app_game_guild_upgrades', methods: ['GET'])]
+    public function upgrades(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $membership = $this->guildManager->getPlayerMembership($player);
+        if (!$membership) {
+            return $this->redirectToRoute('app_game_guild');
+        }
+
+        $guild = $membership->getGuild();
+
+        $regions = $this->entityManager->getRepository(Region::class)->findBy(
+            ['isContestable' => true],
+            ['name' => 'ASC'],
+        );
+
+        $regionData = [];
+        foreach ($regions as $region) {
+            $controllingGuild = $this->townControlManager->getControllingGuild($region);
+            $isOurs = $controllingGuild !== null && $controllingGuild->getId() === $guild->getId();
+
+            $regionData[] = [
+                'region' => $region,
+                'controllingGuild' => $controllingGuild,
+                'isOurs' => $isOurs,
+                'upgrades' => $isOurs ? $this->regionUpgradeManager->getUpgradeSummary($region) : [],
+            ];
+        }
+
+        $canManage = \in_array($membership->getRank()->value, ['leader', 'officer'], true);
+
+        return $this->render('game/guild/upgrades.html.twig', [
+            'guild' => $guild,
+            'membership' => $membership,
+            'regionData' => $regionData,
+            'canManage' => $canManage,
+        ]);
+    }
+
+    #[Route('/upgrade/{regionSlug}/{upgradeSlug}', name: 'app_game_guild_upgrade_purchase', methods: ['POST'])]
+    public function upgradePurchase(string $regionSlug, string $upgradeSlug): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $membership = $this->guildManager->getPlayerMembership($player);
+        if (!$membership) {
+            return new JsonResponse(['error' => 'Vous devez etre dans une guilde.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (!\in_array($membership->getRank()->value, ['leader', 'officer'], true)) {
+            return new JsonResponse(['error' => 'Seuls le chef et les officiers peuvent acheter des ameliorations.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $region = $this->entityManager->getRepository(Region::class)->findOneBy(['slug' => $regionSlug]);
+        if ($region === null) {
+            return new JsonResponse(['error' => 'Region introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        try {
+            $upgrade = $this->regionUpgradeManager->purchase($membership->getGuild(), $region, $upgradeSlug);
+
+            $def = RegionUpgradeManager::UPGRADES[$upgradeSlug] ?? null;
+            $label = $def['label'] ?? $upgradeSlug;
+
+            return new JsonResponse([
+                'success' => true,
+                'message' => sprintf('%s ameliore au niveau %d !', $label, $upgrade->getLevel()),
+            ]);
+        } catch (\InvalidArgumentException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 }
