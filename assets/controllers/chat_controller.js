@@ -264,7 +264,12 @@ export default class extends Controller {
         // Guild tag (shown on global and map channels)
         if (data.sender.guildTag && data.channel !== 'guild' && data.channel !== 'private') {
             const tag = document.createElement('span');
-            tag.className = 'text-amber-400 text-xs font-bold mr-0.5';
+            tag.className = 'text-xs font-bold mr-0.5';
+            if (data.sender.guildColor) {
+                tag.style.color = data.sender.guildColor;
+            } else {
+                tag.classList.add('text-amber-400');
+            }
             tag.textContent = `[${this._escapeHtml(data.sender.guildTag)}]`;
             div.appendChild(time);
             div.appendChild(tag);

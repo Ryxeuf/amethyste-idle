@@ -23,7 +23,7 @@ class GuildManager
     /**
      * @throws \InvalidArgumentException
      */
-    public function createGuild(Player $player, string $name, string $tag, ?string $description = null): Guild
+    public function createGuild(Player $player, string $name, string $tag, ?string $description = null, ?string $color = null): Guild
     {
         // Check player is not already in a guild
         $existingMembership = $this->getPlayerMembership($player);
@@ -65,6 +65,9 @@ class GuildManager
         $guild->setName($name);
         $guild->setTag($tag);
         $guild->setDescription($description);
+        if ($color !== null) {
+            $guild->setColor($color);
+        }
         $guild->setLeader($player);
         $guild->setCreatedAt(new \DateTime());
         $guild->setUpdatedAt(new \DateTime());
@@ -182,6 +185,7 @@ class GuildManager
 
         $guild = $membership->getGuild();
         $guild->removeMember($membership);
+        $player->setPrestigeTitle(null);
         $this->entityManager->remove($membership);
         $this->entityManager->flush();
     }
@@ -210,6 +214,7 @@ class GuildManager
 
         $guild = $target->getGuild();
         $guild->removeMember($target);
+        $target->getPlayer()->setPrestigeTitle(null);
         $this->entityManager->remove($target);
         $this->entityManager->flush();
     }
