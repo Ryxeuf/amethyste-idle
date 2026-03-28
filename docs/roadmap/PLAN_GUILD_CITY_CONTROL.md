@@ -121,14 +121,14 @@ Piste G — Infrastructure & qualite    : GCC-19, GCC-20
 - [x] Ignore si joueur pas en guilde ou map sans region
 - [x] Tests unitaires (12+ tests)
 
-### GCC-09 — Anti-exploit — plafonds & diminishing returns (S | ★★ | HAUTE)
+### ~~GCC-09 — Anti-exploit — plafonds & diminishing returns (S | ★★ | HAUTE)~~ ✅
 > Protections anti-farming. Prerequis : ← GCC-08
-- [ ] Plafond journalier : 500 pts max/jour/joueur/region
-- [ ] Diminishing returns : >10 kills meme monstre en 10min → points × 0.1
-- [ ] Decroissance bas niveau : ecart domain XP vs mob_level > 10 → points ÷ 5
-- [ ] Minimum 3 membres actifs (lastActivityAt < 7j) pour accumuler des points
-- [ ] Constantes configurables dans services.yaml
-- [ ] Tests unitaires (5 tests)
+- [x] Plafond journalier : 500 pts max/jour/joueur/region
+- [x] Diminishing returns : >10 kills meme monstre en 10min → points × 0.1
+- [x] Decroissance bas niveau : ecart domain XP vs mob_level > 10 → points ÷ 5
+- [x] Minimum 3 membres actifs (lastActivityAt < 7j) pour accumuler des points
+- [x] Constantes configurables dans services.yaml
+- [x] Tests unitaires (5 tests)
 
 ### ~~GCC-10 — Controle de ville — attribution fin de saison (S | ★★★ | CRITIQUE)~~ ✅
 > Attribution du controle a la guilde gagnante. Prerequis : ← GCC-08

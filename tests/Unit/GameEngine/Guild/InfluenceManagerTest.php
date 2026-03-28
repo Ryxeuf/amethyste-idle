@@ -9,6 +9,7 @@ use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Player;
 use App\Entity\App\Region;
 use App\Enum\InfluenceActivityType;
+use App\GameEngine\Guild\InfluenceAntiExploit;
 use App\GameEngine\Guild\InfluenceManager;
 use App\GameEngine\Guild\SeasonManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +21,7 @@ class InfluenceManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
     private SeasonManager&MockObject $seasonManager;
+    private InfluenceAntiExploit&MockObject $antiExploit;
     private InfluenceManager $manager;
     private EntityRepository&MockObject $influenceRepo;
     private EntityRepository&MockObject $memberRepo;
@@ -28,6 +30,7 @@ class InfluenceManagerTest extends TestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->seasonManager = $this->createMock(SeasonManager::class);
+        $this->antiExploit = $this->createMock(InfluenceAntiExploit::class);
         $this->influenceRepo = $this->createMock(EntityRepository::class);
         $this->memberRepo = $this->createMock(EntityRepository::class);
 
@@ -38,7 +41,10 @@ class InfluenceManagerTest extends TestCase
                 default => $this->createMock(EntityRepository::class),
             });
 
-        $this->manager = new InfluenceManager($this->em, $this->seasonManager);
+        // Par defaut, l'anti-exploit laisse tout passer
+        $this->antiExploit->method('computeFactor')->willReturn(1.0);
+
+        $this->manager = new InfluenceManager($this->em, $this->seasonManager, $this->antiExploit);
     }
 
     public function testCalculatePointsMobKill(): void
@@ -229,6 +235,35 @@ class InfluenceManagerTest extends TestCase
             ['mob_level' => 5],
         );
         $this->assertTrue($result);
+    }
+
+    public function testAwardInfluenceBlockedByAntiExploit(): void
+    {
+        $player = $this->createPlayer(withMap: true);
+        $guild = $this->createGuild();
+        $season = $this->createActiveSeason();
+
+        $member = new GuildMember();
+        $member->setGuild($guild);
+        $member->setPlayer($player);
+
+        $this->memberRepo->method('findOneBy')->willReturn($member);
+        $this->seasonManager->method('getCurrentSeason')->willReturn($season);
+
+        // Override le mock par defaut : anti-exploit bloque
+        $antiExploit = $this->createMock(InfluenceAntiExploit::class);
+        $antiExploit->method('computeFactor')->willReturn(0.0);
+
+        $manager = new InfluenceManager($this->em, $this->seasonManager, $antiExploit);
+
+        $this->em->expects($this->never())->method('persist');
+
+        $result = $manager->awardInfluence(
+            $player,
+            InfluenceActivityType::MobKill,
+            ['mob_level' => 5],
+        );
+        $this->assertFalse($result);
     }
 
     public function testAwardInfluenceWithExplicitRegion(): void

@@ -17,6 +17,7 @@ class InfluenceManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly SeasonManager $seasonManager,
+        private readonly InfluenceAntiExploit $antiExploit,
     ) {
     }
 
@@ -138,7 +139,26 @@ class InfluenceManager
             return false;
         }
 
+        $antiExploitFactor = $this->antiExploit->computeFactor(
+            $player,
+            $guild,
+            $region,
+            $season,
+            $activityType,
+            $context,
+            $details,
+        );
+
+        if ($antiExploitFactor <= 0.0) {
+            return false;
+        }
+
         $points = $this->calculatePoints($activityType, $context);
+        $points = (int) round($points * $antiExploitFactor);
+
+        if ($points <= 0) {
+            return false;
+        }
 
         $this->addPoints($guild, $region, $season, $points, $player, $activityType, $details);
 
