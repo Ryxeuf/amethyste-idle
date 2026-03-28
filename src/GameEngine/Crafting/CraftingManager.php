@@ -88,7 +88,7 @@ class CraftingManager
             return ['ok' => true, 'message' => ''];
         }
 
-        $toolLabel = Item::TOOL_TYPE_LABELS[$requiredToolType] ?? 'un outil';
+        $toolLabel = Item::TOOL_TYPE_LABELS[$requiredToolType];
 
         if (!$player->hasToolSlot($requiredToolType)) {
             return ['ok' => false, 'message' => "Vous devez débloquer l'emplacement de {$toolLabel} via l'arbre de compétences."];

@@ -118,5 +118,4 @@ class HarvestManager
             'toolBroken' => $toolBroken,
         ];
     }
-
 }
