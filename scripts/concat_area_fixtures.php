@@ -57,7 +57,7 @@ foreach ($yamlFiles as $yamlFile) {
             'name' => $areaData['name'] ?? "Zone $x-$y",
             'slug' => $areaData['slug'] ?? "zone-$x-$y",
             'coordinates' => $areaData['coordinates'] ?? "$x.$y",
-            'data' => isset($areaData['fullData']) ? json_decode($areaData['fullData'], true) : ['x' => $x, 'y' => $y],
+            'fullData' => $areaData['fullData'] ?? json_encode(['x' => $x, 'y' => $y]),
         ];
     }
 }
