@@ -8,6 +8,7 @@ use App\Entity\Game\Recipe;
 use App\Event\CraftEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
@@ -25,6 +26,7 @@ class CraftingManager
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GameEventBonusProvider $gameEventBonusProvider,
         private readonly GearHelper $gearHelper,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -90,7 +92,15 @@ class CraftingManager
 
         $toolLabel = Item::TOOL_TYPE_LABELS[$requiredToolType];
 
-        if (!$player->hasToolSlot($requiredToolType)) {
+        $hasSlot = $player->hasToolSlot($requiredToolType)
+            || \in_array($requiredToolType, $this->playerActionHelper->getUnlockedToolSlots(), true);
+
+        if ($hasSlot && !$player->hasToolSlot($requiredToolType)) {
+            $player->unlockToolSlot($requiredToolType);
+            $this->entityManager->flush();
+        }
+
+        if (!$hasSlot) {
             return ['ok' => false, 'message' => "Vous devez débloquer l'emplacement de {$toolLabel} via l'arbre de compétences."];
         }
 

@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Inventory;
 
 use App\Entity\App\PlayerItem;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +18,7 @@ class EquipItemController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly GearHelper $gearHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -44,7 +46,16 @@ class EquipItemController extends AbstractController
         // Handle tool equipping
         if ($genericItem->isTool()) {
             $toolType = $genericItem->getToolType();
-            if ($toolType === null || !$player->hasToolSlot($toolType)) {
+            $hasSlot = $toolType !== null && (
+                $player->hasToolSlot($toolType)
+                || \in_array($toolType, $this->playerActionHelper->getUnlockedToolSlots(), true)
+            );
+
+            if ($hasSlot && !$player->hasToolSlot($toolType)) {
+                $player->unlockToolSlot($toolType);
+            }
+
+            if (!$hasSlot) {
                 $this->addFlash('warning', 'Vous n\'avez pas débloqué cet emplacement d\'outil.');
 
                 return $this->redirectToRoute('app_game_inventory_equipment_list');
