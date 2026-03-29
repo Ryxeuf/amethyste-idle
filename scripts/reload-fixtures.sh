@@ -39,11 +39,15 @@ db_exec() {
 }
 
 echo "==> [1/7] Suppression du schema..."
+# Double nettoyage : Doctrine d'abord, puis DROP CASCADE sur le schema public en fallback
 php_exec php /app/bin/console doctrine:schema:drop --full-database --force --no-interaction 2>/dev/null || true
+db_exec psql -U "$DB_USER" -d "$DB_NAME" -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;" 2>/dev/null || true
 
 echo ""
 echo "==> [2/7] Recreation du schema..."
-php_exec php /app/bin/console doctrine:schema:create --no-interaction
+php_exec php /app/bin/console doctrine:schema:create --no-interaction 2>/dev/null || true
+# Rattrapage : si le schema existait partiellement, on force la mise a jour
+php_exec php /app/bin/console doctrine:schema:update --force --no-interaction --complete
 
 echo ""
 echo "==> [3/7] Synchronisation des migrations (marquer toutes comme executees)..."
