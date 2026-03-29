@@ -14,6 +14,7 @@ use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\QualityCalculator;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
@@ -57,6 +58,7 @@ class CraftingManagerTest extends TestCase
             $this->eventDispatcher,
             $this->gameEventBonusProvider,
             $this->gearHelper,
+            $this->createMock(PlayerActionHelper::class),
         );
     }
 

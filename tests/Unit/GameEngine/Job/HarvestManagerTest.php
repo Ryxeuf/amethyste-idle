@@ -26,6 +26,7 @@ class HarvestManagerTest extends TestCase
     private InventoryHelper&MockObject $inventoryHelper;
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private GearHelper&MockObject $gearHelper;
+    private PlayerActionHelper&MockObject $playerActionHelper;
     private HarvestManager $harvestManager;
 
     protected function setUp(): void
@@ -35,6 +36,7 @@ class HarvestManagerTest extends TestCase
         $this->inventoryHelper = $this->createMock(InventoryHelper::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->gearHelper = $this->createMock(GearHelper::class);
+        $this->playerActionHelper = $this->createMock(PlayerActionHelper::class);
 
         $this->harvestManager = new HarvestManager(
             $this->harvestItemGenerator,
@@ -42,6 +44,7 @@ class HarvestManagerTest extends TestCase
             $this->inventoryHelper,
             $this->eventDispatcher,
             $this->gearHelper,
+            $this->playerActionHelper,
         );
     }
 
@@ -116,11 +119,38 @@ class HarvestManagerTest extends TestCase
         $player = $this->createMock(Player::class);
         $player->method('hasToolSlot')->with(Item::TOOL_TYPE_PICKAXE)->willReturn(false);
 
+        $this->playerActionHelper->method('getUnlockedToolSlots')->willReturn([]);
+
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_PICKAXE);
 
         $this->expectException(UnauthorizedHttpException::class);
         $this->harvestManager->checkToolRequirement($player, $objectLayer);
+    }
+
+    public function testCheckToolRequirementSlotUnlockedViaSkillsAutoSyncs(): void
+    {
+        $playerItem = $this->createMock(PlayerItem::class);
+        $playerItem->method('getCurrentDurability')->willReturn(10);
+
+        $player = $this->createMock(Player::class);
+        $player->method('hasToolSlot')->with(Item::TOOL_TYPE_PICKAXE)->willReturn(false);
+        $player->expects($this->once())->method('unlockToolSlot')->with(Item::TOOL_TYPE_PICKAXE);
+
+        $this->playerActionHelper->method('getUnlockedToolSlots')->willReturn([Item::TOOL_TYPE_PICKAXE]);
+
+        $this->gearHelper->method('getEquippedToolByType')
+            ->with(Item::TOOL_TYPE_PICKAXE)
+            ->willReturn($playerItem);
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $objectLayer = $this->createMock(ObjectLayer::class);
+        $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_PICKAXE);
+
+        $result = $this->harvestManager->checkToolRequirement($player, $objectLayer);
+
+        $this->assertSame($playerItem, $result);
     }
 
     public function testCheckToolRequirementToolNotEquippedThrows(): void

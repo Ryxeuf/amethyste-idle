@@ -24,6 +24,7 @@ class HarvestManager
         private readonly InventoryHelper $inventoryHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GearHelper $gearHelper,
+        private readonly PlayerActionHelper $playerActionHelper,
     ) {
     }
 
@@ -62,8 +63,16 @@ class HarvestManager
 
         $toolName = Item::TOOL_TYPE_LABELS[$requiredToolType] ?? 'un outil adapté';
 
-        // Vérifier que l'emplacement d'outil est débloqué
-        if (!$player->hasToolSlot($requiredToolType)) {
+        // Vérifier que l'emplacement d'outil est débloqué (BDD + skills)
+        $hasSlot = $player->hasToolSlot($requiredToolType)
+            || \in_array($requiredToolType, $this->playerActionHelper->getUnlockedToolSlots(), true);
+
+        if ($hasSlot && !$player->hasToolSlot($requiredToolType)) {
+            $player->unlockToolSlot($requiredToolType);
+            $this->entityManager->flush();
+        }
+
+        if (!$hasSlot) {
             throw new UnauthorizedHttpException("Vous devez débloquer l'emplacement de {$toolName} via l'arbre de compétences correspondant.");
         }
 
