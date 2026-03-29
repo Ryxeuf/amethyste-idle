@@ -34,7 +34,7 @@ class AreaFixtures extends Fixture implements DependentFixtureInterface
                 $area->setName($areaData['name']);
                 $area->setSlug($areaData['slug']);
                 $area->setCoordinates($areaData['coordinates']);
-                $area->setFullData(json_encode($areaData['data']));
+                $area->setFullData($areaData['fullData']);
                 $area->setMap($map);
                 $area->setCreatedAt(new \DateTime());
                 $area->setUpdatedAt(new \DateTime());
