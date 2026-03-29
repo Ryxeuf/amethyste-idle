@@ -11,6 +11,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Spell;
 use App\GameEngine\Fight\SpellApplicator;
+use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Progression\SkillAcquiring;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -181,6 +182,7 @@ class InventoryControllerTest extends TestCase
             $this->playerHelper,
             $this->gearHelper,
             $this->entityManager,
+            $this->createMock(PlayerActionHelper::class),
         );
         $controller->setContainer($this->createContainerWithRouter());
 
