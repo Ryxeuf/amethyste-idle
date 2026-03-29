@@ -1330,6 +1330,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             GameEventFixtures::class,
+            PnjFixtures::class,
             ForestPnjFixtures::class,
             MinesPnjFixtures::class,
             MaraisPnjFixtures::class,
