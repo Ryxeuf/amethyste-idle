@@ -9,3 +9,4 @@ L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'
 
 **Plan annexe :** [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md)
 **Plan annexe :** [roadmap/PLAN_MAP_EDITOR.md](roadmap/PLAN_MAP_EDITOR.md)
+**Plan annexe :** [roadmap/PLAN_TESTING.md](roadmap/PLAN_TESTING.md) — Testing & qualite (TST-01 a TST-15)
