@@ -46,8 +46,12 @@ ENV PHP_INI_SCAN_DIR=":$PHP_INI_DIR/app.conf.d"
 ENV PANTHER_NO_SANDBOX=1
 # Not mandatory, but recommended
 ENV PANTHER_CHROME_ARGUMENTS='--disable-dev-shm-usage'
-# hadolint ignore=DL3008
-RUN apt-get update && apt-get install -y --no-install-recommends chromium chromium-driver && rm -rf /var/lib/apt/lists/*
+# hadolint ignore=DL3008,SC2015
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends --fix-broken chromium chromium-driver \
+    || (apt-get clean && rm -rf /var/lib/apt/lists/* && apt-get update && apt-get install -y --no-install-recommends chromium chromium-driver) \
+    && rm -rf /var/lib/apt/lists/*
 
 # Firefox and geckodriver
 #ARG GECKODRIVER_VERSION=0.34.0
