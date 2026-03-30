@@ -12,6 +12,8 @@ use App\GameEngine\Job\FishingManager;
 use App\GameEngine\Job\HarvestManager;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\World\GameTimeService;
+use App\Helper\GearHelper;
+use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +34,85 @@ class GatheringController extends AbstractController
         private readonly HarvestManager $harvestManager,
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly GameTimeService $gameTimeService,
+        private readonly GearHelper $gearHelper,
+        private readonly PlayerDomainHelper $playerDomainHelper,
     ) {
+    }
+
+    /**
+     * Get detailed info about a harvest spot (items, tool, domain).
+     */
+    #[Route('/spot/{spotId}', name: 'api_gathering_spot', methods: ['GET'])]
+    public function spotInfo(int $spotId): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        if (!$player) {
+            return $this->json(['error' => 'Player not found'], 404);
+        }
+
+        $spot = $this->entityManager->getRepository(ObjectLayer::class)->find($spotId);
+        if (!$spot || !$spot->isHarvestSpot()) {
+            return $this->json(['error' => 'Spot non trouvé.'], 404);
+        }
+
+        // Resolve item names from slugs
+        $possibleItems = [];
+        foreach ($spot->getItems() ?? [] as $itemDef) {
+            $slug = $itemDef['slug'] ?? null;
+            if (!$slug) {
+                continue;
+            }
+            $item = $this->entityManager->getRepository(Item::class)->findOneBy(['slug' => $slug]);
+            $possibleItems[] = [
+                'slug' => $slug,
+                'name' => $item ? $item->getName() : $slug,
+                'rarity' => $item?->getRarity()?->value ?? 'common',
+                'min' => $itemDef['min'] ?? 1,
+                'max' => $itemDef['max'] ?? 1,
+            ];
+        }
+
+        // Tool info
+        $toolType = $spot->getRequiredToolType();
+        $toolInfo = null;
+        if ($toolType) {
+            $tool = $this->gearHelper->getEquippedToolByType($toolType);
+            if ($tool) {
+                $toolInfo = [
+                    'name' => $tool->getGenericItem()->getName(),
+                    'slug' => $tool->getGenericItem()->getSlug(),
+                    'currentDurability' => $tool->getCurrentDurability(),
+                    'maxDurability' => $tool->getGenericItem()->getDurability(),
+                ];
+            }
+        }
+
+        // Domain info
+        $domainInfo = null;
+        $domain = $this->playerDomainHelper->getDomainBySkillAction('harvest', ['spot' => $spot->getSlug()]);
+        if ($domain) {
+            $domainExp = $this->playerDomainHelper->getDomainExperience($domain);
+            $domainInfo = [
+                'name' => $domain->getName(),
+                'slug' => $domain->getSlug(),
+                'totalXp' => $domainExp?->getTotalExperience() ?? 0,
+            ];
+        }
+
+        return $this->json([
+            'id' => $spot->getId(),
+            'name' => $spot->getName(),
+            'slug' => $spot->getSlug(),
+            'toolType' => $toolType,
+            'available' => $spot->isAvailable(),
+            'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
+            'respawnDelay' => $spot->getRespawnDelay(),
+            'possibleItems' => $possibleItems,
+            'tool' => $toolInfo,
+            'domain' => $domainInfo,
+        ]);
     }
 
     /**
@@ -78,16 +158,41 @@ class GatheringController extends AbstractController
             return $this->json(['error' => $e->getMessage()], 400);
         }
 
+        // Get tool before harvest for durability tracking
+        $toolType = $spot->getRequiredToolType();
         $result = $this->harvestManager->harvestResources($spot, $player);
+
+        // Get domain + XP info
+        $domainSlug = null;
+        $domain = $this->playerDomainHelper->getDomainBySkillAction('harvest', ['spot' => $spot->getSlug()]);
+        if ($domain) {
+            $domainSlug = $domain->getSlug();
+        }
+
+        // Get updated tool durability
+        $toolDurability = null;
+        $toolMaxDurability = null;
+        if ($toolType) {
+            $tool = $this->gearHelper->getEquippedToolByType($toolType);
+            if ($tool) {
+                $toolDurability = $tool->getCurrentDurability();
+                $toolMaxDurability = $tool->getGenericItem()->getDurability();
+            }
+        }
 
         return $this->json([
             'success' => count($result['items']) > 0,
             'items' => array_map(fn ($pi) => [
                 'name' => $pi->getGenericItem()->getName(),
                 'slug' => $pi->getGenericItem()->getSlug(),
+                'rarity' => $pi->getGenericItem()->getRarity()?->value ?? 'common',
             ], $result['items']),
             'respawnDelay' => $spot->getRespawnDelay(),
             'toolBroken' => $result['toolBroken'],
+            'toolDurability' => $toolDurability,
+            'toolMaxDurability' => $toolMaxDurability,
+            'domainSlug' => $domainSlug,
+            'xpGained' => $domain ? 1 : 0,
         ]);
     }
 
