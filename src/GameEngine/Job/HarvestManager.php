@@ -76,6 +76,12 @@ class HarvestManager
             throw new \RuntimeException("Équipez {$toolName} dans votre emplacement d'outil pour récolter ici.");
         }
 
+        // Vérifier que le joueur a la compétence pour cet outil spécifique
+        $toolSlug = $tool->getGenericItem()->getSlug();
+        if (!$this->playerActionHelper->canEquipTool($toolSlug)) {
+            throw new \RuntimeException("Vous n'avez pas la compétence requise pour utiliser cet outil.");
+        }
+
         // Vérifier la durabilité
         if ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
             throw new \RuntimeException('Votre outil est cassé. Réparez-le avant de continuer.');

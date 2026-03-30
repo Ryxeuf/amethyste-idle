@@ -115,6 +115,56 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
                 'inventory' => 'inventory_bag',
                 'nb_usages' => 1,
             ],
+            // Pioches (toutes)
+            'player_pickaxe_bronze' => [
+                'generic_item' => 'pickaxe_bronze',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 100,
+                'durability' => true,
+            ],
+            'player_pickaxe_iron' => [
+                'generic_item' => 'pickaxe_iron',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 200,
+                'durability' => true,
+            ],
+            'player_pickaxe_steel' => [
+                'generic_item' => 'pickaxe_steel',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 350,
+                'durability' => true,
+            ],
+            'player_pickaxe_mithril' => [
+                'generic_item' => 'pickaxe_mithril',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 500,
+                'durability' => true,
+            ],
+            // Faucilles (toutes)
+            'player_sickle_bronze' => [
+                'generic_item' => 'sickle_bronze',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 100,
+                'durability' => true,
+            ],
+            'player_sickle_iron' => [
+                'generic_item' => 'sickle_iron',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 200,
+                'durability' => true,
+            ],
+            'player_sickle_steel' => [
+                'generic_item' => 'sickle_steel',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 350,
+                'durability' => true,
+            ],
+            'player_sickle_mithril' => [
+                'generic_item' => 'sickle_mithril',
+                'inventory' => 'inventory_bag',
+                'nb_usages' => 500,
+                'durability' => true,
+            ],
         ];
 
         // Création des potions pour le joueur demo
@@ -202,9 +252,13 @@ class PlayerItemFixtures extends Fixture implements DependentFixtureInterface
         // Création des objets pour le joueur
         foreach ($playerItems as $key => $data) {
             $playerItem = new PlayerItem();
-            $playerItem->setGenericItem($this->getReference($data['generic_item'], Item::class));
+            $genericItem = $this->getReference($data['generic_item'], Item::class);
+            $playerItem->setGenericItem($genericItem);
             $playerItem->setInventory($this->getReference($data['inventory'], Inventory::class));
             $playerItem->setNbUsages($data['nb_usages']);
+            if (!empty($data['durability']) && $genericItem->getDurability() !== null) {
+                $playerItem->setCurrentDurability($genericItem->getDurability());
+            }
             $playerItem->setCreatedAt(new \DateTime());
             $playerItem->setUpdatedAt(new \DateTime());
 

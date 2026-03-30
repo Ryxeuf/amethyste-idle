@@ -113,6 +113,11 @@ class CraftingManager
             return ['ok' => false, 'message' => 'Votre outil est cassé. Réparez-le avant de continuer.'];
         }
 
+        $toolSlug = $tool->getGenericItem()->getSlug();
+        if (!$this->playerActionHelper->canEquipTool($toolSlug)) {
+            return ['ok' => false, 'message' => "Vous n'avez pas la compétence requise pour utiliser cet outil."];
+        }
+
         return ['ok' => true, 'message' => ''];
     }
 

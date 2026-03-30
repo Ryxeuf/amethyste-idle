@@ -95,8 +95,12 @@ class HarvestManagerTest extends TestCase
 
     public function testCheckToolRequirementToolPresent(): void
     {
+        $genericItem = $this->createMock(Item::class);
+        $genericItem->method('getSlug')->willReturn('pickaxe-bronze');
+
         $playerItem = $this->createMock(PlayerItem::class);
         $playerItem->method('getCurrentDurability')->willReturn(10);
+        $playerItem->method('getGenericItem')->willReturn($genericItem);
 
         $player = $this->createMock(Player::class);
         $player->method('hasToolSlot')->with(Item::TOOL_TYPE_PICKAXE)->willReturn(true);
@@ -104,6 +108,10 @@ class HarvestManagerTest extends TestCase
         $this->gearHelper->method('getEquippedToolByType')
             ->with(Item::TOOL_TYPE_PICKAXE)
             ->willReturn($playerItem);
+
+        $this->playerActionHelper->method('canEquipTool')
+            ->with('pickaxe-bronze')
+            ->willReturn(true);
 
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_PICKAXE);
@@ -129,14 +137,21 @@ class HarvestManagerTest extends TestCase
 
     public function testCheckToolRequirementSlotUnlockedViaSkillsAutoSyncs(): void
     {
+        $genericItem = $this->createMock(Item::class);
+        $genericItem->method('getSlug')->willReturn('pickaxe-iron');
+
         $playerItem = $this->createMock(PlayerItem::class);
         $playerItem->method('getCurrentDurability')->willReturn(10);
+        $playerItem->method('getGenericItem')->willReturn($genericItem);
 
         $player = $this->createMock(Player::class);
         $player->method('hasToolSlot')->with(Item::TOOL_TYPE_PICKAXE)->willReturn(false);
         $player->expects($this->once())->method('unlockToolSlot')->with(Item::TOOL_TYPE_PICKAXE);
 
         $this->playerActionHelper->method('getUnlockedToolSlots')->willReturn([Item::TOOL_TYPE_PICKAXE]);
+        $this->playerActionHelper->method('canEquipTool')
+            ->with('pickaxe-iron')
+            ->willReturn(true);
 
         $this->gearHelper->method('getEquippedToolByType')
             ->with(Item::TOOL_TYPE_PICKAXE)
@@ -170,8 +185,12 @@ class HarvestManagerTest extends TestCase
 
     public function testCheckToolRequirementBrokenToolThrows(): void
     {
+        $genericItem = $this->createMock(Item::class);
+        $genericItem->method('getSlug')->willReturn('sickle-bronze');
+
         $playerItem = $this->createMock(PlayerItem::class);
         $playerItem->method('getCurrentDurability')->willReturn(0);
+        $playerItem->method('getGenericItem')->willReturn($genericItem);
 
         $player = $this->createMock(Player::class);
         $player->method('hasToolSlot')->with(Item::TOOL_TYPE_SICKLE)->willReturn(true);
@@ -179,6 +198,10 @@ class HarvestManagerTest extends TestCase
         $this->gearHelper->method('getEquippedToolByType')
             ->with(Item::TOOL_TYPE_SICKLE)
             ->willReturn($playerItem);
+
+        $this->playerActionHelper->method('canEquipTool')
+            ->with('sickle-bronze')
+            ->willReturn(true);
 
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_SICKLE);

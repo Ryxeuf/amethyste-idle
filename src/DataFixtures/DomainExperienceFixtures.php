@@ -37,6 +37,30 @@ class DomainExperienceFixtures extends Fixture implements DependentFixtureInterf
         $manager->persist($demoSoldier);
         $this->addReference('demo_soldier', $demoSoldier);
 
+        // Expérience de domaine pour le joueur demo (mineur)
+        $demoMiner = new DomainExperience();
+        $demoMiner->setPlayer($this->getReference('player_demo', Player::class));
+        $demoMiner->setDomain($this->getReference('miner', Domain::class));
+        $demoMiner->setTotalExperience(100);
+        $demoMiner->setUsedExperience(0);
+        $demoMiner->setCreatedAt(new \DateTime());
+        $demoMiner->setUpdatedAt(new \DateTime());
+
+        $manager->persist($demoMiner);
+        $this->addReference('demo_miner', $demoMiner);
+
+        // Expérience de domaine pour le joueur demo (herboriste)
+        $demoHerbalist = new DomainExperience();
+        $demoHerbalist->setPlayer($this->getReference('player_demo', Player::class));
+        $demoHerbalist->setDomain($this->getReference('herbalist', Domain::class));
+        $demoHerbalist->setTotalExperience(100);
+        $demoHerbalist->setUsedExperience(0);
+        $demoHerbalist->setCreatedAt(new \DateTime());
+        $demoHerbalist->setUpdatedAt(new \DateTime());
+
+        $manager->persist($demoHerbalist);
+        $this->addReference('demo_herbalist', $demoHerbalist);
+
         $manager->flush();
     }
 

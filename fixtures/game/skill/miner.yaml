@@ -1,79 +1,153 @@
+# REFERENCE ONLY — Ces fixtures ne sont PAS chargées automatiquement.
+# La source de vérité est src/DataFixtures/Game/SkillFixtures.php::getMinerSkills()
+#
+# Ce fichier documente l'arbre de compétences du domaine Mineur.
+
 App\Entity\Game\Skill:
+  # Rang 1 (0 pts)
   miner_ruby_xs (extends skill):
     slug: miner-ruby-xs
     title: "Minage du rubis débutant"
-    description: 'Permet de miner le rubis'
-    actions: [{action: 'harvest', spots: ['spot-ruby-xs']}]
+    description: "Permet de miner les filons de rubis basiques et débloque l'emplacement de pioche"
+    actions:
+      - {action: 'harvest', spots: ['spot-ruby-xs']}
+      - {action: 'tool_slot.unlock', slot: 'pickaxe'}
+      - {action: 'equip.tool', slugs: ['pickaxe-bronze']}
     requiredPoints: 0
     domain: '@miner'
-  miner_ruby_s (extends skill):
-    slug: miner-ruby-s
-    title: "Minage du rubis apprenti"
-    description: 'Permet de miner les filons de rubis'
-    actions: [{action: 'harvest', spots: ['spot-ruby-s']}]
-    requiredPoints: 10
-    domain: '@miner'
-    requirements: [ '@miner_ruby_xs' ]
-  miner_ruby_m (extends skill):
-    slug: miner-ruby-m
-    title: "Minage du rubis avancé"
-    description: 'Permet de miner les filons de rubis riches'
-    actions: [{action: 'harvest', spots: ['spot-ruby-m']}]
-    requiredPoints: 50
-    domain: '@miner'
-    requirements: [ '@miner_ruby_s' ]
-  miner_ruby_l (extends skill):
-    slug: miner-ruby-l
-    title: "Minage du rubis expert"
-    description: 'Permet de miner les gros filons de rubis'
-    actions: [{action: 'harvest', spots: ['spot-ruby-l']}]
-    requiredPoints: 100
-    domain: '@miner'
-    requirements: [ '@miner_ruby_m' ]
-  miner_ruby_xl (extends skill):
-    slug: miner-ruby-xl
-    title: "Minage du rubis maître"
-    description: 'Permet de miner les filons de rubis légendaires'
-    actions: [{action: 'harvest', spots: ['spot-ruby-xl']}]
-    requiredPoints: 200
-    domain: '@miner'
-    requirements: [ '@miner_ruby_l' ]
+
   miner_iron_xs (extends skill):
     slug: miner-iron-xs
     title: "Minage du fer débutant"
-    description: "Permet de miner le fer"
-    actions: [{action: 'harvest', spots: ['spot-iron-xs']}]
+    description: "Permet de miner les filons de fer basiques et d'utiliser une pioche en fer"
+    actions:
+      - {action: 'harvest', spots: ['spot-iron-xs']}
+      - {action: 'equip.tool', slugs: ['pickaxe-iron']}
+    requiredPoints: 0
+    domain: '@miner'
+
+  # Rang 2 (10-20 pts)
+  miner_ruby_s (extends skill):
+    slug: miner-ruby-s
+    title: "Minage du rubis apprenti"
+    description: "Permet de miner les filons de rubis apprenti"
+    actions: [{action: 'harvest', spots: ['spot-ruby-s']}]
     requiredPoints: 10
     domain: '@miner'
-    requirements: [ '@miner_ruby_xs' ]
+    requirements: ['@miner_ruby_xs']
+
   miner_iron_s (extends skill):
     slug: miner-iron-s
     title: "Minage du fer apprenti"
-    description: "Permet de miner les filons de fer"
+    description: "Permet de miner les filons de fer apprenti"
     actions: [{action: 'harvest', spots: ['spot-iron-s']}]
-    requiredPoints: 50
+    requiredPoints: 10
     domain: '@miner'
-    requirements: [ '@miner_iron_xs' ]
-  miner_copper_xs (extends skill):
-    slug: miner-copper-xs
-    title: "Minage du cuivre"
-    description: "Permet de miner le cuivre"
-    actions: [{action: 'harvest', spots: ['spot-copper-xs']}]
-    requiredPoints: 0
+    requirements: ['@miner_iron_xs']
+
+  miner_efficiency_1 (extends skill):
+    slug: miner-efficiency-1
+    title: "Pioche affûtée"
+    description: "Augmente la vitesse d'extraction et permet d'utiliser une pioche en acier"
+    actions:
+      - {action: 'equip.tool', slugs: ['pickaxe-steel']}
+    requiredPoints: 15
     domain: '@miner'
-  miner_silver_xs (extends skill):
-    slug: miner-silver-xs
-    title: "Minage de l'argent"
-    description: "Permet de miner l'argent"
-    actions: [{action: 'harvest', spots: ['spot-silver-xs']}]
-    requiredPoints: 100
-    domain: '@miner'
-    requirements: [ '@miner_iron_s' ]
+    hit: 1
+    requirements: ['@miner_ruby_xs']
+
   miner_gold_xs (extends skill):
     slug: miner-gold-xs
-    title: "Minage de l'or"
-    description: "Permet de miner l'or"
+    title: "Minage de l'or débutant"
+    description: "Permet de miner les filons d'or basiques"
     actions: [{action: 'harvest', spots: ['spot-gold-xs']}]
+    requiredPoints: 20
+    domain: '@miner'
+    requirements: ['@miner_iron_xs']
+
+  # Rang 3 (25-50 pts)
+  miner_ruby_m (extends skill):
+    slug: miner-ruby-m
+    title: "Minage du rubis avancé"
+    description: "Permet de miner les filons de rubis avancés"
+    actions: [{action: 'harvest', spots: ['spot-ruby-m']}]
+    requiredPoints: 25
+    domain: '@miner'
+    requirements: ['@miner_ruby_s', '@miner_efficiency_1']
+
+  miner_iron_m (extends skill):
+    slug: miner-iron-m
+    title: "Minage du fer avancé"
+    description: "Permet de miner les filons de fer avancés"
+    actions: [{action: 'harvest', spots: ['spot-iron-m']}]
+    requiredPoints: 30
+    domain: '@miner'
+    requirements: ['@miner_iron_s']
+
+  miner_gold_s (extends skill):
+    slug: miner-gold-s
+    title: "Minage de l'or apprenti"
+    description: "Permet de miner les filons d'or apprenti"
+    actions: [{action: 'harvest', spots: ['spot-gold-s']}]
+    requiredPoints: 30
+    domain: '@miner'
+    requirements: ['@miner_gold_xs']
+
+  miner_yield_1 (extends skill):
+    slug: miner-yield-1
+    title: "Filon généreux"
+    description: "Chance de doubler les minerais extraits"
+    requiredPoints: 40
+    domain: '@miner'
+    critical: 2
+    requirements: ['@miner_ruby_m']
+
+  miner_iron_l (extends skill):
+    slug: miner-iron-l
+    title: "Minage du fer expert"
+    description: "Permet de miner les filons de fer rares"
+    actions: [{action: 'harvest', spots: ['spot-iron-l']}]
+    requiredPoints: 50
+    domain: '@miner'
+    requirements: ['@miner_iron_m']
+
+  # Rang 4 (60-100 pts)
+  miner_ruby_l (extends skill):
+    slug: miner-ruby-l
+    title: "Minage du rubis expert"
+    description: "Permet de miner les filons de rubis rares"
+    actions: [{action: 'harvest', spots: ['spot-ruby-l']}]
+    requiredPoints: 60
+    domain: '@miner'
+    requirements: ['@miner_ruby_m', '@miner_iron_m']
+
+  miner_gold_m (extends skill):
+    slug: miner-gold-m
+    title: "Minage de l'or avancé"
+    description: "Permet de miner les filons d'or avancés"
+    actions: [{action: 'harvest', spots: ['spot-gold-m']}]
+    requiredPoints: 80
+    domain: '@miner'
+    requirements: ['@miner_gold_s', '@miner_yield_1']
+
+  miner_deep_vein (extends skill):
+    slug: miner-deep-vein
+    title: "Veines profondes"
+    description: "Augmente la quantité de minerais et permet d'utiliser une pioche en mithril"
+    actions:
+      - {action: 'equip.tool', slugs: ['pickaxe-mithril']}
+    requiredPoints: 100
+    domain: '@miner'
+    damage: 1
+    critical: 1
+    requirements: ['@miner_iron_l']
+
+  # Rang 5 (150+ pts)
+  miner_master (extends skill):
+    slug: miner-master
+    title: "Maître mineur"
+    description: "Maîtrise absolue du minage — accès aux filons légendaires"
+    actions: [{action: 'harvest', spots: ['spot-ruby-xl', 'spot-iron-xl', 'spot-gold-xl']}]
     requiredPoints: 150
     domain: '@miner'
-    requirements: [ '@miner_silver_xs' ]
+    requirements: ['@miner_ruby_l', '@miner_gold_m']

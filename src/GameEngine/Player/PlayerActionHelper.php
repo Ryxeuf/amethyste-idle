@@ -9,6 +9,7 @@ class PlayerActionHelper
 {
     final public const HARVEST = 'harvest';
     final public const TOOL_SLOT_UNLOCK = 'tool_slot.unlock';
+    final public const EQUIP_TOOL = 'equip.tool';
     final public const MOVEMENT_SWIM = 'movement.swim';
     final public const MOVEMENT_CLIMB = 'movement.climb';
 
@@ -46,6 +47,38 @@ class PlayerActionHelper
         $actions = $this->getActions();
 
         return $actions[self::TOOL_SLOT_UNLOCK] ?? [];
+    }
+
+    /**
+     * Retourne la liste des slugs d'outils que le joueur peut équiper grâce à ses skills.
+     *
+     * @return string[]
+     */
+    public function getEquippableToolSlugs(): array
+    {
+        $actions = $this->getActions();
+
+        return $actions[self::EQUIP_TOOL] ?? [];
+    }
+
+    /**
+     * Vérifie si le joueur peut équiper un outil donné (par slug).
+     */
+    public function canEquipTool(string $toolSlug): bool
+    {
+        return \in_array($toolSlug, $this->getEquippableToolSlugs(), true);
+    }
+
+    /**
+     * Retourne la liste de tous les spots de récolte débloqués par le joueur.
+     *
+     * @return string[]
+     */
+    public function getHarvestSpots(): array
+    {
+        $actions = $this->getActions();
+
+        return $actions[self::HARVEST] ?? [];
     }
 
     /**
@@ -113,6 +146,18 @@ class PlayerActionHelper
                             }
                             $this->actions[$actionKey][] = $slot;
                         }
+                        continue;
+                    }
+
+                    if ($actionKey === self::EQUIP_TOOL) {
+                        $slugs = $action['slugs'] ?? [];
+                        if (!\is_array($slugs)) {
+                            $slugs = [];
+                        }
+                        if (!isset($this->actions[$actionKey])) {
+                            $this->actions[$actionKey] = [];
+                        }
+                        $this->actions[$actionKey] = array_merge($this->actions[$actionKey], $slugs);
                         continue;
                     }
 

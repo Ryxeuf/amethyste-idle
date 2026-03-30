@@ -61,6 +61,14 @@ class EquipItemController extends AbstractController
                 return $this->redirectToRoute('app_game_inventory_equipment_list');
             }
 
+            // Vérifier que le joueur a la compétence pour équiper cet outil spécifique
+            $toolSlug = $genericItem->getSlug();
+            if (!$this->playerActionHelper->canEquipTool($toolSlug)) {
+                $this->addFlash('warning', 'Vous n\'avez pas la compétence requise pour équiper cet outil.');
+
+                return $this->redirectToRoute('app_game_inventory_equipment_list');
+            }
+
             $gearValue = PlayerItem::TOOL_TYPE_TO_GEAR[$toolType] ?? null;
             if ($gearValue === null) {
                 throw new \LogicException('Type d\'outil invalide');
