@@ -7,6 +7,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Helper\PlayerHelper;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -20,7 +21,9 @@ class MapRedirectToFightTest extends TestCase
     protected function setUp(): void
     {
         $this->playerHelper = $this->createMock(PlayerHelper::class);
-        $this->controller = new IndexController($this->playerHelper);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('contains')->willReturn(false);
+        $this->controller = new IndexController($this->playerHelper, $entityManager);
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
         $authChecker->method('isGranted')->willReturn(true);
