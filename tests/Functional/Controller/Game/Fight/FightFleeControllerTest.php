@@ -7,6 +7,7 @@ use App\Entity\App\Fight;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\Game\Monster;
+use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
@@ -39,10 +40,13 @@ class FightFleeControllerTest extends TestCase
         $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
         $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
 
+        $combatLogArchiver = $this->createMock(CombatLogArchiver::class);
+
         $this->controller = new FightFleeController(
             $this->playerHelper,
             $this->entityManager,
             $this->statusEffectManager,
+            $combatLogArchiver,
             $this->combatLogger,
             $turnResolver,
             $mobActionHandler,
