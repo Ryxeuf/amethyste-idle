@@ -2,161 +2,373 @@ import { Controller } from '@hotwired/stimulus';
 
 /**
  * Harvest controller for gathering resources from map spots.
- * Shows a contextual panel when the player is near a harvest spot.
+ * Shows a rich contextual panel when the player clicks a harvest spot.
  *
  * Listens for 'map_pixi:harvestSpot' Stimulus events.
  */
 export default class extends Controller {
-    static targets = ['panel', 'spotName', 'toolType', 'message', 'harvestBtn', 'resultList', 'cooldownBar'];
+    static targets = [
+        'panel', 'spotName', 'spotIcon', 'domainBadge',
+        'loading', 'content',
+        'toolInfo', 'toolIcon', 'toolName', 'toolDurabilityBar', 'toolDurabilityText',
+        'noToolWarning', 'toolType',
+        'itemsSection', 'itemList',
+        'harvestBtn', 'harvestBtnText', 'progressBar',
+        'cooldownSection', 'cooldownBar', 'cooldownText',
+        'resultSection', 'message', 'resultList',
+        'xpGain', 'xpGainText',
+    ];
 
     connect() {
         this._currentSpot = null;
         this._harvesting = false;
         this._cooldownTimer = null;
+        this._boundKeyHandler = this._handleKeydown.bind(this);
     }
 
     disconnect() {
         this._clearCooldown();
+        document.removeEventListener('keydown', this._boundKeyHandler);
     }
 
     /** Called from map controller via Stimulus dispatch */
-    open(event) {
+    async open(event) {
         const spot = event.detail;
         if (!spot || this._harvesting) return;
 
         this._currentSpot = spot;
+        this._resetPanel();
 
+        // Show panel with loading state
         this.spotNameTarget.textContent = spot.name || 'Spot de récolte';
-        this.toolTypeTarget.textContent = this._toolLabel(spot.toolType);
-        this.messageTarget.textContent = '';
-        this.resultListTarget.innerHTML = '';
-
-        // Check if player has the skill to harvest this spot
-        if (spot.canHarvest === false) {
-            this.harvestBtnTarget.disabled = true;
-            this.harvestBtnTarget.textContent = 'Compétence requise';
-            this.messageTarget.textContent = 'Vous n\'avez pas la compétence pour récolter ce spot.';
-            this.messageTarget.className = 'text-yellow-400 text-sm mt-2';
-        } else if (!spot.available) {
-            this.harvestBtnTarget.disabled = true;
-            this.harvestBtnTarget.textContent = `Respawn ${spot.remainingSeconds || '...'}s`;
-        } else {
-            this.harvestBtnTarget.disabled = false;
-            this.harvestBtnTarget.textContent = this._harvestLabel(spot.toolType);
-        }
-
+        this.spotIconTarget.textContent = this._spotEmoji(spot.toolType);
         this.panelTarget.classList.remove('hidden');
-        this.panelTarget.style.transform = 'translateY(10px)';
+        this.loadingTarget.classList.remove('hidden');
+        this.contentTarget.classList.add('hidden');
+
+        // Animate panel in
+        this.panelTarget.style.transform = 'translateY(10px) scale(0.98)';
         this.panelTarget.style.opacity = '0';
-        this.panelTarget.style.transition = 'transform 0.2s ease-out, opacity 0.2s ease-out';
+        this.panelTarget.style.transition = 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease-out';
         requestAnimationFrame(() => {
-            this.panelTarget.style.transform = 'translateY(0)';
+            this.panelTarget.style.transform = 'translateY(0) scale(1)';
             this.panelTarget.style.opacity = '1';
         });
+
+        // Enable keyboard shortcuts
+        document.addEventListener('keydown', this._boundKeyHandler);
+
+        // Check quick fail states before API call
+        if (spot.canHarvest === false) {
+            this._showNoSkill();
+            return;
+        }
+
+        // Fetch spot details from API
+        try {
+            const resp = await fetch(`/api/gathering/spot/${spot.id}`);
+            const data = await resp.json();
+
+            if (!resp.ok) {
+                this._showError(data.error || 'Impossible de charger les détails.');
+                return;
+            }
+
+            this._populatePanel(data, spot);
+        } catch {
+            this._showError('Erreur de connexion.');
+        }
     }
 
     close() {
-        this.panelTarget.style.transform = 'translateY(10px)';
+        document.removeEventListener('keydown', this._boundKeyHandler);
+        this.panelTarget.style.transform = 'translateY(8px) scale(0.98)';
         this.panelTarget.style.opacity = '0';
         setTimeout(() => {
             this.panelTarget.classList.add('hidden');
             this._currentSpot = null;
+            this._clearCooldown();
         }, 200);
     }
 
     async harvest() {
         if (!this._currentSpot || this._harvesting) return;
         if (this._currentSpot.canHarvest === false) return;
-
-        this._harvesting = true;
-        this.harvestBtnTarget.disabled = true;
-        this.harvestBtnTarget.textContent = 'Récolte en cours...';
-        this.messageTarget.textContent = '';
-        this.resultListTarget.innerHTML = '';
+        if (this.harvestBtnTarget.disabled) return;
 
         const spotId = this._currentSpot.id;
         const isFishing = this._currentSpot.toolType === 'fishing_rod';
 
-        try {
-            let result;
-            if (isFishing) {
-                // Dispatch fishing mini-game event instead
-                this.dispatch('startFishing', { detail: this._currentSpot });
-                this._harvesting = false;
-                this.harvestBtnTarget.disabled = false;
-                this.harvestBtnTarget.textContent = this._harvestLabel(this._currentSpot.toolType);
-                this.close();
-                return;
-            }
+        if (isFishing) {
+            this.dispatch('startFishing', { detail: this._currentSpot });
+            this.close();
+            return;
+        }
 
+        this._harvesting = true;
+        this.harvestBtnTarget.disabled = true;
+        this.harvestBtnTextTarget.textContent = 'Récolte en cours…';
+
+        // Clear previous results
+        this._hideResults();
+
+        // Animate progress bar
+        this.progressBarTarget.style.transition = 'none';
+        this.progressBarTarget.style.transform = 'scaleX(0)';
+        requestAnimationFrame(() => {
+            this.progressBarTarget.style.transition = 'transform 1.5s ease-in-out';
+            this.progressBarTarget.style.transform = 'scaleX(1)';
+        });
+
+        try {
             const resp = await fetch(`/api/gathering/harvest/${spotId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
             });
-            result = await resp.json();
+            const result = await resp.json();
+
+            // Reset progress bar
+            setTimeout(() => {
+                this.progressBarTarget.style.transition = 'transform 0.3s ease-out';
+                this.progressBarTarget.style.transform = 'scaleX(0)';
+            }, 300);
 
             if (!resp.ok) {
-                this.messageTarget.textContent = result.error || 'Impossible de récolter ici.';
-                this.messageTarget.className = 'text-red-400 text-sm mt-2';
+                this._showResultMessage(result.error || 'Impossible de récolter ici.', 'error');
             } else if (result.success) {
-                this.messageTarget.textContent = 'Récolte réussie !';
-                this.messageTarget.className = 'text-green-400 text-sm mt-2';
-
-                // Notify map controller to spawn green particles
-                this.dispatch('harvestSuccess', { detail: { items: result.items || [] } });
-
-                // Show harvested items
-                for (const item of (result.items || [])) {
-                    const li = document.createElement('div');
-                    li.className = 'text-yellow-300 text-xs mt-1';
-                    li.textContent = `+ ${item.name}`;
-                    this.resultListTarget.appendChild(li);
-                }
-
-                if (result.toolBroken) {
-                    const warn = document.createElement('div');
-                    warn.className = 'text-red-400 text-xs mt-1 font-bold';
-                    warn.textContent = 'Votre outil est brisé !';
-                    this.resultListTarget.appendChild(warn);
-                }
-
-                // Start cooldown display
-                if (result.respawnDelay) {
-                    this._startCooldown(result.respawnDelay);
-                }
+                this._showHarvestResults(result);
+                this.dispatch('harvestSuccess', { detail: { items: result.items || [], spotId } });
             } else {
-                this.messageTarget.textContent = 'Aucune ressource obtenue.';
-                this.messageTarget.className = 'text-gray-400 text-sm mt-2';
+                this._showResultMessage('Aucune ressource obtenue.', 'empty');
             }
-        } catch (err) {
-            console.error('[harvest] Error:', err);
-            this.messageTarget.textContent = 'Erreur de connexion.';
-            this.messageTarget.className = 'text-red-400 text-sm mt-2';
+        } catch {
+            this._showResultMessage('Erreur de connexion.', 'error');
         } finally {
             this._harvesting = false;
             this.harvestBtnTarget.disabled = false;
-            this.harvestBtnTarget.textContent = this._harvestLabel(this._currentSpot?.toolType);
+            this.harvestBtnTextTarget.textContent = this._harvestLabel(this._currentSpot?.toolType);
         }
     }
 
-    _startCooldown(seconds) {
+    // --- Private methods ---
+
+    _resetPanel() {
+        this._clearCooldown();
+        this._hideResults();
+        this.loadingTarget.classList.add('hidden');
+        this.contentTarget.classList.remove('hidden');
+        this.toolInfoTarget.classList.add('hidden');
+        this.noToolWarningTarget.classList.add('hidden');
+        this.itemsSectionTarget.classList.add('hidden');
+        this.cooldownSectionTarget.classList.add('hidden');
+        this.domainBadgeTarget.classList.add('hidden');
+        this.itemListTarget.innerHTML = '';
+        this.progressBarTarget.style.transform = 'scaleX(0)';
+        this.harvestBtnTarget.disabled = false;
+        this.harvestBtnTextTarget.textContent = 'Récolter';
+    }
+
+    _populatePanel(data, spot) {
+        this.loadingTarget.classList.add('hidden');
+        this.contentTarget.classList.remove('hidden');
+
+        // Domain badge
+        if (data.domain) {
+            this.domainBadgeTarget.textContent = data.domain.name;
+            this.domainBadgeTarget.classList.remove('hidden');
+        }
+
+        // Tool info
+        if (data.tool) {
+            this._showToolInfo(data.tool);
+        } else if (data.toolType) {
+            this.noToolWarningTarget.classList.remove('hidden');
+            this.toolTypeTarget.textContent = this._toolLabel(data.toolType);
+        }
+
+        // Possible items
+        if (data.possibleItems && data.possibleItems.length > 0) {
+            this._showPossibleItems(data.possibleItems);
+        }
+
+        // Button label
+        this.harvestBtnTextTarget.textContent = this._harvestLabel(spot.toolType);
+
+        // Availability
+        if (!data.available) {
+            this.harvestBtnTarget.disabled = true;
+            if (data.remainingSeconds > 0) {
+                this._startCooldown(data.remainingSeconds, data.respawnDelay || data.remainingSeconds);
+            }
+        } else if (!data.tool && data.toolType) {
+            this.harvestBtnTarget.disabled = true;
+        }
+    }
+
+    _showToolInfo(tool) {
+        this.toolInfoTarget.classList.remove('hidden');
+        this.toolNameTarget.textContent = tool.name;
+        this.toolIconTarget.textContent = this._toolEmoji(this._currentSpot?.toolType);
+
+        const current = tool.currentDurability ?? 0;
+        const max = tool.maxDurability ?? 1;
+        const pct = Math.max(0, Math.min(100, (current / max) * 100));
+
+        this.toolDurabilityTextTarget.textContent = `${current}/${max}`;
+        this.toolDurabilityBarTarget.style.width = `${pct}%`;
+        this.toolDurabilityBarTarget.className = `h-full rounded-full transition-all duration-500 ${this._durabilityColor(pct)}`;
+    }
+
+    _showPossibleItems(items) {
+        this.itemsSectionTarget.classList.remove('hidden');
+        this.itemListTarget.innerHTML = '';
+
+        for (const item of items) {
+            const el = document.createElement('div');
+            el.className = `flex items-center gap-1.5 text-xs px-2 py-1.5 rounded-lg bg-gray-800/60 border border-gray-700/40 ${this._rarityBorderClass(item.rarity)}`;
+
+            const icon = document.createElement('span');
+            icon.className = 'text-sm shrink-0';
+            icon.textContent = this._itemEmoji(item.slug);
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = `truncate ${this._rarityTextClass(item.rarity)}`;
+            nameSpan.textContent = item.name;
+
+            const qtySpan = document.createElement('span');
+            qtySpan.className = 'text-gray-500 text-[10px] ml-auto shrink-0 tabular-nums';
+            qtySpan.textContent = item.min === item.max ? `×${item.min}` : `${item.min}-${item.max}`;
+
+            el.appendChild(icon);
+            el.appendChild(nameSpan);
+            el.appendChild(qtySpan);
+            this.itemListTarget.appendChild(el);
+        }
+    }
+
+    _showHarvestResults(result) {
+        this.resultSectionTarget.classList.remove('hidden');
+
+        // Message
+        this._showResultMessage('Récolte réussie !', 'success');
+
+        // Items with staggered animation
+        this.resultListTarget.innerHTML = '';
+        (result.items || []).forEach((item, i) => {
+            const el = document.createElement('div');
+            el.className = `flex items-center gap-2 text-xs px-2 py-1 rounded-lg ${this._rarityBgClass(item.rarity)} opacity-0`;
+            el.style.transition = 'opacity 0.3s ease-out, transform 0.3s ease-out';
+            el.style.transform = 'translateX(-8px)';
+
+            const icon = document.createElement('span');
+            icon.textContent = this._itemEmoji(item.slug);
+
+            const name = document.createElement('span');
+            name.className = this._rarityTextClass(item.rarity);
+            name.textContent = `+ ${item.name}`;
+
+            el.appendChild(icon);
+            el.appendChild(name);
+            this.resultListTarget.appendChild(el);
+
+            // Staggered fade-in
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateX(0)';
+            }, 100 + i * 120);
+        });
+
+        // Tool broken warning
+        if (result.toolBroken) {
+            const warn = document.createElement('div');
+            warn.className = 'flex items-center gap-1 text-red-400 text-xs font-bold mt-1 animate-pulse';
+            warn.innerHTML = '<span>🔨</span><span>Votre outil est brisé !</span>';
+            this.resultListTarget.appendChild(warn);
+        }
+
+        // Update tool durability bar
+        if (result.toolDurability !== null && result.toolDurability !== undefined && this.hasToolInfoTarget) {
+            this._animateToolDurability(result.toolDurability, result.toolMaxDurability || 1);
+        }
+
+        // XP gained
+        if (result.xpGained > 0 && result.domainSlug) {
+            this.xpGainTarget.classList.remove('hidden');
+            this.xpGainTextTarget.textContent = `+${result.xpGained} XP`;
+            // Pop animation
+            this.xpGainTarget.style.transform = 'scale(0.5)';
+            this.xpGainTarget.style.opacity = '0';
+            this.xpGainTarget.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease-out';
+            setTimeout(() => {
+                this.xpGainTarget.style.transform = 'scale(1)';
+                this.xpGainTarget.style.opacity = '1';
+            }, (result.items?.length || 0) * 120 + 200);
+        }
+
+        // Start cooldown
+        if (result.respawnDelay) {
+            this._startCooldown(result.respawnDelay, result.respawnDelay);
+        }
+    }
+
+    _showResultMessage(text, type) {
+        this.resultSectionTarget.classList.remove('hidden');
+        this.messageTarget.textContent = text;
+        const classes = {
+            success: 'text-emerald-400',
+            error: 'text-red-400',
+            empty: 'text-gray-400',
+        };
+        this.messageTarget.className = `text-sm font-medium mb-1.5 ${classes[type] || 'text-gray-400'}`;
+    }
+
+    _hideResults() {
+        if (this.hasResultSectionTarget) this.resultSectionTarget.classList.add('hidden');
+        if (this.hasResultListTarget) this.resultListTarget.innerHTML = '';
+        if (this.hasMessageTarget) this.messageTarget.textContent = '';
+        if (this.hasXpGainTarget) this.xpGainTarget.classList.add('hidden');
+    }
+
+    _showNoSkill() {
+        this.loadingTarget.classList.add('hidden');
+        this.contentTarget.classList.remove('hidden');
+        this.harvestBtnTarget.disabled = true;
+        this.harvestBtnTextTarget.textContent = 'Compétence requise';
+        this._showResultMessage('Vous n\'avez pas la compétence pour récolter ce spot.', 'error');
+    }
+
+    _showError(text) {
+        this.loadingTarget.classList.add('hidden');
+        this.contentTarget.classList.remove('hidden');
+        this._showResultMessage(text, 'error');
+    }
+
+    _animateToolDurability(current, max) {
+        const pct = Math.max(0, Math.min(100, (current / max) * 100));
+        this.toolDurabilityTextTarget.textContent = `${current}/${max}`;
+        this.toolDurabilityBarTarget.style.width = `${pct}%`;
+        this.toolDurabilityBarTarget.className = `h-full rounded-full transition-all duration-500 ${this._durabilityColor(pct)}`;
+    }
+
+    _startCooldown(seconds, total) {
+        this.cooldownSectionTarget.classList.remove('hidden');
         this.harvestBtnTarget.disabled = true;
         let remaining = seconds;
 
         const update = () => {
             if (remaining <= 0) {
                 this.harvestBtnTarget.disabled = false;
-                this.harvestBtnTarget.textContent = this._harvestLabel(this._currentSpot?.toolType);
-                if (this.hasCooldownBarTarget) {
-                    this.cooldownBarTarget.style.width = '100%';
-                }
+                this.harvestBtnTextTarget.textContent = this._harvestLabel(this._currentSpot?.toolType);
+                this.cooldownBarTarget.style.width = '100%';
+                this.cooldownTextTarget.textContent = 'Prêt !';
+                this.cooldownSectionTarget.classList.add('hidden');
+                this._hideResults();
                 return;
             }
-            this.harvestBtnTarget.textContent = `Respawn ${remaining}s`;
-            if (this.hasCooldownBarTarget) {
-                const pct = ((seconds - remaining) / seconds) * 100;
-                this.cooldownBarTarget.style.width = `${pct}%`;
-            }
+            const pct = ((total - remaining) / total) * 100;
+            this.cooldownBarTarget.style.width = `${pct}%`;
+            this.cooldownTextTarget.textContent = `${remaining}s`;
+            this.harvestBtnTextTarget.textContent = `Respawn ${remaining}s`;
             remaining--;
             this._cooldownTimer = setTimeout(update, 1000);
         };
@@ -170,23 +382,61 @@ export default class extends Controller {
         }
     }
 
+    _handleKeydown(e) {
+        if (e.key === 'Escape') {
+            this.close();
+        } else if (e.key === ' ' || e.key === 'Enter') {
+            if (!this.harvestBtnTarget.disabled && !this._harvesting) {
+                e.preventDefault();
+                this.harvest();
+            }
+        }
+    }
+
+    // --- Emoji / label helpers ---
+
+    _spotEmoji(toolType) {
+        return { pickaxe: '⛏️', sickle: '🌿', fishing_rod: '🎣', skinning_knife: '🔪' }[toolType] || '💎';
+    }
+
+    _toolEmoji(toolType) {
+        return { pickaxe: '⛏️', sickle: '🌾', fishing_rod: '🎣', skinning_knife: '🗡️' }[toolType] || '🔧';
+    }
+
     _toolLabel(toolType) {
-        const labels = {
-            pickaxe: 'Pioche requise',
-            sickle: 'Faucille requise',
-            fishing_rod: 'Canne à pêche requise',
-            skinning_knife: 'Couteau de dépeçage requis',
-        };
-        return labels[toolType] || 'Outil requis';
+        return { pickaxe: 'Pioche requise', sickle: 'Faucille requise', fishing_rod: 'Canne à pêche requise', skinning_knife: 'Couteau de dépeçage requis' }[toolType] || 'Outil requis';
     }
 
     _harvestLabel(toolType) {
-        const labels = {
-            pickaxe: 'Miner',
-            sickle: 'Récolter',
-            fishing_rod: 'Pêcher',
-            skinning_knife: 'Dépecer',
-        };
-        return labels[toolType] || 'Récolter';
+        return { pickaxe: 'Miner', sickle: 'Récolter', fishing_rod: 'Pêcher', skinning_knife: 'Dépecer' }[toolType] || 'Récolter';
+    }
+
+    _itemEmoji(slug) {
+        if (!slug) return '📦';
+        if (slug.startsWith('ore-') || slug.startsWith('mineral-')) return '💎';
+        if (slug.startsWith('herb-') || slug.startsWith('plant-') || slug.startsWith('flower-')) return '🌿';
+        if (slug.startsWith('fish-')) return '🐟';
+        if (slug.startsWith('leather-') || slug.startsWith('hide-') || slug.startsWith('skin-')) return '🧶';
+        if (slug.startsWith('wood-') || slug.startsWith('log-')) return '🪵';
+        if (slug.startsWith('gem-')) return '💠';
+        return '📦';
+    }
+
+    _durabilityColor(pct) {
+        if (pct > 60) return 'bg-emerald-500';
+        if (pct > 30) return 'bg-yellow-500';
+        return 'bg-red-500';
+    }
+
+    _rarityTextClass(rarity) {
+        return { common: 'text-gray-300', uncommon: 'text-green-400', rare: 'text-blue-400', epic: 'text-purple-400', legendary: 'text-amber-400' }[rarity] || 'text-gray-300';
+    }
+
+    _rarityBorderClass(rarity) {
+        return { uncommon: 'border-green-500/30', rare: 'border-blue-500/30', epic: 'border-purple-500/30', legendary: 'border-amber-500/30' }[rarity] || '';
+    }
+
+    _rarityBgClass(rarity) {
+        return { common: 'bg-gray-800/40', uncommon: 'bg-green-900/20', rare: 'bg-blue-900/20', epic: 'bg-purple-900/20', legendary: 'bg-amber-900/20' }[rarity] || 'bg-gray-800/40';
     }
 }

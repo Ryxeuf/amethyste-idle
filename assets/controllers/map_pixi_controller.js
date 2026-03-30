@@ -1264,15 +1264,92 @@ export default class extends Controller {
 
     /**
      * Called when harvest controller reports a successful harvest.
-     * Spawns green sparkle particles + gold XP stars at the player's position.
+     * Spawns contextual particles + floating item names at the player's position.
      */
-    onHarvestSuccess() {
+    onHarvestSuccess(event) {
         const cx = this._playerX * this._tileSize + this._tileSize / 2;
         const cy = this._playerY * this._tileSize + this._tileSize / 2;
-        // Green sparkles for harvest
-        this.spawnParticles(cx, cy, { count: 10, color: 0x22c55e, life: 900, spread: 20 });
-        // Gold stars for domain XP gain
+
+        const items = event?.detail?.items || [];
+        const spotId = event?.detail?.spotId;
+
+        // Contextual particle color based on nearby spot type
+        let particleColor = 0x22c55e; // green default
+        if (spotId) {
+            const entry = this._entitySprites[`harvest_${spotId}`];
+            const toolType = entry?.spotData?.toolType;
+            if (toolType === 'pickaxe') particleColor = 0xd4a574;      // brown/gold
+            else if (toolType === 'fishing_rod') particleColor = 0x3b82f6; // blue
+            else if (toolType === 'skinning_knife') particleColor = 0xef4444; // red
+        }
+
+        // Burst particles
+        this.spawnParticles(cx, cy, { count: 14, color: particleColor, life: 1000, spread: 24 });
+        // Gold XP stars
         this.spawnParticles(cx, cy, { count: 5, color: 0xfbbf24, life: 1200, spread: 12 });
+
+        // Floating item names above the player
+        items.forEach((item, i) => {
+            this._spawnFloatingText(cx, cy - 10 - i * 16, `+${item.name}`, this._rarityHexColor(item.rarity));
+        });
+
+        // Dim the harvested spot
+        if (spotId) {
+            const entry = this._entitySprites[`harvest_${spotId}`];
+            if (entry?.container) {
+                entry.container.alpha = 0.3;
+            }
+        }
+    }
+
+    /**
+     * Spawn a floating text that drifts upward and fades out.
+     */
+    _spawnFloatingText(worldX, worldY, text, color = 0xffffff) {
+        if (!this._app || !this._entityContainer) return;
+
+        const label = new PIXI.Text({
+            text,
+            style: {
+                fontSize: 10,
+                fontFamily: 'monospace',
+                fill: color,
+                fontWeight: 'bold',
+                dropShadow: true,
+                dropShadowColor: 0x000000,
+                dropShadowDistance: 1,
+                dropShadowBlur: 2,
+            },
+        });
+        label.anchor.set(0.5, 1);
+        label.position.set(worldX, worldY);
+        label.zIndex = 9999;
+        this._entityContainer.addChild(label);
+
+        const startY = worldY;
+        const duration = 1500;
+        const startTime = Date.now();
+
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const t = Math.min(elapsed / duration, 1);
+            label.position.y = startY - t * 30;
+            label.alpha = 1 - t * t;
+            if (t < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                this._entityContainer.removeChild(label);
+                label.destroy();
+            }
+        };
+        requestAnimationFrame(animate);
+    }
+
+    /**
+     * Map rarity string to hex color for floating text.
+     */
+    _rarityHexColor(rarity) {
+        return { common: 0xd1d5db, uncommon: 0x4ade80, rare: 0x60a5fa, epic: 0xc084fc, legendary: 0xfbbf24 }[rarity] || 0xd1d5db;
     }
 
     // --- Weather Visual Effects ---
