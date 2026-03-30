@@ -68,7 +68,7 @@ class GatheringController extends AbstractController
             $possibleItems[] = [
                 'slug' => $slug,
                 'name' => $item ? $item->getName() : $slug,
-                'rarity' => $item?->getRarity()?->value ?? 'common',
+                'rarity' => $item?->getRarity() ?? 'common',
                 'min' => $itemDef['min'] ?? 1,
                 'max' => $itemDef['max'] ?? 1,
             ];
@@ -95,7 +95,7 @@ class GatheringController extends AbstractController
         if ($domain) {
             $domainExp = $this->playerDomainHelper->getDomainExperience($domain);
             $domainInfo = [
-                'name' => $domain->getName(),
+                'name' => $domain->getTitle(),
                 'slug' => $domain->getSlug(),
                 'totalXp' => $domainExp?->getTotalExperience() ?? 0,
             ];
@@ -185,7 +185,7 @@ class GatheringController extends AbstractController
             'items' => array_map(fn ($pi) => [
                 'name' => $pi->getGenericItem()->getName(),
                 'slug' => $pi->getGenericItem()->getSlug(),
-                'rarity' => $pi->getGenericItem()->getRarity()?->value ?? 'common',
+                'rarity' => $pi->getGenericItem()->getRarity() ?? 'common',
             ], $result['items']),
             'respawnDelay' => $spot->getRespawnDelay(),
             'toolBroken' => $result['toolBroken'],
