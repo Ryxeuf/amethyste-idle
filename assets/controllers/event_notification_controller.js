@@ -5,7 +5,7 @@ import { Controller } from '@hotwired/stimulus';
  * when a GameEvent becomes active. Also shows active events in the HUD badge.
  */
 export default class extends Controller {
-    static targets = ['badge', 'list', 'wrapper', 'trigger'];
+    static targets = ['badge', 'list', 'wrapper', 'trigger', 'panel'];
     static values = {
         mercureUrl: String,
         eventsUrl: String,
@@ -16,8 +16,9 @@ export default class extends Controller {
         this._loadActiveEvents();
         this._connectMercure();
         this._onDocumentClick = (e) => {
-            if (!this.hasWrapperTarget || this.wrapperTarget.contains(e.target)) return;
-            this._setPanelOpen(false);
+            if (!this.element.contains(e.target)) {
+                this._setPanelOpen(false);
+            }
         };
         document.addEventListener('click', this._onDocumentClick);
     }
@@ -33,14 +34,16 @@ export default class extends Controller {
     togglePanel(event) {
         event.preventDefault();
         event.stopPropagation();
-        if (!this.hasWrapperTarget) return;
-        const open = !this.wrapperTarget.classList.contains('panel-open');
+        if (!this.hasPanelTarget) return;
+        const open = this.panelTarget.classList.contains('invisible');
         this._setPanelOpen(open);
     }
 
     _setPanelOpen(open) {
-        if (!this.hasWrapperTarget) return;
-        this.wrapperTarget.classList.toggle('panel-open', open);
+        if (!this.hasPanelTarget) return;
+        this.panelTarget.classList.toggle('invisible', !open);
+        this.panelTarget.classList.toggle('opacity-0', !open);
+        this.panelTarget.classList.toggle('pointer-events-none', !open);
         if (this.hasTriggerTarget) {
             this.triggerTarget.setAttribute('aria-expanded', open ? 'true' : 'false');
         }
