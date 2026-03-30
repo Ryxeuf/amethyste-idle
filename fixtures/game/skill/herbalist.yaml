@@ -1,55 +1,76 @@
+# REFERENCE ONLY — Ces fixtures ne sont PAS chargées automatiquement.
+# La source de vérité est src/DataFixtures/Game/SkillFixtures.php::getHerbalistSkills()
+
 App\Entity\Game\Skill:
+  # Rang 1 (0 pts)
   herbalist_dandelion (extends skill):
     slug: herbalist-dandelion-xs
     title: "Récolte de pissenlit"
-    description: 'Permet de récolter les pissenlits'
+    description: "Permet de récolter les pissenlits basiques et débloque l'emplacement de faucille"
     requiredPoints: 0
-    actions: [{action: 'harvest', spots: ['spot-dandelion-xs']}]
+    actions:
+      - {action: 'harvest', spots: ['spot-dandelion-xs']}
+      - {action: 'tool_slot.unlock', slot: 'sickle'}
+      - {action: 'equip.tool', slugs: ['sickle-bronze']}
     domain: '@herbalist'
+
   herbalist_mint (extends skill):
     slug: herbalist-mint-xs
     title: "Récolte de menthe"
-    description: 'Permet de récolter la menthe'
+    description: "Permet de récolter la menthe basique et d'utiliser une faucille en fer"
     requiredPoints: 0
-    actions: [{action: 'harvest', spots: ['spot-mint-xs']}]
+    actions:
+      - {action: 'harvest', spots: ['spot-mint-xs']}
+      - {action: 'equip.tool', slugs: ['sickle-iron']}
     domain: '@herbalist'
+
+  # Rang 2 (10-20 pts)
   herbalist_sage (extends skill):
     slug: herbalist-sage-xs
     title: "Récolte de sauge"
-    description: 'Permet de récolter la sauge'
+    description: "Permet de récolter la sauge"
     requiredPoints: 10
     actions: [{action: 'harvest', spots: ['spot-sage-xs']}]
     domain: '@herbalist'
-    requirements: [ '@herbalist_mint' ]
-  herbalist_lavender (extends skill):
-    slug: herbalist-lavender-xs
-    title: "Récolte de lavande"
-    description: 'Permet de récolter la lavande'
+    requirements: ['@herbalist_mint']
+
+  herbalist_dandelion_s (extends skill):
+    slug: herbalist-dandelion-s
+    title: "Récolte de pissenlit apprenti"
+    description: "Permet de récolter les pissenlits de qualité supérieure"
     requiredPoints: 10
-    actions: [{action: 'harvest', spots: ['spot-lavender-xs']}]
+    actions: [{action: 'harvest', spots: ['spot-dandelion-s']}]
     domain: '@herbalist'
-    requirements: [ '@herbalist_dandelion' ]
-  herbalist_thyme (extends skill):
-    slug: herbalist-thyme-xs
-    title: "Récolte de thym"
-    description: 'Permet de récolter le thym sauvage'
+    requirements: ['@herbalist_dandelion']
+
+  herbalist_keen_eye (extends skill):
+    slug: herbalist-keen-eye
+    title: "Oeil aiguisé"
+    description: "Augmente les chances de trouver des plantes rares et permet d'utiliser une faucille en acier"
+    actions:
+      - {action: 'equip.tool', slugs: ['sickle-steel']}
+    requiredPoints: 15
+    domain: '@herbalist'
+    critical: 1
+    requirements: ['@herbalist_dandelion']
+
+  herbalist_chamomile (extends skill):
+    slug: herbalist-chamomile-xs
+    title: "Récolte de camomille"
+    description: "Permet de récolter la camomille"
     requiredPoints: 20
-    actions: [{action: 'harvest', spots: ['spot-thyme-xs']}]
+    actions: [{action: 'harvest', spots: ['spot-chamomile-xs']}]
     domain: '@herbalist'
-    requirements: [ '@herbalist_sage' ]
-  herbalist_rosemary (extends skill):
-    slug: herbalist-rosemary-xs
-    title: "Récolte de romarin"
-    description: 'Permet de récolter le romarin'
-    requiredPoints: 30
-    actions: [{action: 'harvest', spots: ['spot-rosemary-xs']}]
-    domain: '@herbalist'
-    requirements: [ '@herbalist_thyme' ]
-  herbalist_mandrake (extends skill):
-    slug: herbalist-mandrake-xs
-    title: "Récolte de mandragore"
-    description: 'Permet de récolter la rare mandragore'
+    requirements: ['@herbalist_mint']
+
+  # Rang 4 (80 pts)
+  herbalist_bountiful (extends skill):
+    slug: herbalist-bountiful
+    title: "Récolte abondante"
+    description: "Chance de doubler la quantité de plantes et permet d'utiliser une faucille en mithril"
+    actions:
+      - {action: 'equip.tool', slugs: ['sickle-mithril']}
     requiredPoints: 80
-    actions: [{action: 'harvest', spots: ['spot-mandrake-xs']}]
     domain: '@herbalist'
-    requirements: [ '@herbalist_rosemary' ]
+    critical: 2
+    requirements: ['@herbalist_gentle_hands', '@herbalist_mint_m']

@@ -1,32 +1,49 @@
+# REFERENCE ONLY — Ces fixtures ne sont PAS chargées automatiquement.
+# La source de vérité est src/DataFixtures/Game/SkillFixtures.php::getFishermanSkills()
+
 App\Entity\Game\Skill:
-  fisherman_trout (extends skill):
-    slug: fisherman-trout-xs
-    title: "Pêche de la truite"
-    description: 'Permet de pêcher la truite dans les eaux calmes'
+  # Rang 1 (0 pts)
+  fisher_trout_xs (extends skill):
+    slug: fisher-trout-xs
+    title: "Pêche de la truite débutant"
+    description: "Permet de pêcher la truite et débloque l'emplacement de canne à pêche"
     requiredPoints: 0
-    actions: [{action: 'harvest', spots: ['spot-fishing-xs']}]
+    actions:
+      - {action: 'harvest', spots: ['spot-trout-xs']}
+      - {action: 'tool_slot.unlock', slot: 'fishing_rod'}
+      - {action: 'equip.tool', slugs: ['fishing-rod-bronze']}
     domain: '@fisherman'
-  fisherman_salmon (extends skill):
-    slug: fisherman-salmon-xs
-    title: "Pêche du saumon"
-    description: 'Permet de pêcher le saumon dans les lacs'
-    requiredPoints: 10
-    actions: [{action: 'harvest', spots: ['spot-fishing-s']}]
+
+  fisher_carp_xs (extends skill):
+    slug: fisher-carp-xs
+    title: "Pêche de la carpe débutant"
+    description: "Permet de pêcher la carpe et d'utiliser une canne à pêche en fer"
+    requiredPoints: 0
+    actions:
+      - {action: 'harvest', spots: ['spot-carp-xs']}
+      - {action: 'equip.tool', slugs: ['fishing-rod-iron']}
     domain: '@fisherman'
-    requirements: [ '@fisherman_trout' ]
-  fisherman_carp (extends skill):
-    slug: fisherman-carp-xs
-    title: "Pêche de la carpe"
-    description: 'Permet de pêcher la carpe dans les eaux profondes'
-    requiredPoints: 30
-    actions: [{action: 'harvest', spots: ['spot-fishing-m']}]
+
+  # Rang 2 (15 pts)
+  fisher_patience (extends skill):
+    slug: fisher-patience
+    title: "Patience du pêcheur"
+    description: "Augmente les chances de capture et permet d'utiliser une canne à pêche en acier"
+    actions:
+      - {action: 'equip.tool', slugs: ['fishing-rod-steel']}
+    requiredPoints: 15
     domain: '@fisherman'
-    requirements: [ '@fisherman_salmon' ]
-  fisherman_rare (extends skill):
-    slug: fisherman-rare-xs
-    title: "Pêche des raretés"
-    description: 'Permet de pêcher des poissons rares et mystérieux'
-    requiredPoints: 80
-    actions: [{action: 'harvest', spots: ['spot-fishing-rare']}]
+    hit: 1
+    requirements: ['@fisher_trout_xs']
+
+  # Rang 4 (60 pts)
+  fisher_deep_sea (extends skill):
+    slug: fisher-deep-sea
+    title: "Pêche en eaux profondes"
+    description: "Permet de pêcher en eaux profondes et d'utiliser une canne à pêche en mithril"
+    actions:
+      - {action: 'harvest', spots: ['spot-trout-l', 'spot-carp-l']}
+      - {action: 'equip.tool', slugs: ['fishing-rod-mithril']}
+    requiredPoints: 60
     domain: '@fisherman'
-    requirements: [ '@fisherman_carp' ]
+    requirements: ['@fisher_trout_m', '@fisher_carp_m']

@@ -1,24 +1,49 @@
+# REFERENCE ONLY — Ces fixtures ne sont PAS chargées automatiquement.
+# La source de vérité est src/DataFixtures/Game/SkillFixtures.php::getSkinnerSkills()
+
 App\Entity\Game\Skill:
-  skinner_basic (extends skill):
-    slug: skinner-basic
-    title: "Dépeçage basique"
-    description: 'Permet de dépecer les monstres communs'
+  # Rang 1 (0 pts)
+  skinner_hide_xs (extends skill):
+    slug: skinner-hide-xs
+    title: "Dépeçage de cuir brut"
+    description: "Permet de dépecer les créatures basiques et débloque l'emplacement de couteau"
     requiredPoints: 0
-    actions: [{action: 'butcher', spots: []}]
+    actions:
+      - {action: 'harvest', spots: ['spot-hide-xs']}
+      - {action: 'tool_slot.unlock', slot: 'skinning_knife'}
+      - {action: 'equip.tool', slugs: ['skinning-knife-bronze']}
     domain: '@skinner'
-  skinner_advanced (extends skill):
-    slug: skinner-advanced
-    title: "Dépeçage avancé"
-    description: 'Améliore les chances de récupérer des matériaux rares'
-    requiredPoints: 20
-    actions: [{action: 'butcher', spots: []}]
+
+  skinner_bone_xs (extends skill):
+    slug: skinner-bone-xs
+    title: "Collecte d'os"
+    description: "Permet de récupérer les os des créatures et d'utiliser un couteau en fer"
+    requiredPoints: 0
+    actions:
+      - {action: 'harvest', spots: ['spot-bone-xs']}
+      - {action: 'equip.tool', slugs: ['skinning-knife-iron']}
     domain: '@skinner'
-    requirements: [ '@skinner_basic' ]
-  skinner_expert (extends skill):
-    slug: skinner-expert
-    title: "Dépeçage expert"
-    description: 'Permet de dépecer les boss et créatures légendaires'
+
+  # Rang 2 (15 pts)
+  skinner_precision (extends skill):
+    slug: skinner-precision
+    title: "Lame précise"
+    description: "Augmente la précision du dépeçage et permet d'utiliser un couteau en acier"
+    actions:
+      - {action: 'equip.tool', slugs: ['skinning-knife-steel']}
+    requiredPoints: 15
+    domain: '@skinner'
+    hit: 1
+    requirements: ['@skinner_hide_xs']
+
+  # Rang 4 (60 pts)
+  skinner_exotic (extends skill):
+    slug: skinner-exotic
+    title: "Dépeçage de créatures exotiques"
+    description: "Permet de dépecer les créatures rares et d'utiliser un couteau en mithril"
+    actions:
+      - {action: 'harvest', spots: ['spot-hide-l', 'spot-bone-l']}
+      - {action: 'equip.tool', slugs: ['skinning-knife-mithril']}
     requiredPoints: 60
-    actions: [{action: 'butcher', spots: []}]
     domain: '@skinner'
-    requirements: [ '@skinner_advanced' ]
+    requirements: ['@skinner_hide_m', '@skinner_bone_m']
