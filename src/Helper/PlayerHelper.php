@@ -25,9 +25,8 @@ class PlayerHelper implements ResetInterface
             $playerRepository = $this->entityManager->getRepository(Player::class);
             $user = $this->security->getUser();
             if ($user instanceof \App\Entity\User) {
-                $players = $user->getPlayers();
-                $firstPlayer = $players?->first() ?: null;
-                if ($firstPlayer) {
+                $firstPlayer = $user->getPlayers()->first() ?: null;
+                if ($firstPlayer instanceof Player) {
                     $this->player = $playerRepository->find($firstPlayer->getId());
                 }
             }
