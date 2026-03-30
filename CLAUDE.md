@@ -187,6 +187,68 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 | `/game/bestiary` | Bestiaire joueur (paliers 10/50/100 kills) |
 | `/game/achievements` | Succes (combat, exploration, quetes) |
 
+## Commandes slash (Claude Code)
+
+### Workflow de developpement
+
+| Commande | Description |
+|----------|------------|
+| `/feature <besoin>` | Structuration + implementation d'une feature (2 phases obligatoires) |
+| `/plan <besoin>` | Planification detaillee avant implementation (pas de code) |
+| `/tdd <specification>` | Developpement TDD : RED → GREEN → REFACTOR |
+| `/review` | Revue de code complete (securite + qualite) des changements |
+| `/quality-gate [--fix]` | Pipeline qualite locale (lint + PHPStan + tests) |
+| `/verify [quick\|full\|pre-commit\|pre-pr]` | Verification pre-commit/PR complete |
+| `/build-fix` | Diagnostic et correction incrementale des erreurs de build |
+| `/refactor [path]` | Detection et suppression securisee du code mort |
+
+### Agents specialises domaine jeu
+
+| Commande | Description |
+|----------|------------|
+| `/combat-agent` | Combat, equilibrage, IA monstres, materia |
+| `/quest-agent` | Quetes, dialogues PNJ, narration |
+| `/content-agent` | Items, monstres, sorts, recettes |
+| `/economy-agent` | Boutiques, hotel des ventes, equilibre economique |
+| `/craft-gather-agent` | Recolte et artisanat |
+| `/gameplay-agent` | Flux d'etats joueur, game design |
+| `/multiplayer-agent` | Mercure SSE, chat, guildes, temps reel |
+
+### Agents specialises techniques
+
+| Commande | Description |
+|----------|------------|
+| `/architect` | Architecture systeme, patterns, compromis techniques |
+| `/code-reviewer` | Revue de code (securite, qualite, patterns Symfony) |
+| `/security-reviewer` | Audit securite OWASP, secrets, injections |
+| `/performance-optimizer` | Performance (Doctrine, PixiJS, FrankenPHP) |
+| `/database-reviewer` | PostgreSQL, index, migrations, requetes |
+| `/refactor-cleaner` | Nettoyage code mort, doublons, consolidation |
+| `/planner` | Planification d'implementation structuree |
+| `/test-agent` | Tests PHPUnit, PHPStan, PHP-CS-Fixer |
+| `/migration-agent` | Migrations Doctrine, schema PostgreSQL |
+| `/pixijs-agent` | Rendu 2D, sprites, animations, effets visuels |
+| `/level-design-agent` | Zones, biomes, placement d'entites |
+| `/map-editor-agent` | Editeur de cartes web |
+| `/map-generator-agent` | Generation procedurale de cartes |
+
+### Utilitaires
+
+| Commande | Description |
+|----------|------------|
+| `/build` | Compiler Tailwind + AssetMapper |
+| `/cache-clear` | Vider le cache Symfony |
+| `/db-query` | Requete SQL directe |
+| `/deploy` | Deploiement (--prod / --dev) |
+| `/fixtures` | Reset DB + fixtures (DESTRUCTIF) |
+| `/import-terrain` | Importer les cartes Tiled |
+| `/roadmap` | Afficher la roadmap |
+
+## Hooks actifs
+
+- **PreToolUse (Bash)** : bloque les commandes PHP/Composer/Node.js hors Docker
+- **PostToolUse (Edit/Write)** : detecte les debug statements (`dd()`, `dump()`, `var_dump()`) dans les fichiers PHP modifies
+
 ## Domaines web
 
 - `amethyste.best` / `amethyste.ryxeuf.fr` -> Site public

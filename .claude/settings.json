@@ -11,7 +11,8 @@
       "Bash(docker compose build *)",
       "Bash(cd /var/www/amethyste-idle && docker compose *)",
       "Bash(cd /var/www/amethyste-idle && ./scripts/*)",
-      "Bash(ls *)"
+      "Bash(ls *)",
+      "Bash(git *)"
     ],
     "deny": [
       "Bash(php bin/console *)",
@@ -19,6 +20,42 @@
       "Bash(npm *)",
       "Bash(yarn *)",
       "Bash(npx *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "case \"$TOOL_INPUT\" in *'php bin/console'*|*'composer '*) echo 'BLOCK: Utiliser docker compose exec php pour les commandes PHP/Composer (regle CLAUDE.md #1)' ;; *'npm '*|*'yarn '*|*'npx '*) echo 'BLOCK: Node.js interdit — utiliser AssetMapper (regle CLAUDE.md #2)' ;; esac",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$TOOL_INPUT\" | grep -oP '\"file_path\"\\s*:\\s*\"\\K[^\"]+' 2>/dev/null); if [ -n \"$FILE\" ] && echo \"$FILE\" | grep -q '\\.php$'; then grep -n 'dd(\\|dump(\\|var_dump(\\|error_log(\\|print_r(' \"$FILE\" 2>/dev/null | head -5 | while read line; do echo \"⚠️  Debug statement detecte: $line\"; done; fi",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(echo \"$TOOL_INPUT\" | grep -oP '\"file_path\"\\s*:\\s*\"\\K[^\"]+' 2>/dev/null); if [ -n \"$FILE\" ] && echo \"$FILE\" | grep -q '\\.php$'; then grep -n 'dd(\\|dump(\\|var_dump(\\|error_log(\\|print_r(' \"$FILE\" 2>/dev/null | head -5 | while read line; do echo \"⚠️  Debug statement detecte: $line\"; done; fi",
+            "timeout": 5000
+          }
+        ]
+      }
     ]
   }
 }
