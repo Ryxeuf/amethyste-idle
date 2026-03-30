@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Fight;
 
 use App\Event\Fight\CombatFleeEvent;
+use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\MobActionHandler;
@@ -23,6 +24,7 @@ class FightFleeController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly CombatLogArchiver $combatLogArchiver,
         private readonly CombatLogger $combatLogger,
         private readonly FightTurnResolver $turnResolver,
         private readonly MobActionHandler $mobActionHandler,
@@ -99,9 +101,15 @@ class FightFleeController extends AbstractController
                     // Advance coop turn since this player left
                     $remainingPlayers = $fight->getPlayers()->filter(fn ($p) => !$p->isDead() && $p->getFight() !== null);
                     if ($remainingPlayers->count() === 0) {
-                        // All players fled or dead — end the fight
-                        $fight->setInProgress(false);
-                        $fight->setCurrentTurnKey(null);
+                        // All players fled or dead — nettoyage complet
+                        $this->combatLogArchiver->archive($fight);
+                        $this->statusEffectManager->clearAllEffects($fight);
+
+                        foreach ($fight->getMobs() as $fightMob) {
+                            $this->entityManager->remove($fightMob);
+                        }
+
+                        $this->entityManager->remove($fight);
                     } elseif ($remainingPlayers->count() === 1) {
                         // Only one player left — switch to solo mode
                         $fight->setCurrentTurnKey(null);
@@ -117,14 +125,16 @@ class FightFleeController extends AbstractController
                     $this->fightTurnPublisher->publishTurnChange($fight);
                 }
             } else {
-                // Combat classique solo : fin complète du combat
-                $fight->setInProgress(false);
+                // Combat classique solo : nettoyage complet (aligné sur défaite/victoire)
+                $this->combatLogArchiver->archive($fight);
+                $this->statusEffectManager->clearAllEffects($fight);
+
                 foreach ($fight->getMobs() as $fightMob) {
-                    $fightMob->setFight(null);
-                    $this->entityManager->persist($fightMob);
+                    $this->entityManager->remove($fightMob);
                 }
+
+                $this->entityManager->remove($fight);
                 $this->entityManager->persist($player);
-                $this->entityManager->persist($fight);
                 $this->entityManager->flush();
             }
 
