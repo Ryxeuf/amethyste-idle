@@ -22,6 +22,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    public function __construct()
+    {
+        $this->players = new ArrayCollection();
+    }
+
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
