@@ -16,7 +16,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class HarvestManagerTest extends TestCase
@@ -66,7 +65,7 @@ class HarvestManagerTest extends TestCase
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('isAvailable')->willReturn(false);
 
-        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectException(\RuntimeException::class);
         $this->harvestManager->checkObjectLayer($objectLayer);
     }
 
@@ -79,7 +78,7 @@ class HarvestManagerTest extends TestCase
         ]);
         $objectLayer->method('getName')->willReturn('Coffre');
 
-        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectException(\RuntimeException::class);
         $this->harvestManager->checkObjectLayer($objectLayer);
     }
 
@@ -124,7 +123,7 @@ class HarvestManagerTest extends TestCase
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_PICKAXE);
 
-        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectException(\RuntimeException::class);
         $this->harvestManager->checkToolRequirement($player, $objectLayer);
     }
 
@@ -165,7 +164,7 @@ class HarvestManagerTest extends TestCase
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_PICKAXE);
 
-        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectException(\RuntimeException::class);
         $this->harvestManager->checkToolRequirement($player, $objectLayer);
     }
 
@@ -184,7 +183,7 @@ class HarvestManagerTest extends TestCase
         $objectLayer = $this->createMock(ObjectLayer::class);
         $objectLayer->method('getRequiredToolType')->willReturn(Item::TOOL_TYPE_SICKLE);
 
-        $this->expectException(UnauthorizedHttpException::class);
+        $this->expectException(\RuntimeException::class);
         $this->harvestManager->checkToolRequirement($player, $objectLayer);
     }
 

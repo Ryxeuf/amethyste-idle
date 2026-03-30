@@ -13,7 +13,6 @@ use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class HarvestManager
@@ -28,14 +27,11 @@ class HarvestManager
     ) {
     }
 
-    /**
-     * @throws UnauthorizedHttpException
-     */
     public function checkObjectLayer(ObjectLayer $objectLayer): void
     {
         // Check si le spot est disponible (respawn)
         if (!$objectLayer->isAvailable()) {
-            throw new UnauthorizedHttpException('Récolte impossible');
+            throw new \RuntimeException('Récolte impossible');
         }
 
         // Check si l'objet est récoltable
@@ -44,15 +40,13 @@ class HarvestManager
             $canBeHarvested = $canBeHarvested || $action['action'] === PlayerActionHelper::HARVEST;
         }
         if (!$canBeHarvested) {
-            throw new UnauthorizedHttpException('Vous ne pouvez pas récolter ' . $objectLayer->getName());
+            throw new \RuntimeException('Vous ne pouvez pas récolter ' . $objectLayer->getName());
         }
     }
 
     /**
      * Vérifie que le joueur possède l'outil requis pour ce spot de récolte.
      * Retourne le PlayerItem de l'outil, ou null si aucun outil n'est requis.
-     *
-     * @throws UnauthorizedHttpException
      */
     public function checkToolRequirement(Player $player, ObjectLayer $objectLayer): ?PlayerItem
     {
@@ -73,18 +67,18 @@ class HarvestManager
         }
 
         if (!$hasSlot) {
-            throw new UnauthorizedHttpException("Vous devez débloquer l'emplacement de {$toolName} via l'arbre de compétences correspondant.");
+            throw new \RuntimeException("Vous devez débloquer l'emplacement de {$toolName} via l'arbre de compétences correspondant.");
         }
 
         // Vérifier qu'un outil est équipé dans le slot
         $tool = $this->gearHelper->getEquippedToolByType($requiredToolType);
         if ($tool === null) {
-            throw new UnauthorizedHttpException("Équipez {$toolName} dans votre emplacement d'outil pour récolter ici.");
+            throw new \RuntimeException("Équipez {$toolName} dans votre emplacement d'outil pour récolter ici.");
         }
 
         // Vérifier la durabilité
         if ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
-            throw new UnauthorizedHttpException('Votre outil est cassé. Réparez-le avant de continuer.');
+            throw new \RuntimeException('Votre outil est cassé. Réparez-le avant de continuer.');
         }
 
         return $tool;
