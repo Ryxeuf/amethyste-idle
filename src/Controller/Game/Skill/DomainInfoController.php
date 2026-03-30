@@ -74,5 +74,4 @@ class DomainInfoController extends AbstractController
             'equippableTools' => $allToolSlugs,
         ]);
     }
-
 }
