@@ -170,7 +170,7 @@ class EntitySynchronizer
         $objectLayer = new ObjectLayer();
         $objectLayer->setName($obj['name'] ?: 'Spot ' . $coords);
         $objectLayer->setSlug($props['slug'] ?? ('spot-' . $x . '-' . $y));
-        $objectLayer->setType(ObjectLayer::TYPE_SPOT);
+        $objectLayer->setType(ObjectLayer::TYPE_HARVEST_SPOT);
         $objectLayer->setCoordinates($coords);
         $objectLayer->setMovement(-1);
         $objectLayer->setMap($map);
@@ -187,6 +187,16 @@ class EntitySynchronizer
             ]]);
         } else {
             $objectLayer->setItems(null);
+        }
+
+        if (!empty($props['required_tool'])) {
+            $objectLayer->setRequiredToolType($props['required_tool']);
+        }
+        if (!empty($props['respawn_delay'])) {
+            $objectLayer->setRespawnDelay((int) $props['respawn_delay']);
+        }
+        if (!empty($props['night_only'])) {
+            $objectLayer->setNightOnly(true);
         }
 
         $this->entityManager->persist($objectLayer);

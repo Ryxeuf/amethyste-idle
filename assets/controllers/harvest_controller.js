@@ -95,8 +95,8 @@ export default class extends Controller {
             });
             result = await resp.json();
 
-            if (result.error) {
-                this.messageTarget.textContent = result.error;
+            if (!resp.ok) {
+                this.messageTarget.textContent = result.error || 'Impossible de récolter ici.';
                 this.messageTarget.className = 'text-red-400 text-sm mt-2';
             } else if (result.success) {
                 this.messageTarget.textContent = 'Récolte réussie !';
