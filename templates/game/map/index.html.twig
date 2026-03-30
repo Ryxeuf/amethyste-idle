@@ -24,7 +24,7 @@
 
             {# Harvest overlay #}
             <div {{ stimulus_controller('harvest') }}
-                 data-action="map_pixi:harvestSpot->harvest#open harvest:startFishing->fishing#open"
+                 data-action="map_pixi:harvestSpot@document->harvest#open harvest:startFishing@document->fishing#open"
                  class="absolute inset-0 pointer-events-none flex items-start justify-center p-2 sm:p-4"
                  aria-label="Panneau de recolte">
                 <div data-harvest-target="panel"
