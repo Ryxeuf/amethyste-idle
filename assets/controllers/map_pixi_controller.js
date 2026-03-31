@@ -2331,9 +2331,9 @@ export default class extends Controller {
             banner.style.transform = 'translateY(0)';
         });
 
-        // Auto-hide after 3s
+        // Auto-hide after 5s (increased from 3s for readability)
         if (this._mobileBannerTimer) clearTimeout(this._mobileBannerTimer);
-        this._mobileBannerTimer = setTimeout(() => this._hideMobileBanner(), 3000);
+        this._mobileBannerTimer = setTimeout(() => this._hideMobileBanner(), 5000);
     }
 
     _hideMobileBanner() {
@@ -2522,6 +2522,7 @@ export default class extends Controller {
 
         const harvestSpot = this._findHarvestSpotAt(tileX, tileY, isTouch);
         if (harvestSpot) {
+            console.debug('[harvest] Spot found at', tileX, tileY, '→', harvestSpot);
             if (isTouch) this._pulseHarvestSpot(harvestSpot);
             this._walkToHarvestSpot(harvestSpot);
             return;
@@ -2611,6 +2612,7 @@ export default class extends Controller {
 
         // If player is already adjacent to the spot, open panel directly
         if (Math.abs(px - spot.x) + Math.abs(py - spot.y) <= 1) {
+            console.debug('[harvest] Already adjacent — dispatching harvestSpot event', spot);
             this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
@@ -2811,6 +2813,7 @@ export default class extends Controller {
         if (this._pendingHarvestSpot) {
             const spot = this._pendingHarvestSpot;
             this._pendingHarvestSpot = null;
+            console.debug('[harvest] Arrived at pending harvest spot — dispatching event', spot);
             this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
@@ -2965,6 +2968,7 @@ export default class extends Controller {
                 if (!entry || !entry.spotData) continue;
                 const spot = entry.spotData;
                 // Always dispatch — the harvest panel handles availability and skill checks
+                console.debug('[harvest] Auto-interaction with adjacent spot', spot);
                 this._hideMobileBanner();
                 this.dispatch('harvestSpot', { detail: spot });
                 return;
