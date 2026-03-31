@@ -4,6 +4,7 @@ namespace App\Tests\Functional;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -30,9 +31,7 @@ class SmokeTest extends WebTestCase
         $this->client->loginUser($user);
     }
 
-    /**
-     * @dataProvider gameRoutesProvider
-     */
+    #[DataProvider('gameRoutesProvider')]
     public function testGameRouteDoesNotReturn500(string $url): void
     {
         $this->client->request('GET', $url);
