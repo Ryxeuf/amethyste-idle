@@ -100,12 +100,16 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 > Le coeur du probleme : tester l'assemblage des services avec une vraie DB.
 
-### TST-04 — Classe de base AbstractIntegrationTestCase `M`
+### ~~TST-04 — Classe de base AbstractIntegrationTestCase `M`~~ ✅
 
 - **Prerequis** : ← TST-01
-- **Fichier** : `tests/Integration/AbstractIntegrationTestCase.php` (nouveau)
-- **Action** : etend `KernelTestCase`, charge schema + fixtures une seule fois par classe, fournit helpers `getPlayer()`, `getFight()`, `getMob()`, gere le rollback entre chaque test (transaction wrapping)
-- **Verification** : un test vide qui boot le kernel et recupere un Player
+- **Fichier** : `tests/Integration/AbstractIntegrationTestCase.php`
+- [x] Etend `KernelTestCase`, boot le kernel et injecte `EntityManagerInterface`
+- [x] Transaction wrapping : `beginTransaction()` dans `setUp()`, `rollBack()` dans `tearDown()`
+- [x] Helpers `getPlayer()`, `getUser()`, `getMob()`, `getFight()`
+- [x] Helper `getService()` pour recuperer un service du conteneur
+- [x] Helper `refreshEntity()` pour flush + clear + reload depuis la DB
+- [x] Test de validation : `AbstractIntegrationTestCaseTest.php` (8 tests : kernel boot, player fixture, user fixture, service retrieval, transaction rollback isolation, mob retrieval, refresh entity)
 
 ---
 
