@@ -75,14 +75,14 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-02 — Smoke tests routes critiques `S`
+### ~~TST-02 — Smoke tests routes critiques `S`~~ ✅
 
 - **Prerequis** : ← TST-01
-- **Fichier** : `tests/Functional/SmokeTest.php` (nouveau)
-- **Action** : test `WebTestCase` (vraie DB, pas de mocks) qui verifie que les routes principales ne renvoient pas d'erreur 500 :
-  - `/game/map`, `/game/inventory`, `/game/skills`, `/game/bestiary`
-  - `/game/achievements`, `/game/quests`
-  - `/api/map/config`
+- **Fichier** : `tests/Functional/SmokeTest.php`
+- [x] `WebTestCase` avec vraie DB (pas de mocks), login via `loginUser()`
+- [x] `@dataProvider` sur 6 routes : `/game/map`, `/game/inventory`, `/game/skills`, `/game/bestiary`, `/game/achievements`, `/game/quests`
+- [x] Test `/api/map/config` retourne du JSON sans erreur 500
+- [x] Test acces non-authentifie redirige vers login
 - **Verification** : `docker compose exec php vendor/bin/phpunit --filter SmokeTest`
 
 ---
