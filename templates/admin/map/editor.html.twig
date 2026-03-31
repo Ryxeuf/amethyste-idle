@@ -239,7 +239,9 @@
                     <div>
                         <label class="text-xs text-gray-400 block mb-1">Biome</label>
                         <select id="generate-biome" class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
-                            <option value="plains">Plaines</option>
+                            {% for slug, label in biomeChoices %}
+                                <option value="{{ slug }}">{{ label }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div>
@@ -252,10 +254,18 @@
                         <input id="generate-seed" type="number" placeholder="Auto"
                                class="w-full bg-gray-700 text-white text-xs rounded px-2 py-1.5 border border-gray-600">
                     </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-xs text-gray-400 cursor-pointer">
+                            <input id="generate-place-entities" type="checkbox" checked
+                                   class="rounded bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500">
+                            Placer les entites (mobs, recolte)
+                        </label>
+                    </div>
                     <button data-action="admin-map-editor#generateProcedural"
                             class="w-full px-3 py-2 rounded text-xs bg-emerald-600 hover:bg-emerald-700 text-white transition-colors font-semibold">
                         Generer le terrain
                     </button>
+                    <div id="generate-result" class="hidden text-xs text-gray-400 bg-gray-800 rounded p-2 space-y-1"></div>
                 </div>
             </details>
 
