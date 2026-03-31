@@ -57,7 +57,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 > Prerequis pour tout le reste : que la CI ait une vraie DB avec des donnees.
 
-### TST-01 — Schema + fixtures dans le job CI tests `S`
+### ~~TST-01 — Schema + fixtures dans le job CI tests `S`~~ ✅
 
 - **Prerequis** : ∅
 - **Fichier** : `.github/workflows/ci.yml` (job `tests`)
@@ -68,7 +68,10 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
       php bin/console doctrine:schema:create --env=test
       php bin/console doctrine:fixtures:load --env=test --no-interaction
   ```
-- **Verification** : la CI passe avec le schema + fixtures charges
+- [x] Step "Setup test schema and fixtures" ajoute dans le job `tests`
+- [x] Schema cree via `doctrine:schema:create --env=test`
+- [x] Fixtures chargees via `doctrine:fixtures:load --env=test --no-interaction`
+- [x] CI passe avec le schema + fixtures charges
 
 ---
 
