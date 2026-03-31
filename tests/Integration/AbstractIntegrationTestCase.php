@@ -109,16 +109,30 @@ abstract class AbstractIntegrationTestCase extends KernelTestCase
     }
 
     /**
-     * Return the first Mob found on the given map (or any map if null).
+     * Return the first Mob found that is alive and not in a fight.
+     * Optionally filter by map or monster slug.
      */
-    protected function getMob(?Map $map = null): Mob
+    protected function getMob(?Map $map = null, ?string $monsterSlug = null): Mob
     {
-        $criteria = ['fight' => null];
+        $qb = $this->em->createQueryBuilder()
+            ->select('m')
+            ->from(Mob::class, 'm')
+            ->join('m.monster', 'monster')
+            ->where('m.fight IS NULL')
+            ->andWhere('m.diedAt IS NULL')
+            ->setMaxResults(1);
+
         if ($map !== null) {
-            $criteria['map'] = $map;
+            $qb->andWhere('m.map = :map')
+                ->setParameter('map', $map);
         }
 
-        $mob = $this->em->getRepository(Mob::class)->findOneBy($criteria);
+        if ($monsterSlug !== null) {
+            $qb->andWhere('monster.slug = :slug')
+                ->setParameter('slug', $monsterSlug);
+        }
+
+        $mob = $qb->getQuery()->getOneOrNullResult();
         self::assertNotNull($mob, 'No available mob found in fixtures.');
 
         return $mob;
@@ -143,22 +157,6 @@ abstract class AbstractIntegrationTestCase extends KernelTestCase
         $this->em->flush();
 
         return $fight;
-    }
-
-    /**
-     * Return a Mob by its monster slug (not in a fight).
-     */
-    protected function getMobByMonsterSlug(string $slug): Mob
-    {
-        $mobs = $this->em->getRepository(Mob::class)->findBy(['fight' => null]);
-
-        foreach ($mobs as $mob) {
-            if ($mob->getMonster()->getSlug() === $slug) {
-                return $mob;
-            }
-        }
-
-        self::fail(sprintf('No available mob with monster slug "%s" found in fixtures.', $slug));
     }
 
     /**

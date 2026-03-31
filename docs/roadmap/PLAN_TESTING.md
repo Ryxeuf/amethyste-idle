@@ -31,7 +31,7 @@ JALON 1 — Fondations CI (TST-01 a TST-03)
   TST-03 Couverture de code dans CI      ∅
 
 JALON 2 — Tests integration (TST-04 a TST-08)
-  TST-04 AbstractIntegrationTestCase     ← TST-01
+  ✅ TST-04 AbstractIntegrationTestCase   ← TST-01
   TST-05 Integration combat              ← TST-04
   TST-06 Integration status effects      ← TST-04
   TST-07 Integration quetes/progression  ← TST-04
@@ -105,13 +105,13 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 - **Prerequis** : ← TST-01
 - **Fichier** : `tests/Integration/AbstractIntegrationTestCase.php`
 - **Action** : etend `KernelTestCase`, charge schema + fixtures une seule fois par classe, fournit helpers `getPlayer()`, `getFight()`, `getMob()`, gere le rollback entre chaque test (transaction wrapping)
-- **Verification** : `tests/Integration/AbstractIntegrationTestCaseTest.php` — 7 tests (boot kernel, player, user, map, mob, fight + rollback, getService)
+- **Verification** : `tests/Integration/AbstractIntegrationTestCaseTest.php` — 10 tests (boot kernel, player, user, map, mob, mob slug, fight + rollback, getFight, persistAndFlush, getService)
 - [x] Classe `AbstractIntegrationTestCase` etendant `KernelTestCase`
 - [x] Schema + fixtures verifies une seule fois par classe (`setUpBeforeClass`)
 - [x] Transaction wrapping : `beginTransaction` dans `setUp`, `rollBack` dans `tearDown`
-- [x] Helpers : `getPlayer()`, `getUser()`, `getMob()`, `getMap()`, `createFight()`, `getService()`
-- [x] Helpers supplementaires : `getMobByMonsterSlug()`, `getFight()`, `persistAndFlush()`, `refresh()`
-- [x] Test de verification : 9 tests dont isolation par rollback, persistAndFlush, getFight
+- [x] Helpers : `getPlayer()`, `getUser()`, `getMob(map?, monsterSlug?)`, `getMap()`, `createFight()`, `getService()`
+- [x] Helpers supplementaires : `getFight()`, `persistAndFlush()`, `refresh()`
+- [x] Test de verification : 10 tests dont isolation par rollback, filtre mob par slug, persistAndFlush, getFight
 
 ---
 
@@ -291,7 +291,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 1 | **TST-01** Schema + fixtures CI | S | Debloque tout le reste |
 | 2 | **TST-02** Smoke tests routes | S | Attrape les erreurs 500 |
 | 3 | **TST-03** Couverture de code CI | S | Visibilite sur le non-teste |
-| 4 | **TST-04** AbstractIntegrationTestCase | M | Base pour tous les tests integration |
+| 4 | ~~**TST-04** AbstractIntegrationTestCase~~ ✅ | M | Base pour tous les tests integration |
 | 5 | **TST-05** Integration combat | L | **Impact maximal** — zone la plus bugguee |
 | 6 | **TST-08** Integration dans CI | S | Active TST-05 dans le pipeline |
 | 7 | **TST-12** PHPStan niveau 6 | M | Bugs de types detectes statiquement |

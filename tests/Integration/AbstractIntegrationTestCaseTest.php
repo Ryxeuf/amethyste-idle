@@ -40,6 +40,13 @@ class AbstractIntegrationTestCaseTest extends AbstractIntegrationTestCase
         $this->assertNull($mob->getFight(), 'Mob should not be in a fight.');
     }
 
+    public function testGetMobWithSlugFilter(): void
+    {
+        $mob = $this->getMob(monsterSlug: 'slime');
+
+        $this->assertSame('slime', $mob->getMonster()->getSlug());
+    }
+
     public function testCreateFightPersistsInDatabase(): void
     {
         $player = $this->getPlayer();
