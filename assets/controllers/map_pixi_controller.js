@@ -23,6 +23,7 @@ export default class extends Controller {
         this._animating = false;
         this._cancelRequested = false;
         this._pendingNewTarget = null;
+        this._dialogOpen = false;
 
         this._cellCache = new Map();
         this._tileSprites = new Map();

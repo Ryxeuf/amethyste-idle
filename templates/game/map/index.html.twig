@@ -19,7 +19,7 @@
                      playerY: playerY,
                      stepDelay: 120,
                  }) }}
-                 data-action="dialog:closed->map_pixi#onDialogClosed harvest:harvestSuccess@document->map_pixi#onHarvestSuccess">
+                 data-action="dialog:closed@document->map_pixi#onDialogClosed harvest:harvestSuccess@document->map_pixi#onHarvestSuccess">
             </div>
 
             {# Harvest overlay #}
@@ -169,7 +169,7 @@
 
             {# Dialog overlay #}
             <div {{ stimulus_controller('dialog') }}
-                 data-action="map_pixi:pnjDialog->dialog#open"
+                 data-action="map_pixi:pnjDialog@document->dialog#open"
                  class="absolute inset-0 pointer-events-none flex items-end justify-center p-2 sm:p-4"
                  role="dialog"
                  aria-label="{{ 'game.map.dialog_aria'|trans({}, 'messages')|default('Dialogue PNJ') }}">
