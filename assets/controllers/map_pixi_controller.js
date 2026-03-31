@@ -818,12 +818,15 @@ export default class extends Controller {
         const texture = this._getPortalTexture();
         const sprite = new PIXI.Sprite(texture);
         const s = this._tileSize;
-        sprite.position.set(portal.x * s, portal.y * s);
-        sprite.zIndex = portal.y * s - 1;
-        this._entityContainer.addChild(sprite);
+
+        const container = this._acquireEntityContainer();
+        container.addChild(sprite);
+        container.position.set(portal.x * s, portal.y * s);
+        container.zIndex = portal.y * s - 1;
+        this._entityContainer.addChild(container);
 
         const key = `portal_${portal.id}`;
-        this._entitySprites[key] = { container: sprite, x: portal.x, y: portal.y, type: 'portal', animator: null, meta: { name: portal.name } };
+        this._entitySprites[key] = { container, x: portal.x, y: portal.y, type: 'portal', animator: null, meta: { name: portal.name } };
         this._addToSpatialHash(key, portal.x, portal.y);
     }
 
@@ -859,19 +862,22 @@ export default class extends Controller {
         const s = this._tileSize;
         const texture = this._getHarvestSpotTexture(spot.toolType, spot.available);
         const sprite = new PIXI.Sprite(texture);
-        sprite.position.set(spot.x * s, spot.y * s);
-        sprite.zIndex = spot.y * s - 1;
+
+        const container = this._acquireEntityContainer();
+        container.addChild(sprite);
+        container.position.set(spot.x * s, spot.y * s);
+        container.zIndex = spot.y * s - 1;
         // Dim spots that are on cooldown or that the player can't harvest (no skill)
         if (!spot.available || spot.canHarvest === false) {
-            sprite.alpha = 0.3;
+            container.alpha = 0.3;
         } else {
-            sprite.alpha = 1.0;
+            container.alpha = 1.0;
         }
-        this._entityContainer.addChild(sprite);
+        this._entityContainer.addChild(container);
 
         const key = `harvest_${spot.id}`;
         this._entitySprites[key] = {
-            container: sprite, x: spot.x, y: spot.y,
+            container, x: spot.x, y: spot.y,
             type: 'harvest', animator: null, spotData: spot,
             meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds, canHarvest: spot.canHarvest },
         };
@@ -2549,23 +2555,23 @@ export default class extends Controller {
         const entry = this._entitySprites[key];
         if (!entry || !entry.container) return;
 
-        const sprite = entry.container;
-        const origScaleX = sprite.scale?.x ?? 1;
-        const origScaleY = sprite.scale?.y ?? 1;
+        const container = entry.container;
+        const origScaleX = container.scale?.x ?? 1;
+        const origScaleY = container.scale?.y ?? 1;
         const cx = spot.x * this._tileSize + this._tileSize / 2;
         const cy = spot.y * this._tileSize + this._tileSize / 2;
 
         // Set pivot to center for scale-from-center
-        sprite.pivot.set(this._tileSize / 2, this._tileSize / 2);
-        sprite.position.set(cx, cy);
+        container.pivot.set(this._tileSize / 2, this._tileSize / 2);
+        container.position.set(cx, cy);
 
         // Scale up
-        sprite.scale.set(origScaleX * 1.3, origScaleY * 1.3);
+        container.scale.set(origScaleX * 1.3, origScaleY * 1.3);
         setTimeout(() => {
-            sprite.scale.set(origScaleX, origScaleY);
+            container.scale.set(origScaleX, origScaleY);
             // Reset pivot/position
-            sprite.pivot.set(0, 0);
-            sprite.position.set(spot.x * this._tileSize, spot.y * this._tileSize);
+            container.pivot.set(0, 0);
+            container.position.set(spot.x * this._tileSize, spot.y * this._tileSize);
         }, 150);
     }
 
