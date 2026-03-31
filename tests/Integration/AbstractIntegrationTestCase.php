@@ -146,6 +146,30 @@ abstract class AbstractIntegrationTestCase extends KernelTestCase
     }
 
     /**
+     * Return a Mob by its monster slug (not in a fight).
+     */
+    protected function getMobByMonsterSlug(string $slug): Mob
+    {
+        $mobs = $this->em->getRepository(Mob::class)->findBy(['fight' => null]);
+
+        foreach ($mobs as $mob) {
+            if ($mob->getMonster()->getSlug() === $slug) {
+                return $mob;
+            }
+        }
+
+        self::fail(sprintf('No available mob with monster slug "%s" found in fixtures.', $slug));
+    }
+
+    /**
+     * Return an active fight, or null if none exists.
+     */
+    protected function getFight(): ?Fight
+    {
+        return $this->em->getRepository(Fight::class)->findOneBy(['inProgress' => true]);
+    }
+
+    /**
      * Return a Map entity by name.
      */
     protected function getMap(string $name = 'Carte de test'): Map
@@ -154,6 +178,26 @@ abstract class AbstractIntegrationTestCase extends KernelTestCase
         self::assertNotNull($map, sprintf('Fixture map "%s" not found.', $name));
 
         return $map;
+    }
+
+    /**
+     * Persist and flush entities within the current transaction.
+     */
+    protected function persistAndFlush(object ...$entities): void
+    {
+        foreach ($entities as $entity) {
+            $this->em->persist($entity);
+        }
+
+        $this->em->flush();
+    }
+
+    /**
+     * Refresh an entity from the database.
+     */
+    protected function refresh(object $entity): void
+    {
+        $this->em->refresh($entity);
     }
 
     /**

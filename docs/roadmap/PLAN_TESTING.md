@@ -110,7 +110,8 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 - [x] Schema + fixtures verifies une seule fois par classe (`setUpBeforeClass`)
 - [x] Transaction wrapping : `beginTransaction` dans `setUp`, `rollBack` dans `tearDown`
 - [x] Helpers : `getPlayer()`, `getUser()`, `getMob()`, `getMap()`, `createFight()`, `getService()`
-- [x] Test de verification : 7 tests dont isolation par rollback
+- [x] Helpers supplementaires : `getMobByMonsterSlug()`, `getFight()`, `persistAndFlush()`, `refresh()`
+- [x] Test de verification : 9 tests dont isolation par rollback, persistAndFlush, getFight
 
 ---
 

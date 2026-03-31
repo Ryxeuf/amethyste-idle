@@ -66,6 +66,25 @@ class AbstractIntegrationTestCaseTest extends AbstractIntegrationTestCase
         );
     }
 
+    public function testGetFightReturnsNullWhenNoActiveFight(): void
+    {
+        $fight = $this->getFight();
+
+        $this->assertNull($fight);
+    }
+
+    public function testPersistAndFlushWorksWithinTransaction(): void
+    {
+        $player = $this->getPlayer();
+        $originalEnergy = $player->getEnergy();
+
+        $player->setEnergy($originalEnergy - 10);
+        $this->persistAndFlush($player);
+
+        $this->refresh($player);
+        $this->assertSame($originalEnergy - 10, $player->getEnergy());
+    }
+
     public function testGetServiceReturnsContainerService(): void
     {
         $em = $this->getService(\Doctrine\ORM\EntityManagerInterface::class);
