@@ -2531,7 +2531,7 @@ export default class extends Controller {
 
         const harvestSpot = this._findHarvestSpotAt(tileX, tileY, isTouch);
         if (harvestSpot) {
-            console.warn('[harvest] Spot found at', tileX, tileY, '→', harvestSpot);
+            console.debug('[harvest] Spot found at', tileX, tileY, '→', harvestSpot);
             if (isTouch) this._pulseHarvestSpot(harvestSpot);
             this._walkToHarvestSpot(harvestSpot);
             return;
@@ -2621,7 +2621,7 @@ export default class extends Controller {
 
         // If player is already adjacent to the spot, open panel directly
         if (Math.abs(px - spot.x) + Math.abs(py - spot.y) <= 1) {
-            console.warn('[harvest] Already adjacent — dispatching harvestSpot event', spot);
+            console.debug('[harvest] Already adjacent — dispatching harvestSpot event', spot);
             this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
@@ -2822,7 +2822,7 @@ export default class extends Controller {
         if (this._pendingHarvestSpot) {
             const spot = this._pendingHarvestSpot;
             this._pendingHarvestSpot = null;
-            console.warn('[harvest] Arrived at pending harvest spot — dispatching event', spot);
+            console.debug('[harvest] Arrived at pending harvest spot — dispatching event', spot);
             this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
@@ -2977,7 +2977,7 @@ export default class extends Controller {
                 if (!entry || !entry.spotData) continue;
                 const spot = entry.spotData;
                 // Always dispatch — the harvest panel handles availability and skill checks
-                console.warn('[harvest] Auto-interaction with adjacent spot', spot);
+                console.debug('[harvest] Auto-interaction with adjacent spot', spot);
                 this._hideMobileBanner();
                 this.dispatch('harvestSpot', { detail: spot });
                 return;

@@ -35,7 +35,7 @@ export default class extends Controller {
     /** Called from map controller via Stimulus dispatch */
     async open(event) {
         const spot = event.detail;
-        console.warn('[harvest] open() called — spot:', spot, 'harvesting:', this._harvesting);
+        console.debug('[harvest] open() called — spot:', spot, 'harvesting:', this._harvesting);
         if (!spot || this._harvesting) return;
 
         this._currentSpot = spot;
@@ -70,7 +70,7 @@ export default class extends Controller {
         try {
             const resp = await fetch(`/api/gathering/spot/${spot.id}`);
             const data = await resp.json();
-            console.warn('[harvest] spotInfo response:', data);
+            console.debug('[harvest] spotInfo response:', data);
 
             if (!resp.ok) {
                 this._showError(data.error || 'Impossible de charger les détails.');
@@ -137,7 +137,7 @@ export default class extends Controller {
             }, 300);
 
             if (!resp.ok) {
-                console.warn('[harvest] harvest POST failed:', result);
+                console.debug('[harvest] harvest POST failed:', result);
                 this._showResultMessage(result.error || 'Impossible de récolter ici.', 'error');
                 // Show toast for harvest error
                 if (window.Toast) {
@@ -179,7 +179,7 @@ export default class extends Controller {
     _populatePanel(data, spot) {
         this.loadingTarget.classList.add('hidden');
         this.contentTarget.classList.remove('hidden');
-        console.warn('[harvest] _populatePanel — tool:', data.tool, 'toolType:', data.toolType, 'toolError:', data.toolError, 'available:', data.available);
+        console.debug('[harvest] _populatePanel — tool:', data.tool, 'toolType:', data.toolType, 'toolError:', data.toolError, 'available:', data.available);
 
         // Domain badge
         if (data.domain) {
@@ -194,7 +194,7 @@ export default class extends Controller {
             if (data.toolError) {
                 this.noToolWarningTarget.classList.remove('hidden');
                 this.toolTypeTarget.textContent = data.toolError;
-                console.warn('[harvest] Tool found but error:', data.toolError);
+                console.debug('[harvest] Tool found but error:', data.toolError);
                 if (window.Toast) {
                     window.Toast.show('warning', data.toolError, 6000);
                 }
@@ -203,7 +203,7 @@ export default class extends Controller {
             this.noToolWarningTarget.classList.remove('hidden');
             // Use specific error from API if available, otherwise generic label
             this.toolTypeTarget.textContent = data.toolError || this._toolLabel(data.toolType);
-            console.warn('[harvest] No tool found — showing warning:', data.toolError || this._toolLabel(data.toolType));
+            console.debug('[harvest] No tool found — showing warning:', data.toolError || this._toolLabel(data.toolType));
             // Show toast notification for tool issue
             if (window.Toast) {
                 window.Toast.show('warning', data.toolError || this._toolLabel(data.toolType), 6000);
@@ -362,7 +362,7 @@ export default class extends Controller {
         this.harvestBtnTarget.disabled = true;
         this.harvestBtnTextTarget.textContent = 'Compétence requise';
         this._showResultMessage('Vous n\'avez pas la compétence pour récolter ce spot.', 'error');
-        console.warn('[harvest] canHarvest=false — skill missing for this spot');
+        console.debug('[harvest] canHarvest=false — skill missing for this spot');
         if (window.Toast) {
             window.Toast.show('warning', 'Compétence insuffisante pour récolter ce spot.', 6000);
         }
