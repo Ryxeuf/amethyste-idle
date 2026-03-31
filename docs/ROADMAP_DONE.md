@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-28
+> Derniere mise a jour : 2026-03-31
 
 ---
 
@@ -1391,3 +1391,12 @@
 - [x] Sons de combat integres dans `fight/index.html.twig` (hit, critical, miss, spell, death, victory, defeat, flee)
 - [x] Bouton mute + slider volume dans la page parametres
 - [x] Persistance localStorage (muted + volume)
+
+## TST-04 — AbstractIntegrationTestCase (2026-03-31) ✅
+
+> Classe de base pour les tests d'integration avec vraie DB. Fondation pour TST-05 a TST-08.
+- [x] Classe `AbstractIntegrationTestCase` etendant `KernelTestCase` dans `tests/Integration/`
+- [x] Verification fixtures une seule fois par classe (`setUpBeforeClass`)
+- [x] Transaction wrapping : `beginTransaction` dans `setUp`, `rollBack` dans `tearDown` (isolation entre tests)
+- [x] Helpers : `getPlayer()`, `getUser()`, `getMob()`, `getMap()`, `createFight()`, `getService()`
+- [x] Test de verification `AbstractIntegrationTestCaseTest.php` : 7 tests (boot kernel, player, user, map, mob, fight + rollback, getService)
