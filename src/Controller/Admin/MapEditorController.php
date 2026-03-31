@@ -45,6 +45,7 @@ class MapEditorController extends AbstractController
     {
         return $this->render('admin/map/editor.html.twig', [
             'map' => $map,
+            'biomeChoices' => $this->biomeRegistry->getChoices(),
         ]);
     }
 

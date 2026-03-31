@@ -2520,6 +2520,7 @@ export default class extends Controller {
         const difficulty = parseInt(document.getElementById('generate-difficulty')?.value || '1', 10)
         const seedInput = document.getElementById('generate-seed')?.value
         const seed = seedInput !== '' ? parseInt(seedInput, 10) : null
+        const placeEntities = document.getElementById('generate-place-entities')?.checked ?? true
 
         if (!confirm('Attention : cette operation ecrase tout le contenu existant de la carte. Continuer ?')) {
             return
@@ -2528,7 +2529,7 @@ export default class extends Controller {
         this._showFlash('Generation en cours...', 'info')
 
         try {
-            const body = { biome, difficulty }
+            const body = { biome, difficulty, placeEntities }
             if (seed !== null) body.seed = seed
 
             const res = await fetch(this.generateUrlValue, {
@@ -2543,8 +2544,28 @@ export default class extends Controller {
                 return
             }
 
+            // Afficher le résumé de génération
+            const resultDiv = document.getElementById('generate-result')
+            if (resultDiv) {
+                const lines = [
+                    `<span class="text-emerald-400 font-semibold">Generation reussie</span>`,
+                    `Biome : <span class="text-white">${data.biome}</span>`,
+                    `Difficulte : <span class="text-white">${data.difficulty}</span>`,
+                    `Seed : <span class="text-white font-mono">${data.seed}</span>`,
+                ]
+                if (data.entities) {
+                    lines.push(`Mobs : <span class="text-white">${data.entities.mobs ?? 0}</span>`)
+                    lines.push(`Recolte : <span class="text-white">${data.entities.harvestSpots ?? 0}</span>`)
+                }
+                if (data.passages > 0) {
+                    lines.push(`Passages crees : <span class="text-white">${data.passages}</span>`)
+                }
+                resultDiv.innerHTML = lines.map(l => `<div>${l}</div>`).join('')
+                resultDiv.classList.remove('hidden')
+            }
+
             this._showFlash('Terrain genere ! Rechargement...', 'success')
-            setTimeout(() => window.location.reload(), 1000)
+            setTimeout(() => window.location.reload(), 3000)
         } catch (e) {
             this._showFlash('Erreur reseau : ' + e.message, 'error')
         }
