@@ -2,7 +2,6 @@ twig:
     file_name_pattern: '*.twig'
     globals:
         mercure_url: '%env(MERCURE_PUBLIC_URL)%'
-        app_version: '%app.version%'
 
 when@test:
     twig:

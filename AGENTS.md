@@ -21,6 +21,14 @@
 - PixiJS pour le rendu canvas de la carte (WebGL avec fallback Canvas 2D)
 - Containerisation Docker multi-stage + Traefik reverse proxy
 
+## Versioning
+
+- **Semantic Versioning** (`MAJOR.MINOR.PATCH-prerelease`) geree automatiquement par Semantic Release
+- **En dev** : `VersionExtension` affiche la version git (`git describe --tags --always --dirty`)
+- **En prod** : la version est injectee via `APP_VERSION` env var au build Docker
+- **Commits conventionnels** : `feat:` (minor), `fix:`/`perf:`/`refactor:` (patch). `ci:`/`docs:`/`test:`/`chore:` ne declenchent pas de release
+- Le parametre `app.version` dans `config/services.yaml` est le fallback statique (bump pour jalons majeurs)
+
 ## Conventions de développement
 
 - Architecture événementielle (Event-Driven) : actions → événements → EventSubscribers
