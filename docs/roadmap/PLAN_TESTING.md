@@ -119,11 +119,11 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 - **Prerequis** : ← TST-04
 - **Fichiers** : `tests/Integration/Fight/` (nouveau dossier)
-- **Sous-tache A** — `FightFlowIntegrationTest.php` :
-  - `testEngageMobCreatesFight` : engager un mob → Fight creee en DB
-  - `testPlayerAttackReducesMobHp` : attaque basique → HP du mob diminuent
-  - `testMobDeathEndsFight` : mob a 0 HP → combat termine, events dispatches
-  - `testLootAfterVictory` : victoire → loot genere, XP accorde
+- **Sous-tache A** — `FightFlowIntegrationTest.php` : ✅
+  - [x] `testEngageMobCreatesFight` : engager un mob → Fight creee en DB
+  - [x] `testPlayerAttackReducesMobHp` : attaque basique → HP du mob diminuent
+  - [x] `testMobDeathEndsFight` : mob a 0 HP → combat termine, events dispatches
+  - [x] `testLootAfterVictory` : victoire → loot genere
 - **Sous-tache B** — `StatusEffectIntegrationTest.php` :
   - `testPoisonTicksDamagePerTurn` : poison → degats chaque tour → expiration
   - `testSilencePreventsSpellCasting` : silence → sort refuse → silence expire → sort OK
