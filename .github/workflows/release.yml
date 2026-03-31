@@ -117,6 +117,7 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: |
             APP_ENV=prod
+            APP_VERSION=${{ needs.release.outputs.new_release_version }}
 
       - name: Push summary
         run: |

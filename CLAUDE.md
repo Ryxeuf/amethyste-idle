@@ -44,6 +44,13 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
    - Quand une tache est **implementee**, elle est **retiree** du fichier de vague concerne et **ajoutee** a `ROADMAP_DONE.md`
    - Plan annexe controle de cite : `docs/roadmap/PLAN_GUILD_CITY_CONTROL.md` — jalons **GCC-01** a **GCC-20** (ancre Vague 4 dans `ROADMAP_TODO_VAGUE_04.md`)
 
+12. **Versioning automatique** : la version affichee dans le jeu (`app_version`) est geree dynamiquement par `VersionExtension` :
+   - **Dev** : resolue via `git describe --tags --always --dirty` (ex: `0.6.0-alpha-12-gabcdef`)
+   - **Prod** : lue depuis l'env var `APP_VERSION` injectee au build Docker par Semantic Release
+   - **Fallback** : parametre statique `app.version` dans `config/services.yaml`
+   - Le parametre `app.version` dans `services.yaml` sert de version de reference (bump manuel pour les jalons majeurs)
+   - **Commits conventionnels obligatoires** : utiliser les prefixes `feat:`, `fix:`, `perf:`, `refactor:` pour que Semantic Release genere automatiquement les versions. Les types `ci:`, `docs:`, `style:`, `test:`, `chore:` ne declenchent PAS de release.
+
 ## Stack technique
 
 | Couche | Technologie |
