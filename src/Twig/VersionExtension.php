@@ -37,7 +37,7 @@ final class VersionExtension extends AbstractExtension implements GlobalsInterfa
 
         // In production, prefer the build-time env var (set by CI/CD).
         $envVersion = $_ENV['APP_VERSION'] ?? $_SERVER['APP_VERSION'] ?? null;
-        if ($envVersion && '' !== $envVersion) {
+        if (\is_string($envVersion) && '' !== $envVersion) {
             return $this->resolved = $envVersion;
         }
 
@@ -61,9 +61,11 @@ final class VersionExtension extends AbstractExtension implements GlobalsInterfa
         }
 
         // Try full describe first (e.g. "v0.3.0-5-gabcdef").
+        $output = [];
+        $exitCode = 1;
         $result = @exec('git -C ' . escapeshellarg($this->projectDir) . ' describe --tags --always --dirty 2>/dev/null', $output, $exitCode);
 
-        if (0 !== $exitCode || '' === $result) {
+        if (0 !== $exitCode || false === $result || '' === $result) {
             return null;
         }
 
