@@ -74,18 +74,56 @@ class GatheringController extends AbstractController
             ];
         }
 
-        // Tool info
+        // Tool info — diagnose why tool may not be found
         $toolType = $spot->getRequiredToolType();
         $toolInfo = null;
+        $toolError = null;
         if ($toolType) {
-            $tool = $this->gearHelper->getEquippedToolByType($toolType);
-            if ($tool) {
-                $toolInfo = [
-                    'name' => $tool->getGenericItem()->getName(),
-                    'slug' => $tool->getGenericItem()->getSlug(),
-                    'currentDurability' => $tool->getCurrentDurability(),
-                    'maxDurability' => $tool->getGenericItem()->getDurability(),
-                ];
+            $toolName = Item::TOOL_TYPE_LABELS[$toolType] ?? 'un outil adapté';
+
+            // 1. Check tool slot is unlocked
+            $hasSlot = $player->hasToolSlot($toolType)
+                || \in_array($toolType, $this->playerActionHelper->getUnlockedToolSlots(), true);
+
+            if ($hasSlot && !$player->hasToolSlot($toolType)) {
+                $player->unlockToolSlot($toolType);
+                $this->entityManager->flush();
+            }
+
+            if (!$hasSlot) {
+                $toolError = "Débloquez l'emplacement de {$toolName} via l'arbre de compétences.";
+            } else {
+                // 2. Check tool is equipped
+                $tool = $this->gearHelper->getEquippedToolByType($toolType);
+                if ($tool === null) {
+                    // Debug: list all items with their gear bits to trace the issue
+                    $inventoryItems = [];
+                    foreach ($this->playerHelper->getInventory()->getItems() as $pi) {
+                        $gi = $pi->getGenericItem();
+                        if ($gi->isTool()) {
+                            $inventoryItems[] = $gi->getSlug() . ' (gear=' . $pi->getGear() . ', toolType=' . $gi->getToolType() . ')';
+                        }
+                    }
+                    error_log('[harvest-debug] Tool not found for type=' . $toolType . '. Inventory tools: ' . implode(', ', $inventoryItems));
+
+                    $toolError = "Équipez {$toolName} dans votre emplacement d'outil (inventaire → équipement).";
+                } else {
+                    // 3. Check skill for this specific tool
+                    $toolSlug = $tool->getGenericItem()->getSlug();
+                    if (!$this->playerActionHelper->canEquipTool($toolSlug)) {
+                        $toolError = "Compétence manquante pour utiliser {$tool->getGenericItem()->getName()}.";
+                    } elseif ($tool->getCurrentDurability() !== null && $tool->getCurrentDurability() <= 0) {
+                        // 4. Check durability
+                        $toolError = 'Outil cassé — réparez-le avant de récolter.';
+                    }
+
+                    $toolInfo = [
+                        'name' => $tool->getGenericItem()->getName(),
+                        'slug' => $tool->getGenericItem()->getSlug(),
+                        'currentDurability' => $tool->getCurrentDurability(),
+                        'maxDurability' => $tool->getGenericItem()->getDurability(),
+                    ];
+                }
             }
         }
 
@@ -111,6 +149,7 @@ class GatheringController extends AbstractController
             'respawnDelay' => $spot->getRespawnDelay(),
             'possibleItems' => $possibleItems,
             'tool' => $toolInfo,
+            'toolError' => $toolError,
             'domain' => $domainInfo,
         ]);
     }
