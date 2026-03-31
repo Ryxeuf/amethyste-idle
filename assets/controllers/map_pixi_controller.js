@@ -2503,6 +2503,15 @@ export default class extends Controller {
         const cell = this._cellCache.get(cellKey);
         const isWalkable = cell && cell.w;
 
+        // Debug: list all harvest spots in spatial hash for this area
+        const nearbyHarvest = [];
+        for (const [hk, set] of this._entitySpatialHash.entries()) {
+            for (const k of set) {
+                if (k.startsWith('harvest_')) nearbyHarvest.push(`${k}@${hk}`);
+            }
+        }
+        console.warn('[harvest] _handleTap tile=', tileX, tileY, 'walkable=', isWalkable, 'dialogOpen=', this._dialogOpen, 'animating=', this._animating, 'harvestSpots=', nearbyHarvest);
+
         if (this._dialogOpen) return;
 
         if (this._animating) {

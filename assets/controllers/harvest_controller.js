@@ -24,6 +24,7 @@ export default class extends Controller {
         this._harvesting = false;
         this._cooldownTimer = null;
         this._boundKeyHandler = this._handleKeydown.bind(this);
+        console.warn('[harvest] Controller connected ✓');
     }
 
     disconnect() {
