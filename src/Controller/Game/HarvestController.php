@@ -9,6 +9,7 @@ use App\GameEngine\Job\FishingManager;
 use App\GameEngine\Job\HarvestManager;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\World\GameTimeService;
+use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,6 +49,15 @@ class HarvestController extends AbstractController
 
         if (!$spot->isHarvestSpot()) {
             return $this->json(['error' => 'Ce n\'est pas un spot de récolte.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Refresh player coordinates from DB to prevent race conditions
+        $this->entityManager->refresh($player);
+
+        // Verify player is on the same map and adjacent to the spot
+        if ($player->getMap()?->getId() !== $spot->getMap()?->getId()
+            || !CellHelper::isAdjacent($player->getCoordinates(), $spot->getCoordinates())) {
+            return $this->json(['error' => 'Vous êtes trop loin de ce spot.'], Response::HTTP_BAD_REQUEST);
         }
 
         if (!$spot->isAvailable()) {
