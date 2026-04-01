@@ -1437,8 +1437,8 @@
 - [x] `testFleeFromCombat` : fuite reussie → joueur libere, repositionne sur lastCoordinates, combat et mobs supprimes
 - [x] `testPlayerDeathInCombat` : joueur meurt → respawn avec 50% vie max, diedAt null, combat nettoye
 
-## TST-08 — Ajouter testsuite Integration dans la CI (2026-04-01) ✅
+## TST-08 — Testsuite Integration dans la CI (2026-04-01) ✅
 
-> Activation de la testsuite Integration dans le pipeline CI GitHub Actions.
-- [x] Commande PHPUnit dans le job `tests` modifiee : `--testsuite Unit,Functional` → `--testsuite Unit,Functional,Integration`
-- [x] Les 7 tests d'integration (AbstractIntegrationTestCase, Fight, Events) executent desormais dans la CI
+> Ajout de la testsuite Integration au pipeline CI pour que les 8 tests d'integration soient executes automatiquement.
+- [x] Commande PHPUnit modifiee : `--testsuite Unit,Functional,Integration` (ajout de `Integration`)
+- [x] 8 tests d'integration (FightFlow, StatusEffect, FightEdgeCases, Events) executes dans le job `tests`

@@ -172,8 +172,8 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   ```yaml
   run: vendor/bin/phpunit --testdox --exclude-group e2e --testsuite Unit,Functional,Integration
   ```
-- [x] Commande PHPUnit modifiee pour inclure `--testsuite Unit,Functional,Integration`
-- [x] La CI execute desormais les tests d'integration
+- [x] Testsuite `Integration` ajoutee a la commande PHPUnit dans le job `tests`
+- [x] Les 8 tests d'integration (Fight, StatusEffect, FightEdgeCases, Events) executes dans la CI
 - **Verification** : la CI execute les tests d'integration et passe
 
 ---
