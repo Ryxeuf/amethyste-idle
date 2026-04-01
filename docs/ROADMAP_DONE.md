@@ -1411,14 +1411,14 @@
 - [x] `FightTurnResolver::getTimeline` : combat sans participants → LogicException
 - [x] Tests unitaires `BusinessAssertionsTest.php` : 7 tests couvrant les 5 assertions
 
-## TST-15 — GameStateValidator (commande de diagnostic) (2026-04-01) ✅
+## TST-15 — GameStateValidator (2026-04-01) ✅
 
-> Commande Symfony `app:game:validate` qui verifie la coherence de l'etat du jeu en base de donnees.
-- [x] Service `GameStateValidator` dans `src/GameEngine/Validation/` avec 5 verifications DBAL
-- [x] Commande `GameStateValidateCommand` (`app:game:validate`) avec option `--check` pour cibler une verification
-- [x] Check `orphaned_fights` : joueurs referençant un combat inexistant
-- [x] Check `fights_without_alive_mobs` : combats actifs sans mobs vivants
-- [x] Check `orphaned_items` : PlayerItem sans inventaire, mob, vault ni slot
-- [x] Check `players_out_of_bounds` : joueurs hors des limites de leur carte
-- [x] Check `players_in_stale_fights` : joueurs referençant un combat termine
-- [x] Tests unitaires `GameStateValidatorTest.php` : 11 tests couvrant tous les checks
+> Commande Symfony de diagnostic qui verifie la coherence de l'etat du jeu en base de donnees.
+- [x] Service `GameStateValidator` dans `src/GameEngine/Debug/` avec 5 verifications SQL et option `--check`
+- [x] Commande `app:game:validate` affichant un rapport structure (OK / anomalies)
+- [x] Check `ghost_fights` : joueurs references a un combat inexistant ou termine
+- [x] Check `fights_without_living_mobs` : combats actifs sans mobs vivants
+- [x] Check `orphaned_player_items` : PlayerItem orphelins (item_id null ou reference cassee)
+- [x] Check `stale_active_quests` : quetes actives deja completees (doublon PlayerQuest + PlayerQuestCompleted)
+- [x] Check `players_out_of_bounds` : joueurs hors limites de leur carte (coordonnees vs bounds des areas)
+- [x] Tests unitaires : `GameStateValidatorTest.php` (10 tests) + `GameStateValidateCommandTest.php` (3 tests)

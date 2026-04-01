@@ -285,10 +285,10 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   - [x] Joueur en `fight_id` non null mais Fight inexistante ou terminee
   - [x] Fight active sans mobs vivants
   - [x] Inventaire avec PlayerItem orphelins (item_id null)
+  - [x] Quete active deja presente dans PlayerQuestCompleted (doublon)
   - [x] Joueur avec coordonnees hors limites de la carte
-  - [x] Joueur referençant un combat termine (in_progress = false)
-- **Tests** : `tests/Unit/GameEngine/Validation/GameStateValidatorTest.php` — 11 tests
-- **Verification** : `docker compose exec php vendor/bin/phpunit --filter GameStateValidatorTest`
+- **Tests** : `tests/Unit/GameEngine/Debug/GameStateValidatorTest.php` (10 tests), `tests/Unit/Command/GameStateValidateCommandTest.php` (3 tests)
+- **Verification** : `docker compose exec php vendor/bin/phpunit --filter GameStateValidat`
 
 ---
 

@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\GameEngine\Validation\GameStateValidator;
+use App\GameEngine\Debug\GameStateValidator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,10 +12,18 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:game:validate',
-    description: 'Validate game state consistency in the database (orphaned fights, items, out-of-bounds players, etc.)',
+    description: 'Validate game state coherence in the database',
 )]
 class GameStateValidateCommand extends Command
 {
+    private const LABELS = [
+        'ghost_fights' => 'Joueurs references a un combat inexistant ou termine',
+        'fights_without_living_mobs' => 'Combats actifs sans mobs vivants',
+        'orphaned_player_items' => 'PlayerItems orphelins (item manquant)',
+        'stale_active_quests' => 'Quetes actives deja completees',
+        'players_out_of_bounds' => 'Joueurs hors limites de la carte',
+    ];
+
     public function __construct(
         private readonly GameStateValidator $validator,
     ) {
@@ -25,7 +33,7 @@ class GameStateValidateCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('check', null, InputOption::VALUE_REQUIRED, 'Run only a specific check (orphaned_fights, fights_without_alive_mobs, orphaned_items, players_out_of_bounds, players_in_stale_fights)');
+            ->addOption('check', null, InputOption::VALUE_REQUIRED, 'Run only a specific check (' . implode(', ', array_keys(self::LABELS)) . ')');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -36,13 +44,12 @@ class GameStateValidateCommand extends Command
         $singleCheck = $input->getOption('check');
 
         if ($singleCheck !== null) {
-            $results = $this->runSingleCheck($singleCheck);
-            if ($results === null) {
-                $io->error(sprintf('Unknown check: "%s"', $singleCheck));
+            if (!isset(self::LABELS[$singleCheck])) {
+                $io->error(sprintf('Unknown check: "%s". Available: %s', $singleCheck, implode(', ', array_keys(self::LABELS))));
 
                 return Command::FAILURE;
             }
-            $results = [$singleCheck => $results];
+            $results = [$singleCheck => $this->validator->runCheck($singleCheck)];
         } else {
             $results = $this->validator->validateAll();
         }
@@ -50,15 +57,16 @@ class GameStateValidateCommand extends Command
         $totalAnomalies = 0;
 
         foreach ($results as $checkName => $anomalies) {
-            $count = count($anomalies);
+            $label = self::LABELS[$checkName] ?? $checkName;
+            $count = \count($anomalies);
             $totalAnomalies += $count;
 
             if ($count === 0) {
-                $io->writeln(sprintf('  <info>OK</info>  %s', $this->formatCheckName($checkName)));
+                $io->writeln(sprintf('  <info>OK</info>  %s', $label));
             } else {
-                $io->writeln(sprintf('  <error>FAIL</error>  %s — %d anomalie(s)', $this->formatCheckName($checkName), $count));
+                $io->writeln(sprintf('  <error>%d</error>  %s', $count, $label));
                 foreach ($anomalies as $anomaly) {
-                    $io->writeln(sprintf('         - %s', $anomaly));
+                    $io->writeln(sprintf('       - %s', $anomaly));
                 }
             }
         }
@@ -66,33 +74,13 @@ class GameStateValidateCommand extends Command
         $io->newLine();
 
         if ($totalAnomalies === 0) {
-            $io->success('Aucune anomalie detectee. L\'etat du jeu est coherent.');
+            $io->success('Aucune anomalie detectee. Etat du jeu coherent.');
 
             return Command::SUCCESS;
         }
 
-        $io->error(sprintf('%d anomalie(s) detectee(s). Verifier et corriger manuellement.', $totalAnomalies));
+        $io->warning(sprintf('%d anomalie(s) detectee(s).', $totalAnomalies));
 
         return Command::FAILURE;
-    }
-
-    /**
-     * @return list<string>|null
-     */
-    private function runSingleCheck(string $checkName): ?array
-    {
-        return match ($checkName) {
-            'orphaned_fights' => $this->validator->checkOrphanedFights(),
-            'fights_without_alive_mobs' => $this->validator->checkActiveFightsWithoutAliveMobs(),
-            'orphaned_items' => $this->validator->checkOrphanedItems(),
-            'players_out_of_bounds' => $this->validator->checkPlayersOutOfBounds(),
-            'players_in_stale_fights' => $this->validator->checkPlayersInStaleFights(),
-            default => null,
-        };
-    }
-
-    private function formatCheckName(string $checkName): string
-    {
-        return str_replace('_', ' ', ucfirst($checkName));
     }
 }
