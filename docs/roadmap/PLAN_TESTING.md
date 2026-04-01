@@ -32,7 +32,7 @@ JALON 1 — Fondations CI (TST-01 a TST-03)
 
 JALON 2 — Tests integration (TST-04 a TST-08)
   ✅ TST-04 AbstractIntegrationTestCase   ← TST-01
-  TST-05 Integration combat              ← TST-04
+  ✅ TST-05 Integration combat           ← TST-04
   TST-06 Integration status effects      ← TST-04
   TST-07 Integration quetes/progression  ← TST-04
   TST-08 Testsuite Integration dans CI   ← TST-05
@@ -115,7 +115,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-05 — Tests integration combat `L` (decouper en 3 sous-taches)
+### ~~TST-05 — Tests integration combat `L` (decouper en 3 sous-taches)~~ ✅
 
 - **Prerequis** : ← TST-04
 - **Fichiers** : `tests/Integration/Fight/` (nouveau dossier)
@@ -128,10 +128,10 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   - [x] `testPoisonTicksDamagePerTurn` : poison → degats chaque tour → expiration
   - [x] `testSilencePreventsSpellCasting` : silence → sort refuse → silence expire → sort OK
   - [x] `testEffectRefreshResetsDuration` : reappliquer meme effet → duree reset
-- **Sous-tache C** — `FightEdgeCasesTest.php` :
-  - `testPlayerWithNoWeaponCanStillAttack` : attaque de base sans arme
-  - `testFleeFromCombat` : fuite → joueur libere, combat nettoye
-  - `testPlayerDeathInCombat` : joueur meurt → respawn, etat coherent
+- **Sous-tache C** — `FightEdgeCasesTest.php` : ✅
+  - [x] `testPlayerWithNoWeaponCanStillAttack` : attaque de base sans arme
+  - [x] `testFleeFromCombat` : fuite → joueur libere, combat nettoye
+  - [x] `testPlayerDeathInCombat` : joueur meurt → respawn, etat coherent
 - **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite Integration --filter Fight`
 
 ---
@@ -300,7 +300,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 2 | **TST-02** Smoke tests routes | S | Attrape les erreurs 500 |
 | 3 | **TST-03** Couverture de code CI | S | Visibilite sur le non-teste |
 | 4 | ~~**TST-04** AbstractIntegrationTestCase~~ ✅ | M | Base pour tous les tests integration |
-| 5 | **TST-05** Integration combat | L | **Impact maximal** — zone la plus bugguee |
+| 5 | ~~**TST-05** Integration combat~~ ✅ | L | **Impact maximal** — zone la plus bugguee |
 | 6 | **TST-08** Integration dans CI | S | Active TST-05 dans le pipeline |
 | 7 | **TST-12** PHPStan niveau 6 | M | Bugs de types detectes statiquement |
 | 8 | **TST-06** Integration status effects | M | Complemente TST-05 |

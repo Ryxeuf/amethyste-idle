@@ -1429,3 +1429,10 @@
 - [x] `testPoisonTicksDamagePerTurn` : poison applique sur mob → degats chaque tour → expiration apres duree
 - [x] `testSilencePreventsSpellCasting` : silence → isCharacterSilenced true → expiration → isCharacterSilenced false
 - [x] `testEffectRefreshResetsDuration` : appliquer poison → consommer 1 tour → reappliquer → duree reset (pas de stacking)
+
+## TST-05C — Tests integration cas limites combat (2026-04-01) ✅
+
+> Tests d'integration des cas limites de combat avec vraie DB (sous-tache C de TST-05, complete TST-05).
+- [x] `testPlayerWithNoWeaponCanStillAttack` : attaque de base sans arme → degats appliques (baseDamage = 3 + variance, independant de l'arme)
+- [x] `testFleeFromCombat` : fuite reussie → joueur libere, repositionne sur lastCoordinates, combat et mobs supprimes
+- [x] `testPlayerDeathInCombat` : joueur meurt → respawn avec 50% vie max, diedAt null, combat nettoye
