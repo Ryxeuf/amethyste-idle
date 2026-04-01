@@ -13,6 +13,7 @@ export default class extends Controller {
         'nameInput', 'imagePathInput', 'columnsInput', 'tileWidthInput', 'tileHeightInput',
         'previewInfo', 'searchInput', 'imageCount', 'imageList',
         'selectedPreview', 'previewImg', 'previewPath', 'previewDims', 'previewSuggestion',
+        'zoomModal', 'zoomImg', 'zoomTitle',
     ]
 
     _allImages = []
@@ -97,6 +98,29 @@ export default class extends Controller {
             details.appendChild(list)
             container.appendChild(details)
         }
+    }
+
+    openZoom(event) {
+        const src = event.currentTarget.dataset.zoomSrc
+        const title = event.currentTarget.dataset.zoomTitle || ''
+        this._showZoom(src, title)
+    }
+
+    openZoomFromPreview() {
+        const src = this.previewImgTarget.src
+        if (!src) return
+        const title = this.previewPathTarget.textContent || ''
+        this._showZoom(src, title)
+    }
+
+    closeZoom() {
+        this.zoomModalTarget.classList.add('hidden')
+    }
+
+    _showZoom(src, title) {
+        this.zoomImgTarget.src = src
+        this.zoomTitleTarget.textContent = title
+        this.zoomModalTarget.classList.remove('hidden')
     }
 
     async _selectImage(img) {
