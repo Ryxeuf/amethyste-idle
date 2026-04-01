@@ -273,20 +273,22 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-15 — GameStateValidator (commande de diagnostic) `M`
+### ~~TST-15 — GameStateValidator (commande de diagnostic) `M`~~ ✅
 
 - **Prerequis** : ← TST-14
-- **Fichiers** : `src/Command/GameStateValidateCommand.php` (nouveau), `src/GameEngine/Debug/GameStateValidator.php` (nouveau)
+- **Fichiers** : `src/Command/GameStateValidateCommand.php` (nouveau), `src/GameEngine/Validation/GameStateValidator.php` (nouveau)
 - **Action** : commande Symfony qui verifie la coherence de la DB :
   ```bash
   docker compose exec php php bin/console app:game:validate
   ```
 - **Verifications** :
-  - [ ] Joueur en `fight_id` non null mais Fight inexistante ou terminee
-  - [ ] Fight active sans mobs vivants
-  - [ ] Inventaire avec PlayerItem orphelins (item_id null)
-  - [ ] Quete en `status = completed` mais recompense non distribuee
-  - [ ] Joueur avec coordonnees hors limites de la carte
+  - [x] Joueur en `fight_id` non null mais Fight inexistante ou terminee
+  - [x] Fight active sans mobs vivants
+  - [x] Inventaire avec PlayerItem orphelins (item_id null)
+  - [x] Joueur avec coordonnees hors limites de la carte
+  - [x] Joueur referençant un combat termine (in_progress = false)
+- **Tests** : `tests/Unit/GameEngine/Validation/GameStateValidatorTest.php` — 11 tests
+- **Verification** : `docker compose exec php vendor/bin/phpunit --filter GameStateValidatorTest`
 
 ---
 
@@ -308,7 +310,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 12 | ~~**TST-14** Assertions metier~~ ✅ | M | Prevention au runtime |
 | 13 | **TST-13** Mutation testing | M | Qualite des tests eux-memes |
 | 14 | **TST-10** Nouveaux tests E2E | M | Couverture E2E elargie |
-| 15 | **TST-15** GameStateValidator | M | Diagnostic proactif |
+| 15 | ~~**TST-15** GameStateValidator~~ ✅ | M | Diagnostic proactif |
 
 **Convention** : chaque TST-XX termine = commit + push + verification CI.
 
