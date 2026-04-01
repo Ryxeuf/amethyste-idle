@@ -1,0 +1,129 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Respawn Recolte - Admin{% endblock %}
+{% block page_title %}Respawn Recolte{% endblock %}
+
+{% block body %}
+    {# Stats cards #}
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Total spots</div>
+            <div class="text-2xl font-bold text-gray-100">{{ totalSpots }}</div>
+        </div>
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Disponibles</div>
+            <div class="text-2xl font-bold text-emerald-400">{{ availableCount }}</div>
+        </div>
+        <div class="bg-gray-900 border border-amber-800/50 rounded-xl p-4">
+            <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">En cooldown</div>
+            <div class="text-2xl font-bold text-amber-400">{{ inCooldown|length }}</div>
+        </div>
+    </div>
+
+    {# Filters + actions #}
+    <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+        <form method="get" class="flex items-center gap-3">
+            <select name="map" onchange="this.form.submit()" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-300 focus:outline-none focus:border-purple-500">
+                <option value="0">Toutes les cartes</option>
+                {% for map in maps %}
+                    <option value="{{ map.id }}" {% if filterMapId == map.id %}selected{% endif %}>{{ map.name }}</option>
+                {% endfor %}
+            </select>
+            {% if filterMapId > 0 %}
+                <a href="{{ path('admin_harvest_respawn_index') }}" class="text-sm text-purple-400 hover:text-purple-300">Tout afficher</a>
+            {% endif %}
+        </form>
+
+        {% if inCooldown|length > 0 %}
+            <form method="post" action="{{ path('admin_harvest_respawn_force_respawn_all') }}" onsubmit="return confirm('Forcer le respawn de tous les spots en cooldown ?')">
+                <input type="hidden" name="_token" value="{{ csrf_token('force_respawn_all') }}">
+                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-amber-600 hover:bg-amber-500 text-white transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Forcer tout
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+    {# Table #}
+    {% if inCooldown|length > 0 %}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-400">
+                            <th class="text-left px-4 py-3 font-medium">ID</th>
+                            <th class="text-left px-4 py-3 font-medium">Spot</th>
+                            <th class="text-left px-4 py-3 font-medium">Carte</th>
+                            <th class="text-left px-4 py-3 font-medium">Coordonnees</th>
+                            <th class="text-left px-4 py-3 font-medium">Outil</th>
+                            <th class="text-left px-4 py-3 font-medium">Recolte a</th>
+                            <th class="text-left px-4 py-3 font-medium">Respawn dans</th>
+                            <th class="text-left px-4 py-3 font-medium">Progression</th>
+                            <th class="text-right px-4 py-3 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800">
+                        {% for spot in inCooldown %}
+                            {% set remaining = spot.remainingRespawnSeconds %}
+                            {% set total = spot.respawnDelay ?? 1 %}
+                            {% set elapsed = total - remaining %}
+                            {% set pct = ((elapsed / total) * 100)|round(0) %}
+                            <tr class="hover:bg-gray-800/50 transition-colors">
+                                <td class="px-4 py-3 text-gray-500 font-mono text-xs">#{{ spot.id }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="text-gray-200 font-medium">{{ spot.name }}</div>
+                                    <div class="text-gray-500 text-xs">{{ spot.slug }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-gray-300">{{ spot.map ? spot.map.name : '-' }}</td>
+                                <td class="px-4 py-3 text-gray-400 font-mono text-xs">{{ spot.coordinates }}</td>
+                                <td class="px-4 py-3">
+                                    {% if spot.requiredToolType %}
+                                        <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-gray-800 text-gray-300 border border-gray-700">{{ spot.requiredToolType }}</span>
+                                    {% else %}
+                                        <span class="text-gray-600">-</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 text-gray-400 text-xs">{{ spot.usedAt|date('H:i:s') }}</td>
+                                <td class="px-4 py-3">
+                                    {% if remaining > 60 %}
+                                        <span class="text-amber-400 font-mono">{{ (remaining / 60)|round(0) }}m {{ remaining % 60 }}s</span>
+                                    {% else %}
+                                        <span class="text-emerald-400 font-mono">{{ remaining }}s</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 min-w-[120px]">
+                                    <div class="flex items-center gap-2">
+                                        <div class="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full transition-all duration-300 {% if pct > 80 %}bg-emerald-500{% elseif pct > 50 %}bg-amber-500{% else %}bg-purple-500{% endif %}" style="width: {{ pct }}%"></div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 w-8 text-right">{{ pct }}%</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-right">
+                                    <form method="post" action="{{ path('admin_harvest_respawn_force_respawn', {id: spot.id}) }}" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('force_respawn_' ~ spot.id) }}">
+                                        <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg bg-purple-900/50 hover:bg-purple-800 text-purple-300 hover:text-purple-200 border border-purple-800/50 transition-colors" title="Forcer le respawn">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                            Respawn
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="mt-4 text-xs text-gray-600">
+            Rafraichir la page pour mettre a jour les timers. La commande <code class="bg-gray-800 px-1.5 py-0.5 rounded text-gray-400">app:harvest:respawn</code> gere le respawn automatique.
+        </div>
+    {% else %}
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-8 text-center">
+            <div class="text-4xl mb-3">&#x2728;</div>
+            <p class="text-gray-400">Aucun spot en cooldown actuellement.</p>
+            <p class="text-gray-600 text-sm mt-1">Tous les {{ totalSpots }} spots sont disponibles.</p>
+        </div>
+    {% endif %}
+{% endblock %}

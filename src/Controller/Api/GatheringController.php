@@ -145,8 +145,6 @@ class GatheringController extends AbstractController
             'slug' => $spot->getSlug(),
             'toolType' => $toolType,
             'available' => $spot->isAvailable(),
-            'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
-            'respawnDelay' => $spot->getRespawnDelay(),
             'possibleItems' => $possibleItems,
             'tool' => $toolInfo,
             'toolError' => $toolError,
@@ -179,7 +177,6 @@ class GatheringController extends AbstractController
         if (!$spot->isAvailable()) {
             return $this->json([
                 'error' => 'Spot indisponible.',
-                'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
             ], 400);
         }
 
@@ -226,7 +223,6 @@ class GatheringController extends AbstractController
                 'slug' => $pi->getGenericItem()->getSlug(),
                 'rarity' => $pi->getGenericItem()->getRarity() ?? 'common',
             ], $result['items']),
-            'respawnDelay' => $spot->getRespawnDelay(),
             'toolBroken' => $result['toolBroken'],
             'toolDurability' => $toolDurability,
             'toolMaxDurability' => $toolMaxDurability,
