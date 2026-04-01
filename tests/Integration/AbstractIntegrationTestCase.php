@@ -149,6 +149,9 @@ abstract class AbstractIntegrationTestCase extends KernelTestCase
         $fight->setCreatedAt(new \DateTime());
         $fight->setUpdatedAt(new \DateTime());
 
+        $fight->addPlayer($player);
+        $fight->addMob($mob);
+
         $this->em->persist($fight);
 
         $player->setFight($fight);
