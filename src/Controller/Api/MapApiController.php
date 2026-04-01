@@ -272,6 +272,11 @@ class MapApiController extends AbstractController
                 continue;
             }
 
+            // Ne pas afficher les spots en cooldown
+            if (!$spot->isAvailable()) {
+                continue;
+            }
+
             $coords = explode('.', $spot->getCoordinates() ?? '0.0');
             $ex = (int) ($coords[0] ?? 0);
             $ey = (int) ($coords[1] ?? 0);
@@ -284,11 +289,8 @@ class MapApiController extends AbstractController
                 'slug' => $spot->getSlug(),
                 'x' => $ex,
                 'y' => $ey,
-                'available' => $spot->isAvailable(),
                 'nightOnly' => $spot->isNightOnly(),
                 'toolType' => $spot->getRequiredToolType(),
-                'respawnDelay' => $spot->getRespawnDelay(),
-                'remainingSeconds' => $spot->getRemainingRespawnSeconds(),
                 'canHarvest' => $this->playerActionHelper->canHarvest($spot->getSlug()),
             ];
         }

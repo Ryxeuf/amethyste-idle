@@ -25,16 +25,19 @@ class SpotHarvestHandler implements EventSubscriberInterface
     public function removeSpot(SpotHarvestEvent $event): void
     {
         $objectLayer = $event->getObjectLayer();
+        $coords = explode('.', $objectLayer->getCoordinates() ?? '0.0');
         $update = new Update(
             'map/spot',
             json_encode([
                 'topic' => 'map/spot',
                 'type' => 'remove',
+                'mapId' => $objectLayer->getMap()?->getId(),
                 'object' => [
                     'id' => $objectLayer->getId(),
                     'slug' => $objectLayer->getSlug(),
                 ],
-                'coordinates' => $objectLayer->getCoordinates(),
+                'x' => (int) ($coords[0] ?? 0),
+                'y' => (int) ($coords[1] ?? 0),
             ], JSON_THROW_ON_ERROR)
         );
 
@@ -44,18 +47,22 @@ class SpotHarvestHandler implements EventSubscriberInterface
     public function addSpot(SpotAvailableEvent $event): void
     {
         $objectLayer = $event->getObjectLayer();
+        $coords = explode('.', $objectLayer->getCoordinates() ?? '0.0');
         $update = new Update(
             'map/spot',
             json_encode([
                 'topic' => 'map/spot',
                 'type' => 'add',
+                'mapId' => $objectLayer->getMap()?->getId(),
                 'object' => [
                     'id' => $objectLayer->getId(),
                     'slug' => $objectLayer->getSlug(),
                     'name' => $objectLayer->getName(),
                     'toolType' => $objectLayer->getRequiredToolType(),
+                    'nightOnly' => $objectLayer->isNightOnly(),
                 ],
-                'coordinates' => $objectLayer->getCoordinates(),
+                'x' => (int) ($coords[0] ?? 0),
+                'y' => (int) ($coords[1] ?? 0),
             ], JSON_THROW_ON_ERROR)
         );
 

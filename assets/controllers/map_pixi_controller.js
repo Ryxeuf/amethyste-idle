@@ -860,15 +860,15 @@ export default class extends Controller {
 
     _createHarvestSpotMarker(spot) {
         const s = this._tileSize;
-        const texture = this._getHarvestSpotTexture(spot.toolType, spot.available);
+        const texture = this._getHarvestSpotTexture(spot.toolType, true);
         const sprite = new PIXI.Sprite(texture);
 
         const container = this._acquireEntityContainer();
         container.addChild(sprite);
         container.position.set(spot.x * s, spot.y * s);
         container.zIndex = spot.y * s - 1;
-        // Dim spots that are on cooldown or that the player can't harvest (no skill)
-        if (!spot.available || spot.canHarvest === false) {
+        // Dim spots that the player can't harvest (no skill)
+        if (spot.canHarvest === false) {
             container.alpha = 0.3;
         } else {
             container.alpha = 1.0;
@@ -879,7 +879,7 @@ export default class extends Controller {
         this._entitySprites[key] = {
             container, x: spot.x, y: spot.y,
             type: 'harvest', animator: null, spotData: spot,
-            meta: { name: spot.name, available: spot.available, remainingSeconds: spot.remainingSeconds, canHarvest: spot.canHarvest },
+            meta: { name: spot.name, canHarvest: spot.canHarvest },
         };
         this._addToSpatialHash(key, spot.x, spot.y);
     }
@@ -2261,9 +2261,6 @@ export default class extends Controller {
         if (type === 'harvest') {
             const spot = entry.spotData || meta;
             const name = this._escHtml(spot.name || '???');
-            if (spot.available === false && spot.remainingSeconds > 0) {
-                return `<span style="color:#888">${icon} ${name} <span style="font-size:8px">(${spot.remainingSeconds}s)</span></span>`;
-            }
             return `<span style="color:${color}">${icon} ${name}</span>`;
         }
         return null;
@@ -2378,8 +2375,6 @@ export default class extends Controller {
                 let detail = toolLabels[spot.toolType] || 'Outil requis';
                 if (spot.canHarvest === false) {
                     detail = 'Compétence manquante';
-                } else if (!spot.available && spot.remainingSeconds > 0) {
-                    detail = `Cooldown ${spot.remainingSeconds}s`;
                 }
                 this._showMobileBanner('✦', spot.name || 'Spot de récolte', detail, 'border-amber-500/50');
                 return;
@@ -3070,6 +3065,7 @@ export default class extends Controller {
         const url = new URL(this.mercureUrlValue);
         url.searchParams.append('topic', 'map/move');
         url.searchParams.append('topic', 'map/respawn');
+        url.searchParams.append('topic', 'map/spot');
         url.searchParams.append('topic', 'map/weather');
         url.searchParams.append('topic', 'guild/city_control');
 
@@ -3107,12 +3103,46 @@ export default class extends Controller {
             } else if (type !== 'world_boss_spawn' && type !== 'world_boss_despawn') {
                 this._loadEntities();
             }
+        } else if (topic === 'map/spot') {
+            if (data.mapId === this.mapIdValue) {
+                this._handleSpotEvent(data);
+            }
         } else if (topic === 'map/weather') {
             if (data.mapId === this.mapIdValue) {
                 this._transitionWeather(data.weather);
             }
         } else if (topic === 'guild/city_control' && data.type === 'city_control_change') {
             this._loadEntities();
+        }
+    }
+
+    _handleSpotEvent(data) {
+        const spotId = data.object?.id;
+        if (!spotId) return;
+        const key = `harvest_${spotId}`;
+
+        if (data.type === 'remove') {
+            const entry = this._entitySprites[key];
+            if (entry) {
+                this._removeFromSpatialHash(key, entry.x, entry.y);
+                this._entityContainer.removeChild(entry.container);
+                this._releaseEntityContainer(entry.container);
+                delete this._entitySprites[key];
+            }
+        } else if (data.type === 'add') {
+            // Avoid duplicates
+            if (this._entitySprites[key]) return;
+            const spot = {
+                id: spotId,
+                name: data.object.name || '???',
+                slug: data.object.slug,
+                toolType: data.object.toolType || null,
+                nightOnly: data.object.nightOnly || false,
+                x: parseInt(data.x),
+                y: parseInt(data.y),
+                canHarvest: true,
+            };
+            this._createHarvestSpotMarker(spot);
         }
     }
 

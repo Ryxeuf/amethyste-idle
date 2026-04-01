@@ -221,9 +221,6 @@ export default class extends Controller {
         // Availability
         if (!data.available) {
             this.harvestBtnTarget.disabled = true;
-            if (data.remainingSeconds > 0) {
-                this._startCooldown(data.remainingSeconds, data.respawnDelay || data.remainingSeconds);
-            }
         } else if (!data.tool && data.toolType) {
             this.harvestBtnTarget.disabled = true;
         } else if (data.toolError) {
@@ -332,10 +329,10 @@ export default class extends Controller {
             }, (result.items?.length || 0) * 120 + 200);
         }
 
-        // Start cooldown
-        if (result.respawnDelay) {
-            this._startCooldown(result.respawnDelay, result.respawnDelay);
-        }
+        // Fermer le panel après un délai pour que le joueur voie le résultat
+        setTimeout(() => {
+            this.close();
+        }, 2500);
     }
 
     _showResultMessage(text, type) {
