@@ -3437,157 +3437,201 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // MINEUR (terre/recolte) — 15 skills, extraction de minerais
+    // MINEUR (terre/recolte) — extraction de minerais, 5 tiers de progression
+    // T1 Cuivre/Étain/Fer → T2 Argent/Or/Cobalt → T3 Mithril/Platine/Sombracier
+    // → T4 Adamantite/Astrétal/Orichalque → T5 Améthystite/Voidium
     // =========================================================================
     private function getMinerSkills(): array
     {
         $d = 'miner';
 
         return [
-            // Rang 1 (0 pts) — 2 skills d'entree
-            'miner_ruby_xs' => [
-                'slug' => 'miner-ruby-xs',
-                'title' => 'Minage du rubis debutant',
-                'description' => 'Permet de miner les filons de rubis basiques et debloque l\'emplacement de pioche',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xs']], ['action' => 'tool_slot.unlock', 'slot' => 'pickaxe'], ['action' => 'equip.tool', 'slugs' => ['pickaxe-bronze']]],
+            // =================================================================
+            // RANG 1 (0 pts) — T1 Commun : Cuivre, Étain, Fer
+            // =================================================================
+            'miner_copper_xs' => [
+                'slug' => 'miner-copper-xs',
+                'title' => 'Minage du cuivre',
+                'description' => 'Permet de miner les filons de cuivre et debloque l\'emplacement de pioche',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-copper-xs', 'spot-copper-s']], ['action' => 'tool_slot.unlock', 'slot' => 'pickaxe'], ['action' => 'equip.tool', 'slugs' => ['pickaxe-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
+            ],
+            'miner_tin_xs' => [
+                'slug' => 'miner-tin-xs',
+                'title' => 'Minage de l\'etain',
+                'description' => 'Permet de miner les filons d\'etain',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-tin-xs', 'spot-tin-s']]],
+                'requiredPoints' => 0,
+                'domain' => $d,
+                'requirements' => ['miner_copper_xs'],
             ],
             'miner_iron_xs' => [
                 'slug' => 'miner-iron-xs',
                 'title' => 'Minage du fer debutant',
                 'description' => 'Permet de miner les filons de fer basiques et d\'utiliser une pioche en fer',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-xs']], ['action' => 'equip.tool', 'slugs' => ['pickaxe-iron']]],
-                'requiredPoints' => 0,
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-xs', 'spot-iron-s']], ['action' => 'equip.tool', 'slugs' => ['pickaxe-iron']]],
+                'requiredPoints' => 5,
                 'domain' => $d,
+                'requirements' => ['miner_copper_xs'],
             ],
 
-            // Rang 2 (10-20 pts) — 4 skills
-            'miner_ruby_s' => [
-                'slug' => 'miner-ruby-s',
-                'title' => 'Minage du rubis apprenti',
-                'description' => 'Permet de miner les filons de rubis apprenti',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-s']]],
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'requirements' => ['miner_ruby_xs'],
-            ],
-            'miner_iron_s' => [
-                'slug' => 'miner-iron-s',
-                'title' => 'Minage du fer apprenti',
-                'description' => 'Permet de miner les filons de fer apprenti',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-s']]],
-                'requiredPoints' => 10,
-                'domain' => $d,
-                'requirements' => ['miner_iron_xs'],
-            ],
+            // =================================================================
+            // RANG 2 (10-20 pts) — T2 Peu commun : Argent, Or, Cobalt
+            // =================================================================
             'miner_efficiency_1' => [
                 'slug' => 'miner-efficiency-1',
                 'title' => 'Pioche affutee',
-                'description' => 'Augmente la vitesse d\'extraction des minerais et permet d\'utiliser une pioche en acier',
+                'description' => 'Augmente la vitesse d\'extraction et permet d\'utiliser une pioche en acier',
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['pickaxe-steel']]],
-                'requiredPoints' => 15,
+                'requiredPoints' => 10,
                 'domain' => $d,
                 'hit' => 1,
-                'requirements' => ['miner_ruby_xs'],
+                'requirements' => ['miner_iron_xs'],
+            ],
+            'miner_silver_xs' => [
+                'slug' => 'miner-silver-xs',
+                'title' => 'Minage de l\'argent',
+                'description' => 'Permet de miner les filons d\'argent',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-silver-xs', 'spot-silver-s']]],
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'requirements' => ['miner_iron_xs'],
             ],
             'miner_gold_xs' => [
                 'slug' => 'miner-gold-xs',
                 'title' => 'Minage de l\'or debutant',
                 'description' => 'Permet de miner les filons d\'or basiques',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-xs']]],
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-xs', 'spot-gold-s']]],
+                'requiredPoints' => 15,
+                'domain' => $d,
+                'requirements' => ['miner_silver_xs'],
+            ],
+            'miner_cobalt_xs' => [
+                'slug' => 'miner-cobalt-xs',
+                'title' => 'Minage du cobalt',
+                'description' => 'Permet de miner les filons de cobalt, un minerai d\'un bleu profond',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-cobalt-xs', 'spot-cobalt-s']]],
                 'requiredPoints' => 20,
                 'domain' => $d,
-                'requirements' => ['miner_iron_xs'],
+                'requirements' => ['miner_efficiency_1'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
-            'miner_ruby_m' => [
-                'slug' => 'miner-ruby-m',
-                'title' => 'Minage du rubis avance',
-                'description' => 'Permet de miner les filons de rubis avances',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-m']]],
-                'requiredPoints' => 25,
-                'domain' => $d,
-                'requirements' => ['miner_ruby_s', 'miner_efficiency_1'],
-            ],
-            'miner_iron_m' => [
-                'slug' => 'miner-iron-m',
-                'title' => 'Minage du fer avance',
-                'description' => 'Permet de miner les filons de fer avances',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-m']]],
-                'requiredPoints' => 30,
-                'domain' => $d,
-                'requirements' => ['miner_iron_s'],
-            ],
-            'miner_gold_s' => [
-                'slug' => 'miner-gold-s',
-                'title' => 'Minage de l\'or apprenti',
-                'description' => 'Permet de miner les filons d\'or apprenti',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-s']]],
-                'requiredPoints' => 30,
-                'domain' => $d,
-                'requirements' => ['miner_gold_xs'],
-            ],
+            // =================================================================
+            // RANG 3 (25-45 pts) — T3 Rare : Mithril, Platine, Sombracier
+            // =================================================================
             'miner_yield_1' => [
                 'slug' => 'miner-yield-1',
                 'title' => 'Filon genereux',
                 'description' => 'Chance de doubler les minerais extraits',
-                'requiredPoints' => 40,
+                'requiredPoints' => 25,
                 'domain' => $d,
                 'critical' => 2,
-                'requirements' => ['miner_ruby_m'],
+                'requirements' => ['miner_gold_xs'],
             ],
-            'miner_iron_l' => [
-                'slug' => 'miner-iron-l',
-                'title' => 'Minage du fer expert',
-                'description' => 'Permet de miner les filons de fer rares',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-iron-l']]],
-                'requiredPoints' => 50,
+            'miner_mithril_xs' => [
+                'slug' => 'miner-mithril-xs',
+                'title' => 'Minage du mithril',
+                'description' => 'Permet de miner les filons de mithril legendaire',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-mithril-xs', 'spot-mithril-s']]],
+                'requiredPoints' => 30,
                 'domain' => $d,
-                'requirements' => ['miner_iron_m'],
+                'requirements' => ['miner_cobalt_xs', 'miner_yield_1'],
             ],
-
-            // Rang 4 (60-100 pts) — 3 skills
-            'miner_ruby_l' => [
-                'slug' => 'miner-ruby-l',
-                'title' => 'Minage du rubis expert',
-                'description' => 'Permet de miner les filons de rubis rares',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-l']]],
-                'requiredPoints' => 60,
+            'miner_platinum_xs' => [
+                'slug' => 'miner-platinum-xs',
+                'title' => 'Minage du platine',
+                'description' => 'Permet de miner les filons de platine d\'une purete exceptionnelle',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-platinum-xs']]],
+                'requiredPoints' => 35,
                 'domain' => $d,
-                'requirements' => ['miner_ruby_m', 'miner_iron_m'],
-            ],
-            'miner_gold_m' => [
-                'slug' => 'miner-gold-m',
-                'title' => 'Minage de l\'or avance',
-                'description' => 'Permet de miner les filons d\'or avances',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-gold-m']]],
-                'requiredPoints' => 80,
-                'domain' => $d,
-                'requirements' => ['miner_gold_s', 'miner_yield_1'],
+                'requirements' => ['miner_mithril_xs'],
             ],
             'miner_deep_vein' => [
                 'slug' => 'miner-deep-vein',
                 'title' => 'Veines profondes',
-                'description' => 'Augmente la quantite de minerais extraits des filons rares et permet d\'utiliser une pioche en mithril',
+                'description' => 'Permet d\'utiliser une pioche en mithril et augmente les rendements',
                 'actions' => [['action' => 'equip.tool', 'slugs' => ['pickaxe-mithril']]],
-                'requiredPoints' => 100,
+                'requiredPoints' => 40,
                 'domain' => $d,
                 'damage' => 1,
                 'critical' => 1,
-                'requirements' => ['miner_iron_l'],
+                'requirements' => ['miner_mithril_xs'],
+            ],
+            'miner_darksteel_xs' => [
+                'slug' => 'miner-darksteel-xs',
+                'title' => 'Minage du sombracier',
+                'description' => 'Permet de miner les filons de sombracier dans les profondeurs',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-darksteel-xs']]],
+                'requiredPoints' => 45,
+                'domain' => $d,
+                'requirements' => ['miner_deep_vein'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            // =================================================================
+            // RANG 4 (55-80 pts) — T4 Épique : Adamantite, Astrétal, Orichalque
+            // =================================================================
+            'miner_adamantite_xs' => [
+                'slug' => 'miner-adamantite-xs',
+                'title' => 'Minage de l\'adamantite',
+                'description' => 'Permet de miner les filons d\'adamantite, le minerai le plus dur',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-adamantite-xs']]],
+                'requiredPoints' => 55,
+                'domain' => $d,
+                'requirements' => ['miner_darksteel_xs', 'miner_platinum_xs'],
+            ],
+            'miner_starmetal_xs' => [
+                'slug' => 'miner-starmetal-xs',
+                'title' => 'Minage de l\'astretal',
+                'description' => 'Permet de miner les filons d\'astretal, un metal tombe des etoiles',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-starmetal-xs']]],
+                'requiredPoints' => 65,
+                'domain' => $d,
+                'requirements' => ['miner_adamantite_xs'],
+            ],
+            'miner_yield_2' => [
+                'slug' => 'miner-yield-2',
+                'title' => 'Filon prodigieux',
+                'description' => 'Augmente encore les chances de doubler les minerais rares',
+                'requiredPoints' => 70,
+                'domain' => $d,
+                'critical' => 3,
+                'hit' => 2,
+                'requirements' => ['miner_adamantite_xs'],
+            ],
+            'miner_orichalcum_xs' => [
+                'slug' => 'miner-orichalcum-xs',
+                'title' => 'Minage de l\'orichalque',
+                'description' => 'Permet de miner les filons d\'orichalque, le metal mythique des anciens',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-orichalcum-xs']]],
+                'requiredPoints' => 80,
+                'domain' => $d,
+                'requirements' => ['miner_starmetal_xs'],
+            ],
+
+            // =================================================================
+            // RANG 5 (100-150 pts) — T5 Légendaire : Améthystite, Voidium
+            // =================================================================
+            'miner_amethystite_xs' => [
+                'slug' => 'miner-amethystite-xs',
+                'title' => 'Minage de l\'amethystite',
+                'description' => 'Permet de miner les cristaux d\'amethystite, la gemme signature d\'Amethyste',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-amethystite-xs']]],
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'requirements' => ['miner_orichalcum_xs', 'miner_yield_2'],
+            ],
             'miner_master' => [
                 'slug' => 'miner-master',
                 'title' => 'Maitre mineur',
-                'description' => 'Maitrise absolue du minage — acces aux filons legendaires',
-                'actions' => [['action' => 'harvest', 'spots' => ['spot-ruby-xl', 'spot-iron-xl', 'spot-gold-xl']]],
+                'description' => 'Maitrise absolue du minage — acces aux filons de voidium et bonus ultimes',
+                'actions' => [['action' => 'harvest', 'spots' => ['spot-voidium-xs']]],
                 'requiredPoints' => 150,
                 'domain' => $d,
-                'requirements' => ['miner_ruby_l', 'miner_gold_m'],
+                'damage' => 2,
+                'critical' => 2,
+                'hit' => 1,
+                'requirements' => ['miner_amethystite_xs'],
             ],
         ];
     }
