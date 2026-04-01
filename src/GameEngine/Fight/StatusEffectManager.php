@@ -125,6 +125,12 @@ class StatusEffectManager
 
             // Decrement remaining turns
             $fightEffect->decrementTurn();
+
+            // Invariant métier : durée négative → expirer immédiatement
+            if ($fightEffect->getRemainingTurns() < 0) {
+                $fightEffect->setRemainingTurns(0);
+            }
+
             $this->entityManager->persist($fightEffect);
         }
 

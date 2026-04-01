@@ -1400,3 +1400,13 @@
 - [x] Transaction wrapping : `beginTransaction` dans `setUp`, `rollBack` dans `tearDown` (isolation entre tests)
 - [x] Helpers : `getPlayer()`, `getUser()`, `getMob()`, `getMap()`, `createFight()`, `getService()`
 - [x] Test de verification `AbstractIntegrationTestCaseTest.php` : 7 tests (boot kernel, player, user, map, mob, fight + rollback, getService)
+
+## TST-14 — Assertions metier dans le GameEngine (2026-04-01) ✅
+
+> Ajout de LogicException et gardes defensives dans les services critiques du GameEngine pour prevenir les etats impossibles au runtime.
+- [x] `PlayerMoveProcessor` : joueur en combat → LogicException (deplacement interdit) + garde dans les appelants (MapApiController, Map.php)
+- [x] `MobActionHandler` : mob avec 0 HP → LogicException (ne peut pas agir)
+- [x] `SpellApplicator` : degats calcules < 0 → forces a 0 (jamais negatif)
+- [x] `StatusEffectManager` : duree restante < 0 → corrigee a 0 (expiration immediate)
+- [x] `FightTurnResolver::getTimeline` : combat sans participants → LogicException
+- [x] Tests unitaires `BusinessAssertionsTest.php` : 7 tests couvrant les 5 assertions

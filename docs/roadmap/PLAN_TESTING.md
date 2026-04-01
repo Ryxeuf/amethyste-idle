@@ -2,7 +2,7 @@
 
 > Plan annexe pour ameliorer la detection et prevention des bugs en conditions reelles.
 > 15 taches numerotees **TST-01** a **TST-15**, reparties en 5 jalons.
-> Derniere mise a jour : 2026-03-31
+> Derniere mise a jour : 2026-04-01
 
 ---
 
@@ -251,7 +251,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ## Jalon 5 — Prevention proactive
 
-### TST-14 — Assertions metier dans le GameEngine `M`
+### ~~TST-14 — Assertions metier dans le GameEngine `M`~~ ✅
 
 - **Prerequis** : ∅
 - **Fichiers** : services dans `src/GameEngine/Fight/`, `src/GameEngine/Movement/`
@@ -264,6 +264,12 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | `SpellApplicator` | Degats calcules < 0 → forcer a 0 (jamais negatif) |
 | `StatusEffectManager` | Duree restante < 0 → expirer immediatement |
 | `FightTurnResolver` | Fight sans participants → exception |
+
+- [x] `LogicException` dans `PlayerMoveProcessor`, `MobActionHandler`, `FightTurnResolver`
+- [x] Garde defensive `max(0, $damage)` dans `SpellApplicator`
+- [x] Correction duree negative dans `StatusEffectManager`
+- [x] Tests unitaires `BusinessAssertionsTest.php` (7 tests)
+- **Verification** : `docker compose exec php vendor/bin/phpunit --filter BusinessAssertionsTest`
 
 ---
 
@@ -299,7 +305,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 9 | **TST-07** Integration quetes/progression | M | Autre source majeure de bugs |
 | 10 | **TST-09** Stabiliser E2E | M | Flux utilisateur reel |
 | 11 | **TST-11** E2E dans CI | S | Active TST-09 dans le pipeline |
-| 12 | **TST-14** Assertions metier | M | Prevention au runtime |
+| 12 | ~~**TST-14** Assertions metier~~ ✅ | M | Prevention au runtime |
 | 13 | **TST-13** Mutation testing | M | Qualite des tests eux-memes |
 | 14 | **TST-10** Nouveaux tests E2E | M | Couverture E2E elargie |
 | 15 | **TST-15** GameStateValidator | M | Diagnostic proactif |

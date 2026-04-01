@@ -106,6 +106,9 @@ class SpellApplicator
             $damage = $this->damageCalculator->applyBurnReduction($damage);
         }
 
+        // Invariant métier : les dégâts ne peuvent jamais être négatifs
+        $damage = max(0, $damage);
+
         // Shield absorption on target
         if ($damage > 0 && $fight !== null) {
             $shieldAbsorb = $this->getShieldAbsorb($fight, $target);
