@@ -55,19 +55,8 @@ Piste G — Export & qualite                : MED-16
 - [ ] Injecter dans `MapEditorController` et `MapApiController` en remplacement des lectures .tsx
 - [ ] Tests unitaires : resolution GID, conversion local/global
 
-### MED-02 — MapFactory — creation de carte vierge (S | ★★★ | CRITIQUE)
-> Permet de creer des cartes de taille configurable depuis l'admin. Prerequis : ← MED-01
-- [ ] Classe `MapFactory` dans `src/GameEngine/Terrain/MapFactory.php`
-- [ ] Methode `createBlankMap(string $name, int $width, int $height, World $world): Map`
-  - Cree l'entite `Map` avec areaWidth/areaHeight = width/height
-  - Cree une `Area` avec `fullData` initialise (toutes les cells a GID 0, mouvement 0)
-  - Format `fullData` : `{"width": W, "height": H, "tileWidth": 32, "tileHeight": 32, "cells": {"x.y": {"layers": [0,0,0,0], "mouvement": 0, "borders": [0,0,0,0]}}}`
-- [ ] Validation : width/height entre 10 et 200, nom unique
-- [ ] Route `GET /admin/maps/create` — formulaire (nom, largeur, hauteur, world)
-- [ ] Route `POST /admin/maps/create` — appelle `MapFactory`, redirige vers l'editeur
-- [ ] Template `templates/admin/map/create.html.twig`
-- [ ] Lien "Nouvelle carte" dans la liste admin des cartes
-- [ ] Tester : creer une carte 40x30, verifier Area.fullData en DB, ouvrir dans l'editeur
+### MED-02 — MapFactory — creation de carte vierge (S | ★★★ | CRITIQUE) ✅
+> Deplace dans `ROADMAP_DONE.md`.
 
 ---
 

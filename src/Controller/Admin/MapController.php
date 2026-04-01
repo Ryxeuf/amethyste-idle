@@ -7,8 +7,10 @@ use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Pnj;
+use App\Entity\App\World;
 use App\Form\Admin\MobSpawnType;
 use App\Form\Admin\PnjPositionType;
+use App\GameEngine\Terrain\MapFactory;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +26,7 @@ class MapController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
+        private readonly MapFactory $mapFactory,
     ) {
     }
 
@@ -55,6 +58,69 @@ class MapController extends AbstractController
             'maps' => $maps,
             'mapStats' => $mapStats,
             'search' => $search,
+        ]);
+    }
+
+    #[Route('/create', name: 'create')]
+    public function create(Request $request): Response
+    {
+        $worlds = $this->em->getRepository(World::class)->findBy([], ['name' => 'ASC']);
+
+        if ($request->isMethod('POST')) {
+            $name = trim($request->request->get('name', ''));
+            $width = $request->request->getInt('width', 40);
+            $height = $request->request->getInt('height', 30);
+            $worldId = $request->request->getInt('world_id');
+
+            $errors = [];
+            if ($name === '') {
+                $errors[] = 'Le nom est requis.';
+            }
+            if ($width < 10 || $width > 200) {
+                $errors[] = 'La largeur doit etre entre 10 et 200.';
+            }
+            if ($height < 10 || $height > 200) {
+                $errors[] = 'La hauteur doit etre entre 10 et 200.';
+            }
+
+            $world = $worldId ? $this->em->getRepository(World::class)->find($worldId) : null;
+            if (!$world) {
+                $errors[] = 'Le monde est requis.';
+            }
+
+            $existing = $this->em->getRepository(Map::class)->findOneBy(['name' => $name]);
+            if ($existing) {
+                $errors[] = 'Une carte avec ce nom existe deja.';
+            }
+
+            if ($errors) {
+                foreach ($errors as $error) {
+                    $this->addFlash('error', $error);
+                }
+
+                return $this->render('admin/map/create.html.twig', [
+                    'worlds' => $worlds,
+                    'name' => $name,
+                    'width' => $width,
+                    'height' => $height,
+                    'worldId' => $worldId,
+                ]);
+            }
+
+            $map = $this->mapFactory->createBlankMap($name, $width, $height, $world);
+
+            $this->adminLogger->log('create', 'Map', $map->getId(), 'Carte vierge creee : ' . $name . ' (' . $width . 'x' . $height . ')');
+            $this->addFlash('success', 'Carte "' . $name . '" creee (' . $width . 'x' . $height . '). Ouvrez l\'editeur pour commencer.');
+
+            return $this->redirectToRoute('admin_map_show', ['id' => $map->getId()]);
+        }
+
+        return $this->render('admin/map/create.html.twig', [
+            'worlds' => $worlds,
+            'name' => '',
+            'width' => 40,
+            'height' => 30,
+            'worldId' => null,
         ]);
     }
 

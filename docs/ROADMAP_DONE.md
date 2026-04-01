@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-26
+> Derniere mise a jour : 2026-04-01
 
 ---
 
@@ -1229,3 +1229,14 @@
 - [x] 3 PNJ : Sylvain le Garde forestier, Elara l'Herboriste (boutique potions), Thadeus l'Ermite
 - [x] Portails bidirectionnels Village ↔ Foret (3 portails)
 - [x] 6 spots de recolte (menthe, sauge, pissenlit/lavande, romarin, mandragore, peche riviere)
+
+## MED-02 — MapFactory — creation de carte vierge (2026-04-01) ✅
+
+> Permet de creer des cartes de taille configurable depuis l'admin. Prerequis : MED-01.
+- [x] Classe `MapFactory` dans `src/GameEngine/Terrain/MapFactory.php` (createBlankMap)
+- [x] Format fullData : cells[x][y] avec 4 layers null, mouvement 0, slug
+- [x] Validation : width/height entre 10 et 200, nom unique
+- [x] Route `GET/POST /admin/maps/create` dans MapController
+- [x] Template `templates/admin/map/create.html.twig` (formulaire nom, monde, largeur, hauteur)
+- [x] Bouton "Nouvelle carte" dans la liste admin des cartes
+- [x] Test unitaire `MapFactoryTest` (creation, fullData structure, flush)

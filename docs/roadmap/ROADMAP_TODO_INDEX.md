@@ -2,7 +2,7 @@
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
 > Numerotation unifiee : chaque tache a un identifiant unique (01 a 103).
-> Derniere mise a jour : 2026-03-26
+> Derniere mise a jour : 2026-04-01
 > **Repriorisation** : l'editeur de cartes integre (MED-01 a MED-16) est desormais la **priorite absolue** de la Vague 4.
 
 ---
@@ -30,7 +30,7 @@ VAGUES 1-3 : TERMINEES ✅ (63 taches completees)
 VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
   ┌─ Phase 1 (fondation)
   │   MED-01 TilesetRegistry ← ✅ 44, ✅ 58 ─────────────────────────┐
-  │   MED-02 MapFactory ← MED-01 ────────────────────────────────────┤
+  │   ✅ MED-02 MapFactory ← MED-01 ─────────────────────────────────┤
   │                                                                   │
   ├─ Phase 2 (peinture)                                               │
   │   MED-03 Tileset Picker ← MED-01                                 │
