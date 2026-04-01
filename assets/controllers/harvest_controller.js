@@ -35,7 +35,7 @@ export default class extends Controller {
     /** Called from map controller via Stimulus dispatch */
     async open(event) {
         const spot = event.detail;
-        console.debug('[harvest] open() called — spot:', spot, 'harvesting:', this._harvesting);
+        console.warn('[harvest] open() called — spot:', spot, 'harvesting:', this._harvesting);
         if (!spot || this._harvesting) return;
 
         this._currentSpot = spot;

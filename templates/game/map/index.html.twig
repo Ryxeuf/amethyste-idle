@@ -19,12 +19,12 @@
                      playerY: playerY,
                      stepDelay: 120,
                  }) }}
-                 data-action="dialog:closed@document->map_pixi#onDialogClosed harvest:harvestSuccess@document->map_pixi#onHarvestSuccess">
+                 data-action="dialog:closed@document->map-pixi#onDialogClosed harvest:harvestSuccess@document->map-pixi#onHarvestSuccess">
             </div>
 
             {# Harvest overlay #}
             <div {{ stimulus_controller('harvest') }}
-                 data-action="map_pixi:harvestSpot@document->harvest#open"
+                 data-action="map-pixi:harvestSpot@document->harvest#open"
                  class="absolute inset-0 pointer-events-none flex items-start justify-center p-2 sm:p-4"
                  aria-label="Panneau de recolte">
                 <div data-harvest-target="panel"
@@ -170,7 +170,7 @@
 
             {# Dialog overlay #}
             <div {{ stimulus_controller('dialog') }}
-                 data-action="map_pixi:pnjDialog@document->dialog#open"
+                 data-action="map-pixi:pnjDialog@document->dialog#open"
                  class="absolute inset-0 pointer-events-none flex items-end justify-center p-2 sm:p-4"
                  role="dialog"
                  aria-label="{{ 'game.map.dialog_aria'|trans({}, 'messages')|default('Dialogue PNJ') }}">

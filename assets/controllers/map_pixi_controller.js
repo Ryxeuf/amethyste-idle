@@ -2537,11 +2537,12 @@ export default class extends Controller {
 
         const harvestSpot = this._findHarvestSpotAt(tileX, tileY, isTouch);
         if (harvestSpot) {
-            console.debug('[harvest] Spot found at', tileX, tileY, '→', harvestSpot);
+            console.warn('[harvest] Spot found at', tileX, tileY, '→', harvestSpot);
             if (isTouch) this._pulseHarvestSpot(harvestSpot);
             this._walkToHarvestSpot(harvestSpot);
             return;
         }
+        console.warn('[harvest] No spot found at', tileX, tileY, '— hashKey:', this._spatialHashKey(tileX, tileY), 'entries:', this._entitySpatialHash.get(this._spatialHashKey(tileX, tileY)));
 
         if (!isWalkable) return;
         this._requestMove(tileX, tileY);
@@ -2582,9 +2583,11 @@ export default class extends Controller {
     _findHarvestSpotAt(x, y, fuzzy = false) {
         // Check exact tile first
         const entities = this._getEntitiesAt(x, y);
+        console.warn('[harvest] _findHarvestSpotAt', x, y, 'entities at key:', [...entities], 'fuzzy:', fuzzy);
         for (const key of entities) {
             if (!key.startsWith('harvest_')) continue;
             const entry = this._entitySprites[key];
+            console.warn('[harvest]   checking', key, '→ entry:', !!entry, 'spotData:', entry?.spotData);
             if (entry && entry.spotData) {
                 return entry.spotData;
             }
@@ -2627,7 +2630,7 @@ export default class extends Controller {
 
         // If player is already adjacent to the spot, open panel directly
         if (Math.abs(px - spot.x) + Math.abs(py - spot.y) <= 1) {
-            console.debug('[harvest] Already adjacent — dispatching harvestSpot event', spot);
+            console.warn('[harvest] Already adjacent — dispatching harvestSpot event', spot);
             this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
@@ -2828,7 +2831,7 @@ export default class extends Controller {
         if (this._pendingHarvestSpot) {
             const spot = this._pendingHarvestSpot;
             this._pendingHarvestSpot = null;
-            console.debug('[harvest] Arrived at pending harvest spot — dispatching event', spot);
+            console.warn('[harvest] Arrived at pending harvest spot — dispatching event', spot);
             this._hideMobileBanner();
             this.dispatch('harvestSpot', { detail: spot });
             return;
