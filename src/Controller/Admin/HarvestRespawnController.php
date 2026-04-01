@@ -94,7 +94,7 @@ class HarvestRespawnController extends AbstractController
 
         $this->eventDispatcher->dispatch(new SpotAvailableEvent($spot), SpotAvailableEvent::NAME);
 
-        $this->adminLogger->log('harvest_respawn', sprintf('Respawn force du spot "%s" (ID %d)', $spot->getName(), $spot->getId()));
+        $this->adminLogger->log('force_respawn', 'ObjectLayer', $spot->getId(), $spot->getName());
         $this->addFlash('success', sprintf('Spot "%s" force en respawn.', $spot->getName()));
 
         return $this->redirectToRoute('admin_harvest_respawn_index');
@@ -127,7 +127,7 @@ class HarvestRespawnController extends AbstractController
 
         $this->em->flush();
 
-        $this->adminLogger->log('harvest_respawn', sprintf('Respawn force de %d spots', $count));
+        $this->adminLogger->log('force_respawn_all', 'ObjectLayer', null, null, ['count' => $count]);
         $this->addFlash('success', sprintf('%d spot(s) force(s) en respawn.', $count));
 
         return $this->redirectToRoute('admin_harvest_respawn_index');
