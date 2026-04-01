@@ -119,11 +119,14 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 - **Prerequis** : ← TST-04
 - **Fichiers** : `tests/Integration/Fight/` (nouveau dossier)
-- **Sous-tache A** — `FightFlowIntegrationTest.php` :
-  - `testEngageMobCreatesFight` : engager un mob → Fight creee en DB
-  - `testPlayerAttackReducesMobHp` : attaque basique → HP du mob diminuent
-  - `testMobDeathEndsFight` : mob a 0 HP → combat termine, events dispatches
-  - `testLootAfterVictory` : victoire → loot genere, XP accorde
+- **Sous-tache A** — `FightFlowIntegrationTest.php` : ✅
+  - [x] `testEngageMobCreatesFight` : engager un mob → Fight creee en DB
+  - [x] `testPlayerAttackReducesMobHp` : attaque basique → HP du mob diminuent (+ `testDirectDamageReducesMobHp`)
+  - [x] `testMobDeathEndsFight` : mob a 0 HP → combat termine, events dispatches (+ `testPlayerDeathEndsFightAsDefeat`)
+  - [x] `testLootGeneratedAfterMobDeath` : victoire → loot genere via MobDeadEvent → LootGenerator
+  - [x] `testMobActionHandlerExecutesMobTurn` : tour du mob → service MobActionHandler
+  - [x] `testFightTurnResolverDeterminesTurnOrder` : ordre des tours
+  - [x] `testFullCombatLoopUntilVictory` : boucle complete combat → victoire
 - **Sous-tache B** — `StatusEffectIntegrationTest.php` :
   - `testPoisonTicksDamagePerTurn` : poison → degats chaque tour → expiration
   - `testSilencePreventsSpellCasting` : silence → sort refuse → silence expire → sort OK
