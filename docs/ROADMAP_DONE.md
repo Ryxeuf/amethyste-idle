@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-31
+> Derniere mise a jour : 2026-04-01
 
 ---
 
@@ -1410,3 +1410,15 @@
 - [x] `StatusEffectManager` : duree restante < 0 → corrigee a 0 (expiration immediate)
 - [x] `FightTurnResolver::getTimeline` : combat sans participants → LogicException
 - [x] Tests unitaires `BusinessAssertionsTest.php` : 7 tests couvrant les 5 assertions
+
+## TST-15 — GameStateValidator (2026-04-01) ✅
+
+> Commande Symfony de diagnostic qui verifie la coherence de l'etat du jeu en base de donnees.
+- [x] Service `GameStateValidator` dans `src/GameEngine/Debug/` avec 5 verifications SQL et option `--check`
+- [x] Commande `app:game:validate` affichant un rapport structure (OK / anomalies)
+- [x] Check `ghost_fights` : joueurs references a un combat inexistant ou termine
+- [x] Check `fights_without_living_mobs` : combats actifs sans mobs vivants
+- [x] Check `orphaned_player_items` : PlayerItem orphelins (item_id null ou reference cassee)
+- [x] Check `stale_active_quests` : quetes actives deja completees (doublon PlayerQuest + PlayerQuestCompleted)
+- [x] Check `players_out_of_bounds` : joueurs hors limites de leur carte (coordonnees vs bounds des areas)
+- [x] Tests unitaires : `GameStateValidatorTest.php` (10 tests) + `GameStateValidateCommandTest.php` (3 tests)
