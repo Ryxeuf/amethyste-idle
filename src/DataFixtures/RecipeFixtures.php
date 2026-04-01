@@ -99,6 +99,77 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Forge un casque en fer protecteur.',
             ],
 
+            // --- Lingots de forge ---
+            'recipe_bronze_ingot' => [
+                'name' => 'Lingot de bronze',
+                'slug' => 'recipe-bronze-ingot',
+                'craft' => 'forgeron',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'ore-copper', 'quantity' => 2],
+                    ['slug' => 'ore-tin', 'quantity' => 2],
+                ],
+                'result_ref' => 'crafted_bronze_ingot',
+                'crafting_time' => 5,
+                'xp_reward' => 10,
+                'description' => 'Allie cuivre et étain pour forger un lingot de bronze.',
+            ],
+            'recipe_cobalt_ingot' => [
+                'name' => 'Lingot de cobalt',
+                'slug' => 'recipe-cobalt-ingot',
+                'craft' => 'forgeron',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'ore-cobalt', 'quantity' => 3],
+                ],
+                'result_ref' => 'crafted_cobalt_ingot',
+                'crafting_time' => 10,
+                'xp_reward' => 30,
+                'description' => 'Fond le cobalt en un lingot d\'un bleu profond.',
+            ],
+            'recipe_mithril_ingot' => [
+                'name' => 'Lingot de mithril',
+                'slug' => 'recipe-mithril-ingot',
+                'craft' => 'forgeron',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'ore-mithril', 'quantity' => 3],
+                    ['slug' => 'ore-platinum', 'quantity' => 1],
+                ],
+                'result_ref' => 'crafted_mithril_ingot',
+                'crafting_time' => 15,
+                'xp_reward' => 50,
+                'description' => 'Forger le mithril requiert un savoir-faire exceptionnel.',
+            ],
+            'recipe_adamantite_ingot' => [
+                'name' => 'Lingot d\'adamantite',
+                'slug' => 'recipe-adamantite-ingot',
+                'craft' => 'forgeron',
+                'required_level' => 6,
+                'ingredients' => [
+                    ['slug' => 'ore-adamantite', 'quantity' => 3],
+                    ['slug' => 'ore-darksteel', 'quantity' => 2],
+                ],
+                'result_ref' => 'crafted_adamantite_ingot',
+                'crafting_time' => 20,
+                'xp_reward' => 80,
+                'description' => 'Fond l\'adamantite avec du sombracier pour un alliage indestructible.',
+            ],
+            'recipe_orichalcum_ingot' => [
+                'name' => 'Lingot d\'orichalque',
+                'slug' => 'recipe-orichalcum-ingot',
+                'craft' => 'forgeron',
+                'required_level' => 8,
+                'ingredients' => [
+                    ['slug' => 'ore-orichalcum', 'quantity' => 3],
+                    ['slug' => 'ore-starmetal', 'quantity' => 2],
+                ],
+                'result_ref' => 'crafted_orichalcum_ingot',
+                'crafting_time' => 25,
+                'xp_reward' => 120,
+                'description' => 'Le métal mythique des anciens, forgé avec l\'astrétal des étoiles.',
+            ],
+
             // --- Tannerie (tanneur) ---
             'recipe_leather_boots' => [
                 'name' => 'Bottes en cuir',

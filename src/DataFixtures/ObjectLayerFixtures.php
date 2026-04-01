@@ -98,6 +98,65 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'items' => [['slug' => 'ore-gold', 'min' => 1, 'max' => 1]],
             ],
 
+            // --- T1 supplémentaires ---
+            'spot-copper-s' => [
+                'name' => 'Filon de cuivre',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '89.19',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 45,
+                'items' => [['slug' => 'ore-copper', 'min' => 2, 'max' => 4]],
+            ],
+            'spot-tin-xs' => [
+                'name' => 'Petit filon d\'étain',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '86.17',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 30,
+                'items' => [['slug' => 'ore-tin', 'min' => 1, 'max' => 2]],
+            ],
+            'spot-tin-s' => [
+                'name' => 'Filon d\'étain',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '87.18',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 45,
+                'items' => [['slug' => 'ore-tin', 'min' => 2, 'max' => 3]],
+            ],
+            // --- T2 supplémentaires ---
+            'spot-silver-s' => [
+                'name' => 'Filon d\'argent',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '109.35',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 180,
+                'items' => [['slug' => 'ore-silver', 'min' => 1, 'max' => 3]],
+            ],
+            'spot-gold-s' => [
+                'name' => 'Filon d\'or',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '111.37',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 300,
+                'items' => [['slug' => 'ore-gold', 'min' => 1, 'max' => 2]],
+            ],
+            'spot-cobalt-xs' => [
+                'name' => 'Petit filon de cobalt',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '112.38',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 120,
+                'items' => [['slug' => 'ore-cobalt', 'min' => 1, 'max' => 2]],
+            ],
+            'spot-cobalt-s' => [
+                'name' => 'Filon de cobalt',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '113.39',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 180,
+                'items' => [['slug' => 'ore-cobalt', 'min' => 1, 'max' => 3]],
+            ],
+
             // =====================
             // HERBORISTERIE — Plantes
             // =====================
@@ -323,6 +382,107 @@ class ObjectLayerFixtures extends Fixture implements DependentFixtureInterface
                 'requiredToolType' => 'pickaxe',
                 'respawnDelay' => 600,
                 'items' => [['slug' => 'ore-ruby', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
+
+            // --- T2 dans les mines ---
+            'mines-spot-cobalt' => [
+                'name' => 'Filon de cobalt profond',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '55.8',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 180,
+                'items' => [['slug' => 'ore-cobalt', 'min' => 1, 'max' => 3]],
+                'map' => 'map_4',
+            ],
+
+            // --- T3 dans les mines ---
+            'spot-mithril-xs' => [
+                'name' => 'Filon de mithril',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '58.6',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 300,
+                'items' => [['slug' => 'ore-mithril', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
+            'spot-mithril-s' => [
+                'name' => 'Filon de mithril riche',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '60.5',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 600,
+                'items' => [['slug' => 'ore-mithril', 'min' => 2, 'max' => 3]],
+                'map' => 'map_4',
+            ],
+            'spot-platinum-xs' => [
+                'name' => 'Filon de platine',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '62.4',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 300,
+                'items' => [['slug' => 'ore-platinum', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
+            'spot-darksteel-xs' => [
+                'name' => 'Veine de sombracier',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '65.3',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 600,
+                'nightOnly' => true,
+                'items' => [['slug' => 'ore-darksteel', 'min' => 1, 'max' => 2]],
+                'map' => 'map_4',
+            ],
+
+            // --- T4 dans les mines ---
+            'spot-adamantite-xs' => [
+                'name' => 'Filon d\'adamantite',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '68.2',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 900,
+                'items' => [['slug' => 'ore-adamantite', 'min' => 1, 'max' => 1]],
+                'map' => 'map_4',
+            ],
+            'spot-starmetal-xs' => [
+                'name' => 'Météorite d\'astrétal',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '70.2',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 900,
+                'nightOnly' => true,
+                'items' => [['slug' => 'ore-starmetal', 'min' => 1, 'max' => 1]],
+                'map' => 'map_4',
+            ],
+            'spot-orichalcum-xs' => [
+                'name' => 'Filon d\'orichalque ancien',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '72.2',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 1200,
+                'items' => [['slug' => 'ore-orichalcum', 'min' => 1, 'max' => 1]],
+                'map' => 'map_4',
+            ],
+
+            // --- T5 dans les mines ---
+            'spot-amethystite-xs' => [
+                'name' => 'Cristal d\'améthystite',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '75.2',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 1800,
+                'items' => [['slug' => 'ore-amethyst-crystal', 'min' => 1, 'max' => 1]],
+                'map' => 'map_4',
+            ],
+            'spot-voidium-xs' => [
+                'name' => 'Fissure de voidium',
+                'type' => ObjectLayer::TYPE_HARVEST_SPOT,
+                'coordinates' => '78.2',
+                'requiredToolType' => 'pickaxe',
+                'respawnDelay' => 3600,
+                'nightOnly' => true,
+                'items' => [['slug' => 'ore-voidium', 'min' => 1, 'max' => 1]],
                 'map' => 'map_4',
             ],
         ];

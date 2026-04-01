@@ -1,33 +1,146 @@
 App\Entity\Game\Item:
+  # =====================================================================
+  # T1 — COMMUN (zones de départ)
+  # =====================================================================
   ore_copper (extends item):
     id: 20
     name: 'Minerai de cuivre'
-    description: 'Un morceau de minerai de cuivre rougeâtre'
+    description: 'Un morceau de minerai de cuivre rougeâtre, le plus répandu des filons.'
     type: 'resource'
     slug: 'ore-copper'
     price: 5
+    rarity: 'common'
     domain: '@miner'
+  ore_tin (extends item):
+    id: 22
+    name: 'Minerai d''étain'
+    description: 'Un minerai gris clair, essentiel à la fabrication du bronze.'
+    type: 'resource'
+    slug: 'ore-tin'
+    price: 6
+    rarity: 'common'
+    domain: '@miner'
+  ore_iron (extends item):
+    id: 25
+    name: 'Minerai de fer'
+    description: 'Un minerai brun foncé, base de toute forge digne de ce nom.'
+    type: 'resource'
+    slug: 'ore-iron'
+    price: 10
+    rarity: 'common'
+    domain: '@miner'
+
+  # =====================================================================
+  # T2 — PEU COMMUN (zones intermédiaires)
+  # =====================================================================
   ore_silver (extends item):
     id: 21
     name: 'Minerai d''argent'
-    description: 'Un minerai d''argent luisant'
+    description: 'Un minerai d''argent luisant, prisé des joailliers.'
     type: 'resource'
     slug: 'ore-silver'
-    price: 25
+    price: 20
+    rarity: 'uncommon'
     domain: '@miner'
+  ore_gold (extends item):
+    id: 26
+    name: 'Minerai d''or'
+    description: 'Un minerai d''or précieux aux reflets dorés.'
+    type: 'resource'
+    slug: 'ore-gold'
+    price: 30
+    rarity: 'uncommon'
+    domain: '@miner'
+  ore_cobalt (extends item):
+    id: 27
+    name: 'Minerai de cobalt'
+    description: 'Un minerai d''un bleu profond, réputé pour sa dureté.'
+    type: 'resource'
+    slug: 'ore-cobalt'
+    price: 35
+    rarity: 'uncommon'
+    domain: '@miner'
+
+  # =====================================================================
+  # T3 — RARE (zones avancées)
+  # =====================================================================
   ore_mithril (extends item):
     id: 23
     name: 'Minerai de mithril'
-    description: 'Un minerai légendaire d''un bleu étincelant'
+    description: 'Un minerai légendaire d''un bleu étincelant, aussi léger que résistant.'
     type: 'resource'
     slug: 'ore-mithril'
-    price: 100
+    price: 80
+    rarity: 'rare'
     domain: '@miner'
+  ore_platinum (extends item):
+    id: 28
+    name: 'Minerai de platine'
+    description: 'Un minerai blanc éclatant d''une pureté exceptionnelle.'
+    type: 'resource'
+    slug: 'ore-platinum'
+    price: 100
+    rarity: 'rare'
+    domain: '@miner'
+  ore_darksteel (extends item):
+    id: 29
+    name: 'Sombracier'
+    description: 'Un acier noir corrompu par les ténèbres, forgé dans les profondeurs.'
+    type: 'resource'
+    slug: 'ore-darksteel'
+    price: 120
+    rarity: 'rare'
+    domain: '@miner'
+
+  # =====================================================================
+  # T4 — ÉPIQUE (zones dangereuses)
+  # =====================================================================
+  ore_adamantite (extends item):
+    id: 90
+    name: 'Minerai d''adamantite'
+    description: 'Le minerai le plus dur connu, capable de briser toute lame ordinaire.'
+    type: 'resource'
+    slug: 'ore-adamantite'
+    price: 250
+    rarity: 'epic'
+    domain: '@miner'
+  ore_starmetal (extends item):
+    id: 91
+    name: 'Astrétal'
+    description: 'Un métal tombé des étoiles, parcouru d''éclats cosmiques violet-bleu.'
+    type: 'resource'
+    slug: 'ore-starmetal'
+    price: 300
+    rarity: 'epic'
+    domain: '@miner'
+  ore_orichalcum (extends item):
+    id: 92
+    name: 'Minerai d''orichalque'
+    description: 'Le métal mythique des anciens, d''un rouge doré flamboyant.'
+    type: 'resource'
+    slug: 'ore-orichalcum'
+    price: 350
+    rarity: 'epic'
+    domain: '@miner'
+
+  # =====================================================================
+  # T5 — LÉGENDAIRE (zones endgame)
+  # =====================================================================
   ore_amethyst_crystal (extends item):
     id: 24
-    name: 'Cristal d''améthyste'
-    description: 'Un cristal violet aux reflets magiques'
+    name: 'Améthystite'
+    description: 'Un cristal violet aux reflets magiques, signature du monde d''Améthyste. Seuls les maîtres mineurs peuvent l''extraire.'
     type: 'resource'
     slug: 'ore-amethyst-crystal'
-    price: 200
+    price: 800
+    rarity: 'legendary'
+    domain: '@miner'
+  ore_voidium (extends item):
+    id: 93
+    name: 'Voidium'
+    description: 'Un minerai noir-violet parcouru de particules du Vide. Le plus rare et le plus dangereux à extraire.'
+    type: 'resource'
+    slug: 'ore-voidium'
+    price: 1500
+    rarity: 'legendary'
     domain: '@miner'
