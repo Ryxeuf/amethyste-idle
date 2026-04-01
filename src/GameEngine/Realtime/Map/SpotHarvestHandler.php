@@ -25,7 +25,7 @@ class SpotHarvestHandler implements EventSubscriberInterface
     public function removeSpot(SpotHarvestEvent $event): void
     {
         $objectLayer = $event->getObjectLayer();
-        $coords = explode('.', $objectLayer->getCoordinates() ?? '0.0');
+        $coords = explode('.', $objectLayer->getCoordinates());
         $update = new Update(
             'map/spot',
             json_encode([
@@ -47,7 +47,7 @@ class SpotHarvestHandler implements EventSubscriberInterface
     public function addSpot(SpotAvailableEvent $event): void
     {
         $objectLayer = $event->getObjectLayer();
-        $coords = explode('.', $objectLayer->getCoordinates() ?? '0.0');
+        $coords = explode('.', $objectLayer->getCoordinates());
         $update = new Update(
             'map/spot',
             json_encode([

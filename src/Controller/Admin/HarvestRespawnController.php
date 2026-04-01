@@ -39,6 +39,7 @@ class HarvestRespawnController extends AbstractController
             $qb->andWhere('m.id = :mapId')->setParameter('mapId', $filterMapId);
         }
 
+        /** @var ObjectLayer[] $allSpots */
         $allSpots = $qb->orderBy('m.name', 'ASC')
             ->addOrderBy('o.name', 'ASC')
             ->getQuery()
@@ -109,6 +110,7 @@ class HarvestRespawnController extends AbstractController
             return $this->redirectToRoute('admin_harvest_respawn_index');
         }
 
+        /** @var ObjectLayer[] $spots */
         $spots = $this->em->getRepository(ObjectLayer::class)->createQueryBuilder('o')
             ->where('o.type = :type')
             ->andWhere('o.usedAt IS NOT NULL')
