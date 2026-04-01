@@ -12,22 +12,178 @@
             {% endfor %}
         </div>
 
+        {% if monster is defined and monster.attack %}
+            <div class="pt-4 border-t border-gray-800">
+                <h3 class="text-sm font-medium text-gray-400 mb-3">Attaque de base : {{ monster.attack.name }}</h3>
+                <div class="bg-gray-800 rounded-lg p-4">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-sm">
+                        {% if monster.attack.damage %}
+                            <div>
+                                <span class="text-gray-500">Degats</span>
+                                <p class="text-red-400 font-medium">{{ monster.attack.damage }}{{ monster.attack.percent ? '%' : '' }}</p>
+                            </div>
+                        {% endif %}
+                        {% if monster.attack.heal %}
+                            <div>
+                                <span class="text-gray-500">Soin</span>
+                                <p class="text-green-400 font-medium">{{ monster.attack.heal }}{{ monster.attack.percent ? '%' : '' }}</p>
+                            </div>
+                        {% endif %}
+                        <div>
+                            <span class="text-gray-500">Precision</span>
+                            <p class="text-gray-200">{{ monster.attack.hit }}%</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Critique</span>
+                            <p class="text-yellow-400">{{ monster.attack.critical }}%</p>
+                        </div>
+                        <div>
+                            <span class="text-gray-500">Element</span>
+                            <p class="text-gray-200">{{ monster.attack.element.label }}</p>
+                        </div>
+                        {% if monster.attack.cooldown %}
+                            <div>
+                                <span class="text-gray-500">Cooldown</span>
+                                <p class="text-gray-200">{{ monster.attack.cooldown }} tour{{ monster.attack.cooldown > 1 ? 's' : '' }}</p>
+                            </div>
+                        {% endif %}
+                        {% if monster.attack.energyCost > 0 %}
+                            <div>
+                                <span class="text-gray-500">Cout energie</span>
+                                <p class="text-blue-400">{{ monster.attack.energyCost }}</p>
+                            </div>
+                        {% endif %}
+                        {% if monster.attack.aoeTargets != 1 %}
+                            <div>
+                                <span class="text-gray-500">Cibles</span>
+                                <p class="text-gray-200">{{ monster.attack.aoeTargets == 0 ? 'Tous' : monster.attack.aoeTargets }}</p>
+                            </div>
+                        {% endif %}
+                        {% if monster.attack.statusEffectSlug %}
+                            <div>
+                                <span class="text-gray-500">Effet de statut</span>
+                                <p class="text-orange-400">{{ monster.attack.statusEffectSlug }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    {% if monster.attack.description %}
+                        <p class="text-gray-500 text-xs mt-3 italic">{{ monster.attack.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
         {% if monster is defined and monster.monsterItems|length > 0 %}
             <div class="pt-4 border-t border-gray-800">
                 <h3 class="text-sm font-medium text-gray-400 mb-3">Table de loot</h3>
-                <div class="bg-gray-800 rounded-lg overflow-hidden overflow-x-auto">
+                <div class="bg-gray-800 rounded-lg overflow-hidden">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-gray-700 text-gray-500">
                                 <th class="text-left px-3 py-2 font-medium">Item</th>
                                 <th class="text-left px-3 py-2 font-medium">Probabilite</th>
+                                <th class="text-left px-3 py-2 font-medium">Garanti</th>
+                                <th class="text-left px-3 py-2 font-medium">Difficulte min.</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-700">
                             {% for mi in monster.monsterItems %}
-                                <tr>
-                                    <td class="px-3 py-2 text-gray-300">{{ mi.item.name }}</td>
-                                    <td class="px-3 py-2 text-gray-400">{{ (mi.probability * 100)|number_format(1) }}%</td>
+                                <tr class="cursor-pointer hover:bg-gray-700/50 transition-colors drop-row" onclick="this.nextElementSibling.classList.toggle('hidden')">
+                                    <td class="px-3 py-2 {{ mi.item.rarity ? mi.item.rarity.cssClass : 'text-gray-300' }}">
+                                        {{ mi.item.name }}
+                                        {% if mi.item.rarity %}
+                                            <span class="text-xs {{ mi.item.rarity.bgClass }} px-1.5 py-0.5 rounded ml-1">{{ mi.item.rarity.label }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-3 py-2 text-gray-400">{{ mi.probability|number_format(1) }}%</td>
+                                    <td class="px-3 py-2">
+                                        {% if mi.guaranteed %}
+                                            <span class="text-green-400 text-xs font-medium">Oui</span>
+                                        {% else %}
+                                            <span class="text-gray-600 text-xs">Non</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-3 py-2 text-gray-400">{{ mi.minDifficulty ?? '-' }}</td>
+                                </tr>
+                                <tr class="hidden">
+                                    <td colspan="4" class="px-3 py-3 bg-gray-900/50">
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 text-xs">
+                                            <div>
+                                                <span class="text-gray-500">Type</span>
+                                                <p class="text-gray-300 capitalize">{{ mi.item.type }}</p>
+                                            </div>
+                                            {% if mi.item.element and mi.item.element.value != 'none' %}
+                                                <div>
+                                                    <span class="text-gray-500">Element</span>
+                                                    <p class="text-gray-300">{{ mi.item.element.label }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.protection %}
+                                                <div>
+                                                    <span class="text-gray-500">Protection</span>
+                                                    <p class="text-gray-300">{{ mi.item.protection }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.price %}
+                                                <div>
+                                                    <span class="text-gray-500">Prix</span>
+                                                    <p class="text-yellow-400">{{ mi.item.price }} or</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.level %}
+                                                <div>
+                                                    <span class="text-gray-500">Niveau</span>
+                                                    <p class="text-gray-300">{{ mi.item.level }}</p>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <span class="text-gray-500">Espace</span>
+                                                <p class="text-gray-300">{{ mi.item.space }}</p>
+                                            </div>
+                                            {% if mi.item.gearLocation %}
+                                                <div>
+                                                    <span class="text-gray-500">Emplacement</span>
+                                                    <p class="text-gray-300 capitalize">{{ mi.item.gearLocation|replace({'_': ' '}) }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.materiaSlots > 0 %}
+                                                <div>
+                                                    <span class="text-gray-500">Slots materia</span>
+                                                    <p class="text-purple-400">{{ mi.item.materiaSlots }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.nbUsages > 0 %}
+                                                <div>
+                                                    <span class="text-gray-500">Utilisations</span>
+                                                    <p class="text-gray-300">{{ mi.item.nbUsages }}</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.boundToPlayer %}
+                                                <div>
+                                                    <span class="text-gray-500">Lie au joueur</span>
+                                                    <p class="text-red-400">Oui</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.cosmetic %}
+                                                <div>
+                                                    <span class="text-gray-500">Cosmetique</span>
+                                                    <p class="text-pink-400">Oui</p>
+                                                </div>
+                                            {% endif %}
+                                            {% if mi.item.spell %}
+                                                <div>
+                                                    <span class="text-gray-500">Sort lie</span>
+                                                    <p class="text-blue-400">{{ mi.item.spell.name }}</p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if mi.item.description %}
+                                            <p class="text-gray-500 text-xs mt-2 italic">{{ mi.item.description }}</p>
+                                        {% endif %}
+                                        {% if mi.item.effect %}
+                                            <p class="text-amber-400 text-xs mt-1">Effet : {{ mi.item.effect }}</p>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
