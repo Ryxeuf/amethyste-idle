@@ -1442,3 +1442,18 @@
 > Ajout du testsuite Integration a la commande PHPUnit dans le pipeline CI.
 - [x] Commande PHPUnit mise a jour : `--testsuite Unit,Functional,Integration`
 - [x] Les 7 tests d'integration (3 events + 4 combat) executes dans la CI
+
+## TST-06 — Tests integration status effects complet (2026-04-01) ✅
+
+> Tests d'integration complets StatusEffectManager + SpellApplicator + FightTurnResolver ensemble avec vraie DB.
+- [x] Application effet via sort (SpellApplicator) → verification FightStatusEffect en DB
+- [x] Tick degats brulure a chaque tour + expiration
+- [x] Tick soin regeneration avec cap max life
+- [x] Poison frequency-based (tick tous les N tours)
+- [x] Berserk : stat modifiers (+50% dmg, -30% def) + isCharacterBerserk
+- [x] Freeze : stat modifier (-50% speed) + isCharacterFrozen
+- [x] Aggregation de plusieurs effets (berserk + burn = +25% dmg net)
+- [x] Expiration et suppression des FightStatusEffect de la DB
+- [x] clearAllEffects en fin de combat
+- [x] Berserk boost degats via SpellApplicator (pipeline complet)
+- [x] Burn reduit degats du porteur (-25%)

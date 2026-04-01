@@ -33,7 +33,7 @@ JALON 1 — Fondations CI (TST-01 a TST-03)
 JALON 2 — Tests integration (TST-04 a TST-08)
   ✅ TST-04 AbstractIntegrationTestCase   ← TST-01
   ✅ TST-05 Integration combat           ← TST-04
-  TST-06 Integration status effects      ← TST-04
+  ✅ TST-06 Integration status effects      ← TST-04
   TST-07 Integration quetes/progression  ← TST-04
   ✅ TST-08 Testsuite Integration dans CI ← TST-05
 
@@ -136,7 +136,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-06 — Tests integration status effects complet `M`
+### ~~TST-06 — Tests integration status effects complet `M`~~ ✅
 
 - **Prerequis** : ← TST-04
 - **Fichier** : `tests/Integration/Fight/StatusEffectFullIntegrationTest.php`
@@ -146,6 +146,11 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   - Modification stats (buff/debuff) visible dans calculs de degats
   - Expiration et nettoyage corrects
   - Cas berserk : bonus degats + reduction defense
+- [x] Application effet via sort (SpellApplicator → FightStatusEffect en DB)
+- [x] Tick brulure + regeneration + poison frequency-based
+- [x] Stat modifiers berserk, freeze, aggregation multi-effets
+- [x] Expiration + clearAllEffects
+- [x] Berserk pipeline complet via SpellApplicator
 - **Verification** : `docker compose exec php vendor/bin/phpunit --filter StatusEffectFull`
 
 ---
@@ -305,7 +310,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 5 | ~~**TST-05** Integration combat~~ ✅ | L | **Impact maximal** — zone la plus bugguee |
 | 6 | ~~**TST-08** Integration dans CI~~ ✅ | S | Active TST-05 dans le pipeline |
 | 7 | **TST-12** PHPStan niveau 6 | M | Bugs de types detectes statiquement |
-| 8 | **TST-06** Integration status effects | M | Complemente TST-05 |
+| 8 | ~~**TST-06** Integration status effects~~ ✅ | M | Complemente TST-05 |
 | 9 | **TST-07** Integration quetes/progression | M | Autre source majeure de bugs |
 | 10 | **TST-09** Stabiliser E2E | M | Flux utilisateur reel |
 | 11 | **TST-11** E2E dans CI | S | Active TST-09 dans le pipeline |
