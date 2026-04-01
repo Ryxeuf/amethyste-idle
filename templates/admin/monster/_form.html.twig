@@ -89,10 +89,10 @@
                         <tbody class="divide-y divide-gray-700">
                             {% for mi in monster.monsterItems %}
                                 <tr class="cursor-pointer hover:bg-gray-700/50 transition-colors drop-row" onclick="this.nextElementSibling.classList.toggle('hidden')">
-                                    <td class="px-3 py-2 {{ mi.item.rarity ? mi.item.rarity.cssClass : 'text-gray-300' }}">
+                                    <td class="px-3 py-2 {{ mi.item.rarityEnum ? mi.item.rarityEnum.cssClass : 'text-gray-300' }}">
                                         {{ mi.item.name }}
-                                        {% if mi.item.rarity %}
-                                            <span class="text-xs {{ mi.item.rarity.bgClass }} px-1.5 py-0.5 rounded ml-1">{{ mi.item.rarity.label }}</span>
+                                        {% if mi.item.rarityEnum %}
+                                            <span class="text-xs {{ mi.item.rarityEnum.bgClass }} px-1.5 py-0.5 rounded ml-1">{{ mi.item.rarityEnum.label }}</span>
                                         {% endif %}
                                     </td>
                                     <td class="px-3 py-2 text-gray-400">{{ mi.probability|number_format(1) }}%</td>
