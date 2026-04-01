@@ -35,7 +35,7 @@ JALON 2 — Tests integration (TST-04 a TST-08)
   ✅ TST-05 Integration combat           ← TST-04
   TST-06 Integration status effects      ← TST-04
   TST-07 Integration quetes/progression  ← TST-04
-  TST-08 Testsuite Integration dans CI   ← TST-05
+  ✅ TST-08 Testsuite Integration dans CI ← TST-05
 
 JALON 3 — E2E (TST-09 a TST-11)
   TST-09 Stabiliser tests E2E existants  ← TST-01
@@ -164,7 +164,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-08 — Ajouter testsuite Integration dans la CI `S`
+### ~~TST-08 — Ajouter testsuite Integration dans la CI `S`~~ ✅
 
 - **Prerequis** : ← TST-05
 - **Fichier** : `.github/workflows/ci.yml`
@@ -172,6 +172,8 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   ```yaml
   run: vendor/bin/phpunit --testdox --exclude-group e2e --testsuite Unit,Functional,Integration
   ```
+- [x] Commande PHPUnit mise a jour pour inclure `--testsuite Unit,Functional,Integration`
+- [x] CI execute les tests d'integration
 - **Verification** : la CI execute les tests d'integration et passe
 
 ---
@@ -301,7 +303,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 3 | **TST-03** Couverture de code CI | S | Visibilite sur le non-teste |
 | 4 | ~~**TST-04** AbstractIntegrationTestCase~~ ✅ | M | Base pour tous les tests integration |
 | 5 | ~~**TST-05** Integration combat~~ ✅ | L | **Impact maximal** — zone la plus bugguee |
-| 6 | **TST-08** Integration dans CI | S | Active TST-05 dans le pipeline |
+| 6 | ~~**TST-08** Integration dans CI~~ ✅ | S | Active TST-05 dans le pipeline |
 | 7 | **TST-12** PHPStan niveau 6 | M | Bugs de types detectes statiquement |
 | 8 | **TST-06** Integration status effects | M | Complemente TST-05 |
 | 9 | **TST-07** Integration quetes/progression | M | Autre source majeure de bugs |

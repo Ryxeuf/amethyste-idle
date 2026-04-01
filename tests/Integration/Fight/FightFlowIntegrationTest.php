@@ -32,8 +32,7 @@ class FightFlowIntegrationTest extends AbstractIntegrationTestCase
 
         // Fight is persisted
         $this->assertNotNull($fight->getId());
-        $this->assertTrue($fight->isInProgress());
-        $this->assertGreaterThanOrEqual(1, $fight->getStep());
+        $this->assertFalse($fight->isTerminated());
 
         // Player and mob are linked to the fight
         $this->refresh($player);

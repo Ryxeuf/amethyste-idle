@@ -7,10 +7,12 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Event\Map\SpotHarvestEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Progression\DomainExperienceEvolver;
 use App\GameEngine\Quest\PlayerQuestUpdater;
 use App\GameEngine\Quest\QuestCollectTrackingListener;
 use App\Helper\PlayerDomainHelper;
+use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +26,8 @@ class SpotHarvestEventIntegrationTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private PlayerDomainHelper&MockObject $playerDomainHelper;
     private PlayerQuestUpdater&MockObject $playerQuestUpdater;
+    private GameEventBonusProvider&MockObject $gameEventBonusProvider;
+    private PlayerHelper&MockObject $playerHelper;
 
     private DomainExperienceEvolver $domainExperienceEvolver;
     private QuestCollectTrackingListener $questCollectTracker;
@@ -33,10 +37,16 @@ class SpotHarvestEventIntegrationTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->playerDomainHelper = $this->createMock(PlayerDomainHelper::class);
         $this->playerQuestUpdater = $this->createMock(PlayerQuestUpdater::class);
+        $this->gameEventBonusProvider = $this->createMock(GameEventBonusProvider::class);
+        $this->playerHelper = $this->createMock(PlayerHelper::class);
+
+        $this->gameEventBonusProvider->method('getXpMultiplier')->willReturn(1.0);
 
         $this->domainExperienceEvolver = new DomainExperienceEvolver(
             $this->playerDomainHelper,
             $this->entityManager,
+            $this->gameEventBonusProvider,
+            $this->playerHelper,
         );
         $this->questCollectTracker = new QuestCollectTrackingListener(
             $this->playerQuestUpdater,

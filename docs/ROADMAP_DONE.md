@@ -1436,3 +1436,9 @@
 - [x] `testPlayerWithNoWeaponCanStillAttack` : attaque de base sans arme → degats appliques (baseDamage = 3 + variance, independant de l'arme)
 - [x] `testFleeFromCombat` : fuite reussie → joueur libere, repositionne sur lastCoordinates, combat et mobs supprimes
 - [x] `testPlayerDeathInCombat` : joueur meurt → respawn avec 50% vie max, diedAt null, combat nettoye
+
+## TST-08 — Testsuite Integration dans la CI (2026-04-01) ✅
+
+> Ajout du testsuite Integration a la commande PHPUnit dans le pipeline CI.
+- [x] Commande PHPUnit mise a jour : `--testsuite Unit,Functional,Integration`
+- [x] Les 7 tests d'integration (3 events + 4 combat) executes dans la CI
