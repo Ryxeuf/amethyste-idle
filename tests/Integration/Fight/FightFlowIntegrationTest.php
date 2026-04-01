@@ -6,7 +6,9 @@ use App\Entity\App\Fight;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\QueueRespawnMob;
 use App\Entity\Game\Spell;
+use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\Fight\MobActionHandler;
 use App\GameEngine\Fight\SpellApplicator;
 use App\Tests\Integration\AbstractIntegrationTestCase;
 
@@ -196,5 +198,59 @@ class FightFlowIntegrationTest extends AbstractIntegrationTestCase
         // Verify fight state is consistent for victory
         self::assertTrue($fight->isTerminated());
         self::assertTrue($fight->isVictory());
+    }
+
+    /**
+     * MobActionHandler correctly executes mob actions against the player
+     * using real services (SpellApplicator, StatusEffectManager, etc.).
+     */
+    public function testMobActionHandlerActsOnPlayer(): void
+    {
+        $player = $this->getPlayer();
+        $mob = $this->getMob($player->getMap(), 'slime');
+        $fight = $this->createFight($player, $mob);
+
+        $initialPlayerLife = $player->getLife();
+
+        /** @var MobActionHandler $mobActionHandler */
+        $mobActionHandler = $this->getService(MobActionHandler::class);
+
+        // Slime has spell_chance=0 in its AI pattern, so it always basic-attacks
+        $result = $mobActionHandler->doAction($fight);
+
+        self::assertIsArray($result);
+        self::assertArrayHasKey('messages', $result);
+        self::assertArrayHasKey('dangerAlert', $result);
+        self::assertNotEmpty($result['messages'], 'Mob action should produce at least one message.');
+
+        $this->em->flush();
+        $this->refresh($player);
+
+        // Slime has 70% hit chance — player life should be <= initial (damaged or same if missed)
+        self::assertLessThanOrEqual($initialPlayerLife, $player->getLife());
+    }
+
+    /**
+     * Turn order correctly prioritizes by speed (player speed=10 > slime speed=3).
+     */
+    public function testTurnOrderRespectsSpeed(): void
+    {
+        $player = $this->getPlayer();
+        $mob = $this->getMob($player->getMap(), 'slime');
+        $fight = $this->createFight($player, $mob);
+
+        /** @var FightTurnResolver $turnResolver */
+        $turnResolver = $this->getService(FightTurnResolver::class);
+
+        // Player (speed=10) should act before slime (speed=3)
+        self::assertFalse(
+            $turnResolver->isMobFirst($fight),
+            'Player should act first against slime (player speed=10 > slime speed=3).'
+        );
+
+        $turnOrder = $turnResolver->getTurnOrder($fight);
+        self::assertCount(2, $turnOrder);
+        self::assertSame('player', $turnOrder[0]['type']);
+        self::assertSame('mob', $turnOrder[1]['type']);
     }
 }

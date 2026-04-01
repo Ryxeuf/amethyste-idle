@@ -124,6 +124,8 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   - [x] `testPlayerAttackReducesMobHp` : attaque basique → HP du mob diminuent
   - [x] `testMobDeathEndsFight` : mob a 0 HP → combat termine, events dispatches
   - [x] `testLootAfterVictory` : victoire → loot genere
+  - [x] `testMobActionHandlerActsOnPlayer` : mob agit sur le joueur via vrais services
+  - [x] `testTurnOrderRespectsSpeed` : ordre de tour respecte la vitesse
 - **Sous-tache B** — `StatusEffectIntegrationTest.php` :
   - `testPoisonTicksDamagePerTurn` : poison → degats chaque tour → expiration
   - `testSilencePreventsSpellCasting` : silence → sort refuse → silence expire → sort OK
