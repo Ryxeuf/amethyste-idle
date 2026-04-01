@@ -53,6 +53,13 @@ export default class extends Controller {
         this._startAnimation();
     }
 
+    /** Close panel when the player starts moving */
+    onPlayerMove() {
+        if (this._active) {
+            this.close();
+        }
+    }
+
     close() {
         this._stopAnimation();
         this._active = false;

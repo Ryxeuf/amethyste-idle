@@ -83,6 +83,13 @@ export default class extends Controller {
         }
     }
 
+    /** Close panel when the player starts moving */
+    onPlayerMove() {
+        if (this._currentSpot && !this._harvesting) {
+            this.close();
+        }
+    }
+
     close() {
         document.removeEventListener('keydown', this._boundKeyHandler);
         this.panelTarget.style.transform = 'translateY(8px) scale(0.98)';

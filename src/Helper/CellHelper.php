@@ -87,4 +87,16 @@ class CellHelper
     {
         return $x . '.' . $y;
     }
+
+    /**
+     * Check if two coordinate strings ("x.y") are within a given Manhattan distance.
+     * Default maxDistance=1 means directly adjacent (including same cell).
+     */
+    public static function isAdjacent(string $coordA, string $coordB, int $maxDistance = 1): bool
+    {
+        [$ax, $ay] = explode('.', $coordA);
+        [$bx, $by] = explode('.', $coordB);
+
+        return abs((int) $ax - (int) $bx) + abs((int) $ay - (int) $by) <= $maxDistance;
+    }
 }

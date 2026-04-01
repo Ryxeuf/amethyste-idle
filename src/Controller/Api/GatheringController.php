@@ -12,6 +12,7 @@ use App\GameEngine\Job\FishingManager;
 use App\GameEngine\Job\HarvestManager;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\World\GameTimeService;
+use App\Helper\CellHelper;
 use App\Helper\GearHelper;
 use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
@@ -174,6 +175,15 @@ class GatheringController extends AbstractController
             return $this->json(['error' => 'Ce n\'est pas un spot de récolte.'], 400);
         }
 
+        // Refresh player coordinates from DB to prevent race conditions with concurrent move requests
+        $this->entityManager->refresh($player);
+
+        // Verify player is on the same map and adjacent to the spot
+        if ($player->getMap()?->getId() !== $spot->getMap()?->getId()
+            || !CellHelper::isAdjacent($player->getCoordinates(), $spot->getCoordinates())) {
+            return $this->json(['error' => 'Vous êtes trop loin de ce spot.'], 400);
+        }
+
         if (!$spot->isAvailable()) {
             return $this->json([
                 'error' => 'Spot indisponible.',
@@ -243,6 +253,9 @@ class GatheringController extends AbstractController
         if (!$player) {
             return $this->json(['error' => 'Player not found'], 404);
         }
+
+        // Refresh player coordinates from DB to prevent race conditions
+        $this->entityManager->refresh($player);
 
         // Find a fishing spot at the player's current position
         $spot = $this->entityManager->getRepository(ObjectLayer::class)->findOneBy([

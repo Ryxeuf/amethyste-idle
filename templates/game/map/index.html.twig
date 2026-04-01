@@ -24,7 +24,7 @@
 
             {# Harvest overlay #}
             <div {{ stimulus_controller('harvest') }}
-                 data-action="map-pixi:harvestSpot@document->harvest#open"
+                 data-action="map-pixi:harvestSpot@document->harvest#open map-pixi:playerMoveStart@document->harvest#onPlayerMove"
                  class="absolute inset-0 pointer-events-none flex items-start justify-center p-2 sm:p-4"
                  aria-label="Panneau de recolte">
                 <div data-harvest-target="panel"
@@ -138,7 +138,7 @@
 
             {# Fishing mini-game overlay #}
             <div {{ stimulus_controller('fishing') }}
-                 data-action="harvest:startFishing@document->fishing#open"
+                 data-action="harvest:startFishing@document->fishing#open map-pixi:playerMoveStart@document->fishing#onPlayerMove"
                  class="absolute inset-0 pointer-events-none flex items-center justify-center p-3 sm:p-4"
                  aria-label="Mini-jeu de peche">
                 <div data-fishing-target="panel"

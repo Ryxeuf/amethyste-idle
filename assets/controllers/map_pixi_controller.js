@@ -2439,6 +2439,7 @@ export default class extends Controller {
     }
 
     _moveInDirection(dir) {
+        this._pendingHarvestSpot = null;
         const px = Math.floor(this._playerX);
         const py = Math.floor(this._playerY);
         const offsets = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] };
@@ -2662,6 +2663,9 @@ export default class extends Controller {
 
     async _requestMove(targetX, targetY, fromX = null, fromY = null) {
         if (this._animating && !this._cancelRequested) return;
+
+        // Notify listeners (harvest/fishing panels) that the player is moving
+        this.dispatch('playerMoveStart', { detail: { targetX, targetY } });
 
         const body = { targetX, targetY };
         if (fromX !== null && fromY !== null) {
