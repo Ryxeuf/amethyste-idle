@@ -1422,3 +1422,10 @@
 - [x] Check `stale_active_quests` : quetes actives deja completees (doublon PlayerQuest + PlayerQuestCompleted)
 - [x] Check `players_out_of_bounds` : joueurs hors limites de leur carte (coordonnees vs bounds des areas)
 - [x] Tests unitaires : `GameStateValidatorTest.php` (10 tests) + `GameStateValidateCommandTest.php` (3 tests)
+
+## TST-05B — Tests integration status effects (2026-04-01) ✅
+
+> Tests d'integration des effets de statut en combat avec vraie DB (sous-tache B de TST-05).
+- [x] `testPoisonTicksDamagePerTurn` : poison applique sur mob → degats chaque tour → expiration apres duree
+- [x] `testSilencePreventsSpellCasting` : silence → isCharacterSilenced true → expiration → isCharacterSilenced false
+- [x] `testEffectRefreshResetsDuration` : appliquer poison → consommer 1 tour → reappliquer → duree reset (pas de stacking)
