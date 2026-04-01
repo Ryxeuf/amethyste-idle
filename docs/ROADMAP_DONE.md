@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-03-31
+> Derniere mise a jour : 2026-04-01
 
 ---
 
@@ -1410,3 +1410,10 @@
 - [x] `StatusEffectManager` : duree restante < 0 → corrigee a 0 (expiration immediate)
 - [x] `FightTurnResolver::getTimeline` : combat sans participants → LogicException
 - [x] Tests unitaires `BusinessAssertionsTest.php` : 7 tests couvrant les 5 assertions
+
+## TST-05B — Tests integration status effects (2026-04-01) ✅
+
+> Tests d'integration des effets de statut en combat avec vraie DB (poison, silence, refresh).
+- [x] `testPoisonTicksDamagePerTurn` : poison inflige 3 dmg/tour pendant 3 tours puis expire
+- [x] `testSilencePreventsSpellCasting` : silence empeche les sorts, expire apres 3 tours
+- [x] `testEffectRefreshResetsDuration` : reappliquer un effet reset la duree sans stacker
