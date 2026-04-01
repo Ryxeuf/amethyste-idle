@@ -31,10 +31,13 @@
                     {% for tileset in tilesets %}
                     <tr class="hover:bg-gray-800/50">
                         <td class="px-4 py-3">
-                            <img src="{{ asset('styles/images/' ~ tileset.imagePath) }}"
+                            <img src="/assets/styles/images/{{ tileset.imagePath }}"
                                  alt="{{ tileset.name }}"
-                                 class="h-12 w-12 object-cover rounded border border-gray-700"
-                                 style="image-rendering: pixelated;">
+                                 class="h-12 w-12 object-cover rounded border border-gray-700 cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                                 style="image-rendering: pixelated;"
+                                 data-action="click->admin-tileset-manager#openZoom"
+                                 data-zoom-src="/assets/styles/images/{{ tileset.imagePath }}"
+                                 data-zoom-title="{{ tileset.name }}">
                         </td>
                         <td class="px-4 py-3 font-medium text-gray-200">{{ tileset.name }}</td>
                         <td class="px-4 py-3 text-gray-400 text-xs">{{ tileset.imagePath }}</td>
@@ -143,8 +146,9 @@
             <div data-admin-tileset-manager-target="selectedPreview" class="hidden mb-4 bg-gray-800 rounded-lg p-3">
                 <div class="flex gap-3">
                     <img data-admin-tileset-manager-target="previewImg" src="" alt=""
-                         class="h-24 w-24 object-contain rounded border border-gray-700"
-                         style="image-rendering: pixelated;">
+                         class="h-24 w-24 object-contain rounded border border-gray-700 cursor-pointer hover:ring-2 hover:ring-purple-500 transition-all"
+                         style="image-rendering: pixelated;"
+                         data-action="click->admin-tileset-manager#openZoomFromPreview">
                     <div class="text-xs text-gray-400 space-y-1">
                         <p data-admin-tileset-manager-target="previewPath" class="font-mono"></p>
                         <p data-admin-tileset-manager-target="previewDims"></p>
@@ -158,6 +162,21 @@
                  class="max-h-96 overflow-y-auto space-y-1 text-sm">
                 <p class="text-gray-500 text-sm">Cliquez sur "Charger les images" pour scanner le repertoire assets/styles/images/</p>
             </div>
+        </div>
+    </div>
+
+    {# Modale zoom image #}
+    <div data-admin-tileset-manager-target="zoomModal"
+         data-action="click->admin-tileset-manager#closeZoom keydown.escape@window->admin-tileset-manager#closeZoom"
+         class="hidden fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-8 cursor-pointer">
+        <div class="relative max-w-full max-h-full overflow-auto">
+            <div class="sticky top-0 flex justify-between items-center mb-2">
+                <span data-admin-tileset-manager-target="zoomTitle" class="text-sm text-gray-300 font-semibold"></span>
+                <button class="text-gray-400 hover:text-white text-xl leading-none px-2">&times;</button>
+            </div>
+            <img data-admin-tileset-manager-target="zoomImg" src="" alt=""
+                 class="max-w-none border border-gray-700 rounded"
+                 style="image-rendering: pixelated;">
         </div>
     </div>
 </div>
