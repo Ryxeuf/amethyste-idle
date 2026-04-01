@@ -27,12 +27,11 @@ class FightEdgeCasesTest extends AbstractIntegrationTestCase
         $mob = $this->getMob($player->getMap());
 
         // Retirer tout equipement du joueur (gear = 0 signifie non equipe)
-        $playerItems = $this->em->getRepository(\App\Entity\App\PlayerItem::class)
-            ->findBy(['player' => $player]);
-
-        foreach ($playerItems as $playerItem) {
-            if ($playerItem->getGear() > 0) {
-                $playerItem->setGear(0);
+        foreach ($player->getInventories() as $inventory) {
+            foreach ($inventory->getItems() as $playerItem) {
+                if ($playerItem->getGear() > 0) {
+                    $playerItem->setGear(0);
+                }
             }
         }
         $this->em->flush();
