@@ -64,7 +64,12 @@ class FightTurnResolver
     public function getTimeline(Fight $fight, int $rounds = 3): array
     {
         $turnOrder = $this->getTurnOrder($fight);
-        $currentRound = (int) floor($fight->getStep() / max(1, count($turnOrder))) + 1;
+
+        if (empty($turnOrder)) {
+            throw new \LogicException(sprintf('Le combat #%d n\'a pas de participants valides.', $fight->getId()));
+        }
+
+        $currentRound = (int) floor($fight->getStep() / count($turnOrder)) + 1;
 
         $timeline = [];
         for ($r = 0; $r < $rounds; ++$r) {

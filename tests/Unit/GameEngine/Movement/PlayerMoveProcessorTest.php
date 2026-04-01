@@ -43,16 +43,16 @@ class PlayerMoveProcessorTest extends TestCase
         );
     }
 
-    public function testProcessMoveReturnEmptyWhenPlayerInFight(): void
+    public function testProcessMoveThrowsWhenPlayerInFight(): void
     {
         $player = $this->createPlayerWithCoordinates('5.5');
         $fight = $this->createMock(Fight::class);
         $player->setFight($fight);
 
-        $result = $this->processor->processMove($player, [['x' => 6, 'y' => 5]]);
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('est en combat');
 
-        $this->assertSame([], $result);
-        $this->assertNull($this->processor->getTriggeredFight());
+        $this->processor->processMove($player, [['x' => 6, 'y' => 5]]);
     }
 
     public function testProcessMoveReturnEmptyWhenCellsEmpty(): void

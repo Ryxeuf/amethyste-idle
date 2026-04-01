@@ -70,6 +70,10 @@ class MobActionHandler
      */
     private function doMobAction(Fight $fight, Mob $mob): array
     {
+        if ($mob->isDead()) {
+            throw new \LogicException(sprintf('Le mob #%d ne peut pas agir avec 0 PV.', $mob->getId()));
+        }
+
         $result = ['messages' => [], 'dangerAlert' => null];
 
         // Process status effects at start of mob turn

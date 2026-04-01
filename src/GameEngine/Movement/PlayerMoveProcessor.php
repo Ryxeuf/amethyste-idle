@@ -55,9 +55,7 @@ class PlayerMoveProcessor
         }
 
         if ($player->getFight()) {
-            $this->logger->info('Player {player} is in a fight, move ignored', ['player' => $player->getId()]);
-
-            return [];
+            throw new \LogicException(sprintf('Le joueur #%d est en combat et ne peut pas se déplacer.', $player->getId()));
         }
 
         if (empty($cells)) {

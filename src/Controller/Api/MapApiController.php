@@ -362,6 +362,10 @@ class MapApiController extends AbstractController
             return $this->json(['path' => []]);
         }
 
+        if ($player->getFight()) {
+            return $this->json(['error' => 'Le joueur est en combat.'], 409);
+        }
+
         $traversedPath = $playerMoveProcessor->processMove($player, $movements);
 
         $path = array_map(fn (array $cell) => [

@@ -101,7 +101,7 @@ class Map
         $this->movementCalculator->loadMap($this->player->getMap()->getId());
         $movements = $this->movementCalculator->calculateMovement($this->x, $this->y, $x, $y);
 
-        if (empty($movements)) {
+        if (empty($movements) || $this->player->getFight()) {
             $this->updateCells();
 
             return;
