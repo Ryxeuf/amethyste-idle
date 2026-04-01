@@ -36,7 +36,7 @@ class SpotHarvestHandler implements EventSubscriberInterface
                     'id' => $objectLayer->getId(),
                     'slug' => $objectLayer->getSlug(),
                 ],
-                'x' => (int) ($coords[0] ?? 0),
+                'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ], JSON_THROW_ON_ERROR)
         );
@@ -61,7 +61,7 @@ class SpotHarvestHandler implements EventSubscriberInterface
                     'toolType' => $objectLayer->getRequiredToolType(),
                     'nightOnly' => $objectLayer->isNightOnly(),
                 ],
-                'x' => (int) ($coords[0] ?? 0),
+                'x' => (int) $coords[0],
                 'y' => (int) ($coords[1] ?? 0),
             ], JSON_THROW_ON_ERROR)
         );
