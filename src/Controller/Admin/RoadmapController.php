@@ -22,6 +22,9 @@ class RoadmapController extends AbstractController
         'vague_4' => 'ROADMAP_TODO_VAGUE_04.md',
         'vague_5' => 'ROADMAP_TODO_VAGUE_05.md',
         'vague_6' => 'ROADMAP_TODO_VAGUE_06.md',
+        'vague_7' => 'ROADMAP_TODO_VAGUE_07.md',
+        'vague_8' => 'ROADMAP_TODO_VAGUE_08.md',
+        'vague_9' => 'ROADMAP_TODO_VAGUE_09.md',
     ];
 
     private const TODO_PART_LABELS = [
@@ -33,10 +36,13 @@ class RoadmapController extends AbstractController
         'vague_4' => 'Vague 4',
         'vague_5' => 'Vague 5',
         'vague_6' => 'Vague 6',
+        'vague_7' => 'Vague 7',
+        'vague_8' => 'Vague 8',
+        'vague_9' => 'Vague 9',
     ];
 
     /** @var list<string> */
-    private const ALLOWED_TODO_PARTS = ['all', 'index', 'vague_1', 'vague_2', 'vague_3', 'vague_4', 'vague_5', 'vague_6'];
+    private const ALLOWED_TODO_PARTS = ['all', 'index', 'vague_1', 'vague_2', 'vague_3', 'vague_4', 'vague_5', 'vague_6', 'vague_7', 'vague_8', 'vague_9'];
 
     public function __construct(
         private readonly MarkdownParser $markdownParser,
