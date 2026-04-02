@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Choisir un personnage{% endblock %}
+
+{% block body %}
+<div class="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
+    <div class="w-full max-w-2xl">
+        <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 overflow-hidden">
+            <div class="px-8 pt-8 pb-4 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-purple-600 bg-opacity-20 mb-4">
+                    <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-white">Choisir un personnage</h1>
+                <p class="text-gray-400 text-sm mt-1">Sélectionnez le personnage avec lequel vous souhaitez jouer</p>
+            </div>
+
+            <div class="px-8 pb-8">
+                {% for message in app.flashes('error') %}
+                    <div class="mb-4 px-4 py-3 rounded-lg bg-red-900 bg-opacity-40 border border-red-700 text-red-300 text-sm">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                <div class="space-y-3">
+                    {% for player in players %}
+                        <form method="post" action="{{ path('app_character_select') }}" data-turbo="false">
+                            <input type="hidden" name="player_id" value="{{ player.id }}">
+                            <button type="submit"
+                                    class="w-full p-4 rounded-xl border-2 border-gray-600 bg-gray-750 bg-opacity-50 transition-all duration-200
+                                           hover:border-purple-500 hover:bg-purple-900 hover:bg-opacity-20 hover:shadow-lg hover:shadow-purple-900/20
+                                           text-left group">
+                                <div class="flex items-center gap-4">
+                                    {# Sprite #}
+                                    {% if player.race and player.race.spriteSheet %}
+                                        <div class="w-14 h-14 flex-shrink-0 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center overflow-hidden">
+                                            <img src="{{ asset('styles/images/sprites/' ~ player.race.spriteSheet) }}"
+                                                 alt="{{ player.race.name }}"
+                                                 class="w-10 h-14 object-cover object-top"
+                                                 style="image-rendering: pixelated;">
+                                        </div>
+                                    {% else %}
+                                        <div class="w-14 h-14 flex-shrink-0 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center">
+                                            <svg class="w-7 h-7 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="text-white font-semibold group-hover:text-purple-300 transition">{{ player.name }}</h3>
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            {% if player.race %}
+                                                <span class="text-xs text-gray-400">{{ player.race.name }}</span>
+                                            {% endif %}
+                                            {% if player.map %}
+                                                <span class="text-xs text-gray-500">{{ player.map.name }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="flex-shrink-0 text-gray-500 group-hover:text-purple-400 transition">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </button>
+                        </form>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
