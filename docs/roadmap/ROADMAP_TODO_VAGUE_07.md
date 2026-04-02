@@ -81,12 +81,12 @@
 - [ ] Possibilite de skip pour les joueurs experimentes
 - [ ] Achievement "Premier pas" a la fin du tutoriel
 
-### 114 — Centre de notifications in-game (S | ★★)
+### 114 — Centre de notifications in-game (S | ★★) ✅
 > Prerequis : ∅
-- [ ] Panel de notifications (icone cloche, badge non-lues)
-- [ ] Types : quete completee, level up domaine, succes debloque, invitation guilde, objet recu
-- [ ] Persistance en DB (derniers 50 par joueur)
-- [ ] Notifications push via Mercure SSE
+- [x] Panel de notifications (icone cloche, badge non-lues)
+- [x] Types : quete completee, level up domaine, succes debloque, invitation guilde, objet recu
+- [x] Persistance en DB (derniers 50 par joueur)
+- [x] Notifications push via Mercure SSE
 
 ### 115 — Journal de bord joueur (S | ★★) ✅
 > Prerequis : ∅

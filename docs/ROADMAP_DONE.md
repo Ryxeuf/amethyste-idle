@@ -1475,3 +1475,17 @@
 - [x] `JournalListener` : ecoute MobDead, PlayerDead, QuestCompleted, Craft, SpotHarvest, DungeonCompleted
 - [x] Lien dans la navigation desktop et mobile
 - [x] Migration PostgreSQL
+
+## 114 — Centre de notifications in-game (2026-04-02) ✅
+
+> Panel de notifications avec cloche, badge non-lues, persistance DB et push Mercure SSE.
+- [x] Entite `PlayerNotification` modernisee (title, type string, icon, link, readAt)
+- [x] Repository avec findRecent, countUnread, markAllAsRead, pruneOld (max 50)
+- [x] `NotificationService` : creation + publication Mercure SSE temps reel
+- [x] Controller `/game/notifications` (page complete, panel dropdown, API unread-count, mark-read)
+- [x] Stimulus controller `notification_center` avec Mercure SSE et badge temps reel
+- [x] Cloche de notification dans la navbar desktop (dropdown) et mobile (lien)
+- [x] `NotificationEventSubscriber` : quete completee, succes debloque, mort du joueur
+- [x] Evenement `AchievementCompletedEvent` dispatche depuis `AchievementTracker`
+- [x] Twig extension `notification_unread_count()` pour le badge global
+- [x] Migration PostgreSQL (upgrade table existante)
