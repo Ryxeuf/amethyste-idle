@@ -7,6 +7,7 @@ parameters:
     app_locales: ['fr', 'en']
     default_locale: 'fr'
     app.version: '0.6.0-alpha'
+    app.max_players_per_user: 1
 
 services:
     # default configuration for services in *this* file
