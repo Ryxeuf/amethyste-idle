@@ -1464,3 +1464,14 @@
 - [x] PHPUnit lance avec `--coverage-clover coverage.xml --coverage-text`
 - [x] Pourcentage de couverture affiche dans les logs CI (`--coverage-text`)
 - [x] Rapport Clover XML uploade en artifact GitHub (retention 30 jours)
+
+## 115 — Journal de bord joueur (2026-04-02) ✅
+
+> Page `/game/journal` avec historique chronologique des evenements du joueur.
+- [x] Entite `PlayerJournalEntry` avec types (combat, quete, craft, recolte, donjon, progression)
+- [x] Repository avec pagination, filtrage par type et rotation (max 200 entrees)
+- [x] Controller `JournalController` avec page `/game/journal`
+- [x] Template avec filtres par type, icones colorees, pagination
+- [x] `JournalListener` : ecoute MobDead, PlayerDead, QuestCompleted, Craft, SpotHarvest, DungeonCompleted
+- [x] Lien dans la navigation desktop et mobile
+- [x] Migration PostgreSQL

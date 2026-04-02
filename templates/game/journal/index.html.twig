@@ -1,0 +1,130 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Journal de bord{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base sm:text-lg font-semibold text-white">Journal de bord</h2>
+            <span class="text-sm text-gray-400">{{ total }} entree{{ total > 1 ? 's' : '' }}</span>
+        </div>
+
+        <div class="game-card-body">
+            {# Filter tabs #}
+            <div class="flex flex-wrap border-b border-gray-700 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0 gap-0">
+                <a href="{{ path('app_game_journal') }}"
+                   class="px-3 py-2.5 text-sm font-medium border-b-2 touch-target
+                          {% if currentType is null %}border-purple-500 text-purple-400{% else %}border-transparent text-gray-400 hover:text-gray-300{% endif %}">
+                    Tout
+                </a>
+                {% for typeKey in types %}
+                    <a href="{{ path('app_game_journal', { type: typeKey }) }}"
+                       class="px-3 py-2.5 text-sm font-medium border-b-2 touch-target
+                              {% if currentType == typeKey %}border-purple-500 text-purple-400{% else %}border-transparent text-gray-400 hover:text-gray-300{% endif %}">
+                        {{ typeLabels[typeKey] }}
+                    </a>
+                {% endfor %}
+            </div>
+
+            {# Entries list #}
+            {% if entries is empty %}
+                <div class="text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                    <p class="text-gray-500 text-sm">Aucune entree dans le journal.</p>
+                    <p class="text-gray-600 text-xs mt-1">Vos exploits apparaitront ici au fil de vos aventures.</p>
+                </div>
+            {% else %}
+                <div class="space-y-2">
+                    {% for entry in entries %}
+                        <div class="bg-gray-700/50 rounded-lg p-3 border border-gray-600 flex items-start gap-3">
+                            {# Type icon #}
+                            <div class="flex-shrink-0 mt-0.5">
+                                {% set iconType = entry.typeIcon %}
+                                {% if iconType == 'sword' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                {% elseif iconType == 'skull' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                    </svg>
+                                {% elseif iconType == 'scroll' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                {% elseif iconType == 'hammer' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                                    </svg>
+                                {% elseif iconType == 'pickaxe' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.005 9.005 0 003 12a9 9 0 0017.354 3.354z" />
+                                    </svg>
+                                {% elseif iconType == 'dungeon' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                {% elseif iconType == 'star' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                {% endif %}
+                            </div>
+
+                            {# Content #}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-xs font-medium px-1.5 py-0.5 rounded
+                                        {% if entry.type == 'combat_victory' %}bg-green-900/50 text-green-300
+                                        {% elseif entry.type == 'combat_defeat' %}bg-red-900/50 text-red-300
+                                        {% elseif entry.type == 'quest_completed' %}bg-yellow-900/50 text-yellow-300
+                                        {% elseif entry.type == 'craft' %}bg-orange-900/50 text-orange-300
+                                        {% elseif entry.type == 'gathering' %}bg-cyan-900/50 text-cyan-300
+                                        {% elseif entry.type == 'dungeon' %}bg-purple-900/50 text-purple-300
+                                        {% elseif entry.type == 'domain_level' %}bg-blue-900/50 text-blue-300
+                                        {% else %}bg-gray-900/50 text-gray-300
+                                        {% endif %}">
+                                        {{ entry.typeLabel }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-200">{{ entry.message }}</p>
+                            </div>
+
+                            {# Timestamp #}
+                            <div class="flex-shrink-0 text-right">
+                                <span class="text-xs text-gray-500">{{ entry.createdAt|date('d/m H:i') }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# Pagination #}
+                {% if maxPage > 1 %}
+                    <div class="flex justify-center items-center gap-2 mt-4 pt-4 border-t border-gray-700">
+                        {% if page > 1 %}
+                            <a href="{{ path('app_game_journal', { type: currentType, page: page - 1 }|filter(v => v is not null)) }}"
+                               class="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">
+                                Precedent
+                            </a>
+                        {% endif %}
+                        <span class="text-sm text-gray-400">Page {{ page }}/{{ maxPage }}</span>
+                        {% if page < maxPage %}
+                            <a href="{{ path('app_game_journal', { type: currentType, page: page + 1 }|filter(v => v is not null)) }}"
+                               class="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-gray-300 rounded transition-colors">
+                                Suivant
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
