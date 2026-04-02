@@ -1,9 +1,9 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
-> Numerotation unifiee : chaque tache a un identifiant unique (01 a 103).
-> Derniere mise a jour : 2026-03-26
-> **Repriorisation** : l'editeur de cartes integre (MED-01 a MED-16) est desormais la **priorite absolue** de la Vague 4.
+> Derniere mise a jour : 2026-04-02
+> **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
+> **Nouvelle feuille de route** : Vagues 7-9 definissent les prochaines priorites.
 
 ---
 
@@ -21,77 +21,105 @@
 
 ---
 
-## Graphe de dependances global
+## Etat d'avancement global
+
+| Vague | Taches | Statut |
+|-------|--------|--------|
+| Vague 1 — Fondations & Quick Wins | 25/25 | ✅ Terminee |
+| Vague 2 — Systemes core | 20/20 | ✅ Terminee |
+| Vague 3 — Contenu & enrichissement | 18/18 | ✅ Terminee |
+| Vague 4 — Monde & systemes avances | 16/16 + 16 MED + 20 GCC | ✅ Terminee |
+| Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
+| Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
+| **Plan Testing (TST)** | **9/15** | **6 taches restantes** |
+| **Vague 7 — Qualite & stabilisation** | **0/12** | **Prochaine priorite** |
+| **Vague 8 — Economie & social** | **0/10** | **A venir** |
+| **Vague 9 — Monde vivant & endgame** | **0/10** | **Long terme** |
+
+---
+
+## Graphe de dependances (nouvelles taches)
 
 ```
-VAGUES 1-3 : TERMINEES ✅ (63 taches completees)
-  Prerequis editeur de carte : ✅ 44 (TerrainImport), ✅ 57 (terrain:sync), ✅ 58 (zones/biomes)
+PLAN TESTING (restant)
+  TST-07 Integration quetes/progression  ← TST-04
+  TST-09 Stabiliser E2E                 ← TST-01
+  TST-10 Nouveaux tests E2E             ← TST-09
+  TST-11 Reactiver E2E dans CI          ← TST-09
+  TST-12 PHPStan niveau 6               ∅
+  TST-13 Mutation testing (Infection)    ← TST-05
 
-VAGUE 4 — PRIORITE ABSOLUE : EDITEUR DE CARTES (MED-01 a MED-16)
-  ┌─ Phase 1 (fondation)
-  │   MED-01 TilesetRegistry ← ✅ 44, ✅ 58 ─────────────────────────┐
-  │   MED-02 MapFactory ← MED-01 ────────────────────────────────────┤
-  │                                                                   │
-  ├─ Phase 2 (peinture)                                               │
-  │   MED-03 Tileset Picker ← MED-01                                 │
-  │   MED-04 Stamp Brush & Eyedropper ← MED-03 ─────────────────────┤
-  │   MED-05 Eraser ← MED-04                                         │
-  │   MED-06 Bucket Fill ← MED-04                                    │
-  │                                                                   │
-  ├─ Phase 3 (UX editeur) ‖                                          │
-  │   MED-07 Gestion layers ← MED-03                                 │
-  │   MED-08 Undo / Redo ← MED-04                                    │
-  │                                                                   │
-  ├─ Phase 4 (entites)                                                │
-  │   MED-09 Creation entites ← MED-04                               │
-  │   MED-10 Edition entites ← MED-09                                │
-  │                                                                   │
-  ├─ Phase 5 (auto-tiling)                                            │
-  │   MED-11 WangTileResolver backend ← MED-01                       │
-  │   MED-12 Auto-tiling frontend ← MED-11, MED-04                   │
-  │                                                                   │
-  ├─ Phase 6 (generateur procedural)                                  │
-  │   MED-13 Moteur Perlin ← MED-01, MED-02                          │
-  │   MED-14 Biomes ← MED-13                                         │
-  │   MED-15 Objets & connectivite ← MED-14                          │
-  │                                                                   │
-  └─ Phase 7 (export/qualite)                                         │
-      MED-16 Export TMX & tests E2E ← MED-04, MED-09                 │
-                                                                      │
-  PRIORITE 2 — Contenu (debloque par editeur)                         │
-  ┌─ ✅ 68 Mines profondes (FAIT) ← 30, 47, 66 ─────────────────────┘
+VAGUE 7 — QUALITE & STABILISATION (priorite absolue)
+  ┌─ Piste A — Testing (TST restants)
+  │   104 TST-07 Integration quetes     ← TST-04 ✅
+  │   105 TST-09 Stabiliser E2E         ← TST-01 ✅
+  │   106 TST-10 Nouveaux tests E2E     ← 105
+  │   107 TST-11 E2E dans CI            ← 105
+  │   108 TST-12 PHPStan niveau 6       ∅
+  │   109 TST-13 Mutation testing       ← TST-05 ✅
   │
-  PRIORITE 3 — Guildes
-  └─ GCC-01..20 Controle cite ← 38, 48, 52
+  ├─ Piste B — Stabilite & polish (‖)
+  │   110 Correction bugs connus        ∅
+  │   111 Equilibrage combat avance     ∅
+  │   112 Optimisation requetes N+1     ∅
+  │
+  └─ Piste C — UX & accessibilite (‖)
+      113 Tutoriel / onboarding joueur  ∅
+      114 Notifications in-game         ∅
+      115 Journal de bord joueur        ∅
 
-VAGUE 5 (depend de Vague 4) ✅
-  ┌─ ✅ 80 Trame Acte 2 ← 46, 67, 68
-  ├─ ✅ 81 Combat cooperatif ← 53, 49
-  └─ ✅ 84 Donjons mecaniques & loot ← 72, 37
+VAGUE 8 — ECONOMIE & SOCIAL
+  ┌─ Piste A — Commerce (sequentiel)
+  │   116 Hotel des ventes — entites    ∅
+  │   117 Hotel des ventes — UI         ← 116
+  │   118 Hotel des ventes — anti-exploit ← 117
+  │
+  ├─ Piste B — Social avance (‖)
+  │   119 Messagerie joueur             ∅
+  │   120 Profil public joueur          ∅
+  │   121 Systeme de reputation         ← 120
+  │
+  └─ Piste C — Contenu economique (‖)
+      122 Metiers specialises (2e tier)  ∅
+      123 Encheres temporaires           ← 116
+      124 Taxes dynamiques regions       ← GCC
+      125 Gold sinks avances             ∅
 
-VAGUE 6 (long terme)
-  ┌─ ✅ 92 Classement guildes ← 52
-  ├─ ✅ 93 Quetes de guilde ← 52, 92
-  ├─ ✅ 94 Trame Acte 3 ← 80, 72
-  ├─ ✅ 95 Saisonnalite & festivals ← 20, 85
-  ├─ ✅ 98 Rendu tiles animees ← 97
-  ├─ ✅ 99 Transitions de zone ← 30
-  ├─ ✅ 100 Sons basiques
-  ├─ ✅ 101 Monitoring basique
-  ├─ ✅ 102 Index DB composites
-  └─ ✅ 103 Achievements caches
+VAGUE 9 — MONDE VIVANT & ENDGAME
+  ┌─ Piste A — PvP
+  │   126 Arene PvP 1v1                 ∅
+  │   127 Arene PvP par equipes         ← 126
+  │
+  ├─ Piste B — Contenu monde (‖)
+  │   128 Nouvelles zones (acte 4)       ← 94
+  │   129 Housing joueur                 ← 116
+  │   130 Montures & deplacement rapide  ∅
+  │
+  ├─ Piste C — Events & live ops (‖)
+  │   131 Events live / outils GM        ← 79
+  │   132 Classement saisonnier global   ← 92
+  │   133 Mini-jeux (peche, courses)     ∅
+  │
+  └─ Piste D — Technique (‖)
+      134 Load testing & scaling         ∅
+      135 Localisation i18n              ∅
 ```
 
 ---
 
 ## Fichiers par vague (ordre de priorite)
 
-1. [Vague 1 — Fondations & Quick Wins](ROADMAP_TODO_VAGUE_01.md)
-2. [Vague 2 — Systemes core completes (restant)](ROADMAP_TODO_VAGUE_02.md)
-3. [Vague 3 — Contenu & enrichissement](ROADMAP_TODO_VAGUE_03.md)
-4. [Vague 4 — Monde & systemes avances](ROADMAP_TODO_VAGUE_04.md)
-5. [Vague 5 — Endgame & contenu avance](ROADMAP_TODO_VAGUE_05.md)
-6. [Vague 6 — Long terme & polish final](ROADMAP_TODO_VAGUE_06.md)
+1. [Vague 1 — Fondations & Quick Wins](ROADMAP_TODO_VAGUE_01.md) ✅
+2. [Vague 2 — Systemes core completes](ROADMAP_TODO_VAGUE_02.md) ✅
+3. [Vague 3 — Contenu & enrichissement](ROADMAP_TODO_VAGUE_03.md) ✅
+4. [Vague 4 — Monde & systemes avances](ROADMAP_TODO_VAGUE_04.md) ✅
+5. [Vague 5 — Endgame & contenu avance](ROADMAP_TODO_VAGUE_05.md) ✅
+6. [Vague 6 — Long terme & polish final](ROADMAP_TODO_VAGUE_06.md) ✅
+7. **[Vague 7 — Qualite & stabilisation](ROADMAP_TODO_VAGUE_07.md)** ← Prochaine
+8. [Vague 8 — Economie & social](ROADMAP_TODO_VAGUE_08.md)
+9. [Vague 9 — Monde vivant & endgame](ROADMAP_TODO_VAGUE_09.md)
 
-**Plan annexe :** [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md)
-**Plan annexe :** [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md)
+**Plans annexes :**
+- [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
+- [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅
+- [Testing & qualite](PLAN_TESTING.md) — 6 taches restantes (integrees en Vague 7)
