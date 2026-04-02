@@ -3,7 +3,8 @@
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
 > Derniere mise a jour : 2026-04-02
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Nouvelle feuille de route** : Vagues 7-9 definissent les prochaines priorites.
+> **Nouvelle feuille de route** : Vagues 7-10 definissent les prochaines priorites.
+> **Audit contenu** : le jeu dispose de systemes solides mais le contenu est a ~30% du necessaire. La Vague 8 (Contenu critique) a ete inseree pour combler ces lacunes avant l'economie.
 
 ---
 
@@ -32,9 +33,10 @@
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
 | **Plan Testing (TST)** | **9/15** | **6 taches restantes** |
-| **Vague 7 — Qualite & stabilisation** | **0/12** | **Prochaine priorite** |
-| **Vague 8 — Economie & social** | **0/10** | **A venir** |
-| **Vague 9 — Monde vivant & endgame** | **0/10** | **Long terme** |
+| **Vague 7 — Qualite, stabilisation & fondations UX** | **0/16** | **Prochaine priorite** |
+| **Vague 8 — Contenu critique** | **0/9** | **Priorite haute** |
+| **Vague 9 — Economie & social** | **0/10** | **A venir** |
+| **Vague 10 — Monde vivant & endgame** | **0/8** | **Long terme** |
 
 ---
 
@@ -49,7 +51,7 @@ PLAN TESTING (restant)
   TST-12 PHPStan niveau 6               ∅
   TST-13 Mutation testing (Infection)    ← TST-05
 
-VAGUE 7 — QUALITE & STABILISATION (priorite absolue)
+VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   ┌─ Piste A — Testing (TST restants)
   │   104 TST-07 Integration quetes     ← TST-04 ✅
   │   105 TST-09 Stabiliser E2E         ← TST-01 ✅
@@ -63,12 +65,34 @@ VAGUE 7 — QUALITE & STABILISATION (priorite absolue)
   │   111 Equilibrage combat avance     ∅
   │   112 Optimisation requetes N+1     ∅
   │
-  └─ Piste C — UX & accessibilite (‖)
-      113 Tutoriel / onboarding joueur  ∅
-      114 Notifications in-game         ∅
-      115 Journal de bord joueur        ∅
+  ├─ Piste C — UX & accessibilite (‖)
+  │   113 Tutoriel / onboarding joueur  ∅
+  │   114 Notifications in-game         ∅
+  │   115 Journal de bord joueur        ∅
+  │   136 Creation de personnage        ∅
+  │
+  └─ Piste D — Feedback visuels (‖)
+      137 Feedback visuels combat       ∅
+      138 Feedback progression          ∅
+      139 Comparaison equip & QoL       ∅
 
-VAGUE 8 — ECONOMIE & SOCIAL
+VAGUE 8 — CONTENU CRITIQUE
+  ┌─ Piste A — Bestiaire (sequentiel)
+  │   140 Monstres tier 1 manquants     ∅
+  │   141 Monstres tier 2-3 & boss      ← 140
+  │
+  ├─ Piste B — Equipement & sorts (‖)
+  │   142 Armes variees par tier        ∅
+  │   143 Armures & accessoires         ∅
+  │   144 Sorts & materia tier 2-3      ∅
+  │
+  └─ Piste C — Metiers, PNJ & quetes (‖)
+      145 Recettes craft manquantes     ← 142, 143
+      146 PNJ & dialogues par zone      ∅
+      147 Arbres de talent combat       ← 144
+      148 Quetes secondaires            ← 146, 140
+
+VAGUE 9 — ECONOMIE & SOCIAL
   ┌─ Piste A — Commerce (sequentiel)
   │   116 Hotel des ventes — entites    ∅
   │   117 Hotel des ventes — UI         ← 116
@@ -80,14 +104,14 @@ VAGUE 8 — ECONOMIE & SOCIAL
   │   121 Systeme de reputation         ← 120
   │
   └─ Piste C — Contenu economique (‖)
-      122 Metiers specialises (2e tier)  ∅
+      122 Metiers specialises (2e tier)  ← 145
       123 Encheres temporaires           ← 116
       124 Taxes dynamiques regions       ← GCC
       125 Gold sinks avances             ∅
 
-VAGUE 9 — MONDE VIVANT & ENDGAME
+VAGUE 10 — MONDE VIVANT & ENDGAME
   ┌─ Piste A — Contenu monde (‖)
-  │   128 Nouvelles zones (acte 4)       ← 94
+  │   128 Nouvelles zones (acte 4)       ← 94, 141
   │   129 Housing joueur                 ← 116
   │   130 Montures & deplacement rapide  ∅
   │
@@ -111,9 +135,10 @@ VAGUE 9 — MONDE VIVANT & ENDGAME
 4. [Vague 4 — Monde & systemes avances](ROADMAP_TODO_VAGUE_04.md) ✅
 5. [Vague 5 — Endgame & contenu avance](ROADMAP_TODO_VAGUE_05.md) ✅
 6. [Vague 6 — Long terme & polish final](ROADMAP_TODO_VAGUE_06.md) ✅
-7. **[Vague 7 — Qualite & stabilisation](ROADMAP_TODO_VAGUE_07.md)** ← Prochaine
-8. [Vague 8 — Economie & social](ROADMAP_TODO_VAGUE_08.md)
-9. [Vague 9 — Monde vivant & endgame](ROADMAP_TODO_VAGUE_09.md)
+7. **[Vague 7 — Qualite, stabilisation & fondations UX](ROADMAP_TODO_VAGUE_07.md)** ← Prochaine
+8. **[Vague 8 — Contenu critique](ROADMAP_TODO_VAGUE_08.md)** ← Priorite haute
+9. [Vague 9 — Economie & social](ROADMAP_TODO_VAGUE_09.md)
+10. [Vague 10 — Monde vivant & endgame](ROADMAP_TODO_VAGUE_10.md)
 
 **Plans annexes :**
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅

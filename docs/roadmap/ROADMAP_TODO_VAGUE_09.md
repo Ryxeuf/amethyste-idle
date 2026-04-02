@@ -1,74 +1,91 @@
-## Vague 9 — Monde vivant & endgame
+## Vague 9 — Economie & social
 
-> **8 taches** long terme pour un monde vivant et rejouable.
-> Prerequis : Vague 8 (economie & social) recommandee avant.
-
----
-
-### Piste A — Contenu monde (parallelisable)
-
-### 128 — Nouvelles zones — Acte 4 (XL | ★★★)
-> Prerequis : ← 94 (Acte 3 termine)
-- [ ] 4 nouvelles cartes generees via l'editeur
-- [ ] Nouveaux biomes : desert, tundra
-- [ ] Monstres tier 4 (level 30-40)
-- [ ] Chaine de quetes Acte 4
-- [ ] Boss final Acte 4
-
-### 129 — Housing joueur (L | ★★)
-> Prerequis : ← 116 (hotel des ventes)
-- [ ] Terrain achetable dans une zone dediee
-- [ ] Maison personnalisable : meubles, coffre prive, atelier de craft
-- [ ] Visitabilite : les joueurs peuvent visiter les maisons des autres
-- [ ] Jardin : recolte passive (plantes poussent en temps reel)
-
-### 130 — Montures & deplacement rapide (M | ★★)
-> Prerequis : ∅
-- [ ] Entite `Mount` : slug, name, speedBonus, sprite
-- [ ] Obtention via quete, drop rare, ou achat
-- [ ] Vitesse de deplacement +50% quand monte
-- [ ] Animation sprite monte sur la carte
-- [ ] Teleportation rapide entre villes decouvertes (cout en gils)
+> **10 taches** pour enrichir l'economie et les interactions sociales.
+> Prerequis : Vague 8 (contenu critique) recommandee avant.
 
 ---
 
-### Piste B — Events & live ops (parallelisable)
+### Piste A — Commerce entre joueurs (sequentiel)
 
-### 131 — Events live & outils GM (M | ★★★)
-> Prerequis : ← 79 (evenements bonus)
-- [ ] Interface admin pour lancer des events en temps reel
-- [ ] Types : spawn de boss special, buff global, quete ephemere
-- [ ] Historique des events lances
-- [ ] Annonce globale via Mercure SSE
-
-### 132 — Classement saisonnier global (S | ★★)
-> Prerequis : ← 92 (classement guildes)
-- [ ] Classement individuel : XP gagnee, mobs tues, quetes completees par saison
-- [ ] Recompenses de fin de saison : titres, cosmetiques, items exclusifs
-- [ ] Page `/game/rankings` avec onglets (individuel, guilde)
-
-### 133 — Mini-jeux (peche amélioree, courses) (M | ★)
+### 116 — Hotel des ventes — entites & backend (L | ★★★)
 > Prerequis : ∅
-- [ ] Peche active : mini-jeu timing (barre de progression, fenetre de clic)
-- [ ] Courses entre joueurs : parcours avec chrono, classement
-- [ ] Recompenses specifiques par mini-jeu
+- [ ] Entite `AuctionListing` : seller, item, quantity, pricePerUnit, expiresAt, status (active/sold/expired/cancelled)
+- [ ] Entite `AuctionTransaction` : listing, buyer, totalPrice, purchasedAt
+- [ ] `AuctionManager` : createListing, buyListing, cancelListing, expireListings
+- [ ] Taxe de mise en vente (5% du prix), taxe regionale si region controlee par une guilde
+- [ ] Commande CRON `app:auction:expire` pour expirer les annonces depassees
+- [ ] Migration + fixtures de test
+
+### 117 — Hotel des ventes — UI & recherche (M | ★★★)
+> Prerequis : ← 116
+- [ ] Page `/game/auction` : liste paginee avec filtres (type, rarete, prix min/max, nom)
+- [ ] Recherche full-text sur le nom des items
+- [ ] Page "Mes ventes" : annonces actives, historique, revenus
+- [ ] Formulaire de mise en vente depuis l'inventaire (bouton "Vendre")
+- [ ] Confirmation d'achat avec resume (prix + taxes)
+
+### 118 — Hotel des ventes — anti-exploit & economie (S | ★★)
+> Prerequis : ← 117
+- [ ] Prix minimum et maximum par rarete (eviter les transferts deguises)
+- [ ] Limite d'annonces actives par joueur (20 max)
+- [ ] Cooldown entre annulation et remise en vente (5 min)
+- [ ] Logs des transactions pour audit admin
+- [ ] Dashboard admin : volume d'echanges, prix moyens par item
 
 ---
 
-### Piste C — Technique (parallelisable)
+### Piste B — Social avance (parallelisable)
 
-### 134 — Load testing & scaling (M | ★★)
+### 119 — Messagerie joueur a joueur (M | ★★)
 > Prerequis : ∅
-- [ ] Script k6/Locust pour simuler 100+ joueurs simultanes
-- [ ] Identification goulots d'etranglement (DB, Mercure, FrankenPHP)
-- [ ] Optimisations : connection pooling, cache Redis, horizontal scaling plan
-- [ ] Objectif : 200 joueurs simultanes sans degradation
+- [ ] Entite `PrivateMessage` : sender, receiver, subject, body, readAt, createdAt
+- [ ] Page `/game/messages` : boite de reception, envoi, lu/non-lu
+- [ ] Notification Mercure SSE a la reception
+- [ ] Limite : 100 messages conserves par joueur
+- [ ] Blocage de joueur (ignore list)
 
-### 135 — Localisation i18n (M | ★)
+### 120 — Profil public joueur (S | ★★)
 > Prerequis : ∅
-- [ ] Extraction des chaines via Symfony Translation (xliff)
-- [ ] Traduction EN prioritaire (UI, items, quetes, dialogues)
-- [ ] Selecteur de langue dans les parametres joueur
-- [ ] Contenu de jeu multilingue (noms items, descriptions sorts)
+- [ ] Page `/game/player/{slug}` : avatar, race, statistiques, equipement visible, domaines
+- [ ] Succes affiches (selection par le joueur, top 5)
+- [ ] Guilde, titre, date d'inscription
+- [ ] Lien "Voir le profil" depuis le chat et la carte
+
+### 121 — Systeme de reputation & karma (M | ★★)
+> Prerequis : ← 120
+- [ ] Score de reputation (incremente par quetes, aide groupe, evenements)
+- [ ] Titres de reputation (Novice → Respecte → Legendaire)
+- [ ] Malus si comportement negatif (report systeme basique)
+- [ ] Bonus reputation : acces a des quetes speciales, reductions PNJ
+
+---
+
+### Piste C — Contenu economique (parallelisable)
+
+### 122 — Metiers specialises (2e tier) (M | ★★)
+> Prerequis : ← 145
+- [ ] Specialisations de craft : Maitre Forgeron, Maitre Alchimiste, Maitre Joaillier
+- [ ] Recettes exclusives par specialisation (items tier 4+)
+- [ ] Bonus qualite +20% si specialise
+- [ ] 1 specialisation par joueur (choix irreversible, deblocage a domain XP 500+)
+
+### 123 — Encheres temporaires & ventes flash (S | ★)
+> Prerequis : ← 116
+- [ ] Type d'annonce "enchere" : prix de depart, increments, duree fixe
+- [ ] Notification aux encherisseurs si depasses
+- [ ] Ventes flash admin : items rares a prix reduit, duree limitee
+
+### 124 — Taxes dynamiques & tresor regional (S | ★★)
+> Prerequis : ← GCC ✅
+- [ ] Taux de taxe ajustable par la guilde controlante (1% a 10%)
+- [ ] Tresor regional visible par tous les membres
+- [ ] Investissements automatiques (buff zone) si tresor > seuil
+
+### 125 — Gold sinks avances (S | ★★)
+> Prerequis : ∅
+- [ ] Enchantement temporaire d'equipement (coute gils, duree limitee)
+- [ ] Renommage d'items (cosmetique, coute gils)
+- [ ] Transport rapide payant entre villes decouvertes
+- [ ] Repair d'equipement (degradation naturelle sur mort)
 
 ---
