@@ -144,3 +144,4 @@ VAGUE 10 — MONDE VIVANT & ENDGAME
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅
 - [Testing & qualite](PLAN_TESTING.md) — 6 taches restantes (integrees en Vague 7)
+- [Systeme d'avatar modulaire](PLAN_AVATAR_SYSTEM.md) — 30 taches (AVT-01 a AVT-30, 6 phases)
