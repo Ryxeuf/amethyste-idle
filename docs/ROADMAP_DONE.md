@@ -5,6 +5,16 @@
 
 ---
 
+## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 104 — Tests integration quetes & progression (TST-07) ✅
+> Tests d'integration avec vraie DB (pas de mocks) pour les flux critiques quetes et progression.
+- [x] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense
+- [x] `SkillProgressionIntegrationTest` : gagner XP domaine → competence deblocable → acquisition → stats mises a jour
+- [x] Helper `setCurrentPlayer()` dans `AbstractIntegrationTestCase` pour injecter le joueur sans contexte HTTP
+
+---
+
 ## Modernisation de la stack (2026-03-09) ✅
 
 > Refonte complete de l'infrastructure technique.
