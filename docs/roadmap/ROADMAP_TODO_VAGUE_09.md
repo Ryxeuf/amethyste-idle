@@ -1,31 +1,11 @@
 ## Vague 9 — Monde vivant & endgame
 
-> **10 taches** long terme pour un monde vivant et rejouable.
+> **8 taches** long terme pour un monde vivant et rejouable.
 > Prerequis : Vague 8 (economie & social) recommandee avant.
 
 ---
 
-### Piste A — PvP (sequentiel)
-
-### 126 — Arene PvP 1v1 (L | ★★★)
-> Prerequis : ∅
-- [ ] Carte arene dediee avec matchmaking (file d'attente)
-- [ ] Combat PvP : memes regles que PvE, mais contre un joueur reel
-- [ ] Classement Elo : victoire = +25, defaite = -15
-- [ ] Recompenses par palier (bronze/argent/or/diamant) : titres, cosmetiques
-- [ ] Saison PvP mensuelle avec reset et recompenses de fin de saison
-- [ ] Restrictions : pas d'items consommables, pas de fuite
-
-### 127 — Arene PvP par equipes (L | ★★★)
-> Prerequis : ← 126
-- [ ] Mode 2v2 et 3v3 (equipes pre-formees via groupes)
-- [ ] Classement par equipe
-- [ ] Mecaniques de synergie bonus (elements complementaires)
-- [ ] Recompenses de groupe exclusives
-
----
-
-### Piste B — Contenu monde (parallelisable)
+### Piste A — Contenu monde (parallelisable)
 
 ### 128 — Nouvelles zones — Acte 4 (XL | ★★★)
 > Prerequis : ← 94 (Acte 3 termine)
@@ -52,7 +32,7 @@
 
 ---
 
-### Piste C — Events & live ops (parallelisable)
+### Piste B — Events & live ops (parallelisable)
 
 ### 131 — Events live & outils GM (M | ★★★)
 > Prerequis : ← 79 (evenements bonus)
@@ -65,7 +45,7 @@
 > Prerequis : ← 92 (classement guildes)
 - [ ] Classement individuel : XP gagnee, mobs tues, quetes completees par saison
 - [ ] Recompenses de fin de saison : titres, cosmetiques, items exclusifs
-- [ ] Page `/game/rankings` avec onglets (individuel, guilde, PvP)
+- [ ] Page `/game/rankings` avec onglets (individuel, guilde)
 
 ### 133 — Mini-jeux (peche amélioree, courses) (M | ★)
 > Prerequis : ∅
@@ -75,7 +55,7 @@
 
 ---
 
-### Piste D — Technique (parallelisable)
+### Piste C — Technique (parallelisable)
 
 ### 134 — Load testing & scaling (M | ★★)
 > Prerequis : ∅

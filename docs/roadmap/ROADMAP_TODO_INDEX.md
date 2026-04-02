@@ -86,21 +86,17 @@ VAGUE 8 — ECONOMIE & SOCIAL
       125 Gold sinks avances             ∅
 
 VAGUE 9 — MONDE VIVANT & ENDGAME
-  ┌─ Piste A — PvP
-  │   126 Arene PvP 1v1                 ∅
-  │   127 Arene PvP par equipes         ← 126
-  │
-  ├─ Piste B — Contenu monde (‖)
+  ┌─ Piste A — Contenu monde (‖)
   │   128 Nouvelles zones (acte 4)       ← 94
   │   129 Housing joueur                 ← 116
   │   130 Montures & deplacement rapide  ∅
   │
-  ├─ Piste C — Events & live ops (‖)
+  ├─ Piste B — Events & live ops (‖)
   │   131 Events live / outils GM        ← 79
   │   132 Classement saisonnier global   ← 92
   │   133 Mini-jeux (peche, courses)     ∅
   │
-  └─ Piste D — Technique (‖)
+  └─ Piste C — Technique (‖)
       134 Load testing & scaling         ∅
       135 Localisation i18n              ∅
 ```
