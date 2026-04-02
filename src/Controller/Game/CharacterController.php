@@ -44,7 +44,9 @@ class CharacterController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $name = trim($form->get('name')->getData());
+            /** @var string $name */
+            $name = trim((string) $form->get('name')->getData());
+            /** @var \App\Entity\Game\Race $race */
             $race = $form->get('race')->getData();
 
             $existingPlayer = $this->entityManager->getRepository(Player::class)
@@ -81,7 +83,7 @@ class CharacterController extends AbstractController
         }
 
         if ($request->isMethod('POST')) {
-            $playerId = (int) $request->request->get('player_id');
+            $playerId = $request->request->getInt('player_id');
             $player = $this->entityManager->getRepository(Player::class)->find($playerId);
 
             if ($player instanceof Player && $player->getUser() === $user) {

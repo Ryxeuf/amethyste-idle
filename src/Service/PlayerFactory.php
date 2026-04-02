@@ -32,15 +32,20 @@ class PlayerFactory
         $player->setClassType('player');
 
         $modifiers = $race->getStatModifiers();
-        $maxLife = self::BASE_LIFE + ($modifiers['life'] ?? 0);
-        $maxEnergy = self::BASE_MAX_ENERGY + ($modifiers['energy'] ?? 0);
+        $lifeMod = (int) ($modifiers['life'] ?? 0);
+        $energyMod = (int) ($modifiers['energy'] ?? 0);
+        $speedMod = (int) ($modifiers['speed'] ?? 0);
+        $hitMod = (int) ($modifiers['hit'] ?? 0);
+
+        $maxLife = self::BASE_LIFE + $lifeMod;
+        $maxEnergy = self::BASE_MAX_ENERGY + $energyMod;
 
         $player->setLife($maxLife);
         $player->setMaxLife($maxLife);
-        $player->setEnergy(self::BASE_ENERGY + ($modifiers['energy'] ?? 0));
+        $player->setEnergy(self::BASE_ENERGY + $energyMod);
         $player->setMaxEnergy($maxEnergy);
-        $player->setSpeed(self::BASE_SPEED + ($modifiers['speed'] ?? 0));
-        $player->setHit(self::BASE_HIT + ($modifiers['hit'] ?? 0));
+        $player->setSpeed(self::BASE_SPEED + $speedMod);
+        $player->setHit(self::BASE_HIT + $hitMod);
         $player->setGils(0);
 
         $spawnMap = $this->getSpawnMap();
