@@ -99,8 +99,49 @@
                     </div>
                 </div>
 
-                {# -- Right side: admin + settings icons -- #}
+                {# -- Right side: notifications + admin + settings icons -- #}
                 <div class="flex items-center gap-1">
+                    {% if app.user %}
+                        {% set notif_unread = notification_unread_count() %}
+                        {% set notif_player = app.user.players.first|default(null) %}
+                        <div class="relative"
+                             data-controller="notification-center"
+                             data-notification-center-mercure-url-value="{{ (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure') }}"
+                             data-notification-center-player-id-value="{{ notif_player ? notif_player.id : 0 }}"
+                             data-notification-center-panel-url-value="{{ path('app_game_notifications_panel') }}"
+                             data-notification-center-mark-all-url-value="{{ path('app_game_notifications_mark_all_read') }}"
+                             data-notification-center-unread-count-value="{{ notif_unread }}">
+                            <button data-notification-center-target="trigger"
+                                    data-action="click->notification-center#toggle"
+                                    class="relative text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700"
+                                    title="Notifications"
+                                    aria-expanded="false">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                </svg>
+                                <span data-notification-center-target="badge"
+                                      class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1 {{ notif_unread == 0 ? 'hidden' : '' }}">
+                                    {{ notif_unread > 99 ? '99+' : notif_unread }}
+                                </span>
+                            </button>
+                            <div data-notification-center-target="panel"
+                                 class="hidden opacity-0 translate-y-1 transition-all duration-150
+                                        absolute right-0 top-full mt-1 w-80 bg-gray-800/95 border border-purple-900/50 rounded-lg shadow-xl z-50">
+                                <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-700">
+                                    <span class="text-sm font-medium text-white">Notifications</span>
+                                    <button data-action="click->notification-center#markAllRead"
+                                            class="text-[10px] text-gray-400 hover:text-purple-400 transition-colors">
+                                        Tout marquer lu
+                                    </button>
+                                </div>
+                                <div data-notification-center-target="panelContent">
+                                    <div class="text-center py-6">
+                                        <div class="animate-spin h-5 w-5 border-2 border-purple-500 border-t-transparent rounded-full mx-auto"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
                     {% if is_granted('ROLE_MODERATOR') %}
                         <a href="{{ path('admin_dashboard') }}" class="text-gray-300 hover:text-white transition-colors p-2 rounded-md hover:bg-gray-700" title="Administration">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -124,6 +165,19 @@
         <div class="flex items-center justify-between h-11 px-4" style="padding-top: var(--safe-top)">
             <a href="{{ path('app_game') }}" class="text-purple-400 font-bold text-base">{{ 'game.title'|trans }}</a>
             <div class="flex items-center gap-2">
+                {% if app.user %}
+                    <a href="{{ path('app_game_notifications') }}" class="relative text-gray-400 hover:text-white p-1.5 touch-target flex items-center justify-center" title="Notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        {% set mobile_notif_unread = notification_unread_count() %}
+                        {% if mobile_notif_unread > 0 %}
+                            <span class="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full min-w-[14px] h-3.5 flex items-center justify-center px-0.5">
+                                {{ mobile_notif_unread > 99 ? '99+' : mobile_notif_unread }}
+                            </span>
+                        {% endif %}
+                    </a>
+                {% endif %}
                 {% if is_granted('ROLE_MODERATOR') %}
                     <a href="{{ path('admin_dashboard') }}" class="text-gray-400 hover:text-white p-1.5 touch-target flex items-center justify-center" title="Administration">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Integration tests: MobDeadEvent triggers BestiaryListener, AchievementTracker,
@@ -56,6 +57,7 @@ class MobDeadEventIntegrationTest extends TestCase
         $this->achievementTracker = new AchievementTracker(
             $this->entityManager,
             $this->playerAchievementRepository,
+            $this->createMock(EventDispatcherInterface::class),
         );
         $this->questMonsterTracker = new QuestMonsterTrackingListener(
             $this->playerQuestUpdater,

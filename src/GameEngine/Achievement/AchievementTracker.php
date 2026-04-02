@@ -10,18 +10,21 @@ use App\Event\CraftEvent;
 use App\Event\Fight\CombatFleeEvent;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Fight\PlayerDeadEvent;
+use App\Event\Game\AchievementCompletedEvent;
 use App\Event\Game\DungeonCompletedEvent;
 use App\Event\Game\QuestCompletedEvent;
 use App\Event\GatheringEvent;
 use App\Repository\PlayerAchievementRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class AchievementTracker implements EventSubscriberInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerAchievementRepository $playerAchievementRepository,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -135,6 +138,7 @@ class AchievementTracker implements EventSubscriberInterface
             if ($newProgress >= $achievement->getCriteriaCount()) {
                 $playerAchievement->setCompletedAt(new \DateTime());
                 $this->applyReward($player, $achievement);
+                $this->eventDispatcher->dispatch(new AchievementCompletedEvent($player, $achievement), AchievementCompletedEvent::NAME);
             }
         }
 
@@ -174,6 +178,7 @@ class AchievementTracker implements EventSubscriberInterface
             if ($distinctCount >= $achievement->getCriteriaCount()) {
                 $playerAchievement->setCompletedAt(new \DateTime());
                 $this->applyReward($player, $achievement);
+                $this->eventDispatcher->dispatch(new AchievementCompletedEvent($player, $achievement), AchievementCompletedEvent::NAME);
             }
         }
 

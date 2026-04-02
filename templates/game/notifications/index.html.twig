@@ -1,0 +1,81 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base sm:text-lg font-semibold text-white">Notifications</h2>
+            <div class="flex items-center gap-3">
+                {% if unreadCount > 0 %}
+                    <span class="text-xs text-purple-400">{{ unreadCount }} non lue{{ unreadCount > 1 ? 's' : '' }}</span>
+                    <button id="mark-all-read-btn"
+                            class="text-xs text-gray-400 hover:text-white transition-colors"
+                            data-controller="notification-mark-all"
+                            data-action="click->notification-mark-all#markAll"
+                            data-notification-mark-all-url-value="{{ path('app_game_notifications_mark_all_read') }}">
+                        Tout marquer comme lu
+                    </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="game-card-body">
+            {% if notifications is empty %}
+                <div class="text-center py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    <p class="text-gray-500 text-sm">Aucune notification pour le moment.</p>
+                </div>
+            {% else %}
+                <div class="space-y-1">
+                    {% for notification in notifications %}
+                        {% set iconMap = {
+                            'achievement': 'M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z',
+                            'quest': 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4',
+                            'domain_level': 'M13 10V3L4 14h7v7l9-11h-7z',
+                            'item_received': 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+                            'guild': 'M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9',
+                            'system': 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+                        } %}
+                        {% set typeColors = {
+                            'achievement': 'text-yellow-400',
+                            'quest': 'text-green-400',
+                            'domain_level': 'text-purple-400',
+                            'item_received': 'text-blue-400',
+                            'guild': 'text-orange-400',
+                            'system': 'text-gray-400'
+                        } %}
+                        <div class="flex items-start gap-3 p-3 rounded-lg transition-colors {{ not notification.read ? 'bg-purple-900/20 border border-purple-800/30' : 'hover:bg-gray-800/50' }}">
+                            <div class="flex-shrink-0 mt-0.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ typeColors[notification.type]|default('text-gray-400') }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="{{ iconMap[notification.type]|default(iconMap['system']) }}" />
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2">
+                                    <p class="text-sm font-medium {{ not notification.read ? 'text-white' : 'text-gray-300' }}">{{ notification.title }}</p>
+                                    {% if not notification.read %}
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
+                                    {% endif %}
+                                </div>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ notification.comment }}</p>
+                                <p class="text-xs text-gray-600 mt-1">{{ notification.createdAt|date('d/m/Y H:i') }}</p>
+                            </div>
+                            {% if notification.link %}
+                                <a href="{{ notification.link }}" class="text-purple-400 hover:text-purple-300 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

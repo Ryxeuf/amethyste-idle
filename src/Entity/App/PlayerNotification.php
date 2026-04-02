@@ -2,134 +2,159 @@
 
 namespace App\Entity\App;
 
+use App\Repository\PlayerNotificationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
+#[ORM\Entity(repositoryClass: PlayerNotificationRepository::class)]
 #[ORM\Table(name: 'player_notification')]
-#[ORM\Entity()]
+#[ORM\Index(columns: ['player_id', 'read_at'], name: 'idx_player_notification_unread')]
 class PlayerNotification
 {
     use TimestampableEntity;
 
-    #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $id;
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    #[ORM\Column(name: 'comment', type: 'text')]
-    private $comment;
+    #[ORM\ManyToOne(targetEntity: Player::class)]
+    #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
+    private Player $player;
 
-    #[ORM\Column(name: 'admin_comment', type: 'text', nullable: true)]
-    private $admin_comment;
+    #[ORM\Column(length: 50)]
+    private string $type;
 
-    #[ORM\Column(name: 'type', type: 'integer', nullable: true)]
-    private $type;
+    #[ORM\Column(length: 255)]
+    private string $title;
 
-    #[ORM\ManyToOne(targetEntity: Player::class, inversedBy: 'notifications')]
-    #[ORM\JoinColumn(name: 'player_id', referencedColumnName: 'id')]
-    private $player;
+    #[ORM\Column(type: 'text')]
+    private string $comment;
 
-    /**
-     * Get id.
-     *
-     * @return int
-     */
-    public function getId()
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $admin_comment = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $icon = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $link = null;
+
+    #[ORM\Column(name: 'read_at', type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $readAt = null;
+
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set comment.
-     *
-     * @param string $comment
-     *
-     * @return PlayerNotification
-     */
-    public function setComment($comment)
+    public function getPlayer(): Player
     {
-        $this->comment = $comment;
-
-        return $this;
+        return $this->player;
     }
 
-    /**
-     * Get comment.
-     *
-     * @return string
-     */
-    public function getComment()
-    {
-        return $this->comment;
-    }
-
-    /**
-     * Set type.
-     *
-     * @param int $type
-     *
-     * @return PlayerNotification
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    /**
-     * Get type.
-     *
-     * @return int
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Set player.
-     *
-     * @return PlayerNotification
-     */
-    public function setPlayer(?Player $player = null)
+    public function setPlayer(Player $player): self
     {
         $this->player = $player;
 
         return $this;
     }
 
-    /**
-     * Get player.
-     *
-     * @return Player
-     */
-    public function getPlayer()
+    public function getType(): string
     {
-        return $this->player;
+        return $this->type;
     }
 
-    /**
-     * Set adminComment.
-     *
-     * @param string $adminComment
-     *
-     * @return PlayerNotification
-     */
-    public function setAdminComment($adminComment)
+    public function setType(string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getComment(): string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(string $comment): self
+    {
+        $this->comment = $comment;
+
+        return $this;
+    }
+
+    public function getAdminComment(): ?string
+    {
+        return $this->admin_comment;
+    }
+
+    public function setAdminComment(?string $adminComment): self
     {
         $this->admin_comment = $adminComment;
 
         return $this;
     }
 
-    /**
-     * Get adminComment.
-     *
-     * @return string
-     */
-    public function getAdminComment()
+    public function getIcon(): ?string
     {
-        return $this->admin_comment;
+        return $this->icon;
+    }
+
+    public function setIcon(?string $icon): self
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    public function getLink(): ?string
+    {
+        return $this->link;
+    }
+
+    public function setLink(?string $link): self
+    {
+        $this->link = $link;
+
+        return $this;
+    }
+
+    public function getReadAt(): ?\DateTimeInterface
+    {
+        return $this->readAt;
+    }
+
+    public function setReadAt(?\DateTimeInterface $readAt): self
+    {
+        $this->readAt = $readAt;
+
+        return $this;
+    }
+
+    public function isRead(): bool
+    {
+        return $this->readAt !== null;
+    }
+
+    public function markAsRead(): self
+    {
+        if ($this->readAt === null) {
+            $this->readAt = new \DateTime();
+        }
+
+        return $this;
     }
 }
