@@ -8,27 +8,56 @@ use App\Entity\App\PlayerItem;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Service\ResetInterface;
 
 class PlayerHelper implements ResetInterface
 {
+    private const SESSION_KEY = '_active_player_id';
+
     private ?Player $player = null;
 
-    public function __construct(private readonly Security $security, private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly Security $security,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly RequestStack $requestStack,
+    ) {
     }
 
     public function getPlayer(): ?Player
     {
-        if ($this->player === null) {
-            /** @var EntityRepository $playerRepository */
-            $playerRepository = $this->entityManager->getRepository(Player::class);
-            $user = $this->security->getUser();
-            if ($user instanceof \App\Entity\User) {
-                $firstPlayer = $user->getPlayers()->first() ?: null;
-                if ($firstPlayer instanceof Player) {
-                    $this->player = $playerRepository->find($firstPlayer->getId());
-                }
+        if ($this->player !== null) {
+            return $this->player;
+        }
+
+        $user = $this->security->getUser();
+        if (!$user instanceof \App\Entity\User) {
+            return null;
+        }
+
+        $players = $user->getPlayers();
+        if ($players->isEmpty()) {
+            return null;
+        }
+
+        /** @var EntityRepository $playerRepository */
+        $playerRepository = $this->entityManager->getRepository(Player::class);
+
+        $activePlayerId = $this->getActivePlayerId();
+        if ($activePlayerId !== null) {
+            $player = $playerRepository->find($activePlayerId);
+            if ($player instanceof Player && $player->getUser() === $user) {
+                $this->player = $player;
+
+                return $this->player;
+            }
+        }
+
+        $firstPlayer = $players->first() ?: null;
+        if ($firstPlayer instanceof Player) {
+            $this->player = $playerRepository->find($firstPlayer->getId());
+            if ($this->player !== null) {
+                $this->setActivePlayer($this->player);
             }
         }
 
@@ -37,6 +66,14 @@ class PlayerHelper implements ResetInterface
 
     public function setPlayer(Player $player): void
     {
+        $this->player = $player;
+        $this->setActivePlayer($player);
+    }
+
+    public function setActivePlayer(Player $player): void
+    {
+        $session = $this->requestStack->getSession();
+        $session->set(self::SESSION_KEY, $player->getId());
         $this->player = $player;
     }
 
@@ -118,5 +155,14 @@ class PlayerHelper implements ResetInterface
             Inventory::TYPE_MATERIA => 50,
             default => 0,
         };
+    }
+
+    private function getActivePlayerId(): ?int
+    {
+        $session = $this->requestStack->getSession();
+
+        $id = $session->get(self::SESSION_KEY);
+
+        return $id !== null ? (int) $id : null;
     }
 }
