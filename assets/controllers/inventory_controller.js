@@ -78,6 +78,7 @@ export default class extends Controller {
             <div class="inv-tooltip-slot"></div>
             <div class="inv-tooltip-desc"></div>
             <div class="inv-tooltip-stats"></div>
+            <div class="inv-tooltip-compare"></div>
             <div class="inv-tooltip-materia"></div>
             <div class="inv-tooltip-effects"></div>
         `;
@@ -108,6 +109,7 @@ export default class extends Controller {
             <div class="inv-sheet-slot"></div>
             <div class="inv-sheet-desc"></div>
             <div class="inv-sheet-stats"></div>
+            <div class="inv-sheet-compare"></div>
             <div class="inv-sheet-materia"></div>
             <div class="inv-sheet-effects"></div>
             <div class="inv-sheet-actions"></div>
@@ -219,6 +221,7 @@ export default class extends Controller {
             statsEl.style.display = 'none';
         }
 
+        this._fillCompareSection(t.querySelector('.inv-tooltip-compare'), data);
         this._fillMateriaSection(t.querySelector('.inv-tooltip-materia'), data);
 
         const fxEl = t.querySelector('.inv-tooltip-effects');
@@ -276,6 +279,7 @@ export default class extends Controller {
             statsEl.style.display = 'none';
         }
 
+        this._fillCompareSection(s.querySelector('.inv-sheet-compare'), data);
         this._fillMateriaSection(s.querySelector('.inv-sheet-materia'), data);
 
         const fxEl = s.querySelector('.inv-sheet-effects');
@@ -331,6 +335,83 @@ export default class extends Controller {
         el.style.display = '';
     }
 
+    // ---- Compare section ----
+
+    _fillCompareSection(el, data) {
+        // Only show comparison if there's an equipped item in the same slot
+        if (!data.eqName && !data.slot) {
+            el.style.display = 'none';
+            return;
+        }
+
+        const lines = [];
+
+        if (data.eqName) {
+            // Compare against equipped item
+            lines.push('<div class="inv-compare-title">Remplace : <span class="inv-compare-eq-name">' + this._escHtml(data.eqName) + '</span></div>');
+
+            // Protection delta
+            const newProt = parseInt(data.protection) || 0;
+            const oldProt = parseInt(data.eqProtection) || 0;
+            const deltaProt = newProt - oldProt;
+            if (deltaProt !== 0) {
+                lines.push(this._deltaLine('DEF', deltaProt));
+            }
+
+            // Materia slots delta
+            const newMat = parseInt(data.materiaTotal) || 0;
+            const oldMat = parseInt(data.eqMateriaTotal) || 0;
+            const deltaMat = newMat - oldMat;
+            if (deltaMat !== 0) {
+                lines.push(this._deltaLine('Slots materia', deltaMat));
+            }
+
+            // Element change
+            const newElem = data.element && data.element !== 'none' ? data.element : '';
+            const oldElem = data.eqElement && data.eqElement !== 'none' ? data.eqElement : '';
+            if (newElem !== oldElem) {
+                if (newElem && !oldElem) {
+                    lines.push('<div class="inv-compare-line inv-compare-up">' + this._elementLabel(newElem) + '</div>');
+                } else if (!newElem && oldElem) {
+                    lines.push('<div class="inv-compare-line inv-compare-down">Perd ' + this._elementLabel(oldElem) + '</div>');
+                } else if (newElem && oldElem) {
+                    lines.push('<div class="inv-compare-line inv-compare-neutral">' + this._elementLabel(oldElem) + ' \u2192 ' + this._elementLabel(newElem) + '</div>');
+                }
+            }
+
+            if (lines.length === 1) {
+                // Only the title, no actual deltas — items are equivalent
+                lines.push('<div class="inv-compare-line inv-compare-neutral">Statistiques identiques</div>');
+            }
+        } else {
+            // Empty slot
+            lines.push('<div class="inv-compare-title">Slot vide</div>');
+            const prot = parseInt(data.protection) || 0;
+            if (prot > 0) {
+                lines.push(this._deltaLine('DEF', prot));
+            }
+            const mat = parseInt(data.materiaTotal) || 0;
+            if (mat > 0) {
+                lines.push(this._deltaLine('Slots materia', mat));
+            }
+        }
+
+        el.innerHTML = lines.join('');
+        el.style.display = '';
+    }
+
+    _deltaLine(label, delta) {
+        const cls = delta > 0 ? 'inv-compare-up' : 'inv-compare-down';
+        const sign = delta > 0 ? '+' : '';
+        return '<div class="inv-compare-line ' + cls + '">' + sign + delta + ' ' + label + '</div>';
+    }
+
+    _escHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     // ---- Helpers ----
 
     _extractData(el) {
@@ -345,6 +426,11 @@ export default class extends Controller {
             effects: el.dataset.itemEffects || '',
             materiaTotal: el.dataset.itemMateriaTotal || '0',
             materiaFilled: el.dataset.itemMateriaFilled || '0',
+            eqName: el.dataset.itemEqName || '',
+            eqProtection: el.dataset.itemEqProtection || '',
+            eqMateriaTotal: el.dataset.itemEqMateriaTotal || '',
+            eqElement: el.dataset.itemEqElement || '',
+            eqRarity: el.dataset.itemEqRarity || '',
         };
     }
 

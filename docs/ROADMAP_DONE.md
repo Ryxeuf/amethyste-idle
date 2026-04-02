@@ -7,6 +7,11 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 139 — Comparaison d'equipement & QoL inventaire (partiel) ✅
+> Tooltip de comparaison avec delta stats sur les items d'equipement disponibles.
+- [x] Tooltip/modal de comparaison avant equipement (delta stats : DEF, materia slots, element)
+- [x] Apercu de l'objet au hover (stats, rarete, description) — deja fonctionnel, enrichi avec comparaison
+
 ### 104 — Tests integration quetes & progression (TST-07) ✅
 > Tests d'integration avec vraie DB (pas de mocks) pour les flux critiques quetes et progression.
 - [x] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense

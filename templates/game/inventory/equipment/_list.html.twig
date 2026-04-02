@@ -266,6 +266,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for item in availableGear %}
                     {% set gi = item.genericItem %}
+                    {% set eqSlot = gi.gearLocation %}
+                    {% set eqItem = equipped[eqSlot] is defined ? equipped[eqSlot] : null %}
                     <div class="equip-available-item group {{ _self.rarity_border_class(gi.rarity) }}"
                          data-inventory-target="item"
                          data-item-name="{{ gi.name }}"
@@ -276,7 +278,14 @@
                          data-item-element="{{ gi.element.value }}"
                          data-item-slot="{{ gi.gearLocation }}"
                          data-item-materia-total="{{ gi.materiaSlots }}"
-                         data-item-materia-filled="0">
+                         data-item-materia-filled="0"
+                         {% if eqItem is not null %}
+                         data-item-eq-name="{{ eqItem.genericItem.name }}"
+                         data-item-eq-protection="{{ eqItem.genericItem.protection }}"
+                         data-item-eq-materia-total="{{ eqItem.genericItem.materiaSlots }}"
+                         data-item-eq-element="{{ eqItem.genericItem.element.value }}"
+                         data-item-eq-rarity="{{ eqItem.genericItem.rarity }}"
+                         {% endif %}>
                         <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 {{ _self.rarity_bg_class(gi.rarity) }}">
                             {{ _self.slot_icon(gi.gearLocation) }}
                         </div>
