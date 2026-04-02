@@ -1,91 +1,88 @@
-## Vague 8 — Economie & social
+## Vague 8 — Contenu critique
 
-> **10 taches** pour enrichir l'economie et les interactions sociales.
-> Prerequis : Vague 7 (stabilite) recommandee avant.
-
----
-
-### Piste A — Commerce entre joueurs (sequentiel)
-
-### 116 — Hotel des ventes — entites & backend (L | ★★★)
-> Prerequis : ∅
-- [ ] Entite `AuctionListing` : seller, item, quantity, pricePerUnit, expiresAt, status (active/sold/expired/cancelled)
-- [ ] Entite `AuctionTransaction` : listing, buyer, totalPrice, purchasedAt
-- [ ] `AuctionManager` : createListing, buyListing, cancelListing, expireListings
-- [ ] Taxe de mise en vente (5% du prix), taxe regionale si region controlee par une guilde
-- [ ] Commande CRON `app:auction:expire` pour expirer les annonces depassees
-- [ ] Migration + fixtures de test
-
-### 117 — Hotel des ventes — UI & recherche (M | ★★★)
-> Prerequis : ← 116
-- [ ] Page `/game/auction` : liste paginee avec filtres (type, rarete, prix min/max, nom)
-- [ ] Recherche full-text sur le nom des items
-- [ ] Page "Mes ventes" : annonces actives, historique, revenus
-- [ ] Formulaire de mise en vente depuis l'inventaire (bouton "Vendre")
-- [ ] Confirmation d'achat avec resume (prix + taxes)
-
-### 118 — Hotel des ventes — anti-exploit & economie (S | ★★)
-> Prerequis : ← 117
-- [ ] Prix minimum et maximum par rarete (eviter les transferts deguises)
-- [ ] Limite d'annonces actives par joueur (20 max)
-- [ ] Cooldown entre annulation et remise en vente (5 min)
-- [ ] Logs des transactions pour audit admin
-- [ ] Dashboard admin : volume d'echanges, prix moyens par item
+> **9 taches** pour combler les lacunes de contenu identifiees par l'audit.
+> Le jeu dispose de systemes solides mais le contenu est a ~30% du necessaire.
+> Prerequis : Vague 7 (stabilite & fondations UX) recommandee avant.
 
 ---
 
-### Piste B — Social avance (parallelisable)
+### Piste A — Bestiaire (sequentiel)
 
-### 119 — Messagerie joueur a joueur (M | ★★)
+### 140 — Monstres tier 1 manquants (M | ★★★)
 > Prerequis : ∅
-- [ ] Entite `PrivateMessage` : sender, receiver, subject, body, readAt, createdAt
-- [ ] Page `/game/messages` : boite de reception, envoi, lu/non-lu
-- [ ] Notification Mercure SSE a la reception
-- [ ] Limite : 100 messages conserves par joueur
-- [ ] Blocage de joueur (ignore list)
+- [ ] 10 monstres niveaux 1-15 : slime, goblin, spider, wolf, bat, snake, scorpion, beetle, mushroom_golem, ghost
+- [ ] Stats, resistances elementaires et faiblesses par monstre
+- [ ] Loot tables specifiques (materiaux, consommables, equipements communs)
+- [ ] Patterns IA basiques (agressif, defensif, fuyard)
+- [ ] Placement dans les zones existantes (Plaine, Foret, Marais)
+- [ ] Correction des references d'achievements vers les monstres manquants
 
-### 120 — Profil public joueur (S | ★★)
-> Prerequis : ∅
-- [ ] Page `/game/player/{slug}` : avatar, race, statistiques, equipement visible, domaines
-- [ ] Succes affiches (selection par le joueur, top 5)
-- [ ] Guilde, titre, date d'inscription
-- [ ] Lien "Voir le profil" depuis le chat et la carte
-
-### 121 — Systeme de reputation & karma (M | ★★)
-> Prerequis : ← 120
-- [ ] Score de reputation (incremente par quetes, aide groupe, evenements)
-- [ ] Titres de reputation (Novice → Respecte → Legendaire)
-- [ ] Malus si comportement negatif (report systeme basique)
-- [ ] Bonus reputation : acces a des quetes speciales, reductions PNJ
+### 141 — Monstres tier 2-3 & boss manquants (M | ★★★)
+> Prerequis : ← 140
+- [ ] 10+ monstres niveaux 15-40 : troll, werewolf, naga, wyvern, crystal_golem, cursed_knight, salamander, undine, sylph, clay_golem
+- [ ] Boss de zone : alpha_wolf (foret), will_o_wisp (marais), creeping_shadow (lande)
+- [ ] Patterns IA avances (phases de boss, invocations, adaptations)
+- [ ] Loot tables avancees (equipements rares, materia, materiaux tier 2-3)
+- [ ] Placement dans les zones avancees (Collines, Lande, Donjons)
 
 ---
 
-### Piste C — Contenu economique (parallelisable)
+### Piste B — Equipement & sorts (parallelisable)
 
-### 122 — Metiers specialises (2e tier) (M | ★★)
+### 142 — Armes variees par tier (M | ★★★)
 > Prerequis : ∅
-- [ ] Specialisations de craft : Maitre Forgeron, Maitre Alchimiste, Maitre Joaillier
-- [ ] Recettes exclusives par specialisation (items tier 4+)
-- [ ] Bonus qualite +20% si specialise
-- [ ] 1 specialisation par joueur (choix irreversible, deblocage a domain XP 500+)
+- [ ] 15+ armes reparties sur 3 tiers : epees, haches, batons, arcs, dagues, lances
+- [ ] Rarete par tier : common (T1), uncommon/rare (T2), epic (T3)
+- [ ] Stats equilibrees (ATK, vitesse, precision) par type d'arme
+- [ ] Prerequis de competences pour les armes avancees
+- [ ] Sprites et descriptions
 
-### 123 — Encheres temporaires & ventes flash (S | ★)
-> Prerequis : ← 116
-- [ ] Type d'annonce "enchere" : prix de depart, increments, duree fixe
-- [ ] Notification aux encherisseurs si depasses
-- [ ] Ventes flash admin : items rares a prix reduit, duree limitee
-
-### 124 — Taxes dynamiques & tresor regional (S | ★★)
-> Prerequis : ← GCC ✅
-- [ ] Taux de taxe ajustable par la guilde controlante (1% a 10%)
-- [ ] Tresor regional visible par tous les membres
-- [ ] Investissements automatiques (buff zone) si tresor > seuil
-
-### 125 — Gold sinks avances (S | ★★)
+### 143 — Armures & accessoires par tier (M | ★★★)
 > Prerequis : ∅
-- [ ] Enchantement temporaire d'equipement (coute gils, duree limitee)
-- [ ] Renommage d'items (cosmetique, coute gils)
-- [ ] Transport rapide payant entre villes decouvertes
-- [ ] Repair d'equipement (degradation naturelle sur mort)
+- [ ] 15+ pieces : casques, plastrons, jambières, bottes, gants, capes, boucliers
+- [ ] Accessoires : 5+ anneaux, 5+ amulettes avec effets varies
+- [ ] Rarete et progression par tier (cuir → metal → mithril)
+- [ ] Sets d'equipement avec bonus complet (2, 3, 4 pieces)
+
+### 144 — Sorts & materia tier 2-3 (M | ★★)
+> Prerequis : ∅
+- [ ] 20+ sorts supplementaires couvrant les 8 elements (Feu, Eau, Air, Terre, Metal, Bete, Lumiere, Ombre)
+- [ ] Materia epiques et legendaires (6+ nouvelles materia)
+- [ ] Sorts de zone, sorts de soin avances, sorts de controle
+- [ ] Equilibrage avec le systeme de synergies elementaires existant
+
+---
+
+### Piste C — Metiers, PNJ & quetes (parallelisable)
+
+### 145 — Recettes craft manquantes (L | ★★★)
+> Prerequis : ← 142, 143
+- [ ] Tanneur : 15 recettes (armures cuir, capes, accessoires)
+- [ ] Alchimiste : 15 recettes (potions, elixirs, poisons, onguents)
+- [ ] Joaillier : 15 recettes (anneaux, amulettes, gemmes, sertissage materia)
+- [ ] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)
+- [ ] Progression de recettes par niveau de domaine
+
+### 146 — PNJ & dialogues par zone (M | ★★)
+> Prerequis : ∅
+- [ ] 20+ PNJ instancies a partir des noms definis (fixtures existantes)
+- [ ] 3-5 PNJ par zone : marchands, queteurs, lore, formateurs
+- [ ] Dialogues ramifies avec conditions (reputation, quetes, domaines)
+- [ ] Indicateurs visuels ! (quete dispo) et ? (quete en cours) deja implementes
+
+### 147 — Arbres de talent combat (M | ★★★)
+> Prerequis : ← 144
+- [ ] 10-15 skills par branche combat : Soldat, Defenseur, Guérisseur, Druide, Necromancien, Magicien blanc
+- [ ] Reequilibrage global : chaque branche doit avoir une profondeur comparable au Mineur (18 skills)
+- [ ] Skills de deblocage materia pour les sorts tier 2-3
+- [ ] Bonus passifs diversifies (degats, survie, soin, critique, vitesse)
+
+### 148 — Quetes secondaires & contenu narratif (M | ★★)
+> Prerequis : ← 146, 140
+- [ ] 30+ quetes supplementaires (objectif : 80+ quetes total)
+- [ ] Quetes de zone : 3-5 quetes par zone liees aux PNJ locaux
+- [ ] Quetes de faction (reputation)
+- [ ] Quetes de decouverte (explorer X zones, trouver Y objets caches)
+- [ ] Diversifier les types : escorte, defend, puzzle, choix moral
 
 ---

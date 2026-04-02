@@ -1,7 +1,7 @@
-## Vague 7 — Qualite & stabilisation
+## Vague 7 — Qualite, stabilisation & fondations UX
 
-> **12 taches** de qualite, stabilite et polish UX.
-> Priorite absolue : consolider l'existant avant d'ajouter des features.
+> **16 taches** de qualite, stabilite, polish UX et fondations joueur.
+> Priorite absolue : consolider l'existant et combler les lacunes critiques d'experience joueur.
 > Integre les taches TST restantes du plan testing.
 
 ---
@@ -94,5 +94,41 @@
 - [ ] Entrees automatiques : combats, quetes, decouvertes, craft, niveau domaine
 - [ ] Filtrage par type d'evenement
 - [ ] Limite : 200 entrees par joueur (rotation)
+
+### 136 — Creation de personnage (M | ★★★)
+> Prerequis : ∅
+- [ ] Ecran de creation post-inscription (si aucun Player actif sur le compte)
+- [ ] Choix du nom de personnage (validation unicite, filtrage mots interdits)
+- [ ] Choix de la race (parmi `Race.availableAtCreation = true`) avec apercu sprite
+- [ ] Affichage des bonus de stats par race (`statModifiers`)
+- [ ] Limite configurable du nombre de personnages par compte (defaut : 1)
+- [ ] Selecteur de personnage au login si le joueur en possede plusieurs
+- [ ] Refactoring du `RegistrationController` : inscription compte → redirection creation personnage
+
+---
+
+### Piste D — Feedback visuels & celebrations (parallelisable)
+
+### 137 — Feedback visuels combat (M | ★★)
+> Prerequis : ∅
+- [ ] Damage numbers flottants PixiJS (texte jaune degats, rouge critique, vert soin)
+- [ ] Auras d'effets de statut sous les sprites (cercle colore : poison vert, brulure orange, bouclier bleu)
+- [ ] Screen shake sur coup critique ou danger
+- [ ] Boss health bar (barre rouge en haut d'ecran avec nom du boss)
+- [ ] Notification synergie elementaire ("SYNERGIE : +50% degats")
+
+### 138 — Feedback progression & celebrations (S | ★★)
+> Prerequis : ∅
+- [ ] Popup "Competence debloquee !" quand un palier de domaine est atteint
+- [ ] Banniere "Succes debloque" avec animation pour les achievements
+- [ ] Toast d'animation craft reussi avec XP gagnee
+- [ ] Notification visuelle Mercure quand un joueur proche atteint un palier
+
+### 139 — Comparaison d'equipement & QoL inventaire (S | ★★)
+> Prerequis : ∅
+- [ ] Tooltip/modal de comparaison avant equipement (delta stats : +3 ATK, -1 DEF)
+- [ ] Apercu de l'objet au hover (stats, rarete, description)
+- [ ] File d'attente de craft (input quantite, craft en arriere-plan)
+- [ ] Timer reset quetes quotidiennes visible ("Prochain reset : 14h32")
 
 ---
