@@ -39,14 +39,16 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 11. **Pas de PvP** : le jeu est exclusivement PvE cooperatif. Ne jamais introduire de combat joueur contre joueur (arenes, duels, zones PvP, RvR). Les interactions entre joueurs sont limitees a la cooperation (guildes, groupes, commerce, chat).
 
-12. **Roadmap** : realise dans `docs/ROADMAP_DONE.md` ; a venir reparti par vague dans `docs/roadmap/` :
+12. **Multi-personnages** : un compte utilisateur (User) peut posseder plusieurs personnages (Player). La limite par defaut est de **1 personnage par compte** (configurable, cas particuliers possibles). Le systeme de creation de personnage (choix du nom, de la race, de l'apparence) est distinct de l'inscription du compte.
+
+13. **Roadmap** : realise dans `docs/ROADMAP_DONE.md` ; a venir reparti par vague dans `docs/roadmap/` :
    - `docs/roadmap/ROADMAP_TODO_INDEX.md` — Legende, graphe de dependances, liens vers les vagues
    - `docs/roadmap/ROADMAP_TODO_VAGUE_01.md` … `ROADMAP_TODO_VAGUE_09.md` — Taches par priorite (vagues 1-6 terminees, vague 7 = prochaine)
    - `docs/ROADMAP_TODO.md` — Point d'entree (liens vers l'index et les vagues) ; l'admin `/admin/roadmap` **agrege** index + 9 vagues par defaut, avec **sous-onglets** (`?part=index`, `vague_1` … `vague_9`, ou `all`) pour n'afficher qu'un fichier
    - Quand une tache est **implementee**, elle est **retiree** du fichier de vague concerne et **ajoutee** a `ROADMAP_DONE.md`
    - Plan annexe controle de cite : `docs/roadmap/PLAN_GUILD_CITY_CONTROL.md` — jalons **GCC-01** a **GCC-20** (ancre Vague 4 dans `ROADMAP_TODO_VAGUE_04.md`)
 
-13. **Versioning automatique** : la version affichee dans le jeu (`app_version`) est geree dynamiquement par `VersionExtension` :
+14. **Versioning automatique** : la version affichee dans le jeu (`app_version`) est geree dynamiquement par `VersionExtension` :
    - **Dev** : resolue via `git describe --tags --always --dirty` (ex: `0.6.0-alpha-12-gabcdef`)
    - **Prod** : lue depuis l'env var `APP_VERSION` injectee au build Docker par Semantic Release
    - **Fallback** : parametre statique `app.version` dans `config/services.yaml`
