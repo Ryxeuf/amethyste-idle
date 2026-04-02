@@ -87,12 +87,15 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-03 — Couverture de code dans la CI `S`
+### ~~TST-03 — Couverture de code dans la CI `S`~~ ✅
 
 - **Prerequis** : ∅
 - **Fichier** : `.github/workflows/ci.yml` (job `tests`)
 - **Action** : modifier la commande PHPUnit pour generer `--coverage-clover coverage.xml --coverage-text`
 - **Verification** : le job CI affiche le pourcentage de couverture
+- [x] PHPUnit lance avec `--coverage-clover coverage.xml --coverage-text`
+- [x] Rapport de couverture uploade en artifact (retention 30 jours)
+- [x] Pourcentage de couverture affiche dans les logs CI
 
 ---
 
@@ -305,7 +308,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 |-------|-------|--------|--------|
 | 1 | **TST-01** Schema + fixtures CI | S | Debloque tout le reste |
 | 2 | **TST-02** Smoke tests routes | S | Attrape les erreurs 500 |
-| 3 | **TST-03** Couverture de code CI | S | Visibilite sur le non-teste |
+| 3 | ~~**TST-03** Couverture de code CI~~ ✅ | S | Visibilite sur le non-teste |
 | 4 | ~~**TST-04** AbstractIntegrationTestCase~~ ✅ | M | Base pour tous les tests integration |
 | 5 | ~~**TST-05** Integration combat~~ ✅ | L | **Impact maximal** — zone la plus bugguee |
 | 6 | ~~**TST-08** Integration dans CI~~ ✅ | S | Active TST-05 dans le pipeline |

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-01
+> Derniere mise a jour : 2026-04-02
 
 ---
 
@@ -1457,3 +1457,10 @@
 - [x] clearAllEffects en fin de combat
 - [x] Berserk boost degats via SpellApplicator (pipeline complet)
 - [x] Burn reduit degats du porteur (-25%)
+
+## TST-03 — Couverture de code dans la CI (2026-04-02) ✅
+
+> Ajout de la generation et publication du rapport de couverture de code dans le pipeline CI.
+- [x] PHPUnit lance avec `--coverage-clover coverage.xml --coverage-text`
+- [x] Pourcentage de couverture affiche dans les logs CI (`--coverage-text`)
+- [x] Rapport Clover XML uploade en artifact GitHub (retention 30 jours)
