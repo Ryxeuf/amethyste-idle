@@ -13,11 +13,6 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 10)]
 class PlayerRequiredListener
 {
-    private const ALLOWED_ROUTES = [
-        'app_character_create',
-        'app_character_select',
-    ];
-
     private const ALLOWED_PREFIXES = [
         '/game/character',
     ];

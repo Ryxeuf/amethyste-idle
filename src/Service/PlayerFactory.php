@@ -82,15 +82,16 @@ class PlayerFactory
 
     private function getSpawnMap(): Map
     {
+        /** @var \Doctrine\ORM\EntityRepository<Map> $mapRepository */
         $mapRepository = $this->entityManager->getRepository(Map::class);
 
         $village = $mapRepository->findOneBy(['name' => 'Village de Lumière']);
-        if ($village !== null) {
+        if ($village instanceof Map) {
             return $village;
         }
 
         $firstMap = $mapRepository->findOneBy([]);
-        if ($firstMap !== null) {
+        if ($firstMap instanceof Map) {
             return $firstMap;
         }
 

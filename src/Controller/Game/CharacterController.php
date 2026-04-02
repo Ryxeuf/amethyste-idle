@@ -23,14 +23,14 @@ class CharacterController extends AbstractController
         private readonly PlayerFactory $playerFactory,
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        #[Autowire('%app.max_players_per_user%')] private readonly int $maxPlayersPerUser,
     ) {
     }
 
     #[Route('/create', name: 'app_character_create')]
-    public function create(
-        Request $request,
-        #[Autowire('%app.max_players_per_user%')] int $maxPlayersPerUser,
-    ): Response {
+    public function create(Request $request): Response
+    {
+        $maxPlayersPerUser = $this->maxPlayersPerUser;
         /** @var User $user */
         $user = $this->getUser();
 
