@@ -158,16 +158,20 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-07 — Tests integration quetes et progression `M`
+### ~~TST-07 — Tests integration quetes et progression `M`~~ ✅
 
 - **Prerequis** : ← TST-04
 - **Fichiers** : `tests/Integration/Quest/`, `tests/Integration/Progression/`
 - **Quetes** — `QuestProgressionIntegrationTest.php` :
-  - Accepter quete → tuer mob cible → objectif mis a jour → completion → recompense
-  - Quete de collecte → obtenir items → rendre au PNJ → completion
+  - [x] Accepter quete → tuer mob cible → objectif mis a jour → completion → recompense
+  - [x] Tuer mob non-cible → objectif inchange
+  - [x] QuestCompletedEvent dispatch → subscribers repondent
 - **Progression** — `SkillProgressionIntegrationTest.php` :
-  - Gagner XP domaine → niveau domaine augmente → competence deblocable
-  - Apprendre competence materia → equiper materia → sort disponible en combat
+  - [x] Gagner XP domaine → niveau domaine augmente → competence deblocable
+  - [x] Pas assez d'XP → competence non-deblocable
+  - [x] Apprendre competence → XP consommee + stats domaine mises a jour
+  - [x] Flow complet XP → skill → materia
+  - [x] Total used points correct apres multiple acquisitions
 - **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite Integration --filter Quest`
 
 ---

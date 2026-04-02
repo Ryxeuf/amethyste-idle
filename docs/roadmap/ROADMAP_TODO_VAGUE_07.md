@@ -8,11 +8,11 @@
 
 ### Piste A — Testing (sequentiel, reprise du plan TST)
 
-### 104 — Tests integration quetes & progression (M | ★★★) — TST-07
+### ~~104 — Tests integration quetes & progression (M | ★★★) — TST-07~~ ✅
 > Prerequis : ← TST-04 ✅
-- [ ] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense
-- [ ] `SkillProgressionIntegrationTest` : gagner XP domaine → niveau augmente → competence deblocable → materia utilisable
-- [ ] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite Integration --filter Quest`
+- [x] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense
+- [x] `SkillProgressionIntegrationTest` : gagner XP domaine → niveau augmente → competence deblocable → materia utilisable
+- [x] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite Integration --filter Quest`
 
 ### 105 — Stabiliser tests E2E existants (M | ★★) — TST-09
 > Prerequis : ← TST-01 ✅

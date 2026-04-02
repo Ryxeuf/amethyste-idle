@@ -7,6 +7,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\User;
+use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -199,6 +200,18 @@ abstract class AbstractIntegrationTestCase extends KernelTestCase
     protected function refresh(object $entity): void
     {
         $this->em->refresh($entity);
+    }
+
+    /**
+     * Inject a Player into PlayerHelper so services that depend on the
+     * current player work without HTTP/security context.
+     */
+    protected function setCurrentPlayer(Player $player): void
+    {
+        /** @var PlayerHelper $playerHelper */
+        $playerHelper = $this->getService(PlayerHelper::class);
+        $ref = new \ReflectionProperty(PlayerHelper::class, 'player');
+        $ref->setValue($playerHelper, $player);
     }
 
     /**
