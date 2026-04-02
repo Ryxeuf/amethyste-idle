@@ -88,11 +88,11 @@
 - [ ] Persistance en DB (derniers 50 par joueur)
 - [ ] Notifications push via Mercure SSE
 
-### 115 — Journal de bord joueur (S | ★★)
+### 115 — Journal de bord joueur (S | ★★) ✅
 > Prerequis : ∅
-- [ ] Page `/game/journal` : historique chronologique des evenements du joueur
-- [ ] Entrees automatiques : combats, quetes, decouvertes, craft, niveau domaine
-- [ ] Filtrage par type d'evenement
-- [ ] Limite : 200 entrees par joueur (rotation)
+- [x] Page `/game/journal` : historique chronologique des evenements du joueur
+- [x] Entrees automatiques : combats, quetes, decouvertes, craft, niveau domaine
+- [x] Filtrage par type d'evenement
+- [x] Limite : 200 entrees par joueur (rotation)
 
 ---
