@@ -43,7 +43,7 @@ class PlayerActionsProvider
     private function addGearMateria(PlayerItem $item): iterable
     {
         foreach ($item->getSlots() as $slot) {
-            if ($slot->getItemSet() && $slot->getItemSet()->getGenericItem()->getSpell()) {
+            if ($slot->getItemSet()->getGenericItem()->getSpell()) {
                 yield new Materia($slot->getItemSet());
             }
         }

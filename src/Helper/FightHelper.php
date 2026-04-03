@@ -14,26 +14,25 @@ class FightHelper
     {
     }
 
-    /**
-     * @return object|CharacterInterface|null
-     */
     public function getTarget(Fight $fight): ?CharacterInterface
     {
-        if (!$targetClass = $this->getTargetClass($fight)) {
+        $targetType = $fight->getMetadataValue('targetType');
+        $targetId = $fight->getMetadataValue('target');
+
+        if ($targetType === null || $targetId === null) {
             return null;
         }
 
-        return $this->entityManager->getRepository($targetClass)->find($fight->target);
-    }
-
-    private function getTargetClass(Fight $fight): ?string
-    {
-        $targetClass = match ($fight->targetType) {
+        $targetClass = match ($targetType) {
             'mob' => Mob::class,
             'player' => Player::class,
             default => null,
         };
 
-        return $targetClass;
+        if ($targetClass === null) {
+            return null;
+        }
+
+        return $this->entityManager->getRepository($targetClass)->find($targetId);
     }
 }

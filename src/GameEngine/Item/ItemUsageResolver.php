@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Item;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\CharacterInterface;
 use App\Event\Fight\ItemUsedEvent;
@@ -34,7 +35,7 @@ class ItemUsageResolver implements EventSubscriberInterface
         }
 
         if ($spell = $this->itemHelper->getItemSpell($item)) {
-            $modifiers = $this->itemHelper->getItemSpellModifiers($item, $sender);
+            $modifiers = $this->itemHelper->getItemSpellModifiers($item, $sender instanceof Player ? $sender : null);
             $this->spellApplicator->apply($spell, $sender, $target, $modifiers);
         } elseif ($skill = $this->itemHelper->getItemSkillLearning($item)) {
             $this->skillAcquiring->acquireSkill($skill);

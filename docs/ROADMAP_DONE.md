@@ -31,6 +31,14 @@
 - [x] File d'attente de craft : input quantite (1-99) avec boutons +/-/Max, craft en lot via API JSON, feedback toast
 - [x] Timer reset quetes quotidiennes : compte a rebours visible dans l'onglet Quotidiennes ("Prochain reset : HHhMMmSSs")
 
+### 108 — PHPStan niveau 6 + reduction baseline (TST-12) ✅
+> Passage de PHPStan level 5 → 6. Correction de toutes les erreurs reelles du baseline.
+- [x] Suppression de 9 services injectes non utilises (`property.onlyWritten`)
+- [x] Correction de 17+ verifications `nullCoalesce.offset/expr` inutiles
+- [x] Correction erreurs `alwaysTrue`, `alwaysFalse`, `property.notFound`, `argument.type`, `method.unused`, `varTag`
+- [x] Passage du niveau PHPStan de 5 a 6
+- [x] Baseline regenere : 0 erreurs reelles, 499 erreurs `missingType.*` (typage iterables/generics a corriger progressivement)
+
 ### 109 — Mutation testing avec Infection PHP (TST-13) ✅
 > Mise en place du mutation testing sur les calculateurs de combat pour mesurer l'efficacite des tests.
 - [x] Installation d'Infection PHP (`infection/infection`)

@@ -36,7 +36,7 @@
 > Prerequis : ∅
 - [x] Corriger erreurs `property.onlyWritten` et `nullCoalesce.offset`
 - [x] Passer le niveau de 5 a 6
-- [x] Baseline regenere (erreurs reelles corrigees, restant = annotations types generiques)
+- [x] Baseline regenere : 0 erreurs reelles, 499 `missingType.*` en baseline (typage iterables/generics)
 
 ### ~~109 — Mutation testing avec Infection PHP (M | ★★) — TST-13~~ ✅
 > Prerequis : ← TST-05 ✅

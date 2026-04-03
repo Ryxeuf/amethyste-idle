@@ -33,7 +33,7 @@
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
 | **Plan Testing (TST)** | **10/15** | **5 taches restantes** |
-| **Vague 7 — Qualite, stabilisation & fondations UX** | **1/16** | **Prochaine priorite** |
+| **Vague 7 — Qualite, stabilisation & fondations UX** | **5/16** | **Prochaine priorite** |
 | **Vague 8 — Contenu critique** | **0/9** | **Priorite haute** |
 | **Vague 9 — Economie & social** | **0/10** | **A venir** |
 | **Vague 10 — Monde vivant & endgame** | **0/8** | **Long terme** |
@@ -48,8 +48,8 @@ PLAN TESTING (restant)
   TST-09 Stabiliser E2E                 ← TST-01
   TST-10 Nouveaux tests E2E             ← TST-09
   TST-11 Reactiver E2E dans CI          ← TST-09
-  TST-12 PHPStan niveau 6               ∅
-  TST-13 Mutation testing (Infection)    ← TST-05 ✅
+  ✅ TST-12 PHPStan niveau 6               ∅
+  ✅ TST-13 Mutation testing (Infection)    ← TST-05
 
 VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   ┌─ Piste A — Testing (TST restants)
@@ -57,8 +57,8 @@ VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   │   105 TST-09 Stabiliser E2E         ← TST-01 ✅
   │   106 TST-10 Nouveaux tests E2E     ← 105
   │   107 TST-11 E2E dans CI            ← 105
-  │   108 TST-12 PHPStan niveau 6       ∅
-  │   109 TST-13 Mutation testing       ← TST-05 ✅ ✅
+  │   108 TST-12 PHPStan niveau 6       ∅  ✅
+  │   109 TST-13 Mutation testing       ← TST-05 ✅
   │
   ├─ Piste B — Stabilite & polish (‖)
   │   110 Correction bugs connus        ∅

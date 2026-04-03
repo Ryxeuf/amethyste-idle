@@ -50,13 +50,11 @@ class PlayerSkillTransformer extends AbstractSkillTransformer
     protected function setRequirements(SkillModel $output, SkillEntity $skill): void
     {
         $player = $this->playerHelper->getPlayer();
-        if ($skill->getRequirements()) {
-            foreach ($skill->getRequirements() as $requirement) {
-                $model = new SkillPlayer($requirement);
-                $model->acquired = $player->hasSkill($requirement);
-                $output->requirements[] = $model;
-                $output->requirementIds[] = $requirement->getId();
-            }
+        foreach ($skill->getRequirements() as $requirement) {
+            $model = new SkillPlayer($requirement);
+            $model->acquired = $player->hasSkill($requirement);
+            $output->requirements[] = $model;
+            $output->requirementIds[] = $requirement->getId();
         }
     }
 }

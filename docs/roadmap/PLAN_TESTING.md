@@ -16,7 +16,7 @@
 | Tests E2E | 5 (desactives) | Flux utilisateur non valides |
 | Tests JS/frontend | 0 | PixiJS, Stimulus, Turbo non testes |
 | Couverture code | Non tracee | Impossible de voir le code non teste |
-| PHPStan baseline | 313 erreurs masquees | Bugs de types caches |
+| PHPStan baseline | ~~313 erreurs masquees~~ 499 `missingType` (level 6) | Types iterables a annoter |
 
 **Diagnostic** : la CI valide que chaque brique fonctionne seule, mais jamais que le jeu fonctionne quand les briques s'assemblent.
 
@@ -43,7 +43,7 @@ JALON 3 — E2E (TST-09 a TST-11)
   TST-11 Reactiver E2E dans CI           ← TST-09
 
 JALON 4 — Analyse statique (TST-12 a TST-13)
-  TST-12 PHPStan niveau 6 + baseline     ∅
+  ✅ TST-12 PHPStan niveau 6 + baseline     ∅
   TST-13 Mutation testing (Infection)    ← TST-05
 
 JALON 5 — Prevention proactive (TST-14 a TST-15)
@@ -240,12 +240,13 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 - **Prerequis** : ∅
 - **Fichiers** : `phpstan.neon`, `phpstan-baseline.neon`
 - [x] Corriger erreurs `property.onlyWritten` du baseline (10 services inutilises supprimes)
-- [x] Corriger erreurs `nullCoalesce.offset` et `nullCoalesce.expr` (17 corrections dans MapApiController + autres)
+- [x] Corriger erreurs `nullCoalesce.offset` et `nullCoalesce.expr` (17+ verifications inutiles)
 - [x] Corriger erreurs `argument.type` (ItemHelper, ItemHitResolver — CharacterInterface → Player)
+- [x] Corriger erreurs `alwaysTrue`, `alwaysFalse`, `property.notFound`
 - [x] Supprimer code mort (PriorityQueue::getPosition, PlayerSpellHandler::$gearHelper)
 - [x] Corriger FightCleaner @var tag, MateriaFusionManager comparison
 - [x] Passer le niveau de 5 a 6
-- [x] Regenerer le baseline
+- [x] Baseline regenere : 0 erreurs reelles, 499 erreurs `missingType.*` (typage iterables/generics)
 - **Verification** : `docker compose exec php vendor/bin/phpstan analyse` passe au niveau 6
 
 ---
@@ -321,7 +322,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 4 | ~~**TST-04** AbstractIntegrationTestCase~~ ✅ | M | Base pour tous les tests integration |
 | 5 | ~~**TST-05** Integration combat~~ ✅ | L | **Impact maximal** — zone la plus bugguee |
 | 6 | ~~**TST-08** Integration dans CI~~ ✅ | S | Active TST-05 dans le pipeline |
-| 7 | **TST-12** PHPStan niveau 6 | M | Bugs de types detectes statiquement |
+| 7 | ~~**TST-12** PHPStan niveau 6~~ ✅ | M | Bugs de types detectes statiquement |
 | 8 | ~~**TST-06** Integration status effects~~ ✅ | M | Complemente TST-05 |
 | 9 | **TST-07** Integration quetes/progression | M | Autre source majeure de bugs |
 | 10 | **TST-09** Stabiliser E2E | M | Flux utilisateur reel |
