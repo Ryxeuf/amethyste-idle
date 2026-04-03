@@ -1825,6 +1825,25 @@ a.materia-slots-counter--link:hover {
 }
 .toast-close:hover { opacity: 1; }
 
+.toast-celebration {
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.95), rgba(124, 58, 237, 0.9));
+  border-color: rgba(196, 181, 253, 0.5);
+  color: #ede9fe;
+  box-shadow: 0 4px 24px rgba(124, 58, 237, 0.4), 0 0 0 1px rgba(196, 181, 253, 0.2);
+}
+.toast-celebration .toast-icon { color: #fbbf24; }
+.toast-celebration .toast-message { font-weight: 700; }
+
+.toast-celebration.toast-enter {
+  animation: toast-celebration-in 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
+@keyframes toast-celebration-in {
+  0% { opacity: 0; transform: translateX(100%) scale(0.8); }
+  60% { opacity: 1; transform: translateX(-4%) scale(1.05); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
 /* Landscape orientation compact mode */
 @media (max-height: 500px) and (orientation: landscape) {
   .game-bottom-nav {

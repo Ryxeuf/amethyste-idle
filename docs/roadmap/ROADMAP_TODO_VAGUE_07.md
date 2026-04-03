@@ -117,12 +117,12 @@
 - [ ] Boss health bar (barre rouge en haut d'ecran avec nom du boss)
 - [ ] Notification synergie elementaire ("SYNERGIE : +50% degats")
 
-### 138 — Feedback progression & celebrations (S | ★★)
+### ~~138 — Feedback progression & celebrations (S | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Popup "Competence debloquee !" quand un palier de domaine est atteint
-- [ ] Banniere "Succes debloque" avec animation pour les achievements
-- [ ] Toast d'animation craft reussi avec XP gagnee
-- [ ] Notification visuelle Mercure quand un joueur proche atteint un palier
+- [x] Popup "Competence debloquee !" quand un palier de domaine est atteint
+- [x] Banniere "Succes debloque" avec animation pour les achievements
+- [x] Toast d'animation craft reussi avec XP gagnee
+- [x] Notification visuelle Mercure quand un joueur proche atteint un palier
 
 ### 139 — Comparaison d'equipement & QoL inventaire (S | ★★)
 > Prerequis : ∅

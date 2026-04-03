@@ -1,11 +1,18 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-02
+> Derniere mise a jour : 2026-04-03
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 138 — Feedback progression & celebrations ✅
+> Notifications et toasts celebratoires pour les evenements de progression du joueur.
+- [x] Popup "Competence debloquee !" quand un palier de domaine est atteint (DomainLevelUpEvent + notification Mercure)
+- [x] Banniere "Succes debloque" avec animation celebration (toast type `celebration` avec style violet/dore)
+- [x] Toast craft reussi avec XP gagnee (notification `craft_success` via CraftEvent)
+- [x] Notification visuelle Mercure pour les achievements et level-ups (mapping type-aware dans notification_center_controller)
 
 ### 139 — Comparaison d'equipement & QoL inventaire (partiel) ✅
 > Tooltip de comparaison avec delta stats sur les items d'equipement disponibles.
