@@ -16,6 +16,7 @@ use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Integration tests: SpotHarvestEvent triggers DomainExperienceEvolver
@@ -47,6 +48,7 @@ class SpotHarvestEventIntegrationTest extends TestCase
             $this->entityManager,
             $this->gameEventBonusProvider,
             $this->playerHelper,
+            $this->createMock(EventDispatcherInterface::class),
         );
         $this->questCollectTracker = new QuestCollectTrackingListener(
             $this->playerQuestUpdater,
@@ -69,6 +71,7 @@ class SpotHarvestEventIntegrationTest extends TestCase
         $domain = $this->createMock(Domain::class);
         $domainExperience = $this->createMock(\App\Entity\App\DomainExperience::class);
         $domainExperience->method('getTotalExperience')->willReturn(10);
+        $domainExperience->method('getLevel')->willReturn(1);
         $domainExperience->expects($this->once())
             ->method('setTotalExperience')
             ->with(11);
