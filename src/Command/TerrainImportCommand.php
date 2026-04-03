@@ -158,7 +158,7 @@ class TerrainImportCommand extends Command
         $walkableCells = 0;
         $wallCells = 0;
         $tilesetCount = count($map['terrains']);
-        $objectCount = count($map['objects'] ?? []);
+        $objectCount = count($map['objects']);
 
         // Count layers from a sample cell
         $layerCount = 0;
@@ -166,7 +166,7 @@ class TerrainImportCommand extends Command
             foreach ($col as $cell) {
                 $layerCount = max($layerCount, count($cell['layers'] ?? []));
                 ++$totalCells;
-                $movement = $cell['mouvement'] ?? 0;
+                $movement = $cell['mouvement'];
                 if ($movement === -1) {
                     ++$wallCells;
                 } else {

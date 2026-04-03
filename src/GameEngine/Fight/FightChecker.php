@@ -24,9 +24,9 @@ class FightChecker
     {
         if (is_int($fight)) {
             $fight = $this->fightRepository->findWithRelations($fight);
-        }
-        if ($fight === null) {
-            throw new EntityNotFoundException();
+            if ($fight === null) {
+                throw new EntityNotFoundException();
+            }
         }
         $player = $this->playerHelper->getPlayer();
         if ($fight !== $player->getFight()) {

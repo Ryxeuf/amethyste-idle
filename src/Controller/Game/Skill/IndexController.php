@@ -88,22 +88,19 @@ class IndexController extends AbstractController
         $output = new PlayerDomain($domain);
         $domainExperience = $this->playerDomainHelper->getDomainExperience($domain);
 
-        if ($domainExperience !== null) {
-            foreach ($domainExperience->getDomain()->getSkills() as $skill) {
-                if ($playerSkillOutput = $this->playerSkillDataTransformer->transform($skill)) {
-                    $playerSkillOutput->acquired = $this->skillHelper->hasSkill($skill);
-                    $playerSkillOutput->canBeAcquired = $this->skillHelper->canAcquireSkill($skill);
+        foreach ($domainExperience->getDomain()->getSkills() as $skill) {
+            $playerSkillOutput = $this->playerSkillDataTransformer->transform($skill);
+            $playerSkillOutput->acquired = $this->skillHelper->hasSkill($skill);
+            $playerSkillOutput->canBeAcquired = $this->skillHelper->canAcquireSkill($skill);
 
-                    $output->skills[] = $playerSkillOutput;
-                }
-            }
-
-            $output->availableExperience = $domainExperience->getAvailableExperience();
-            $output->totalExperience = $domainExperience->getTotalExperience();
-            $output->damage = $domainExperience->getDamage();
-            $output->hit = $domainExperience->getHit();
-            $output->critical = $domainExperience->getCritical();
+            $output->skills[] = $playerSkillOutput;
         }
+
+        $output->availableExperience = $domainExperience->getAvailableExperience();
+        $output->totalExperience = $domainExperience->getTotalExperience();
+        $output->damage = $domainExperience->getDamage();
+        $output->hit = $domainExperience->getHit();
+        $output->critical = $domainExperience->getCritical();
 
         return $output;
     }

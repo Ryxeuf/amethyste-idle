@@ -77,12 +77,13 @@ class MateriaFusionManager
         if ($element1 === $element2) {
             $level1 = $materia1->getMateriaLevel();
             $level2 = $materia2->getMateriaLevel();
-            $newLevel = min(5, max($level1, $level2) + 1);
 
-            // Max level is 5 — if both are already level 5, newLevel stays at 5 (no upgrade)
-            if ($newLevel <= max($level1, $level2)) {
+            // Max level is 5 — cannot fuse if both are already at max
+            if (max($level1, $level2) >= 5) {
                 return false;
             }
+
+            $newLevel = min(5, max($level1, $level2) + 1);
 
             $resultSlug = $this->getSameElementResultSlug($element1->value, $newLevel);
 

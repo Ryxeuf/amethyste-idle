@@ -135,7 +135,7 @@ class GatheringManager
         $level = 0;
         foreach ($player->getDomainExperiences() as $domainExperience) {
             $domain = $domainExperience->getDomain();
-            if ($domain && str_contains(strtolower($domain->getTitle()), $type)) {
+            if (str_contains(strtolower($domain->getTitle()), $type)) {
                 // Convert total XP to an approximate level
                 $level += intdiv($domainExperience->getTotalExperience(), 100);
             }

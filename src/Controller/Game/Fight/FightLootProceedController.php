@@ -39,16 +39,12 @@ class FightLootProceedController extends AbstractController
         $fightId = $data['fightId'];
         $items = $data['items'];
 
-        /** @var Fight $fight */
         $fight = $this->entityManager->getRepository(Fight::class)->find($fightId);
-        if (!$fight) {
+        if (!$fight instanceof Fight) {
             return new JsonResponse(['error' => 'Fight not found'], Response::HTTP_NOT_FOUND);
         }
 
         $player = $this->playerHelper->getPlayer();
-        if (!$player) {
-            return new JsonResponse(['error' => 'Player not found'], Response::HTTP_NOT_FOUND);
-        }
 
         // Détacher ce joueur du combat
         $player->setFight(null);

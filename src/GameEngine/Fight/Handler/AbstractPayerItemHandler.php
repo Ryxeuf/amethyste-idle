@@ -46,8 +46,13 @@ abstract class AbstractPayerItemHandler implements PlayerActionHandlerInterface
 
     protected function getItem(Fight $fight): PlayerItem
     {
-        /** @var PlayerItem $item */
-        if (!$item = $this->entityManager->getRepository(PlayerItem::class)->find($fight->item)) {
+        $itemId = $fight->getMetadataValue('item');
+        if ($itemId === null) {
+            throw new EntityNotFoundException('Objet inconnu');
+        }
+
+        $item = $this->entityManager->getRepository(PlayerItem::class)->find($itemId);
+        if (!$item) {
             throw new EntityNotFoundException('Objet inconnu');
         }
 

@@ -9,21 +9,17 @@ class AbstractSkillTransformer
 {
     protected function setRequirements(SkillModel $output, SkillEntity $skill): void
     {
-        if ($skill->getRequirements()) {
-            foreach ($skill->getRequirements() as $requirement) {
-                $output->requirements[] = new SkillModel($requirement);
-                $output->requirementIds[] = $requirement->getId();
-            }
+        foreach ($skill->getRequirements() as $requirement) {
+            $output->requirements[] = new SkillModel($requirement);
+            $output->requirementIds[] = $requirement->getId();
         }
     }
 
     protected function setAchievements(SkillModel $output, SkillEntity $skill): void
     {
-        if ($skill->getAchievements()) {
-            foreach ($skill->getAchievements() as $achievement) {
-                $output->achievements[] = new SkillModel($achievement);
-                $output->achievementIds[] = $achievement->getId();
-            }
+        foreach ($skill->getAchievements() as $achievement) {
+            $output->achievements[] = new SkillModel($achievement);
+            $output->achievementIds[] = $achievement->getId();
         }
     }
 }

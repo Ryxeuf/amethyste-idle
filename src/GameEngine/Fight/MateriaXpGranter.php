@@ -43,7 +43,7 @@ class MateriaXpGranter implements EventSubscriberInterface
         }
 
         $monster = $mob->getMonster();
-        $monsterLevel = $monster->getLevel() ?? 1;
+        $monsterLevel = $monster->getLevel();
         $xpGain = self::BASE_XP_PER_KILL * $monsterLevel;
 
         if ($monster->isBoss()) {

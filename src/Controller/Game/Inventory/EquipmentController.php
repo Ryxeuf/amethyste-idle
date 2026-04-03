@@ -71,7 +71,7 @@ class EquipmentController extends AbstractController
         foreach ($allToolSlots as $toolType) {
             $toolSlots[$toolType] = [
                 'equipped' => $this->gearHelper->getEquippedToolByType($toolType),
-                'label' => Item::TOOL_TYPE_LABELS[$toolType] ?? $toolType,
+                'label' => Item::TOOL_TYPE_LABELS[$toolType],
             ];
         }
 

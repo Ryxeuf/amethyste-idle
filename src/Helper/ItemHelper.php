@@ -4,7 +4,6 @@ namespace App\Helper;
 
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
-use App\Entity\CharacterInterface;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
@@ -51,7 +50,7 @@ class ItemHelper implements ResetInterface
             $this->spells[$item->getId()] = $spell;
         } elseif ($item->getEffect()) {
             $effect = json_decode($item->getEffect(), true, 512, JSON_THROW_ON_ERROR);
-            if (ItemEffectEncoder::ACTION_USE_SPELL === $effect['action'] ?? false) {
+            if (ItemEffectEncoder::ACTION_USE_SPELL === ($effect['action'] ?? false)) {
                 if ($spell = $this->entityManager->getRepository(Spell::class)->findOneBy(['slug' => $effect['slug']])) {
                     $this->spells[$item->getId()] = $spell;
                 }
@@ -69,7 +68,7 @@ class ItemHelper implements ResetInterface
         }
         if ($item->getEffect()) {
             $effect = json_decode($item->getEffect(), true, 512, JSON_THROW_ON_ERROR);
-            if (ItemEffectEncoder::ACTION_LEARN_SKILL === $effect['action'] ?? false) {
+            if (ItemEffectEncoder::ACTION_LEARN_SKILL === ($effect['action'] ?? false)) {
                 if ($skill = $this->entityManager->getRepository(Skill::class)->findOneBy(['slug' => $effect['slug']])) {
                     $this->skills[$item->getId()] = $skill;
                 }
@@ -89,7 +88,7 @@ class ItemHelper implements ResetInterface
         return null;
     }
 
-    public function getItemSpellModifiers(Item $item, ?CharacterInterface $character = null): array
+    public function getItemSpellModifiers(Item $item, ?Player $character = null): array
     {
         $modifiers = [
             'hit' => 0,
