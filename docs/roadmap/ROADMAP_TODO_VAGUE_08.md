@@ -8,14 +8,14 @@
 
 ### Piste A — Bestiaire (sequentiel)
 
-### 140 — Monstres tier 1 manquants (M | ★★★)
+### ~~140 — Monstres tier 1 manquants (M | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] 10 monstres niveaux 1-15 : slime, goblin, spider, wolf, bat, snake, scorpion, beetle, mushroom_golem, ghost
-- [ ] Stats, resistances elementaires et faiblesses par monstre
-- [ ] Loot tables specifiques (materiaux, consommables, equipements communs)
-- [ ] Patterns IA basiques (agressif, defensif, fuyard)
-- [ ] Placement dans les zones existantes (Plaine, Foret, Marais)
-- [ ] Correction des references d'achievements vers les monstres manquants
+- [x] 10 monstres niveaux 1-15 : slime, goblin, spider, wolf, bat, snake, scorpion, beetle, mushroom_golem, ghost
+- [x] Stats, resistances elementaires et faiblesses par monstre
+- [x] Loot tables specifiques (materiaux, consommables, equipements communs)
+- [x] Patterns IA basiques (agressif, defensif, fuyard)
+- [x] Placement dans les zones existantes (Plaine, Foret, Marais)
+- [x] Correction des references d'achievements vers les monstres manquants
 
 ### 141 — Monstres tier 2-3 & boss manquants (M | ★★★)
 > Prerequis : ← 140
