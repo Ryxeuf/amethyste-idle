@@ -239,7 +239,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 - **Prerequis** : ∅
 - **Fichiers** : `phpstan.neon`, `phpstan-baseline.neon`
-- [x] Corriger erreurs `property.onlyWritten` du baseline (9 services injectes inutilises supprimes)
+- [x] Corriger erreurs `property.onlyWritten` du baseline (10 services inutilises supprimes)
 - [x] Corriger erreurs `nullCoalesce.offset` et `nullCoalesce.expr` (17+ verifications inutiles)
 - [x] Corriger erreurs `argument.type` (ItemHelper, ItemHitResolver — CharacterInterface → Player)
 - [x] Corriger erreurs `alwaysTrue`, `alwaysFalse`, `property.notFound`

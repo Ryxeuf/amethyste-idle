@@ -32,7 +32,7 @@ class ItemHitResolver
 
         $domainExperience = null;
         if ($domain = $item->getDomain()) {
-            if ($domainExperience = $this->playerDomainHelper->getDomainExperience($domain, $sender instanceof Player ? $sender : null)) {
+            if ($sender instanceof Player && $domainExperience = $this->playerDomainHelper->getDomainExperience($domain, $sender)) {
                 $chances += $domainExperience->getHit();
             }
         }
