@@ -2,12 +2,12 @@
 
 namespace App\Tests\E2E;
 
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Component\Panther\PantherTestCase;
 
+#[Group('e2e')]
 abstract class AbstractE2ETestCase extends PantherTestCase
 {
     /** Default timeout in seconds for wait operations. */
