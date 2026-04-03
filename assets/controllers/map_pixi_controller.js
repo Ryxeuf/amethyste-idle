@@ -609,7 +609,7 @@ export default class extends Controller {
 
         for (const p of data.players) {
             if (p.self) continue;
-            this._createEntitySprite('player', p.id, p.x, p.y, p.spriteKey, p.name, { name: p.name });
+            this._createEntitySprite('player', p.id, p.x, p.y, p.spriteKey, p.name, { name: p.name, playerId: p.id });
         }
 
         for (const mob of data.mobs) {
@@ -2246,7 +2246,8 @@ export default class extends Controller {
         const color = colors[type] || '#f0e6d2';
 
         if (type === 'player') {
-            return `<span style="color:${color}">${icon} ${this._escHtml(meta.name || '???')}</span>`;
+            const profileUrl = meta.playerId ? `/game/player/${meta.playerId}/profile` : '#';
+            return `<a href="${profileUrl}" style="color:${color};text-decoration:none" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${icon} ${this._escHtml(meta.name || '???')}</a>`;
         }
         if (type === 'mob') {
             const lvl = meta.level ? ` <span style="color:#aaa;font-size:8px">Nv.${meta.level}</span>` : '';
@@ -2318,7 +2319,13 @@ export default class extends Controller {
 
         if (iconEl) iconEl.textContent = icon;
         if (nameEl) nameEl.textContent = name;
-        if (detailEl) detailEl.textContent = detail;
+        if (detailEl) {
+            if (typeof detail === 'string' && detail.includes('<')) {
+                detailEl.innerHTML = detail;
+            } else {
+                detailEl.textContent = detail;
+            }
+        }
 
         // Update border color based on entity type
         if (inner) {
@@ -2364,6 +2371,11 @@ export default class extends Controller {
             const entry = this._entitySprites[key];
             if (!entry) continue;
 
+            if (entry.type === 'player') {
+                const profileUrl = entry.meta?.playerId ? `/game/player/${entry.meta.playerId}/profile` : null;
+                this._showMobileBanner('👤', entry.meta?.name || '???', profileUrl ? `<a href="${profileUrl}" class="text-blue-400 underline">Voir le profil</a>` : 'Joueur', 'border-blue-500/50');
+                return;
+            }
             if (entry.type === 'harvest') {
                 const spot = entry.spotData || entry.meta;
                 const toolLabels = {

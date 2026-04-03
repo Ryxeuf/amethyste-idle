@@ -33,6 +33,9 @@ class PlayerAchievement
     #[ORM\Column(name: 'completed_at', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $completedAt = null;
 
+    #[ORM\Column(name: 'featured', type: 'boolean', options: ['default' => false])]
+    private bool $featured = false;
+
     public function getId(): int
     {
         return $this->id;
@@ -89,5 +92,17 @@ class PlayerAchievement
     public function isCompleted(): bool
     {
         return null !== $this->completedAt;
+    }
+
+    public function isFeatured(): bool
+    {
+        return $this->featured;
+    }
+
+    public function setFeatured(bool $featured): self
+    {
+        $this->featured = $featured;
+
+        return $this;
     }
 }

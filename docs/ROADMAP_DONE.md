@@ -1531,3 +1531,13 @@
 - [x] Evenement `AchievementCompletedEvent` dispatche depuis `AchievementTracker`
 - [x] Twig extension `notification_unread_count()` pour le badge global
 - [x] Migration PostgreSQL (upgrade table existante)
+
+## 120 — Profil public joueur (2026-04-03) ✅
+
+> Page profil enrichie avec equipement visible, succes en vedette (showcase top 5), et liens depuis la carte.
+- [x] Equipement visible sur le profil (items equipes avec rarete et icones par slot)
+- [x] Systeme de succes en vedette : champ `featured` sur PlayerAchievement, toggle via API, max 5
+- [x] Stimulus controller `profile_achievement_toggle` pour gerer le toggle cote client
+- [x] Lien "Voir le profil" depuis la carte PixiJS (tooltip desktop cliquable, banner mobile)
+- [x] Migration PostgreSQL (ajout colonne `featured` a `player_achievements`)
+- [x] Tests fonctionnels (show profil, toggle featured, limite max)
