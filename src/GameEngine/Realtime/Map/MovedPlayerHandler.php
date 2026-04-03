@@ -5,7 +5,6 @@ namespace App\GameEngine\Realtime\Map;
 use App\Entity\App\Player;
 use App\Event\Map\PlayerMovedEvent;
 use App\Helper\PlayerHelper;
-use App\Transformer\CellModelTransformer;
 use App\Transformer\PlayerInfosTransformer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
@@ -15,9 +14,8 @@ class MovedPlayerHandler extends MovedHandler
     public function __construct(
         HubInterface $publisher,
         private readonly PlayerInfosTransformer $playerInfosTransformer,
-        private readonly CellModelTransformer $cellModelTransformer,
         private readonly PlayerHelper $playerHelper,
-        private readonly LoggerInterface $logger,
+        LoggerInterface $logger,
     ) {
         parent::__construct($publisher, $logger);
     }

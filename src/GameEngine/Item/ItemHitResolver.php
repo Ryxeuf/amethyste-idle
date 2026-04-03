@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Item;
 
+use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Item;
 use App\Helper\ItemHelper;
@@ -31,7 +32,7 @@ class ItemHitResolver
 
         $domainExperience = null;
         if ($domain = $item->getDomain()) {
-            if ($domainExperience = $this->playerDomainHelper->getDomainExperience($domain, $sender)) {
+            if ($sender instanceof Player && $domainExperience = $this->playerDomainHelper->getDomainExperience($domain, $sender)) {
                 $chances += $domainExperience->getHit();
             }
         }

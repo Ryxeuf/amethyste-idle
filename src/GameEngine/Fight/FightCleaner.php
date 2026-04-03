@@ -22,8 +22,8 @@ class FightCleaner implements EventSubscriberInterface
 
     public function removeFight(FightLootedEvent $event)
     {
-        /** @var Fight $fight */
-        if ($fight = $this->entityManager->getRepository(Fight::class)->find($event->getFightId())) {
+        $fight = $this->entityManager->getRepository(Fight::class)->find($event->getFightId());
+        if ($fight instanceof Fight) {
             foreach ($fight->getMobs() as $mob) {
                 foreach ($mob->getItems() as $item) {
                     $this->entityManager->remove($item);

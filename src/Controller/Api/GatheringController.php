@@ -5,7 +5,6 @@ namespace App\Controller\Api;
 use App\Entity\App\Mob;
 use App\Entity\App\ObjectLayer;
 use App\Entity\Game\Item;
-use App\GameEngine\Gathering\GatheringManager;
 use App\GameEngine\Gathering\ToolDurabilityManager;
 use App\GameEngine\Job\ButcheringManager;
 use App\GameEngine\Job\FishingManager;
@@ -28,7 +27,6 @@ class GatheringController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
-        private readonly GatheringManager $gatheringManager,
         private readonly ToolDurabilityManager $toolDurabilityManager,
         private readonly FishingManager $fishingManager,
         private readonly ButcheringManager $butcheringManager,

@@ -7,6 +7,16 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 108 — PHPStan niveau 6 + reduction baseline ✅ (TST-12)
+> Passage de PHPStan niveau 5 a 6 avec correction des erreurs reelles du baseline.
+- [x] Suppression de 10 services injectes mais jamais utilises (`property.onlyWritten`)
+- [x] Correction de 17 null coalescing inutiles (`nullCoalesce.offset` / `nullCoalesce.expr`) dans MapApiController et autres
+- [x] Correction des erreurs de type (`argument.type`) dans ItemHelper et ItemHitResolver
+- [x] Suppression de code mort (PriorityQueue::getPosition, PlayerSpellHandler $gearHelper)
+- [x] Fix FightCleaner @var tag, MateriaFusionManager comparaison impossible
+- [x] Passage du niveau PHPStan de 5 a 6
+- [x] Baseline regenere — erreurs restantes = annotations types generiques (niveau 6)
+
 ### 138 — Feedback progression & celebrations ✅
 > Notifications et toasts celebratoires pour les evenements de progression du joueur.
 - [x] Popup "Competence debloquee !" quand un palier de domaine est atteint (DomainLevelUpEvent + notification Mercure)

@@ -10,13 +10,12 @@ use App\Event\Fight\PlayerSpellHitEvent;
 use App\Event\Fight\PlayerSpellMissEvent;
 use App\GameEngine\Item\ItemUsageResolver;
 use App\Helper\FightHelper;
-use App\Helper\GearHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class PlayerSpellHandler extends AbstractPayerItemHandler
 {
-    public function __construct(GearHelper $gearHelper, EntityManagerInterface $entityManager, FightHelper $fightHelper, private readonly EventDispatcherInterface $eventDispatcher, ItemUsageResolver $itemUsageResolver)
+    public function __construct(EntityManagerInterface $entityManager, FightHelper $fightHelper, private readonly EventDispatcherInterface $eventDispatcher, ItemUsageResolver $itemUsageResolver)
     {
         parent::__construct($entityManager, $fightHelper, $itemUsageResolver);
     }

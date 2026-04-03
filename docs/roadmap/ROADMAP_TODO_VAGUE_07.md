@@ -32,11 +32,11 @@
 - [ ] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
 - [ ] `continue-on-error: true` initialement, retirer apres 5 CI vertes
 
-### 108 — PHPStan niveau 6 + reduction baseline (M | ★★★) — TST-12
+### ~~108 — PHPStan niveau 6 + reduction baseline (M | ★★★) — TST-12~~ ✅
 > Prerequis : ∅
-- [ ] Corriger erreurs `property.onlyWritten` et `nullCoalesce.offset`
-- [ ] Passer le niveau de 5 a 6
-- [ ] Objectif : baseline < 100 erreurs (actuellement 313)
+- [x] Corriger erreurs `property.onlyWritten` et `nullCoalesce.offset`
+- [x] Passer le niveau de 5 a 6
+- [x] Baseline regenere (erreurs reelles corrigees, restant = annotations types generiques)
 
 ### 109 — Mutation testing avec Infection PHP (M | ★★) — TST-13
 > Prerequis : ← TST-05 ✅

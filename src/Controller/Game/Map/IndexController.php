@@ -43,7 +43,7 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('app_game_fight');
         }
 
-        $coordinates = $player->getCoordinates() ?? '0.0';
+        $coordinates = $player->getCoordinates();
         [$x, $y] = array_map('intval', explode('.', $coordinates));
 
         return $this->render('game/map/index.html.twig', [

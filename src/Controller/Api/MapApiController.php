@@ -142,14 +142,14 @@ class MapApiController extends AbstractController
         $map = $player->getMap();
         $radius = $request->query->getInt('radius', 0);
 
-        $pCoords = explode('.', $player->getCoordinates() ?? '0.0');
-        $px = (int) ($pCoords[0] ?? 0);
+        $pCoords = explode('.', $player->getCoordinates());
+        $px = (int) $pCoords[0];
         $py = (int) ($pCoords[1] ?? 0);
 
         $players = [];
         foreach ($this->entityManager->getRepository(Player::class)->findBy(['map' => $map]) as $p) {
-            $coords = explode('.', $p->getCoordinates() ?? '0.0');
-            $ex = (int) ($coords[0] ?? 0);
+            $coords = explode('.', $p->getCoordinates());
+            $ex = (int) $coords[0];
             $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
@@ -180,8 +180,8 @@ class MapApiController extends AbstractController
                 continue;
             }
 
-            $coords = explode('.', $mob->getCoordinates() ?? '0.0');
-            $ex = (int) ($coords[0] ?? 0);
+            $coords = explode('.', $mob->getCoordinates());
+            $ex = (int) $coords[0];
             $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
@@ -214,8 +214,8 @@ class MapApiController extends AbstractController
 
         $pnjs = [];
         foreach ($pnjEntities as $pnj) {
-            $coords = explode('.', $pnj->getCoordinates() ?? '0.0');
-            $ex = (int) ($coords[0] ?? 0);
+            $coords = explode('.', $pnj->getCoordinates());
+            $ex = (int) $coords[0];
             $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
@@ -248,8 +248,8 @@ class MapApiController extends AbstractController
             'map' => $map,
             'type' => ObjectLayer::TYPE_PORTAL,
         ]) as $portal) {
-            $coords = explode('.', $portal->getCoordinates() ?? '0.0');
-            $ex = (int) ($coords[0] ?? 0);
+            $coords = explode('.', $portal->getCoordinates());
+            $ex = (int) $coords[0];
             $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
@@ -277,8 +277,8 @@ class MapApiController extends AbstractController
                 continue;
             }
 
-            $coords = explode('.', $spot->getCoordinates() ?? '0.0');
-            $ex = (int) ($coords[0] ?? 0);
+            $coords = explode('.', $spot->getCoordinates());
+            $ex = (int) $coords[0];
             $ey = (int) ($coords[1] ?? 0);
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
@@ -339,8 +339,8 @@ class MapApiController extends AbstractController
         // Même instance Player que dans User#getPlayer() : aligner sur la BDD avant le pathfinding.
         $this->reconcilePlayerFromPersistedRow($player, $fromX === null && $fromY === null, true);
 
-        $coords = explode('.', $player->getCoordinates() ?? '0.0');
-        $currentX = (int) ($coords[0] ?? 0);
+        $coords = explode('.', $player->getCoordinates());
+        $currentX = (int) $coords[0];
         $currentY = (int) ($coords[1] ?? 0);
 
         if ($fromX !== null && $fromY !== null) {
@@ -438,7 +438,7 @@ class MapApiController extends AbstractController
         return $this->json([
             'success' => true,
             'mapId' => $destinationMap->getId(),
-            'x' => (int) ($coords[0] ?? 0),
+            'x' => (int) $coords[0],
             'y' => (int) ($coords[1] ?? 0),
         ]);
     }
@@ -592,8 +592,8 @@ class MapApiController extends AbstractController
         $cells = [];
 
         foreach ($map->getAreas() as $area) {
-            $areaCoords = explode('.', $area->getCoordinates() ?? '0.0');
-            $areaX = (int) ($areaCoords[0] ?? 0);
+            $areaCoords = explode('.', $area->getCoordinates());
+            $areaX = (int) $areaCoords[0];
             $areaY = (int) ($areaCoords[1] ?? 0);
 
             $areaMinGlobalX = $areaX * $areaWidth;
