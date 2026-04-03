@@ -1,11 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-04
+> Derniere mise a jour : 2026-04-03
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 105 — Stabiliser tests E2E existants (TST-09) ✅
+> Stabilisation des 5 classes de tests E2E (16 methodes) pour les rendre fiables et deterministes.
+- [x] Helpers `waitForPixi()` et `waitForTurbo()` dans `AbstractE2ETestCase` pour attentes asynchrones
+- [x] Helpers `waitForSelector()`, `waitForUrlContaining()`, `waitForUrlNotContaining()` pour navigation robuste
+- [x] Helper `apiFetch()` pour simplifier les appels API JS (fetch + JSON parse)
+- [x] Helper `selectorExists()` pour verifications conditionnelles sans exception
+- [x] Correction du `login()` avec attente de redirection post-authentification
+- [x] Remplacement de tous les `waitFor('body')` generiques par des attentes specifiques
+- [x] Verification des fixtures (positions mobs, quetes) et selecteurs CSS (tous valides)
 
 ### 108 — PHPStan niveau 6 + reduction baseline ✅ (TST-12)
 > Passage de PHPStan niveau 5 a 6 avec correction des erreurs reelles du baseline.

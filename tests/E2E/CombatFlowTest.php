@@ -13,43 +13,33 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/fight');
-        static::$pantherClient->waitFor('body');
+        $this->waitForUrlContaining('/game/map');
 
-        // Sans combat actif, le joueur est redirige vers la carte
-        $url = static::$pantherClient->getCurrentURL();
-        $this->assertStringContainsString('/game/map', $url);
+        $this->assertStringContainsString('/game/map', static::$pantherClient->getCurrentURL());
     }
 
     public function testCombatFlowViaApiMove(): void
     {
         $this->login();
 
-        // 1. Verifier que la carte est accessible
+        // 1. Verifier que la carte est accessible et PixiJS charge
         static::$pantherClient->request('GET', '/game/map');
-        static::$pantherClient->waitFor('body');
+        $this->waitForSelector('.map-canvas-container');
+        $this->waitForPixi();
         $this->assertSelectorExists('.map-canvas-container');
 
         // 2. Declencher un combat en se deplacant vers un mob via l'API
-        //    On essaie plusieurs positions de mobs connues (fixtures)
         $mobPositions = [
-            ['x' => 14, 'y' => 16], // ochu_1
-            ['x' => 17, 'y' => 2],  // zombie_1
-            ['x' => 6, 'y' => 5],   // zombie_2
-            ['x' => 10, 'y' => 8],  // goblin_1
-            ['x' => 12, 'y' => 10], // goblin_2
+            ['targetX' => 14, 'targetY' => 16], // ochu_1
+            ['targetX' => 17, 'targetY' => 2],  // zombie_1
+            ['targetX' => 6, 'targetY' => 5],   // zombie_2
+            ['targetX' => 10, 'targetY' => 8],  // goblin_1
+            ['targetX' => 12, 'targetY' => 10], // goblin_2
         ];
 
         $fightTriggered = false;
         foreach ($mobPositions as $pos) {
-            $result = static::$pantherClient->executeScript(sprintf(
-                "return await fetch('/api/map/move', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({targetX: %d, targetY: %d})
-                }).then(r => r.json()).catch(e => ({error: e.message}));",
-                $pos['x'],
-                $pos['y']
-            ));
+            $result = $this->apiFetch('/api/map/move', 'POST', $pos);
 
             if (isset($result['fight']['id'])) {
                 $fightTriggered = true;
@@ -63,9 +53,9 @@ class CombatFlowTest extends AbstractE2ETestCase
 
         // 3. Naviguer vers la page de combat
         static::$pantherClient->request('GET', '/game/fight');
-        static::$pantherClient->waitFor('#action-attack');
+        $this->waitForSelector('#action-attack');
+        $this->waitForTurbo();
 
-        // Verifier les elements du combat
         $this->assertSelectorExists('#action-attack');
         $this->assertSelectorExists('#action-flee');
         $this->assertSelectorExists('[data-target-type="mob"]');
@@ -78,20 +68,15 @@ class CombatFlowTest extends AbstractE2ETestCase
 
         // 5. Boucle d'attaque (max 50 tours pour eviter boucle infinie)
         for ($i = 0; $i < 50; ++$i) {
-            $result = static::$pantherClient->executeScript(sprintf(
-                "return await fetch('/game/fight/attack', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({targetId: %s, targetType: 'mob'})
-                }).then(r => r.json()).catch(e => ({error: e.message}));",
-                $mobId
-            ));
+            $result = $this->apiFetch('/game/fight/attack', 'POST', [
+                'targetId' => (int) $mobId,
+                'targetType' => 'mob',
+            ]);
 
             if (isset($result['fight']['terminated']) && $result['fight']['terminated']) {
                 break;
             }
 
-            // Si erreur (joueur mort, cible morte, etc.), on arrete
             if (isset($result['error'])) {
                 break;
             }
@@ -99,12 +84,13 @@ class CombatFlowTest extends AbstractE2ETestCase
 
         // 6. Verifier l'etat final
         static::$pantherClient->request('GET', '/game/fight');
-        static::$pantherClient->waitFor('body');
+        $this->waitForTurbo();
 
         $url = static::$pantherClient->getCurrentURL();
 
         if (str_contains($url, '/game/fight/loot')) {
             // Victoire → page de loot
+            $this->waitForSelector('#lootForm');
             $this->assertSelectorExists('#lootForm');
 
             // Cocher tous les items et collecter
@@ -112,15 +98,12 @@ class CombatFlowTest extends AbstractE2ETestCase
                 "document.querySelectorAll('input[name=\"items[]\"]').forEach(cb => cb.checked = true);"
             );
 
-            // Soumettre le formulaire de loot
             static::$pantherClient->executeScript(
                 "document.getElementById('lootForm').dispatchEvent(new Event('submit'));"
             );
 
-            // Attendre la redirection vers la carte
-            static::$pantherClient->waitFor('body', 5);
-            $finalUrl = static::$pantherClient->getCurrentURL();
-            $this->assertStringContainsString('/game/map', $finalUrl);
+            $this->waitForUrlContaining('/game/map');
+            $this->assertStringContainsString('/game/map', static::$pantherClient->getCurrentURL());
         } elseif (str_contains($url, '/game/fight')) {
             // Defaite — la page de defaite est affichee
             $this->assertSelectorExists('a[href*="/game/map"]');
@@ -135,20 +118,15 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->login();
 
         // Engager un combat via API
-        $result = static::$pantherClient->executeScript(
-            "return await fetch('/api/map/move', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({targetX: 14, targetY: 16})
-            }).then(r => r.json()).catch(e => ({error: e.message}));"
-        );
+        $result = $this->apiFetch('/api/map/move', 'POST', ['targetX' => 14, 'targetY' => 16]);
 
         if (!isset($result['fight']['id'])) {
             $this->markTestSkipped('Aucun combat declenche — mob absent a cette position.');
         }
 
         static::$pantherClient->request('GET', '/game/fight');
-        static::$pantherClient->waitFor('#action-attack');
+        $this->waitForSelector('#action-attack');
+        $this->waitForTurbo();
 
         // Verifier la presence de tous les boutons d'action
         $this->assertSelectorExists('#action-attack');
@@ -161,11 +139,6 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->assertSelectorExists('[data-target-type="mob"]');
 
         // Nettoyer : fuir le combat
-        static::$pantherClient->executeScript(
-            "return await fetch('/game/fight/flee', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'}
-            }).then(r => r.json()).catch(e => ({error: e.message}));"
-        );
+        $this->apiFetch('/game/fight/flee');
     }
 }

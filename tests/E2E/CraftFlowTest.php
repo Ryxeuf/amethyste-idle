@@ -15,9 +15,9 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/craft');
-        static::$pantherClient->waitFor('#craft-tabs');
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
-        // Verifier la page d'artisanat
         $this->assertSelectorExists('#craft-tabs');
         $this->assertSelectorExists('.craft-tab-btn');
         $this->assertSelectorExists('.craft-panel');
@@ -28,7 +28,8 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/craft');
-        static::$pantherClient->waitFor('#craft-tabs');
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
         // Recuperer la liste des onglets
         $tabs = static::$pantherClient->executeScript(
@@ -58,16 +59,15 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/craft');
-        static::$pantherClient->waitFor('#craft-tabs');
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
-        // Compter le nombre de recettes affichees (toutes professions)
         $recipeCount = static::$pantherClient->executeScript(
             "return document.querySelectorAll('.craft-panel form[action*=\"/game/craft/craft/\"]').length;"
         );
 
         $this->assertGreaterThan(0, $recipeCount, 'Des recettes doivent etre affichees dans les fixtures');
 
-        // Verifier que chaque recette a un bouton (actif ou desactive)
         $buttonCount = static::$pantherClient->executeScript(
             "return document.querySelectorAll('.craft-panel form button[type=\"submit\"]').length;"
         );
@@ -80,7 +80,8 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/craft');
-        static::$pantherClient->waitFor('#craft-tabs');
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
         // Chercher une recette craftable (bouton non disabled)
         $craftableSlug = static::$pantherClient->executeScript(
@@ -92,7 +93,6 @@ class CraftFlowTest extends AbstractE2ETestCase
         );
 
         if (null === $craftableSlug) {
-            // Tester le cas ou aucune recette n'est craftable (manque ingredients)
             $disabledCount = static::$pantherClient->executeScript(
                 "return document.querySelectorAll('.craft-panel form button[disabled]').length;"
             );
@@ -107,10 +107,10 @@ class CraftFlowTest extends AbstractE2ETestCase
         );
         $craftForm->submit();
 
-        // Apres soumission, la page de craft est rechargee avec un message flash
-        static::$pantherClient->waitFor('#craft-tabs');
+        // Apres soumission, la page de craft est rechargee
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
-        // Verifier que la page s'est rechargee correctement
         $url = static::$pantherClient->getCurrentURL();
         $this->assertStringContainsString('/game/craft', $url);
     }
@@ -119,16 +119,15 @@ class CraftFlowTest extends AbstractE2ETestCase
     {
         $this->login();
 
-        // Verifier l'inventaire d'abord
         static::$pantherClient->request('GET', '/game/inventory');
-        static::$pantherClient->waitFor('body');
+        $this->waitForTurbo();
 
         $url = static::$pantherClient->getCurrentURL();
         $this->assertStringContainsString('/game/inventory', $url);
 
-        // Naviguer vers l'atelier
         static::$pantherClient->request('GET', '/game/craft');
-        static::$pantherClient->waitFor('#craft-tabs');
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
         $this->assertSelectorExists('#craft-tabs');
     }
@@ -138,13 +137,12 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/craft');
-        static::$pantherClient->waitFor('#craft-tabs');
+        $this->waitForSelector('#craft-tabs');
+        $this->waitForTurbo();
 
-        // Verifier la section experimentation
-        $hasExperiment = static::$pantherClient->executeScript(
-            "return document.querySelector('form[action*=\"/game/craft/experiment\"]') !== null;"
+        $this->assertTrue(
+            $this->selectorExists('form[action*="/game/craft/experiment"]'),
+            'La section experimentation doit etre presente'
         );
-
-        $this->assertTrue($hasExperiment, 'La section experimentation doit etre presente');
     }
 }

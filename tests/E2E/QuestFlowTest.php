@@ -15,9 +15,9 @@ class QuestFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/quests');
-        static::$pantherClient->waitFor('#tab-active');
+        $this->waitForSelector('#tab-active');
+        $this->waitForTurbo();
 
-        // Verifier la structure de la page
         $this->assertSelectorExists('#tab-active');
         $this->assertSelectorExists('#tab-daily');
         $this->assertSelectorExists('#tab-available');
@@ -30,12 +30,12 @@ class QuestFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/quests');
-        static::$pantherClient->waitFor('#tab-available');
+        $this->waitForSelector('#tab-available');
+        $this->waitForTurbo();
 
         // Cliquer sur l'onglet "Disponibles"
         static::$pantherClient->findElement(WebDriverBy::id('tab-available'))->click();
 
-        // Verifier que le panneau des quetes disponibles est visible
         $isVisible = static::$pantherClient->executeScript(
             "return !document.getElementById('panel-available').classList.contains('hidden');"
         );
@@ -63,7 +63,8 @@ class QuestFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/quests');
-        static::$pantherClient->waitFor('#tab-available');
+        $this->waitForSelector('#tab-available');
+        $this->waitForTurbo();
 
         // Basculer sur l'onglet disponibles
         static::$pantherClient->findElement(WebDriverBy::id('tab-available'))->click();
@@ -78,20 +79,15 @@ class QuestFlowTest extends AbstractE2ETestCase
             $this->markTestSkipped('Aucune quete disponible dans les fixtures.');
         }
 
-        // Accepter la quete via l'API (comme le fait le JS du frontend)
-        $acceptResult = static::$pantherClient->executeScript(sprintf(
-            "return await fetch('/game/quests/accept/%s', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'}
-            }).then(r => r.json()).catch(e => ({error: e.message}));",
-            $questId
-        ));
+        // Accepter la quete via l'API
+        $acceptResult = $this->apiFetch(sprintf('/game/quests/accept/%s', $questId));
 
         $this->assertTrue($acceptResult['success'] ?? false, 'La quete doit etre acceptee avec succes');
 
         // Recharger la page pour voir la quete dans les actives
         static::$pantherClient->request('GET', '/game/quests');
-        static::$pantherClient->waitFor('#tab-active');
+        $this->waitForSelector('#tab-active');
+        $this->waitForTurbo();
 
         // Verifier que la quete apparait dans les actives
         $hasActiveQuest = static::$pantherClient->executeScript(
@@ -108,25 +104,18 @@ class QuestFlowTest extends AbstractE2ETestCase
         $this->assertNotNull($playerQuestId, 'Un PlayerQuest doit exister');
 
         // Abandonner la quete
-        $abandonResult = static::$pantherClient->executeScript(sprintf(
-            "return await fetch('/game/quests/abandon/%s', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'}
-            }).then(r => r.json()).catch(e => ({error: e.message}));",
-            $playerQuestId
-        ));
+        $abandonResult = $this->apiFetch(sprintf('/game/quests/abandon/%s', $playerQuestId));
 
         $this->assertTrue($abandonResult['success'] ?? false, 'La quete doit etre abandonnee avec succes');
 
         // Recharger et verifier que la quete n'est plus active
         static::$pantherClient->request('GET', '/game/quests');
-        static::$pantherClient->waitFor('#tab-active');
+        $this->waitForSelector('#tab-active');
+        $this->waitForTurbo();
 
-        // La quete abandonnee ne doit plus etre dans les actives (ou une de moins)
         $activeCount = static::$pantherClient->executeScript(
             "return document.querySelectorAll('#panel-active [id^=\"quest-\"]').length;"
         );
-        // On verifie simplement que la page se charge correctement apres abandon
         $this->assertIsInt($activeCount);
     }
 
@@ -135,35 +124,26 @@ class QuestFlowTest extends AbstractE2ETestCase
         $this->login();
 
         static::$pantherClient->request('GET', '/game/quests');
-        static::$pantherClient->waitFor('#tab-available');
+        $this->waitForSelector('#tab-available');
+        $this->waitForTurbo();
 
         // Basculer sur les quetes disponibles
         static::$pantherClient->findElement(WebDriverBy::id('tab-available'))->click();
 
-        // Verifier si les filtres existent
-        $hasFilters = static::$pantherClient->executeScript(
-            "return document.getElementById('filter-all') !== null;"
-        );
-
-        if (!$hasFilters) {
+        if (!$this->selectorExists('#filter-all')) {
             $this->markTestSkipped('Filtres de quete non presents.');
         }
 
         // Cliquer sur le filtre "Tous"
         static::$pantherClient->findElement(WebDriverBy::id('filter-all'))->click();
 
-        // Compter les quetes visibles
         $totalQuests = static::$pantherClient->executeScript(
             "return document.querySelectorAll('#available-quests-list [id^=\"available-quest-\"]:not([style*=\"display: none\"])').length;"
         );
-
         $this->assertIsInt($totalQuests);
 
         // Cliquer sur le filtre "Combat" (kill)
-        $hasKillFilter = static::$pantherClient->executeScript(
-            "return document.getElementById('filter-kill') !== null;"
-        );
-        if ($hasKillFilter) {
+        if ($this->selectorExists('#filter-kill')) {
             static::$pantherClient->findElement(WebDriverBy::id('filter-kill'))->click();
 
             $filteredQuests = static::$pantherClient->executeScript(
