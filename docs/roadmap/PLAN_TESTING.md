@@ -235,16 +235,17 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ## Jalon 4 — Analyse statique renforcee
 
-### TST-12 — PHPStan niveau 6 + reduction baseline `M`
+### ~~TST-12 — PHPStan niveau 6 + reduction baseline `M`~~ ✅
 
 - **Prerequis** : ∅
 - **Fichiers** : `phpstan.neon`, `phpstan-baseline.neon`
-- **Actions** :
-  1. Corriger erreurs `property.onlyWritten` du baseline (code mort = bugs potentiels)
-  2. Corriger erreurs `nullCoalesce.offset` (verifications inutiles)
-  3. Passer le niveau de 5 a 6 (verification types de retour)
-  4. Regenerer le baseline : `docker compose exec php vendor/bin/phpstan analyse --generate-baseline`
-  5. Objectif : reduire baseline de 313 a < 100 erreurs
+- [x] Corriger erreurs `property.onlyWritten` du baseline (10 services inutilises supprimes)
+- [x] Corriger erreurs `nullCoalesce.offset` et `nullCoalesce.expr` (17 corrections dans MapApiController + autres)
+- [x] Corriger erreurs `argument.type` (ItemHelper, ItemHitResolver — CharacterInterface → Player)
+- [x] Supprimer code mort (PriorityQueue::getPosition, PlayerSpellHandler::$gearHelper)
+- [x] Corriger FightCleaner @var tag, MateriaFusionManager comparison
+- [x] Passer le niveau de 5 a 6
+- [x] Regenerer le baseline
 - **Verification** : `docker compose exec php vendor/bin/phpstan analyse` passe au niveau 6
 
 ---

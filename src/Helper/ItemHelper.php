@@ -2,6 +2,7 @@
 
 namespace App\Helper;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\CharacterInterface;
 use App\Entity\Game\Item;
@@ -98,7 +99,7 @@ class ItemHelper implements ResetInterface
         ];
 
         if ($domain = $item->getDomain()) {
-            $player = $character ?? $this->playerHelper->getPlayer();
+            $player = $character instanceof Player ? $character : $this->playerHelper->getPlayer();
             if ($domainExperience = $this->playerDomainHelper->getDomainExperience($domain, $player)) {
                 $modifiers['hit'] += $domainExperience->getHit();
                 $modifiers['critical'] += $domainExperience->getCritical();

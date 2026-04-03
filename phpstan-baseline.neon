@@ -1,10 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Unreachable statement \- code above always terminates\.$#'
-			identifier: deadCode.unreachable
+			message: '#^Method App\\Command\\AuditEntityPlacementCommand\:\:findNearestFreeCell\(\) has parameter \$cellMovements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/Command/DebugMoveCommand.php
+			path: src/Command/AuditEntityPlacementCommand.php
+
+		-
+			message: '#^Method App\\Command\\FixturesSelectiveCommand\:\:__construct\(\) has parameter \$fixtures with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/FixturesSelectiveCommand.php
 
 		-
 			message: '#^While loop condition is always true\.$#'
@@ -13,58 +19,148 @@ parameters:
 			path: src/Command/HarvestRespawnCommand.php
 
 		-
-			message: '#^Offset ''mouvement'' on array\{x\: int, y\: int, mouvement\: \-1\|0\|1\|2, cellIdx\: int, layers\: array\<0\|1, array\{mapIdx\: string\|null, idxInMap\: mixed, tilesetName\: string, source\: string\}\|null\>, slug\?\: non\-falsy\-string\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
+			message: '#^Method App\\Command\\TerrainImportCommand\:\:exportFiles\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Command/TerrainImportCommand.php
 
 		-
-			message: '#^Offset ''objects'' on array\{width\: int, height\: int, tileHeight\: int, tileWidth\: int, cells\: array\<int, non\-empty\-array\<int, array\{x\: int, y\: int, mouvement\: \-1\|0\|1\|2, cellIdx\: int, layers\: array\<0\|1, array\{mapIdx\: string\|null, idxInMap\: mixed, tilesetName\: string, source\: string\}\|null\>, slug\?\: non\-falsy\-string\}\>\>, terrains\: array\<string, array\{fullPath\: non\-falsy\-string, sanitizePath\: string, image\: string\|null, tilesetName\: string, tilewidth\: string\|null, tileheight\: string\|null, tilecount\: string\|null, columns\: string\|null, \.\.\.\}\>, objects\: list\<array\{group\: string, type\: string, name\: string, x\: int, y\: int, width\: int, height\: int, properties\: array\<string, string\>\}\>\} on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
+			message: '#^Method App\\Command\\TerrainImportCommand\:\:exportFiles\(\) has parameter \$slugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Command/TerrainImportCommand.php
 
 		-
-			message: '#^Property App\\Command\\TerrainImportCommand\:\:\$collisions is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\Command\\TerrainImportCommand\:\:showStatistics\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Command/TerrainImportCommand.php
 
 		-
-			message: '#^Property App\\Controller\\Api\\GatheringController\:\:\$gatheringManager is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\Command\\TerrainPreviewCommand\:\:drawCollisionOverlay\(\) has parameter \$collisionData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/Controller/Api/GatheringController.php
+			path: src/Command/TerrainPreviewCommand.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 8
+			message: '#^Method App\\Command\\TerrainPreviewCommand\:\:drawCollisionOverlay\(\) has parameter \$tilesets with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/TerrainPreviewCommand.php
+
+		-
+			message: '#^Method App\\Command\\TerrainPreviewCommand\:\:drawTile\(\) has parameter \$tilesetImages with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/TerrainPreviewCommand.php
+
+		-
+			message: '#^Method App\\Command\\TerrainPreviewCommand\:\:drawTile\(\) has parameter \$tilesets with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/TerrainPreviewCommand.php
+
+		-
+			message: '#^Method App\\Command\\TerrainPreviewCommand\:\:parseTilesets\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/TerrainPreviewCommand.php
+
+		-
+			message: '#^Method App\\Command\\TerrainSyncCommand\:\:exportFiles\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/TerrainSyncCommand.php
+
+		-
+			message: '#^Method App\\Command\\TerrainSyncCommand\:\:exportFiles\(\) has parameter \$slugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Command/TerrainSyncCommand.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:buildEntityResult\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:createHarvestSpot\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:createMob\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:createPnj\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:createPortal\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:updateCraftStation\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:updateHarvestSpot\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:updateMob\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:updatePnj\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Admin\\MapEditorController\:\:updatePortal\(\) has parameter \$properties with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Controller/Admin/MapEditorController.php
+
+		-
+			message: '#^Method App\\Controller\\Api\\MapApiController\:\:extractTilesets\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
 			path: src/Controller/Api/MapApiController.php
 
 		-
-			message: '#^Offset 0 on non\-empty\-list\<string\> on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
-			count: 9
+			message: '#^Method App\\Controller\\Api\\MapApiController\:\:extractZones\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
 			path: src/Controller/Api/MapApiController.php
 
 		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array\<mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
+			message: '#^Method App\\Controller\\Api\\MapApiController\:\:loadRawCells\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/Controller/Game/CraftController.php
+			path: src/Controller/Api/MapApiController.php
 
 		-
-			message: '#^Property App\\Controller\\Game\\Fight\\FightAttackController\:\:\$playerActionHandler is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\Controller\\Api\\QuickbarController\:\:getRemainingForSlug\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/Controller/Game/Fight/FightAttackController.php
-
-		-
-			message: '#^Property App\\Controller\\Game\\Fight\\FightLootIndexController\:\:\$entityManager is never read, only written\.$#'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Controller/Game/Fight/FightLootIndexController.php
+			path: src/Controller/Api/QuickbarController.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -73,22 +169,94 @@ parameters:
 			path: src/Controller/Game/Fight/FightLootProceedController.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: src/Controller/Game/Inventory/EquipmentController.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: src/Controller/Game/Map/IndexController.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
 			path: src/Controller/Game/Skill/IndexController.php
+
+		-
+			message: '#^Method App\\DataStorage\\MapStorage\:\:getMap\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataStorage/MapStorage.php
+
+		-
+			message: '#^Method App\\DataStorage\\MapStorage\:\:getMapTag\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataStorage/MapStorage.php
+
+		-
+			message: '#^Method App\\DataStorage\\MapStorage\:\:storeMap\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/DataStorage/MapStorage.php
+
+		-
+			message: '#^Method App\\Dto\\Cell\\CellModel\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Cell/CellModel.php
+
+		-
+			message: '#^Property App\\Dto\\Cell\\CellModel\:\:\$actions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Cell/CellModel.php
+
+		-
+			message: '#^Property App\\Dto\\Cell\\CellModel\:\:\$layers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Cell/CellModel.php
+
+		-
+			message: '#^Method App\\Dto\\Cell\\CellModelLight\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Cell/CellModelLight.php
+
+		-
+			message: '#^Property App\\Dto\\CellAction\\CellAction\:\:\$data type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/CellAction/CellAction.php
+
+		-
+			message: '#^Property App\\Dto\\Dialog\\DialogModel\:\:\$sentences type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Dialog/DialogModel.php
+
+		-
+			message: '#^Property App\\Dto\\Fight\\FightModel\:\:\$loot type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Fight/FightModel.php
+
+		-
+			message: '#^Property App\\Dto\\Fight\\FightModel\:\:\$loot type has no value type specified in iterable type array\|Generator\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Fight/FightModel.php
+
+		-
+			message: '#^Method App\\Dto\\Fight\\TimelineItem\:\:isMob\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Dto/Fight/TimelineItem.php
+
+		-
+			message: '#^Method App\\Dto\\Fight\\TimelineItem\:\:isPlayer\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Dto/Fight/TimelineItem.php
+
+		-
+			message: '#^Property App\\Dto\\Item\\ItemModel\:\:\$slots type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Item/ItemModel.php
 
 		-
 			message: '#^Attribute class ApiPlatform\\Metadata\\ApiProperty does not exist\.$#'
@@ -103,58 +271,1912 @@ parameters:
 			path: src/Dto/Item/SlotModel.php
 
 		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
+			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$mobs type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/Dto/Item/SlotModel.php
+			path: src/Dto/Map/MapDynamicModel.php
 
 		-
-			message: '#^Property App\\Entity\\User\:\:\$players is never written, only read\.$#'
-			identifier: property.onlyRead
+			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$objects type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Map/MapDynamicModel.php
+
+		-
+			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$players type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Map/MapDynamicModel.php
+
+		-
+			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$pnjs type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Map/MapDynamicModel.php
+
+		-
+			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$usableObjects type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Map/MapDynamicModel.php
+
+		-
+			message: '#^Property App\\Dto\\Move\\MoveOutput\:\:\$actions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Move/MoveOutput.php
+
+		-
+			message: '#^Property App\\Dto\\Move\\MoveOutput\:\:\$cells type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Move/MoveOutput.php
+
+		-
+			message: '#^Property App\\Dto\\Quest\\PlayerQuestModel\:\:\$completed has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Dto/Quest/PlayerQuestModel.php
+
+		-
+			message: '#^Property App\\Dto\\Quest\\PlayerQuestModel\:\:\$progress has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Dto/Quest/PlayerQuestModel.php
+
+		-
+			message: '#^Property App\\Dto\\Quest\\PlayerQuestModel\:\:\$tracking has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Dto/Quest/PlayerQuestModel.php
+
+		-
+			message: '#^Property App\\Dto\\Quest\\QuestModel\:\:\$requirements type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Quest/QuestModel.php
+
+		-
+			message: '#^Property App\\Dto\\Quest\\QuestModel\:\:\$rewards type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Quest/QuestModel.php
+
+		-
+			message: '#^Method App\\Dto\\Search\\SearchCell\:\:__construct\(\) has parameter \$area with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Search/SearchCell.php
+
+		-
+			message: '#^Method App\\Dto\\Search\\SearchCell\:\:__construct\(\) has parameter \$debug with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Search/SearchCell.php
+
+		-
+			message: '#^Method App\\Dto\\Search\\SearchCell\:\:__construct\(\) has parameter \$layers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Search/SearchCell.php
+
+		-
+			message: '#^Method App\\Dto\\Search\\SearchCell\:\:__construct\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Search/SearchCell.php
+
+		-
+			message: '#^Method App\\Dto\\Search\\SearchCell\:\:fromArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Search/SearchCell.php
+
+		-
+			message: '#^Method App\\Dto\\Search\\SearchCell\:\:toArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Search/SearchCell.php
+
+		-
+			message: '#^Property App\\Dto\\Skill\\SkillModel\:\:\$achievementIds type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Skill/SkillModel.php
+
+		-
+			message: '#^Property App\\Dto\\Skill\\SkillModel\:\:\$requirementIds type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Dto/Skill/SkillModel.php
+
+		-
+			message: '#^Method App\\Entity\\App\\AdminLog\:\:getDetails\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/AdminLog.php
+
+		-
+			message: '#^Method App\\Entity\\App\\AdminLog\:\:setDetails\(\) has parameter \$details with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/AdminLog.php
+
+		-
+			message: '#^Property App\\Entity\\App\\AdminLog\:\:\$details type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/AdminLog.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Area\:\:getFullDataArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Area.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Area\:\:getZoneData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Area.php
+
+		-
+			message: '#^Method App\\Entity\\App\\BuildPreset\:\:getSkillSlugs\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/BuildPreset.php
+
+		-
+			message: '#^Method App\\Entity\\App\\BuildPreset\:\:setSkillSlugs\(\) has parameter \$skillSlugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/BuildPreset.php
+
+		-
+			message: '#^Property App\\Entity\\App\\BuildPreset\:\:\$skillSlugs type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/BuildPreset.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$critical has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$damage has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$domain has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$heal has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$hit has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$player has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$totalExperience has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Property App\\Entity\\App\\DomainExperience\:\:\$usedExperience has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/DomainExperience.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Festival\:\:getRewards\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Festival.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Festival\:\:setRewards\(\) has parameter \$rewards with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Festival.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:getContributions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:getCooldowns\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:getMetadata\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:setContributions\(\) has parameter \$contributions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:setCooldowns\(\) has parameter \$cooldowns with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:setMetadata\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:setMobs\(\) has parameter \$mobs with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Fight\:\:setPlayers\(\) has parameter \$players with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Fight\:\:\$contributions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Fight\:\:\$cooldowns type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Fight\:\:\$metadata type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Fight.php
+
+		-
+			message: '#^Method App\\Entity\\App\\FightLog\:\:getMetadata\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/FightLog.php
+
+		-
+			message: '#^Method App\\Entity\\App\\FightLog\:\:setMetadata\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/FightLog.php
+
+		-
+			message: '#^Property App\\Entity\\App\\FightLog\:\:\$metadata type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/FightLog.php
+
+		-
+			message: '#^Method App\\Entity\\App\\GameEvent\:\:getParameters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/GameEvent.php
+
+		-
+			message: '#^Method App\\Entity\\App\\GameEvent\:\:setParameters\(\) has parameter \$parameters with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/GameEvent.php
+
+		-
+			message: '#^Property App\\Entity\\App\\GameEvent\:\:\$parameters type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/GameEvent.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Inventory\:\:addGold\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Inventory\:\:getItems\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Inventory\:\:getOccupiedSpace\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Inventory\:\:removeItem\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Inventory\:\:\$gold has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Inventory\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Inventory\:\:\$items has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Inventory\:\:\$player has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Inventory\:\:\$size has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Inventory\:\:\$type has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Inventory.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Mob\:\:getItems\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Mob.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Mob\:\:getSpells\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Mob.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Mob\:\:setItems\(\) has parameter \$items with generic class Doctrine\\Common\\Collections\\ArrayCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Mob.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Mob\:\:\$diedAt has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Mob.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Mob\:\:\$items with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Mob.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Mob\:\:\$life has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Mob.php
+
+		-
+			message: '#^Method App\\Entity\\App\\ObjectLayer\:\:getActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/ObjectLayer.php
+
+		-
+			message: '#^Method App\\Entity\\App\\ObjectLayer\:\:getItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/ObjectLayer.php
+
+		-
+			message: '#^Method App\\Entity\\App\\ObjectLayer\:\:setActions\(\) has parameter \$actions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/ObjectLayer.php
+
+		-
+			message: '#^Method App\\Entity\\App\\ObjectLayer\:\:setItems\(\) has parameter \$items with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/ObjectLayer.php
+
+		-
+			message: '#^Property App\\Entity\\App\\ObjectLayer\:\:\$actions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/ObjectLayer.php
+
+		-
+			message: '#^Property App\\Entity\\App\\ObjectLayer\:\:\$items type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/ObjectLayer.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Parameter\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Parameter.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Parameter\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Parameter.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Parameter\:\:\$value has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Parameter.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:getDiscoveredRecipes\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:getDomainExperiences\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:getInventories\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:getUnlockedToolSlots\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:removeDomainExperience\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:setDiscoveredRecipes\(\) has parameter \$discoveredRecipes with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:setQuests\(\) has parameter \$quests with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:setSkills\(\) has parameter \$skills with generic interface Doctrine\\Common\\Collections\\Collection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Player\:\:setUnlockedToolSlots\(\) has parameter \$unlockedToolSlots with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$achievements with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$bestiaryEntries with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$completedQuests has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$diedAt has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$discoveredRecipes type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$domainExperiences has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$inventories has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$life has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$quests has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$resourceCatalogEntries with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$skills has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$statusEffects with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Player\:\:\$unlockedToolSlots type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Player.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerDailyQuest\:\:getTracking\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerDailyQuest.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerDailyQuest\:\:setTracking\(\) has parameter \$tracking with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerDailyQuest.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerDailyQuest\:\:\$tracking type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerDailyQuest.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerItem\:\:getSlots\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/PlayerItem.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerItem\:\:setSlots\(\) has parameter \$slots with generic class Doctrine\\Common\\Collections\\ArrayCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/PlayerItem.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerItem\:\:\$slots with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/PlayerItem.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerJournalEntry\:\:getMetadata\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerJournalEntry.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerJournalEntry\:\:setMetadata\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerJournalEntry.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerJournalEntry\:\:\$metadata type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerJournalEntry.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerQuest\:\:getTracking\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerQuest.php
+
+		-
+			message: '#^Method App\\Entity\\App\\PlayerQuest\:\:setTracking\(\) has parameter \$tracking with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/PlayerQuest.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuest\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuest.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuest\:\:\$player has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuest.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuest\:\:\$quest has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuest.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuest\:\:\$tracking has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuest.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuestCompleted\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuestCompleted.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuestCompleted\:\:\$player has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuestCompleted.php
+
+		-
+			message: '#^Property App\\Entity\\App\\PlayerQuestCompleted\:\:\$quest has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/PlayerQuestCompleted.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Pnj\:\:getDialog\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Pnj\:\:getShopItems\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Pnj\:\:getShopStock\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Pnj\:\:setDialog\(\) has parameter \$dialog with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Pnj\:\:setShopItems\(\) has parameter \$shopItems with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Method App\\Entity\\App\\Pnj\:\:setShopStock\(\) has parameter \$shopStock with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$class_type has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$dialog has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$life has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$maxLife has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$shopItems type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Pnj\:\:\$shopStock type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/App/Pnj.php
+
+		-
+			message: '#^Property App\\Entity\\App\\QueueRespawnMob\:\:\$delay has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/QueueRespawnMob.php
+
+		-
+			message: '#^Property App\\Entity\\App\\QueueRespawnMob\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/QueueRespawnMob.php
+
+		-
+			message: '#^Property App\\Entity\\App\\QueueRespawnMob\:\:\$monster has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/QueueRespawnMob.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Slot\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Slot.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Slot\:\:\$item has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Slot.php
+
+		-
+			message: '#^Property App\\Entity\\App\\Slot\:\:\$item_set has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/App/Slot.php
+
+		-
+			message: '#^Method App\\Entity\\App\\World\:\:getMaps\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/World.php
+
+		-
+			message: '#^Property App\\Entity\\App\\World\:\:\$maps with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/App/World.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Achievement\:\:getCriteria\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Achievement.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Achievement\:\:getReward\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Achievement.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Achievement\:\:setCriteria\(\) has parameter \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Achievement.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Achievement\:\:setReward\(\) has parameter \$reward with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Achievement.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Achievement\:\:\$criteria type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Achievement.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Achievement\:\:\$reward type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Achievement.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:getItems\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:getPlayerExperiences\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:getSkills\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:removePlayerExperience\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:setItems\(\) has parameter \$items with generic class Doctrine\\Common\\Collections\\ArrayCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:setPlayerExperiences\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Domain\:\:setPlayerExperiences\(\) has parameter \$playerExperiences with generic class Doctrine\\Common\\Collections\\ArrayCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$graphHeight has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$items has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$playerExperiences has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$randomSeed has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$skills with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Domain\:\:\$title has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Domain.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Dungeon\:\:getEntryRequirements\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Dungeon.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Dungeon\:\:getLootPreview\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Dungeon.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Dungeon\:\:setEntryRequirements\(\) has parameter \$entryRequirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Dungeon.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Dungeon\:\:setLootPreview\(\) has parameter \$lootPreview with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Dungeon.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Dungeon\:\:\$entryRequirements type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Dungeon.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Dungeon\:\:\$lootPreview type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Dungeon.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\EnchantmentDefinition\:\:getIngredients\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/EnchantmentDefinition.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\EnchantmentDefinition\:\:getStatBonuses\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/EnchantmentDefinition.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\EnchantmentDefinition\:\:setIngredients\(\) has parameter \$ingredients with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/EnchantmentDefinition.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\EnchantmentDefinition\:\:setStatBonuses\(\) has parameter \$statBonuses with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/EnchantmentDefinition.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\FactionReward\:\:getRewardData\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/FactionReward.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\FactionReward\:\:setRewardData\(\) has parameter \$rewardData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/FactionReward.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\FactionReward\:\:\$rewardData type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/FactionReward.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Item\:\:getMateriaSlotConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Item\:\:getRequirements\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Item\:\:setMateriaSlotConfig\(\) has parameter \$config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$description has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$domain has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$effect has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$energyCost has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$gearLocation has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$level has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$materiaSlotConfig type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$nbUsages has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$price has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$protection has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$requirements has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$slug has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$space has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$spell has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Item\:\:\$type has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Item.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:getAiPattern\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:getBossPhases\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:getCurrentBossPhase\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:getElementalResistances\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:getMonsterItems\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:getSpells\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:removeMonsterItem\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:setAiPattern\(\) has parameter \$aiPattern with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:setBossPhases\(\) has parameter \$bossPhases with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:setElementalResistances\(\) has parameter \$elementalResistances with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Monster\:\:setSpells\(\) has parameter \$spells with generic class Doctrine\\Common\\Collections\\ArrayCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$aiPattern type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$attack has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$bossPhases type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$elementalResistances type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$hit has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$level has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$life has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$monsterItems has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$slug has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$speed has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Monster\:\:\$spells has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Monster.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\MonsterItem\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/MonsterItem.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\MonsterItem\:\:\$item has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/MonsterItem.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\MonsterItem\:\:\$monster has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/MonsterItem.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\MonsterItem\:\:\$probability has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/MonsterItem.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:getChoiceOutcome\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:getPlayers\(\) return type with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:getPrerequisiteQuests\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:getRequirements\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:getRewards\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:getTriggerCondition\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:setChoiceOutcome\(\) has parameter \$choiceOutcome with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:setPlayers\(\) has parameter \$players with generic class Doctrine\\Common\\Collections\\ArrayCollection but does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:setPrerequisiteQuests\(\) has parameter \$prerequisiteQuests with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:setRequirements\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:setRewards\(\) has parameter \$rewards with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Quest\:\:setTriggerCondition\(\) has parameter \$triggerCondition with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$choiceOutcome type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$description has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$players has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$prerequisiteQuests type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$requirements has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$rewards has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Quest\:\:\$triggerCondition type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Quest.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Race\:\:getStatModifiers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Race.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Race\:\:setStatModifiers\(\) has parameter \$statModifiers with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Race.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Race\:\:\$statModifiers type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Race.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Recipe\:\:getIngredients\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Recipe.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Recipe\:\:setIngredients\(\) has parameter \$ingredients with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Recipe.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Recipe\:\:\$ingredients type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Recipe.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Skill\:\:getAchievements\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Skill\:\:getActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Skill\:\:getItems\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Skill\:\:getRequirements\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Skill\:\:setActions\(\) has parameter \$actions with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\Skill\:\:setId\(\) has parameter \$id with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$achievements has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$actions has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$critical has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$damage has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$description has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$domains with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$heal has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$hit has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$items has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$life has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$requiredPoints has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$requirements has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$slug has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Skill\:\:\$title has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Skill.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$critical has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$damage has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$description has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$heal has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$hit has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$id has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$name has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$slug has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\Spell\:\:\$spellRange has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/Entity/Game/Spell.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\StatusEffect\:\:getStatModifier\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/StatusEffect.php
+
+		-
+			message: '#^Method App\\Entity\\Game\\StatusEffect\:\:setStatModifier\(\) has parameter \$statModifier with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/StatusEffect.php
+
+		-
+			message: '#^Property App\\Entity\\Game\\StatusEffect\:\:\$statModifier type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/Game/StatusEffect.php
+
+		-
+			message: '#^Method App\\Entity\\User\:\:getPlayers\(\) return type with generic interface Doctrine\\Common\\Collections\\Collection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
 			count: 1
 			path: src/Entity/User.php
 
 		-
-			message: '#^Property App\\GameEngine\\Craft\\CraftManager\:\:\$playerDomainHelper is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\Entity\\User\:\:setRoles\(\) has parameter \$roles with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/GameEngine/Craft/CraftManager.php
+			path: src/Entity/User.php
 
 		-
-			message: '#^Property App\\GameEngine\\Craft\\CraftManager\:\:\$playerHelper is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Property App\\Entity\\User\:\:\$players with generic class Doctrine\\Common\\Collections\\ArrayCollection does not specify its types\: TKey, T$#'
+			identifier: missingType.generics
 			count: 1
-			path: src/GameEngine/Craft/CraftManager.php
+			path: src/Entity/User.php
 
 		-
-			message: '#^Property App\\GameEngine\\Crafting\\CraftingManager\:\:\$playerHelper is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Property App\\Entity\\User\:\:\$roles type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Method App\\EventListener\\JournalListener\:\:addEntry\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/EventListener/JournalListener.php
+
+		-
+			message: '#^Property App\\EventListener\\LocaleListener\:\:\$defaultLocale has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/EventListener/LocaleListener.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\DomainType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/DomainType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\ItemType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/ItemType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\MobSpawnType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/MobSpawnType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\MonsterItemType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/MonsterItemType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\MonsterType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/MonsterType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\PlayerPositionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/PlayerPositionType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\PnjPositionType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/PnjPositionType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\PnjType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/PnjType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\QuestType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/QuestType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\SkillType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/SkillType.php
+
+		-
+			message: '#^Class App\\Form\\Admin\\SpellType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/Admin/SpellType.php
+
+		-
+			message: '#^Class App\\Form\\CharacterCreateType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/CharacterCreateType.php
+
+		-
+			message: '#^Class App\\Form\\RegistrationFormType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Form/RegistrationFormType.php
+
+		-
+			message: '#^Method App\\GameEngine\\Crafting\\CraftingManager\:\:canCraft\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Crafting/CraftingManager.php
 
 		-
-			message: '#^Property App\\GameEngine\\Crafting\\ExperimentationManager\:\:\$inventoryHelper is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\GameEngine\\Event\\InvasionManager\:\:validateParameters\(\) has parameter \$params with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/GameEngine/Crafting/ExperimentationManager.php
+			path: src/GameEngine/Event/InvasionManager.php
 
 		-
-			message: '#^Property App\\GameEngine\\Crafting\\ExperimentationManager\:\:\$playerItemGenerator is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Constant App\\GameEngine\\Event\\RandomEventGenerator\:\:EVENT_TEMPLATES type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/GameEngine/Crafting/ExperimentationManager.php
+			path: src/GameEngine/Event/RandomEventGenerator.php
 
 		-
-			message: '#^Strict comparison using \=\=\= between App\\Entity\\App\\Fight and null will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
+			message: '#^Method App\\GameEngine\\Fight\\CombatLogger\:\:log\(\) has parameter \$metadata with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/CombatLogger.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\CombatSkillResolver\:\:getAvailableSkillsForCombat\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/CombatSkillResolver.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\ElementalSynergyCalculator\:\:applySynergyDamage\(\) has parameter \$synergyData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/ElementalSynergyCalculator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\ElementalSynergyCalculator\:\:checkSynergy\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/ElementalSynergyCalculator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\ElementalSynergyCalculator\:\:getAllSynergies\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/ElementalSynergyCalculator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\ElementalSynergyCalculator\:\:getSelfDamage\(\) has parameter \$synergyData with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/ElementalSynergyCalculator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\FightChecker\:\:validateMobId\(\) has parameter \$mobIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Fight/FightChecker.php
 
 		-
-			message: '#^Variable \$fight in PHPDoc tag @var does not exist\.$#'
-			identifier: varTag.variableNotFound
+			message: '#^Method App\\GameEngine\\Fight\\FightChecker\:\:validatePlayerId\(\) has parameter \$playerIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/FightChecker.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\FightCleaner\:\:removeFight\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: src/GameEngine/Fight/FightCleaner.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\FightNotificationHandler\:\:getNotifications\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/FightNotificationHandler.php
+
+		-
+			message: '#^Property App\\GameEngine\\Fight\\FightNotificationHandler\:\:\$notifications has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: src/GameEngine/Fight/FightNotificationHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\FightTurnResolver\:\:findIndexByKey\(\) has parameter \$turnOrder with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/FightTurnResolver.php
 
 		-
 			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$item\.$#'
@@ -169,10 +2191,34 @@ parameters:
 			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
 
 		-
+			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Fight/Handler/MobActionHandlerInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobAttackHandler\:\:supports\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
+
+		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Fight/Handler/PlayerActionHandlerInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerAttackHandler\:\:supports\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -181,16 +2227,22 @@ parameters:
 			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
 
 		-
-			message: '#^Constructor of class App\\GameEngine\\Fight\\Handler\\PlayerSpellHandler has an unused parameter \$gearHelper\.$#'
-			identifier: constructor.unusedParameter
+			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerItemHandler\:\:supports\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Fight/Handler/PlayerItemHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerSpellHandler\:\:supports\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: src/GameEngine/Fight/Handler/PlayerSpellHandler.php
 
 		-
-			message: '#^Comparison operation "\>" between int\<min, 5\> and 5 is always false\.$#'
-			identifier: greater.alwaysFalse
+			message: '#^Method App\\GameEngine\\Fight\\LootGenerator\:\:mobDied\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
-			path: src/GameEngine/Fight/MateriaFusionManager.php
+			path: src/GameEngine/Fight/LootGenerator.php
 
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
@@ -199,10 +2251,28 @@ parameters:
 			path: src/GameEngine/Fight/MateriaXpGranter.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
+			message: '#^Method App\\GameEngine\\Fight\\MobActionHandler\:\:__construct\(\) has parameter \$handlers with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/GameEngine/Gathering/GatheringManager.php
+			path: src/GameEngine/Fight/MobActionHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\PlayerActionHandler\:\:__construct\(\) has parameter \$handlers with no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/PlayerActionHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\SpellApplicator\:\:apply\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/SpellApplicator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Fight\\SpellApplicator\:\:apply\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Fight/SpellApplicator.php
 
 		-
 			message: '#^Left side of && is always true\.$#'
@@ -211,40 +2281,622 @@ parameters:
 			path: src/GameEngine/Gathering/GatheringManager.php
 
 		-
-			message: '#^Parameter \#2 \$character of method App\\Helper\\PlayerDomainHelper\:\:getDomainExperience\(\) expects App\\Entity\\App\\Player\|null, App\\Entity\\CharacterInterface given\.$#'
-			identifier: argument.type
+			message: '#^Method App\\GameEngine\\Gathering\\GatheringManager\:\:determineGatheredItem\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/GameEngine/Item/ItemHitResolver.php
+			path: src/GameEngine/Gathering/GatheringManager.php
 
 		-
-			message: '#^Property App\\GameEngine\\Job\\FishingManager\:\:\$playerHelper is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\GameEngine\\Gathering\\GatheringManager\:\:gather\(\) has parameter \$context with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Gathering/GatheringManager.php
+
+		-
+			message: '#^Method App\\GameEngine\\Item\\ItemEffectEncoder\:\:encodeItemEffect\(\) has parameter \$effect with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Item/ItemEffectEncoder.php
+
+		-
+			message: '#^Method App\\GameEngine\\Job\\ButcheringManager\:\:butcher\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Job/ButcheringManager.php
+
+		-
+			message: '#^Method App\\GameEngine\\Job\\FishingManager\:\:completeFishing\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Job/FishingManager.php
 
 		-
-			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:getPosition\(\) is unused\.$#'
-			identifier: method.unused
+			message: '#^Method App\\GameEngine\\Map\\Dijkstra\:\:__construct\(\) has parameter \$graph with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\Dijkstra\:\:__construct\(\) has parameter \$isDirected with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\Dijkstra\:\:getDistances\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\Dijkstra\:\:getNeighbors\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\Dijkstra\:\:getPrevious\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\Dijkstra\:\:shortestPathTo\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Property App\\GameEngine\\Map\\Dijkstra\:\:\$distances type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Property App\\GameEngine\\Map\\Dijkstra\:\:\$graph type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Property App\\GameEngine\\Map\\Dijkstra\:\:\$previous type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/Dijkstra.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\MoveProcessor\:\:move\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/MoveProcessor.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\MovementCalculator\:\:calculateMovement\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/MovementCalculator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\MovementCalculator\:\:setMap\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/MovementCalculator.php
+
+		-
+			message: '#^Property App\\GameEngine\\Map\\MovementCalculator\:\:\$map type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/MovementCalculator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:__construct\(\) has parameter \$hashmap with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Map/PriorityQueue.php
 
 		-
-			message: '#^Access to an undefined property App\\GameEngine\\Quest\\PlayerQuestHelper\:\:\$entityManager\.$#'
-			identifier: property.notFound
-			count: 5
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:__construct\(\) has parameter \$queue with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:change_priority\(\) has parameter \$element with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:change_priority\(\) has parameter \$new_priority with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:contains\(\) has parameter \$element with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:pop\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueue\:\:push\(\) has parameter \$element with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueue.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueueInterface\:\:change_priority\(\) has parameter \$element with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueueInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueueInterface\:\:change_priority\(\) has parameter \$new_priority with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueueInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueueInterface\:\:contains\(\) has parameter \$element with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueueInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueueInterface\:\:pop\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Map/PriorityQueueInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueueInterface\:\:push\(\) has parameter \$element with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueueInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\PriorityQueueInterface\:\:push\(\) has parameter \$priority with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: src/GameEngine/Map/PriorityQueueInterface.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:getFullConfig\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:getKeysByCategory\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:getMobSprites\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:getPlayerSprites\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:getPnjSprites\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:multi\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Map\\SpriteConfigProvider\:\:single\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Map/SpriteConfigProvider.php
+
+		-
+			message: '#^Method App\\GameEngine\\Mob\\MobGenerator\:\:generate\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/GameEngine/Mob/MobGenerator.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PlayerActionHelper\:\:getActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PlayerActionHelper.php
+
+		-
+			message: '#^Property App\\GameEngine\\Player\\PlayerActionHelper\:\:\$actions type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PlayerActionHelper.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:domainXpMin\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:hasItem\(\) has parameter \$slugs with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:parseDialog\(\) has parameter \$dialog with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:parseDialog\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:quest\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:questActive\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:questNot\(\) has parameter \$ids with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Player\\PnjDialogParser\:\:questPrerequisitesMet\(\) has parameter \$questIds with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Player/PnjDialogParser.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$questRepository contains generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: TEntityClass$#'
+			identifier: missingType.generics
+			count: 3
 			path: src/GameEngine/Quest/PlayerQuestHelper.php
 
 		-
-			message: '#^Property App\\GameEngine\\Realtime\\Map\\MovedPlayerHandler\:\:\$cellModelTransformer is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\GameEngine\\Quest\\PnjQuestIndicatorResolver\:\:extractQuestIdsFromDialog\(\) has parameter \$dialog with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/PnjQuestIndicatorResolver.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestGiverResolver\:\:extractQuestIdsFromDialog\(\) has parameter \$dialog with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestGiverResolver.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatBossChallenge\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatCollect\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatCollect\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatCraft\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatCraft\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatDeliver\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatExplore\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatMonsters\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatMonsters\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatTalkTo\(\) has parameter \$requirements with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Quest\\QuestTrackingFormater\:\:formatTracking\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Quest/QuestTrackingFormater.php
+
+		-
+			message: '#^Method App\\GameEngine\\Realtime\\Map\\MovedHandler\:\:move\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Realtime/Map/MovedHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Realtime\\Map\\MovedHandler\:\:movePath\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Realtime/Map/MovedHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Realtime\\Map\\MovedHandler\:\:movePath\(\) has parameter \$path with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Realtime/Map/MovedHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Realtime\\Map\\MovedPlayerHandler\:\:movePlayerPath\(\) has parameter \$path with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Realtime/Map/MovedPlayerHandler.php
 
 		-
-			message: '#^Property App\\GameEngine\\Realtime\\Map\\MovedPlayerHandler\:\:\$logger is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\GameEngine\\Realtime\\Map\\RespawnedHandler\:\:respawn\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: src/GameEngine/Realtime/Map/MovedPlayerHandler.php
+			path: src/GameEngine/Realtime/Map/RespawnedHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Realtime\\Map\\RespawnedHandler\:\:respawn\(\) has parameter \$object with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Realtime/Map/RespawnedHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleEmote\(\) has parameter \$parts with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleEmote\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleGlobal\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleGuild\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleWhisper\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleWho\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Social\\ChatCommandHandler\:\:handleZone\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Social/ChatCommandHandler.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\AreaSynchronizer\:\:filterZoneObjects\(\) has parameter \$objects with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/AreaSynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\AreaSynchronizer\:\:filterZoneObjects\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/AreaSynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\AreaSynchronizer\:\:syncZone\(\) has parameter \$zone with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/AreaSynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\AreaSynchronizer\:\:syncZonesFromObjects\(\) has parameter \$objects with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/AreaSynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\EntitySynchronizer\:\:syncChest\(\) has parameter \$obj with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/EntitySynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\EntitySynchronizer\:\:syncEntitiesFromObjects\(\) has parameter \$objects with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/EntitySynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\EntitySynchronizer\:\:syncEntitiesFromObjects\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/EntitySynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\EntitySynchronizer\:\:syncHarvestSpot\(\) has parameter \$obj with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/EntitySynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\EntitySynchronizer\:\:syncMobSpawn\(\) has parameter \$obj with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/EntitySynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\EntitySynchronizer\:\:syncPortal\(\) has parameter \$obj with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/EntitySynchronizer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\Generator\\ObjectPlacer\:\:findWalkableBorderCell\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/Generator/ObjectPlacer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\Generator\\ObjectPlacer\:\:placeAll\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/Generator/ObjectPlacer.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxExporter\:\:buildGrid\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxExporter.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxExporter\:\:buildLayerCsv\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxExporter.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxExporter\:\:movementToCollisionGid\(\) has parameter \$cell with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxExporter.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxExporter\:\:writeCollisionLayer\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxExporter.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxExporter\:\:writeTileLayer\(\) has parameter \$cells with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxExporter.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxParser\:\:parse\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxParser\:\:parseLayers\(\) has parameter \$terrains with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxParser\:\:parseLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxParser\:\:parseObjectLayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxParser\:\:parseTilesets\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxParser.php
+
+		-
+			message: '#^Method App\\GameEngine\\Terrain\\TmxParser\:\:validateMap\(\) has parameter \$map with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/GameEngine/Terrain/TmxParser.php
+
+		-
+			message: '#^Method App\\Helper\\CellHelper\:\:getCalculatedDataFromSlug\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/CellHelper.php
+
+		-
+			message: '#^Method App\\Helper\\CellHelper\:\:getCellInfos\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/CellHelper.php
+
+		-
+			message: '#^Method App\\Helper\\CellHelper\:\:getCellsInfos\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/CellHelper.php
+
+		-
+			message: '#^Method App\\Helper\\CellHelper\:\:getDataFromSlug\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/CellHelper.php
 
 		-
 			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$target\.$#'
@@ -265,20 +2917,182 @@ parameters:
 			path: src/Helper/FightHelper.php
 
 		-
+			message: '#^Method App\\Helper\\FightTimelineHelper\:\:generateTimeline\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/FightTimelineHelper.php
+
+		-
+			message: '#^Method App\\Helper\\FightTimelineHelper\:\:getCurrentTimeline\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/FightTimelineHelper.php
+
+		-
+			message: '#^Method App\\Helper\\FightTimelineHelper\:\:getTimeLine\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helper/FightTimelineHelper.php
+
+		-
+			message: '#^Property App\\Helper\\FightTimelineHelper\:\:\$timeline type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/FightTimelineHelper.php
+
+		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 2
 			path: src/Helper/ItemHelper.php
 
 		-
-			message: '#^Parameter \#2 \$character of method App\\Helper\\PlayerDomainHelper\:\:getDomainExperience\(\) expects App\\Entity\\App\\Player\|null, App\\Entity\\CharacterInterface\|null given\.$#'
-			identifier: argument.type
+			message: '#^Method App\\Helper\\ItemHelper\:\:getItemSpellModifiers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Helper/ItemHelper.php
 
 		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
+			message: '#^Method App\\Helper\\PlayerDomainHelper\:\:getDomainBySkillAction\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/PlayerDomainHelper.php
+
+		-
+			message: '#^Method App\\Helper\\PlayerDomainHelper\:\:getDomainsBySkillAction\(\) has parameter \$options with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Helper/PlayerDomainHelper.php
+
+		-
+			message: '#^Method App\\Helper\\PlayerHelper\:\:getBagInventory\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helper/PlayerHelper.php
+
+		-
+			message: '#^Method App\\Helper\\PlayerHelper\:\:getBankInventory\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helper/PlayerHelper.php
+
+		-
+			message: '#^Method App\\Helper\\PlayerHelper\:\:getInventorySizeByType\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helper/PlayerHelper.php
+
+		-
+			message: '#^Method App\\Helper\\PlayerHelper\:\:getMateriaInventory\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Helper/PlayerHelper.php
+
+		-
+			message: '#^PHPDoc tag @var for variable \$playerRepository contains generic class Doctrine\\ORM\\EntityRepository but does not specify its types\: TEntityClass$#'
+			identifier: missingType.generics
+			count: 1
+			path: src/Helper/PlayerHelper.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#1 \$criteria with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Class App\\Repository\\UserRepository has PHPDoc tag @method for method findOneBy\(\) parameter \#2 \$orderBy with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Repository/UserRepository.php
+
+		-
+			message: '#^Method App\\SearchEngine\\Transformer\\CellTransformer\:\:addTerrains\(\) has parameter \$terrains with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SearchEngine/Transformer/CellTransformer.php
+
+		-
+			message: '#^Method App\\SearchEngine\\Transformer\\CellTransformer\:\:findTilesetForGid\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SearchEngine/Transformer/CellTransformer.php
+
+		-
+			message: '#^Method App\\SearchEngine\\Transformer\\CellTransformer\:\:resolveTilesetName\(\) has parameter \$terrain with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SearchEngine/Transformer/CellTransformer.php
+
+		-
+			message: '#^Method App\\SearchEngine\\Transformer\\CellTransformer\:\:transform\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SearchEngine/Transformer/CellTransformer.php
+
+		-
+			message: '#^Property App\\SearchEngine\\Transformer\\CellTransformer\:\:\$terrains type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/SearchEngine/Transformer/CellTransformer.php
+
+		-
+			message: '#^Method App\\Service\\AdminLogger\:\:log\(\) has parameter \$details with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Service/AdminLogger.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\CellActionsProvider\:\:getActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ServiceProvider/CellActionsProvider.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\CellActionsProvider\:\:getObjectLayersAction\(\) has parameter \$coordinates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ServiceProvider/CellActionsProvider.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\CellActionsProvider\:\:getObjectLayersAction\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ServiceProvider/CellActionsProvider.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\CellActionsProvider\:\:getPnjsActions\(\) has parameter \$coordinates with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ServiceProvider/CellActionsProvider.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\CellActionsProvider\:\:getPnjsActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ServiceProvider/CellActionsProvider.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\PlayerActionsProvider\:\:addGearMateria\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/ServiceProvider/PlayerActionsProvider.php
+
+		-
+			message: '#^Method App\\ServiceProvider\\PlayerActionsProvider\:\:getMaterias\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/ServiceProvider/PlayerActionsProvider.php
 
@@ -289,10 +3103,40 @@ parameters:
 			path: src/Transformer/AbstractSkillTransformer.php
 
 		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
+			message: '#^Method App\\Transformer\\CellModelTransformer\:\:transformCellActions\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Transformer/CellModelTransformer.php
+
+		-
+			message: '#^Method App\\Transformer\\CellModelTransformer\:\:transformCellPlayers\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Transformer/CellModelTransformer.php
+
+		-
+			message: '#^Method App\\Transformer\\FightModelTransformer\:\:getGearMaterias\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: src/Transformer/FightModelTransformer.php
+
+		-
+			message: '#^Method App\\Transformer\\FightModelTransformer\:\:getItems\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Transformer/FightModelTransformer.php
+
+		-
+			message: '#^Method App\\Transformer\\FightModelTransformer\:\:getLoots\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Transformer/FightModelTransformer.php
+
+		-
+			message: '#^Method App\\Transformer\\MapModelTransformer\:\:generateDijkstraTagMap\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Transformer/MapModelTransformer.php
 
 		-
 			message: '#^If condition is always true\.$#'
@@ -301,13 +3145,25 @@ parameters:
 			path: src/Transformer/PlayerSkillTransformer.php
 
 		-
-			message: '#^Property App\\Twig\\Components\\FightNotification\:\:\$fightNotificationHandler is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Method App\\Twig\\Components\\FightNotification\:\:mount\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: src/Twig/Components/FightNotification.php
 
 		-
-			message: '#^Property App\\Twig\\Components\\FightTimeline\:\:\$timeLineHelper is never read, only written\.$#'
-			identifier: property.onlyWritten
+			message: '#^Property App\\Twig\\Components\\FightNotification\:\:\$notifications type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: src/Twig/Components/FightNotification.php
+
+		-
+			message: '#^Method App\\Twig\\Components\\FightTimeline\:\:mount\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: src/Twig/Components/FightTimeline.php
+
+		-
+			message: '#^Property App\\Twig\\Components\\FightTimeline\:\:\$timeline type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: src/Twig/Components/FightTimeline.php

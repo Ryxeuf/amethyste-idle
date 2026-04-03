@@ -18,7 +18,6 @@ use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\InventoryHelper;
-use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -67,7 +66,6 @@ class EventBonusIntegrationTest extends TestCase
             $em,
             $playerItemGen,
             $this->createMock(InventoryHelper::class),
-            $this->createMock(PlayerHelper::class),
             $this->createStub(QualityCalculator::class),
             $this->createStub(EventDispatcherInterface::class),
             $bonusProvider,
@@ -121,7 +119,6 @@ class EventBonusIntegrationTest extends TestCase
             $em,
             $playerItemGen,
             $this->createMock(InventoryHelper::class),
-            $this->createMock(PlayerHelper::class),
             $this->createStub(QualityCalculator::class),
             $this->createStub(EventDispatcherInterface::class),
             $bonusProvider,

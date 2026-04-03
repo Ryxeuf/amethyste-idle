@@ -79,8 +79,8 @@ class MateriaFusionManager
             $level2 = $materia2->getMateriaLevel();
             $newLevel = min(5, max($level1, $level2) + 1);
 
-            // Max level is 5
-            if ($newLevel > 5) {
+            // Max level is 5 — if both are already level 5, newLevel stays at 5 (no upgrade)
+            if ($newLevel <= max($level1, $level2)) {
                 return false;
             }
 

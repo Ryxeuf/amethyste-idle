@@ -264,22 +264,6 @@ class PriorityQueue implements PriorityQueueInterface
     }
 
     /**
-     * Get the position of one element in cost O(1).  :-).
-     *
-     * @return int|bool
-     */
-    private function getPosition($element)
-    {
-        $position = hash($this->algorithm, $element);
-        if (isset($this->hashmap[$position])) {
-            return $this->hashmap[$position];
-        }
-
-        return false;
-
-    }
-
-    /**
      * Just a help function to print out the queue.
      */
     public function print(): void

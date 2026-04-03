@@ -17,7 +17,6 @@ use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
-use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -30,7 +29,6 @@ class CraftingManagerTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private PlayerItemGenerator&MockObject $playerItemGenerator;
     private InventoryHelper&MockObject $inventoryHelper;
-    private PlayerHelper&MockObject $playerHelper;
     private QualityCalculator&MockObject $qualityCalculator;
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private GameEventBonusProvider&MockObject $gameEventBonusProvider;
@@ -42,7 +40,6 @@ class CraftingManagerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->playerItemGenerator = $this->createMock(PlayerItemGenerator::class);
         $this->inventoryHelper = $this->createMock(InventoryHelper::class);
-        $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->qualityCalculator = $this->createMock(QualityCalculator::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->gameEventBonusProvider = $this->createMock(GameEventBonusProvider::class);
@@ -53,7 +50,6 @@ class CraftingManagerTest extends TestCase
             $this->entityManager,
             $this->playerItemGenerator,
             $this->inventoryHelper,
-            $this->playerHelper,
             $this->qualityCalculator,
             $this->eventDispatcher,
             $this->gameEventBonusProvider,

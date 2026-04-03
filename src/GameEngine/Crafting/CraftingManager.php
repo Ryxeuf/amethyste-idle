@@ -12,7 +12,6 @@ use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
-use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -22,7 +21,6 @@ class CraftingManager
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly InventoryHelper $inventoryHelper,
-        private readonly PlayerHelper $playerHelper,
         private readonly QualityCalculator $qualityCalculator,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GameEventBonusProvider $gameEventBonusProvider,

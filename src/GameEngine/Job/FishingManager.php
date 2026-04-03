@@ -10,7 +10,6 @@ use App\Event\Map\FishingEvent;
 use App\GameEngine\Generator\HarvestItemGenerator;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
-use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -20,7 +19,6 @@ class FishingManager
         private readonly EntityManagerInterface $entityManager,
         private readonly HarvestItemGenerator $harvestItemGenerator,
         private readonly InventoryHelper $inventoryHelper,
-        private readonly PlayerHelper $playerHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GearHelper $gearHelper,
     ) {

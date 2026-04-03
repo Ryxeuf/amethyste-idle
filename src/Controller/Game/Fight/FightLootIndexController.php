@@ -4,7 +4,6 @@ namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Mob;
 use App\Helper\PlayerHelper;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +15,6 @@ class FightLootIndexController extends AbstractController
 {
     public function __construct(
         private readonly PlayerHelper $playerHelper,
-        private readonly EntityManagerInterface $entityManager
     ) {
     }
 

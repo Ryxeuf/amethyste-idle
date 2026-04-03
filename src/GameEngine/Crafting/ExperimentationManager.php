@@ -5,16 +5,12 @@ namespace App\GameEngine\Crafting;
 use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
-use App\GameEngine\Generator\PlayerItemGenerator;
-use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ExperimentationManager
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly PlayerItemGenerator $playerItemGenerator,
-        private readonly InventoryHelper $inventoryHelper,
         private readonly CraftingManager $craftingManager,
     ) {
     }
