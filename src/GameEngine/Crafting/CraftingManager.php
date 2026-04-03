@@ -123,6 +123,88 @@ class CraftingManager
     }
 
     /**
+     * Calcule le nombre maximum de fois qu'un joueur peut fabriquer une recette.
+     */
+    public function maxCraftable(Player $player, Recipe $recipe): int
+    {
+        $bagItems = $this->getBagItemsBySlug($player);
+        $max = PHP_INT_MAX;
+
+        foreach ($recipe->getIngredients() as $ingredient) {
+            $slug = $ingredient['slug'];
+            $requiredQty = $ingredient['quantity'] ?? 1;
+            $available = $bagItems[$slug] ?? 0;
+
+            $possibleForIngredient = (int) floor($available / $requiredQty);
+            $max = min($max, $possibleForIngredient);
+        }
+
+        return $max === PHP_INT_MAX ? 0 : $max;
+    }
+
+    /**
+     * Fabrique une recette plusieurs fois d'affilee.
+     * Valide les ingredients pour la quantite totale avant de commencer.
+     *
+     * @return array{success: bool, crafted: int, totalXp: int, results: list<array{item: Item, quality: string}>, message: string}
+     */
+    public function craftMultiple(Player $player, Recipe $recipe, int $quantity): array
+    {
+        $quantity = max(1, min($quantity, 99));
+
+        // Verifier l'outil
+        $toolCheck = $this->checkCraftTool($player, $recipe->getCraft());
+        if (!$toolCheck['ok']) {
+            return ['success' => false, 'crafted' => 0, 'totalXp' => 0, 'results' => [], 'message' => $toolCheck['message']];
+        }
+
+        // Verifier qu'on peut crafter la quantite demandee
+        $maxPossible = $this->maxCraftable($player, $recipe);
+        if ($maxPossible < $quantity) {
+            return [
+                'success' => false,
+                'crafted' => 0,
+                'totalXp' => 0,
+                'results' => [],
+                'message' => sprintf('Ingredients insuffisants. Vous pouvez fabriquer %d exemplaire(s) maximum.', $maxPossible),
+            ];
+        }
+
+        $crafted = 0;
+        $totalXp = 0;
+        $results = [];
+
+        for ($i = 0; $i < $quantity; ++$i) {
+            $result = $this->craft($player, $recipe);
+
+            if (!$result['success']) {
+                break;
+            }
+
+            ++$crafted;
+            $results[] = ['item' => $result['item'], 'quality' => $result['quality']];
+        }
+
+        // Calculer le XP total accorde
+        $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($player->getMap());
+        $totalXp = (int) round($recipe->getXpReward() * $xpMultiplier) * $crafted;
+
+        if ($crafted === 0) {
+            return ['success' => false, 'crafted' => 0, 'totalXp' => 0, 'results' => [], 'message' => 'La fabrication a echoue.'];
+        }
+
+        $itemName = $recipe->getResult()->getName();
+
+        return [
+            'success' => true,
+            'crafted' => $crafted,
+            'totalXp' => $totalXp,
+            'results' => $results,
+            'message' => sprintf('Vous avez fabrique %dx %s (+%d XP)', $crafted, $itemName, $totalXp),
+        ];
+    }
+
+    /**
      * Execute la fabrication : consomme les ingredients, cree l'item, accorde l'XP.
      *
      * @return array{success: bool, item: ?Item, quality: ?string, message: string}
