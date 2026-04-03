@@ -181,6 +181,7 @@ jobs:
           MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
           MERCURE_JWT_SECRET: "test"
           MESSENGER_TRANSPORT_DSN: "in-memory://"
+          PERF_MAX_RESPONSE_MS: "500"
 
       - name: Upload coverage report
         if: always()
