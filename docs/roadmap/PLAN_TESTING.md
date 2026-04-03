@@ -250,7 +250,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-13 — Mutation testing avec Infection PHP `M`
+### ~~TST-13 — Mutation testing avec Infection PHP `M`~~ ✅
 
 - **Prerequis** : ← TST-05
 - **Fichiers** : `composer.json`, `infection.json5` (nouveau)
@@ -260,6 +260,10 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   3. Lancer : `docker compose exec php vendor/bin/infection --threads=4`
   4. Objectif initial : MSI >= 60%, Covered MSI >= 80% sur les calculateurs
   5. Etendre progressivement a tout `src/GameEngine/Fight/`
+- [x] Infection PHP installe (`infection/infection ^0.29`)
+- [x] Configuration `infection.json5` sur `src/GameEngine/Fight/Calculator/`
+- [x] Tests ameliores pour tuer les mutants (MSI 79%, Covered MSI 80%)
+- [x] Mutants equivalents documentes et exclus (CastInt apres round())
 - **Verification** : `docker compose exec php vendor/bin/infection --min-msi=60`
 
 ---

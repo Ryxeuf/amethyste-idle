@@ -31,3 +31,7 @@ phpstan.cache
 ###> dbrekelmans/bdi ###
 /drivers/
 ###< dbrekelmans/bdi ###
+
+###> infection/infection ###
+infection.log
+###< infection/infection ###

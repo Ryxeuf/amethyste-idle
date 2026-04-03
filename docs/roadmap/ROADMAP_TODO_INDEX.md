@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-04-02
+> Derniere mise a jour : 2026-04-03
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
 > **Nouvelle feuille de route** : Vagues 7-10 definissent les prochaines priorites.
 > **Audit contenu** : le jeu dispose de systemes solides mais le contenu est a ~30% du necessaire. La Vague 8 (Contenu critique) a ete inseree pour combler ces lacunes avant l'economie.
@@ -32,8 +32,8 @@
 | Vague 4 — Monde & systemes avances | 16/16 + 16 MED + 20 GCC | ✅ Terminee |
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
-| **Plan Testing (TST)** | **9/15** | **6 taches restantes** |
-| **Vague 7 — Qualite, stabilisation & fondations UX** | **0/16** | **Prochaine priorite** |
+| **Plan Testing (TST)** | **10/15** | **5 taches restantes** |
+| **Vague 7 — Qualite, stabilisation & fondations UX** | **1/16** | **Prochaine priorite** |
 | **Vague 8 — Contenu critique** | **0/9** | **Priorite haute** |
 | **Vague 9 — Economie & social** | **0/10** | **A venir** |
 | **Vague 10 — Monde vivant & endgame** | **0/8** | **Long terme** |
@@ -49,7 +49,7 @@ PLAN TESTING (restant)
   TST-10 Nouveaux tests E2E             ← TST-09
   TST-11 Reactiver E2E dans CI          ← TST-09
   TST-12 PHPStan niveau 6               ∅
-  TST-13 Mutation testing (Infection)    ← TST-05
+  TST-13 Mutation testing (Infection)    ← TST-05 ✅
 
 VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   ┌─ Piste A — Testing (TST restants)
@@ -58,7 +58,7 @@ VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   │   106 TST-10 Nouveaux tests E2E     ← 105
   │   107 TST-11 E2E dans CI            ← 105
   │   108 TST-12 PHPStan niveau 6       ∅
-  │   109 TST-13 Mutation testing       ← TST-05 ✅
+  │   109 TST-13 Mutation testing       ← TST-05 ✅ ✅
   │
   ├─ Piste B — Stabilite & polish (‖)
   │   110 Correction bugs connus        ∅

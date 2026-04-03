@@ -93,4 +93,43 @@ class HitChanceCalculatorTest extends TestCase
         $hitChance = $this->calculator->computeHitChance($spell, 1);
         $this->assertSame(5, $hitChance);
     }
+
+    public function testComputeHitChanceUsesDefaultTargetLevel(): void
+    {
+        $spell = $this->createSpell(hit: 90, level: 3);
+
+        // Appel sans targetLevel : defaut = 1, donc 90 + (3 - 1) * 2 = 94
+        $result = $this->calculator->computeHitChance($spell);
+
+        $this->assertSame(94, $result);
+    }
+
+    public function testHasHitUsesDefaultTargetLevel(): void
+    {
+        $spell = $this->createSpell(hit: 100, level: 5);
+
+        // Appel sans targetLevel : defaut = 1, 100 + (5 - 1)*2 = 108 cap 100 => toujours true
+        $this->assertTrue($this->calculator->hasHit($spell));
+    }
+
+    public function testComputeHitChanceExactMinimumBoundary(): void
+    {
+        // Resultat exactement egal a 5 : doit retourner 5
+        $spell = $this->createSpell(hit: 5, level: 1);
+
+        $result = $this->calculator->computeHitChance($spell, 1);
+
+        // 5 + (1 - 1) * 2 = 5
+        $this->assertSame(5, $result);
+    }
+
+    public function testComputeHitChanceJustAboveMinimum(): void
+    {
+        // Resultat a 6 : doit rester 6 (pas clamp a 5)
+        $spell = $this->createSpell(hit: 6, level: 1);
+
+        $result = $this->calculator->computeHitChance($spell, 1);
+
+        $this->assertSame(6, $result);
+    }
 }
