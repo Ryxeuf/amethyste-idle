@@ -53,7 +53,6 @@ class CraftingManagerTest extends TestCase
             $this->entityManager,
             $this->playerItemGenerator,
             $this->inventoryHelper,
-            $this->playerHelper,
             $this->qualityCalculator,
             $this->eventDispatcher,
             $this->gameEventBonusProvider,
