@@ -109,13 +109,13 @@
 
 ### Piste D — Feedback visuels & celebrations (parallelisable)
 
-### 137 — Feedback visuels combat (M | ★★)
+### ~~137 — Feedback visuels combat (M | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Damage numbers flottants PixiJS (texte jaune degats, rouge critique, vert soin)
-- [ ] Auras d'effets de statut sous les sprites (cercle colore : poison vert, brulure orange, bouclier bleu)
-- [ ] Screen shake sur coup critique ou danger
-- [ ] Boss health bar (barre rouge en haut d'ecran avec nom du boss)
-- [ ] Notification synergie elementaire ("SYNERGIE : +50% degats")
+- [x] Damage numbers flottants (texte jaune degats, rouge critique, vert soin, gris miss)
+- [x] Auras d'effets de statut sur les cartes combattants (lueur coloree : poison vert, brulure orange, bouclier bleu, etc.)
+- [x] Screen shake sur coup critique ou danger (deja implemente precedemment)
+- [x] Boss health bar (barre rouge en haut d'ecran avec nom du boss, phase et animation low HP)
+- [x] Notification synergie elementaire (banniere "SYNERGIE" animee avec label)
 
 ### ~~138 — Feedback progression & celebrations (S | ★★)~~ ✅
 > Prerequis : ∅
