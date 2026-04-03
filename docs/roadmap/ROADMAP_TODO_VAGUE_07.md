@@ -95,15 +95,15 @@
 - [x] Filtrage par type d'evenement
 - [x] Limite : 200 entrees par joueur (rotation)
 
-### 136 — Creation de personnage (M | ★★★)
+### ~~136 — Creation de personnage (M | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Ecran de creation post-inscription (si aucun Player actif sur le compte)
-- [ ] Choix du nom de personnage (validation unicite, filtrage mots interdits)
-- [ ] Choix de la race (parmi `Race.availableAtCreation = true`) avec apercu sprite
-- [ ] Affichage des bonus de stats par race (`statModifiers`)
-- [ ] Limite configurable du nombre de personnages par compte (defaut : 1)
-- [ ] Selecteur de personnage au login si le joueur en possede plusieurs
-- [ ] Refactoring du `RegistrationController` : inscription compte → redirection creation personnage
+- [x] Ecran de creation post-inscription (si aucun Player actif sur le compte)
+- [x] Choix du nom de personnage (validation unicite, filtrage mots interdits)
+- [x] Choix de la race (parmi `Race.availableAtCreation = true`) avec apercu sprite
+- [x] Affichage des bonus de stats par race (`statModifiers`)
+- [x] Limite configurable du nombre de personnages par compte (defaut : 1)
+- [x] Selecteur de personnage au login si le joueur en possede plusieurs
+- [x] Refactoring du `RegistrationController` : inscription compte → redirection creation personnage
 
 ---
 

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-03
+> Derniere mise a jour : 2026-04-04
 
 ---
 
@@ -62,6 +62,17 @@
 - [x] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense
 - [x] `SkillProgressionIntegrationTest` : gagner XP domaine → competence deblocable → acquisition → stats mises a jour
 - [x] Helper `setCurrentPlayer()` dans `AbstractIntegrationTestCase` pour injecter le joueur sans contexte HTTP
+
+### 136 — Creation de personnage ✅
+> Systeme complet de creation et selection de personnage, distinct de l'inscription du compte.
+- [x] Ecran de creation post-inscription (`CharacterController::create()`) avec redirection auto si aucun Player
+- [x] Choix du nom de personnage (validation unicite + filtrage mots interdits via `ForbiddenNameChecker`)
+- [x] Choix de la race (parmi `Race.availableAtCreation = true`) avec apercu sprite
+- [x] Affichage des bonus de stats par race (`statModifiers`) dans le formulaire
+- [x] Limite configurable du nombre de personnages par compte (`app.max_players_per_user`, defaut : 1)
+- [x] Selecteur de personnage au login si le joueur en possede plusieurs (`CharacterController::select()`)
+- [x] Refactoring du `RegistrationController` : auto-login + redirection vers creation personnage
+- [x] `LoginFormAuthenticator` : redirection intelligente (0 players → create, 1 → game, 2+ → select)
 
 ---
 

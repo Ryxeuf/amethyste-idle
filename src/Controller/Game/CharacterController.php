@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\User;
 use App\Form\CharacterCreateType;
 use App\Helper\PlayerHelper;
+use App\Service\ForbiddenNameChecker;
 use App\Service\PlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,7 @@ class CharacterController extends AbstractController
         private readonly PlayerFactory $playerFactory,
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly ForbiddenNameChecker $forbiddenNameChecker,
         #[Autowire('%app.max_players_per_user%')] private readonly int $maxPlayersPerUser,
     ) {
     }
@@ -48,6 +50,14 @@ class CharacterController extends AbstractController
             $name = trim((string) $form->get('name')->getData());
             /** @var \App\Entity\Game\Race $race */
             $race = $form->get('race')->getData();
+
+            if ($this->forbiddenNameChecker->isForbidden($name)) {
+                $this->addFlash('error', 'Ce nom de personnage n\'est pas autorisé.');
+
+                return $this->render('game/character/create.html.twig', [
+                    'form' => $form->createView(),
+                ]);
+            }
 
             $existingPlayer = $this->entityManager->getRepository(Player::class)
                 ->findOneBy(['name' => $name]);

@@ -33,7 +33,7 @@
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
 | **Plan Testing (TST)** | **10/15** | **5 taches restantes** |
-| **Vague 7 — Qualite, stabilisation & fondations UX** | **5/16** | **Prochaine priorite** |
+| **Vague 7 — Qualite, stabilisation & fondations UX** | **9/16** | **Prochaine priorite** |
 | **Vague 8 — Contenu critique** | **0/9** | **Priorite haute** |
 | **Vague 9 — Economie & social** | **0/10** | **A venir** |
 | **Vague 10 — Monde vivant & endgame** | **0/8** | **Long terme** |
