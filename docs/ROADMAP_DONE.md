@@ -64,6 +64,7 @@
 - [x] SynergyCalculator : cache memoire par requete (elimine findAll() duplique)
 - [x] 11 index DB manquants : player, inventory, domain_experience, mob, pnj, object_layer, game_event
 - [x] Suppression requete findAll() inutile dans Skill/IndexController
+- [x] Benchmark performance : test PHPUnit verifiant que les routes critiques (game + API) repondent en < 200ms
 
 ### 104 — Tests integration quetes & progression (TST-07) ✅
 > Tests d'integration avec vraie DB (pas de mocks) pour les flux critiques quetes et progression.

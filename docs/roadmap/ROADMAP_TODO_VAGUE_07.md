@@ -67,7 +67,7 @@
 - [x] Profiling Doctrine : identifier les requetes N+1 (Symfony Profiler / logs)
 - [x] Ajouter les `JOIN FETCH` et index manquants
 - [x] Cache Symfony pour les donnees statiques (items, monstres, sorts)
-- [ ] Benchmark : temps de reponse < 200ms pour les routes critiques
+- [x] Benchmark : temps de reponse < 200ms pour les routes critiques
 
 ---
 
