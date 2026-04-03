@@ -44,12 +44,12 @@
 - [ ] Limite : 100 messages conserves par joueur
 - [ ] Blocage de joueur (ignore list)
 
-### 120 — Profil public joueur (S | ★★)
+### 120 — Profil public joueur (S | ★★) ✅
 > Prerequis : ∅
-- [ ] Page `/game/player/{slug}` : avatar, race, statistiques, equipement visible, domaines
-- [ ] Succes affiches (selection par le joueur, top 5)
-- [ ] Guilde, titre, date d'inscription
-- [ ] Lien "Voir le profil" depuis le chat et la carte
+- [x] Page `/game/player/{id}/profile` : avatar, race, statistiques, equipement visible, domaines
+- [x] Succes affiches (selection par le joueur, top 5)
+- [x] Guilde, titre, date d'inscription
+- [x] Lien "Voir le profil" depuis le chat et la carte
 
 ### 121 — Systeme de reputation & karma (M | ★★)
 > Prerequis : ← 120

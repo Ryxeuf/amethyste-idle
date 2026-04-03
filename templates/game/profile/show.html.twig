@@ -28,7 +28,7 @@
                     <div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
                         {% if targetPlayer.race %}
                             <span>{{ targetPlayer.race.name }}</span>
-                            <span class="text-gray-600">·</span>
+                            <span class="text-gray-600">&middot;</span>
                         {% endif %}
                         <span>{{ targetPlayer.classType }}</span>
                     </div>
@@ -91,6 +91,33 @@
         </div>
     </div>
 
+    {# Equipement visible #}
+    {% if equippedItems|filter(v => v is not null)|length > 0 %}
+    <div class="game-card mb-4">
+        <div class="game-card-header">
+            <h3 class="text-sm font-semibold text-white">Equipement</h3>
+        </div>
+        <div class="game-card-body">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {% for location, playerItem in equippedItems %}
+                    {% if playerItem is not null %}
+                        {% set gi = playerItem.genericItem %}
+                        <div class="flex items-center gap-2 bg-gray-800/50 rounded-lg p-2 border border-gray-700/20">
+                            <div class="w-8 h-8 rounded flex items-center justify-center shrink-0 {{ _self.rarity_bg_class(gi.rarity) }}">
+                                {{ _self.slot_icon(location) }}
+                            </div>
+                            <div class="min-w-0">
+                                <div class="text-xs font-medium truncate {{ _self.rarity_text_class(gi.rarity) }}">{{ gi.name }}</div>
+                                <div class="text-[10px] text-gray-500">{{ _self.slot_label(location) }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     {# Domaines principaux #}
     {% if domainExperiences|length > 0 %}
     <div class="game-card mb-4">
@@ -118,7 +145,39 @@
     </div>
     {% endif %}
 
-    {# Succes notables #}
+    {# Succes en vedette (showcase) #}
+    {% if featuredAchievements|length > 0 %}
+    <div class="game-card mb-4">
+        <div class="game-card-header flex items-center justify-between">
+            <h3 class="text-sm font-semibold text-white">Succes en vedette</h3>
+            <span class="text-xs text-gray-400">{{ featuredAchievements|length }}/5</span>
+        </div>
+        <div class="game-card-body">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {% for pa in featuredAchievements %}
+                    <div class="flex items-center gap-2 bg-gradient-to-r from-amber-900/20 to-gray-800/50 rounded-lg p-2.5 border border-amber-700/20">
+                        <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-sm font-medium text-amber-400 truncate">{{ pa.achievement.title }}</div>
+                            <div class="text-[10px] text-gray-500 truncate">{{ pa.achievement.description }}</div>
+                        </div>
+                        {% if isOwnProfile %}
+                            <button type="button"
+                                    class="text-amber-500 hover:text-amber-300 transition-colors shrink-0"
+                                    title="Retirer des succes en vedette"
+                                    data-controller="profile-achievement-toggle"
+                                    data-profile-achievement-toggle-url-value="{{ path('app_game_player_achievement_toggle_featured', {id: pa.id}) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Succes obtenus #}
     {% if completedAchievements|length > 0 %}
     <div class="game-card mb-4">
         <div class="game-card-header flex items-center justify-between">
@@ -129,11 +188,20 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for pa in completedAchievements %}
                     <div class="flex items-center gap-2 bg-gray-800/50 rounded-lg p-2.5">
-                        <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('🏆') }}</span>
-                        <div class="min-w-0">
+                        <span class="text-lg flex-shrink-0">{{ pa.achievement.icon|default('&#127942;') }}</span>
+                        <div class="min-w-0 flex-1">
                             <div class="text-sm font-medium text-amber-400 truncate">{{ pa.achievement.title }}</div>
                             <div class="text-[10px] text-gray-500 truncate">{{ pa.achievement.description }}</div>
                         </div>
+                        {% if isOwnProfile %}
+                            <button type="button"
+                                    class="shrink-0 transition-colors {{ pa.featured ? 'text-amber-500 hover:text-amber-300' : 'text-gray-600 hover:text-amber-400' }}"
+                                    title="{{ pa.featured ? 'Retirer des succes en vedette' : 'Mettre en vedette' }}"
+                                    data-controller="profile-achievement-toggle"
+                                    data-profile-achievement-toggle-url-value="{{ path('app_game_player_achievement_toggle_featured', {id: pa.id}) }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            </button>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
@@ -167,3 +235,72 @@
 
 </div>
 {% endblock %}
+
+{# ===== MACROS ===== #}
+
+{% macro rarity_bg_class(rarity) %}
+{% apply spaceless %}
+{% if rarity == 'amethyst' %}bg-fuchsia-900/50 text-fuchsia-400
+{% elseif rarity == 'legendary' %}bg-yellow-900/50 text-yellow-400
+{% elseif rarity == 'epic' %}bg-purple-900/50 text-purple-400
+{% elseif rarity == 'rare' %}bg-blue-900/50 text-blue-400
+{% elseif rarity == 'uncommon' %}bg-green-900/50 text-green-400
+{% else %}bg-gray-700/50 text-gray-400{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{% macro rarity_text_class(rarity) %}
+{% apply spaceless %}
+{% if rarity == 'amethyst' %}text-fuchsia-400
+{% elseif rarity == 'legendary' %}text-yellow-400
+{% elseif rarity == 'epic' %}text-purple-300
+{% elseif rarity == 'rare' %}text-blue-300
+{% elseif rarity == 'uncommon' %}text-green-300
+{% else %}text-white{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{% macro slot_label(location) %}
+{% apply spaceless %}
+{% if location == 'head' %}Tete
+{% elseif location == 'neck' %}Cou
+{% elseif location == 'shoulder' %}Epaules
+{% elseif location == 'chest' %}Torse
+{% elseif location == 'hand' %}Mains
+{% elseif location == 'main_weapon' %}Arme
+{% elseif location == 'side_weapon' %}Bouclier
+{% elseif location == 'belt' %}Ceinture
+{% elseif location == 'leg' %}Jambes
+{% elseif location == 'foot' %}Pieds
+{% elseif location == 'ring_1' or location == 'ring_2' %}Anneau
+{% else %}{{ location }}{% endif %}
+{% endapply %}
+{% endmacro %}
+
+{% macro slot_icon(location) %}
+{% if location == 'head' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z"/><path d="M9 21h6"/></svg>
+{% elseif location == 'neck' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+{% elseif location == 'shoulder' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+{% elseif location == 'chest' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2 12 5.5 8 2 3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+{% elseif location == 'hand' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 13"/></svg>
+{% elseif location == 'main_weapon' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2l6 6-9 9-6-6 9-9z"/><path d="M5.5 16.5L2 22l5.5-3.5"/></svg>
+{% elseif location == 'side_weapon' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+{% elseif location == 'belt' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="9" width="20" height="6" rx="1"/><rect x="9" y="8" width="6" height="8" rx="1"/></svg>
+{% elseif location == 'leg' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2v14a2 2 0 0 0 2 2h2v4h4v-4h2a2 2 0 0 0 2-2V2"/></svg>
+{% elseif location == 'foot' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16s1-1 3-1 3 2 5 2 3-1 5-1 3 1 3 1v2H4v-2z"/><path d="M4 12s1-1 3-1 3 2 5 2 3-1 5-1 3 1 3 1v2s-1-1-3-1-3 2-5 2-3-1-5-1-3 1-3 1v-2z"/></svg>
+{% elseif location == 'ring_1' or location == 'ring_2' %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+{% else %}
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+{% endif %}
+{% endmacro %}
