@@ -59,9 +59,11 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {% for recipe in recipesByCraft[craft] %}
                         {% set craftCheck = canCraftByCraft[craft][recipe.id] ?? {possible: false, missing: []} %}
+                        {% set maxCraft = maxCraftByCraft[craft][recipe.id] ?? 0 %}
                         {% include 'game/crafting/_recipe_card.html.twig' with {
                             recipe: recipe,
-                            craftCheck: craftCheck
+                            craftCheck: craftCheck,
+                            maxCraft: maxCraft
                         } %}
                     {% endfor %}
                 </div>

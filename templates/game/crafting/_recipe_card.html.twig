@@ -89,9 +89,35 @@
         <span>+{{ recipe.xpReward }} XP</span>
     </div>
 
-    {# Bouton de fabrication #}
-    <form method="post" action="{{ path('app_game_craft_execute', {slug: recipe.slug}) }}">
-        <button type="submit"
+    {# Bouton de fabrication avec quantite #}
+    {% set maxCraftQty = maxCraft|default(0) %}
+    <div data-controller="craft-queue"
+         data-craft-queue-slug-value="{{ recipe.slug }}"
+         data-craft-queue-max-value="{{ maxCraftQty }}">
+        {% if canCraftRecipe and maxCraftQty > 1 %}
+            <div class="flex items-center gap-1.5 mb-2">
+                <button type="button" data-action="craft-queue#decrement"
+                        class="w-7 h-7 flex items-center justify-center rounded bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-bold">-</button>
+                <input type="number" min="1" max="{{ maxCraftQty }}" value="1"
+                       data-craft-queue-target="quantityInput"
+                       class="w-12 h-7 text-center text-sm bg-gray-700 text-white rounded border border-gray-600 focus:border-purple-500 focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                <button type="button" data-action="craft-queue#increment"
+                        class="w-7 h-7 flex items-center justify-center rounded bg-gray-700 hover:bg-gray-600 text-gray-300 text-sm font-bold">+</button>
+                <button type="button" data-action="craft-queue#setMax"
+                        data-craft-queue-target="maxBadge"
+                        class="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/50 text-purple-300 border border-purple-700/50 hover:bg-purple-800/50 cursor-pointer">
+                    Max ({{ maxCraftQty }})
+                </button>
+            </div>
+        {% elseif canCraftRecipe %}
+            <input type="hidden" value="1" data-craft-queue-target="quantityInput">
+        {% else %}
+            <input type="hidden" value="0" data-craft-queue-target="quantityInput">
+        {% endif %}
+
+        <button type="button"
+                data-craft-queue-target="button"
+                data-action="craft-queue#craft"
                 class="w-full py-2 px-4 rounded-md text-sm font-medium transition-colors
                     {% if canCraftRecipe %}
                         bg-purple-600 hover:bg-purple-500 text-white cursor-pointer
@@ -99,11 +125,13 @@
                         bg-gray-700 text-gray-500 cursor-not-allowed
                     {% endif %}"
                 {% if not canCraftRecipe %}disabled{% endif %}>
-            {% if canCraftRecipe %}
-                Fabriquer
-            {% else %}
-                Ingredients manquants
-            {% endif %}
+            <span data-craft-queue-target="buttonText">
+                {% if canCraftRecipe %}
+                    Fabriquer
+                {% else %}
+                    Ingredients manquants
+                {% endif %}
+            </span>
         </button>
-    </form>
+    </div>
 </div>

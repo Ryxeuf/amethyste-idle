@@ -14,10 +14,12 @@
 - [x] Toast craft reussi avec XP gagnee (notification `craft_success` via CraftEvent)
 - [x] Notification visuelle Mercure pour les achievements et level-ups (mapping type-aware dans notification_center_controller)
 
-### 139 — Comparaison d'equipement & QoL inventaire (partiel) ✅
-> Tooltip de comparaison avec delta stats sur les items d'equipement disponibles.
+### 139 — Comparaison d'equipement & QoL inventaire ✅
+> Tooltip de comparaison avec delta stats + file de craft + timer reset quotidiennes.
 - [x] Tooltip/modal de comparaison avant equipement (delta stats : DEF, materia slots, element)
 - [x] Apercu de l'objet au hover (stats, rarete, description) — deja fonctionnel, enrichi avec comparaison
+- [x] File d'attente de craft : input quantite (1-99) avec boutons +/-/Max, craft en lot via API JSON, feedback toast
+- [x] Timer reset quetes quotidiennes : compte a rebours visible dans l'onglet Quotidiennes ("Prochain reset : HHhMMmSSs")
 
 ### 104 — Tests integration quetes & progression (TST-07) ✅
 > Tests d'integration avec vraie DB (pas de mocks) pour les flux critiques quetes et progression.
