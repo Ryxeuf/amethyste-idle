@@ -15,3 +15,4 @@ L'interface **admin /admin/roadmap** agrege automatiquement ces fichiers pour l'
 - [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md) ✅
 - [roadmap/PLAN_MAP_EDITOR.md](roadmap/PLAN_MAP_EDITOR.md) ✅
 - [roadmap/PLAN_TESTING.md](roadmap/PLAN_TESTING.md) — 6 taches restantes (integrees en Vague 7)
+- [roadmap/PLAN_AVATAR_SYSTEM.md](roadmap/PLAN_AVATAR_SYSTEM.md) — 38 taches (format 8x8, 7 phases)

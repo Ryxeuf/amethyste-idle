@@ -123,6 +123,32 @@ VAGUE 10 — MONDE VIVANT & ENDGAME
   └─ Piste C — Technique (‖)
       134 Load testing & scaling         ∅
       135 Localisation i18n              ∅
+
+PLAN AVATAR MODULAIRE (format 8x8, 38 taches)
+  Voir : PLAN_AVATAR_SYSTEM.md
+  ┌─ Phase 0 — Assets (prerequis)
+  │   AVT-01..05 (inventaire, doc layout, organisation)
+  │
+  ├─ Phase 1 — SpriteAnimator (← Phase 0, ‖)
+  │   AVT-06..09 (type avatar, multi-anim, positionnement)
+  │
+  ├─ Phase 2 — Composition layers (‖ Phase 1)
+  │   AVT-10..12 (Composer, Cache, Factory)
+  │
+  ├─ Phase 3 — Backend (‖ Phases 1-2)
+  │   AVT-13..18 (Player fields, hash, API)
+  │
+  ├─ Phase 4 — Integration map (← Phases 1-3)
+  │   AVT-19..22 (Factory map, createAnimator, tests)
+  │
+  ├─ Phase 5 — Creation personnage (← Phase 4)
+  │   AVT-23..26 (formulaire, preview, race)
+  │
+  ├─ Phase 6 — Equipement visible (← Phase 5)
+  │   AVT-27..30 (avatarSheet items, Mercure)
+  │
+  └─ Phase 7 — Polish & animations (← Phase 6)
+      AVT-31..38 (run, jump, paper doll, lazy load)
 ```
 
 ---
@@ -144,4 +170,4 @@ VAGUE 10 — MONDE VIVANT & ENDGAME
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅
 - [Testing & qualite](PLAN_TESTING.md) — 6 taches restantes (integrees en Vague 7)
-- [Systeme d'avatar modulaire](PLAN_AVATAR_SYSTEM.md) — 30 taches (AVT-01 a AVT-30, 6 phases)
+- [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — 38 taches (AVT-01 a AVT-38, 7 phases)
