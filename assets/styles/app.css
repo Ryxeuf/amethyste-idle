@@ -1406,6 +1406,50 @@ a.materia-slots-counter--link:hover {
   margin-top: 0.25rem;
 }
 
+/* ===== INVENTORY: Equipment Comparison ===== */
+.inv-tooltip-compare,
+.inv-sheet-compare {
+  margin-top: 0.375rem;
+  padding: 0.375rem;
+  background: rgba(55, 65, 81, 0.4);
+  border-radius: 0.375rem;
+  border-left: 2px solid rgba(156, 163, 175, 0.4);
+}
+.inv-compare-title {
+  font-size: 0.625rem;
+  color: #9ca3af;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+.inv-compare-eq-name {
+  color: #d1d5db;
+}
+.inv-compare-line {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.0625rem 0;
+}
+.inv-compare-up {
+  color: #4ade80;
+}
+.inv-compare-up::before {
+  content: "\25B2 ";
+  font-size: 0.5rem;
+  vertical-align: middle;
+}
+.inv-compare-down {
+  color: #f87171;
+}
+.inv-compare-down::before {
+  content: "\25BC ";
+  font-size: 0.5rem;
+  vertical-align: middle;
+}
+.inv-compare-neutral {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
 /* ===== INVENTORY: Bottom Sheet (mobile tap) ===== */
 .inv-sheet-backdrop {
   position: fixed;
