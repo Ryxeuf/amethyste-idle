@@ -100,7 +100,7 @@ class CombatFlowTest extends AbstractE2ETestCase
             );
 
             static::$pantherClient->executeScript(
-                "document.getElementById('lootForm').dispatchEvent(new Event('submit'));"
+                "document.getElementById('lootForm').submit();"
             );
 
             $this->waitForUrlContaining('/game/map');
