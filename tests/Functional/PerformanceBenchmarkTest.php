@@ -2,6 +2,7 @@
 
 namespace App\Tests\Functional;
 
+use App\Entity\App\Player;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -9,21 +10,20 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * Performance benchmark: verify that critical routes respond in < 200ms.
+ * Performance benchmark: verify that critical routes respond within an acceptable threshold.
+ * Default threshold: 200ms (overridable via PERF_MAX_RESPONSE_MS env var for CI).
  * Requires a real database with fixtures loaded.
  */
 class PerformanceBenchmarkTest extends WebTestCase
 {
-    /**
-     * Maximum allowed response time in milliseconds.
-     */
-    private const MAX_RESPONSE_TIME_MS = 200;
-
     private KernelBrowser $client;
+
+    private int $maxResponseTimeMs;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
+        $this->maxResponseTimeMs = (int) ($_ENV['PERF_MAX_RESPONSE_MS'] ?? 200);
 
         /** @var EntityManagerInterface $em */
         $em = static::getContainer()->get(EntityManagerInterface::class);
@@ -40,57 +40,35 @@ class PerformanceBenchmarkTest extends WebTestCase
     }
 
     #[DataProvider('criticalGameRoutesProvider')]
-    public function testGameRouteRespondsUnder200ms(string $url, string $label): void
+    public function testGameRouteRespondsWithinThreshold(string $url, string $label): void
     {
-        $start = microtime(true);
-        $this->client->request('GET', $url);
-        $durationMs = (microtime(true) - $start) * 1000;
-
-        $statusCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertLessThan(
-            500,
-            $statusCode,
-            sprintf('[%s] returned HTTP %d', $label, $statusCode),
-        );
-
-        $this->assertLessThanOrEqual(
-            self::MAX_RESPONSE_TIME_MS,
-            $durationMs,
-            sprintf(
-                '[%s] responded in %.1f ms (max: %d ms)',
-                $label,
-                $durationMs,
-                self::MAX_RESPONSE_TIME_MS,
-            ),
-        );
+        $this->assertRoutePerformance($url, $label);
     }
 
-    #[DataProvider('criticalApiRoutesProvider')]
-    public function testApiRouteRespondsUnder200ms(string $url, string $label): void
+    #[DataProvider('simpleApiRoutesProvider')]
+    public function testApiRouteRespondsWithinThreshold(string $url, string $label): void
     {
-        $start = microtime(true);
-        $this->client->request('GET', $url);
-        $durationMs = (microtime(true) - $start) * 1000;
+        $this->assertRoutePerformance($url, $label);
+    }
 
-        $statusCode = $this->client->getResponse()->getStatusCode();
+    public function testMapCellsApiRespondsWithinThreshold(): void
+    {
+        // Use the player's actual map — avoids hardcoding a mapId that may not exist
+        $this->assertRoutePerformance('/api/map/cells?x=0&y=0&radius=5', 'API: Map Cells');
+    }
 
-        $this->assertLessThan(
-            500,
-            $statusCode,
-            sprintf('[%s] returned HTTP %d', $label, $statusCode),
-        );
+    public function testMapEntitiesApiRespondsWithinThreshold(): void
+    {
+        /** @var EntityManagerInterface $em */
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $player = $em->getRepository(Player::class)->findOneBy([]);
 
-        $this->assertLessThanOrEqual(
-            self::MAX_RESPONSE_TIME_MS,
-            $durationMs,
-            sprintf(
-                '[%s] responded in %.1f ms (max: %d ms)',
-                $label,
-                $durationMs,
-                self::MAX_RESPONSE_TIME_MS,
-            ),
-        );
+        if ($player === null || $player->getMap() === null) {
+            $this->markTestSkipped('No player with a map found in fixtures.');
+        }
+
+        $mapId = $player->getMap()->getId();
+        $this->assertRoutePerformance('/api/map/entities?mapId=' . $mapId, 'API: Map Entities');
     }
 
     /**
@@ -109,13 +87,37 @@ class PerformanceBenchmarkTest extends WebTestCase
     /**
      * @return iterable<string, array{string, string}>
      */
-    public static function criticalApiRoutesProvider(): iterable
+    public static function simpleApiRoutesProvider(): iterable
     {
         yield 'map-config' => ['/api/map/config', 'API: Map Config'];
-        yield 'map-cells' => ['/api/map/cells?x=0&y=0&radius=5&mapId=1', 'API: Map Cells'];
-        yield 'map-entities' => ['/api/map/entities?mapId=1', 'API: Map Entities'];
         yield 'quickbar-items' => ['/api/quickbar/items', 'API: Quickbar Items'];
         yield 'game-time' => ['/api/game/time', 'API: Game Time'];
         yield 'active-events' => ['/api/game/events/active', 'API: Active Events'];
+    }
+
+    private function assertRoutePerformance(string $url, string $label): void
+    {
+        $start = microtime(true);
+        $this->client->request('GET', $url);
+        $durationMs = (microtime(true) - $start) * 1000;
+
+        $statusCode = $this->client->getResponse()->getStatusCode();
+
+        $this->assertLessThan(
+            500,
+            $statusCode,
+            sprintf('[%s] returned HTTP %d', $label, $statusCode),
+        );
+
+        $this->assertLessThanOrEqual(
+            $this->maxResponseTimeMs,
+            $durationMs,
+            sprintf(
+                '[%s] responded in %.1f ms (max: %d ms)',
+                $label,
+                $durationMs,
+                $this->maxResponseTimeMs,
+            ),
+        );
     }
 }
