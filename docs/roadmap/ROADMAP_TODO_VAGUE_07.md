@@ -62,11 +62,11 @@
 - [ ] Equilibrage donjons : difficulte vs recompenses
 - [ ] Equilibrage world boss : HP et loot en fonction du nombre de joueurs actifs
 
-### 112 — Optimisation requetes N+1 & performance DB (M | ★★)
+### ~~112 — Optimisation requetes N+1 & performance DB (M | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Profiling Doctrine : identifier les requetes N+1 (Symfony Profiler / logs)
-- [ ] Ajouter les `JOIN FETCH` et index manquants
-- [ ] Cache Symfony pour les donnees statiques (items, monstres, sorts)
+- [x] Profiling Doctrine : identifier les requetes N+1 (Symfony Profiler / logs)
+- [x] Ajouter les `JOIN FETCH` et index manquants
+- [x] Cache Symfony pour les donnees statiques (items, monstres, sorts)
 - [ ] Benchmark : temps de reponse < 200ms pour les routes critiques
 
 ---

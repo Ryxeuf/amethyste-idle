@@ -6,6 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'game_event')]
+#[ORM\Index(columns: ['status'], name: 'idx_game_event_status')]
+#[ORM\Index(columns: ['type'], name: 'idx_game_event_type')]
 #[ORM\Entity]
 class GameEvent
 {

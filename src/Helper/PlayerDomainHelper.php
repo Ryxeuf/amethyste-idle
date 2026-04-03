@@ -5,17 +5,35 @@ namespace App\Helper;
 use App\Entity\App\DomainExperience;
 use App\Entity\App\Player;
 use App\Entity\Game\Domain;
+use App\Repository\DomainExperienceRepository;
 
 class PlayerDomainHelper
 {
-    public function __construct(private readonly PlayerHelper $playerHelper)
-    {
+    /** @var DomainExperience[]|null Cache des domain experiences pré-chargées */
+    private ?array $cachedDomainExperiences = null;
+    private ?int $cachedPlayerId = null;
+
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly DomainExperienceRepository $domainExperienceRepository,
+    ) {
     }
 
     public function getDomainExperience(Domain $domain, ?Player $character = null): ?DomainExperience
     {
-        $player = $character ?? $this->playerHelper->getPlayer();
-        foreach ($player->getDomainExperiences() as $domainExperience) {
+        // Si un joueur spécifique est passé, utiliser le chemin classique
+        if ($character !== null) {
+            foreach ($character->getDomainExperiences() as $domainExperience) {
+                if ($domainExperience->getDomain() === $domain) {
+                    return $domainExperience;
+                }
+            }
+
+            return null;
+        }
+
+        // Pour le joueur courant, utiliser le cache pré-chargé avec JOIN FETCH
+        foreach ($this->getPreloadedDomainExperiences() as $domainExperience) {
             if ($domainExperience->getDomain() === $domain) {
                 return $domainExperience;
             }
@@ -26,14 +44,9 @@ class PlayerDomainHelper
 
     public function getAvailableDomainExperience(Domain $domain, ?Player $character = null): int
     {
-        $player = $character ?? $this->playerHelper->getPlayer();
-        foreach ($player->getDomainExperiences() as $domainExperience) {
-            if ($domainExperience->getDomain() === $domain) {
-                return $domainExperience->getAvailableExperience();
-            }
-        }
+        $domainExperience = $this->getDomainExperience($domain, $character);
 
-        return 0;
+        return $domainExperience?->getAvailableExperience() ?? 0;
     }
 
     /**
@@ -42,11 +55,34 @@ class PlayerDomainHelper
     public function getDomains(): array
     {
         $domains = [];
-        foreach ($this->playerHelper->getPlayer()->getDomainExperiences() as $domainExperience) {
+        foreach ($this->getPreloadedDomainExperiences() as $domainExperience) {
             $domains[] = $domainExperience->getDomain();
         }
 
         return $domains;
+    }
+
+    /**
+     * Pré-charge toutes les DomainExperience avec Domain + Skills via JOIN FETCH.
+     * Élimine les requêtes N+1 sur la page skills.
+     *
+     * @return DomainExperience[]
+     */
+    private function getPreloadedDomainExperiences(): array
+    {
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return [];
+        }
+
+        if ($this->cachedDomainExperiences !== null && $this->cachedPlayerId === $player->getId()) {
+            return $this->cachedDomainExperiences;
+        }
+
+        $this->cachedDomainExperiences = $this->domainExperienceRepository->findByPlayerWithDomainsAndSkills($player);
+        $this->cachedPlayerId = $player->getId();
+
+        return $this->cachedDomainExperiences;
     }
 
     public function getDomainBySkillAction(string $action, array $options = []): ?Domain
