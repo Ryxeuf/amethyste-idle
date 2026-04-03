@@ -117,6 +117,18 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
+     * Wait for a Stimulus controller to be connected on the page.
+     */
+    protected function waitForStimulus(string $controllerName, int $timeout = self::WAIT_TIMEOUT): void
+    {
+        static::$pantherClient->wait($timeout)->until(
+            WebDriverExpectedCondition::presenceOfElementLocated(
+                WebDriverBy::cssSelector(sprintf('[data-controller*="%s"]', $controllerName))
+            )
+        );
+    }
+
+    /**
      * Check whether a CSS selector exists in the page without throwing.
      */
     protected function selectorExists(string $selector): bool

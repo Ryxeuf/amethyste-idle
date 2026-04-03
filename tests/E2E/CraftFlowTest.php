@@ -62,14 +62,16 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('#craft-tabs');
         $this->waitForTurbo();
 
+        // Les recettes utilisent le controleur Stimulus craft-queue
         $recipeCount = static::$pantherClient->executeScript(
-            "return document.querySelectorAll('.craft-panel form[action*=\"/game/craft/craft/\"]').length;"
+            "return document.querySelectorAll('[data-controller*=\"craft-queue\"]').length;"
         );
 
         $this->assertGreaterThan(0, $recipeCount, 'Des recettes doivent etre affichees dans les fixtures');
 
+        // Chaque recette a un bouton via data-craft-queue-target="button"
         $buttonCount = static::$pantherClient->executeScript(
-            "return document.querySelectorAll('.craft-panel form button[type=\"submit\"]').length;"
+            "return document.querySelectorAll('[data-craft-queue-target=\"button\"]').length;"
         );
 
         $this->assertSame($recipeCount, $buttonCount, 'Chaque recette doit avoir un bouton de fabrication');
@@ -83,29 +85,30 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('#craft-tabs');
         $this->waitForTurbo();
 
-        // Chercher une recette craftable (bouton non disabled)
+        // Chercher une recette craftable (bouton Stimulus non disabled)
         $craftableSlug = static::$pantherClient->executeScript(
-            "const form = document.querySelector('.craft-panel form button[type=\"submit\"]:not([disabled])')?.closest('form');
-             if (!form) return null;
-             const action = form.getAttribute('action');
-             const match = action.match(/\\/game\\/craft\\/craft\\/(.+)$/);
-             return match ? match[1] : null;"
+            "const btn = document.querySelector('[data-action=\"craft-queue#craft\"]:not([disabled])');
+             if (!btn) return null;
+             const controller = btn.closest('[data-controller*=\"craft-queue\"]');
+             return controller ? controller.dataset.craftQueueSlugValue : null;"
         );
 
         if (null === $craftableSlug) {
             $disabledCount = static::$pantherClient->executeScript(
-                "return document.querySelectorAll('.craft-panel form button[disabled]').length;"
+                "return document.querySelectorAll('[data-action=\"craft-queue#craft\"][disabled]').length;"
             );
             $this->assertGreaterThan(0, $disabledCount, 'Des recettes doivent exister meme si non craftables');
 
             return;
         }
 
-        // Soumettre le formulaire de craft
-        $craftForm = static::$pantherClient->findElement(
-            WebDriverBy::cssSelector(sprintf('form[action$="/game/craft/craft/%s"]', $craftableSlug))
-        );
-        $craftForm->submit();
+        // Cliquer sur le bouton de craft du controleur Stimulus
+        static::$pantherClient->findElement(
+            WebDriverBy::cssSelector(sprintf(
+                '[data-craft-queue-slug-value="%s"] [data-action="craft-queue#craft"]',
+                $craftableSlug
+            ))
+        )->click();
 
         // Apres soumission, la page de craft est rechargee
         $this->waitForSelector('#craft-tabs');

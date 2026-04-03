@@ -29,12 +29,13 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->assertSelectorExists('.map-canvas-container');
 
         // 2. Declencher un combat en se deplacant vers un mob via l'API
+        //    Mobs proches du spawn joueur (85.34) sur map_1
         $mobPositions = [
-            ['targetX' => 14, 'targetY' => 16], // ochu_1
-            ['targetX' => 17, 'targetY' => 2],  // zombie_1
-            ['targetX' => 6, 'targetY' => 5],   // zombie_2
-            ['targetX' => 10, 'targetY' => 8],  // goblin_1
-            ['targetX' => 12, 'targetY' => 10], // goblin_2
+            ['targetX' => 83, 'targetY' => 34], // slime_1
+            ['targetX' => 87, 'targetY' => 35], // slime_2
+            ['targetX' => 85, 'targetY' => 31], // slime_3
+            ['targetX' => 84, 'targetY' => 37], // bat_1
+            ['targetX' => 82, 'targetY' => 33], // giant_rat_1
         ];
 
         $fightTriggered = false;
@@ -117,8 +118,8 @@ class CombatFlowTest extends AbstractE2ETestCase
     {
         $this->login();
 
-        // Engager un combat via API
-        $result = $this->apiFetch('/api/map/move', 'POST', ['targetX' => 14, 'targetY' => 16]);
+        // Engager un combat via API (slime_1 proche du spawn)
+        $result = $this->apiFetch('/api/map/move', 'POST', ['targetX' => 83, 'targetY' => 34]);
 
         if (!isset($result['fight']['id'])) {
             $this->markTestSkipped('Aucun combat declenche — mob absent a cette position.');
