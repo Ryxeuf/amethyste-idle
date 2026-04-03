@@ -35,7 +35,7 @@ class ForbiddenNameCheckerTest extends TestCase
         yield 'reserved test' => ['test'];
         yield 'offensive french' => ['connard'];
         yield 'offensive english' => ['fuck'];
-        yield 'leet speak' => ['fvck'];
+        yield 'leet speak' => ['$h1t'];
         yield 'leet speak numbers' => ['4dm1n'];
         yield 'spaced out' => ['f u c k'];
         yield 'with hyphens' => ['ad-min'];
