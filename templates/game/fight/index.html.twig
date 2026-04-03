@@ -184,6 +184,58 @@
 			100% { opacity: 0.25; filter: saturate(0) brightness(0.7); }
 		}
 		.death-fade { animation: deathFade 0.8s ease-out forwards; }
+		/* Floating damage/heal numbers */
+		@keyframes floatNumber {
+			0% { opacity: 1; transform: translateY(0) scale(1); }
+			20% { transform: translateY(-12px) scale(1.15); }
+			100% { opacity: 0; transform: translateY(-48px) scale(0.8); }
+		}
+		.floating-number {
+			position: absolute; left: 50%; top: 0;
+			pointer-events: none; z-index: 100;
+			font-weight: 800; text-shadow: 0 1px 3px rgba(0,0,0,0.7);
+			animation: floatNumber 1s ease-out forwards;
+		}
+		.floating-number.damage { color: #fbbf24; font-size: 1.25rem; }
+		.floating-number.critical { color: #ef4444; font-size: 1.5rem; }
+		.floating-number.heal { color: #34d399; font-size: 1.25rem; }
+		.floating-number.miss { color: #6b7280; font-size: 1rem; font-style: italic; }
+		/* Boss health bar */
+		.boss-health-bar {
+			background: linear-gradient(135deg, rgba(127,29,29,0.8), rgba(153,27,27,0.6));
+			border: 1px solid rgba(239,68,68,0.5);
+			backdrop-filter: blur(4px);
+		}
+		.boss-health-fill {
+			background: linear-gradient(90deg, #dc2626, #ef4444, #dc2626);
+			transition: width 0.6s ease-out;
+		}
+		.boss-health-fill.low { background: linear-gradient(90deg, #991b1b, #dc2626, #991b1b); animation: bossLowPulse 1s ease-in-out infinite; }
+		@keyframes bossLowPulse {
+			0%, 100% { opacity: 1; }
+			50% { opacity: 0.7; }
+		}
+		/* Synergy notification banner */
+		@keyframes synergySlideIn {
+			0% { opacity: 0; transform: translateY(-20px) scale(0.9); }
+			30% { opacity: 1; transform: translateY(4px) scale(1.05); }
+			50% { transform: translateY(0) scale(1); }
+			100% { opacity: 0; transform: translateY(-10px) scale(0.95); }
+		}
+		.synergy-notification {
+			position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+			z-index: 9999; pointer-events: none;
+			animation: synergySlideIn 2s ease-out forwards;
+		}
+		/* Status effect aura glow on character cards */
+		.status-aura-poison { box-shadow: 0 0 8px 2px rgba(34,197,94,0.3), inset 0 0 4px rgba(34,197,94,0.1); }
+		.status-aura-burn { box-shadow: 0 0 8px 2px rgba(249,115,22,0.3), inset 0 0 4px rgba(249,115,22,0.1); }
+		.status-aura-freeze { box-shadow: 0 0 8px 2px rgba(34,211,238,0.3), inset 0 0 4px rgba(34,211,238,0.1); }
+		.status-aura-regeneration { box-shadow: 0 0 8px 2px rgba(52,211,153,0.3), inset 0 0 4px rgba(52,211,153,0.1); }
+		.status-aura-shield { box-shadow: 0 0 8px 2px rgba(59,130,246,0.3), inset 0 0 4px rgba(59,130,246,0.1); }
+		.status-aura-berserk { box-shadow: 0 0 8px 2px rgba(239,68,68,0.3), inset 0 0 4px rgba(239,68,68,0.1); }
+		.status-aura-paralysis { box-shadow: 0 0 8px 2px rgba(234,179,8,0.3), inset 0 0 4px rgba(234,179,8,0.1); }
+		.status-aura-silence { box-shadow: 0 0 8px 2px rgba(107,114,128,0.3), inset 0 0 4px rgba(107,114,128,0.1); }
 	</style>
 
 	<div class="game-page min-h-screen bg-gradient-to-b from-gray-900 to-gray-800"
@@ -216,6 +268,29 @@
 			</div>
 		{% endif %}
 
+		{# ===== BOSS HEALTH BAR ===== #}
+		{% for mob in fight.mobs %}
+			{% if mob.monster.isBoss and not mob.isDead %}
+				{% set bossHpPercent = (mob.life / mob.maxLife) * 100 %}
+				<div class="boss-health-bar rounded-lg p-2 mb-2">
+					<div class="flex items-center justify-between mb-1">
+						<div class="flex items-center gap-1.5">
+							<span class="text-yellow-400 text-sm">&#9813;</span>
+							<span class="text-white font-bold text-xs sm:text-sm">{{ mob.name }}</span>
+							{% if bossPhases[mob.id] is defined %}
+								<span class="text-[9px] px-1 py-0.5 rounded bg-yellow-900/50 text-yellow-300 border border-yellow-700/50">{{ bossPhases[mob.id].name }}</span>
+							{% endif %}
+						</div>
+						<span class="text-red-200 text-xs font-mono">{{ mob.life }}/{{ mob.maxLife }}</span>
+					</div>
+					<div class="w-full h-3 bg-gray-900/60 rounded-full overflow-hidden">
+						<div class="boss-health-fill h-full rounded-full{% if bossHpPercent <= 25 %} low{% endif %}"
+							style="width: {{ bossHpPercent }}%"></div>
+					</div>
+				</div>
+			{% endif %}
+		{% endfor %}
+
 		{# ===== TIMELINE ===== #}
 		{% include 'game/fight/partials/_timeline.html.twig' %}
 
@@ -226,7 +301,14 @@
 				{% for fightPlayer in fight.players %}
 					{% set isCurrentPlayer = fightPlayer.id == player.id %}
 					{% set effMaxLife = effectiveMaxLifeByPlayer[fightPlayer.id] ?? fightPlayer.maxLife %}
-					<div class="selectable-target rounded-lg p-2 sm:p-3 transition-all
+					{% set playerEffects = statusEffects['player_' ~ fightPlayer.id] ?? [] %}
+					{% set dominantAura = '' %}
+					{% for fse in playerEffects %}
+						{% if dominantAura == '' %}
+							{% set dominantAura = 'status-aura-' ~ fse.statusEffect.type %}
+						{% endif %}
+					{% endfor %}
+					<div class="selectable-target rounded-lg p-2 sm:p-3 transition-all {{ dominantAura }}
 						{% if isCurrentPlayer %}bg-gradient-to-br from-purple-900/80 to-purple-800/80 border-2 border-purple-500{% else %}game-card border border-purple-500/20{% endif %}"
 						data-player-id="{{ fightPlayer.id }}" data-target-type="player">
 
@@ -278,7 +360,14 @@
 			{# --- MONSTERS --- #}
 			<div class="space-y-2">
 				{% for mob in fight.mobs %}
-					<div class="selectable-target game-card p-2 sm:p-3 rounded-lg transition-all"
+					{% set mobEffects = statusEffects['mob_' ~ mob.id] ?? [] %}
+					{% set mobDominantAura = '' %}
+					{% for fse in mobEffects %}
+						{% if mobDominantAura == '' %}
+							{% set mobDominantAura = 'status-aura-' ~ fse.statusEffect.type %}
+						{% endif %}
+					{% endfor %}
+					<div class="selectable-target game-card p-2 sm:p-3 rounded-lg transition-all {{ mobDominantAura }}"
 						data-mob-id="{{ mob.id }}" data-target-type="mob">
 
 						<div class="flex items-center gap-2 mb-1.5">
@@ -748,6 +837,43 @@
 				overlay.addEventListener('animationend', () => overlay.remove());
 			}
 
+			/** Spawn un nombre flottant au-dessus d'une cible */
+			function spawnFloatingNumber(targetEl, text, type = 'damage') {
+				if (!targetEl) return;
+				targetEl.style.position = targetEl.style.position || 'relative';
+				if (getComputedStyle(targetEl).position === 'static') {
+					targetEl.style.position = 'relative';
+				}
+				const el = document.createElement('div');
+				el.className = 'floating-number ' + type;
+				el.textContent = text;
+				// Random horizontal offset for multiple numbers
+				const offsetX = (Math.random() - 0.5) * 40;
+				el.style.transform = `translateX(calc(-50% + ${offsetX}px))`;
+				targetEl.appendChild(el);
+				el.addEventListener('animationend', () => el.remove());
+			}
+
+			/** Affiche une notification de synergie élémentaire */
+			function showSynergyNotification(label) {
+				const el = document.createElement('div');
+				el.className = 'synergy-notification';
+				el.innerHTML = `
+					<div class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-600/90 to-purple-600/90 border border-cyan-400/50 backdrop-blur-sm shadow-lg shadow-cyan-500/20">
+						<div class="flex items-center gap-2">
+							<span class="text-cyan-200 text-lg">&#10024;</span>
+							<div>
+								<div class="text-white font-bold text-sm">SYNERGIE</div>
+								<div class="text-cyan-200 text-xs">${label}</div>
+							</div>
+							<span class="text-cyan-200 text-lg">&#10024;</span>
+						</div>
+					</div>
+				`;
+				document.body.appendChild(el);
+				el.addEventListener('animationend', () => el.remove());
+			}
+
 			/** Shake camera sur coup critique */
 			function shakeCombat() {
 				const page = document.querySelector('.game-page');
@@ -820,6 +946,21 @@
 							spawnCombatParticles(target, { color });
 							shakeTarget(target);
 
+							// Floating damage/heal numbers
+							if (data.damage && data.damage > 0) {
+								const numType = data.critical ? 'critical' : 'damage';
+								const prefix = data.critical ? '💥 ' : '-';
+								spawnFloatingNumber(target, prefix + data.damage, numType);
+							}
+							if (data.heal && data.heal > 0) {
+								spawnFloatingNumber(target, '+' + data.heal, 'heal');
+							}
+
+							// Synergy notification
+							if (data.synergy) {
+								showSynergyNotification(data.synergy);
+							}
+
 							// Sons de combat
 							if (window.SoundManager) {
 								if (data.critical) {
@@ -840,8 +981,14 @@
 								spawnCriticalParticles(target);
 								shakeCombat();
 							}
-						} else if (!data.hit && !data.fled && window.SoundManager) {
-							window.SoundManager.play('combat_miss');
+						} else if (!data.hit && !data.fled) {
+							// Miss indicator
+							if (target) {
+								spawnFloatingNumber(target, 'Miss', 'miss');
+							}
+							if (window.SoundManager) {
+								window.SoundManager.play('combat_miss');
+							}
 						}
 
 						// Fondu sur mort de la cible

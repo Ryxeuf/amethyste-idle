@@ -215,10 +215,25 @@ class FightSpellController extends AbstractController
         $messages = $statusMessages;
 
         $isCritical = false;
+        $damageDealt = 0;
+        $healAmount = 0;
         if ($hit) {
             $targetLifeBefore = $target->getLife();
+            $playerLifeBefore = $player->getLife();
             $spellMessages = $this->spellApplicator->apply($spell, $player, $target, $options);
             $isCritical = in_array('Coup critique !', $spellMessages, true);
+
+            // Calculate actual damage dealt or heal amount
+            if ($spell->getDamage() > 0) {
+                $damageDealt = max(0, $targetLifeBefore - $target->getLife());
+            }
+            if ($spell->getHeal() > 0) {
+                $healAmount = max(0, $target->getLife() - $targetLifeBefore);
+                if ($healAmount === 0 && $data['targetType'] === 'player') {
+                    // Heal on self (player is caster and target)
+                    $healAmount = max(0, $player->getLife() - $playerLifeBefore);
+                }
+            }
 
             // Tracker la contribution pour les combats world boss
             if ($fight->isWorldBossFight()) {
@@ -297,6 +312,8 @@ class FightSpellController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'hit' => $hit,
+            'damage' => $damageDealt,
+            'heal' => $healAmount,
             'messages' => $mobFirst
                 ? array_merge($mobResult['messages'], $messages)
                 : array_merge($messages, $mobResult['messages']),

@@ -31,6 +31,14 @@
 - [x] File d'attente de craft : input quantite (1-99) avec boutons +/-/Max, craft en lot via API JSON, feedback toast
 - [x] Timer reset quetes quotidiennes : compte a rebours visible dans l'onglet Quotidiennes ("Prochain reset : HHhMMmSSs")
 
+### 137 — Feedback visuels combat ✅
+> Feedback visuels riches pour le combat : nombres flottants, barre de boss, notification synergie, auras status.
+- [x] Nombres de degats flottants au-dessus des cibles (jaune degats, rouge critique, vert soin, gris miss)
+- [x] Barre de vie boss prominente en haut de l'ecran (nom, phase, animation pulsante < 25% HP)
+- [x] Notification synergie elementaire animee (banniere "SYNERGIE" avec label cyan/violet)
+- [x] Auras d'effets de statut sur les cartes combattants (lueur coloree par type d'effet)
+- [x] Champs `damage`/`heal`/`critical` ajoutes aux reponses JSON des controllers combat
+
 ### 108 — PHPStan niveau 6 + reduction baseline (TST-12) ✅
 > Passage de PHPStan level 5 → 6. Correction de toutes les erreurs reelles du baseline.
 - [x] Suppression de 9 services injectes non utilises (`property.onlyWritten`)

@@ -64,6 +64,7 @@ class FightAttackController extends AbstractController
 
         $messages = [];
         $hit = false;
+        $playerDamage = 0;
         $mobResult = ['messages' => [], 'dangerAlert' => null];
 
         if ($fight->isCoopFight()) {
@@ -71,6 +72,7 @@ class FightAttackController extends AbstractController
             $attackResult = $this->doPlayerAttack($player, $target, $fight);
             $messages = $attackResult['messages'];
             $hit = $attackResult['hit'];
+            $playerDamage = $attackResult['damage'];
             $fight->setStep($fight->getStep() + 1);
 
             if (!$fight->isTerminated()) {
@@ -91,6 +93,7 @@ class FightAttackController extends AbstractController
                 $attackResult = $this->doPlayerAttack($player, $target, $fight);
                 $messages = $attackResult['messages'];
                 $hit = $attackResult['hit'];
+                $playerDamage = $attackResult['damage'];
             }
 
             $fight->setStep($fight->getStep() + 1);
@@ -128,6 +131,8 @@ class FightAttackController extends AbstractController
         return new JsonResponse([
             'success' => true,
             'hit' => $hit,
+            'damage' => $playerDamage,
+            'critical' => false,
             'messages' => $messages,
             'dangerAlert' => $mobResult['dangerAlert'],
             'fight' => [
@@ -139,12 +144,13 @@ class FightAttackController extends AbstractController
     }
 
     /**
-     * @return array{messages: string[], hit: bool}
+     * @return array{messages: string[], hit: bool, damage: int}
      */
     private function doPlayerAttack(Player $player, CharacterInterface $target, Fight $fight): array
     {
         $messages = [];
         $hit = FightCalculator::hasAttackHit($player->getHit());
+        $damage = 0;
 
         if ($hit) {
             $damage = $this->calculateDamage($player, $target);
@@ -167,7 +173,7 @@ class FightAttackController extends AbstractController
             $messages[] = sprintf('%s rate son attaque !', $player->getName());
         }
 
-        return ['messages' => $messages, 'hit' => $hit];
+        return ['messages' => $messages, 'hit' => $hit, 'damage' => $damage];
     }
 
     private function findTarget(Fight $fight, int $targetId, string $targetType): ?CharacterInterface
