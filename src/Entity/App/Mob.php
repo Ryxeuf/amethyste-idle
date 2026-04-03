@@ -14,6 +14,8 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'mob')]
 #[ORM\Index(columns: ['map_id'], name: 'idx_mob_map')]
+#[ORM\Index(columns: ['fight_id'], name: 'idx_mob_fight')]
+#[ORM\Index(columns: ['monster_id'], name: 'idx_mob_monster')]
 #[ORM\Entity(repositoryClass: \App\Repository\MobRepository::class)]
 class Mob implements CharacterInterface
 {

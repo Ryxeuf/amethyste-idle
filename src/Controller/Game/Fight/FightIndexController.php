@@ -12,6 +12,7 @@ use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\PlayerHelper;
 use App\Repository\DungeonRunRepository;
+use App\Repository\FightRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,6 +32,7 @@ class FightIndexController extends AbstractController
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly DungeonRunRepository $dungeonRunRepository,
         private readonly DungeonManager $dungeonManager,
+        private readonly FightRepository $fightRepository,
     ) {
     }
 
@@ -47,20 +49,25 @@ class FightIndexController extends AbstractController
         if (!$player->getFight()) {
             return $this->redirectToRoute('app_game_map');
         }
-        if ($player->getFight()->isVictory()) {
+
+        // Charger le combat avec toutes ses relations via JOIN FETCH (élimine N+1)
+        $fight = $this->fightRepository->findWithRelations($player->getFight()->getId());
+        if (!$fight) {
+            return $this->redirectToRoute('app_game_map');
+        }
+
+        if ($fight->isVictory()) {
             return $this->redirectToRoute('app_game_fight_loot');
         }
         // World boss / coop : si ce joueur est mort mais d'autres joueurs sont vivants,
         // le retirer du combat et le respawn
-        if ($player->isDead() && ($player->getFight()->isWorldBossFight() || $player->getFight()->isCoopFight())) {
+        if ($player->isDead() && ($fight->isWorldBossFight() || $fight->isCoopFight())) {
             return $this->handleMultiPlayerDeath($player);
         }
 
-        if ($player->getFight()->isDefeat()) {
+        if ($fight->isDefeat()) {
             return $this->handleDefeat($player);
         }
-
-        $fight = $player->getFight();
 
         // Gather status effects for all participants
         $statusEffects = [];

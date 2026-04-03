@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class SynergyCalculator
 {
+    /** @var DomainSynergy[]|null Cache en mémoire par requête */
+    private ?array $synergiesCache = null;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -21,7 +24,7 @@ class SynergyCalculator
      */
     public function getActiveSynergies(Player $player): array
     {
-        $synergies = $this->entityManager->getRepository(DomainSynergy::class)->findAll();
+        $synergies = $this->getAllSynergies();
         $domainXpMap = $this->buildDomainXpMap($player);
         $active = [];
 
@@ -51,7 +54,7 @@ class SynergyCalculator
      */
     public function getAllSynergiesWithStatus(Player $player): array
     {
-        $synergies = $this->entityManager->getRepository(DomainSynergy::class)->findAll();
+        $synergies = $this->getAllSynergies();
         $domainXpMap = $this->buildDomainXpMap($player);
         $result = [];
 
@@ -111,5 +114,20 @@ class SynergyCalculator
         }
 
         return $map;
+    }
+
+    /**
+     * Charge toutes les DomainSynergy avec cache en mémoire par requête.
+     * Évite les appels multiples à findAll() dans le même cycle requête.
+     *
+     * @return DomainSynergy[]
+     */
+    private function getAllSynergies(): array
+    {
+        if ($this->synergiesCache === null) {
+            $this->synergiesCache = $this->entityManager->getRepository(DomainSynergy::class)->findAll();
+        }
+
+        return $this->synergiesCache;
     }
 }

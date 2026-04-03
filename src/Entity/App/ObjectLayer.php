@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'object_layer')]
+#[ORM\Index(columns: ['map_id', 'type'], name: 'idx_object_layer_map_type')]
 #[ORM\Entity()]
 class ObjectLayer
 {

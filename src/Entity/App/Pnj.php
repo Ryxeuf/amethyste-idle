@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'pnj')]
+#[ORM\Index(columns: ['map_id'], name: 'idx_pnj_map')]
 #[ORM\Entity()]
 class Pnj
 {

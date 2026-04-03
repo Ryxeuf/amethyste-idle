@@ -7,7 +7,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'domain_experience')]
-#[ORM\Entity()]
+#[ORM\Index(columns: ['player_id'], name: 'idx_domain_experience_player')]
+#[ORM\Index(columns: ['domain_id'], name: 'idx_domain_experience_domain')]
+#[ORM\Entity(repositoryClass: \App\Repository\DomainExperienceRepository::class)]
 class DomainExperience
 {
     use TimestampableEntity;

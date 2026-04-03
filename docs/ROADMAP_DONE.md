@@ -47,6 +47,16 @@
 - [x] Resultats : MSI 79%, Covered MSI 80%, 108 mutants tues sur 141
 - [x] Exclusion documentee des mutants equivalents (CastInt apres round())
 
+### 112 — Optimisation requetes N+1 & performance DB ✅
+> Profiling et correction des requetes N+1 critiques, ajout d'index manquants, cache memoire par requete.
+- [x] Audit complet des N+1 : inventaire, combat, skills, synergies (30-100+ requetes eliminées par page)
+- [x] InventoryRepository : JOIN FETCH PlayerItem + Item pour les pages inventaire/materia/equipement
+- [x] DomainExperienceRepository : JOIN FETCH Domain + Skills pour la page talents
+- [x] FightIndexController : chargement du combat via FightRepository::findWithRelations() au lieu de lazy-load
+- [x] SynergyCalculator : cache memoire par requete (elimine findAll() duplique)
+- [x] 11 index DB manquants : player, inventory, domain_experience, mob, pnj, object_layer, game_event
+- [x] Suppression requete findAll() inutile dans Skill/IndexController
+
 ### 104 — Tests integration quetes & progression (TST-07) ✅
 > Tests d'integration avec vraie DB (pas de mocks) pour les flux critiques quetes et progression.
 - [x] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense

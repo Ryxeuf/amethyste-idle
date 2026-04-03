@@ -5,6 +5,7 @@ namespace App\Helper;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\Repository\InventoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -17,10 +18,14 @@ class PlayerHelper implements ResetInterface
 
     private ?Player $player = null;
 
+    /** @var array<int, Inventory|null> Cache inventaires par type (avec JOIN FETCH) */
+    private array $inventoryCache = [];
+
     public function __construct(
         private readonly Security $security,
         private readonly EntityManagerInterface $entityManager,
         private readonly RequestStack $requestStack,
+        private readonly InventoryRepository $inventoryRepository,
     ) {
     }
 
@@ -84,35 +89,38 @@ class PlayerHelper implements ResetInterface
 
     public function getBagInventory()
     {
-        foreach ($this->getPlayer()->getInventories() as $inventory) {
-            if ($inventory->isBag()) {
-                return $inventory;
-            }
-        }
-
-        return $this->createInventory(Inventory::TYPE_BAG);
+        return $this->getInventoryByType(Inventory::TYPE_BAG);
     }
 
     public function getBankInventory()
     {
-        foreach ($this->getPlayer()->getInventories() as $inventory) {
-            if ($inventory->isBank()) {
-                return $inventory;
-            }
-        }
-
-        return $this->createInventory(Inventory::TYPE_BANK);
+        return $this->getInventoryByType(Inventory::TYPE_BANK);
     }
 
     public function getMateriaInventory()
     {
-        foreach ($this->getPlayer()->getInventories() as $inventory) {
-            if ($inventory->isMateria()) {
-                return $inventory;
-            }
+        return $this->getInventoryByType(Inventory::TYPE_MATERIA);
+    }
+
+    /**
+     * Charge l'inventaire avec JOIN FETCH (PlayerItem + Item) pour éliminer les requêtes N+1.
+     */
+    private function getInventoryByType(int $type): Inventory
+    {
+        if (isset($this->inventoryCache[$type])) {
+            return $this->inventoryCache[$type];
         }
 
-        return $this->createInventory(Inventory::TYPE_MATERIA);
+        $player = $this->getPlayer();
+        $inventory = $this->inventoryRepository->findByPlayerAndTypeWithItems($player, $type);
+
+        if ($inventory === null) {
+            $inventory = $this->createInventory($type);
+        }
+
+        $this->inventoryCache[$type] = $inventory;
+
+        return $inventory;
     }
 
     /**
@@ -145,6 +153,7 @@ class PlayerHelper implements ResetInterface
     public function reset(): void
     {
         $this->player = null;
+        $this->inventoryCache = [];
     }
 
     protected function getInventorySizeByType(int $type)
