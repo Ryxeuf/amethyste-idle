@@ -39,6 +39,14 @@
 - [x] Passage du niveau PHPStan de 5 a 6
 - [x] Baseline regenere : 0 erreurs reelles, 499 erreurs `missingType.*` (typage iterables/generics a corriger progressivement)
 
+### 109 — Mutation testing avec Infection PHP (TST-13) ✅
+> Mise en place du mutation testing sur les calculateurs de combat pour mesurer l'efficacite des tests.
+- [x] Installation d'Infection PHP (`infection/infection`)
+- [x] Configuration `infection.json5` sur `src/GameEngine/Fight/Calculator/` (zone critique)
+- [x] Amelioration des tests existants pour tuer les mutants (107 tests, 432 assertions)
+- [x] Resultats : MSI 79%, Covered MSI 80%, 108 mutants tues sur 141
+- [x] Exclusion documentee des mutants equivalents (CastInt apres round())
+
 ### 104 — Tests integration quetes & progression (TST-07) ✅
 > Tests d'integration avec vraie DB (pas de mocks) pour les flux critiques quetes et progression.
 - [x] `QuestProgressionIntegrationTest` : accepter quete → tuer mob → objectif mis a jour → completion → recompense
