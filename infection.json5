@@ -1,0 +1,31 @@
+{
+    "$schema": "https://raw.githubusercontent.com/infection/infection/0.29.x/resources/schema.json",
+    "source": {
+        "directories": [
+            "src/GameEngine/Fight/Calculator"
+        ]
+    },
+    "logs": {
+        "text": "infection.log",
+        "summary": "php://stderr",
+        "perMutator": "php://stderr"
+    },
+    "tmpDir": "var/infection",
+    "phpUnit": {
+        "configDir": ".",
+        "customPath": "vendor/bin/phpunit"
+    },
+    "mutators": {
+        "@default": true,
+        // CastInt apres round() est equivalent : le return type int force la coercion.
+        "CastInt": {
+            "ignoreSourceCodeByRegex": [
+                "return \\(int\\) round\\(.*\\).*"
+            ]
+        }
+    },
+    "minMsi": 60,
+    "minCoveredMsi": 80,
+    "testFramework": "phpunit",
+    "testFrameworkOptions": "--testsuite=Unit --filter=Calculator"
+}

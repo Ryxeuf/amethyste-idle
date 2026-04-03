@@ -38,11 +38,11 @@
 - [x] Passer le niveau de 5 a 6
 - [x] Baseline regenere (erreurs reelles corrigees, restant = annotations types generiques)
 
-### 109 — Mutation testing avec Infection PHP (M | ★★) — TST-13
+### ~~109 — Mutation testing avec Infection PHP (M | ★★) — TST-13~~ ✅
 > Prerequis : ← TST-05 ✅
-- [ ] Installer Infection PHP
-- [ ] Configurer sur `src/GameEngine/Fight/Calculator/` (zone critique)
-- [ ] Objectif : MSI >= 60%, Covered MSI >= 80%
+- [x] Installer Infection PHP
+- [x] Configurer sur `src/GameEngine/Fight/Calculator/` (zone critique)
+- [x] Objectif : MSI >= 60%, Covered MSI >= 80%
 
 ---
 
