@@ -2,8 +2,6 @@
 
 namespace App\Tests\E2E;
 
-use Facebook\WebDriver\Exception\NoSuchElementException;
-use Facebook\WebDriver\Exception\TimeoutException;
 use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\WebDriverExpectedCondition;
 use Symfony\Component\Panther\PantherTestCase;
@@ -103,7 +101,7 @@ abstract class AbstractE2ETestCase extends PantherTestCase
      */
     protected function apiFetch(string $url, string $method = 'POST', ?array $body = null): mixed
     {
-        $bodyJs = null !== $body ? sprintf(", body: JSON.stringify(%s)", json_encode($body)) : '';
+        $bodyJs = null !== $body ? sprintf(', body: JSON.stringify(%s)', json_encode($body)) : '';
 
         return static::$pantherClient->executeScript(sprintf(
             "return await fetch('%s', {
