@@ -1,48 +1,54 @@
-# Plan — Systeme d'avatar modulaire
+# Plan — Systeme d'avatar modulaire (nouveau format 8x8)
 
 > Roadmap d'integration du systeme d'avatar modulaire pour les personnages joueurs.
-> Source : `data/amethyste-avatar-pack/` (blueprint architecture + code MVP).
-> Derniere mise a jour : 2026-04-02
+> Basee sur un nouveau pack d'assets au format **8 colonnes x 8 lignes** avec animations multiples.
+> Remplace l'ancien plan base sur le format RPG Maker 3x4 (72x128).
+> Derniere mise a jour : 2026-04-03
 
 ---
 
 ## Contexte
 
 Aujourd'hui, tous les joueurs utilisent `spriteKey: 'player_default'` (hard-code dans `MapApiController`).
-L'objectif est de permettre un **avatar composite par couches** (body, cheveux, barbe, equipement visible)
-tout en conservant le pipeline existant pour mobs et PNJ.
+Le systeme de sprites repose sur le format **RPG Maker VX** (3 colonnes x 4 lignes, 24x32 par frame).
+
+Un nouveau pack d'assets est disponible avec :
+- **Format 8x8** : 8 colonnes x 8 lignes = 64 frames par sheet
+- **Animations multiples** : stand, push, pull, jump, walk, run (vs uniquement walk actuellement)
+- **Layers superposes** : body, outfit, hair (meme layout, pixel-perfect alignes)
+- **Outfits et coiffures pre-dessines** disponibles
 
 ### Principe architectural
 
 ```
-layers modulaires (72x128 chacun)
+layers modulaires (meme taille, format 8x8)
   -> composition client PixiJS (RenderTexture)
-    -> SpriteAnimator existant (zero modification)
+    -> SpriteAnimator etendu (type 'avatar', multi-animations)
       -> cache LRU par avatarHash
 ```
+
+### Differences avec l'ancien plan
+
+| Aspect | Ancien plan (RPG Maker) | Nouveau plan (8x8) |
+|--------|------------------------|---------------------|
+| Layout | 3 cols x 4 rows (72x128) | 8 cols x 8 rows |
+| Frame size | 24x32 px | ~64x64 px (a confirmer avec assets) |
+| Animations | Walk uniquement | Stand, Push, Pull, Jump, Walk, Run |
+| SpriteAnimator | Reutilise tel quel | Etendu avec type `avatar` |
+| Mobs/PNJ | Inchanges | Inchanges (restent en legacy 3x4) |
 
 ### Ce qui existe deja
 
 | Element | Etat |
 |---------|------|
-| `SpriteAnimator.js` | Operationnel, format RPG Maker 3x4 |
+| `SpriteAnimator.js` | Operationnel, format RPG Maker 3x4 — **a etendre** |
 | `SpriteConfigProvider.php` | Registre sprites hard-code |
 | `/api/map/entities` | Renvoie `spriteKey` pour chaque entite |
 | `/api/map/config` | Expose le catalogue sprites |
 | Systeme d'equipement (`PlayerItem`, bitmask slots) | Complet |
 | `GearHelper` | Getters par slot (head, chest, foot, etc.) |
 | `Race.spriteSheet` | Champ existant mais non exploite |
-
-### Ce que fournit le blueprint (`data/amethyste-avatar-pack/`)
-
-| Fichier | Role |
-|---------|------|
-| `src/Service/Avatar/AvatarHashGenerator.php` | Hash SHA256 deterministe |
-| `src/Service/Avatar/PlayerAvatarPayloadBuilder.php` | Construction payload API |
-| `assets/lib/avatar/AvatarTextureComposer.js` | Composition layers -> RenderTexture |
-| `assets/lib/avatar/AvatarSpriteSheetCache.js` | Cache LRU textures composites |
-| `assets/lib/avatar/AvatarAnimatorFactory.js` | Factory legacy/avatar -> SpriteAnimator |
-| `docs/avatar-modulaire-amethyste-idle.md` | Spec complete (626 lignes) |
+| Blueprint avatar (`data/amethyste-avatar-pack/`) | Code JS + PHP a adapter |
 
 ---
 
@@ -60,145 +66,212 @@ layers modulaires (72x128 chacun)
 
 ---
 
-## Phase 1 — Fondations backend (priorite absolue)
+## Phase 0 — Preparation des assets (prerequis)
 
-> Objectif : stocker l'apparence, generer le hash, exposer le payload API.
+> Objectif : organiser, inventorier et documenter le format exact des nouveaux sprites.
+> Goulot d'etranglement : cette phase conditionne toutes les autres.
 
 | # | Tache | Taille | Impact | Prerequis |
 |---|-------|--------|--------|-----------|
-| AVT-01 | **Ajouter les champs avatar sur `Player`** | M | ★★★ | ∅ |
+| AVT-01 | **Inventorier les assets disponibles** | S | ★★★ | ∅ |
+| | Lister tous les body, outfits, hairstyles fournis dans le pack | | | |
+| | Verifier la coherence de taille entre layers (memes dimensions) | | | |
+| AVT-02 | **Documenter le layout exact du spritesheet** | S | ★★★ | ← AVT-01 |
+| | Taille totale (ex: 512x512), taille par frame (ex: 64x64) | | | |
+| | Mapping precis des animations par zone de la grille 8x8 | | | |
+| | Reference sheet annotee (quelles cols/rows = quelle animation) | | | |
+| AVT-03 | **Organiser les assets dans le projet** | S | ★★ | ← AVT-01 |
+| | Deposer dans `assets/styles/images/avatar/` : | | | |
+| | `body/` — corps de base (skin tones, genres) | | | |
+| | `hair/` — coiffures (transparentes, meme layout) | | | |
+| | `outfit/` — armures/vetements complets | | | |
+| | `head/` — casques, chapeaux (optionnel MVP) | | | |
+| AVT-04 | **Verifier l'alignement pixel-perfect** | S | ★★ | ← AVT-03 |
+| | Superposer body + outfit + hair dans un editeur d'image | | | |
+| | Confirmer que les layers s'alignent sur les 64 frames | | | |
+| AVT-05 | **Mettre a jour ASSETS.md** | S | ★ | ← AVT-02 |
+| | Ajouter la section "Format avatar 8x8" avec le layout documente | | | |
+
+---
+
+## Phase 1 — SpriteAnimator multi-animations
+
+> Objectif : etendre le moteur d'animation pour supporter le format 8x8 sans casser l'existant.
+> Les types `single` et `multi` (mobs, PNJ) restent strictement inchanges.
+
+| # | Tache | Taille | Impact | Prerequis |
+|---|-------|--------|--------|-----------|
+| AVT-06 | **Ajouter le type `avatar` dans `SpriteAnimator.js`** | M | ★★★ | ← AVT-02 |
+| | Nouvelle branche dans `_computeFrameSize()` : grille 8x8 | | | |
+| | Nouvelle branche dans `_buildFrames()` : 8 rows x 8 cols | | | |
+| | Mapping configurable des animations : | | | |
+| | `AVATAR_ANIMATIONS = { stand: {row,frames}, walk: {row,frames}, run: {row,frames}, jump: {row,frames}, push: {row,frames}, pull: {row,frames} }` | | | |
+| | Le mapping exact depend du layout documente en AVT-02 | | | |
+| AVT-07 | **Methode `setAnimation(name)` + animation courante** | S | ★★★ | ← AVT-06 |
+| | Switcher entre stand/walk/run/jump/push/pull | | | |
+| | L'animation par defaut reste `walk` pour compatibilite avec le flux de mouvement | | | |
+| | `play()` et `stop()` fonctionnent comme avant mais sur l'animation courante | | | |
+| AVT-08 | **Adapter le positionnement dans le tile** | S | ★★ | ← AVT-06 |
+| | Frame plus grande (ex: 64x64 vs 24x32) → ajuster ancrage et scale | | | |
+| | Les avatars doivent s'aligner correctement sur les tiles 32x32 | | | |
+| | Factor de scale ou offset dans `map_pixi_controller.js` | | | |
+| AVT-09 | **Tests manuels : type avatar isole** | S | ★★ | ← AVT-06 |
+| | Charger un spritesheet 8x8 brut et verifier toutes les animations/directions | | | |
+| | Verifier que les types `single` et `multi` ne sont pas impactes | | | |
+
+---
+
+## Phase 2 — Composition de textures par layers
+
+> Objectif : empiler body + hair + outfit en une seule texture composite.
+> Adapte le code existant dans `data/amethyste-avatar-pack/` au nouveau format.
+
+| # | Tache | Taille | Impact | Prerequis |
+|---|-------|--------|--------|-----------|
+| AVT-10 | **Integrer `AvatarTextureComposer.js`** | S | ★★★ | ∅ |
+| | Copier depuis blueprint dans `assets/lib/avatar/` | | | |
+| | Fonctionne deja pour n'importe quelle taille (lit `source.width/height`) | | | |
+| | Verifier compatibilite PixiJS v8 (RenderTexture API) | | | |
+| AVT-11 | **Integrer `AvatarSpriteSheetCache.js`** | S | ★★ | ∅ |
+| | Copier depuis blueprint, cache LRU 128 entrees | | | |
+| AVT-12 | **Adapter `AvatarAnimatorFactory.js`** | M | ★★★ | ← AVT-06, AVT-10, AVT-11 |
+| | Copier depuis blueprint, adapter les imports | | | |
+| | `createFromAvatarPayload()` cree un SpriteAnimator avec `type: 'avatar'` | | | |
+| | `createFromLegacySpriteKey()` reste identique (type single/multi) | | | |
+| | Deux pipelines coexistent : legacy pour mobs/PNJ, avatar pour joueurs | | | |
+
+**Ordre des layers pour la composition :**
+
+```
+1. body (base)
+2. outfit/armor (remplace le body visible)
+3. hair (par-dessus)
+4. head gear (casque, par-dessus les cheveux)
+```
+
+---
+
+## Phase 3 — Backend : entite Player + API avatar
+
+> Objectif : stocker l'apparence du joueur et la servir via l'API.
+
+| # | Tache | Taille | Impact | Prerequis |
+|---|-------|--------|--------|-----------|
+| AVT-13 | **Ajouter les champs avatar sur `Player`** | M | ★★★ | ∅ |
 | | `avatarAppearance` (JSON nullable), `avatarHash` (string 64), `avatarVersion` (int), `avatarUpdatedAt` (datetime) | | | |
 | | Migration Doctrine + valeurs par defaut pour joueurs existants | | | |
-| AVT-02 | **Integrer `AvatarHashGenerator`** | S | ★★ | ∅ |
+| | Structure JSON `avatarAppearance` : | | | |
+| | `{ "body": "human_m_light", "hair": "short_01", "hairColor": "#d6b25e", "outfit": "starter_tunic" }` | | | |
+| AVT-14 | **Integrer `AvatarHashGenerator`** | S | ★★ | ∅ |
 | | Copier depuis blueprint, adapter namespace, enregistrer comme service | | | |
-| AVT-03 | **Integrer `PlayerAvatarPayloadBuilder`** | M | ★★★ | ← AVT-01, AVT-02 |
+| AVT-15 | **Integrer `PlayerAvatarPayloadBuilder`** | M | ★★★ | ← AVT-13, AVT-14 |
 | | Adapter `extractAppearance()` pour lire les vrais champs Player | | | |
-| | Adapter `resolveSheetFromItem()` pour utiliser un champ `avatarSheet` sur Item | | | |
-| | Brancher sur `GearHelper` pour les items equipes | | | |
-| AVT-04 | **Ajouter `avatarSheet` sur `Item`** | S | ★★ | ∅ |
+| | Construire le payload avec baseSheet + layers | | | |
+| | Brancher sur `GearHelper` pour les items equipes (phase 5) | | | |
+| AVT-16 | **Ajouter `avatarSheet` sur `Item`** | S | ★★ | ∅ |
 | | Champ nullable string : chemin vers le sprite sheet du layer visuel de l'item | | | |
 | | Migration Doctrine | | | |
-| AVT-05 | **Enrichir `/api/map/entities`** | M | ★★★ | ← AVT-03 |
+| AVT-17 | **Enrichir `/api/map/entities`** | M | ★★★ | ← AVT-15 |
 | | Joueurs : ajouter `renderMode`, `avatarHash`, `avatar` (baseSheet + layers) | | | |
 | | Conserver `spriteKey` en fallback (`renderMode: 'legacy'` si pas d'avatar) | | | |
-| AVT-06 | **Enrichir `/api/map/config`** | S | ★★ | ← AVT-04 |
+| | Exemple payload : | | | |
+| | `{ "renderMode": "avatar", "avatarHash": "a1b2c3...", "avatar": { "baseSheet": "/avatar/body/human_m_light.png", "layers": [...] } }` | | | |
+| AVT-18 | **Enrichir `/api/map/config`** | S | ★★ | ← AVT-16 |
 | | Ajouter `avatarCatalog` : liste des sheets avatar a precharger | | | |
 
 ---
 
-## Phase 2 — Integration frontend
+## Phase 4 — Integration dans le renderer map
 
-> Objectif : composer les textures cote client et les animer via SpriteAnimator.
+> Objectif : le controleur PixiJS utilise le nouveau pipeline pour les joueurs.
+> Point d'integration central des phases 1-3.
 
 | # | Tache | Taille | Impact | Prerequis |
 |---|-------|--------|--------|-----------|
-| AVT-07 | **Integrer `AvatarTextureComposer.js`** | S | ★★★ | ∅ |
-| | Copier depuis blueprint dans `assets/lib/avatar/` | | | |
-| | Verifier compatibilite PixiJS v8 (RenderTexture API) | | | |
-| AVT-08 | **Integrer `AvatarSpriteSheetCache.js`** | S | ★★ | ∅ |
-| | Copier depuis blueprint, cache LRU 128 entrees | | | |
-| AVT-09 | **Integrer `AvatarAnimatorFactory.js`** | S | ★★★ | ← AVT-07, AVT-08 |
-| | Copier depuis blueprint, adapter les imports | | | |
-| | Deux chemins : legacy (spriteKey) et avatar (composite) | | | |
-| AVT-10 | **Modifier `map_pixi_controller.js`** | M | ★★★ | ← AVT-05, AVT-09 |
-| | Instancier `AvatarAnimatorFactory` au chargement | | | |
-| | Remplacer `_createAnimator()` par `_createAnimatorForEntity()` | | | |
-| | Gerer le preload des sheets avatar depuis `avatarCatalog` | | | |
-| AVT-11 | **Gerer le joueur local** | S | ★★ | ← AVT-10 |
+| AVT-19 | **Instancier `AvatarAnimatorFactory` dans le map controller** | M | ★★★ | ← AVT-12, AVT-17 |
+| | Instanciation apres chargement des textures | | | |
+| | Precharger les sheets avatar depuis `avatarCatalog` | | | |
+| AVT-20 | **Remplacer `_createAnimator()` par `_createAnimatorForEntity()`** | M | ★★★ | ← AVT-19 |
+| | Si `entity.renderMode === 'avatar'` → pipeline composition | | | |
+| | Sinon → pipeline legacy (spriteKey, inchange) | | | |
+| | Mobs et PNJ passent toujours par le chemin legacy | | | |
+| AVT-21 | **Gerer le joueur local (self)** | S | ★★ | ← AVT-20 |
 | | Le joueur courant (`self: true`) utilise aussi le pipeline avatar | | | |
 | | Invalidation du cache quand l'equipement change | | | |
+| AVT-22 | **Tests integration carte** | S | ★★ | ← AVT-20 |
+| | Verifier : joueurs rendus en avatar, mobs en legacy, PNJ en legacy | | | |
+| | Verifier : taille, positionnement, z-order, emotes sur avatars | | | |
 
 ---
 
-## Phase 3 — Assets graphiques MVP
+## Phase 5 — Ecran de creation de personnage
 
-> Objectif : creer le set minimum d'assets pour un rendu fonctionnel.
-> Format : 72x128 pixels, layout RPG Maker 3x4 (24x32 par frame).
-> Arborescence cible : `assets/styles/images/avatar/`
+> Objectif : permettre au joueur de choisir son apparence a la creation.
 
 | # | Tache | Taille | Impact | Prerequis |
 |---|-------|--------|--------|-----------|
-| AVT-12 | **Body de base** | M | ★★★ | ∅ |
-| | `base/human_m_light_01.png` — silhouette masculine | | | |
-| | `base/human_f_light_01.png` — silhouette feminine (optionnel MVP) | | | |
-| AVT-13 | **Coiffures (3-5 variantes)** | M | ★★ | ‖ |
-| | `hair/short_01.png`, `hair/ponytail_01.png`, `hair/long_01.png` | | | |
-| | Support tint couleur via le champ `hairColor` | | | |
-| AVT-14 | **Barbe (1 variante)** | S | ★ | ‖ |
-| | `beard/short_beard_01.png` avec support tint | | | |
-| AVT-15 | **Marque faciale (1 variante)** | S | ★ | ‖ |
-| | `face/scar_eye_left_01.png` | | | |
-| AVT-16 | **Gear : torse (2 variantes)** | M | ★★★ | ‖ |
-| | `gear/chest/tunic_01.png`, `gear/chest/iron_armor_01.png` | | | |
-| AVT-17 | **Gear : jambes (2 variantes)** | M | ★★ | ‖ |
-| | `gear/leg/pants_01.png`, `gear/leg/plate_legs_01.png` | | | |
-| AVT-18 | **Gear : pieds, tete, arme, bouclier** | M | ★★ | ‖ |
-| | `gear/foot/boots_01.png` | | | |
-| | `gear/head/leather_cap_01.png` | | | |
-| | `gear/main_weapon/sword_iron_01.png` | | | |
-| | `gear/side_weapon/shield_wood_01.png` | | | |
+| AVT-23 | **Ajouter les champs d'apparence au formulaire** | M | ★★★ | ← AVT-13 |
+| | `CharacterCreateType` : choix body (genre × skin tone), hair, hairColor, outfit de depart | | | |
+| | Liste des choix alimentee depuis les assets disponibles dans `avatar/` | | | |
+| AVT-24 | **Preview temps reel** | L | ★★★ | ← AVT-10, AVT-23 |
+| | Stimulus controller `character_creator_controller.js` | | | |
+| | Mini canvas PixiJS composant les layers en temps reel au changement | | | |
+| | Ou fallback : images statiques pre-generees | | | |
+| AVT-25 | **Persister l'apparence a la creation** | S | ★★ | ← AVT-23 |
+| | `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash` | | | |
+| AVT-26 | **Lier Race au body de base** | S | ★★ | ← AVT-25 |
+| | Exploiter `Race.spriteSheet` pour determiner le body de base | | | |
+| | Variantes visuelles par race (optionnel MVP : une seule silhouette) | | | |
+| | Race affecte les stats (inchange), body affecte le visuel | | | |
 
 ---
 
-## Phase 4 — Apparence joueur & creation de personnage
-
-> Objectif : permettre au joueur de choisir son apparence.
-
-| # | Tache | Taille | Impact | Prerequis |
-|---|-------|--------|--------|-----------|
-| AVT-19 | **Ecran de creation de personnage** | L | ★★★ | ← AVT-01, AVT-12..18 |
-| | Choix body (race/genre), coiffure, couleur cheveux, barbe, marque faciale | | | |
-| | Preview temps reel avec composition PixiJS | | | |
-| | Sauvegarde dans `avatarAppearance` JSON | | | |
-| AVT-20 | **Lier la Race au body de base** | S | ★★ | ← AVT-19 |
-| | Utiliser `Race.spriteSheet` pour determiner le body de base | | | |
-| | Variantes par race (humain, elfe, nain, etc.) | | | |
-| AVT-21 | **Ecran de personnalisation (post-creation)** | M | ★★ | ← AVT-19 |
-| | Modifier apparence apres creation (coiffeur PNJ ou menu) | | | |
-| | Recalcul du hash + persistence | | | |
-
----
-
-## Phase 5 — Equipement visible & Mercure
+## Phase 6 — Equipement visible & Mercure
 
 > Objectif : l'equipement change le rendu visuel, les autres joueurs voient les mises a jour en temps reel.
 
 | # | Tache | Taille | Impact | Prerequis |
 |---|-------|--------|--------|-----------|
-| AVT-22 | **Peupler `avatarSheet` sur les items existants** | M | ★★★ | ← AVT-04, AVT-16..18 |
-| | Associer chaque item d'equipement a son sprite sheet avatar | | | |
+| AVT-27 | **Peupler `avatarSheet` sur les items existants** | M | ★★★ | ← AVT-16, AVT-03 |
+| | Associer chaque item d'equipement a son sprite sheet avatar (format 8x8) | | | |
 | | Mettre a jour les fixtures | | | |
-| AVT-23 | **Recalcul automatique du hash** | S | ★★ | ← AVT-03 |
+| AVT-28 | **Recalcul automatique du hash** | S | ★★ | ← AVT-15 |
 | | EventSubscriber sur changement d'equipement | | | |
 | | Recalcul `avatarHash` + `avatarUpdatedAt` | | | |
-| AVT-24 | **Publication Mercure `player.avatar.updated`** | M | ★★★ | ← AVT-23 |
+| AVT-29 | **Publication Mercure `player.avatar.updated`** | M | ★★★ | ← AVT-28 |
 | | Quand le hash change : publier le nouveau payload avatar | | | |
 | | Le client invalide le cache et recompose la texture | | | |
-| AVT-25 | **Gestion cote client des updates Mercure** | M | ★★ | ← AVT-10, AVT-24 |
+| AVT-30 | **Gestion cote client des updates Mercure** | M | ★★ | ← AVT-20, AVT-29 |
 | | Ecouter `player.avatar.updated` dans le controleur map | | | |
 | | Invalider le cache + recreer l'animator pour le joueur concerne | | | |
 
 ---
 
-## Phase 6 — Polish & extensions
+## Phase 7 — Polish & animations avancees (optionnel)
 
-> Objectif : ameliorations visuelles et qualite de vie.
+> Objectif : exploiter pleinement les animations et ameliorer la qualite visuelle.
 
 | # | Tache | Taille | Impact | Prerequis |
 |---|-------|--------|--------|-----------|
-| AVT-26 | **Paper doll dans l'inventaire** | L | ★★★ | ← AVT-10, AVT-22 |
+| AVT-31 | **Animation Run** | S | ★★ | ← AVT-07 |
+| | Activer quand le joueur a un buff de vitesse ou sprint | | | |
+| AVT-32 | **Animation Jump** | S | ★★ | ← AVT-07 |
+| | Traversee d'obstacle, teleportation, changement de zone | | | |
+| AVT-33 | **Animations Push/Pull** | S | ★ | ← AVT-07 |
+| | Interaction avec objets du monde (meubles, leviers, puzzles) | | | |
+| AVT-34 | **Paper doll dans l'inventaire** | L | ★★★ | ← AVT-20, AVT-27 |
 | | Preview du personnage equipe dans l'ecran d'inventaire | | | |
 | | Composition PixiJS dans un canvas dedie | | | |
-| AVT-27 | **Outils visibles (gathering)** | S | ★ | ← AVT-22 |
-| | Afficher pioche/faucille/canne a peche quand outil equipe | | | |
-| | `tools/tool_pickaxe_bronze.png`, etc. | | | |
-| AVT-28 | **Lazy loading intelligent** | M | ★★ | ← AVT-10 |
+| AVT-35 | **Ecran de personnalisation post-creation** | M | ★★ | ← AVT-25 |
+| | Modifier apparence apres creation (coiffeur PNJ ou menu) | | | |
+| | Recalcul du hash + persistence | | | |
+| AVT-36 | **Lazy loading intelligent** | M | ★★ | ← AVT-19 |
 | | Precharger uniquement les sheets des joueurs visibles | | | |
 | | Lazy load les sheets rares au besoin | | | |
-| AVT-29 | **Cache IndexedDB** | M | ★★ | ← AVT-08 |
+| AVT-37 | **Cache IndexedDB** | M | ★★ | ← AVT-11 |
 | | Persister les textures composites entre sessions | | | |
 | | Invalidation par `avatarHash` | | | |
-| AVT-30 | **Variantes raciales & cosmetiques** | L | ★★ | ← AVT-20 |
+| AVT-38 | **Variantes raciales & cosmetiques supplementaires** | L | ★★ | ← AVT-26 |
 | | Bodies supplementaires par race | | | |
 | | Coiffures et barbes supplementaires | | | |
 | | Options cosmetiques premium (futurs) | | | |
@@ -208,66 +281,79 @@ layers modulaires (72x128 chacun)
 ## Graphe de dependances
 
 ```
-Phase 1 — Backend
-  AVT-01 (Player fields)  ──────┐
-  AVT-02 (HashGenerator)  ──┐   │
-  AVT-04 (Item avatarSheet) │   │
-                             ├───┤
-  AVT-03 (PayloadBuilder) ──┘   │
-       │                         │
-  AVT-05 (API entities) ────────┘
-  AVT-06 (API config) ← AVT-04
+Phase 0 — Assets (prerequis)
+  AVT-01 (Inventaire assets)
+  AVT-02 (Doc layout 8x8)     ← AVT-01
+  AVT-03 (Organiser fichiers)  ← AVT-01
+  AVT-04 (Alignement)          ← AVT-03
+  AVT-05 (MAJ ASSETS.md)       ← AVT-02
 
-Phase 2 — Frontend
-  AVT-07 (Composer) ──┐
-  AVT-08 (Cache)    ──┤
-                       ├─ AVT-09 (Factory) ─┐
-                       │                     │
-  AVT-05 ──────────────┼────────────────────┤
-                       │                     │
-                       └─ AVT-10 (Controller)┘
-                              │
-                         AVT-11 (Local player)
+Phase 1 — SpriteAnimator (← Phase 0)
+  AVT-06 (Type avatar 8x8)    ← AVT-02
+  AVT-07 (setAnimation)       ← AVT-06
+  AVT-08 (Positionnement)     ← AVT-06
+  AVT-09 (Tests manuels)      ← AVT-06
 
-Phase 3 — Assets (‖ parallelisable)
-  AVT-12..18 (sprites)  ← production graphique
+Phase 2 — Composition layers (‖ Phase 1)
+  AVT-10 (Composer.js)        ∅
+  AVT-11 (Cache.js)           ∅
+  AVT-12 (Factory.js)         ← AVT-06, AVT-10, AVT-11
 
-Phase 4 — Creation personnage
-  AVT-19 (Ecran creation) ← AVT-01, AVT-12+
-  AVT-20 (Race -> body)   ← AVT-19
-  AVT-21 (Personnalisation) ← AVT-19
+Phase 3 — Backend (‖ Phases 1-2)
+  AVT-13 (Player fields)      ∅
+  AVT-14 (HashGenerator)      ∅
+  AVT-15 (PayloadBuilder)     ← AVT-13, AVT-14
+  AVT-16 (Item avatarSheet)   ∅
+  AVT-17 (API entities)       ← AVT-15
+  AVT-18 (API config)         ← AVT-16
 
-Phase 5 — Equipement visible & temps reel
-  AVT-22 (Peupler avatarSheet) ← AVT-04, assets
-  AVT-23 (Recalcul hash)  ← AVT-03
-  AVT-24 (Mercure publish) ← AVT-23
-  AVT-25 (Mercure client)  ← AVT-10, AVT-24
+Phase 4 — Integration map (← Phases 1-3)
+  AVT-19 (Factory dans ctrl)  ← AVT-12, AVT-17
+  AVT-20 (createAnimator)     ← AVT-19
+  AVT-21 (Joueur local)       ← AVT-20
+  AVT-22 (Tests integration)  ← AVT-20
 
-Phase 6 — Polish
-  AVT-26 (Paper doll inventaire) ← AVT-10, AVT-22
-  AVT-27 (Outils visibles)       ← AVT-22
-  AVT-28 (Lazy loading)          ← AVT-10
-  AVT-29 (Cache IndexedDB)       ← AVT-08
-  AVT-30 (Variantes raciales)    ← AVT-20
+Phase 5 — Creation personnage (← Phases 3-4)
+  AVT-23 (Formulaire)         ← AVT-13
+  AVT-24 (Preview temps reel) ← AVT-10, AVT-23
+  AVT-25 (Persistance)        ← AVT-23
+  AVT-26 (Race → body)        ← AVT-25
+
+Phase 6 — Equipement visible (← Phases 4-5)
+  AVT-27 (Peupler avatarSheet) ← AVT-16, AVT-03
+  AVT-28 (Recalcul hash)       ← AVT-15
+  AVT-29 (Mercure publish)     ← AVT-28
+  AVT-30 (Mercure client)      ← AVT-20, AVT-29
+
+Phase 7 — Polish (← Phase 6)
+  AVT-31..33 (Animations)     ← AVT-07
+  AVT-34 (Paper doll)         ← AVT-20, AVT-27
+  AVT-35 (Personnalisation)   ← AVT-25
+  AVT-36 (Lazy loading)       ← AVT-19
+  AVT-37 (Cache IndexedDB)    ← AVT-11
+  AVT-38 (Variantes raciales) ← AVT-26
 ```
+
+### Parallelisation
+
+Les phases **1, 2 et 3** peuvent avancer en parallele apres la phase 0.
+La phase **4** est le point d'integration central.
+Les phases **5-7** sont sequentielles apres la 4.
 
 ---
 
-## Ordre d'empilement des couches (z-order)
+## Coexistence des deux formats de sprites
 
-Ordre recommande pour la composition des layers (du fond vers le devant) :
+Le systeme supporte **simultanement** les deux formats :
 
-1. `body` — silhouette de base
-2. `leg` — pantalon / jambieres
-3. `foot` — bottes
-4. `chest` — torse / armure
-5. `belt` — ceinture
-6. `shoulder` — epaulieres
-7. `head` — casque / chapeau
-8. `beard` — barbe
-9. `face_mark` — cicatrice / tatouage
-10. `main_weapon` — arme principale
-11. `side_weapon` — bouclier / arme secondaire
+| Format | Type SpriteAnimator | Utilise par |
+|--------|-------------------|-------------|
+| RPG Maker 3x4 (legacy) | `single` / `multi` | Mobs, PNJ |
+| Nouveau 8x8 (avatar) | `avatar` | Joueurs |
+
+Le routing se fait via `renderMode` dans le payload API :
+- `renderMode: 'avatar'` → pipeline composition + type avatar
+- `renderMode: 'legacy'` ou absent → pipeline spriteKey classique
 
 ---
 
@@ -275,14 +361,17 @@ Ordre recommande pour la composition des layers (du fond vers le devant) :
 
 | Constante Item | Layer avatar |
 |----------------|-------------|
-| `GEAR_LOCATION_HEAD` | `gear/head/` |
-| `GEAR_LOCATION_CHEST` | `gear/chest/` |
-| `GEAR_LOCATION_BELT` | `gear/belt/` |
-| `GEAR_LOCATION_LEG` | `gear/leg/` |
-| `GEAR_LOCATION_FOOT` | `gear/foot/` |
-| `GEAR_LOCATION_SHOULDER` | `gear/shoulder/` |
-| `GEAR_LOCATION_MAIN_WEAPON` | `gear/main_weapon/` |
-| `GEAR_LOCATION_SIDE_WEAPON` | `gear/side_weapon/` |
+| `GEAR_LOCATION_HEAD` | `avatar/head/` |
+| `GEAR_LOCATION_CHEST` | `avatar/outfit/` (remplace la tenue de base) |
+| `GEAR_LOCATION_BELT` | `avatar/outfit/` (optionnel, integre dans l'outfit) |
+| `GEAR_LOCATION_LEG` | `avatar/outfit/` (integre dans l'outfit complet) |
+| `GEAR_LOCATION_FOOT` | `avatar/outfit/` (integre dans l'outfit complet) |
+| `GEAR_LOCATION_SHOULDER` | `avatar/outfit/` (integre dans l'outfit complet) |
+| `GEAR_LOCATION_MAIN_WEAPON` | `avatar/weapon/` (futur) |
+| `GEAR_LOCATION_SIDE_WEAPON` | `avatar/shield/` (futur) |
+
+> Note : avec des sprites 8x8 plus detailles, les outfits sont souvent des sheets completes
+> (armure + bottes + jambieres) plutot que des micro-layers separes comme en 24x32.
 
 ---
 
@@ -290,11 +379,12 @@ Ordre recommande pour la composition des layers (du fond vers le devant) :
 
 | Risque | Mitigation |
 |--------|-----------|
-| Assets graphiques non disponibles | Phase 3 peut etre realisee en parallele ; placeholder sprites possibles |
-| Performance composition sur mobiles | Cache LRU + preload catalogue limité |
-| Trop de micro-couches = bruit visuel 24x32 | Limiter a ~10 layers max, dessiner les layers adaptes a leur taille finale |
-| Migration joueurs existants | Valeurs par defaut dans la migration (`avatarAppearance` = null -> fallback legacy) |
-| Rupture API pour clients existants | `renderMode: 'legacy'` si pas d'avatar, backward-compatible |
+| Layout exact du spritesheet pas encore documente | Phase 0 obligatoire avant toute implementation |
+| Frame size differente (64x64 vs 24x32) → positionnement | Scale/offset dans le map controller (AVT-08) |
+| Performance composition sur mobiles | Cache LRU + preload catalogue limite |
+| Migration joueurs existants | `avatarAppearance` nullable → fallback `player_default` legacy |
+| Rupture API pour clients existants | `renderMode: 'legacy'` par defaut, backward-compatible |
+| Assets graphiques insuffisants pour tous les items | Phase 6 progressive, fallback outfit par defaut |
 
 ---
 
@@ -302,14 +392,16 @@ Ordre recommande pour la composition des layers (du fond vers le devant) :
 
 | Phase | Taches | Complexite estimee |
 |-------|--------|--------------------|
-| Phase 1 — Backend | 6 taches | M (2-3 sessions) |
-| Phase 2 — Frontend | 5 taches | M (2-3 sessions) |
-| Phase 3 — Assets | 7 taches | M-L (production graphique, parallelisable) |
-| Phase 4 — Creation personnage | 3 taches | L (2-3 sessions) |
-| Phase 5 — Equipement & Mercure | 4 taches | M (2 sessions) |
-| Phase 6 — Polish | 5 taches | L (3-4 sessions) |
-| **Total** | **30 taches** | |
+| Phase 0 — Assets | 5 taches (AVT-01..05) | S (1 session) |
+| Phase 1 — SpriteAnimator | 4 taches (AVT-06..09) | M (1-2 sessions) |
+| Phase 2 — Composition | 3 taches (AVT-10..12) | S-M (1 session) |
+| Phase 3 — Backend | 6 taches (AVT-13..18) | M (2-3 sessions) |
+| Phase 4 — Integration map | 4 taches (AVT-19..22) | M (1-2 sessions) |
+| Phase 5 — Creation perso | 4 taches (AVT-23..26) | L (2-3 sessions) |
+| Phase 6 — Equipement & Mercure | 4 taches (AVT-27..30) | M (2 sessions) |
+| Phase 7 — Polish | 8 taches (AVT-31..38) | L (progressif) |
+| **Total** | **38 taches** | |
 
-Les phases 1-2 constituent le MVP technique (joueurs avec avatar par defaut sur la map).
-La phase 3 (assets) est le goulot d'etranglement principal et peut etre realisee en parallele.
-Les phases 4-6 enrichissent progressivement l'experience.
+Le **MVP visuel** (joueurs avec avatar compose sur la carte) necessite les phases 0-4 (22 taches).
+La phase 5 (creation personnage) est la premiere extension critique.
+Les phases 6-7 enrichissent progressivement l'experience.
