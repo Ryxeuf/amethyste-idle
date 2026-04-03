@@ -66,6 +66,15 @@ class DomainExperience
         return $this->getTotalExperience() - $this->getUsedExperience();
     }
 
+    /**
+     * Calcule le niveau du domaine a partir de l'XP totale.
+     * Chaque 100 XP = 1 niveau, niveau de base = 1.
+     */
+    public function getLevel(): int
+    {
+        return (int) floor($this->totalExperience / 100) + 1;
+    }
+
     public function getId(): int
     {
         return $this->id;

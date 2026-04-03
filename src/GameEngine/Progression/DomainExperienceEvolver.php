@@ -5,6 +5,7 @@ namespace App\GameEngine\Progression;
 use App\Entity\App\Map;
 use App\Entity\Game\Domain;
 use App\Event\Fight\ItemUsedEvent;
+use App\Event\Game\DomainLevelUpEvent;
 use App\Event\Map\ButcheringEvent;
 use App\Event\Map\FishingEvent;
 use App\Event\Map\SpotHarvestEvent;
@@ -13,6 +14,7 @@ use App\Helper\PlayerDomainHelper;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DomainExperienceEvolver implements EventSubscriberInterface
 {
@@ -21,6 +23,7 @@ class DomainExperienceEvolver implements EventSubscriberInterface
         private readonly EntityManagerInterface $entityManager,
         private readonly GameEventBonusProvider $gameEventBonusProvider,
         private readonly PlayerHelper $playerHelper,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -91,10 +94,20 @@ class DomainExperienceEvolver implements EventSubscriberInterface
         }
 
         if ($domainExperience = $this->playerDomainHelper->getDomainExperience($domain)) {
+            $oldLevel = $domainExperience->getLevel();
             $newExperience = $domainExperience->getTotalExperience() + $finalAmount;
             $domainExperience->setTotalExperience($newExperience);
             $this->entityManager->persist($domainExperience);
             $this->entityManager->flush();
+
+            $newLevel = $domainExperience->getLevel();
+            if ($newLevel > $oldLevel) {
+                $player = $domainExperience->getPlayer();
+                $this->eventDispatcher->dispatch(
+                    new DomainLevelUpEvent($player, $domain, $oldLevel, $newLevel),
+                    DomainLevelUpEvent::NAME
+                );
+            }
         }
     }
 }

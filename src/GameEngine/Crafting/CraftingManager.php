@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Event\CraftEvent;
+use App\Event\Game\DomainLevelUpEvent;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
@@ -241,10 +242,19 @@ class CraftingManager
             $domainSlug = strtolower(str_replace(' ', '-', $domain->getTitle()));
 
             if ($domainSlug === $craft) {
+                $oldLevel = $domainExperience->getLevel();
                 $domainExperience->setTotalExperience(
                     $domainExperience->getTotalExperience() + $finalXp
                 );
                 $this->entityManager->persist($domainExperience);
+
+                $newLevel = $domainExperience->getLevel();
+                if ($newLevel > $oldLevel) {
+                    $this->eventDispatcher->dispatch(
+                        new DomainLevelUpEvent($player, $domain, $oldLevel, $newLevel),
+                        DomainLevelUpEvent::NAME
+                    );
+                }
 
                 return $finalXp;
             }

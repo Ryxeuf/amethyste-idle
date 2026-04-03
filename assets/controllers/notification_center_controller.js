@@ -133,9 +133,26 @@ export default class extends Controller {
             this._loadPanel();
         }
 
-        // Show toast
+        // Show toast with type-aware styling
         if (window.Toast) {
-            window.Toast.show('info', notification.title, 4000);
+            const toastType = this._mapNotificationType(notification.type);
+            const duration = toastType === 'celebration' ? 6000 : 4000;
+            window.Toast.show(toastType, notification.title, duration);
+        }
+    }
+
+    _mapNotificationType(notificationType) {
+        switch (notificationType) {
+        case 'achievement':
+        case 'domain_level':
+            return 'celebration';
+        case 'quest':
+        case 'craft_success':
+            return 'success';
+        case 'system':
+            return 'warning';
+        default:
+            return 'info';
         }
     }
 
