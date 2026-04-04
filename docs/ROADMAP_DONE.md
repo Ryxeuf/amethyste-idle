@@ -106,6 +106,12 @@
 - [x] Refactoring du `RegistrationController` : auto-login + redirection vers creation personnage
 - [x] `LoginFormAuthenticator` : redirection intelligente (0 players → create, 1 → game, 2+ → select)
 
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Sous-tache : verification coherence DB via `app:game:validate` en CI.
+- [x] Ajout de l'etape `app:game:validate --env=test` dans le job `tests` de la CI (apres le chargement des fixtures)
+- [x] 2 nouveaux checks dans `GameStateValidator` : `negative_domain_experience` (XP used > total ou valeurs negatives) et `equipped_items_wrong_location` (items equipes hors inventaire joueur)
+- [x] Tests unitaires mis a jour pour couvrir les 7 checks
+
 ---
 
 ## Modernisation de la stack (2026-03-09) ✅
