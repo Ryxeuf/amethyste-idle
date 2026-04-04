@@ -21,11 +21,11 @@
 - [x] Corriger selecteurs CSS casses
 - [x] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite E2E`
 
-### 106 — Nouveaux tests E2E critiques (M | ★★) — TST-10
+### ~~106 — Nouveaux tests E2E critiques (M | ★★) — TST-10~~ ✅
 > Prerequis : ← 105
-- [ ] `InventoryFlowTest` : equiper item → stat change → desequiper → stat revient
-- [ ] `MapNavigationTest` : clic deplacement → joueur bouge → changement de carte
-- [ ] `ShopFlowTest` : acheter item → or diminue → item dans inventaire
+- [x] `InventoryFlowTest` : equiper item → stat change → desequiper → stat revient
+- [x] `MapNavigationTest` : clic deplacement → joueur bouge → changement de carte
+- [x] `ShopFlowTest` : acheter item → or diminue → item dans inventaire
 
 ### ~~107 — Reactiver E2E dans la CI (S | ★★) — TST-11~~ ✅
 > Prerequis : ← 105

@@ -7,6 +7,12 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 106 — Nouveaux tests E2E critiques (TST-10) ✅
+> 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
+- [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)
+- [x] `MapNavigationTest` : deplacement API → joueur bouge → changement de carte via portail (5 tests)
+- [x] `ShopFlowTest` : acheter item → or diminue → item dans inventaire (4 tests)
+
 ### 107 — Reactiver E2E dans la CI (TST-11) ✅
 > Reactivation du job E2E (Panther + Chrome headless) dans la CI GitHub Actions.
 - [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
