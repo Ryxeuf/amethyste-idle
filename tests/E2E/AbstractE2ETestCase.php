@@ -29,8 +29,14 @@ abstract class AbstractE2ETestCase extends PantherTestCase
         static::$pantherClient->request('GET', '/login');
         $this->waitForSelector('#inputEmail');
 
-        static::$pantherClient->findElement(WebDriverBy::id('inputEmail'))->sendKeys($email);
-        static::$pantherClient->findElement(WebDriverBy::id('inputPassword'))->sendKeys($password);
+        $emailField = static::$pantherClient->findElement(WebDriverBy::id('inputEmail'));
+        $emailField->clear();
+        $emailField->sendKeys($email);
+
+        $passwordField = static::$pantherClient->findElement(WebDriverBy::id('inputPassword'));
+        $passwordField->clear();
+        $passwordField->sendKeys($password);
+
         static::$pantherClient->findElement(WebDriverBy::cssSelector('button[type="submit"]'))->click();
 
         // Wait for login redirect to complete
@@ -137,5 +143,30 @@ abstract class AbstractE2ETestCase extends PantherTestCase
             "return document.querySelector('%s') !== null;",
             addslashes($selector)
         ));
+    }
+
+    /**
+     * Take a screenshot on test failure for CI debugging.
+     */
+    protected function takeScreenshot(string $name): void
+    {
+        $dir = __DIR__ . '/../../var/error-screenshots';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0o777, true);
+        }
+
+        static::$pantherClient->takeScreenshot(sprintf('%s/%s-%s.png', $dir, $name, date('Y-m-d_H-i-s')));
+    }
+
+    protected function onNotSuccessfulTest(\Throwable $t): never
+    {
+        try {
+            $testName = str_replace(['\\', '::'], ['-', '-'], static::class . '-' . $this->name());
+            $this->takeScreenshot('failure-' . $testName);
+        } catch (\Throwable) {
+            // Ignorer les erreurs de screenshot pour ne pas masquer l'erreur originale
+        }
+
+        throw $t;
     }
 }

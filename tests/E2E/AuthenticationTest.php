@@ -29,8 +29,13 @@ class AuthenticationTest extends AbstractE2ETestCase
         static::$pantherClient->request('GET', '/login');
         $this->waitForSelector('#inputEmail');
 
-        static::$pantherClient->findElement(WebDriverBy::id('inputEmail'))->sendKeys('invalid@test.fr');
-        static::$pantherClient->findElement(WebDriverBy::id('inputPassword'))->sendKeys('wrongpassword');
+        $emailField = static::$pantherClient->findElement(WebDriverBy::id('inputEmail'));
+        $emailField->clear();
+        $emailField->sendKeys('invalid@test.fr');
+
+        $passwordField = static::$pantherClient->findElement(WebDriverBy::id('inputPassword'));
+        $passwordField->clear();
+        $passwordField->sendKeys('wrongpassword');
         static::$pantherClient->findElement(WebDriverBy::cssSelector('button[type="submit"]'))->click();
 
         $this->waitForSelector('body');
