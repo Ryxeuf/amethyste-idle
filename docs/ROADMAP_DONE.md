@@ -18,6 +18,19 @@
 
 ---
 
+## Vague 8 — Contenu critique
+
+### 140 — Monstres tier 1 manquants ✅
+> Ajout des 5 monstres tier 1 manquants + loot tables + placements + achievements bestiaire.
+- [x] 5 nouveaux monstres : wolf (Loup), scorpion (Scorpion), beetle (Scarabée), mushroom_golem (Golem champignon), ghost (Fantôme)
+- [x] Stats, resistances elementaires et faiblesses par monstre
+- [x] Loot tables specifiques (materiaux, consommables, equipements communs)
+- [x] Patterns IA basiques
+- [x] Placement dans les zones existantes (Plaine map_1, Foret map_3)
+- [x] Achievements bestiaire (paliers 10/50/100) pour bat, giant_rat, venom_snake, wolf, scorpion, beetle, mushroom_golem, ghost
+
+---
+
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
 ### 105 — Stabiliser tests E2E existants (TST-09) ✅
