@@ -105,6 +105,23 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '86.31',
                 'monster' => 'bat',
             ],
+            // === Monstres tier 1 manquants (tâche 140) — zone de départ ===
+            'wolf_1' => [
+                'coordinates' => '81.36',
+                'monster' => 'wolf',
+            ],
+            'wolf_2' => [
+                'coordinates' => '89.33',
+                'monster' => 'wolf',
+            ],
+            'beetle_1' => [
+                'coordinates' => '84.32',
+                'monster' => 'beetle',
+            ],
+            'beetle_2' => [
+                'coordinates' => '87.37',
+                'monster' => 'beetle',
+            ],
             // Niveau 2 — distance moyenne (8-12 cases)
             'spider_1' => [
                 'coordinates' => '78.30',
@@ -122,13 +139,39 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '90.28',
                 'monster' => 'venom_snake',
             ],
-            'specter_1' => [
+            'scorpion_1' => [
+                'coordinates' => '77.32',
+                'monster' => 'scorpion',
+            ],
+            'scorpion_2' => [
+                'coordinates' => '93.36',
+                'monster' => 'scorpion',
+            ],
+            'mushroom_golem_1' => [
+                'coordinates' => '79.36',
+                'monster' => 'mushroom_golem',
+            ],
+            'mushroom_golem_2' => [
+                'coordinates' => '91.32',
+                'monster' => 'mushroom_golem',
+            ],
+            'ghost_1' => [
                 'coordinates' => '80.40',
+                'monster' => 'ghost',
+                'nocturnal' => true,
+            ],
+            'ghost_2' => [
+                'coordinates' => '93.32',
+                'monster' => 'ghost',
+                'nocturnal' => true,
+            ],
+            'specter_1' => [
+                'coordinates' => '80.42',
                 'monster' => 'specter',
                 'nocturnal' => true,
             ],
             'banshee_2' => [
-                'coordinates' => '93.32',
+                'coordinates' => '93.30',
                 'monster' => 'banshee',
                 'nocturnal' => true,
             ],
@@ -418,6 +461,33 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '10.45',
                 'monster' => 'salamander',
                 'map' => 'map_3',
+            ],
+            // Monstres tier 1 manquants (tâche 140) — forêt
+            'forest_wolf_1' => [
+                'coordinates' => '28.50',
+                'monster' => 'wolf',
+                'map' => 'map_3',
+            ],
+            'forest_beetle_1' => [
+                'coordinates' => '32.48',
+                'monster' => 'beetle',
+                'map' => 'map_3',
+            ],
+            'forest_scorpion_1' => [
+                'coordinates' => '20.40',
+                'monster' => 'scorpion',
+                'map' => 'map_3',
+            ],
+            'forest_mushroom_golem_1' => [
+                'coordinates' => '30.30',
+                'monster' => 'mushroom_golem',
+                'map' => 'map_3',
+            ],
+            'forest_ghost_1' => [
+                'coordinates' => '40.25',
+                'monster' => 'ghost',
+                'map' => 'map_3',
+                'nocturnal' => true,
             ],
             // Mobs nocturnes
             'forest_will_o_wisp_1' => [

@@ -140,8 +140,8 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     protected function selectorExists(string $selector): bool
     {
         return (bool) static::$pantherClient->executeScript(sprintf(
-            "return document.querySelector('%s') !== null;",
-            addslashes($selector)
+            'return document.querySelector(%s) !== null;',
+            json_encode($selector)
         ));
     }
 
