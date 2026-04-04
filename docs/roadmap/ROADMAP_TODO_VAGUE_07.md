@@ -129,6 +129,6 @@
 - [x] Tooltip/modal de comparaison avant equipement (delta stats : +3 ATK, -1 DEF)
 - [x] Apercu de l'objet au hover (stats, rarete, description)
 - [ ] File d'attente de craft (input quantite, craft en arriere-plan)
-- [ ] Timer reset quetes quotidiennes visible ("Prochain reset : 14h32")
+- [x] Timer reset quetes quotidiennes visible ("Prochain reset : 14h32")
 
 ---
