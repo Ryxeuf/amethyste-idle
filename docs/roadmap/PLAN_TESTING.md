@@ -209,16 +209,21 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-10 — Nouveaux tests E2E critiques `M`
+### ~~TST-10 — Nouveaux tests E2E critiques `M`~~ ✅
 
 - **Prerequis** : ← TST-09
-- **Fichiers** : `tests/E2E/` (nouveaux fichiers)
+- **Fichiers** : `tests/E2E/InventoryFlowTest.php`, `tests/E2E/MapNavigationTest.php`, `tests/E2E/ShopFlowTest.php`
 
 | Test | Flux valide |
 |------|-------------|
 | `InventoryFlowTest` | Equiper item → stat change → desequiper → stat revient |
 | `MapNavigationTest` | Clic deplacement → joueur bouge → changement de carte |
 | `ShopFlowTest` | Acheter item → or diminue → item dans inventaire |
+
+- [x] `InventoryFlowTest` : 4 tests (accessibilite, equip stats, unequip stats, cycle complet)
+- [x] `MapNavigationTest` : 5 tests (chargement PixiJS, deplacement API, multi-cellules, portail, entites API)
+- [x] `ShopFlowTest` : 4 tests (accessibilite boutique, achat diminue or, item en inventaire, refus sans or)
+- **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite E2E`
 
 ---
 
