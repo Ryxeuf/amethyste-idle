@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Service;
 
 use App\Service\ForbiddenNameChecker;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ForbiddenNameCheckerTest extends TestCase
@@ -14,7 +15,7 @@ class ForbiddenNameCheckerTest extends TestCase
         $this->checker = new ForbiddenNameChecker();
     }
 
-    /** @dataProvider forbiddenNamesProvider */
+    #[DataProvider('forbiddenNamesProvider')]
     public function testForbiddenNamesAreRejected(string $name): void
     {
         $this->assertTrue($this->checker->isForbidden($name), "Name '$name' should be forbidden");
@@ -43,7 +44,7 @@ class ForbiddenNameCheckerTest extends TestCase
         yield 'discrimination' => ['nazi'];
     }
 
-    /** @dataProvider allowedNamesProvider */
+    #[DataProvider('allowedNamesProvider')]
     public function testAllowedNamesAreAccepted(string $name): void
     {
         $this->assertFalse($this->checker->isForbidden($name), "Name '$name' should be allowed");
