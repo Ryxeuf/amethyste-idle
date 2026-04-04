@@ -7,6 +7,10 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Ajout de la validation de coherence de l'etat du jeu dans la CI.
+- [x] Verification coherence DB via `app:game:validate` en CI (etape ajoutee apres chargement des fixtures)
+
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
 - [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)
