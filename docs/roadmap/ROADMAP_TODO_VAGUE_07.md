@@ -27,10 +27,10 @@
 - [ ] `MapNavigationTest` : clic deplacement → joueur bouge → changement de carte
 - [ ] `ShopFlowTest` : acheter item → or diminue → item dans inventaire
 
-### 107 — Reactiver E2E dans la CI (S | ★★) — TST-11
+### ~~107 — Reactiver E2E dans la CI (S | ★★) — TST-11~~ ✅
 > Prerequis : ← 105
-- [ ] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
-- [ ] `continue-on-error: true` initialement, retirer apres 5 CI vertes
+- [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
+- [x] `continue-on-error: true` initialement, retirer apres 5 CI vertes
 
 ### ~~108 — PHPStan niveau 6 + reduction baseline (M | ★★★) — TST-12~~ ✅
 > Prerequis : ∅

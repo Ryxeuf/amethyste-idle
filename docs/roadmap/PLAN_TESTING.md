@@ -222,14 +222,13 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-11 — Reactiver E2E dans la CI `S`
+### ~~TST-11 — Reactiver E2E dans la CI `S`~~ ✅
 
 - **Prerequis** : ← TST-09
 - **Fichier** : `.github/workflows/ci.yml`
-- **Action** :
-  - Decomenter le job `e2e` (lignes 178-279)
-  - Ajouter `continue-on-error: true` initialement
-  - Retirer `continue-on-error` une fois stables (apres 5 CI vertes consecutives)
+- [x] Decomenter le job `e2e`
+- [x] Ajouter `continue-on-error: true` initialement
+- [ ] Retirer `continue-on-error` une fois stables (apres 5 CI vertes consecutives)
 
 ---
 
