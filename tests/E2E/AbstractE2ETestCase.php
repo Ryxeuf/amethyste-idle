@@ -109,7 +109,7 @@ abstract class AbstractE2ETestCase extends PantherTestCase
      */
     protected function apiFetch(string $url, string $method = 'POST', ?array $body = null): mixed
     {
-        $bodyJs = null !== $body ? sprintf(", body: JSON.stringify(%s)", json_encode($body)) : '';
+        $bodyJs = null !== $body ? sprintf(', body: JSON.stringify(%s)', json_encode($body)) : '';
 
         return static::$pantherClient->executeScript(sprintf(
             "return await fetch('%s', {
