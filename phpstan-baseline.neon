@@ -2178,17 +2178,6 @@ parameters:
 			count: 1
 			path: src/GameEngine/Fight/FightTurnResolver.php
 
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$item\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
-			message: '#^Variable \$item in PHPDoc tag @var does not exist\.$#'
-			identifier: varTag.variableNotFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
 
 		-
 			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
@@ -2898,23 +2887,6 @@ parameters:
 			count: 1
 			path: src/Helper/CellHelper.php
 
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$target\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$targetType\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
-			message: '#^PHPDoc tag @return with type object\|null is not subtype of native type App\\Entity\\CharacterInterface\|null\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: src/Helper/FightHelper.php
 
 		-
 			message: '#^Method App\\Helper\\FightTimelineHelper\:\:generateTimeline\(\) return type has no value type specified in iterable type array\.$#'

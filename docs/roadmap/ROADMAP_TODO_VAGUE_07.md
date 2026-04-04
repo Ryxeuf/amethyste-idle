@@ -48,12 +48,12 @@
 
 ### Piste B — Stabilite & polish (parallelisable)
 
-### 110 — Correction bugs connus & dette technique (M | ★★★)
+### ~~110 — Correction bugs connus & dette technique (M | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Audit des issues GitHub ouvertes et priorisation
-- [ ] Correction des bugs critiques gameplay (combat, inventaire, quetes)
-- [ ] Nettoyage code mort detecte par PHPStan
-- [ ] Verification coherence DB via `app:game:validate` en CI
+- [x] Audit des issues GitHub ouvertes et priorisation
+- [x] Correction des bugs critiques gameplay (combat, inventaire, quetes)
+- [x] Nettoyage code mort detecte par PHPStan
+- [x] Verification coherence DB via `app:game:validate` en CI
 
 ### 111 — Equilibrage combat avance (M | ★★★)
 > Prerequis : ∅

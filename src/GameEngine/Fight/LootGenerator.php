@@ -44,13 +44,15 @@ class LootGenerator implements EventSubscriberInterface
         $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
 
         // Dungeon difficulty drop bonus
-        $dungeonDropMultiplier = (float) ($mob->getFight()?->getMetadataValue('difficulty_drop_multiplier', 1.0) ?? 1.0);
+        $fight = $mob->getFight();
+        $dungeonDropMultiplier = $fight !== null
+            ? (float) $fight->getMetadataValue('difficulty_drop_multiplier', 1.0)
+            : 1.0;
         $dropMultiplier *= $dungeonDropMultiplier;
 
         $monsterDifficulty = $mob->getMonster()->getDifficulty();
 
         // Determine if this is a coop fight for round-robin loot distribution
-        $fight = $mob->getFight();
         $coopPlayerIds = [];
         if ($fight !== null && $fight->isCoopFight()) {
             foreach ($fight->getPlayers() as $player) {

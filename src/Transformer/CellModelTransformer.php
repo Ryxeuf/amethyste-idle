@@ -2,8 +2,6 @@
 
 namespace App\Transformer;
 
-use App\Dto\Cell\CellModel;
-use App\Dto\Cell\ObjectLayerModel;
 use App\Dto\Mob\MobModelLight;
 use App\Dto\Player\PlayerModelLight;
 use App\Dto\Pnj\PnjModelLight;
@@ -24,46 +22,6 @@ class CellModelTransformer
         private readonly EntityManagerInterface $entityManager,
     ) {
     }
-
-    // public function transformCell(Cell $cell, bool $withMap = true): CellModel
-    // {
-    //     $cellModel = new CellModel($cell, $withMap);
-
-    //     if ($cell->getObjectLayer() && !$cell->getObjectLayer()->isDynamic()) {
-    //         $cellModel->object = new ObjectLayerModel($cell->getObjectLayer());
-    //     }
-    //     $cellModel->mouvement = $this->getCellMouvement($cell);
-    //     $cellModel->pnj = $this->transformCellPnj($cell);
-    //     $cellModel->actions = $this->transformCellActions($cell);
-
-    //     return $cellModel;
-    // }
-
-    // public function transformCellDynamicObject(Cell $cell): ?ObjectLayerModel
-    // {
-    //     if ($cell->getObjectLayer()?->isDynamic()) {
-    //         return new ObjectLayerModel($cell->getObjectLayer());
-    //     }
-
-    //     return null;
-    // }
-
-    // public function getCellMouvement(Cell $cell): int
-    // {
-    //     $mouvement = 0;
-    //     if (null !== $objectLayer = $cell->getObjectLayer()) {
-    //         if ($objectLayer->getMovement() < 0) {
-    //             $mouvement = $objectLayer->getMovement();
-    //         } else {
-    //             $mouvement += $objectLayer->getMovement();
-    //         }
-    //     }
-    //     if ($cell->getPnj()) {
-    //         $mouvement = -1;
-    //     }
-
-    //     return $mouvement;
-    // }
 
     public function transformCellPlayers(int $x, int $y): array
     {

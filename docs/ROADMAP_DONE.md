@@ -7,6 +7,15 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 110 — Correction bugs connus & dette technique ✅
+> Nettoyage code mort, correction PHPStan baseline, ajout validation coherence DB en CI.
+- [x] Ajout de `app:game:validate` dans le pipeline CI (apres fixtures)
+- [x] Nettoyage code mort : 3 methodes commentees dans CellModelTransformer, ~30 lignes de code mort dans MapModelTransformer, code debug dans FightLootIndexController
+- [x] Suppression de 5 entrees PHPStan baseline obsoletes (property.notFound, varTag.variableNotFound, return.phpDocType)
+- [x] Fix FightHelper : assertion instanceof pour type safety du retour `getTarget()`
+- [x] Fix LootGenerator : suppression appel `getFight()` redondant
+- [x] Modernisation AbstractPayerItemHandler : readonly constructor promotion
+
 ### 108 — PHPStan niveau 6 + reduction baseline ✅ (TST-12)
 > Passage de PHPStan niveau 5 a 6 avec correction des erreurs reelles du baseline.
 - [x] Suppression de 10 services injectes mais jamais utilises (`property.onlyWritten`)

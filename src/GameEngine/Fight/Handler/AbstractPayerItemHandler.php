@@ -13,22 +13,11 @@ use Doctrine\ORM\EntityNotFoundException;
 
 abstract class AbstractPayerItemHandler implements PlayerActionHandlerInterface
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    protected $entityManager;
-    /**
-     * @var FightHelper
-     */
-    protected $fightHelper;
-
-    /**
-     * AbstractPayerItemHandler constructor.
-     */
-    public function __construct(EntityManagerInterface $entityManager, FightHelper $fightHelper, private readonly ItemUsageResolver $itemUsageResolver)
-    {
-        $this->entityManager = $entityManager;
-        $this->fightHelper = $fightHelper;
+    public function __construct(
+        protected readonly EntityManagerInterface $entityManager,
+        protected readonly FightHelper $fightHelper,
+        private readonly ItemUsageResolver $itemUsageResolver,
+    ) {
     }
 
     public function applyAction(Fight $fight, Player $player): bool
