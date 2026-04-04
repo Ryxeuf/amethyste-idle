@@ -161,6 +161,14 @@ jobs:
           MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
           MERCURE_JWT_SECRET: "test"
 
+      - name: Install vendor assets (importmap)
+        run: php bin/console importmap:install --env=test
+        env:
+          DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
+          MERCURE_URL: "http://localhost/.well-known/mercure"
+          MERCURE_PUBLIC_URL: "http://localhost/.well-known/mercure"
+          MERCURE_JWT_SECRET: "test"
+
       - name: Setup test schema and fixtures
         run: |
           php bin/console doctrine:schema:create --env=test

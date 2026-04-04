@@ -14,12 +14,12 @@
 - [x] `SkillProgressionIntegrationTest` : gagner XP domaine → niveau augmente → competence deblocable → materia utilisable
 - [x] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite Integration --filter Quest`
 
-### 105 — Stabiliser tests E2E existants (M | ★★) — TST-09
+### ~~105 — Stabiliser tests E2E existants (M | ★★) — TST-09~~ ✅
 > Prerequis : ← TST-01 ✅
-- [ ] Corriger fixtures E2E (joueur avec mob adjacent, quete en cours)
-- [ ] Helpers `waitForPixi()`, `waitForTurbo()` dans `AbstractE2ETestCase`
-- [ ] Corriger selecteurs CSS casses
-- [ ] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite E2E`
+- [x] Corriger fixtures E2E (joueur avec mob adjacent, quete en cours)
+- [x] Helpers `waitForPixi()`, `waitForTurbo()` dans `AbstractE2ETestCase`
+- [x] Corriger selecteurs CSS casses
+- [x] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite E2E`
 
 ### 106 — Nouveaux tests E2E critiques (M | ★★) — TST-10
 > Prerequis : ← 105

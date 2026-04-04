@@ -1,20 +1,34 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-04
+> Derniere mise a jour : 2026-04-03
+
+---
+
+## Vague 8 — Contenu critique
+
+### 140 — Monstres tier 1 manquants ✅
+> Ajout des 5 monstres tier 1 manquants + loot tables + placements + achievements bestiaire.
+- [x] 5 nouveaux monstres : wolf (Loup), scorpion (Scorpion), beetle (Scarabée), mushroom_golem (Golem champignon), ghost (Fantôme)
+- [x] Stats, resistances elementaires et faiblesses par monstre
+- [x] Loot tables specifiques (materiaux, consommables, equipements communs)
+- [x] Patterns IA basiques
+- [x] Placement dans les zones existantes (Plaine map_1, Foret map_3)
+- [x] Achievements bestiaire (paliers 10/50/100) pour bat, giant_rat, venom_snake, wolf, scorpion, beetle, mushroom_golem, ghost
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
-### 110 — Correction bugs connus & dette technique ✅
-> Nettoyage code mort, correction PHPStan baseline, ajout validation coherence DB en CI.
-- [x] Ajout de `app:game:validate` dans le pipeline CI (apres fixtures)
-- [x] Nettoyage code mort : 3 methodes commentees dans CellModelTransformer, ~30 lignes de code mort dans MapModelTransformer, code debug dans FightLootIndexController
-- [x] Suppression de 5 entrees PHPStan baseline obsoletes (property.notFound, varTag.variableNotFound, return.phpDocType)
-- [x] Fix FightHelper : assertion instanceof pour type safety du retour `getTarget()`
-- [x] Fix LootGenerator : suppression appel `getFight()` redondant
-- [x] Modernisation AbstractPayerItemHandler : readonly constructor promotion
+### 105 — Stabiliser tests E2E existants (TST-09) ✅
+> Stabilisation des 5 classes de tests E2E (16 methodes) pour les rendre fiables et deterministes.
+- [x] Helpers `waitForPixi()` et `waitForTurbo()` dans `AbstractE2ETestCase` pour attentes asynchrones
+- [x] Helpers `waitForSelector()`, `waitForUrlContaining()`, `waitForUrlNotContaining()` pour navigation robuste
+- [x] Helper `apiFetch()` pour simplifier les appels API JS (fetch + JSON parse)
+- [x] Helper `selectorExists()` pour verifications conditionnelles sans exception
+- [x] Correction du `login()` avec attente de redirection post-authentification
+- [x] Remplacement de tous les `waitFor('body')` generiques par des attentes specifiques
+- [x] Verification des fixtures (positions mobs, quetes) et selecteurs CSS (tous valides)
 
 ### 108 — PHPStan niveau 6 + reduction baseline ✅ (TST-12)
 > Passage de PHPStan niveau 5 a 6 avec correction des erreurs reelles du baseline.

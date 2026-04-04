@@ -47,6 +47,34 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'zombie', 'item' => 'starter_helmet', 'probability' => 5],
             ['monster' => 'zombie', 'item' => 'starter_chest', 'probability' => 4],
 
+            // --- Niveau 1-2 : Loup, Scorpion, Scarabée, Golem champignon, Fantôme (tâche 140) ---
+            ['monster' => 'wolf', 'item' => 'leather_skin_1', 'probability' => 65],
+            ['monster' => 'wolf', 'item' => 'mushroom', 'probability' => 40],
+            ['monster' => 'wolf', 'item' => 'grilled_meat', 'probability' => 15],
+            ['monster' => 'wolf', 'item' => 'starter_gloves', 'probability' => 3],
+
+            ['monster' => 'scorpion', 'item' => 'leather_skin_1', 'probability' => 55],
+            ['monster' => 'scorpion', 'item' => 'antidote', 'probability' => 25],
+            ['monster' => 'scorpion', 'item' => 'mushroom', 'probability' => 30],
+            ['monster' => 'scorpion', 'item' => 'healing_potion_small', 'probability' => 10],
+            ['monster' => 'scorpion', 'item' => 'starter_boots', 'probability' => 3],
+
+            ['monster' => 'beetle', 'item' => 'leather_skin_1', 'probability' => 70],
+            ['monster' => 'beetle', 'item' => 'mushroom', 'probability' => 50],
+            ['monster' => 'beetle', 'item' => 'bread', 'probability' => 15],
+            ['monster' => 'beetle', 'item' => 'starter_legs', 'probability' => 3],
+
+            ['monster' => 'mushroom_golem', 'item' => 'mushroom', 'probability' => 80],
+            ['monster' => 'mushroom_golem', 'item' => 'antidote', 'probability' => 20],
+            ['monster' => 'mushroom_golem', 'item' => 'healing_potion_small', 'probability' => 15],
+            ['monster' => 'mushroom_golem', 'item' => 'wood_log', 'probability' => 30],
+            ['monster' => 'mushroom_golem', 'item' => 'starter_helmet', 'probability' => 4],
+
+            ['monster' => 'ghost', 'item' => 'energy_potion_small', 'probability' => 25],
+            ['monster' => 'ghost', 'item' => 'ancient_scroll', 'probability' => 5],
+            ['monster' => 'ghost', 'item' => 'healing_potion_small', 'probability' => 15],
+            ['monster' => 'ghost', 'item' => 'starter_shield', 'probability' => 3],
+
             // --- Niveau 2 : Squelette, Araignée, Serpent, Taiju, Spectre, Banshee ---
             ['monster' => 'skeleton', 'item' => 'leather_skin_2', 'probability' => 50],
             ['monster' => 'skeleton', 'item' => 'short_sword', 'probability' => 8],

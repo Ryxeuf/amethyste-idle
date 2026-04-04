@@ -194,17 +194,17 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 > Simuler un vrai joueur dans un vrai navigateur.
 
-### TST-09 — Stabiliser les tests E2E existants `M`
+### ~~TST-09 — Stabiliser les tests E2E existants `M`~~ ✅
 
 - **Prerequis** : ← TST-01
 - **Fichiers** : `tests/E2E/CombatFlowTest.php`, `tests/E2E/QuestFlowTest.php`, `tests/E2E/AbstractE2ETestCase.php`
-- **Problemes actuels** :
-  - Tests skippes car fixtures incompletes (pas de mob a combattre, pas de quete active)
-  - Pas de `waitFor()` pour PixiJS et Turbo (chargements asynchrones)
-- **Actions** :
-  - Ajouter fixtures specifiques E2E (joueur avec mob adjacent, quete en cours)
-  - Ajouter helpers `waitForPixi()`, `waitForTurbo()` dans `AbstractE2ETestCase`
-  - Corriger les selecteurs CSS casses
+- [x] Verification et validation des fixtures E2E (joueur avec mob adjacent, quete en cours)
+- [x] Helpers `waitForPixi()`, `waitForTurbo()`, `waitForSelector()`, `waitForUrlContaining()`, `waitForUrlNotContaining()` dans `AbstractE2ETestCase`
+- [x] Helper utilitaire `apiFetch()` pour simplifier les appels API via JS
+- [x] Helper `selectorExists()` pour les verifications conditionnelles sans exception
+- [x] Correction des `waitFor('body')` generiques par des attentes specifiques dans tous les tests
+- [x] Amelioration du `login()` avec attente de redirection post-login
+- [x] Verification des selecteurs CSS (tous valides — aucun casse)
 - **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite E2E`
 
 ---
@@ -325,7 +325,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 7 | ~~**TST-12** PHPStan niveau 6~~ ✅ | M | Bugs de types detectes statiquement |
 | 8 | ~~**TST-06** Integration status effects~~ ✅ | M | Complemente TST-05 |
 | 9 | **TST-07** Integration quetes/progression | M | Autre source majeure de bugs |
-| 10 | **TST-09** Stabiliser E2E | M | Flux utilisateur reel |
+| 10 | ~~**TST-09** Stabiliser E2E~~ ✅ | M | Flux utilisateur reel |
 | 11 | **TST-11** E2E dans CI | S | Active TST-09 dans le pipeline |
 | 12 | ~~**TST-14** Assertions metier~~ ✅ | M | Prevention au runtime |
 | 13 | **TST-13** Mutation testing | M | Qualite des tests eux-memes |
