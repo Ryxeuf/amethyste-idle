@@ -13,7 +13,7 @@ interface PlayerActionHandlerInterface
     public const ACTION_SPELL = 'spell';
     public const ACTION_ITEM = 'item';
 
-    public function supports(Fight $fight, string $context);
+    public function supports(Fight $fight, string $context): bool;
 
     public function applyAction(Fight $fight, Player $sender): bool;
 }

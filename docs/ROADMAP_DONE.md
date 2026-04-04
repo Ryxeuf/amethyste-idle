@@ -17,7 +17,18 @@
 > Reactivation du job E2E (Panther + Chrome headless) dans la CI GitHub Actions.
 - [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
 - [x] Ajouter `continue-on-error: true` pour ne pas bloquer la CI pendant la stabilisation
+- [x] Retirer `continue-on-error` apres stabilisation — E2E desormais bloquant
 - [x] Screenshots uploadees en artifact en cas d'echec
+
+### 110 — Correction bugs connus & dette technique ✅
+> Nettoyage PHPStan (types de retour manquants, entries baseline stales, code mort), ajout de `app:game:validate` en CI.
+- [x] Ajout des types de retour `bool` sur les interfaces `MobActionHandlerInterface::supports()` et `PlayerActionHandlerInterface::supports()` et toutes leurs implementations
+- [x] Correction du type de retour dans `FightHelper::getTarget()` (cast instanceof)
+- [x] Ajout de `@phpstan-ignore` pour le `while(true)` intentionnel dans `HarvestRespawnCommand`
+- [x] Correction des `nullCoalesce.expr` dans `ItemHelper` (isset au lieu de ??)
+- [x] Suppression de 14 entrees stales/resolues dans `phpstan-baseline.neon` (3169 → 3085 lignes)
+- [x] Ajout de l'etape `app:game:validate` dans le job CI `tests` (apres fixtures)
+- [x] Retrait de `continue-on-error: true` du job E2E (TST-11 complete)
 
 ---
 

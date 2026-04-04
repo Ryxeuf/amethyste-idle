@@ -32,8 +32,8 @@
 | Vague 4 — Monde & systemes avances | 16/16 + 16 MED + 20 GCC | ✅ Terminee |
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
-| **Plan Testing (TST)** | **11/15** | **4 taches restantes** |
-| **Vague 7 — Qualite, stabilisation & fondations UX** | **10/16** | **Prochaine priorite** |
+| **Plan Testing (TST)** | **11/15** | **3 taches restantes** |
+| **Vague 7 — Qualite, stabilisation & fondations UX** | **11/16** | **Prochaine priorite** |
 | **Vague 8 — Contenu critique** | **0/9** | **Priorite haute** |
 | **Vague 9 — Economie & social** | **0/10** | **A venir** |
 | **Vague 10 — Monde vivant & endgame** | **0/8** | **Long terme** |
@@ -61,9 +61,9 @@ VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   │   109 TST-13 Mutation testing       ← TST-05 ✅
   │
   ├─ Piste B — Stabilite & polish (‖)
-  │   110 Correction bugs connus        ∅
+  │   110 Correction bugs connus        ∅  ✅
   │   111 Equilibrage combat avance     ∅
-  │   112 Optimisation requetes N+1     ∅
+  │   112 Optimisation requetes N+1     ∅  ✅
   │
   ├─ Piste C — UX & accessibilite (‖)
   │   113 Tutoriel / onboarding joueur  ∅

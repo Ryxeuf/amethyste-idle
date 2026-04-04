@@ -57,7 +57,7 @@ class ItemHelper implements ResetInterface
             }
         }
 
-        return $this->spells[$item->getId()] ?? null;
+        return isset($this->spells[$item->getId()]) ? $this->spells[$item->getId()] : null;
     }
 
     public function getItemSkillLearning(Item $item): ?Skill
@@ -75,7 +75,7 @@ class ItemHelper implements ResetInterface
             }
         }
 
-        return $this->skills[$item->getId()] ?? null;
+        return isset($this->skills[$item->getId()]) ? $this->skills[$item->getId()] : null;
     }
 
     public function isUsable(Item $item): bool

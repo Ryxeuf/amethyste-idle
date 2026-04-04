@@ -43,7 +43,7 @@ class HarvestRespawnCommand extends Command
             $interval = (int) ($loop ?: 10);
             $io->info("Mode boucle activé (intervalle: {$interval}s)");
 
-            while (true) {
+            while (true) { // @phpstan-ignore while.alwaysTrue
                 $this->processRespawns($io, $dryRun);
                 sleep($interval);
             }

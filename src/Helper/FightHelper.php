@@ -33,6 +33,8 @@ class FightHelper
             return null;
         }
 
-        return $this->entityManager->getRepository($targetClass)->find($targetId);
+        $target = $this->entityManager->getRepository($targetClass)->find($targetId);
+
+        return $target instanceof CharacterInterface ? $target : null;
     }
 }
