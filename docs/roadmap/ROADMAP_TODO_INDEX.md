@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-04-03
+> Derniere mise a jour : 2026-04-04
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
 > **Nouvelle feuille de route** : Vagues 7-10 definissent les prochaines priorites.
 > **Audit contenu** : le jeu dispose de systemes solides mais le contenu est a ~30% du necessaire. La Vague 8 (Contenu critique) a ete inseree pour combler ces lacunes avant l'economie.
@@ -32,8 +32,8 @@
 | Vague 4 — Monde & systemes avances | 16/16 + 16 MED + 20 GCC | ✅ Terminee |
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
-| **Plan Testing (TST)** | **10/15** | **5 taches restantes** |
-| **Vague 7 — Qualite, stabilisation & fondations UX** | **9/16** | **Prochaine priorite** |
+| **Plan Testing (TST)** | **11/15** | **4 taches restantes** |
+| **Vague 7 — Qualite, stabilisation & fondations UX** | **10/16** | **Prochaine priorite** |
 | **Vague 8 — Contenu critique** | **0/9** | **Priorite haute** |
 | **Vague 9 — Economie & social** | **0/10** | **A venir** |
 | **Vague 10 — Monde vivant & endgame** | **0/8** | **Long terme** |
@@ -47,7 +47,7 @@ PLAN TESTING (restant)
   TST-07 Integration quetes/progression  ← TST-04
   TST-09 Stabiliser E2E                 ← TST-01
   TST-10 Nouveaux tests E2E             ← TST-09
-  TST-11 Reactiver E2E dans CI          ← TST-09
+  ✅ TST-11 Reactiver E2E dans CI          ← TST-09
   ✅ TST-12 PHPStan niveau 6               ∅
   ✅ TST-13 Mutation testing (Infection)    ← TST-05
 
@@ -56,7 +56,7 @@ VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   │   104 TST-07 Integration quetes     ← TST-04 ✅
   │   105 TST-09 Stabiliser E2E         ← TST-01 ✅
   │   106 TST-10 Nouveaux tests E2E     ← 105
-  │   107 TST-11 E2E dans CI            ← 105
+  │   107 TST-11 E2E dans CI            ← 105 ✅
   │   108 TST-12 PHPStan niveau 6       ∅  ✅
   │   109 TST-13 Mutation testing       ← TST-05 ✅
   │
@@ -169,5 +169,5 @@ PLAN AVATAR MODULAIRE (format 8x8, 38 taches)
 **Plans annexes :**
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅
-- [Testing & qualite](PLAN_TESTING.md) — 6 taches restantes (integrees en Vague 7)
+- [Testing & qualite](PLAN_TESTING.md) — 4 taches restantes (integrees en Vague 7)
 - [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — 38 taches (AVT-01 a AVT-38, 7 phases)
