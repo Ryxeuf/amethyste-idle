@@ -105,6 +105,12 @@ class SpriteConfigProvider
             'mob_specter' => $this->single('monster/Enemy 14-1.png', 'mob'),
             'mob_fire_elemental' => $this->single('monster/Enemy 15-1.png', 'mob'),
             'mob_stone_golem' => $this->single('monster/Enemy 16-1.png', 'mob'),
+            // Monstres tier 1 manquants (tâche 140)
+            'mob_wolf' => $this->single('monster/Enemy 17-1.png', 'mob'),
+            'mob_scorpion' => $this->single('monster/Enemy 17-2.png', 'mob'),
+            'mob_beetle' => $this->single('monster/Enemy 17-3.png', 'mob'),
+            'mob_mushroom_golem' => $this->single('monster/Enemy 17-4.png', 'mob'),
+            'mob_ghost' => $this->single('monster/Enemy 17-5.png', 'mob'),
         ];
     }
 
