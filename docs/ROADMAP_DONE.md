@@ -7,6 +7,18 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 110 — Correction bugs connus & dette technique ✅
+> Correction de bugs critiques gameplay, nettoyage code mort, ajout de app:game:validate en CI.
+- [x] Ajout de `app:game:validate` dans le pipeline CI (verification coherence DB apres fixtures)
+- [x] Correction bug critique LootGenerator : loot perdu par ecrasement ArrayCollection vide (ligne 98)
+- [x] Correction bug SlotModel : crash sur slot vide (getItemSet() nullable)
+- [x] Correction bug FightModelTransformer : crash getGearMaterias sur slot sans materia
+- [x] Ajout types de retour `bool` aux interfaces (MobActionHandlerInterface, PlayerActionHandlerInterface) et implementations
+- [x] Modernisation AbstractPayerItemHandler (readonly constructor promotion)
+- [x] Ajout types natifs Inventory (isBag, isBank, isMateria, getOccupiedSpace)
+- [x] Correction FightHelper::getTarget() — type narrowing sur le resultat repository
+- [x] Correction FightLootProceedController — remplacement `!$data` par `is_array($data)` (json_decode null safety)
+
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
 - [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)

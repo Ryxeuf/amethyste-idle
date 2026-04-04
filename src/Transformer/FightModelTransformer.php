@@ -99,8 +99,9 @@ class FightModelTransformer
     private function getGearMaterias(PlayerItem $item)
     {
         foreach ($item->getSlots() as $slot) {
-            if ($this->itemHelper->getItemSpell($slot->getItemSet()->getGenericItem())) {
-                yield new Materia($slot->getItemSet());
+            $materia = $slot->getItemSet();
+            if ($materia !== null && $this->itemHelper->getItemSpell($materia->getGenericItem())) {
+                yield new Materia($materia);
             }
         }
     }

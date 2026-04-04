@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 #[AutoconfigureTag]
 interface MobActionHandlerInterface
 {
-    public function supports(string $context);
+    public function supports(string $context): bool;
 
     public function getSpell(Mob $mob): Spell;
 }

@@ -24,7 +24,7 @@ class LootGenerator implements EventSubscriberInterface
         ];
     }
 
-    public function mobDied(MobDeadEvent $event)
+    public function mobDied(MobDeadEvent $event): void
     {
         // Les mobs invoqués en combat ne droppent pas de loot (anti-exploit)
         if ($event->getMob()->isSummoned()) {
@@ -64,7 +64,6 @@ class LootGenerator implements EventSubscriberInterface
         $isCoopLoot = count($coopPlayerIds) > 1;
         $roundRobinIndex = 0;
 
-        $items = [];
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
             if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
                 continue;
@@ -97,9 +96,7 @@ class LootGenerator implements EventSubscriberInterface
                 $this->entityManager->persist($item);
             }
         }
-        $mob->setItems(new \Doctrine\Common\Collections\ArrayCollection($items));
 
         $this->entityManager->flush();
-        $this->entityManager->refresh($mob);
     }
 }

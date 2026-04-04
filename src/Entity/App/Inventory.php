@@ -22,31 +22,22 @@ class Inventory
         return 'Inventaire [' . $this->getType() . '] de ' . $this->getPlayer();
     }
 
-    /**
-     * @return bool
-     */
-    public function isMateria()
+    public function isMateria(): bool
     {
-        return $this->getType() == self::TYPE_MATERIA;
+        return $this->getType() === self::TYPE_MATERIA;
     }
 
-    /**
-     * @return bool
-     */
-    public function isBag()
+    public function isBag(): bool
     {
-        return $this->getType() == self::TYPE_BAG;
+        return $this->getType() === self::TYPE_BAG;
     }
 
-    /**
-     * @return bool
-     */
-    public function isBank()
+    public function isBank(): bool
     {
-        return $this->getType() == self::TYPE_BANK;
+        return $this->getType() === self::TYPE_BANK;
     }
 
-    public function getOccupiedSpace()
+    public function getOccupiedSpace(): int
     {
         return count($this->getItems());
     }

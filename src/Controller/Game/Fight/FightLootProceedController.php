@@ -32,7 +32,7 @@ class FightLootProceedController extends AbstractController
     public function __invoke(Request $request): Response
     {
         $data = json_decode($request->getContent(), true);
-        if (!$data || !isset($data['fightId']) || !isset($data['items'])) {
+        if (!\is_array($data) || !isset($data['fightId']) || !isset($data['items'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
         }
 
