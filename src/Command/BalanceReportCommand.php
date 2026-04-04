@@ -35,7 +35,8 @@ class BalanceReportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('section', 's', InputOption::VALUE_OPTIONAL, 'Section to display: monsters, items, drops, domains, spells, alerts, all', 'all');
+            ->addOption('section', 's', InputOption::VALUE_OPTIONAL, 'Section to display: monsters, items, drops, domains, spells, alerts, all', 'all')
+            ->addOption('strict', null, InputOption::VALUE_NONE, 'Exit with error code 1 if any balance alerts are detected (useful for CI)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -76,6 +77,10 @@ class BalanceReportCommand extends Command
 
         if (\in_array($section, ['all', 'alerts'], true)) {
             $this->reportAlerts($io, $alerts);
+        }
+
+        if ($input->getOption('strict') && $alerts !== []) {
+            return Command::FAILURE;
         }
 
         return Command::SUCCESS;

@@ -55,6 +55,13 @@
 - [x] Resultats : MSI 79%, Covered MSI 80%, 108 mutants tues sur 141
 - [x] Exclusion documentee des mutants equivalents (CastInt apres round())
 
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Integration des commandes de validation dans la CI pour detecter les incoherences de donnees et d'equilibrage.
+- [x] Ajout de `app:game:validate` dans le pipeline CI (apres chargement des fixtures)
+- [x] Ajout du flag `--strict` a `BalanceReportCommand` (exit code 1 si alertes)
+- [x] Ajout de `app:balance:report --section=alerts --strict` dans le pipeline CI
+- [x] Test unitaire `BalanceReportCommandTest` (5 cas : succes, strict fail, strict success, sans strict, section filter)
+
 ### 112 — Optimisation requetes N+1 & performance DB ✅
 > Profiling et correction des requetes N+1 critiques, ajout d'index manquants, cache memoire par requete.
 - [x] Audit complet des N+1 : inventaire, combat, skills, synergies (30-100+ requetes eliminées par page)

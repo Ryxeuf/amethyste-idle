@@ -53,7 +53,8 @@
 - [ ] Audit des issues GitHub ouvertes et priorisation
 - [ ] Correction des bugs critiques gameplay (combat, inventaire, quetes)
 - [ ] Nettoyage code mort detecte par PHPStan
-- [ ] Verification coherence DB via `app:game:validate` en CI
+- [x] Verification coherence DB via `app:game:validate` en CI
+- [x] Verification equilibrage via `app:balance:report --strict` en CI
 
 ### 111 — Equilibrage combat avance (M | ★★★)
 > Prerequis : ∅
