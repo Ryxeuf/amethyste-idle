@@ -2,7 +2,7 @@
 
 > Plan annexe pour ameliorer la detection et prevention des bugs en conditions reelles.
 > 15 taches numerotees **TST-01** a **TST-15**, reparties en 5 jalons.
-> Derniere mise a jour : 2026-04-01
+> Derniere mise a jour : 2026-04-04
 
 ---
 
@@ -222,7 +222,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 
 ---
 
-### TST-11 — Reactiver E2E dans la CI `S`
+### ~~TST-11 — Reactiver E2E dans la CI `S`~~ ✅
 
 - **Prerequis** : ← TST-09
 - **Fichier** : `.github/workflows/ci.yml`
@@ -230,6 +230,9 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
   - Decomenter le job `e2e` (lignes 178-279)
   - Ajouter `continue-on-error: true` initialement
   - Retirer `continue-on-error` une fois stables (apres 5 CI vertes consecutives)
+- [x] Job `e2e` decommente dans `.github/workflows/ci.yml`
+- [x] `continue-on-error: true` ajoute initialement
+- **Verification** : la CI execute les tests E2E (non-bloquants grace a `continue-on-error`)
 
 ---
 
@@ -326,7 +329,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 | 8 | ~~**TST-06** Integration status effects~~ ✅ | M | Complemente TST-05 |
 | 9 | **TST-07** Integration quetes/progression | M | Autre source majeure de bugs |
 | 10 | ~~**TST-09** Stabiliser E2E~~ ✅ | M | Flux utilisateur reel |
-| 11 | **TST-11** E2E dans CI | S | Active TST-09 dans le pipeline |
+| 11 | ~~**TST-11** E2E dans CI~~ ✅ | S | Active TST-09 dans le pipeline |
 | 12 | ~~**TST-14** Assertions metier~~ ✅ | M | Prevention au runtime |
 | 13 | **TST-13** Mutation testing | M | Qualite des tests eux-memes |
 | 14 | **TST-10** Nouveaux tests E2E | M | Couverture E2E elargie |

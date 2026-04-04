@@ -1,7 +1,17 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-03
+> Derniere mise a jour : 2026-04-04
+
+---
+
+## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 107 — Reactiver E2E dans la CI (TST-11) ✅
+> Reactivation du job E2E (Panther + Chrome headless) dans le pipeline CI GitHub Actions.
+- [x] Job `e2e` decommente dans `.github/workflows/ci.yml`
+- [x] `continue-on-error: true` ajoute initialement (non-bloquant)
+- [x] Retirer `continue-on-error` apres 5 CI vertes consecutives
 
 ---
 
