@@ -26,6 +26,11 @@ class PerformanceBenchmarkTest extends WebTestCase
         $envThreshold = getenv('PERF_MAX_RESPONSE_MS');
         $this->maxResponseTimeMs = $envThreshold !== false ? (int) $envThreshold : 500;
 
+        // Xdebug coverage adds significant overhead — double the threshold
+        if (\extension_loaded('xdebug') && \in_array('coverage', xdebug_info('mode'), true)) {
+            $this->maxResponseTimeMs *= 2;
+        }
+
         /** @var EntityManagerInterface $em */
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $user = $em->getRepository(User::class)->findOneBy(['email' => 'remy@amethyste.game']);
