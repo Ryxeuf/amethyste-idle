@@ -28,6 +28,7 @@ class SpriteConfigProviderTest extends TestCase
             'banshee', 'griffin', 'minotaur', 'gargoyle',
             'slime', 'giant_rat', 'bat', 'spider',
             'venom_snake', 'specter', 'fire_elemental', 'stone_golem',
+            'wolf', 'scorpion', 'beetle', 'mushroom_golem', 'ghost',
         ];
 
         $mobSprites = $this->provider->getMobSprites();

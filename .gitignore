@@ -12,6 +12,9 @@
 /public/assets/
 /assets/vendor/*
 !/assets/vendor/pixi-bundle.js
+!/assets/vendor/@hotwired/
+!/assets/vendor/@hotwired/**
+!/assets/vendor/installed.php
 ###< symfony/asset-mapper ###
 node_modules
 
