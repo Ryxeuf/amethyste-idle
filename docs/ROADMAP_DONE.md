@@ -1,20 +1,17 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-03
+> Derniere mise a jour : 2026-04-04
 
 ---
 
-## Vague 8 — Contenu critique
+## Vague 7 — Qualite, stabilisation & fondations UX
 
-### 140 — Monstres tier 1 manquants ✅
-> Ajout des 5 monstres tier 1 manquants + loot tables + placements + achievements bestiaire.
-- [x] 5 nouveaux monstres : wolf (Loup), scorpion (Scorpion), beetle (Scarabée), mushroom_golem (Golem champignon), ghost (Fantôme)
-- [x] Stats, resistances elementaires et faiblesses par monstre
-- [x] Loot tables specifiques (materiaux, consommables, equipements communs)
-- [x] Patterns IA basiques
-- [x] Placement dans les zones existantes (Plaine map_1, Foret map_3)
-- [x] Achievements bestiaire (paliers 10/50/100) pour bat, giant_rat, venom_snake, wolf, scorpion, beetle, mushroom_golem, ghost
+### 107 — Reactiver E2E dans la CI (TST-11) ✅
+> Reactivation du job E2E (Panther + Chrome headless) dans la CI GitHub Actions.
+- [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
+- [x] Ajouter `continue-on-error: true` pour ne pas bloquer la CI pendant la stabilisation
+- [x] Screenshots uploadees en artifact en cas d'echec
 
 ---
 
