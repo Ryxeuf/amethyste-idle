@@ -7,7 +7,7 @@ use App\Entity\Game\Spell;
 
 class MobAttackHandler implements MobActionHandlerInterface
 {
-    public function supports(string $context)
+    public function supports(string $context): bool
     {
         return 'attack' === $context;
     }

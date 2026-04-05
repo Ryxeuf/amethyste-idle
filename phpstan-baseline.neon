@@ -258,17 +258,6 @@ parameters:
 			count: 1
 			path: src/Dto/Item/ItemModel.php
 
-		-
-			message: '#^Attribute class ApiPlatform\\Metadata\\ApiProperty does not exist\.$#'
-			identifier: attribute.notFound
-			count: 1
-			path: src/Dto/Item/SlotModel.php
-
-		-
-			message: '#^Attribute class Symfony\\Component\\Serializer\\Annotation\\Groups does not exist\.$#'
-			identifier: attribute.notFound
-			count: 2
-			path: src/Dto/Item/SlotModel.php
 
 		-
 			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$mobs type has no value type specified in iterable type array\.$#'
@@ -2178,65 +2167,6 @@ parameters:
 			count: 1
 			path: src/GameEngine/Fight/FightTurnResolver.php
 
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$item\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
-			message: '#^Variable \$item in PHPDoc tag @var does not exist\.$#'
-			identifier: varTag.variableNotFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobActionHandlerInterface.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobAttackHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerActionHandlerInterface.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerAttackHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerItemHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerItemHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerSpellHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerSpellHandler.php
 
 		-
 			message: '#^Method App\\GameEngine\\Fight\\LootGenerator\:\:mobDied\(\) has no return type specified\.$#'
@@ -2898,23 +2828,6 @@ parameters:
 			count: 1
 			path: src/Helper/CellHelper.php
 
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$target\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$targetType\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
-			message: '#^PHPDoc tag @return with type object\|null is not subtype of native type App\\Entity\\CharacterInterface\|null\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: src/Helper/FightHelper.php
 
 		-
 			message: '#^Method App\\Helper\\FightTimelineHelper\:\:generateTimeline\(\) return type has no value type specified in iterable type array\.$#'

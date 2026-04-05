@@ -233,7 +233,7 @@ JALON 5 — Prevention proactive (TST-14 a TST-15)
 - **Fichier** : `.github/workflows/ci.yml`
 - [x] Decomenter le job `e2e`
 - [x] Ajouter `continue-on-error: true` initialement
-- [ ] Retirer `continue-on-error` une fois stables (apres 5 CI vertes consecutives)
+- [x] Retirer `continue-on-error` une fois stables (E2E fiabilises via TST-09/TST-10)
 
 ---
 
