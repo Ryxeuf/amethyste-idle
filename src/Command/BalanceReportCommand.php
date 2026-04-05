@@ -8,6 +8,7 @@ use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -18,13 +19,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:balance:report',
-    description: 'Generate a balance report: monsters, items, drops, domains, spells',
+    description: 'Generate a balance report: monsters, items, drops, domains, spells, combat stats',
 )]
 class BalanceReportCommand extends Command
 {
     private const BASE_XP_PER_KILL = 10;
     private const BOSS_XP_MULTIPLIER = 5;
     private const SELL_RATIO = 0.3;
+    private const DPS_VARIANCE_THRESHOLD = 0.3;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -35,7 +37,8 @@ class BalanceReportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('section', 's', InputOption::VALUE_OPTIONAL, 'Section to display: monsters, items, drops, domains, spells, alerts, all', 'all');
+            ->addOption('section', 's', InputOption::VALUE_OPTIONAL, 'Section to display: monsters, items, drops, domains, spells, combat, alerts, all', 'all')
+            ->addOption('days', 'd', InputOption::VALUE_OPTIONAL, 'Number of days to analyze for combat stats (default: 30)', '30');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -72,6 +75,13 @@ class BalanceReportCommand extends Command
 
         if (\in_array($section, ['all', 'spells'], true)) {
             $alerts = array_merge($alerts, $this->reportSpells($io, $spells));
+        }
+
+        if (\in_array($section, ['all', 'combat'], true)) {
+            /** @var string $daysOption */
+            $daysOption = $input->getOption('days');
+            $days = max(1, (int) $daysOption);
+            $alerts = array_merge($alerts, $this->reportCombatStats($io, $days));
         }
 
         if (\in_array($section, ['all', 'alerts'], true)) {
@@ -386,6 +396,271 @@ class BalanceReportCommand extends Command
         );
 
         $io->text(sprintf('Total : %d sorts', \count($spells)));
+
+        return $alerts;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function reportCombatStats(SymfonyStyle $io, int $days): array
+    {
+        $io->section(sprintf('Statistiques de combat — %d derniers jours', $days));
+
+        $conn = $this->entityManager->getConnection();
+        $since = (new \DateTimeImmutable(sprintf('-%d days', $days)))->format('Y-m-d H:i:s');
+
+        // 1. Nombre de combats termines par tier de monstre, victoires et defaites
+        $outcomeData = $this->fetchCombatOutcomes($conn, $since);
+        // 2. Duree moyenne des combats (nombre de tours) par tier
+        $durationData = $this->fetchCombatDurations($conn, $since);
+        // 3. DPS moyen joueur par tier (degats totaux joueur / nombre de tours)
+        $dpsData = $this->fetchPlayerDps($conn, $since);
+
+        if ($outcomeData === []) {
+            $io->warning('Aucun combat termine trouve dans la periode.');
+
+            return [];
+        }
+
+        // Fusionner les donnees par monstre (cle = "level:name")
+        $tiers = [];
+        foreach ($outcomeData as $row) {
+            $key = $row['monster_level'] . ':' . $row['monster_name'];
+            $tiers[$key] = [
+                'level' => (int) $row['monster_level'],
+                'monster_name' => $row['monster_name'],
+                'is_boss' => (bool) $row['is_boss'],
+                'total_fights' => (int) $row['total_fights'],
+                'victories' => (int) $row['victories'],
+                'defeats' => (int) $row['defeats'],
+                'flees' => (int) $row['flees'],
+                'avg_turns' => 0.0,
+                'avg_player_dps' => 0.0,
+            ];
+        }
+
+        foreach ($durationData as $row) {
+            $key = $row['monster_level'] . ':' . $row['monster_name'];
+            if (isset($tiers[$key])) {
+                $tiers[$key]['avg_turns'] = round((float) $row['avg_turns'], 1);
+            }
+        }
+
+        foreach ($dpsData as $row) {
+            $key = $row['monster_level'] . ':' . $row['monster_name'];
+            if (isset($tiers[$key])) {
+                $tiers[$key]['avg_player_dps'] = round((float) $row['avg_dps'], 1);
+            }
+        }
+
+        uasort($tiers, fn (array $a, array $b) => $a['level'] <=> $b['level'] ?: $a['monster_name'] <=> $b['monster_name']);
+
+        // Tableau principal
+        $rows = [];
+        foreach ($tiers as $tier) {
+            $total = $tier['total_fights'];
+            $winRate = $total > 0 ? round(($tier['victories'] / $total) * 100, 1) : 0;
+            $deathRate = $total > 0 ? round(($tier['defeats'] / $total) * 100, 1) : 0;
+            $fleeRate = $total > 0 ? round(($tier['flees'] / $total) * 100, 1) : 0;
+
+            $rows[] = [
+                $tier['monster_name'] . ($tier['is_boss'] ? ' [Boss]' : ''),
+                $tier['level'],
+                $total,
+                sprintf('%s (%.1f%%)', $tier['victories'], $winRate),
+                sprintf('%s (%.1f%%)', $tier['defeats'], $deathRate),
+                sprintf('%s (%.1f%%)', $tier['flees'], $fleeRate),
+                $tier['avg_turns'],
+                $tier['avg_player_dps'],
+            ];
+        }
+
+        $io->table(
+            ['Monstre', 'Niveau', 'Combats', 'Victoires', 'Defaites', 'Fuites', 'Tours moy.', 'DPS joueur'],
+            $rows,
+        );
+
+        $totalFights = array_sum(array_column($tiers, 'total_fights'));
+        $totalVictories = array_sum(array_column($tiers, 'victories'));
+        $totalDefeats = array_sum(array_column($tiers, 'defeats'));
+        $io->text(sprintf(
+            'Total : %d combats, %d victoires (%.1f%%), %d defaites (%.1f%%)',
+            $totalFights,
+            $totalVictories,
+            $totalFights > 0 ? ($totalVictories / $totalFights) * 100 : 0,
+            $totalDefeats,
+            $totalFights > 0 ? ($totalDefeats / $totalFights) * 100 : 0,
+        ));
+
+        // Alertes d'equilibrage
+        return $this->detectCombatAlerts($tiers);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function fetchCombatOutcomes(Connection $conn, string $since): array
+    {
+        return $conn->fetchAllAssociative(
+            <<<'SQL'
+                SELECT
+                    mon.level AS monster_level,
+                    mon.name AS monster_name,
+                    mon.is_boss,
+                    COUNT(DISTINCT f.id) AS total_fights,
+                    COUNT(DISTINCT CASE WHEN fl_v.id IS NOT NULL THEN f.id END) AS victories,
+                    COUNT(DISTINCT CASE WHEN fl_d.id IS NOT NULL THEN f.id END) AS defeats,
+                    COUNT(DISTINCT CASE WHEN fl_f.id IS NOT NULL THEN f.id END) AS flees
+                FROM fight f
+                INNER JOIN mob m ON m.fight_id = f.id
+                INNER JOIN monster mon ON m.monster_id = mon.id
+                LEFT JOIN fight_log fl_v ON fl_v.fight_id = f.id AND fl_v.type = 'victory'
+                LEFT JOIN fight_log fl_d ON fl_d.fight_id = f.id AND fl_d.type = 'defeat'
+                LEFT JOIN fight_log fl_f ON fl_f.fight_id = f.id AND fl_f.type = 'flee'
+                WHERE f.in_progress = false
+                  AND f.created_at >= :since
+                GROUP BY mon.level, mon.name, mon.is_boss
+                ORDER BY mon.level ASC, mon.name ASC
+                SQL,
+            ['since' => $since],
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function fetchCombatDurations(Connection $conn, string $since): array
+    {
+        return $conn->fetchAllAssociative(
+            <<<'SQL'
+                SELECT
+                    mon.level AS monster_level,
+                    mon.name AS monster_name,
+                    AVG(f.step) AS avg_turns
+                FROM fight f
+                INNER JOIN mob m ON m.fight_id = f.id
+                INNER JOIN monster mon ON m.monster_id = mon.id
+                WHERE f.in_progress = false
+                  AND f.created_at >= :since
+                GROUP BY mon.level, mon.name
+                ORDER BY mon.level ASC, mon.name ASC
+                SQL,
+            ['since' => $since],
+        );
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function fetchPlayerDps(Connection $conn, string $since): array
+    {
+        return $conn->fetchAllAssociative(
+            <<<'SQL'
+                SELECT
+                    mon.level AS monster_level,
+                    mon.name AS monster_name,
+                    CASE WHEN SUM(sub.total_turns) > 0
+                        THEN CAST(SUM(sub.total_damage) AS FLOAT) / SUM(sub.total_turns)
+                        ELSE 0
+                    END AS avg_dps
+                FROM (
+                    SELECT
+                        f.id AS fight_id,
+                        f.step AS total_turns,
+                        COALESCE(SUM(
+                            CASE WHEN fl.actor_type = 'player' AND fl.type = 'attack'
+                                THEN CAST(fl.metadata::json->>'damage' AS INTEGER)
+                                ELSE 0
+                            END
+                        ), 0) AS total_damage
+                    FROM fight f
+                    INNER JOIN fight_log fl ON fl.fight_id = f.id
+                    WHERE f.in_progress = false
+                      AND f.created_at >= :since
+                    GROUP BY f.id, f.step
+                ) sub
+                INNER JOIN mob m ON m.fight_id = sub.fight_id
+                INNER JOIN monster mon ON m.monster_id = mon.id
+                GROUP BY mon.level, mon.name
+                ORDER BY mon.level ASC, mon.name ASC
+                SQL,
+            ['since' => $since],
+        );
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $tiers
+     *
+     * @return string[]
+     */
+    private function detectCombatAlerts(array $tiers): array
+    {
+        $alerts = [];
+        $normalTiers = array_values(array_filter($tiers, fn (array $t) => !$t['is_boss']));
+
+        // Alerte : taux de mort trop eleve (> 50%) pour un monstre non-boss
+        foreach ($normalTiers as $tier) {
+            $total = $tier['total_fights'];
+            if ($total >= 5 && $tier['defeats'] / $total > 0.5) {
+                $alerts[] = sprintf(
+                    '[COMBAT] %s (lvl %d) — taux de defaite %.0f%% (> 50%%)',
+                    $tier['monster_name'],
+                    $tier['level'],
+                    ($tier['defeats'] / $total) * 100,
+                );
+            }
+        }
+
+        // Alerte : ecart DPS > 30% entre niveaux adjacents (agrege par niveau)
+        $dpsByLevel = [];
+        foreach ($normalTiers as $tier) {
+            $level = $tier['level'];
+            if (!isset($dpsByLevel[$level])) {
+                $dpsByLevel[$level] = [];
+            }
+            $dpsByLevel[$level][] = $tier['avg_player_dps'];
+        }
+        $avgDpsByLevel = [];
+        foreach ($dpsByLevel as $level => $values) {
+            $nonZero = array_filter($values, fn (float $v) => $v > 0);
+            if ($nonZero !== []) {
+                $avgDpsByLevel[$level] = array_sum($nonZero) / \count($nonZero);
+            }
+        }
+        ksort($avgDpsByLevel);
+        $levelKeys = array_keys($avgDpsByLevel);
+        for ($i = 1, $count = \count($levelKeys); $i < $count; ++$i) {
+            $prevLevel = $levelKeys[$i - 1];
+            $currLevel = $levelKeys[$i];
+            $prevDps = $avgDpsByLevel[$prevLevel];
+            $currDps = $avgDpsByLevel[$currLevel];
+
+            $variance = abs($currDps - $prevDps) / $prevDps;
+            if ($variance > self::DPS_VARIANCE_THRESHOLD) {
+                $alerts[] = sprintf(
+                    '[COMBAT] Ecart DPS joueur entre lvl %d (%.1f) et lvl %d (%.1f) : %.0f%% (> %d%%)',
+                    $prevLevel,
+                    $prevDps,
+                    $currLevel,
+                    $currDps,
+                    $variance * 100,
+                    (int) (self::DPS_VARIANCE_THRESHOLD * 100),
+                );
+            }
+        }
+
+        // Alerte : combats trop longs (> 20 tours en moyenne) pour un monstre normal
+        foreach ($normalTiers as $tier) {
+            if ($tier['total_fights'] >= 5 && $tier['avg_turns'] > 20) {
+                $alerts[] = sprintf(
+                    '[COMBAT] %s (lvl %d) — duree moyenne %.1f tours (> 20)',
+                    $tier['monster_name'],
+                    $tier['level'],
+                    $tier['avg_turns'],
+                );
+            }
+        }
 
         return $alerts;
     }

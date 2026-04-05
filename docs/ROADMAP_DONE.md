@@ -1,11 +1,18 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-02
+> Derniere mise a jour : 2026-04-05
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 111 — Equilibrage combat avance (partiel) ✅
+> Rapport d'equilibrage combat via commande admin `app:balance:report --section=combat`.
+- [x] Section `combat` dans la commande `app:balance:report` : DPS moyen joueur par monstre, duree moyenne, taux de victoire/defaite/fuite
+- [x] Alertes automatiques : taux de mort > 50%, ecart DPS > 30% entre niveaux adjacents, combats > 20 tours
+- [x] Option `--days` pour limiter la periode d'analyse (defaut : 30 jours)
+- [x] Tests unitaires `BalanceReportCombatTest` (6 cas)
 
 ### 139 — Comparaison d'equipement & QoL inventaire (partiel) ✅
 > Tooltip de comparaison avec delta stats sur les items d'equipement disponibles.
