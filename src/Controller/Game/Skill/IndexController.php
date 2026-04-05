@@ -4,7 +4,6 @@ namespace App\Controller\Game\Skill;
 
 use App\Dto\Domain\DomainModel;
 use App\Dto\Domain\PlayerDomain;
-use App\Dto\Skill\SkillPlayer;
 use App\Entity\Game\Domain;
 use App\GameEngine\Progression\BuildPresetManager;
 use App\GameEngine\Progression\SkillRespecManager;
@@ -65,7 +64,7 @@ class IndexController extends AbstractController
 
         foreach ($domainsModels as $domain) {
             foreach ($domain->skills as $skill) {
-                if (!($skill instanceof SkillPlayer) || !$skill->acquired) {
+                if (!$skill->acquired) {
                     continue;
                 }
                 $stats['damage'] += $skill->damage;
