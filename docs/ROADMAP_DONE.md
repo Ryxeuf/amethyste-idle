@@ -1,11 +1,19 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-04
+> Derniere mise a jour : 2026-04-05
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 110 — Correction bugs connus & dette technique ✅
+> Nettoyage code mort, correction handlers Mercure et ajout validation coherence DB en CI.
+- [x] Nettoyage code mort : suppression code commente dans CellModelTransformer (39 lignes), PriorityQueue, PriorityQueueInterface
+- [x] Suppression import inutilise `Command` dans ConsoleController
+- [x] Correction bug MovedMobHandler : implementation de `moveMob()` (publication Mercure mob deplacement)
+- [x] Correction bug RespawnedPlayerHandler : implementation de `respawnPlayer()` (publication Mercure respawn joueur)
+- [x] Verification coherence DB via `app:game:validate` integree dans le pipeline CI (job tests)
 
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.

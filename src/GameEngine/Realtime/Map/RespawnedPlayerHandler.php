@@ -16,6 +16,6 @@ class RespawnedPlayerHandler extends RespawnedHandler implements EventSubscriber
 
     public function respawnPlayer(PlayerRespawnedEvent $event): void
     {
-        // $this->respawn('player', ['id' => $event->getPlayer()->getId(), 'class' => $event->getPlayer()->getClassType()], $event->getPlayer()->getCell()->getId());
+        $this->respawn('player', ['id' => $event->getPlayer()->getId()], $event->getPlayer()->getCoordinates());
     }
 }

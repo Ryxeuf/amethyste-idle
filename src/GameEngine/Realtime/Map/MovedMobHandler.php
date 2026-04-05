@@ -16,6 +16,6 @@ class MovedMobHandler extends MovedHandler implements EventSubscriberInterface
 
     public function moveMob(MobMovedEvent $event): void
     {
-        // $this->move('mob', $event->getMob()->getId(), $event->getMob()->getCell()->getId());
+        $this->move('mob', $event->getMob()->getId(), $event->getMob()->getCoordinates());
     }
 }

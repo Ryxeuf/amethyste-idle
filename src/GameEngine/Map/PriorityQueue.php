@@ -11,18 +11,6 @@ namespace App\GameEngine\Map;
  */
 class PriorityQueue implements PriorityQueueInterface
 {
-    // The queue itself.  It is a bi-dimensional array.
-    //    private array $queue;
-
-    // The number of elements inside the queue.
-    //    private int $numElements;
-
-    // A hashmap to track the positions of all the elements inside the queue (performance trick).
-    //    private $hashmap;
-
-    // The hash algorithm.  By default, 'crc32b'.
-    //    private string $algorithm;
-
     /**
      * Create a new queue (an array) without elements in it.
      * Create the hashmap.
