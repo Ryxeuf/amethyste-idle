@@ -8,11 +8,11 @@
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
 ### 110 — Correction bugs connus & dette technique ✅
-> Audit de code, nettoyage de la dette technique et integration du validateur de coherence en CI.
-- [x] Nettoyage code mort : suppression code commente dans `MapModelTransformer` (debug `dd()`, blocs commentes obsoletes)
-- [x] Correction catch vides : ajout de logging dans `InventoryHelper` et `AdminFightModerationService` (erreurs silencieuses → warnings loggues)
-- [x] Suppression TODO obsolete dans `MapHelper::getRespawnCoordinates()`
-- [x] Verification coherence DB via `app:game:validate` ajoutee dans le pipeline CI (job `tests`, apres chargement des fixtures)
+> Nettoyage code mort, logging des erreurs silencieuses et validation coherence DB en CI.
+- [x] Audit des issues GitHub ouvertes (0 issues ouvertes)
+- [x] Nettoyage code mort : suppression ~80 lignes de code commente (MapModelTransformer, CellModelTransformer), suppression classe morte MapHelper + simplification PlayerRespawnHandler, imports inutilises
+- [x] Logging des catch blocks vides : InventoryHelper (EntityNotFoundException), AdminFightModerationService (Throwable)
+- [x] Ajout de `app:game:validate` dans le pipeline CI (job tests) pour verifier la coherence DB a chaque push
 
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
