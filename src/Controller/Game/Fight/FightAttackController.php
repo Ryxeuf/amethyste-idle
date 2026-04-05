@@ -52,6 +52,10 @@ class FightAttackController extends AbstractController
             return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
         }
 
+        if ($player->isDead()) {
+            return new JsonResponse(['error' => 'Vous êtes vaincu !', 'success' => false]);
+        }
+
         $data = json_decode($request->getContent(), true);
         if (!$data || !isset($data['targetId']) || !isset($data['targetType'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
