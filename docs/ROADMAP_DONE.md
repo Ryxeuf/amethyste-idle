@@ -1,11 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-04
+> Derniere mise a jour : 2026-04-05
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 111 — Equilibrage combat avance (partiel) — Rapport de combat ✅
+> Ajout de la section « combat » au rapport d'equilibrage (`app:balance:report --section combat`).
+- [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
+- [x] Taux de victoire/defaite/fuite par monstre (avec alertes si < 30% ou > 95%)
+- [x] Duree moyenne des combats (en tours)
+- [x] DPS des monstres par niveau (degats/combat et degats/tour)
+- [x] Top 10 morts joueurs les plus frequentes
+- [x] Option `--days` pour filtrer la periode d'analyse (defaut: 30 jours)
 
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.

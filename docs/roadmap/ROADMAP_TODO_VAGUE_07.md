@@ -57,7 +57,7 @@
 
 ### 111 — Equilibrage combat avance (M | ★★★)
 > Prerequis : ∅
-- [ ] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
+- [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
 - [ ] Ajustement formules de degats si ecarts > 30% entre builds
 - [ ] Equilibrage donjons : difficulte vs recompenses
 - [ ] Equilibrage world boss : HP et loot en fonction du nombre de joueurs actifs
