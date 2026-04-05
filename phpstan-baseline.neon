@@ -163,12 +163,6 @@ parameters:
 			path: src/Controller/Api/QuickbarController.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/Controller/Game/Fight/FightLootProceedController.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1

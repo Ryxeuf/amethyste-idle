@@ -1,11 +1,17 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-04
+> Derniere mise a jour : 2026-04-05
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Nettoyage du code mort et ajout de la validation de coherence DB en CI.
+- [x] Nettoyage code mort detecte par PHPStan : suppression de blocs commentes (MapModelTransformer, CellModelTransformer, FightLootIndexController), suppression d'imports orphelins, fix du pattern `!$fight instanceof Fight` dans FightLootProceedController
+- [x] Verification coherence DB via `app:game:validate` en CI : ajout d'un step dans le job tests du workflow CI, execute apres le chargement des fixtures
+- [x] Mise a jour baseline PHPStan : retrait de l'entree corrigee (booleanNot.alwaysFalse)
 
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
