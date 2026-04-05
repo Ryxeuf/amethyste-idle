@@ -13,6 +13,7 @@ class SlotModel
     public function __construct(SlotEntity $slot)
     {
         $this->id = $slot->getId();
-        $this->itemSet = new SlotItemModel($slot->getItemSet());
+        $itemSet = $slot->getItemSet();
+        $this->itemSet = $itemSet !== null ? new SlotItemModel($itemSet) : null;
     }
 }

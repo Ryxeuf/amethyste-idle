@@ -163,12 +163,6 @@ parameters:
 			path: src/Controller/Api/QuickbarController.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/Controller/Game/Fight/FightLootProceedController.php
-
-		-
 			message: '#^If condition is always true\.$#'
 			identifier: if.alwaysTrue
 			count: 1
@@ -257,18 +251,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Dto/Item/ItemModel.php
-
-		-
-			message: '#^Attribute class ApiPlatform\\Metadata\\ApiProperty does not exist\.$#'
-			identifier: attribute.notFound
-			count: 1
-			path: src/Dto/Item/SlotModel.php
-
-		-
-			message: '#^Attribute class Symfony\\Component\\Serializer\\Annotation\\Groups does not exist\.$#'
-			identifier: attribute.notFound
-			count: 2
-			path: src/Dto/Item/SlotModel.php
 
 		-
 			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$mobs type has no value type specified in iterable type array\.$#'
@@ -2179,18 +2161,6 @@ parameters:
 			path: src/GameEngine/Fight/FightTurnResolver.php
 
 		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$item\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
-			message: '#^Variable \$item in PHPDoc tag @var does not exist\.$#'
-			identifier: varTag.variableNotFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
 			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
@@ -2199,12 +2169,6 @@ parameters:
 		-
 			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobAttackHandler\:\:supports\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
 
@@ -2245,12 +2209,6 @@ parameters:
 			path: src/GameEngine/Fight/LootGenerator.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: src/GameEngine/Fight/MateriaXpGranter.php
-
-		-
 			message: '#^Method App\\GameEngine\\Fight\\MobActionHandler\:\:__construct\(\) has parameter \$handlers with no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -2273,12 +2231,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Fight/SpellApplicator.php
-
-		-
-			message: '#^Left side of && is always true\.$#'
-			identifier: booleanAnd.leftAlwaysTrue
-			count: 1
-			path: src/GameEngine/Gathering/GatheringManager.php
 
 		-
 			message: '#^Method App\\GameEngine\\Gathering\\GatheringManager\:\:determineGatheredItem\(\) has parameter \$context with no value type specified in iterable type array\.$#'
@@ -2899,24 +2851,6 @@ parameters:
 			path: src/Helper/CellHelper.php
 
 		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$target\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$targetType\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
-			message: '#^PHPDoc tag @return with type object\|null is not subtype of native type App\\Entity\\CharacterInterface\|null\.$#'
-			identifier: return.phpDocType
-			count: 1
-			path: src/Helper/FightHelper.php
-
-		-
 			message: '#^Method App\\Helper\\FightTimelineHelper\:\:generateTimeline\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3095,12 +3029,6 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/ServiceProvider/PlayerActionsProvider.php
-
-		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 2
-			path: src/Transformer/AbstractSkillTransformer.php
 
 		-
 			message: '#^Method App\\Transformer\\CellModelTransformer\:\:transformCellActions\(\) return type has no value type specified in iterable type array\.$#'

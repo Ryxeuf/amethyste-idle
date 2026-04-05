@@ -117,8 +117,7 @@ class GatheringManager
             }
             foreach ($inventory->getItems() as $playerItem) {
                 $genericItem = $playerItem->getGenericItem();
-                if ($genericItem->isTool()
-                    && $genericItem->getToolType() === $requiredType
+                if ($genericItem->getToolType() === $requiredType
                     && !$this->toolDurabilityManager->isToolBroken($playerItem)
                 ) {
                     return $playerItem;

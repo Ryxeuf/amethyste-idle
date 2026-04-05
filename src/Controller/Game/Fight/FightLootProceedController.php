@@ -40,7 +40,7 @@ class FightLootProceedController extends AbstractController
         $items = $data['items'];
 
         $fight = $this->entityManager->getRepository(Fight::class)->find($fightId);
-        if (!$fight instanceof Fight) {
+        if ($fight === null) {
             return new JsonResponse(['error' => 'Fight not found'], Response::HTTP_NOT_FOUND);
         }
 
