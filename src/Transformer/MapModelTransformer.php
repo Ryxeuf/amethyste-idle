@@ -46,9 +46,6 @@ class MapModelTransformer
         $model = new MapStaticModel($map);
 
         foreach ($map->getAreas() as $area) {
-
-            // dd($area->getFullDataArray()['cells'][0]);
-
             $model->areas[] = new AreaModel($area);
             $model->minX = min($model->minX, $area->getX() * $map->getAreaWidth());
             $model->minY = min($model->minY, $area->getY() * $map->getAreaHeight());
@@ -71,28 +68,6 @@ class MapModelTransformer
             }
         }
 
-        // // Si aucune cellule n'a été trouvée, générer des cellules de test
-        // if (count($model->cells) === 0) {
-        //     // Générer une grille de 20x20 cellules autour du centre (0,0)
-        //     for ($x = -10; $x <= 10; $x++) {
-        //         for ($y = -10; $y <= 10; $y++) {
-        //             $cellData = [
-        //                 'x' => $x,
-        //                 'y' => $y,
-        //                 'slug' => 'test-cell',
-        //                 'mouvement' => 1,
-        //                 'layers' => [
-        //                     [
-        //                         'color' => '#cccccc',
-        //                         'opacity' => 1
-        //                     ]
-        //                 ]
-        //             ];
-        //             $model->cells[] = new CellModel($cellData, $map);
-        //         }
-        //     }
-        // }
-
         return $model;
     }
 
@@ -102,23 +77,10 @@ class MapModelTransformer
         [$x, $y] = explode('.', $player->getCoordinates());
 
         $model = new MapModel($map);
-        //        $model->minX = $player->getCell()->getX() - ($player->getCell()->getX()%20);
         $model->minX = (int) $x - 11;
         $model->maxX = $model->minX + 22;
-        //        $model->minY = $player->getCell()->getY() - ($player->getCell()->getY()%20);
         $model->minY = (int) $y - 11;
         $model->maxY = $model->minY + 22;
-
-        //        foreach ($map->getCells() as $cell) {
-        //            if ($model->minX <= $cell->getX()  && $cell->getX() < $model->maxX && $model->minY <= $cell->getY() && $cell->getY() < $model->maxY) {
-        //                $cellModel = new CellModel($cell, false);
-        //                $this->cellModelTransformer->transformCellPlayers($cell, $cellModel);
-        //                $cellModel->mob = $this->cellModelTransformer->transformCellMob($cell);
-        //                $cellModel->pnj = $this->cellModelTransformer->transformCellPnj($cell);
-        //                $cellModel->actions = $this->cellModelTransformer->transformCellActions($cell);
-        //                $model->cells[] = $cellModel;
-        //            }
-        //        }
 
         return $model;
     }
@@ -158,13 +120,6 @@ class MapModelTransformer
     {
         $mapModel = $this->transformMapModel($map);
         $dijkstraMap = [];
-
-        //        /** @var bool[] $objectLayers */
-        //        $objectLayers = [];
-        //        foreach ($map->getObjectLayers() as $objectLayer) {
-        //            $objectLayers[$objectLayer->getCoordinates()] = $objectLayer->getMovement() !== CellHelper::MOVE_UNREACHABLE;
-        //        }
-        // && ($objectLayers[$cellInfos['coordinates']] ?? CellHelper::MOVE_DEFAULT) !== CellHelper::MOVE_UNREACHABLE
 
         $baseMovements = [];
         $cells = [];

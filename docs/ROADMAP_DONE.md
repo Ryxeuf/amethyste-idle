@@ -1,11 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-04
+> Derniere mise a jour : 2026-04-07
 
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
+
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Nettoyage de code mort et ajout de la validation de coherence DB en CI.
+- [x] Nettoyage code mort detecte par PHPStan (LootGenerator variable inutilisee, MapModelTransformer code commente)
+- [x] Verification coherence DB via `app:game:validate` en CI (step apres fixtures dans le job tests)
+
+### TST-11 — Retirer continue-on-error E2E ✅
+> Retrait de `continue-on-error: true` du job E2E dans la CI, les tests sont desormais stables.
+- [x] Retirer `continue-on-error: true` du job E2E dans `.github/workflows/ci.yml`
 
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
