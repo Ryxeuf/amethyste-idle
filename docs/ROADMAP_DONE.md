@@ -13,6 +13,9 @@
 - [x] Taux de victoire/defaite/fuite par monstre (avec alertes si < 30% ou > 95%)
 - [x] Duree moyenne des combats (en tours)
 - [x] DPS des monstres par niveau (degats/combat et degats/tour)
+- [x] DPS des joueurs par monstre (degats infliges aux mobs, par tour)
+- [x] Alertes automatiques : ecart DPS joueur > 30% entre niveaux adjacents
+- [x] Alertes automatiques : combats trop longs (> 20 tours en moyenne)
 - [x] Top 10 morts joueurs les plus frequentes
 - [x] Option `--days` pour filtrer la periode d'analyse (defaut: 30 jours)
 
