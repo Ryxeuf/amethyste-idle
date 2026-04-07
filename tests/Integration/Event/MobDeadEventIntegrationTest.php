@@ -158,7 +158,7 @@ class MobDeadEventIntegrationTest extends TestCase
     public function testMobDeadWithNoFactionSkipsReputation(): void
     {
         $player = $this->createPlayer();
-        $mob = $this->createMobWithFight([$player], 'wolf', 1, null);
+        $mob = $this->createMobWithFight([$player], 'slime', 1, null);
         $event = new MobDeadEvent($mob);
 
         $this->reputationManager->expects($this->never())

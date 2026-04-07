@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par vague (priorite) dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-04-03
+> Derniere mise a jour : 2026-04-04
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
 > **Nouvelle feuille de route** : Vagues 7-10 definissent les prochaines priorites.
 > **Audit contenu** : le jeu dispose de systemes solides mais le contenu est a ~30% du necessaire. La Vague 8 (Contenu critique) a ete inseree pour combler ces lacunes avant l'economie.
@@ -46,15 +46,15 @@
 PLAN TESTING (restant)
   TST-07 Integration quetes/progression  ← TST-04
   ✅ TST-09 Stabiliser E2E                 ← TST-01
-  TST-10 Nouveaux tests E2E             ← TST-09 ✅
-  TST-11 Reactiver E2E dans CI          ← TST-09 ✅
+  ✅ TST-10 Nouveaux tests E2E             ← TST-09
+  ✅ TST-11 Reactiver E2E dans CI          ← TST-09
   ✅ TST-12 PHPStan niveau 6               ∅
   ✅ TST-13 Mutation testing (Infection)    ← TST-05
 
 VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   ┌─ Piste A — Testing (TST restants)
   │   104 TST-07 Integration quetes     ← TST-04 ✅
-  │   105 TST-09 Stabiliser E2E         ← TST-01 ✅  ✅
+  │   105 TST-09 Stabiliser E2E         ← TST-01 ✅
   │   106 TST-10 Nouveaux tests E2E     ← 105 ✅
   │   107 TST-11 E2E dans CI            ← 105 ✅
   │   108 TST-12 PHPStan niveau 6       ∅  ✅
@@ -169,5 +169,5 @@ PLAN AVATAR MODULAIRE (format 8x8, 38 taches)
 **Plans annexes :**
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅
-- [Testing & qualite](PLAN_TESTING.md) — 6 taches restantes (integrees en Vague 7)
+- [Testing & qualite](PLAN_TESTING.md) — 4 taches restantes (integrees en Vague 7)
 - [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — 38 taches (AVT-01 a AVT-38, 7 phases)

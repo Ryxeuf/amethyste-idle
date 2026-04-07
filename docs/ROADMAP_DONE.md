@@ -1,20 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-03
+> Derniere mise a jour : 2026-04-05
 
 ---
 
-## Vague 8 — Contenu critique
+## Vague 7 — Qualite, stabilisation & fondations UX
 
-### 140 — Monstres tier 1 manquants ✅
-> Ajout des 5 monstres tier 1 manquants + loot tables + placements + achievements bestiaire.
-- [x] 5 nouveaux monstres : wolf (Loup), scorpion (Scorpion), beetle (Scarabée), mushroom_golem (Golem champignon), ghost (Fantôme)
-- [x] Stats, resistances elementaires et faiblesses par monstre
-- [x] Loot tables specifiques (materiaux, consommables, equipements communs)
-- [x] Patterns IA basiques
-- [x] Placement dans les zones existantes (Plaine map_1, Foret map_3)
-- [x] Achievements bestiaire (paliers 10/50/100) pour bat, giant_rat, venom_snake, wolf, scorpion, beetle, mushroom_golem, ghost
+### 111 — Equilibrage combat avance (partiel) — Rapport de combat ✅
+> Ajout de la section « combat » au rapport d'equilibrage (`app:balance:report --section combat`).
+- [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
+- [x] Taux de victoire/defaite/fuite par monstre (avec alertes si < 30% ou > 95%)
+- [x] Duree moyenne des combats (en tours)
+- [x] DPS des monstres par niveau (degats/combat et degats/tour)
+- [x] Top 10 morts joueurs les plus frequentes
+- [x] Option `--days` pour filtrer la periode d'analyse (defaut: 30 jours)
+
+### 106 — Nouveaux tests E2E critiques (TST-10) ✅
+> 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
+- [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)
+- [x] `MapNavigationTest` : deplacement API → joueur bouge → changement de carte via portail (5 tests)
+- [x] `ShopFlowTest` : acheter item → or diminue → item dans inventaire (4 tests)
+
+### 107 — Reactiver E2E dans la CI (TST-11) ✅
+> Reactivation du job E2E (Panther + Chrome headless) dans la CI GitHub Actions.
+- [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
+- [x] Ajouter `continue-on-error: true` pour ne pas bloquer la CI pendant la stabilisation
+- [x] Screenshots uploadees en artifact en cas d'echec
 
 ---
 
@@ -105,6 +117,12 @@
 - [x] Selecteur de personnage au login si le joueur en possede plusieurs (`CharacterController::select()`)
 - [x] Refactoring du `RegistrationController` : auto-login + redirection vers creation personnage
 - [x] `LoginFormAuthenticator` : redirection intelligente (0 players → create, 1 → game, 2+ → select)
+
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Sous-tache : verification coherence DB via `app:game:validate` en CI.
+- [x] Ajout de l'etape `app:game:validate --env=test` dans le job `tests` de la CI (apres le chargement des fixtures)
+- [x] 2 nouveaux checks dans `GameStateValidator` : `negative_domain_experience` (XP used > total ou valeurs negatives) et `equipped_items_wrong_location` (items equipes hors inventaire joueur)
+- [x] Tests unitaires mis a jour pour couvrir les 7 checks
 
 ---
 

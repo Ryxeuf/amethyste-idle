@@ -21,16 +21,16 @@
 - [x] Corriger selecteurs CSS casses
 - [x] **Verification** : `docker compose exec php vendor/bin/phpunit --testsuite E2E`
 
-### 106 — Nouveaux tests E2E critiques (M | ★★) — TST-10
+### ~~106 — Nouveaux tests E2E critiques (M | ★★) — TST-10~~ ✅
 > Prerequis : ← 105
-- [ ] `InventoryFlowTest` : equiper item → stat change → desequiper → stat revient
-- [ ] `MapNavigationTest` : clic deplacement → joueur bouge → changement de carte
-- [ ] `ShopFlowTest` : acheter item → or diminue → item dans inventaire
+- [x] `InventoryFlowTest` : equiper item → stat change → desequiper → stat revient
+- [x] `MapNavigationTest` : clic deplacement → joueur bouge → changement de carte
+- [x] `ShopFlowTest` : acheter item → or diminue → item dans inventaire
 
-### 107 — Reactiver E2E dans la CI (S | ★★) — TST-11
+### ~~107 — Reactiver E2E dans la CI (S | ★★) — TST-11~~ ✅
 > Prerequis : ← 105
-- [ ] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
-- [ ] `continue-on-error: true` initialement, retirer apres 5 CI vertes
+- [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
+- [x] `continue-on-error: true` initialement, retirer apres 5 CI vertes
 
 ### ~~108 — PHPStan niveau 6 + reduction baseline (M | ★★★) — TST-12~~ ✅
 > Prerequis : ∅
@@ -53,11 +53,11 @@
 - [ ] Audit des issues GitHub ouvertes et priorisation
 - [ ] Correction des bugs critiques gameplay (combat, inventaire, quetes)
 - [ ] Nettoyage code mort detecte par PHPStan
-- [ ] Verification coherence DB via `app:game:validate` en CI
+- [x] Verification coherence DB via `app:game:validate` en CI
 
 ### 111 — Equilibrage combat avance (M | ★★★)
 > Prerequis : ∅
-- [ ] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
+- [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
 - [ ] Ajustement formules de degats si ecarts > 30% entre builds
 - [ ] Equilibrage donjons : difficulte vs recompenses
 - [ ] Equilibrage world boss : HP et loot en fonction du nombre de joueurs actifs

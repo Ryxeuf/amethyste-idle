@@ -22,6 +22,8 @@ class GameStateValidateCommand extends Command
         'orphaned_player_items' => 'PlayerItems orphelins (item manquant)',
         'stale_active_quests' => 'Quetes actives deja completees',
         'players_out_of_bounds' => 'Joueurs hors limites de la carte',
+        'negative_domain_experience' => 'Experience de domaine incoherente (used > total ou valeurs negatives)',
+        'equipped_items_wrong_location' => 'Items equipes hors inventaire joueur (vault, mob ou sans inventaire)',
     ];
 
     public function __construct(

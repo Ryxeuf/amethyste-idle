@@ -33,6 +33,8 @@ class GameStateValidateCommandTest extends TestCase
                 'orphaned_player_items' => [],
                 'stale_active_quests' => [],
                 'players_out_of_bounds' => [],
+                'negative_domain_experience' => [],
+                'equipped_items_wrong_location' => [],
             ]);
 
         $this->tester->execute([]);
@@ -50,6 +52,8 @@ class GameStateValidateCommandTest extends TestCase
                 'orphaned_player_items' => [],
                 'stale_active_quests' => [],
                 'players_out_of_bounds' => [],
+                'negative_domain_experience' => [],
+                'equipped_items_wrong_location' => [],
             ]);
 
         $this->tester->execute([]);
@@ -68,6 +72,8 @@ class GameStateValidateCommandTest extends TestCase
                 'orphaned_player_items' => [],
                 'stale_active_quests' => [],
                 'players_out_of_bounds' => [],
+                'negative_domain_experience' => [],
+                'equipped_items_wrong_location' => [],
             ]);
 
         $this->tester->execute([]);
@@ -78,6 +84,8 @@ class GameStateValidateCommandTest extends TestCase
         $this->assertStringContainsString('orphelins', $display);
         $this->assertStringContainsString('completees', $display);
         $this->assertStringContainsString('limites', $display);
+        $this->assertStringContainsString('Experience de domaine', $display);
+        $this->assertStringContainsString('Items equipes hors inventaire', $display);
     }
 
     public function testCheckOptionRunsSingleCheck(): void
