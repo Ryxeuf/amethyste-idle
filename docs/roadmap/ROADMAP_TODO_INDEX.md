@@ -45,8 +45,8 @@
 ```
 PLAN TESTING (restant)
   TST-07 Integration quetes/progression  ← TST-04
-  TST-09 Stabiliser E2E                 ← TST-01
-  TST-10 Nouveaux tests E2E             ← TST-09
+  ✅ TST-09 Stabiliser E2E                 ← TST-01
+  ✅ TST-10 Nouveaux tests E2E             ← TST-09
   ✅ TST-11 Reactiver E2E dans CI          ← TST-09
   ✅ TST-12 PHPStan niveau 6               ∅
   ✅ TST-13 Mutation testing (Infection)    ← TST-05
@@ -55,7 +55,7 @@ VAGUE 7 — QUALITE, STABILISATION & FONDATIONS UX (priorite absolue)
   ┌─ Piste A — Testing (TST restants)
   │   104 TST-07 Integration quetes     ← TST-04 ✅
   │   105 TST-09 Stabiliser E2E         ← TST-01 ✅
-  │   106 TST-10 Nouveaux tests E2E     ← 105
+  │   106 TST-10 Nouveaux tests E2E     ← 105 ✅
   │   107 TST-11 E2E dans CI            ← 105 ✅
   │   108 TST-12 PHPStan niveau 6       ∅  ✅
   │   109 TST-13 Mutation testing       ← TST-05 ✅

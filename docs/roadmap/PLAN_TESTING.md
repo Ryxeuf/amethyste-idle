@@ -38,7 +38,7 @@ JALON 2 — Tests integration (TST-04 a TST-08)
   ✅ TST-08 Testsuite Integration dans CI ← TST-05
 
 JALON 3 — E2E (TST-09 a TST-11)
-  TST-09 Stabiliser tests E2E existants  ← TST-01
+  ✅ TST-09 Stabiliser tests E2E existants  ← TST-01
   TST-10 Nouveaux tests E2E critiques    ← TST-09
   TST-11 Reactiver E2E dans CI           ← TST-09
 
