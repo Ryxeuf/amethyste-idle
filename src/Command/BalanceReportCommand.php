@@ -27,6 +27,8 @@ class BalanceReportCommand extends Command
     private const BASE_XP_PER_KILL = 10;
     private const BOSS_XP_MULTIPLIER = 5;
     private const SELL_RATIO = 0.3;
+    private const DPS_VARIANCE_THRESHOLD = 0.3;
+    private const LONG_FIGHT_THRESHOLD = 20;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -490,7 +492,30 @@ class BalanceReportCommand extends Command
             );
         }
 
-        // 5. Player death rate
+        // 5. DPS moyen des joueurs par monstre (degats infliges par les joueurs aux mobs)
+        $playerDpsRows = $this->queryPlayerDpsByMonster($sinceStr);
+        if ($playerDpsRows !== []) {
+            $io->text('--- DPS moyen des joueurs par monstre (degats infliges aux mobs) ---');
+            $io->table(
+                ['Monstre', 'Niveau', 'Combats', 'Degats totaux', 'Degats/tour'],
+                array_map(fn (array $r) => [
+                    $r['monster_name'],
+                    $r['level'],
+                    $r['fight_count'],
+                    $r['total_damage'],
+                    sprintf('%.1f', $r['dps']),
+                ], $playerDpsRows),
+            );
+
+            $alerts = array_merge($alerts, $this->detectDpsVarianceAlerts($playerDpsRows));
+        }
+
+        // 6. Alertes duree de combat par monstre
+        if ($monsterOutcomes !== []) {
+            $alerts = array_merge($alerts, $this->detectLongFightAlerts($monsterOutcomes));
+        }
+
+        // 7. Player death rate
         $playerDeaths = $this->queryPlayerDeathStats($sinceStr);
         if ($playerDeaths !== []) {
             $io->text('--- Morts joueurs les plus frequentes (top 10) ---');
@@ -756,6 +781,155 @@ class BalanceReportCommand extends Command
         }
 
         return $result;
+    }
+
+    /**
+     * @return list<array{monster_name: string, level: int, fight_count: int, total_damage: int, dps: float}>
+     */
+    private function queryPlayerDpsByMonster(string $since): array
+    {
+        $sql = <<<'SQL'
+            WITH fight_mobs AS (
+                SELECT
+                    fl.fight_id,
+                    jsonb_array_elements_text(fl.metadata::jsonb->'mobs') as mob_name
+                FROM fight_log fl
+                WHERE fl.type = :fight_start
+                  AND fl.metadata IS NOT NULL
+                  AND fl.created_at >= :since
+            ),
+            fight_player_damage AS (
+                SELECT
+                    fl.fight_id,
+                    COALESCE(SUM((fl.metadata->>'damage')::int), 0) as total_damage
+                FROM fight_log fl
+                WHERE fl.actor_type = :player
+                  AND fl.type = :attack
+                  AND fl.metadata IS NOT NULL
+                  AND fl.metadata->>'damage' IS NOT NULL
+                  AND fl.created_at >= :since
+                GROUP BY fl.fight_id
+            ),
+            fight_turns AS (
+                SELECT
+                    fight_id,
+                    MAX(turn) as max_turn
+                FROM fight_log
+                WHERE created_at >= :since
+                GROUP BY fight_id
+            )
+            SELECT
+                fm.mob_name as monster_name,
+                COALESCE(gm.level, 0) as level,
+                COUNT(DISTINCT fm.fight_id) as fight_count,
+                COALESCE(SUM(fpd.total_damage), 0) as total_damage,
+                CASE WHEN SUM(ft.max_turn) > 0
+                    THEN CAST(SUM(fpd.total_damage) AS FLOAT) / SUM(ft.max_turn)
+                    ELSE 0
+                END as dps
+            FROM fight_mobs fm
+            INNER JOIN fight_player_damage fpd ON fpd.fight_id = fm.fight_id
+            INNER JOIN fight_turns ft ON ft.fight_id = fm.fight_id
+            LEFT JOIN game_monsters gm ON gm.name = fm.mob_name
+            GROUP BY fm.mob_name, gm.level
+            ORDER BY gm.level ASC, fm.mob_name ASC
+            SQL;
+
+        $rows = $this->connection->executeQuery($sql, [
+            'fight_start' => FightLog::TYPE_FIGHT_START,
+            'player' => FightLog::ACTOR_PLAYER,
+            'attack' => FightLog::TYPE_ATTACK,
+            'since' => $since,
+        ])->fetchAllAssociative();
+
+        $result = [];
+        foreach ($rows as $row) {
+            $result[] = [
+                'monster_name' => $row['monster_name'],
+                'level' => (int) $row['level'],
+                'fight_count' => (int) $row['fight_count'],
+                'total_damage' => (int) $row['total_damage'],
+                'dps' => round((float) $row['dps'], 1),
+            ];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Detecte les ecarts de DPS joueur > 30% entre niveaux adjacents.
+     *
+     * @param list<array{monster_name: string, level: int, fight_count: int, total_damage: int, dps: float}> $playerDpsRows
+     *
+     * @return string[]
+     */
+    private function detectDpsVarianceAlerts(array $playerDpsRows): array
+    {
+        $alerts = [];
+
+        // Agreger DPS par niveau
+        $dpsByLevel = [];
+        foreach ($playerDpsRows as $row) {
+            if ($row['dps'] > 0 && $row['fight_count'] >= 3) {
+                $dpsByLevel[$row['level']][] = $row['dps'];
+            }
+        }
+
+        $avgDpsByLevel = [];
+        foreach ($dpsByLevel as $level => $values) {
+            $avgDpsByLevel[$level] = array_sum($values) / \count($values);
+        }
+        ksort($avgDpsByLevel);
+
+        $levels = array_keys($avgDpsByLevel);
+        for ($i = 1, $count = \count($levels); $i < $count; ++$i) {
+            $prevLevel = $levels[$i - 1];
+            $currLevel = $levels[$i];
+            $prevDps = $avgDpsByLevel[$prevLevel];
+            $currDps = $avgDpsByLevel[$currLevel];
+
+            $variance = abs($currDps - $prevDps) / $prevDps;
+            if ($variance > self::DPS_VARIANCE_THRESHOLD) {
+                $alerts[] = sprintf(
+                    '[COMBAT] Ecart DPS joueur entre lvl %d (%.1f) et lvl %d (%.1f) : %.0f%% (seuil: %d%%)',
+                    $prevLevel,
+                    $prevDps,
+                    $currLevel,
+                    $currDps,
+                    $variance * 100,
+                    (int) (self::DPS_VARIANCE_THRESHOLD * 100),
+                );
+            }
+        }
+
+        return $alerts;
+    }
+
+    /**
+     * Detecte les combats trop longs (> 20 tours en moyenne) pour les monstres non-boss.
+     *
+     * @param list<array{monster_name: string, level: int, victories: int, defeats: int, flees: int, avg_turns: float}> $monsterOutcomes
+     *
+     * @return string[]
+     */
+    private function detectLongFightAlerts(array $monsterOutcomes): array
+    {
+        $alerts = [];
+
+        foreach ($monsterOutcomes as $row) {
+            $total = $row['victories'] + $row['defeats'] + $row['flees'];
+            if ($total >= 5 && $row['avg_turns'] > self::LONG_FIGHT_THRESHOLD) {
+                $alerts[] = sprintf(
+                    '[COMBAT] %s (lvl %d) — duree moyenne %.1f tours (seuil: %d)',
+                    $row['monster_name'],
+                    $row['level'],
+                    $row['avg_turns'],
+                    self::LONG_FIGHT_THRESHOLD,
+                );
+            }
+        }
+
+        return $alerts;
     }
 
     /**
