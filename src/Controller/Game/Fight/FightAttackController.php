@@ -93,7 +93,8 @@ class FightAttackController extends AbstractController
                 $fight->setStep($fight->getStep() + 1);
             }
 
-            if (!$player->isDead()) { // @phpstan-ignore negatedBoolean.alwaysTrue (mob can kill the player via doAction side effects)
+            // @phpstan-ignore-next-line mob can kill the player via doAction side effects
+            if (!$player->isDead()) {
                 $attackResult = $this->doPlayerAttack($player, $target, $fight);
                 $messages = $attackResult['messages'];
                 $hit = $attackResult['hit'];
