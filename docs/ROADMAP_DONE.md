@@ -1660,3 +1660,11 @@
 - [x] Lien "Voir le profil" depuis la carte PixiJS (tooltip desktop cliquable, banner mobile)
 - [x] Migration PostgreSQL (ajout colonne `featured` a `player_achievements`)
 - [x] Tests fonctionnels (show profil, toggle featured, limite max)
+
+## 144 — Sorts & materia tier 2-3 (partiel) (2026-04-08) 🔧
+
+> Ajout de materia épiques tier 3 (1 par élément) et comblement du déficit de materia pour Eau, Métal et Bête.
+- [x] 8 nouveaux sorts tier 3 conçus pour materia (1 par élément : Feu, Eau, Air, Terre, Métal, Bête, Lumière, Ombre)
+- [x] 8 materia épiques tier 3 (Epic, level 3) — une par élément avec sorts dédiés
+- [x] 6 materia supplémentaires pour éléments sous-représentés (Eau ×2, Métal ×2, Bête ×2) utilisant des sorts existants
+- [x] Couverture complète des 8 éléments en materia tier 2-3
