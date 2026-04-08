@@ -14,7 +14,7 @@ Lire `CLAUDE.md` et `AGENTS.md` a la racine du depot. Ces fichiers font autorite
 |--------|---------|
 | `docs/ROADMAP_DONE.md` | Taches realisees (reference) |
 | `docs/roadmap/ROADMAP_TODO_INDEX.md` | Legende, graphe de dependances global, etat d'avancement par vague |
-| `docs/roadmap/ROADMAP_TODO_VAGUE_07.md` … `_10.md` | Taches ouvertes par priorite (vagues 1-6 terminees) |
+| `docs/roadmap/SPRINT_01.md` … `SPRINT_12.md` | Taches ouvertes par sprint (12 sprints, priorite Critique a Basse) |
 | `docs/roadmap/PLAN_TESTING.md` | Jalons **TST-01** a **TST-15** (testing & qualite) |
 | `docs/roadmap/PLAN_AVATAR_SYSTEM.md` | Jalons **AVT-01** a **AVT-30** (avatar modulaire, 6 phases) |
 | `docs/roadmap/PLAN_GUILD_CITY_CONTROL.md` | Jalons **GCC-01** a **GCC-20** (controle de cite — ✅ termine) |

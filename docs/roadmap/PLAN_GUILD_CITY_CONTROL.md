@@ -1,6 +1,6 @@
 # Plan — Controle de cite par les guildes
 
-> **Numerotation :** les jalons de **ce** document sont prefixes **GCC-** (Guild City Control). Ils n'entrent **pas** en conflit avec les numeros de la roadmap globale (`ROADMAP_TODO_VAGUE_*.md`). Les prerequis **roadmap globale** sont indiques en clair (ex. **38**, **48**, **52**). **GCC-01** est le decoupage fin de la tache globale **52** (guildes fondation).
+> **Numerotation :** les jalons de **ce** document sont prefixes **GCC-** (Guild City Control). Ils n'entrent **pas** en conflit avec les numeros de la roadmap globale (`SPRINT_*.md`). Les prerequis **roadmap globale** sont indiques en clair (ex. **38**, **48**, **52**). **GCC-01** est le decoupage fin de la tache globale **52** (guildes fondation).
 
 > Systeme de competition PvE entre guildes pour le controle temporaire de villes.
 > Les guildes s'affrontent indirectement via des activites PvE (combat, craft, recolte, quetes).
