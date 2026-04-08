@@ -1,7 +1,18 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-05
+> Derniere mise a jour : 2026-04-08
+
+---
+
+## Sprint 1 — Stabilite & Onboarding
+
+### 110 — Correction bugs connus & dette technique (partiel) — Nettoyage PHPStan ✅
+> Nettoyage du code mort et reduction de la baseline PHPStan (528 → 507 entrees, -21).
+- [x] Ajout des return types manquants : `supports(): bool` sur 6 handlers de combat, `mobDied(): void`, `isMob()/isPlayer(): bool`, `mount(): void`
+- [x] Typage des proprietes : `LocaleListener::$defaultLocale` (constructor promotion), `FightNotificationHandler::$notifications` (array typed)
+- [x] Correction logique `ItemHelper` : remplacement `$array[$key] ?? null` par structure `isset()` + `return` explicite
+- [x] Nettoyage de 8 entrees stale du baseline (attributs/proprietes/conditions inexistants dans le code)
 
 ---
 

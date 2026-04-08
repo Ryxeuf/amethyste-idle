@@ -31,14 +31,13 @@ class TimelineItem
         $this->slug = $slug;
     }
 
-    public function isMob()
+    public function isMob(): bool
     {
-        return $this->type == self::TYPE_MOB;
+        return $this->type === self::TYPE_MOB;
     }
 
-    public function isPlayer()
+    public function isPlayer(): bool
     {
-        return $this->type == self::TYPE_PLAYER;
-
+        return $this->type === self::TYPE_PLAYER;
     }
 }
