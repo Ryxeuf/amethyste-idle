@@ -296,7 +296,16 @@ jobs:
           MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Run E2E tests
-        run: vendor/bin/phpunit --testsuite E2E --testdox || vendor/bin/phpunit --testsuite E2E --testdox
+        run: |
+          set +e
+          vendor/bin/phpunit --testsuite E2E --testdox --verbose > /tmp/e2e_output.txt 2>&1
+          EXIT_CODE=$?
+          cat /tmp/e2e_output.txt
+          if [ $EXIT_CODE -ne 0 ]; then
+            MSG=$(grep -E "ERRORS!|FAILURES!|Error:|Exception|Fatal|failed" /tmp/e2e_output.txt | head -10 | tr '\n' ' | ' | head -c 800)
+            echo "::error::E2E exit $EXIT_CODE — $MSG"
+            exit $EXIT_CODE
+          fi
         env:
           APP_ENV: test
           DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
