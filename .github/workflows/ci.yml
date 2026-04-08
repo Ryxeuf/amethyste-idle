@@ -181,16 +181,7 @@ jobs:
           MESSENGER_TRANSPORT_DSN: "in-memory://"
 
       - name: Validate game state coherence
-        run: |
-          set +e
-          php -d display_errors=1 bin/console app:game:validate --env=test -vvv > /tmp/validate.txt 2>&1
-          EXIT_CODE=$?
-          cat /tmp/validate.txt
-          if [ $EXIT_CODE -ne 0 ]; then
-            MSG=$(tail -50 /tmp/validate.txt | tr '\n' ' | ' | head -c 800)
-            echo "::error::game:validate exit $EXIT_CODE — $MSG"
-            exit $EXIT_CODE
-          fi
+        run: php bin/console app:game:validate --env=test
         env:
           DATABASE_URL: "postgresql://${{ env.POSTGRES_USER }}:${{ env.POSTGRES_PASSWORD }}@127.0.0.1:5432/${{ env.POSTGRES_DB }}?serverVersion=17&charset=utf8"
           MERCURE_URL: "http://localhost/.well-known/mercure"

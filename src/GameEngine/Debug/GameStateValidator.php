@@ -286,7 +286,7 @@ class GameStateValidator
     {
         $sql = <<<'SQL'
             SELECT de.id, de.player_id, p.name AS player_name,
-                   d.name AS domain_name,
+                   d.title AS domain_name,
                    de.total_experience, de.used_experience
             FROM domain_experience de
             JOIN player p ON p.id = de.player_id
