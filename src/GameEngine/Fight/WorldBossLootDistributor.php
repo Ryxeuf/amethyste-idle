@@ -23,6 +23,8 @@ class WorldBossLootDistributor implements EventSubscriberInterface
 {
     private const TOP_CONTRIBUTOR_COUNT = 3;
     private const TOP_CONTRIBUTOR_PROBABILITY_BONUS = 1.5;
+    private const LOOT_SCALE_PER_PLAYER = 0.1;
+    private const MAX_PARTICIPANT_LOOT_MULTIPLIER = 2.0;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -68,6 +70,14 @@ class WorldBossLootDistributor implements EventSubscriberInterface
 
         $rankedContributors = $fight->getRankedContributors();
         $dropMultiplier = $this->gameEventBonusProvider->getDropMultiplier($mob->getMap());
+
+        // Bonus de loot proportionnel au nombre de participants
+        $participantCount = \count($rankedContributors);
+        $participantBonus = min(
+            self::MAX_PARTICIPANT_LOOT_MULTIPLIER,
+            1.0 + self::LOOT_SCALE_PER_PLAYER * max(0, $participantCount - 1)
+        );
+        $dropMultiplier *= $participantBonus;
 
         $playerMap = [];
         foreach ($fight->getPlayers() as $player) {
