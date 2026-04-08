@@ -302,8 +302,8 @@ jobs:
           EXIT_CODE=$?
           cat /tmp/e2e_output.txt
           if [ $EXIT_CODE -ne 0 ]; then
-            MSG=$(grep -E "ERRORS!|FAILURES!|Error:|Exception|Fatal|failed" /tmp/e2e_output.txt | head -10 | tr '\n' ' | ' | head -c 800)
-            echo "::error::E2E exit $EXIT_CODE — $MSG"
+            LAST=$(tail -40 /tmp/e2e_output.txt | tr '\n' '§' | head -c 1500)
+            echo "::error::E2E exit $EXIT_CODE — LAST40: $LAST"
             exit $EXIT_CODE
           fi
         env:
