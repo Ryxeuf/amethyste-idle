@@ -51,6 +51,7 @@ class MateriaXpGranterTest extends TestCase
         int $monsterLevel = 1,
         bool $isBoss = false,
         array $players = [],
+        array $fightMetadata = [],
     ): Mob&MockObject {
         $monster = $this->createMock(Monster::class);
         $monster->method('getLevel')->willReturn($monsterLevel);
@@ -58,6 +59,9 @@ class MateriaXpGranterTest extends TestCase
 
         $fight = $this->createMock(Fight::class);
         $fight->method('getPlayers')->willReturn(new ArrayCollection($players));
+        $fight->method('getMetadataValue')->willReturnCallback(
+            fn (string $key, mixed $default = null) => $fightMetadata[$key] ?? $default,
+        );
 
         $mob = $this->createMock(Mob::class);
         $mob->method('getFight')->willReturn($fight);
@@ -289,6 +293,82 @@ class MateriaXpGranterTest extends TestCase
         $player = $this->createPlayerWithInventory(isDead: false, inventoryItems: [$equipment]);
 
         $mob = $this->createMobWithFight(monsterLevel: 1, isBoss: false, players: [$player]);
+        $event = new MobDeadEvent($mob);
+
+        $this->granter->onMobDead($event);
+    }
+
+    public function testDungeonHeroicXpMultiplierApplied(): void
+    {
+        // Monster level 2 => base XP = 10 * 2 = 20, heroic 1.5x => 30
+        $materia = $this->createMateriaItem(expectedXp: 30);
+        $slot = $this->createSlot($materia);
+        $equipment = $this->createEquipmentWithSlots([$slot]);
+        $player = $this->createPlayerWithInventory(isDead: false, inventoryItems: [$equipment]);
+
+        $mob = $this->createMobWithFight(
+            monsterLevel: 2,
+            isBoss: false,
+            players: [$player],
+            fightMetadata: ['difficulty_xp_multiplier' => 1.5],
+        );
+        $event = new MobDeadEvent($mob);
+
+        $this->granter->onMobDead($event);
+    }
+
+    public function testDungeonMythicXpMultiplierApplied(): void
+    {
+        // Monster level 2 => base XP = 10 * 2 = 20, mythic 2.5x => 50
+        $materia = $this->createMateriaItem(expectedXp: 50);
+        $slot = $this->createSlot($materia);
+        $equipment = $this->createEquipmentWithSlots([$slot]);
+        $player = $this->createPlayerWithInventory(isDead: false, inventoryItems: [$equipment]);
+
+        $mob = $this->createMobWithFight(
+            monsterLevel: 2,
+            isBoss: false,
+            players: [$player],
+            fightMetadata: ['difficulty_xp_multiplier' => 2.5],
+        );
+        $event = new MobDeadEvent($mob);
+
+        $this->granter->onMobDead($event);
+    }
+
+    public function testDungeonXpMultiplierStacksWithBossMultiplier(): void
+    {
+        // Boss level 2 => base XP = 10 * 2 * 5 = 100, mythic 2.5x => 250
+        $materia = $this->createMateriaItem(expectedXp: 250);
+        $slot = $this->createSlot($materia);
+        $equipment = $this->createEquipmentWithSlots([$slot]);
+        $player = $this->createPlayerWithInventory(isDead: false, inventoryItems: [$equipment]);
+
+        $mob = $this->createMobWithFight(
+            monsterLevel: 2,
+            isBoss: true,
+            players: [$player],
+            fightMetadata: ['difficulty_xp_multiplier' => 2.5],
+        );
+        $event = new MobDeadEvent($mob);
+
+        $this->granter->onMobDead($event);
+    }
+
+    public function testNormalDungeonNoXpBonus(): void
+    {
+        // Normal difficulty (no metadata) => XP = 10 * 1 = 10 (no bonus)
+        $materia = $this->createMateriaItem(expectedXp: 10);
+        $slot = $this->createSlot($materia);
+        $equipment = $this->createEquipmentWithSlots([$slot]);
+        $player = $this->createPlayerWithInventory(isDead: false, inventoryItems: [$equipment]);
+
+        $mob = $this->createMobWithFight(
+            monsterLevel: 1,
+            isBoss: false,
+            players: [$player],
+            fightMetadata: ['difficulty_xp_multiplier' => 1.0],
+        );
         $event = new MobDeadEvent($mob);
 
         $this->granter->onMobDead($event);
