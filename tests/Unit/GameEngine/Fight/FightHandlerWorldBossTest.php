@@ -115,6 +115,128 @@ class FightHandlerWorldBossTest extends TestCase
         $this->assertCount(1, $fight->getMobs());
     }
 
+    public function testJoinWorldBossFightScalesBossHp(): void
+    {
+        $monster = $this->createMock(\App\Entity\Game\Monster::class);
+        $monster->method('getLife')->willReturn(1000);
+        $monster->method('getName')->willReturn('World Boss');
+
+        $mob = new Mob();
+        $ref = new \ReflectionProperty(Mob::class, 'id');
+        $ref->setValue($mob, 1);
+        $mob->setMonster($monster);
+        $mob->setIsWorldBoss(true);
+        $mob->setLife(1000);
+
+        $fight = new Fight();
+        $fight->setId(1);
+        $fight->addMob($mob);
+        $mob->setFight($fight);
+
+        $player1 = new Player();
+        $refP1 = new \ReflectionProperty(Player::class, 'id');
+        $refP1->setValue($player1, 1);
+        $refName1 = new \ReflectionProperty(Player::class, 'name');
+        $refName1->setValue($player1, 'Player1');
+        $fight->addPlayer($player1);
+
+        $player2 = new Player();
+        $refP2 = new \ReflectionProperty(Player::class, 'id');
+        $refP2->setValue($player2, 2);
+        $refName2 = new \ReflectionProperty(Player::class, 'name');
+        $refName2->setValue($player2, 'Player2');
+
+        $this->handler->joinWorldBossFight($player2, $fight);
+
+        // 2 players: multiplier = 1 + 0.35 * (2-1) = 1.35 → 1000 * 1.35 = 1350
+        $this->assertSame(1350, $mob->getLife());
+        $this->assertSame(1.35, $fight->getMetadataValue('world_boss_player_multiplier'));
+    }
+
+    public function testJoinWorldBossFightPreservesHpRatio(): void
+    {
+        $monster = $this->createMock(\App\Entity\Game\Monster::class);
+        $monster->method('getLife')->willReturn(1000);
+        $monster->method('getName')->willReturn('World Boss');
+
+        $mob = new Mob();
+        $ref = new \ReflectionProperty(Mob::class, 'id');
+        $ref->setValue($mob, 1);
+        $mob->setMonster($monster);
+        $mob->setIsWorldBoss(true);
+        $mob->setLife(500); // 50% HP
+
+        $fight = new Fight();
+        $fight->setId(1);
+        $fight->addMob($mob);
+        $mob->setFight($fight);
+
+        $player1 = new Player();
+        $refP1 = new \ReflectionProperty(Player::class, 'id');
+        $refP1->setValue($player1, 1);
+        $refName1 = new \ReflectionProperty(Player::class, 'name');
+        $refName1->setValue($player1, 'Player1');
+        $fight->addPlayer($player1);
+
+        $player2 = new Player();
+        $refP2 = new \ReflectionProperty(Player::class, 'id');
+        $refP2->setValue($player2, 2);
+        $refName2 = new \ReflectionProperty(Player::class, 'name');
+        $refName2->setValue($player2, 'Player2');
+
+        $this->handler->joinWorldBossFight($player2, $fight);
+
+        // Boss was at 50% of 1000 = 500 HP. New max = 1350. 50% of 1350 = 675
+        $this->assertSame(675, $mob->getLife());
+    }
+
+    public function testJoinWorldBossFightScalesProgressivelyFor3Players(): void
+    {
+        $monster = $this->createMock(\App\Entity\Game\Monster::class);
+        $monster->method('getLife')->willReturn(1000);
+        $monster->method('getName')->willReturn('World Boss');
+
+        $mob = new Mob();
+        $ref = new \ReflectionProperty(Mob::class, 'id');
+        $ref->setValue($mob, 1);
+        $mob->setMonster($monster);
+        $mob->setIsWorldBoss(true);
+        $mob->setLife(1000);
+
+        $fight = new Fight();
+        $fight->setId(1);
+        $fight->addMob($mob);
+        $mob->setFight($fight);
+
+        $player1 = new Player();
+        $refP1 = new \ReflectionProperty(Player::class, 'id');
+        $refP1->setValue($player1, 1);
+        $refName1 = new \ReflectionProperty(Player::class, 'name');
+        $refName1->setValue($player1, 'Player1');
+        $fight->addPlayer($player1);
+
+        // Player 2 joins
+        $player2 = new Player();
+        $refP2 = new \ReflectionProperty(Player::class, 'id');
+        $refP2->setValue($player2, 2);
+        $refName2 = new \ReflectionProperty(Player::class, 'name');
+        $refName2->setValue($player2, 'Player2');
+        $this->handler->joinWorldBossFight($player2, $fight);
+        $this->assertSame(1350, $mob->getLife());
+
+        // Player 3 joins
+        $player3 = new Player();
+        $refP3 = new \ReflectionProperty(Player::class, 'id');
+        $refP3->setValue($player3, 3);
+        $refName3 = new \ReflectionProperty(Player::class, 'name');
+        $refName3->setValue($player3, 'Player3');
+        $this->handler->joinWorldBossFight($player3, $fight);
+
+        // 3 players: multiplier = 1 + 0.35 * 2 = 1.70 → 1000 * 1.70 = 1700
+        $this->assertSame(1700, $mob->getLife());
+        $this->assertSame(1.7, $fight->getMetadataValue('world_boss_player_multiplier'));
+    }
+
     private function createPlayer(int $id): Player&MockObject
     {
         $player = $this->createMock(Player::class);

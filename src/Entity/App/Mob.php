@@ -151,9 +151,10 @@ class Mob implements CharacterInterface
     public function getMaxLife(): int
     {
         $base = $this->getMonster()->getLife();
-        $multiplier = $this->fight?->getMetadataValue('difficulty_multiplier', 1.0) ?? 1.0;
+        $difficultyMultiplier = $this->fight?->getMetadataValue('difficulty_multiplier', 1.0) ?? 1.0;
+        $playerMultiplier = $this->fight?->getMetadataValue('world_boss_player_multiplier', 1.0) ?? 1.0;
 
-        return (int) round($base * $multiplier);
+        return (int) round($base * $difficultyMultiplier * $playerMultiplier);
     }
 
     public function getAttack(): Spell

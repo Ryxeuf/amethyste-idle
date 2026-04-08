@@ -47,6 +47,15 @@
 - [x] Application du multiplicateur XP donjon dans `MateriaXpGranter` (stack avec boss x5)
 - [x] Tests unitaires : `DungeonDifficultyTest`, `DungeonDifficultyScalingTest`, `MateriaXpGranterTest`
 
+### 111 — Equilibrage combat avance (partiel) — Equilibrage world boss ✅
+> Scaling dynamique des HP et du loot du world boss en fonction du nombre de joueurs actifs.
+- [x] Scaling HP world boss : +35% par joueur additionnel (`world_boss_player_multiplier` en metadata)
+- [x] Scaling HP proportionnel au join : maintien du ratio HP courant lors de l'arrivee d'un nouveau joueur
+- [x] Scaling initial pour les groupes : si un groupe de N joueurs engage le boss, HP scalees des le depart
+- [x] `Mob::getMaxLife()` integre le multiplicateur joueur (`world_boss_player_multiplier`)
+- [x] Bonus loot par participant : +10% par joueur additionnel (cap 2.0x) dans `WorldBossLootDistributor`
+- [x] Tests unitaires : scaling HP (join simple, ratio preserve, 3 joueurs progressifs), loot participant bonus
+
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
 - [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)

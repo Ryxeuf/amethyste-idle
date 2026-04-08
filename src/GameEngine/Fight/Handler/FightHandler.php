@@ -16,6 +16,11 @@ use Psr\Log\LoggerInterface;
 
 class FightHandler
 {
+    /**
+     * Multiplicateur de HP du world boss par joueur additionnel (35% par joueur).
+     */
+    private const WORLD_BOSS_HP_SCALE_PER_PLAYER = 0.35;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly LoggerInterface $logger,
@@ -82,6 +87,17 @@ class FightHandler
             }
         }
 
+        // Scale world boss HP based on initial party size
+        if ($fight->isWorldBossFight() && \count($partyPlayers) > 1) {
+            $multiplier = 1.0 + self::WORLD_BOSS_HP_SCALE_PER_PLAYER * (\count($partyPlayers) - 1);
+            $fight->setMetadataValue('world_boss_player_multiplier', $multiplier);
+            foreach ($mobs as $mob) {
+                if ($mob->isWorldBoss()) {
+                    $mob->setLife((int) round($mob->getLife() * $multiplier));
+                }
+            }
+        }
+
         $this->entityManager->persist($fight);
         $this->entityManager->flush();
 
@@ -111,10 +127,38 @@ class FightHandler
         $player->setFight($fight);
         $player->setIsMoving(false);
 
+        $this->scaleWorldBossHpForNewPlayer($fight);
+
         $this->entityManager->flush();
 
         $this->combatLogger->logPlayerJoined($fight, $player);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Recalcule les HP du world boss proportionnellement au nouveau nombre de joueurs.
+     * Maintient le pourcentage de vie actuel du boss.
+     */
+    private function scaleWorldBossHpForNewPlayer(Fight $fight): void
+    {
+        $playerCount = $fight->getPlayers()->count();
+        $previousMultiplier = (float) $fight->getMetadataValue('world_boss_player_multiplier', 1.0);
+        $newMultiplier = 1.0 + self::WORLD_BOSS_HP_SCALE_PER_PLAYER * ($playerCount - 1);
+
+        $fight->setMetadataValue('world_boss_player_multiplier', $newMultiplier);
+
+        foreach ($fight->getMobs() as $mob) {
+            if (!$mob->isWorldBoss() || $mob->isDead()) {
+                continue;
+            }
+
+            $baseLife = $mob->getMonster()->getLife();
+            $oldMaxLife = (int) round($baseLife * $previousMultiplier);
+            $newMaxLife = (int) round($baseLife * $newMultiplier);
+
+            $ratio = $oldMaxLife > 0 ? ($mob->getLife() / $oldMaxLife) : 1.0;
+            $mob->setLife((int) round($newMaxLife * $ratio));
+        }
     }
 
     /**
