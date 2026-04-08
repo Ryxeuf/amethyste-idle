@@ -52,6 +52,10 @@ class FightItemController extends AbstractController
             return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
         }
 
+        if ($player->isDead()) {
+            return new JsonResponse(['error' => 'Vous êtes vaincu !', 'success' => false]);
+        }
+
         // Find the item in player's inventory
         $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find((int) $data['itemId']);
         if (!$playerItem) {

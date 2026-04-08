@@ -296,6 +296,9 @@ class MobActionHandler
         // Sequential pattern: follow a predefined action sequence
         if (isset($aiPattern['sequence'])) {
             $sequence = $aiPattern['sequence'];
+            if (empty($sequence)) {
+                return 'attack';
+            }
             $step = $fight->getStep();
             $index = $step % count($sequence);
             $sequenceAction = $sequence[$index];

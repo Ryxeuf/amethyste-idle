@@ -51,6 +51,10 @@ class FightFleeController extends AbstractController
             return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
         }
 
+        if ($player->isDead()) {
+            return new JsonResponse(['error' => 'Vous êtes vaincu !', 'success' => false]);
+        }
+
         // Cannot flee from boss fights (sauf world boss — on peut quitter le raid)
         if (!$isWorldBoss) {
             foreach ($fight->getMobs() as $fightMob) {

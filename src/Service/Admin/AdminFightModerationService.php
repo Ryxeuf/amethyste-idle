@@ -8,6 +8,7 @@ use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\Realtime\Map\MovedPlayerHandler;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Operations de moderation sur les combats et l'etat « session » des joueurs.
@@ -19,6 +20,7 @@ class AdminFightModerationService
         private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly StatusEffectManager $statusEffectManager,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -137,7 +139,12 @@ class AdminFightModerationService
     {
         try {
             $this->combatLogArchiver->archive($fight);
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->logger->warning('Failed to archive combat log for fight #{id}: {message}', [
+                'id' => $fight->getId(),
+                'message' => $e->getMessage(),
+                'exception' => $e,
+            ]);
         }
         $this->statusEffectManager->clearAllEffects($fight);
     }
