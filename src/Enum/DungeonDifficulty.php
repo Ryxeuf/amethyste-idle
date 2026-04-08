@@ -66,8 +66,20 @@ enum DungeonDifficulty: string
     {
         return match ($this) {
             self::Normal => 1.0,
-            self::Heroic => 1.25,
-            self::Mythic => 1.5,
+            self::Heroic => 1.5,
+            self::Mythic => 2.0,
+        };
+    }
+
+    /**
+     * Multiplicateur d'XP (materia) en donjon.
+     */
+    public function xpMultiplier(): float
+    {
+        return match ($this) {
+            self::Normal => 1.0,
+            self::Heroic => 1.5,
+            self::Mythic => 2.5,
         };
     }
 

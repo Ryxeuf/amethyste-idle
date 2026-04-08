@@ -30,6 +30,14 @@
 - [x] Top 10 morts joueurs les plus frequentes
 - [x] Option `--days` pour filtrer la periode d'analyse (defaut: 30 jours)
 
+### 111 — Equilibrage combat avance (partiel) — Equilibrage donjons ✅
+> Reequilibrage difficulte vs recompenses des donjons (Normal/Heroique/Mythique).
+- [x] Ajout `xpMultiplier()` dans `DungeonDifficulty` : Normal 1.0x, Heroique 1.5x, Mythique 2.5x
+- [x] Ajustement `dropMultiplier()` : Heroique 1.25x → 1.5x, Mythique 1.5x → 2.0x
+- [x] Stockage `difficulty_xp_multiplier` dans les metadata du combat (`FightHandler`)
+- [x] Application du multiplicateur XP donjon dans `MateriaXpGranter` (stack avec boss x5)
+- [x] Tests unitaires : `DungeonDifficultyTest`, `DungeonDifficultyScalingTest`, `MateriaXpGranterTest`
+
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
 - [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)

@@ -61,6 +61,7 @@ class FightHandler
             $fight->setMetadataValue('difficulty_multiplier', $statMultiplier);
             $fight->setMetadataValue('difficulty_damage_multiplier', $difficulty->damageMultiplier());
             $fight->setMetadataValue('difficulty_drop_multiplier', $difficulty->dropMultiplier());
+            $fight->setMetadataValue('difficulty_xp_multiplier', $difficulty->xpMultiplier());
         }
 
         foreach ($mobs as $mob) {

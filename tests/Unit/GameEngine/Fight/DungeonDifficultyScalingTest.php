@@ -78,11 +78,13 @@ class DungeonDifficultyScalingTest extends TestCase
         $fight = new Fight();
         $fight->setMetadataValue('difficulty_multiplier', 2.5);
         $fight->setMetadataValue('difficulty_damage_multiplier', 1.75);
-        $fight->setMetadataValue('difficulty_drop_multiplier', 1.5);
+        $fight->setMetadataValue('difficulty_drop_multiplier', 2.0);
+        $fight->setMetadataValue('difficulty_xp_multiplier', 2.5);
 
         $this->assertSame(2.5, $fight->getMetadataValue('difficulty_multiplier'));
         $this->assertSame(1.75, $fight->getMetadataValue('difficulty_damage_multiplier'));
-        $this->assertSame(1.5, $fight->getMetadataValue('difficulty_drop_multiplier'));
+        $this->assertSame(2.0, $fight->getMetadataValue('difficulty_drop_multiplier'));
+        $this->assertSame(2.5, $fight->getMetadataValue('difficulty_xp_multiplier'));
     }
 
     public function testFightMetadataDefaultsToOneWhenNotSet(): void
@@ -92,5 +94,6 @@ class DungeonDifficultyScalingTest extends TestCase
         $this->assertSame(1.0, $fight->getMetadataValue('difficulty_multiplier', 1.0));
         $this->assertSame(1.0, $fight->getMetadataValue('difficulty_damage_multiplier', 1.0));
         $this->assertSame(1.0, $fight->getMetadataValue('difficulty_drop_multiplier', 1.0));
+        $this->assertSame(1.0, $fight->getMetadataValue('difficulty_xp_multiplier', 1.0));
     }
 }

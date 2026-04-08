@@ -53,6 +53,12 @@ class MateriaXpGranter implements EventSubscriberInterface
         $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($mob->getMap());
         $xpGain = (int) round($xpGain * $xpMultiplier);
 
+        // Dungeon difficulty: scale materia XP
+        $dungeonXpMultiplier = (float) ($fight->getMetadataValue('difficulty_xp_multiplier', 1.0) ?? 1.0);
+        if ($dungeonXpMultiplier > 1.0) {
+            $xpGain = (int) round($xpGain * $dungeonXpMultiplier);
+        }
+
         // Coop: split XP equally between participants (minimum 1)
         $alivePlayers = $fight->getPlayers()->filter(fn ($p) => !$p->isDead());
         if ($fight->isCoopFight() && $alivePlayers->count() > 1) {
