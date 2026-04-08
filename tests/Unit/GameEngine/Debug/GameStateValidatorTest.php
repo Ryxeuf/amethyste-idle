@@ -153,8 +153,8 @@ class GameStateValidatorTest extends TestCase
                             'coordinates' => '999.999',
                             'map_id' => 1,
                             'map_name' => 'Foret',
-                            'areaWidth' => 30,
-                            'areaHeight' => 30,
+                            'areawidth' => 30,
+                            'areaheight' => 30,
                         ],
                     ];
                 }
@@ -186,8 +186,8 @@ class GameStateValidatorTest extends TestCase
                             'coordinates' => '15.15',
                             'map_id' => 1,
                             'map_name' => 'Foret',
-                            'areaWidth' => 30,
-                            'areaHeight' => 30,
+                            'areawidth' => 30,
+                            'areaheight' => 30,
                         ],
                     ];
                 }

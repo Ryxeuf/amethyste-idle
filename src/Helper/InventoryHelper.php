@@ -7,11 +7,16 @@ use App\Entity\App\PlayerItem;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class InventoryHelper
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly PlayerHelper $playerHelper, private readonly PlayerItemGenerator $playerItemGenerator)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerHelper $playerHelper,
+        private readonly PlayerItemGenerator $playerItemGenerator,
+        private readonly LoggerInterface $logger,
+    ) {
     }
 
     public function addItemId(int $id, bool $flush = true): void
@@ -19,7 +24,11 @@ class InventoryHelper
         try {
             $item = $this->playerItemGenerator->generateFromItemId($id);
             $this->addItem($item, $flush);
-        } catch (EntityNotFoundException) {
+        } catch (EntityNotFoundException $e) {
+            $this->logger->warning('Failed to add item to inventory: item ID {id} not found.', [
+                'id' => $id,
+                'exception' => $e,
+            ]);
         }
     }
 

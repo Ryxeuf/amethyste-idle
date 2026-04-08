@@ -4,14 +4,13 @@ namespace App\GameEngine\Player;
 
 use App\Event\Fight\PlayerDeadEvent;
 use App\Event\Map\PlayerRespawnedEvent;
-use App\Helper\MapHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PlayerRespawnHandler implements EventSubscriberInterface
 {
-    public function __construct(private readonly MapHelper $mapHelper, private readonly EntityManagerInterface $entityManager, private readonly EventDispatcherInterface $eventDispatcher)
+    public function __construct(private readonly EntityManagerInterface $entityManager, private readonly EventDispatcherInterface $eventDispatcher)
     {
     }
 
@@ -26,9 +25,6 @@ class PlayerRespawnHandler implements EventSubscriberInterface
     {
         $player = $event->getPlayer();
         $coordinates = $player->getLastCoordinates();
-        if ($player->getMap() !== null && $respawnCoordinates = $this->mapHelper->getRespawnCoordinates($player->getMap())) {
-            $coordinates = $respawnCoordinates;
-        }
 
         $player->setLife((int) round($player->getMaxLife() / 2));
         $player->setDiedAt(null);

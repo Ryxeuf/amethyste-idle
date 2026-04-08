@@ -104,22 +104,54 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
-     * Execute a JS fetch() call and return the parsed JSON response.
-     * Wraps the common pattern used across E2E tests.
+     * Make an API call using PHP HTTP with the browser's session cookies.
+     * Avoids WebDriver executeScript issues with async/sync JavaScript.
      */
     protected function apiFetch(string $url, string $method = 'POST', ?array $body = null): mixed
     {
-        $bodyJs = null !== $body ? sprintf(', body: JSON.stringify(%s)', json_encode($body)) : '';
+        // Extract session cookies from the browser (including HttpOnly)
+        $cookieParts = [];
+        foreach (static::$pantherClient->getCookieJar()->all() as $cookie) {
+            $cookieParts[] = $cookie->getName() . '=' . $cookie->getValue();
+        }
+        $cookies = implode('; ', $cookieParts);
 
-        return static::$pantherClient->executeScript(sprintf(
-            "return await fetch('%s', {
-                method: '%s',
-                headers: {'Content-Type': 'application/json'}%s
-            }).then(r => r.json()).catch(e => ({error: e.message}));",
-            $url,
-            $method,
-            $bodyJs
-        ));
+        // Resolve the base URL from the current page
+        $currentUrl = static::$pantherClient->getCurrentURL();
+        preg_match('#^(https?://[^/]+)#', $currentUrl, $m);
+        $origin = $m[1] ?? 'http://127.0.0.1:9080';
+
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'Cookie: ' . $cookies,
+        ];
+
+        $ch = curl_init($origin . $url);
+        curl_setopt_array($ch, [
+            \CURLOPT_CUSTOMREQUEST => $method,
+            \CURLOPT_HTTPHEADER => $headers,
+            \CURLOPT_RETURNTRANSFER => true,
+            \CURLOPT_TIMEOUT => 15,
+        ]);
+        if (null !== $body) {
+            curl_setopt($ch, \CURLOPT_POSTFIELDS, json_encode($body));
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, \CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (false === $response) {
+            return ['error' => 'curl failed'];
+        }
+        if ($httpCode >= 400) {
+            $decoded = json_decode($response, true);
+
+            return $decoded ?? ['error' => 'HTTP ' . $httpCode];
+        }
+
+        return json_decode($response, true) ?? ['error' => 'Invalid JSON'];
     }
 
     /**

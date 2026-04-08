@@ -207,7 +207,7 @@ class GameStateValidator
         $sql = <<<'SQL'
             SELECT p.id AS player_id, p.name AS player_name,
                    p.coordinates, p.map_id,
-                   m.name AS map_name, m."areaWidth", m."areaHeight"
+                   m.name AS map_name, m.areawidth, m.areaheight
             FROM player p
             JOIN map m ON m.id = p.map_id
             WHERE p.coordinates IS NOT NULL
@@ -250,8 +250,8 @@ class GameStateValidator
             $py = (int) ($coords[1] ?? 0);
 
             $bounds = $mapBounds[$mapId];
-            $areaWidth = (int) $row['areaWidth'];
-            $areaHeight = (int) $row['areaHeight'];
+            $areaWidth = (int) $row['areawidth'];
+            $areaHeight = (int) $row['areaheight'];
 
             $minX = $bounds['minAX'] * $areaWidth;
             $minY = $bounds['minAY'] * $areaHeight;
@@ -286,7 +286,7 @@ class GameStateValidator
     {
         $sql = <<<'SQL'
             SELECT de.id, de.player_id, p.name AS player_name,
-                   d.name AS domain_name,
+                   d.title AS domain_name,
                    de.total_experience, de.used_experience
             FROM domain_experience de
             JOIN player p ON p.id = de.player_id

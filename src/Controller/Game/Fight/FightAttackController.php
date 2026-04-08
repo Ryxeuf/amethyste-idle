@@ -52,6 +52,10 @@ class FightAttackController extends AbstractController
             return new JsonResponse(['error' => 'Ce n\'est pas votre tour !', 'success' => false]);
         }
 
+        if ($player->isDead()) {
+            return new JsonResponse(['error' => 'Vous êtes vaincu !', 'success' => false]);
+        }
+
         $data = json_decode($request->getContent(), true);
         if (!$data || !isset($data['targetId']) || !isset($data['targetType'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
@@ -89,6 +93,7 @@ class FightAttackController extends AbstractController
                 $fight->setStep($fight->getStep() + 1);
             }
 
+            // @phpstan-ignore-next-line mob can kill the player via doAction side effects
             if (!$player->isDead()) {
                 $attackResult = $this->doPlayerAttack($player, $target, $fight);
                 $messages = $attackResult['messages'];
