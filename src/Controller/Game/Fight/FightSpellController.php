@@ -6,6 +6,7 @@ use App\Entity\App\Fight;
 use App\Entity\CharacterInterface;
 use App\Enum\Element;
 use App\GameEngine\Enchantment\EnchantmentManager;
+use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
@@ -45,6 +46,7 @@ class FightSpellController extends AbstractController
         private readonly EnchantmentManager $enchantmentManager,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly FightTurnPublisher $fightTurnPublisher,
+        private readonly DamageMultiplierNormalizer $damageMultiplierNormalizer,
     ) {
     }
 
@@ -158,20 +160,21 @@ class FightSpellController extends AbstractController
             }
         }
 
-        // Apply element match bonus from materia/slot matching (+25% damage)
+        // Stacking additif des bonus d'équipement + soft cap (évite les écarts > 30% entre builds)
+        $equipBonusPercent = 0.0;
         if ($elementMatch) {
-            $bonuses['damage'] += (int) round($bonuses['damage'] * CombatCapacityResolver::ELEMENT_MATCH_DAMAGE_BONUS);
+            $equipBonusPercent += CombatCapacityResolver::ELEMENT_MATCH_DAMAGE_BONUS;
         }
-
-        // Apply linked materia bonus (+15% damage when linked slots share element)
         if ($linkedBonus) {
-            $bonuses['damage'] += max(1, (int) round($bonuses['damage'] * LinkedMateriaResolver::LINKED_DAMAGE_BONUS));
+            $equipBonusPercent += LinkedMateriaResolver::LINKED_DAMAGE_BONUS;
         }
-
-        // Apply equipped gear elemental damage bonus (+10% per matching piece)
         $gearElementalBonus = $this->gearHelper->getEquippedElementalDamageBonus($spell->getElement());
         if ($gearElementalBonus > 0.0) {
-            $bonuses['damage'] += max(1, (int) round($bonuses['damage'] * $gearElementalBonus));
+            $equipBonusPercent += $gearElementalBonus;
+        }
+        if ($equipBonusPercent > 0.0) {
+            $normalizedBonus = $this->damageMultiplierNormalizer->normalizeBonus($equipBonusPercent);
+            $bonuses['damage'] += max(1, (int) round($bonuses['damage'] * $normalizedBonus));
         }
 
         // Check elemental synergy
@@ -189,9 +192,11 @@ class FightSpellController extends AbstractController
             'fight' => $fight,
         ];
 
-        // Apply synergy damage multiplier
+        // Apply synergy damage multiplier (avec soft cap)
         if ($synergyData) {
-            $bonuses['damage'] = $this->synergyCalculator->applySynergyDamage($bonuses['damage'], $synergyData);
+            $rawMultiplier = $synergyData['damageMultiplier'] ?? 1.0;
+            $cappedMultiplier = $this->damageMultiplierNormalizer->normalizeSynergy($rawMultiplier);
+            $bonuses['damage'] = (int) round($bonuses['damage'] * $cappedMultiplier);
             $options['damage'] = $bonuses['damage'];
 
             // Self damage from Eclipse synergy

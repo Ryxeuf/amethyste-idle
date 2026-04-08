@@ -43,7 +43,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('sandstorm', $synergy['name']);
-        $this->assertSame(1.5, $synergy['damageMultiplier']);
+        $this->assertSame(1.4, $synergy['damageMultiplier']);
     }
 
     public function testAirEarthSynergyIsBidirectional(): void
@@ -62,8 +62,8 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('eclipse', $synergy['name']);
-        $this->assertSame(2.5, $synergy['damageMultiplier']);
-        $this->assertSame(10, $synergy['selfDamagePercent']);
+        $this->assertSame(1.5, $synergy['damageMultiplier']);
+        $this->assertSame(5, $synergy['selfDamagePercent']);
     }
 
     public function testDarkLightSynergyIsBidirectional(): void
@@ -82,7 +82,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('floral_explosion', $synergy['name']);
-        $this->assertSame(1.3, $synergy['damageMultiplier']);
+        $this->assertSame(1.25, $synergy['damageMultiplier']);
         $this->assertSame('poison', $synergy['statusEffect']);
     }
 
@@ -102,7 +102,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('forge', $synergy['name']);
-        $this->assertSame(1.4, $synergy['damageMultiplier']);
+        $this->assertSame(1.3, $synergy['damageMultiplier']);
         $this->assertSame('burn', $synergy['statusEffect']);
     }
 
@@ -112,7 +112,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('holy_blade', $synergy['name']);
-        $this->assertSame(1.6, $synergy['damageMultiplier']);
+        $this->assertSame(1.5, $synergy['damageMultiplier']);
     }
 
     // --- Tests synergies beast ---
@@ -123,7 +123,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('primal_fury', $synergy['name']);
-        $this->assertSame(1.4, $synergy['damageMultiplier']);
+        $this->assertSame(1.3, $synergy['damageMultiplier']);
         $this->assertSame('berserk', $synergy['statusEffect']);
     }
 
@@ -133,7 +133,7 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $this->assertNotNull($synergy);
         $this->assertSame('venomous_shadow', $synergy['name']);
-        $this->assertSame(1.5, $synergy['damageMultiplier']);
+        $this->assertSame(1.35, $synergy['damageMultiplier']);
         $this->assertSame('poison', $synergy['statusEffect']);
     }
 
@@ -182,8 +182,8 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $result = $this->calculator->applySynergyDamage($baseDamage, $synergy);
 
-        // 100 * 2.5 = 250
-        $this->assertSame(250, $result);
+        // 100 * 1.5 = 150
+        $this->assertSame(150, $result);
     }
 
     public function testApplySynergyDamageWithSteamMultiplier(): void
@@ -226,8 +226,8 @@ class ElementalSynergyCalculatorTest extends TestCase
 
         $selfDamage = $this->calculator->getSelfDamage(200, $synergy);
 
-        // 200 * 10 / 100 = 20
-        $this->assertSame(20, $selfDamage);
+        // 200 * 5 / 100 = 10
+        $this->assertSame(10, $selfDamage);
     }
 
     public function testGetSelfDamageReturnsZeroWhenNoSelfDamagePercent(): void
