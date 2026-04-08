@@ -46,23 +46,23 @@ class ItemHelper implements ResetInterface
             return $this->spells[$item->getId()];
         }
 
-        if ($spell = $item->getSpell()) {
-            $this->spells[$item->getId()] = $spell;
-        } elseif ($item->getEffect()) {
+        $spell = $item->getSpell();
+        if (!$spell && $item->getEffect()) {
             $effect = json_decode($item->getEffect(), true, 512, JSON_THROW_ON_ERROR);
             if (ItemEffectEncoder::ACTION_USE_SPELL === ($effect['action'] ?? false)) {
-                if ($spell = $this->entityManager->getRepository(Spell::class)->findOneBy(['slug' => $effect['slug']])) {
-                    $this->spells[$item->getId()] = $spell;
-                }
+                $spell = $this->entityManager->getRepository(Spell::class)->findOneBy(['slug' => $effect['slug']]);
             }
         }
 
-        return $this->spells[$item->getId()] ?? null;
+        if ($spell !== null) {
+            $this->spells[$item->getId()] = $spell;
+        }
+
+        return $spell;
     }
 
     public function getItemSkillLearning(Item $item): ?Skill
     {
-        $skill = null;
         if (isset($this->skills[$item->getId()])) {
             return $this->skills[$item->getId()];
         }
@@ -71,11 +71,13 @@ class ItemHelper implements ResetInterface
             if (ItemEffectEncoder::ACTION_LEARN_SKILL === ($effect['action'] ?? false)) {
                 if ($skill = $this->entityManager->getRepository(Skill::class)->findOneBy(['slug' => $effect['slug']])) {
                     $this->skills[$item->getId()] = $skill;
+
+                    return $skill;
                 }
             }
         }
 
-        return $this->skills[$item->getId()] ?? null;
+        return null;
     }
 
     public function isUsable(Item $item): bool

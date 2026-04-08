@@ -15,7 +15,7 @@ class FightNotification
 
     public array $notifications = [];
 
-    public function mount(Fight $fight)
+    public function mount(Fight $fight): void
     {
         $this->fight = $fight;
     }

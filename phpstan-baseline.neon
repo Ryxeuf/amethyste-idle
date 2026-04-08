@@ -241,34 +241,10 @@ parameters:
 			path: src/Dto/Fight/FightModel.php
 
 		-
-			message: '#^Method App\\Dto\\Fight\\TimelineItem\:\:isMob\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Dto/Fight/TimelineItem.php
-
-		-
-			message: '#^Method App\\Dto\\Fight\\TimelineItem\:\:isPlayer\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Dto/Fight/TimelineItem.php
-
-		-
 			message: '#^Property App\\Dto\\Item\\ItemModel\:\:\$slots type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/Dto/Item/ItemModel.php
-
-		-
-			message: '#^Attribute class ApiPlatform\\Metadata\\ApiProperty does not exist\.$#'
-			identifier: attribute.notFound
-			count: 1
-			path: src/Dto/Item/SlotModel.php
-
-		-
-			message: '#^Attribute class Symfony\\Component\\Serializer\\Annotation\\Groups does not exist\.$#'
-			identifier: attribute.notFound
-			count: 2
-			path: src/Dto/Item/SlotModel.php
 
 		-
 			message: '#^Property App\\Dto\\Map\\MapDynamicModel\:\:\$mobs type has no value type specified in iterable type array\.$#'
@@ -2005,12 +1981,6 @@ parameters:
 			path: src/EventListener/JournalListener.php
 
 		-
-			message: '#^Property App\\EventListener\\LocaleListener\:\:\$defaultLocale has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/EventListener/LocaleListener.php
-
-		-
 			message: '#^Class App\\Form\\Admin\\DomainType extends generic class Symfony\\Component\\Form\\AbstractType but does not specify its types\: TData$#'
 			identifier: missingType.generics
 			count: 1
@@ -2167,88 +2137,10 @@ parameters:
 			path: src/GameEngine/Fight/FightNotificationHandler.php
 
 		-
-			message: '#^Property App\\GameEngine\\Fight\\FightNotificationHandler\:\:\$notifications has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: src/GameEngine/Fight/FightNotificationHandler.php
-
-		-
 			message: '#^Method App\\GameEngine\\Fight\\FightTurnResolver\:\:findIndexByKey\(\) has parameter \$turnOrder with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: src/GameEngine/Fight/FightTurnResolver.php
-
-		-
-			message: '#^Access to an undefined property App\\Entity\\App\\Fight\:\:\$item\.$#'
-			identifier: property.notFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
-			message: '#^Variable \$item in PHPDoc tag @var does not exist\.$#'
-			identifier: varTag.variableNotFound
-			count: 1
-			path: src/GameEngine/Fight/Handler/AbstractPayerItemHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobActionHandlerInterface.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\MobAttackHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/GameEngine/Fight/Handler/MobAttackHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerActionHandlerInterface\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerActionHandlerInterface.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerAttackHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerAttackHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerItemHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerItemHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\Handler\\PlayerSpellHandler\:\:supports\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/Handler/PlayerSpellHandler.php
-
-		-
-			message: '#^Method App\\GameEngine\\Fight\\LootGenerator\:\:mobDied\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/GameEngine/Fight/LootGenerator.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: src/GameEngine/Fight/MateriaXpGranter.php
 
 		-
 			message: '#^Method App\\GameEngine\\Fight\\MobActionHandler\:\:__construct\(\) has parameter \$handlers with no value type specified in iterable type iterable\.$#'
@@ -2941,12 +2833,6 @@ parameters:
 			path: src/Helper/FightTimelineHelper.php
 
 		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 2
-			path: src/Helper/ItemHelper.php
-
-		-
 			message: '#^Method App\\Helper\\ItemHelper\:\:getItemSpellModifiers\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3097,12 +2983,6 @@ parameters:
 			path: src/ServiceProvider/PlayerActionsProvider.php
 
 		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 2
-			path: src/Transformer/AbstractSkillTransformer.php
-
-		-
 			message: '#^Method App\\Transformer\\CellModelTransformer\:\:transformCellActions\(\) return type has no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -3143,12 +3023,6 @@ parameters:
 			identifier: if.alwaysTrue
 			count: 1
 			path: src/Transformer/PlayerSkillTransformer.php
-
-		-
-			message: '#^Method App\\Twig\\Components\\FightNotification\:\:mount\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: src/Twig/Components/FightNotification.php
 
 		-
 			message: '#^Property App\\Twig\\Components\\FightNotification\:\:\$notifications type has no value type specified in iterable type array\.$#'
