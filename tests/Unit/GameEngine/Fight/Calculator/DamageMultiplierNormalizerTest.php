@@ -95,8 +95,8 @@ class DamageMultiplierNormalizerTest extends TestCase
 
     public function testNormalizeSynergyFormerEclipseWouldBeCapped(): void
     {
-        // Ancien Eclipse 2.5 = 1.0 + 0.5 + 1.5 * 0.3 = 1.95
-        $this->assertEqualsWithDelta(1.95, $this->normalizer->normalizeSynergy(2.5), 0.001);
+        // Ancien Eclipse 2.5 : bonus = 1.5, excess = 1.0, result = 1.0 + 0.5 + 1.0 * 0.3 = 1.80
+        $this->assertEqualsWithDelta(1.80, $this->normalizer->normalizeSynergy(2.5), 0.001);
     }
 
     // --- Tests d'intégration : variance entre builds < 30% ---
