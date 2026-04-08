@@ -6,7 +6,8 @@ use App\Dto\Fight\FightNotification;
 
 class FightNotificationHandler
 {
-    protected $notifications = [];
+    /** @var FightNotification[] */
+    protected array $notifications = [];
 
     public function getNotifications(): array
     {

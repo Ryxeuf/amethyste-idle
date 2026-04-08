@@ -1,11 +1,12 @@
-## Vague 10 — Monde vivant & endgame
+## Sprint 11 — Monde vivant
 
-> **8 taches** long terme pour un monde vivant et rejouable.
-> Prerequis : Vague 9 (economie & social) recommandee avant.
+> **6 taches** | Priorite : **Basse** | Origine : Vague 10, Pistes A & B
+> Objectif : etendre le monde avec de nouvelles zones, du housing, des montures et des events live.
+> Prerequis : Sprints 1-6 recommandes (contenu de base complet)
 
 ---
 
-### Piste A — Contenu monde (parallelisable)
+### Piste A — Contenu monde
 
 ### 128 — Nouvelles zones — Acte 4 (XL | ★★★)
 > Prerequis : ← 94 (Acte 3 termine), ← 141 (monstres tier 2-3)
@@ -32,7 +33,7 @@
 
 ---
 
-### Piste B — Events & live ops (parallelisable)
+### Piste B — Events & live ops
 
 ### 131 — Events live & outils GM (M | ★★★)
 > Prerequis : ← 79 (evenements bonus)
@@ -55,20 +56,10 @@
 
 ---
 
-### Piste C — Technique (parallelisable)
+### Definition of Done
 
-### 134 — Load testing & scaling (M | ★★)
-> Prerequis : ∅
-- [ ] Script k6/Locust pour simuler 100+ joueurs simultanes
-- [ ] Identification goulots d'etranglement (DB, Mercure, FrankenPHP)
-- [ ] Optimisations : connection pooling, cache Redis, horizontal scaling plan
-- [ ] Objectif : 200 joueurs simultanes sans degradation
-
-### 135 — Localisation i18n (M | ★)
-> Prerequis : ∅
-- [ ] Extraction des chaines via Symfony Translation (xliff)
-- [ ] Traduction EN prioritaire (UI, items, quetes, dialogues)
-- [ ] Selecteur de langue dans les parametres joueur
-- [ ] Contenu de jeu multilingue (noms items, descriptions sorts)
-
----
+- [ ] 4 nouvelles cartes Acte 4 jouables
+- [ ] Housing fonctionnel avec visites
+- [ ] Montures obtensibles et utilisables
+- [ ] Events live lancables depuis l'admin
+- [ ] Classement saisonnier operationnel

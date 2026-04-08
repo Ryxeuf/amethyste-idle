@@ -1,0 +1,39 @@
+## Sprint 4 — Progression & Narration
+
+> **3 taches** | Priorite : **Haute** | Origine : Vague 8, Piste C
+> Objectif : enrichir les arbres de talent, completer les recettes de craft, ajouter des quetes.
+> Prerequis : Sprint 3 (armes, armures, sorts necessaires pour les recettes et talents)
+
+---
+
+### 147 — Arbres de talent combat (M | ★★★)
+> Prerequis : ← 144 (sorts & materia tier 2-3)
+- [ ] 10-15 skills par branche combat : Soldat, Defenseur, Guerisseur, Druide, Necromancien, Magicien blanc
+- [ ] Reequilibrage global : chaque branche doit avoir une profondeur comparable au Mineur (18 skills)
+- [ ] Skills de deblocage materia pour les sorts tier 2-3
+- [ ] Bonus passifs diversifies (degats, survie, soin, critique, vitesse)
+
+### 145 — Recettes craft manquantes (L | ★★★)
+> Prerequis : ← 142 (armes), ← 143 (armures)
+- [ ] Tanneur : 15 recettes (armures cuir, capes, accessoires)
+- [ ] Alchimiste : 15 recettes (potions, elixirs, poisons, onguents)
+- [ ] Joaillier : 15 recettes (anneaux, amulettes, gemmes, sertissage materia)
+- [ ] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)
+- [ ] Progression de recettes par niveau de domaine
+
+### 148 — Quetes secondaires & contenu narratif (M | ★★)
+> Prerequis : ← 146 (PNJ), ← 140 ✅ (monstres tier 1)
+- [ ] 30+ quetes supplementaires (objectif : 80+ quetes total)
+- [ ] Quetes de zone : 3-5 quetes par zone liees aux PNJ locaux
+- [ ] Quetes de faction (reputation)
+- [ ] Quetes de decouverte (explorer X zones, trouver Y objets caches)
+- [ ] Diversifier les types : escorte, defend, puzzle, choix moral
+
+---
+
+### Definition of Done
+
+- [ ] 6 branches combat avec 10-15 skills chacune
+- [ ] 55+ recettes de craft reparties sur 4 metiers
+- [ ] 30+ nouvelles quetes jouables
+- [ ] Fixtures et tests d'integration a jour

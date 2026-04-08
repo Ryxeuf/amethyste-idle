@@ -22,7 +22,7 @@ class PlayerAttackHandler extends AbstractPayerItemHandler
         parent::__construct($entityManager, $fightHelper, $itemUsageResolver);
     }
 
-    public function supports(Fight $fight, string $context)
+    public function supports(Fight $fight, string $context): bool
     {
         return PlayerActionHandlerInterface::ACTION_ATTACK === $context;
     }

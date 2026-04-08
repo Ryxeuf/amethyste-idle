@@ -1,7 +1,18 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-07
+> Derniere mise a jour : 2026-04-08
+
+---
+
+## Sprint 1 — Stabilite & Onboarding
+
+### 110 — Correction bugs connus & dette technique (partiel) — Nettoyage PHPStan ✅
+> Nettoyage du code mort et reduction de la baseline PHPStan (528 → 507 entrees, -21).
+- [x] Ajout des return types manquants : `supports(): bool` sur 6 handlers de combat, `mobDied(): void`, `isMob()/isPlayer(): bool`, `mount(): void`
+- [x] Typage des proprietes : `LocaleListener::$defaultLocale` (constructor promotion), `FightNotificationHandler::$notifications` (array typed)
+- [x] Correction logique `ItemHelper` : remplacement `$array[$key] ?? null` par structure `isset()` + `return` explicite
+- [x] Nettoyage de 8 entrees stale du baseline (attributs/proprietes/conditions inexistants dans le code)
 
 ---
 
@@ -16,6 +27,26 @@
 > Retrait de `continue-on-error: true` du job E2E dans la CI, les tests sont desormais stables.
 - [x] Retirer `continue-on-error: true` du job E2E dans `.github/workflows/ci.yml`
 
+### 111 — Equilibrage combat avance (partiel) — Rapport de combat ✅
+> Ajout de la section « combat » au rapport d'equilibrage (`app:balance:report --section combat`).
+- [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
+- [x] Taux de victoire/defaite/fuite par monstre (avec alertes si < 30% ou > 95%)
+- [x] Duree moyenne des combats (en tours)
+- [x] DPS des monstres par niveau (degats/combat et degats/tour)
+- [x] DPS des joueurs par monstre (degats infliges aux mobs, par tour)
+- [x] Alertes automatiques : ecart DPS joueur > 30% entre niveaux adjacents
+- [x] Alertes automatiques : combats trop longs (> 20 tours en moyenne)
+- [x] Top 10 morts joueurs les plus frequentes
+- [x] Option `--days` pour filtrer la periode d'analyse (defaut: 30 jours)
+
+### 111 — Equilibrage combat avance (partiel) — Equilibrage donjons ✅
+> Reequilibrage difficulte vs recompenses des donjons (Normal/Heroique/Mythique).
+- [x] Ajout `xpMultiplier()` dans `DungeonDifficulty` : Normal 1.0x, Heroique 1.5x, Mythique 2.5x
+- [x] Ajustement `dropMultiplier()` : Heroique 1.25x → 1.5x, Mythique 1.5x → 2.0x
+- [x] Stockage `difficulty_xp_multiplier` dans les metadata du combat (`FightHandler`)
+- [x] Application du multiplicateur XP donjon dans `MateriaXpGranter` (stack avec boss x5)
+- [x] Tests unitaires : `DungeonDifficultyTest`, `DungeonDifficultyScalingTest`, `MateriaXpGranterTest`
+
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.
 - [x] `InventoryFlowTest` : equiper item → stats changent → desequiper → stats reviennent (4 tests)
@@ -27,19 +58,6 @@
 - [x] Decomenter le job `e2e` dans `.github/workflows/ci.yml`
 - [x] Ajouter `continue-on-error: true` pour ne pas bloquer la CI pendant la stabilisation
 - [x] Screenshots uploadees en artifact en cas d'echec
-
----
-
-## Vague 8 — Contenu critique
-
-### 140 — Monstres tier 1 manquants ✅
-> Ajout des 5 monstres tier 1 manquants + loot tables + placements + achievements bestiaire.
-- [x] 5 nouveaux monstres : wolf (Loup), scorpion (Scorpion), beetle (Scarabée), mushroom_golem (Golem champignon), ghost (Fantôme)
-- [x] Stats, resistances elementaires et faiblesses par monstre
-- [x] Loot tables specifiques (materiaux, consommables, equipements communs)
-- [x] Patterns IA basiques
-- [x] Placement dans les zones existantes (Plaine map_1, Foret map_3)
-- [x] Achievements bestiaire (paliers 10/50/100) pour bat, giant_rat, venom_snake, wolf, scorpion, beetle, mushroom_golem, ghost
 
 ---
 
@@ -130,6 +148,12 @@
 - [x] Selecteur de personnage au login si le joueur en possede plusieurs (`CharacterController::select()`)
 - [x] Refactoring du `RegistrationController` : auto-login + redirection vers creation personnage
 - [x] `LoginFormAuthenticator` : redirection intelligente (0 players → create, 1 → game, 2+ → select)
+
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Sous-tache : verification coherence DB via `app:game:validate` en CI.
+- [x] Ajout de l'etape `app:game:validate --env=test` dans le job `tests` de la CI (apres le chargement des fixtures)
+- [x] 2 nouveaux checks dans `GameStateValidator` : `negative_domain_experience` (XP used > total ou valeurs negatives) et `equipped_items_wrong_location` (items equipes hors inventaire joueur)
+- [x] Tests unitaires mis a jour pour couvrir les 7 checks
 
 ---
 

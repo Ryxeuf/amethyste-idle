@@ -24,8 +24,15 @@ class DungeonDifficultyTest extends TestCase
     public function testDropMultiplierValues(): void
     {
         $this->assertSame(1.0, DungeonDifficulty::Normal->dropMultiplier());
-        $this->assertSame(1.25, DungeonDifficulty::Heroic->dropMultiplier());
-        $this->assertSame(1.5, DungeonDifficulty::Mythic->dropMultiplier());
+        $this->assertSame(1.5, DungeonDifficulty::Heroic->dropMultiplier());
+        $this->assertSame(2.0, DungeonDifficulty::Mythic->dropMultiplier());
+    }
+
+    public function testXpMultiplierValues(): void
+    {
+        $this->assertSame(1.0, DungeonDifficulty::Normal->xpMultiplier());
+        $this->assertSame(1.5, DungeonDifficulty::Heroic->xpMultiplier());
+        $this->assertSame(2.5, DungeonDifficulty::Mythic->xpMultiplier());
     }
 
     public function testDamageMultiplierAlwaysLessThanStatMultiplier(): void
@@ -46,6 +53,38 @@ class DungeonDifficultyTest extends TestCase
                 $difficulty->statMultiplier(),
                 $difficulty->dropMultiplier(),
                 sprintf('%s: dropMultiplier should be <= statMultiplier', $difficulty->name)
+            );
+        }
+    }
+
+    public function testXpMultiplierAlwaysLessThanOrEqualStatMultiplier(): void
+    {
+        foreach (DungeonDifficulty::cases() as $difficulty) {
+            $this->assertLessThanOrEqual(
+                $difficulty->statMultiplier(),
+                $difficulty->xpMultiplier(),
+                sprintf('%s: xpMultiplier should be <= statMultiplier', $difficulty->name)
+            );
+        }
+    }
+
+    public function testRewardScalesWithDifficulty(): void
+    {
+        $difficulties = DungeonDifficulty::cases();
+
+        for ($i = 1; $i < count($difficulties); ++$i) {
+            $current = $difficulties[$i];
+            $previous = $difficulties[$i - 1];
+
+            $this->assertGreaterThan(
+                $previous->dropMultiplier(),
+                $current->dropMultiplier(),
+                sprintf('%s dropMultiplier should be > %s', $current->name, $previous->name)
+            );
+            $this->assertGreaterThan(
+                $previous->xpMultiplier(),
+                $current->xpMultiplier(),
+                sprintf('%s xpMultiplier should be > %s', $current->name, $previous->name)
             );
         }
     }

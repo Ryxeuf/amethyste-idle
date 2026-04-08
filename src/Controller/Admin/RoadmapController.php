@@ -16,33 +16,39 @@ class RoadmapController extends AbstractController
     /** @var array<string, string> cle part => nom de fichier */
     private const ROADMAP_TODO_PART_FILES = [
         'index' => 'ROADMAP_TODO_INDEX.md',
-        'vague_1' => 'ROADMAP_TODO_VAGUE_01.md',
-        'vague_2' => 'ROADMAP_TODO_VAGUE_02.md',
-        'vague_3' => 'ROADMAP_TODO_VAGUE_03.md',
-        'vague_4' => 'ROADMAP_TODO_VAGUE_04.md',
-        'vague_5' => 'ROADMAP_TODO_VAGUE_05.md',
-        'vague_6' => 'ROADMAP_TODO_VAGUE_06.md',
-        'vague_7' => 'ROADMAP_TODO_VAGUE_07.md',
-        'vague_8' => 'ROADMAP_TODO_VAGUE_08.md',
-        'vague_9' => 'ROADMAP_TODO_VAGUE_09.md',
+        'sprint_1' => 'SPRINT_01.md',
+        'sprint_2' => 'SPRINT_02.md',
+        'sprint_3' => 'SPRINT_03.md',
+        'sprint_4' => 'SPRINT_04.md',
+        'sprint_5' => 'SPRINT_05.md',
+        'sprint_6' => 'SPRINT_06.md',
+        'sprint_7' => 'SPRINT_07.md',
+        'sprint_8' => 'SPRINT_08.md',
+        'sprint_9' => 'SPRINT_09.md',
+        'sprint_10' => 'SPRINT_10.md',
+        'sprint_11' => 'SPRINT_11.md',
+        'sprint_12' => 'SPRINT_12.md',
     ];
 
     private const TODO_PART_LABELS = [
         'all' => 'Tout',
         'index' => 'Index',
-        'vague_1' => 'Vague 1',
-        'vague_2' => 'Vague 2',
-        'vague_3' => 'Vague 3',
-        'vague_4' => 'Vague 4',
-        'vague_5' => 'Vague 5',
-        'vague_6' => 'Vague 6',
-        'vague_7' => 'Vague 7',
-        'vague_8' => 'Vague 8',
-        'vague_9' => 'Vague 9',
+        'sprint_1' => 'Sprint 1',
+        'sprint_2' => 'Sprint 2',
+        'sprint_3' => 'Sprint 3',
+        'sprint_4' => 'Sprint 4',
+        'sprint_5' => 'Sprint 5',
+        'sprint_6' => 'Sprint 6',
+        'sprint_7' => 'Sprint 7',
+        'sprint_8' => 'Sprint 8',
+        'sprint_9' => 'Sprint 9',
+        'sprint_10' => 'Sprint 10',
+        'sprint_11' => 'Sprint 11',
+        'sprint_12' => 'Sprint 12',
     ];
 
     /** @var list<string> */
-    private const ALLOWED_TODO_PARTS = ['all', 'index', 'vague_1', 'vague_2', 'vague_3', 'vague_4', 'vague_5', 'vague_6', 'vague_7', 'vague_8', 'vague_9'];
+    private const ALLOWED_TODO_PARTS = ['all', 'index', 'sprint_1', 'sprint_2', 'sprint_3', 'sprint_4', 'sprint_5', 'sprint_6', 'sprint_7', 'sprint_8', 'sprint_9', 'sprint_10', 'sprint_11', 'sprint_12'];
 
     public function __construct(
         private readonly MarkdownParser $markdownParser,

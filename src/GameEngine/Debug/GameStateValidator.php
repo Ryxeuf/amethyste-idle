@@ -21,6 +21,8 @@ class GameStateValidator
         'orphaned_player_items' => 'checkOrphanedPlayerItems',
         'stale_active_quests' => 'checkStaleActiveQuests',
         'players_out_of_bounds' => 'checkPlayersOutOfBounds',
+        'negative_domain_experience' => 'checkNegativeDomainExperience',
+        'equipped_items_wrong_location' => 'checkEquippedItemsWrongLocation',
     ];
 
     /**
@@ -270,6 +272,85 @@ class GameStateValidator
                     $maxY,
                 );
             }
+        }
+
+        return $anomalies;
+    }
+
+    /**
+     * Domain experience where used_experience > total_experience or negative values.
+     *
+     * @return list<string>
+     */
+    public function checkNegativeDomainExperience(): array
+    {
+        $sql = <<<'SQL'
+            SELECT de.id, de.player_id, p.name AS player_name,
+                   d.name AS domain_name,
+                   de.total_experience, de.used_experience
+            FROM domain_experience de
+            JOIN player p ON p.id = de.player_id
+            JOIN domain d ON d.id = de.domain_id
+            WHERE de.used_experience > de.total_experience
+               OR de.total_experience < 0
+               OR de.used_experience < 0
+            SQL;
+
+        $rows = $this->connection->fetchAllAssociative($sql);
+        $anomalies = [];
+
+        foreach ($rows as $row) {
+            $anomalies[] = sprintf(
+                'Player #%d "%s" domain "%s": total_experience=%d, used_experience=%d',
+                $row['player_id'],
+                $row['player_name'],
+                $row['domain_name'],
+                $row['total_experience'],
+                $row['used_experience'],
+            );
+        }
+
+        return $anomalies;
+    }
+
+    /**
+     * Items marked as equipped (gear != 0) but not in a player inventory
+     * (e.g. in guild vault, on a mob, or with no inventory at all).
+     *
+     * @return list<string>
+     */
+    public function checkEquippedItemsWrongLocation(): array
+    {
+        $sql = <<<'SQL'
+            SELECT pi.id AS player_item_id, pi.gear,
+                   i.name AS item_name,
+                   pi.inventory_id, pi.guild_vault_id, pi.mob_id
+            FROM player_item pi
+            JOIN item i ON i.id = pi.item_id
+            WHERE pi.gear != 0
+              AND (pi.inventory_id IS NULL
+                   OR pi.guild_vault_id IS NOT NULL
+                   OR pi.mob_id IS NOT NULL)
+            SQL;
+
+        $rows = $this->connection->fetchAllAssociative($sql);
+        $anomalies = [];
+
+        foreach ($rows as $row) {
+            $location = match (true) {
+                $row['inventory_id'] === null => 'no inventory',
+                $row['guild_vault_id'] !== null => 'in guild vault',
+                $row['mob_id'] !== null => 'on mob loot',
+                default => 'unknown',
+            };
+
+            $anomalies[] = sprintf(
+                'PlayerItem #%d "%s" is equipped (gear=%d) but located in %s',
+                $row['player_item_id'],
+                $row['item_name'],
+                $row['gear'],
+                $location,
+            );
         }
 
         return $anomalies;
