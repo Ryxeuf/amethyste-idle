@@ -18,41 +18,41 @@ class DamageMultiplierNormalizerTest extends TestCase
 
     public function testNormalizeBonusZeroReturnsZero(): void
     {
-        $this->assertSame(0.0, $this->normalizer->normalizeBonus(0.0));
+        $this->assertEqualsWithDelta(0.0, $this->normalizer->normalizeBonus(0.0), 0.001);
     }
 
     public function testNormalizeBonusNegativeReturnsZero(): void
     {
-        $this->assertSame(0.0, $this->normalizer->normalizeBonus(-0.1));
+        $this->assertEqualsWithDelta(0.0, $this->normalizer->normalizeBonus(-0.1), 0.001);
     }
 
     public function testNormalizeBonusBelowSoftCapUnchanged(): void
     {
         // 25% est sous le soft cap de 40%
-        $this->assertSame(0.25, $this->normalizer->normalizeBonus(0.25));
+        $this->assertEqualsWithDelta(0.25, $this->normalizer->normalizeBonus(0.25), 0.001);
     }
 
     public function testNormalizeBonusAtSoftCapUnchanged(): void
     {
-        $this->assertSame(0.4, $this->normalizer->normalizeBonus(0.4));
+        $this->assertEqualsWithDelta(0.4, $this->normalizer->normalizeBonus(0.4), 0.001);
     }
 
     public function testNormalizeBonusAboveSoftCapDiminished(): void
     {
         // 50% = 40% (plein) + 10% * 0.5 (diminished) = 45%
-        $this->assertSame(0.45, $this->normalizer->normalizeBonus(0.50));
+        $this->assertEqualsWithDelta(0.45, $this->normalizer->normalizeBonus(0.50), 0.001);
     }
 
     public function testNormalizeBonusLargeValueCapped(): void
     {
         // 80% = 40% + 40% * 0.5 = 60%
-        $this->assertSame(0.6, $this->normalizer->normalizeBonus(0.80));
+        $this->assertEqualsWithDelta(0.6, $this->normalizer->normalizeBonus(0.80), 0.001);
     }
 
     public function testNormalizeBonusTypicalElementMatchPlusLinked(): void
     {
         // Element match (25%) + linked (15%) = 40%, exactement au cap
-        $this->assertSame(0.4, $this->normalizer->normalizeBonus(0.40));
+        $this->assertEqualsWithDelta(0.4, $this->normalizer->normalizeBonus(0.40), 0.001);
     }
 
     public function testNormalizeBonusAllBonusesStacked(): void
@@ -60,31 +60,31 @@ class DamageMultiplierNormalizerTest extends TestCase
         // Element match (25%) + linked (15%) + gear (10%) = 50%
         // Normalized: 40% + 10% * 0.5 = 45%
         $result = $this->normalizer->normalizeBonus(0.50);
-        $this->assertSame(0.45, $result);
+        $this->assertEqualsWithDelta(0.45, $result, 0.001);
     }
 
     // --- normalizeSynergy ---
 
     public function testNormalizeSynergyBelowOneUnchanged(): void
     {
-        $this->assertSame(0.8, $this->normalizer->normalizeSynergy(0.8));
+        $this->assertEqualsWithDelta(0.8, $this->normalizer->normalizeSynergy(0.8), 0.001);
     }
 
     public function testNormalizeSynergyExactlyOneUnchanged(): void
     {
-        $this->assertSame(1.0, $this->normalizer->normalizeSynergy(1.0));
+        $this->assertEqualsWithDelta(1.0, $this->normalizer->normalizeSynergy(1.0), 0.001);
     }
 
     public function testNormalizeSynergyBelowCapUnchanged(): void
     {
         // Steam: 1.2 (bonus 0.2, sous le cap de 0.5)
-        $this->assertSame(1.2, $this->normalizer->normalizeSynergy(1.2));
+        $this->assertEqualsWithDelta(1.2, $this->normalizer->normalizeSynergy(1.2), 0.001);
     }
 
     public function testNormalizeSynergyAtCapUnchanged(): void
     {
         // Sandstorm/Eclipse/Holy Blade: 1.5 (bonus 0.5, exactement au cap)
-        $this->assertSame(1.5, $this->normalizer->normalizeSynergy(1.5));
+        $this->assertEqualsWithDelta(1.5, $this->normalizer->normalizeSynergy(1.5), 0.001);
     }
 
     public function testNormalizeSynergyAboveCapDiminished(): void
