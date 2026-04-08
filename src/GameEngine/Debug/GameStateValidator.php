@@ -135,7 +135,7 @@ class GameStateValidator
             SELECT pi.id AS player_item_id, pi.inventory_id, pi.item_id,
                    i.id AS item_exists
             FROM player_item pi
-            LEFT JOIN item i ON i.id = pi.item_id
+            LEFT JOIN game_items i ON i.id = pi.item_id
             WHERE pi.item_id IS NULL OR i.id IS NULL
             SQL;
 
@@ -175,7 +175,7 @@ class GameStateValidator
                    pqc.id AS completed_id
             FROM player_quest pq
             JOIN player p ON p.id = pq.player_id
-            JOIN quest q ON q.id = pq.quest_id
+            JOIN game_quests q ON q.id = pq.quest_id
             JOIN player_quest_completed pqc ON pqc.player_id = pq.player_id AND pqc.quest_id = pq.quest_id
             SQL;
 
@@ -290,7 +290,7 @@ class GameStateValidator
                    de.total_experience, de.used_experience
             FROM domain_experience de
             JOIN player p ON p.id = de.player_id
-            JOIN domain d ON d.id = de.domain_id
+            JOIN game_domains d ON d.id = de.domain_id
             WHERE de.used_experience > de.total_experience
                OR de.total_experience < 0
                OR de.used_experience < 0
@@ -326,7 +326,7 @@ class GameStateValidator
                    i.name AS item_name,
                    pi.inventory_id, pi.guild_vault_id, pi.mob_id
             FROM player_item pi
-            JOIN item i ON i.id = pi.item_id
+            JOIN game_items i ON i.id = pi.item_id
             WHERE pi.gear != 0
               AND (pi.inventory_id IS NULL
                    OR pi.guild_vault_id IS NOT NULL

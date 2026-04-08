@@ -18,6 +18,15 @@
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
 
+### 110 — Correction bugs connus & dette technique (partiel) ✅
+> Nettoyage de code mort et ajout de la validation de coherence DB en CI.
+- [x] Nettoyage code mort detecte par PHPStan (LootGenerator variable inutilisee, MapModelTransformer code commente)
+- [x] Verification coherence DB via `app:game:validate` en CI (step apres fixtures dans le job tests)
+
+### TST-11 — Retirer continue-on-error E2E ✅
+> Retrait de `continue-on-error: true` du job E2E dans la CI, les tests sont desormais stables.
+- [x] Retirer `continue-on-error: true` du job E2E dans `.github/workflows/ci.yml`
+
 ### 111 — Equilibrage combat avance (partiel) — Rapport de combat ✅
 > Ajout de la section « combat » au rapport d'equilibrage (`app:balance:report --section combat`).
 - [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort

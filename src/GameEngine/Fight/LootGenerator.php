@@ -62,7 +62,6 @@ class LootGenerator implements EventSubscriberInterface
         $isCoopLoot = count($coopPlayerIds) > 1;
         $roundRobinIndex = 0;
 
-        $items = [];
         foreach ($mob->getMonster()->getMonsterItems() as $monsterItem) {
             if (null !== $monsterItem->getMinDifficulty() && $monsterDifficulty < $monsterItem->getMinDifficulty()) {
                 continue;
@@ -95,7 +94,6 @@ class LootGenerator implements EventSubscriberInterface
                 $this->entityManager->persist($item);
             }
         }
-        $mob->setItems(new \Doctrine\Common\Collections\ArrayCollection($items));
 
         $this->entityManager->flush();
         $this->entityManager->refresh($mob);
