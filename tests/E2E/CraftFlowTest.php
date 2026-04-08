@@ -132,7 +132,7 @@ class CraftFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('#craft-tabs');
         $this->waitForTurbo();
 
-        $this->assertSelectorExists('#craft-tabs');
+        $this->assertTrue($this->selectorExists('#craft-tabs'), 'Craft tabs should exist after navigation');
     }
 
     public function testExperimentSectionExists(): void

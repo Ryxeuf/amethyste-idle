@@ -104,28 +104,50 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
-     * Execute a synchronous XHR call and return the parsed JSON response.
-     * Uses synchronous XMLHttpRequest instead of async fetch() to avoid
-     * unreliable await behavior in WebDriver executeScript context.
+     * Make an API call using PHP HTTP with the browser's session cookies.
+     * Avoids WebDriver executeScript issues with async/sync JavaScript.
      */
     protected function apiFetch(string $url, string $method = 'POST', ?array $body = null): mixed
     {
-        $bodyJs = null !== $body ? sprintf('xhr.send(JSON.stringify(%s));', json_encode($body)) : 'xhr.send();';
+        // Extract session cookies from the browser
+        $cookies = static::$pantherClient->executeScript('return document.cookie;');
 
-        return static::$pantherClient->executeScript(sprintf(
-            "try {
-                var xhr = new XMLHttpRequest();
-                xhr.open('%s', '%s', false);
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                %s
-                return JSON.parse(xhr.responseText);
-            } catch(e) {
-                return {error: e.message};
-            }",
-            $method,
-            $url,
-            $bodyJs
-        ));
+        // Resolve the base URL from the current page
+        $currentUrl = static::$pantherClient->getCurrentURL();
+        preg_match('#^(https?://[^/]+)#', $currentUrl, $m);
+        $origin = $m[1] ?? 'http://127.0.0.1:9080';
+
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'Cookie: ' . $cookies,
+        ];
+
+        $ch = curl_init($origin . $url);
+        curl_setopt_array($ch, [
+            \CURLOPT_CUSTOMREQUEST => $method,
+            \CURLOPT_HTTPHEADER => $headers,
+            \CURLOPT_RETURNTRANSFER => true,
+            \CURLOPT_TIMEOUT => 15,
+        ]);
+        if (null !== $body) {
+            curl_setopt($ch, \CURLOPT_POSTFIELDS, json_encode($body));
+        }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, \CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if (false === $response) {
+            return ['error' => 'curl failed'];
+        }
+        if ($httpCode >= 400) {
+            $decoded = json_decode($response, true);
+
+            return $decoded ?? ['error' => 'HTTP ' . $httpCode];
+        }
+
+        return json_decode($response, true) ?? ['error' => 'Invalid JSON'];
     }
 
     /**
