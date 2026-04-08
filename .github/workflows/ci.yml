@@ -183,17 +183,12 @@ jobs:
       - name: Validate game state coherence
         run: |
           set +e
-          OUTPUT=$(php -d display_errors=1 -d error_reporting=E_ALL bin/console app:game:validate --env=test -vvv 2>&1)
+          php -d display_errors=1 -d error_reporting=E_ALL bin/console app:game:validate --env=test -vvv > /tmp/validate_output.txt 2>&1
           EXIT_CODE=$?
-          echo "$OUTPUT"
+          cat /tmp/validate_output.txt
           if [ $EXIT_CODE -ne 0 ]; then
-            echo "::error::game:validate exit code: $EXIT_CODE"
-            {
-              echo "### game:validate failed (exit $EXIT_CODE)"
-              echo '```'
-              echo "$OUTPUT" | tail -100
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
+            LAST_LINES=$(tail -30 /tmp/validate_output.txt | tr '\n' ' | ' | head -c 500)
+            echo "::error::game:validate exit $EXIT_CODE — $LAST_LINES"
             exit $EXIT_CODE
           fi
         env:
