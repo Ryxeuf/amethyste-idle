@@ -183,12 +183,17 @@ jobs:
       - name: Validate game state coherence
         run: |
           set +e
-          php bin/console app:game:validate --env=test -vvv 2>&1
+          OUTPUT=$(php -d display_errors=1 -d error_reporting=E_ALL bin/console app:game:validate --env=test -vvv 2>&1)
           EXIT_CODE=$?
-          echo "::notice::game:validate exit code: $EXIT_CODE"
+          echo "$OUTPUT"
           if [ $EXIT_CODE -ne 0 ]; then
-            echo "Retrying with debug..."
-            php -d display_errors=1 -d error_reporting=E_ALL bin/console app:game:validate --env=test -vvv 2>&1 || true
+            echo "::error::game:validate exit code: $EXIT_CODE"
+            {
+              echo "### game:validate failed (exit $EXIT_CODE)"
+              echo '```'
+              echo "$OUTPUT" | tail -100
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
             exit $EXIT_CODE
           fi
         env:
