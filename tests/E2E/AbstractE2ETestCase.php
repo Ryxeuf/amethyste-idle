@@ -104,20 +104,26 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
-     * Execute a JS fetch() call and return the parsed JSON response.
-     * Wraps the common pattern used across E2E tests.
+     * Execute a synchronous XHR call and return the parsed JSON response.
+     * Uses synchronous XMLHttpRequest instead of async fetch() to avoid
+     * unreliable await behavior in WebDriver executeScript context.
      */
     protected function apiFetch(string $url, string $method = 'POST', ?array $body = null): mixed
     {
-        $bodyJs = null !== $body ? sprintf(', body: JSON.stringify(%s)', json_encode($body)) : '';
+        $bodyJs = null !== $body ? sprintf('xhr.send(JSON.stringify(%s));', json_encode($body)) : 'xhr.send();';
 
         return static::$pantherClient->executeScript(sprintf(
-            "return await fetch('%s', {
-                method: '%s',
-                headers: {'Content-Type': 'application/json'}%s
-            }).then(r => r.json()).catch(e => ({error: e.message}));",
-            $url,
+            "try {
+                var xhr = new XMLHttpRequest();
+                xhr.open('%s', '%s', false);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                %s
+                return JSON.parse(xhr.responseText);
+            } catch(e) {
+                return {error: e.message};
+            }",
             $method,
+            $url,
             $bodyJs
         ));
     }
