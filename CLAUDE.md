@@ -41,12 +41,12 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 12. **Multi-personnages** : un compte utilisateur (User) peut posseder plusieurs personnages (Player). La limite par defaut est de **1 personnage par compte** (configurable, cas particuliers possibles). Le systeme de creation de personnage (choix du nom, de la race, de l'apparence) est distinct de l'inscription du compte.
 
-13. **Roadmap** : realise dans `docs/ROADMAP_DONE.md` ; a venir reparti par vague dans `docs/roadmap/` :
-   - `docs/roadmap/ROADMAP_TODO_INDEX.md` — Legende, graphe de dependances, liens vers les vagues
-   - `docs/roadmap/ROADMAP_TODO_VAGUE_01.md` … `ROADMAP_TODO_VAGUE_10.md` — Taches par priorite (vagues 1-6 terminees, vague 7 = prochaine)
-   - `docs/ROADMAP_TODO.md` — Point d'entree (liens vers l'index et les vagues) ; l'admin `/admin/roadmap` **agrege** index + 10 vagues par defaut, avec **sous-onglets** (`?part=index`, `vague_1` … `vague_10`, ou `all`) pour n'afficher qu'un fichier
-   - Quand une tache est **implementee**, elle est **retiree** du fichier de vague concerne et **ajoutee** a `ROADMAP_DONE.md`
-   - Plan annexe controle de cite : `docs/roadmap/PLAN_GUILD_CITY_CONTROL.md` — jalons **GCC-01** a **GCC-20** (ancre Vague 4 dans `ROADMAP_TODO_VAGUE_04.md`)
+13. **Roadmap** : realise dans `docs/ROADMAP_DONE.md` ; a venir reparti par **sprint** dans `docs/roadmap/` :
+   - `docs/roadmap/ROADMAP_TODO_INDEX.md` — Legende, graphe de dependances, liens vers les sprints
+   - `docs/roadmap/SPRINT_01.md` … `SPRINT_12.md` — Taches par sprint (12 sprints focuses, priorite Critique a Basse)
+   - `docs/ROADMAP_TODO.md` — Point d'entree (liens vers l'index et les sprints) ; l'admin `/admin/roadmap` **agrege** index + 12 sprints par defaut, avec **sous-onglets** (`?part=index`, `sprint_1` … `sprint_12`, ou `all`) pour n'afficher qu'un fichier
+   - Quand une tache est **implementee**, elle est **retiree** du fichier de sprint concerne et **ajoutee** a `ROADMAP_DONE.md`
+   - Plan annexe controle de cite : `docs/roadmap/PLAN_GUILD_CITY_CONTROL.md` — jalons **GCC-01** a **GCC-20** ✅
 
 14. **Versioning automatique** : la version affichee dans le jeu (`app_version`) est geree dynamiquement par `VersionExtension` :
    - **Dev** : resolue via `git describe --tags --always --dirty` (ex: `0.6.0-alpha-12-gabcdef`)
@@ -172,7 +172,7 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 
 - [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (22 sections, modele de donnees, combat, carte, inventaire, quetes, bestiaire, succes, etc.)
 - [docs/ROADMAP_DONE.md](docs/ROADMAP_DONE.md) — Roadmap realisee (historique des phases completees)
-- [docs/roadmap/ROADMAP_TODO_INDEX.md](docs/roadmap/ROADMAP_TODO_INDEX.md) — Roadmap a venir (index + liens par vague) ; [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Point d'entree
+- [docs/roadmap/ROADMAP_TODO_INDEX.md](docs/roadmap/ROADMAP_TODO_INDEX.md) — Roadmap a venir (index + liens par sprint) ; [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Point d'entree
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 - [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)

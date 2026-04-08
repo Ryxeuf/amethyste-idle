@@ -1,6 +1,6 @@
 # Plan — Editeur de cartes integre & generateur procedural
 
-> **Numerotation :** les jalons de **ce** document sont prefixes **MED-** (Map EDitor). Ils n'entrent **pas** en conflit avec les numeros de la roadmap globale (`ROADMAP_TODO_VAGUE_*.md`). Les prerequis **roadmap globale** sont indiques en clair (ex. **44**, **57**, **58**).
+> **Numerotation :** les jalons de **ce** document sont prefixes **MED-** (Map EDitor). Ils n'entrent **pas** en conflit avec les numeros de la roadmap globale (`SPRINT_*.md`). Les prerequis **roadmap globale** sont indiques en clair (ex. **44**, **57**, **58**).
 
 > Editeur web complet remplacant le logiciel Tiled pour la creation et l'edition de cartes.
 > Format JSON natif stocke en DB (`Area.fullData`), export TMX optionnel pour validation.
