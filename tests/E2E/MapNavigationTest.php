@@ -16,7 +16,7 @@ class MapNavigationTest extends AbstractE2ETestCase
         $this->waitForSelector('.map-canvas-container');
         $this->waitForPixi();
 
-        $this->assertSelectorExists('.map-canvas-container canvas');
+        $this->assertTrue($this->selectorExists('.map-canvas-container canvas'));
     }
 
     public function testPlayerMovesViaApi(): void
@@ -187,7 +187,7 @@ class MapNavigationTest extends AbstractE2ETestCase
             $this->waitForSelector('.map-canvas-container');
             $this->waitForPixi();
 
-            $this->assertSelectorExists('.map-canvas-container canvas');
+            $this->assertTrue($this->selectorExists('.map-canvas-container canvas'));
 
             // Clean up
             $this->teleportBackToSpawn($initialMapId);

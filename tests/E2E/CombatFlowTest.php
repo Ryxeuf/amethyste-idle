@@ -26,7 +26,7 @@ class CombatFlowTest extends AbstractE2ETestCase
         static::$pantherClient->request('GET', '/game/map');
         $this->waitForSelector('.map-canvas-container');
         $this->waitForPixi();
-        $this->assertSelectorExists('.map-canvas-container');
+        $this->assertTrue($this->selectorExists('.map-canvas-container'));
 
         // 2. Declencher un combat en se deplacant vers un mob via l'API
         //    Mobs proches du spawn joueur (85.34) sur map_1
@@ -57,9 +57,9 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('#action-attack');
         $this->waitForTurbo();
 
-        $this->assertSelectorExists('#action-attack');
-        $this->assertSelectorExists('#action-flee');
-        $this->assertSelectorExists('[data-target-type="mob"]');
+        $this->assertTrue($this->selectorExists('#action-attack'));
+        $this->assertTrue($this->selectorExists('#action-flee'));
+        $this->assertTrue($this->selectorExists('[data-target-type="mob"]'));
 
         // 4. Recuperer l'id du premier mob vivant
         $mobId = static::$pantherClient->executeScript(
@@ -92,7 +92,7 @@ class CombatFlowTest extends AbstractE2ETestCase
         if (str_contains($url, '/game/fight/loot')) {
             // Victoire → page de loot
             $this->waitForSelector('#lootForm');
-            $this->assertSelectorExists('#lootForm');
+            $this->assertTrue($this->selectorExists('#lootForm'));
 
             // Cocher tous les items et collecter
             static::$pantherClient->executeScript(
@@ -107,7 +107,7 @@ class CombatFlowTest extends AbstractE2ETestCase
             $this->assertStringContainsString('/game/map', static::$pantherClient->getCurrentURL());
         } elseif (str_contains($url, '/game/fight')) {
             // Defaite — la page de defaite est affichee
-            $this->assertSelectorExists('a[href*="/game/map"]');
+            $this->assertTrue($this->selectorExists('a[href*="/game/map"]'));
         } else {
             // Redirige vers carte (plus de combat)
             $this->assertStringContainsString('/game/map', $url);
@@ -130,14 +130,14 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->waitForTurbo();
 
         // Verifier la presence de tous les boutons d'action
-        $this->assertSelectorExists('#action-attack');
-        $this->assertSelectorExists('#fight-spells');
-        $this->assertSelectorExists('#fight-objects');
-        $this->assertSelectorExists('#action-flee');
+        $this->assertTrue($this->selectorExists('#action-attack'));
+        $this->assertTrue($this->selectorExists('#fight-spells'));
+        $this->assertTrue($this->selectorExists('#fight-objects'));
+        $this->assertTrue($this->selectorExists('#action-flee'));
 
         // Verifier les combattants
-        $this->assertSelectorExists('[data-target-type="player"]');
-        $this->assertSelectorExists('[data-target-type="mob"]');
+        $this->assertTrue($this->selectorExists('[data-target-type="player"]'));
+        $this->assertTrue($this->selectorExists('[data-target-type="mob"]'));
 
         // Nettoyer : fuir le combat
         $this->apiFetch('/game/fight/flee');

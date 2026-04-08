@@ -109,8 +109,12 @@ abstract class AbstractE2ETestCase extends PantherTestCase
      */
     protected function apiFetch(string $url, string $method = 'POST', ?array $body = null): mixed
     {
-        // Extract session cookies from the browser
-        $cookies = static::$pantherClient->executeScript('return document.cookie;');
+        // Extract session cookies from the browser (including HttpOnly)
+        $cookieParts = [];
+        foreach (static::$pantherClient->getCookieJar()->all() as $cookie) {
+            $cookieParts[] = $cookie->getName() . '=' . $cookie->getValue();
+        }
+        $cookies = implode('; ', $cookieParts);
 
         // Resolve the base URL from the current page
         $currentUrl = static::$pantherClient->getCurrentURL();
