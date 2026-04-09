@@ -190,6 +190,9 @@ class AchievementFixtures extends Fixture
             ['slug' => 'secret-gather-1000', 'title' => 'L\'infatigable', 'description' => 'Récolter 1000 ressources', 'category' => 'secrets', 'criteria' => ['type' => 'gathering', 'count' => 1000], 'reward' => ['gils' => 5000, 'title' => 'L\'infatigable'], 'hidden' => true],
             ['slug' => 'secret-craft-500', 'title' => 'Forgeron des dieux', 'description' => 'Fabriquer 500 objets', 'category' => 'secrets', 'criteria' => ['type' => 'craft', 'count' => 500], 'reward' => ['gils' => 5000, 'title' => 'Forgeron des dieux'], 'hidden' => true],
             ['slug' => 'secret-quest-100', 'title' => 'L\'éternel aventurier', 'description' => 'Compléter 100 quêtes', 'category' => 'secrets', 'criteria' => ['type' => 'quest_complete', 'count' => 100], 'reward' => ['gils' => 5000, 'title' => 'L\'éternel aventurier'], 'hidden' => true],
+
+            // === TUTORIEL ===
+            ['slug' => 'tutorial-complete', 'title' => 'Premiers pas', 'description' => 'Terminer le tutoriel d\'introduction.', 'category' => 'exploration', 'criteria' => ['type' => 'tutorial_complete', 'count' => 1], 'reward' => ['gils' => 100]],
         ];
 
         foreach ($achievements as $data) {

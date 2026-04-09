@@ -7,6 +7,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\Game\Race;
 use App\Entity\User;
+use App\Enum\TutorialStep;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerFactory
@@ -47,6 +48,7 @@ class PlayerFactory
         $player->setSpeed(self::BASE_SPEED + $speedMod);
         $player->setHit(self::BASE_HIT + $hitMod);
         $player->setGils(0);
+        $player->setTutorialStep(TutorialStep::Movement->value);
 
         $spawnMap = $this->getSpawnMap();
         $player->setMap($spawnMap);

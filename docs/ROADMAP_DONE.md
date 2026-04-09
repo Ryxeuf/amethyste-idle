@@ -7,6 +7,20 @@
 
 ## Sprint 1 — Stabilite & Onboarding
 
+### 113 — Tutoriel / onboarding nouveau joueur (partiel) — Infrastructure tutoriel ✅
+> Systeme de tutoriel en 5 etapes (deplacement → combat → inventaire → quetes → craft) avec progression automatique par evenements, skip, et achievement.
+- [x] Enum `TutorialStep` (5 etapes avec label, objectif, navigation sequentielle)
+- [x] Champ `tutorial_step` (smallint nullable) sur Player + migration
+- [x] `PlayerFactory` initialise le tutoriel pour les nouveaux joueurs (step 0)
+- [x] `TutorialManager` : getCurrentStep, advance, advanceIfOnStep, skip, complete
+- [x] `TutorialProgressListener` (EventSubscriber) : avance auto sur PlayerMovedEvent, MobDeadEvent, FightLootedEvent, QuestCompletedEvent, CraftEvent
+- [x] `TutorialController` : endpoint skip (POST, CSRF) + endpoint status (GET, JSON)
+- [x] `TutorialCompletedEvent` dispatche a la fin du tutoriel
+- [x] Achievement "Premiers pas" (slug: tutorial-complete, 100 gils) + `AchievementTracker` ecoute TutorialCompletedEvent
+- [x] `TutorialExtension` Twig : fonction `tutorial_current_step()` avec cache
+- [x] Bandeau tutoriel dans le layout du jeu (objectif, progression, bouton Passer)
+- [x] 11 tests unitaires `TutorialManagerTest` (avancement, skip, step matching, completion event)
+
 ### 110 — Correction bugs connus & dette technique (partiel) — Nettoyage PHPStan ✅
 > Nettoyage du code mort et reduction de la baseline PHPStan (528 → 507 entrees, -21).
 - [x] Ajout des return types manquants : `supports(): bool` sur 6 handlers de combat, `mobDied(): void`, `isMob()/isPlayer(): bool`, `mount(): void`

@@ -22,11 +22,11 @@
 
 ### 113 — Tutoriel / onboarding nouveau joueur (M | ★★★)
 > Prerequis : ∅
-- [ ] Sequence tutoriel : deplacement → combat → inventaire → quetes → craft
+- [x] Sequence tutoriel : deplacement → combat → inventaire → quetes → craft
 - [ ] Indicateurs visuels (fleches, highlights) pour guider le joueur
 - [ ] PNJ tuteur avec dialogues contextuels
-- [ ] Possibilite de skip pour les joueurs experimentes
-- [ ] Achievement "Premier pas" a la fin du tutoriel
+- [x] Possibilite de skip pour les joueurs experimentes
+- [x] Achievement "Premier pas" a la fin du tutoriel
 
 ---
 

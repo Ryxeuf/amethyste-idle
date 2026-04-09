@@ -124,6 +124,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'unlocked_tool_slots', type: 'json', options: ['default' => '[]'])]
     private array $unlockedToolSlots = [];
 
+    #[ORM\Column(name: 'tutorial_step', type: 'smallint', nullable: true)]
+    private ?int $tutorialStep = null;
+
     #[ORM\OneToMany(targetEntity: PlayerStatusEffect::class, mappedBy: 'player', cascade: ['remove'])]
     private Collection $statusEffects;
 
@@ -501,5 +504,15 @@ class Player implements CharacterInterface
         if (!$this->hasToolSlot($toolType)) {
             $this->unlockedToolSlots[] = $toolType;
         }
+    }
+
+    public function getTutorialStep(): ?int
+    {
+        return $this->tutorialStep;
+    }
+
+    public function setTutorialStep(?int $tutorialStep): void
+    {
+        $this->tutorialStep = $tutorialStep;
     }
 }
