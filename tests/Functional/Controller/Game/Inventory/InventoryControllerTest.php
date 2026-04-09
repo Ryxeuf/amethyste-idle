@@ -17,6 +17,7 @@ use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
 use App\Helper\ItemHelper;
 use App\Helper\PlayerHelper;
+use App\Helper\PlayerItemHelper;
 use App\Helper\PlayerSkillHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -35,6 +36,7 @@ class InventoryControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private GearHelper&MockObject $gearHelper;
     private EntityManagerInterface&MockObject $entityManager;
+    private PlayerItemHelper&MockObject $playerItemHelper;
     private FlashBag $flashBag;
 
     protected function setUp(): void
@@ -42,6 +44,7 @@ class InventoryControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->gearHelper = $this->createMock(GearHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->playerItemHelper = $this->createMock(PlayerItemHelper::class);
         $this->flashBag = new FlashBag();
     }
 
@@ -60,6 +63,8 @@ class InventoryControllerTest extends TestCase
         $bag = $this->createMock(Inventory::class);
         $bag->method('getItems')->willReturn(new ArrayCollection([$playerItem]));
         $this->playerHelper->method('getBagInventory')->willReturn($bag);
+
+        $this->playerItemHelper->method('canBeEquipped')->with($playerItem)->willReturn(true);
 
         $this->gearHelper->method('getPlayerItemGearByLocation')->with('head')->willReturn(PlayerItem::GEAR_HEAD);
         $this->gearHelper->method('getEquippedGearByLocation')->with('head')->willReturn(null);
@@ -183,6 +188,7 @@ class InventoryControllerTest extends TestCase
             $this->gearHelper,
             $this->entityManager,
             $this->createMock(PlayerActionHelper::class),
+            $this->playerItemHelper,
         );
         $controller->setContainer($this->createContainerWithRouter());
 
