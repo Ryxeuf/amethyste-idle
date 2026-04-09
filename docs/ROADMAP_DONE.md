@@ -1715,3 +1715,13 @@
 - [x] 8 materia épiques tier 3 (Epic, level 3) — une par élément avec sorts dédiés
 - [x] 6 materia supplémentaires pour éléments sous-représentés (Eau ×2, Métal ×2, Bête ×2) utilisant des sorts existants
 - [x] Couverture complète des 8 éléments en materia tier 2-3
+
+## 141 — Monstres tier 2-3 & boss manquants (partiel) (2026-04-09) 🔧
+
+> Peuplement du Marais Brumeux (map_5) — zone lvl 8-18 avec 16 mobs répartis par difficulté progressive.
+- [x] 3 mobs faciles en lisière nord : zombie, spider, venom_snake
+- [x] 5 mobs intermédiaires dans les chemins marécageux : ochu ×2, mushroom_golem, undine, spider
+- [x] 2 mobs avancés dans les eaux profondes sud : naga, corrupted_archdruid
+- [x] 5 mobs nocturnes répartis : ghost, specter, banshee, will_o_wisp, creeping_shadow
+- [x] 1 boss de zone : swamp_hydra (profondeurs sud-est)
+- [x] Difficulté progressive nord→sud cohérente avec les PNJ existants (Morwen, Fergus, Bran)

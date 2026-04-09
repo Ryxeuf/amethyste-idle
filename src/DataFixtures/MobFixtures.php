@@ -591,6 +591,98 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
                 'map' => 'map_dungeon_racines',
             ],
 
+            // === Marais Brumeux (map_5) — zone lvl 8-18 ===
+            // Lisière nord — mobs faciles (entrée de zone)
+            'swamp_zombie_1' => [
+                'coordinates' => '6.14',
+                'monster' => 'zombie',
+                'map' => 'map_5',
+            ],
+            'swamp_spider_1' => [
+                'coordinates' => '15.10',
+                'monster' => 'spider',
+                'map' => 'map_5',
+            ],
+            'swamp_venom_snake_1' => [
+                'coordinates' => '5.20',
+                'monster' => 'venom_snake',
+                'map' => 'map_5',
+            ],
+            // Chemins marécageux — mobs intermédiaires
+            'swamp_ochu_1' => [
+                'coordinates' => '20.18',
+                'monster' => 'ochu',
+                'map' => 'map_5',
+            ],
+            'swamp_mushroom_golem_1' => [
+                'coordinates' => '32.15',
+                'monster' => 'mushroom_golem',
+                'map' => 'map_5',
+            ],
+            'swamp_undine_1' => [
+                'coordinates' => '18.28',
+                'monster' => 'undine',
+                'map' => 'map_5',
+            ],
+            'swamp_ochu_2' => [
+                'coordinates' => '12.35',
+                'monster' => 'ochu',
+                'map' => 'map_5',
+            ],
+            'swamp_spider_2' => [
+                'coordinates' => '35.20',
+                'monster' => 'spider',
+                'map' => 'map_5',
+            ],
+            // Eaux profondes sud — mobs avancés
+            'swamp_naga_1' => [
+                'coordinates' => '30.38',
+                'monster' => 'naga',
+                'map' => 'map_5',
+            ],
+            'swamp_corrupted_archdruid_1' => [
+                'coordinates' => '38.44',
+                'monster' => 'corrupted_archdruid',
+                'map' => 'map_5',
+            ],
+            // Mobs nocturnes — répartis dans le marais
+            'swamp_ghost_1' => [
+                'coordinates' => '14.22',
+                'monster' => 'ghost',
+                'map' => 'map_5',
+                'nocturnal' => true,
+            ],
+            'swamp_specter_1' => [
+                'coordinates' => '28.32',
+                'monster' => 'specter',
+                'map' => 'map_5',
+                'nocturnal' => true,
+            ],
+            'swamp_banshee_1' => [
+                'coordinates' => '36.25',
+                'monster' => 'banshee',
+                'map' => 'map_5',
+                'nocturnal' => true,
+            ],
+            'swamp_will_o_wisp_1' => [
+                'coordinates' => '22.40',
+                'monster' => 'will_o_wisp',
+                'map' => 'map_5',
+                'nocturnal' => true,
+            ],
+            'swamp_creeping_shadow_1' => [
+                'coordinates' => '45.32',
+                'monster' => 'creeping_shadow',
+                'map' => 'map_5',
+                'nocturnal' => true,
+            ],
+            // Boss de zone — Hydre des marais (profondeurs sud-est)
+            'swamp_hydra_boss' => [
+                'coordinates' => '42.46',
+                'monster' => 'swamp_hydra',
+                'map' => 'map_5',
+            ],
+
             // === Crête de Ventombre (map_6) — zone montagneuse lvl 15-25 ===
             // Mobs d'entrée — base de la montagne
             'mountain_griffin_1' => [
