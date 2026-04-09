@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-08
+> Derniere mise a jour : 2026-04-09
 
 ---
 
@@ -55,6 +55,16 @@
 - [x] `Mob::getMaxLife()` integre le multiplicateur joueur (`world_boss_player_multiplier`)
 - [x] Bonus loot par participant : +10% par joueur additionnel (cap 2.0x) dans `WorldBossLootDistributor`
 - [x] Tests unitaires : scaling HP (join simple, ratio preserve, 3 joueurs progressifs), loot participant bonus
+
+### 111 — Equilibrage combat avance (partiel) — Ajustement formules de degats ✅
+> Normalisation des multiplicateurs de degats pour reduire les ecarts entre builds a < 30%.
+- [x] Creation de `DamageMultiplierNormalizer` : soft cap avec rendements decroissants sur le stacking de bonus equipement et les synergies elementaires
+- [x] Stacking additif des bonus d'equipement (element match + linked materia + gear) au lieu du stacking multiplicatif
+- [x] Reduction des multiplicateurs de synergie pour ramener la plage de 1.2-2.5 a 1.2-1.5 (ecart 25% < 30%)
+- [x] Eclipse : multiplicateur 2.5 → 1.5, self-damage 10% → 5% (equilibre risque/recompense)
+- [x] Sandstorm 1.5 → 1.4, Floral Explosion 1.3 → 1.25, Forge 1.4 → 1.3, Holy Blade 1.6 → 1.5, Primal Fury 1.4 → 1.3, Venomous Shadow 1.5 → 1.35
+- [x] Tests unitaires : `DamageMultiplierNormalizerTest` (soft cap, diminishing returns, variance < 30%)
+- [x] Mise a jour des tests `ElementalSynergyCalculatorTest` pour les nouvelles valeurs
 
 ### 106 — Nouveaux tests E2E critiques (TST-10) ✅
 > 3 nouvelles classes de tests E2E couvrant les parcours critiques : inventaire, carte et boutique.

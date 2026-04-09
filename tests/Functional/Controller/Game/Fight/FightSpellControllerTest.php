@@ -11,6 +11,7 @@ use App\Entity\App\Slot;
 use App\Entity\Game\Spell;
 use App\Enum\Element;
 use App\GameEngine\Enchantment\EnchantmentManager;
+use App\GameEngine\Fight\Calculator\DamageMultiplierNormalizer;
 use App\GameEngine\Fight\CombatCapacityResolver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\CombatSkillResolver;
@@ -85,6 +86,7 @@ class FightSpellControllerTest extends TestCase
             $enchantmentManager,
             $this->playerEffectiveStatsCalculator,
             $fightTurnPublisher,
+            new DamageMultiplierNormalizer(),
         );
 
         $authChecker = $this->createMock(\Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface::class);
