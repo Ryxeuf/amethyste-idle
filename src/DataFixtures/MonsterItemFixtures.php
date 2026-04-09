@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Game\ItemFixtures as GameItemFixtures;
 use App\Entity\Game\Item;
 use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
@@ -490,6 +491,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
         return [
             MonsterFixtures::class,
             ItemFixtures::class,
+            GameItemFixtures::class,
         ];
     }
 }
