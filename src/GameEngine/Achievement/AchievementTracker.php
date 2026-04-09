@@ -13,6 +13,7 @@ use App\Event\Fight\PlayerDeadEvent;
 use App\Event\Game\AchievementCompletedEvent;
 use App\Event\Game\DungeonCompletedEvent;
 use App\Event\Game\QuestCompletedEvent;
+use App\Event\Game\TutorialCompletedEvent;
 use App\Event\GatheringEvent;
 use App\Repository\PlayerAchievementRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,6 +39,7 @@ class AchievementTracker implements EventSubscriberInterface
             CraftEvent::NAME => 'onCraft',
             PlayerDeadEvent::NAME => 'onPlayerDead',
             CombatFleeEvent::NAME => 'onCombatFlee',
+            TutorialCompletedEvent::NAME => 'onTutorialCompleted',
         ];
     }
 
@@ -103,6 +105,11 @@ class AchievementTracker implements EventSubscriberInterface
     public function onCombatFlee(CombatFleeEvent $event): void
     {
         $this->progressAchievements($event->getPlayer(), 'combat_flee');
+    }
+
+    public function onTutorialCompleted(TutorialCompletedEvent $event): void
+    {
+        $this->progressAchievements($event->getPlayer(), 'tutorial_complete');
     }
 
     private function progressAchievements(Player $player, string $criteriaType, ?string $monsterSlug = null, int $increment = 1): void
