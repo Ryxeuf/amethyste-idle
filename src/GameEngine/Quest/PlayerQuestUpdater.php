@@ -26,7 +26,7 @@ class PlayerQuestUpdater
             $tracking = $quest->getTracking();
             if (isset($tracking['monsters'])) {
                 foreach ($tracking['monsters'] as $idx => $monster) {
-                    if ($monster['slug'] === $mob->getMonster()->getSlug()) {
+                    if ($monster['slug'] === $mob->getMonster()->getSlug() && $monster['count'] < $monster['necessary']) {
                         ++$tracking['monsters'][$idx]['count'];
                     }
                 }

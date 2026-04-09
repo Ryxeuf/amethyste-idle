@@ -19,6 +19,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class FightAttackControllerTest extends TestCase
 {
@@ -43,6 +44,8 @@ class FightAttackControllerTest extends TestCase
 
         $fightTurnPublisher = $this->createMock(FightTurnPublisher::class);
 
+        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+
         $this->controller = new FightAttackController(
             $this->playerHelper,
             $this->mobActionHandler,
@@ -51,6 +54,7 @@ class FightAttackControllerTest extends TestCase
             $this->turnResolver,
             $enchantmentManager,
             $fightTurnPublisher,
+            $eventDispatcher,
         );
 
         // Stub the container for security checks

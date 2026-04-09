@@ -9,7 +9,7 @@
 ### 110 — Correction bugs connus & dette technique (M | ★★★)
 > Prerequis : ∅
 - [ ] Audit des issues GitHub ouvertes et priorisation
-- [ ] Correction des bugs critiques gameplay (combat, inventaire, quetes)
+- [x] Correction des bugs critiques gameplay (combat, inventaire, quetes)
 - [x] Nettoyage code mort detecte par PHPStan
 - [x] Verification coherence DB via `app:game:validate` en CI
 
