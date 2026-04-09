@@ -3,8 +3,11 @@
 namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
+use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Entity\CharacterInterface;
+use App\Event\Fight\MobDeadEvent;
+use App\Event\Fight\PlayerDeadEvent;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightCalculator;
@@ -18,6 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/game/fight/attack', name: 'app_game_fight_attack', methods: ['POST'])]
 class FightAttackController extends AbstractController
@@ -30,6 +34,7 @@ class FightAttackController extends AbstractController
         private readonly FightTurnResolver $turnResolver,
         private readonly EnchantmentManager $enchantmentManager,
         private readonly FightTurnPublisher $fightTurnPublisher,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -173,6 +178,12 @@ class FightAttackController extends AbstractController
                 $target->setDiedAt(new \DateTime());
                 $messages[] = sprintf('%s est vaincu !', $target->getName());
                 $this->combatLogger->logDeath($fight, $target);
+
+                if ($target instanceof Mob) {
+                    $this->eventDispatcher->dispatch(new MobDeadEvent($target), MobDeadEvent::NAME);
+                } elseif ($target instanceof Player) {
+                    $this->eventDispatcher->dispatch(new PlayerDeadEvent($target), PlayerDeadEvent::NAME);
+                }
             }
         } else {
             $messages[] = sprintf('%s rate son attaque !', $player->getName());

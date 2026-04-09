@@ -92,6 +92,32 @@ class PlayerQuestUpdaterTest extends TestCase
         $this->assertEquals(5, $tracking['monsters'][0]['count']);
     }
 
+    public function testUpdateMobKilledCapsAtNecessary(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'monsters' => [
+                ['slug' => 'goblin', 'count' => 4, 'necessary' => 5],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $monster = $this->createMock(Monster::class);
+        $monster->method('getSlug')->willReturn('goblin');
+
+        $mob = $this->createMock(Mob::class);
+        $mob->method('getMonster')->willReturn($monster);
+
+        // Kill twice: count should go from 4 → 5, then stay at 5 (capped)
+        $this->updater->updateMobKilled($mob);
+        $this->assertEquals(5, $quest->getTracking()['monsters'][0]['count']);
+
+        $this->updater->updateMobKilled($mob);
+        $this->assertEquals(5, $quest->getTracking()['monsters'][0]['count']);
+    }
+
     public function testUpdateItemCollectedIncrementsCount(): void
     {
         $quest = new PlayerQuest();

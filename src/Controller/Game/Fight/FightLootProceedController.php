@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\GameEngine\Dungeon\DungeonManager;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +27,7 @@ class FightLootProceedController extends AbstractController
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly DungeonRunRepository $dungeonRunRepository,
         private readonly DungeonManager $dungeonManager,
+        private readonly InventoryHelper $inventoryHelper,
     ) {
     }
 
@@ -45,6 +47,27 @@ class FightLootProceedController extends AbstractController
         }
 
         $player = $this->playerHelper->getPlayer();
+
+        // Transférer les items de loot sélectionnés vers l'inventaire du joueur
+        $selectedItemIds = array_map('intval', $items);
+        foreach ($fight->getMobs() as $mob) {
+            foreach ($mob->getItems()->toArray() as $item) {
+                // En coop/world boss, ne gérer que les items liés à ce joueur
+                if (($fight->isWorldBossFight() || $fight->isCoopFight())
+                    && $item->getBoundToPlayerId() !== $player->getId()) {
+                    continue;
+                }
+
+                if (\in_array($item->getId(), $selectedItemIds, true)) {
+                    $item->setMob(null);
+                    $mob->removeItem($item);
+                    $this->inventoryHelper->addItem($item, false);
+                } else {
+                    $mob->removeItem($item);
+                    $this->entityManager->remove($item);
+                }
+            }
+        }
 
         // Détacher ce joueur du combat
         $player->setFight(null);
@@ -70,6 +93,9 @@ class FightLootProceedController extends AbstractController
         }
 
         foreach ($fight->getMobs() as $mob) {
+            foreach ($mob->getItems()->toArray() as $remainingItem) {
+                $this->entityManager->remove($remainingItem);
+            }
             $this->entityManager->remove($mob);
         }
 

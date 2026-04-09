@@ -7,6 +7,14 @@
 
 ## Sprint 1 — Stabilite & Onboarding
 
+### 110 — Correction bugs connus & dette technique (partiel) — Bugs critiques gameplay ✅
+> Correction de 4 bugs gameplay critiques : attaque basique, loot, quetes, IA mobs.
+- [x] Basic attack dispatch `MobDeadEvent` et `PlayerDeadEvent` quand la cible meurt (loot, quetes, achievements, materia XP fonctionnent pour l'attaque basique)
+- [x] Loot items transferes vers l'inventaire joueur dans `FightLootProceedController` (items selectionnes ajoutes au sac, non-selectionnes supprimes, items orphelins nettoyes avant suppression des mobs)
+- [x] Compteur monstres quetes regulieres plafonne a `necessary` (alignement avec le comportement des quetes quotidiennes et des autres types de tracking)
+- [x] Division par zero evitee dans `MobActionHandler` via methode `getHpPercent()` (6 occurrences securisees)
+- [x] Test unitaire `testUpdateMobKilledCapsAtNecessary` ajoute, test `FightAttackControllerTest` mis a jour
+
 ### 113 — Tutoriel / onboarding nouveau joueur (partiel) — Infrastructure tutoriel ✅
 > Systeme de tutoriel en 5 etapes (deplacement → combat → inventaire → quetes → craft) avec progression automatique par evenements, skip, et achievement.
 - [x] Enum `TutorialStep` (5 etapes avec label, objectif, navigation sequentielle)

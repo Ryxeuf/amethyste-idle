@@ -184,7 +184,7 @@ class MobActionHandler
                 continue;
             }
 
-            $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+            $hpPercent = $this->getHpPercent($mob);
 
             // Ne soigner que si le mob a perdu des PV
             if ($hpPercent < 100.0 && $hpPercent < $lowestHpPercent) {
@@ -255,7 +255,7 @@ class MobActionHandler
         if (isset($aiPattern['role']) && $aiPattern['role'] === 'healer') {
             $healTarget = $this->findMostWoundedAlly($fight, $mob);
             if ($healTarget !== null && $this->mobHasHealSpell($mob)) {
-                $hpPercent = ($healTarget->getLife() / $healTarget->getMaxLife()) * 100;
+                $hpPercent = $this->getHpPercent($healTarget);
                 // Soigner si un allié est en dessous de 70% PV
                 if ($hpPercent < 70) {
                     return 'heal';
@@ -266,7 +266,7 @@ class MobActionHandler
         // Check low HP heal behavior (self-heal)
         if (isset($aiPattern['low_hp_heal'])) {
             $threshold = $aiPattern['low_hp_heal']['threshold'] ?? 30;
-            $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+            $hpPercent = $this->getHpPercent($mob);
             if ($hpPercent <= $threshold && $this->mobHasHealSpell($mob)) {
                 return 'heal';
             }
@@ -286,7 +286,7 @@ class MobActionHandler
 
         // Boss phase-based behavior
         if ($monster->isBoss() && $monster->getBossPhases()) {
-            $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+            $hpPercent = $this->getHpPercent($mob);
             $phase = $monster->getCurrentBossPhase((int) $hpPercent);
             if ($phase && isset($phase['action'])) {
                 return $phase['action'];
@@ -449,7 +449,7 @@ class MobActionHandler
             return;
         }
 
-        $hpPercent = (int) (($mob->getLife() / $mob->getMaxLife()) * 100);
+        $hpPercent = (int) $this->getHpPercent($mob);
         $phase = $monster->getCurrentBossPhase($hpPercent);
         if ($phase === null) {
             return;
@@ -480,7 +480,7 @@ class MobActionHandler
             return null;
         }
 
-        $hpPercent = ($mob->getLife() / $mob->getMaxLife()) * 100;
+        $hpPercent = $this->getHpPercent($mob);
 
         // Boss phase danger messages
         if ($monster->isBoss() && $monster->getBossPhases()) {
@@ -499,5 +499,15 @@ class MobActionHandler
         }
 
         return null;
+    }
+
+    /**
+     * Calcule le pourcentage de PV d'un personnage sans risque de division par zéro.
+     */
+    private function getHpPercent(CharacterInterface $character): float
+    {
+        $maxLife = $character->getMaxLife();
+
+        return $maxLife > 0 ? ($character->getLife() / $maxLife) * 100 : 0.0;
     }
 }
