@@ -65,6 +65,173 @@ App\Entity\Game\Item:
     protection: 4
     materia_slots: 1
 
+  # === Armures Fer — Tier 2 (Uncommon, niveau 8) ===
+  iron_chestplate (extends item):
+    name: "Plastron en fer"
+    description: "Un plastron en fer forge, solide et fiable. La protection standard des soldats aguerris."
+    type: "gear"
+    slug: 'iron-chestplate'
+    price: 200
+    gear_location: 'chest'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 8
+    materia_slots: 1
+    level: 8
+    space: 3
+  iron_greaves (extends item):
+    name: "Jambieres en fer"
+    description: "Des jambieres en fer articulees qui protegent les cuisses et les genoux."
+    type: "gear"
+    slug: 'iron-greaves'
+    price: 160
+    gear_location: 'leg'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 6
+    materia_slots: 1
+    level: 8
+    space: 2
+  iron_boots (extends item):
+    name: "Bottes en fer"
+    description: "Des bottes renforcees de plaques de fer, lourdes mais protectrices."
+    type: "gear"
+    slug: 'iron-boots'
+    price: 130
+    gear_location: 'foot'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 5
+    materia_slots: 1
+    level: 8
+  iron_gauntlets (extends item):
+    name: "Gantelets en fer"
+    description: "Des gantelets en fer avec jointures renforcees, parfaits pour le combat rapproche."
+    type: "gear"
+    slug: 'iron-gauntlets'
+    price: 130
+    gear_location: 'hand'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 5
+    materia_slots: 1
+    level: 8
+  iron_pauldrons (extends item):
+    name: "Epaulieres en fer"
+    description: "Des epaulieres en fer massives qui protegent les epaules et le haut des bras."
+    type: "gear"
+    slug: 'iron-pauldrons'
+    price: 170
+    gear_location: 'shoulder'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 6
+    materia_slots: 1
+    level: 8
+    space: 2
+  iron_belt_reinforced (extends item):
+    name: "Ceinture de fer"
+    description: "Une ceinture de cuir renforcee de plaques de fer, pratique et resistante."
+    type: "gear"
+    slug: 'iron-belt-reinforced'
+    price: 100
+    gear_location: 'belt'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 3
+    materia_slots: 1
+    level: 8
+
+  # === Armures Mithril — Tier 3 (Rare, niveau 15) ===
+  mithril_helm (extends item):
+    name: "Heaume de mithril"
+    description: "Un heaume forge dans le mithril, un alliage rare aussi leger que resistant. Brille d'un eclat argente."
+    type: "gear"
+    slug: 'mithril-helm'
+    price: 400
+    gear_location: 'head'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 12
+    materia_slots: 2
+    level: 15
+    space: 2
+  mithril_cuirass (extends item):
+    name: "Cuirasse de mithril"
+    description: "Une cuirasse en mithril etincelante, presque aussi legere que le cuir mais infiniment plus solide."
+    type: "gear"
+    slug: 'mithril-cuirass'
+    price: 550
+    gear_location: 'chest'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 14
+    materia_slots: 2
+    level: 15
+    space: 3
+  mithril_greaves (extends item):
+    name: "Greves de mithril"
+    description: "Des greves en mithril finement ouvragees, offrant une mobilite remarquable pour leur niveau de protection."
+    type: "gear"
+    slug: 'mithril-greaves'
+    price: 380
+    gear_location: 'leg'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 10
+    materia_slots: 2
+    level: 15
+    space: 2
+  mithril_sabatons (extends item):
+    name: "Solerets de mithril"
+    description: "Des bottes de mithril aux reflets lunaires, silencieuses malgre leur solidite."
+    type: "gear"
+    slug: 'mithril-sabatons'
+    price: 320
+    gear_location: 'foot'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 8
+    materia_slots: 2
+    level: 15
+  mithril_gauntlets (extends item):
+    name: "Gantelets de mithril"
+    description: "Des gantelets de mithril aux articulations souples, permettant une dexterite parfaite au combat."
+    type: "gear"
+    slug: 'mithril-gauntlets'
+    price: 350
+    gear_location: 'hand'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 8
+    materia_slots: 2
+    level: 15
+  mithril_pauldrons (extends item):
+    name: "Epaulieres de mithril"
+    description: "Des epaulieres de mithril ornees de motifs elfiques, aussi belles que fonctionnelles."
+    type: "gear"
+    slug: 'mithril-pauldrons'
+    price: 400
+    gear_location: 'shoulder'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 10
+    materia_slots: 2
+    level: 15
+    space: 2
+  mithril_girdle (extends item):
+    name: "Ceinturon de mithril"
+    description: "Un ceinturon de mithril tresse, renforce de plaques fines mais quasi indestructibles."
+    type: "gear"
+    slug: 'mithril-girdle'
+    price: 300
+    gear_location: 'belt'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 6
+    materia_slots: 2
+    level: 15
+
   # === Anneaux — Tier 1 (Common) ===
   bone_ring (extends item):
     name: "Anneau d'os"

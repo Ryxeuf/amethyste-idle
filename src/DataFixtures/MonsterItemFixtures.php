@@ -422,6 +422,35 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'dragon', 'item' => 't3_light_chest', 'probability' => 3],
             ['monster' => 'dragon', 'item' => 't3_metal_gloves', 'probability' => 3],
 
+            // --- Armures Fer T2 (tâche 143) — monstres de niveau moyen ---
+            ['monster' => 'wolf', 'item' => 'iron_helmet', 'probability' => 2],
+            ['monster' => 'skeleton', 'item' => 'iron_gauntlets', 'probability' => 3],
+            ['monster' => 'fire_elemental', 'item' => 'iron_chestplate', 'probability' => 2],
+            ['monster' => 'salamander', 'item' => 'iron_boots', 'probability' => 2],
+            ['monster' => 'gargoyle', 'item' => 'iron_pauldrons', 'probability' => 2],
+            ['monster' => 'troll', 'item' => 'iron_chestplate', 'probability' => 3],
+            ['monster' => 'troll', 'item' => 'iron_greaves', 'probability' => 2],
+            ['monster' => 'werewolf', 'item' => 'iron_gauntlets', 'probability' => 2],
+            ['monster' => 'werewolf', 'item' => 'iron_helmet', 'probability' => 2],
+            ['monster' => 'ochu', 'item' => 'iron_belt_reinforced', 'probability' => 3],
+            ['monster' => 'undine', 'item' => 'iron_boots', 'probability' => 2],
+            ['monster' => 'sylph', 'item' => 'iron_greaves', 'probability' => 2],
+
+            // --- Armures Mithril T3 (tâche 143) — monstres de haut niveau et boss ---
+            ['monster' => 'crystal_golem', 'item' => 'mithril_cuirass', 'probability' => 1],
+            ['monster' => 'crystal_golem', 'item' => 'mithril_gauntlets', 'probability' => 2],
+            ['monster' => 'lesser_lich', 'item' => 'mithril_helm', 'probability' => 1],
+            ['monster' => 'lesser_lich', 'item' => 'mithril_girdle', 'probability' => 2],
+            ['monster' => 'cursed_knight', 'item' => 'mithril_greaves', 'probability' => 1],
+            ['monster' => 'cursed_knight', 'item' => 'mithril_pauldrons', 'probability' => 1],
+            ['monster' => 'naga', 'item' => 'mithril_sabatons', 'probability' => 2],
+            ['monster' => 'wyvern', 'item' => 'mithril_helm', 'probability' => 1],
+            ['monster' => 'stone_golem', 'item' => 'mithril_cuirass', 'probability' => 1],
+            ['monster' => 'forest_guardian', 'item' => 'mithril_pauldrons', 'probability' => 3],
+            ['monster' => 'forge_lord', 'item' => 'mithril_cuirass', 'probability' => 3],
+            ['monster' => 'dragon', 'item' => 'mithril_helm', 'probability' => 2],
+            ['monster' => 'dragon', 'item' => 'mithril_gauntlets', 'probability' => 2],
+
             // --- Accessoires (anneaux & amulettes, tâche 143) ---
             // T1 — monstres de base
             ['monster' => 'goblin', 'item' => 'bone_ring', 'probability' => 4],
