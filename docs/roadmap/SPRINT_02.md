@@ -12,7 +12,7 @@
 - [ ] Boss de zone : alpha_wolf (foret), will_o_wisp (marais), creeping_shadow (lande)
 - [ ] Patterns IA avances (phases de boss, invocations, adaptations)
 - [ ] Loot tables avancees (equipements rares, materia, materiaux tier 2-3)
-- [ ] Placement dans les zones avancees (Collines, Lande, Donjons)
+- [x] Placement dans les zones avancees (Collines, Lande, Donjons)
 
 ### 146 — PNJ & dialogues par zone (M | ★★)
 > Prerequis : ∅
