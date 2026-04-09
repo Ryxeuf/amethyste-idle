@@ -428,7 +428,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'zombie', 'item' => 'bone_ring', 'probability' => 5],
             ['monster' => 'wolf', 'item' => 'bone_amulet', 'probability' => 4],
             ['monster' => 'giant_rat', 'item' => 'wooden_pendant', 'probability' => 5],
-            ['monster' => 'skeleton', 'item' => 'copper_ring', 'probability' => 3],
+            ['monster' => 'skeleton', 'item' => 'silver_ring', 'probability' => 3],
             ['monster' => 'bat', 'item' => 'wooden_pendant', 'probability' => 4],
             ['monster' => 'scorpion', 'item' => 'bone_amulet', 'probability' => 3],
 

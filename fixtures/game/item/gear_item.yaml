@@ -76,12 +76,12 @@ App\Entity\Game\Item:
     nbUsages: -1
     rarity: 'common'
     protection: 1
-  copper_ring (extends item):
-    name: "Anneau de cuivre"
-    description: "Un anneau de cuivre martelé, légèrement verdâtre par l'oxydation"
+  silver_ring (extends item):
+    name: "Anneau d'argent"
+    description: "Un anneau d'argent fin, poli par le temps et les combats"
     type: "gear"
-    slug: 'copper-ring'
-    price: 35
+    slug: 'silver-ring'
+    price: 45
     gear_location: 'ring_2'
     nbUsages: -1
     rarity: 'common'

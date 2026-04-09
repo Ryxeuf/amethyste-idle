@@ -57,7 +57,7 @@
 
 ### 143 — Armures & accessoires par tier (partiel) — Accessoires (anneaux & amulettes) ✅
 > 12 accessoires crees (6 anneaux + 6 amulettes) repartis sur 3 tiers avec effets elementaires et loot tables.
-- [x] 6 anneaux : bone_ring (T1), copper_ring (T1), ruby_ring (T2 feu), sapphire_ring (T2 eau), emerald_ring (T3 terre), amethyst_ring (T3 ombre)
+- [x] 6 anneaux : bone_ring (T1), silver_ring (T1), ruby_ring (T2 feu), sapphire_ring (T2 eau), emerald_ring (T3 terre), amethyst_ring (T3 ombre)
 - [x] 6 amulettes : wooden_pendant (T1), bone_amulet (T1), fire_pendant (T2 feu), wind_pendant (T2 air), crystal_pendant (T3 lumiere), obsidian_pendant (T3 ombre)
 - [x] Progression par rarete (common → uncommon/rare → epic) avec materia slots et effets elemental_damage_boost
 - [x] Loot tables : 28 entrees reparties sur monstres T1 (goblin, zombie, wolf...), T2 (fire_elemental, salamander, undine, sylph...) et T3/boss (crystal_golem, lesser_lich, dragon...)
