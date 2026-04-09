@@ -17,7 +17,7 @@
 ### 143 — Armures & accessoires par tier (M | ★★★)
 > Prerequis : ∅
 - [ ] 15+ pieces : casques, plastrons, jambieres, bottes, gants, capes, boucliers
-- [ ] Accessoires : 5+ anneaux, 5+ amulettes avec effets varies
+- [x] Accessoires : 5+ anneaux, 5+ amulettes avec effets varies
 - [ ] Rarete et progression par tier (cuir → metal → mithril)
 - [ ] Sets d'equipement avec bonus complet (2, 3, 4 pieces)
 

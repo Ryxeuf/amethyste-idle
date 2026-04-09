@@ -421,6 +421,39 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'dragon', 'item' => 't3_light_chest', 'probability' => 3],
             ['monster' => 'dragon', 'item' => 't3_metal_gloves', 'probability' => 3],
 
+            // --- Accessoires (anneaux & amulettes, tâche 143) ---
+            // T1 — monstres de base
+            ['monster' => 'goblin', 'item' => 'bone_ring', 'probability' => 4],
+            ['monster' => 'zombie', 'item' => 'bone_ring', 'probability' => 5],
+            ['monster' => 'wolf', 'item' => 'bone_amulet', 'probability' => 4],
+            ['monster' => 'giant_rat', 'item' => 'wooden_pendant', 'probability' => 5],
+            ['monster' => 'skeleton', 'item' => 'copper_ring', 'probability' => 3],
+            ['monster' => 'bat', 'item' => 'wooden_pendant', 'probability' => 4],
+            ['monster' => 'scorpion', 'item' => 'bone_amulet', 'probability' => 3],
+
+            // T2 — monstres élémentaires (anneaux & pendentifs thématiques)
+            ['monster' => 'fire_elemental', 'item' => 'ruby_ring', 'probability' => 3],
+            ['monster' => 'salamander', 'item' => 'fire_pendant', 'probability' => 3],
+            ['monster' => 'undine', 'item' => 'sapphire_ring', 'probability' => 3],
+            ['monster' => 'sylph', 'item' => 'wind_pendant', 'probability' => 3],
+            ['monster' => 'gargoyle', 'item' => 'wind_pendant', 'probability' => 2],
+            ['monster' => 'werewolf', 'item' => 'ruby_ring', 'probability' => 2],
+            ['monster' => 'ochu', 'item' => 'sapphire_ring', 'probability' => 2],
+            ['monster' => 'troll', 'item' => 'fire_pendant', 'probability' => 2],
+
+            // T3 — monstres avancés et boss (accessoires épiques)
+            ['monster' => 'crystal_golem', 'item' => 'emerald_ring', 'probability' => 2],
+            ['monster' => 'crystal_golem', 'item' => 'crystal_pendant', 'probability' => 2],
+            ['monster' => 'lesser_lich', 'item' => 'amethyst_ring', 'probability' => 2],
+            ['monster' => 'lesser_lich', 'item' => 'obsidian_pendant', 'probability' => 2],
+            ['monster' => 'cursed_knight', 'item' => 'obsidian_pendant', 'probability' => 2],
+            ['monster' => 'stone_golem', 'item' => 'emerald_ring', 'probability' => 2],
+            ['monster' => 'corrupted_archdruid', 'item' => 'crystal_pendant', 'probability' => 2],
+            ['monster' => 'swamp_hydra', 'item' => 'amethyst_ring', 'probability' => 2],
+            ['monster' => 'forest_guardian', 'item' => 'crystal_pendant', 'probability' => 3],
+            ['monster' => 'dragon', 'item' => 'amethyst_ring', 'probability' => 3],
+            ['monster' => 'dragon', 'item' => 'obsidian_pendant', 'probability' => 2],
+
             // --- Drops légendaires rares sur monstres de haut niveau ---
             ['monster' => 'griffin', 'item' => 'griffin_talon_ring', 'probability' => 3, 'minDifficulty' => 3],
             ['monster' => 'minotaur', 'item' => 'minotaur_horn_helm', 'probability' => 3, 'minDifficulty' => 3],
