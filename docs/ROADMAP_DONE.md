@@ -21,6 +21,13 @@
 - [x] Bandeau tutoriel dans le layout du jeu (objectif, progression, bouton Passer)
 - [x] 11 tests unitaires `TutorialManagerTest` (avancement, skip, step matching, completion event)
 
+### 113 — Tutoriel / onboarding (partiel) — PNJ tuteur avec dialogues contextuels ✅
+> PNJ guide "Lyra la Guide" dans le Village de Lumiere avec dialogues adaptes a l'etape tutoriel courante du joueur.
+- [x] Conditions `tutorial_step` et `tutorial_completed` dans `PnjDialogParser` (branching conditionnel base sur la progression tutoriel)
+- [x] PNJ "Lyra la Guide" (healer, coordonnees 20.18 pres du spawn) dans `VillageHubPnjFixtures`
+- [x] 13 sentences de dialogue contextuel : une branche par etape (deplacement, combat, inventaire, quetes, artisanat) + post-tutoriel + details d'aide
+- [x] 6 tests unitaires `PnjDialogParserTutorialTest` (match step, fallthrough, multi-values, completed, in-progress, no player)
+
 ### 110 — Correction bugs connus & dette technique (partiel) — Nettoyage PHPStan ✅
 > Nettoyage du code mort et reduction de la baseline PHPStan (528 → 507 entrees, -21).
 - [x] Ajout des return types manquants : `supports(): bool` sur 6 handlers de combat, `mobDied(): void`, `isMob()/isPlayer(): bool`, `mount(): void`
