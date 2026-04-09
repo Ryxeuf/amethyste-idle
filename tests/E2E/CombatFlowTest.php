@@ -100,7 +100,7 @@ class CombatFlowTest extends AbstractE2ETestCase
             );
 
             static::$pantherClient->executeScript(
-                "document.getElementById('lootForm').submit();"
+                "document.getElementById('lootForm').requestSubmit();"
             );
 
             $this->waitForUrlContaining('/game/map');
@@ -139,7 +139,12 @@ class CombatFlowTest extends AbstractE2ETestCase
         $this->assertTrue($this->selectorExists('[data-target-type="player"]'));
         $this->assertTrue($this->selectorExists('[data-target-type="mob"]'));
 
-        // Nettoyer : fuir le combat
-        $this->apiFetch('/game/fight/flee');
+        // Nettoyer : fuir le combat (retry car la fuite peut echouer aleatoirement)
+        for ($i = 0; $i < 5; ++$i) {
+            $fleeResult = $this->apiFetch('/game/fight/flee');
+            if (isset($fleeResult['fled']) && $fleeResult['fled']) {
+                break;
+            }
+        }
     }
 }

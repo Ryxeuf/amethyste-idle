@@ -61,10 +61,10 @@
                                     {% endif %}
                                     <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">{{ item.price }} G</span>
                                     <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ item.price }}, {{ pnj.id }})"
-                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if player.gils < item.price or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
-                                            {% if player.gils < item.price or outOfStock %}disabled{% endif %}
+                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if not isOpen or player.gils < item.price or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
+                                            {% if not isOpen or player.gils < item.price or outOfStock %}disabled{% endif %}
                                             id="buy-btn-{{ item.slug }}">
-                                        {% if outOfStock %}Rupture{% else %}Acheter{% endif %}
+                                        {% if not isOpen %}Fermé{% elseif outOfStock %}Rupture{% else %}Acheter{% endif %}
                                     </button>
                                 </div>
                             </div>
