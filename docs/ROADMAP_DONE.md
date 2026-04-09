@@ -1716,6 +1716,17 @@
 - [x] 6 materia supplémentaires pour éléments sous-représentés (Eau ×2, Métal ×2, Bête ×2) utilisant des sorts existants
 - [x] Couverture complète des 8 éléments en materia tier 2-3
 
+## 142 — Armes variées par tier (partiel) (2026-04-09) 🔧
+
+> 15 armes ajoutées (5 types × 3 tiers) pour diversifier le combat au-delà des épées existantes.
+- [x] 5 types d'armes : hache (berserker), bâton (paladin), arc (archer), dague (assassin), lance (knight)
+- [x] Tier 1 (common, lvl 1) : hachette rouillée, bâton de novice, arc court, dague ébréchée, pique en bois
+- [x] Tier 2 (uncommon, lvl 5) : hache de guerre, bâton de cristal, arc long composite, dague de mithril, lance d'acier
+- [x] Tier 3 (epic, lvl 15) : hache du berserker, bâton de l'archimage, arc du vent hurlant, lame de l'ombre, lance du chevalier céleste
+- [x] Profils de stats distincts par type : damage (hache), magic_boost (bâton), precision_boost (arc), critical_boost (dague), damage+range (lance)
+- [x] Raretés, prix et slots materia progressifs par tier
+- [x] Descriptions thématiques en français
+
 ## 141 — Monstres tier 2-3 & boss manquants (partiel) (2026-04-09) 🔧
 
 > Peuplement du Marais Brumeux (map_5) — zone lvl 8-18 avec 16 mobs répartis par difficulté progressive.

@@ -8,11 +8,11 @@
 
 ### 142 — Armes variees par tier (M | ★★★)
 > Prerequis : ∅
-- [ ] 15+ armes reparties sur 3 tiers : epees, haches, batons, arcs, dagues, lances
-- [ ] Rarete par tier : common (T1), uncommon/rare (T2), epic (T3)
-- [ ] Stats equilibrees (ATK, vitesse, precision) par type d'arme
+- [x] 15+ armes reparties sur 3 tiers : epees, haches, batons, arcs, dagues, lances
+- [x] Rarete par tier : common (T1), uncommon/rare (T2), epic (T3)
+- [x] Stats equilibrees (ATK, vitesse, precision) par type d'arme
 - [ ] Prerequis de competences pour les armes avancees
-- [ ] Sprites et descriptions
+- [x] Sprites et descriptions
 
 ### 143 — Armures & accessoires par tier (M | ★★★)
 > Prerequis : ∅
