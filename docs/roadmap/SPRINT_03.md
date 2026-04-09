@@ -11,7 +11,7 @@
 - [x] 15+ armes reparties sur 3 tiers : epees, haches, batons, arcs, dagues, lances
 - [x] Rarete par tier : common (T1), uncommon/rare (T2), epic (T3)
 - [x] Stats equilibrees (ATK, vitesse, precision) par type d'arme
-- [ ] Prerequis de competences pour les armes avancees
+- [x] Prerequis de competences pour les armes avancees
 - [x] Sprites et descriptions
 
 ### 143 — Armures & accessoires par tier (M | ★★★)
