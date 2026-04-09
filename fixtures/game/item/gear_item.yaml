@@ -64,3 +64,163 @@ App\Entity\Game\Item:
     rarity: 'common'
     protection: 4
     materia_slots: 1
+
+  # === Anneaux — Tier 1 (Common) ===
+  bone_ring (extends item):
+    name: "Anneau d'os"
+    description: "Un anneau taillé dans un os de monstre, rugueux mais solide"
+    type: "gear"
+    slug: 'bone-ring'
+    price: 25
+    gear_location: 'ring_1'
+    nbUsages: -1
+    rarity: 'common'
+    protection: 1
+  silver_ring (extends item):
+    name: "Anneau d'argent"
+    description: "Un anneau d'argent fin, poli par le temps et les combats"
+    type: "gear"
+    slug: 'silver-ring'
+    price: 45
+    gear_location: 'ring_2'
+    nbUsages: -1
+    rarity: 'common'
+    protection: 1
+    level: 2
+    materia_slots: 1
+
+  # === Anneaux — Tier 2 (Uncommon / Rare) ===
+  ruby_ring (extends item):
+    name: "Anneau de rubis"
+    description: "Un rubis ardent serti dans un anneau d'or, il irradie de chaleur"
+    type: "gear"
+    slug: 'ruby-ring'
+    price: 120
+    gear_location: 'ring_1'
+    nbUsages: -1
+    rarity: 'uncommon'
+    element: 'fire'
+    level: 5
+    materia_slots: 1
+    effect: '{"action":"elemental_damage_boost","element":"fire","amount":8}'
+  sapphire_ring (extends item):
+    name: "Anneau de saphir"
+    description: "Un saphir bleu profond enchâssé dans de l'argent, frais au toucher"
+    type: "gear"
+    slug: 'sapphire-ring'
+    price: 180
+    gear_location: 'ring_2'
+    nbUsages: -1
+    rarity: 'rare'
+    element: 'water'
+    level: 8
+    materia_slots: 1
+    effect: '{"action":"elemental_damage_boost","element":"water","amount":8}'
+
+  # === Anneaux — Tier 3 (Epic) ===
+  emerald_ring (extends item):
+    name: "Anneau d'émeraude"
+    description: "Un émeraude imposant dans une monture de mithril, il vibre au contact de la terre"
+    type: "gear"
+    slug: 'emerald-ring'
+    price: 350
+    gear_location: 'ring_1'
+    nbUsages: -1
+    rarity: 'epic'
+    element: 'earth'
+    level: 12
+    materia_slots: 2
+    effect: '{"action":"elemental_damage_boost","element":"earth","amount":12}'
+  amethyst_ring (extends item):
+    name: "Anneau d'améthyste"
+    description: "Une améthyste sombre sertie dans de l'obsidienne, elle absorbe la lumière autour d'elle"
+    type: "gear"
+    slug: 'amethyst-ring'
+    price: 400
+    gear_location: 'ring_2'
+    nbUsages: -1
+    rarity: 'epic'
+    element: 'dark'
+    level: 15
+    materia_slots: 2
+    effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
+
+  # === Amulettes — Tier 1 (Common) ===
+  wooden_pendant (extends item):
+    name: "Pendentif de bois"
+    description: "Un pendentif sculpté dans du bois d'orme, simple mais réconfortant"
+    type: "gear"
+    slug: 'wooden-pendant'
+    price: 20
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'common'
+    protection: 1
+  bone_amulet (extends item):
+    name: "Amulette d'os"
+    description: "Une amulette taillée dans un croc de bête, portée par les chasseurs novices"
+    type: "gear"
+    slug: 'bone-amulet'
+    price: 40
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'common'
+    protection: 2
+    level: 3
+    materia_slots: 1
+
+  # === Amulettes — Tier 2 (Uncommon / Rare) ===
+  fire_pendant (extends item):
+    name: "Pendentif ardent"
+    description: "Un cristal de flamme suspendu à une chaîne de fer noir, toujours tiède"
+    type: "gear"
+    slug: 'fire-pendant'
+    price: 130
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'uncommon'
+    element: 'fire'
+    level: 6
+    materia_slots: 1
+    effect: '{"action":"elemental_damage_boost","element":"fire","amount":8}'
+  wind_pendant (extends item):
+    name: "Pendentif du vent"
+    description: "Une plume cristallisée dans de l'ambre, elle frémit au moindre courant d'air"
+    type: "gear"
+    slug: 'wind-pendant'
+    price: 190
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'rare'
+    element: 'air'
+    level: 8
+    materia_slots: 1
+    effect: '{"action":"elemental_damage_boost","element":"air","amount":8}'
+
+  # === Amulettes — Tier 3 (Epic) ===
+  crystal_pendant (extends item):
+    name: "Pendentif de cristal sacré"
+    description: "Un cristal radieux béni par les prêtres de l'aube, il baigne son porteur d'une lueur protectrice"
+    type: "gear"
+    slug: 'crystal-pendant'
+    price: 380
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'epic'
+    element: 'light'
+    level: 12
+    materia_slots: 2
+    effect: '{"action":"elemental_damage_boost","element":"light","amount":12}'
+  obsidian_pendant (extends item):
+    name: "Pendentif d'obsidienne"
+    description: "Une sphère d'obsidienne polie enchâssée dans un collier de chaînes noires, elle murmure dans le silence"
+    type: "gear"
+    slug: 'obsidian-pendant'
+    price: 420
+    gear_location: 'neck'
+    nbUsages: -1
+    rarity: 'epic'
+    element: 'dark'
+    level: 15
+    materia_slots: 2
+    effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
