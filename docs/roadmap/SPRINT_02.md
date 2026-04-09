@@ -6,12 +6,12 @@
 
 ---
 
-### 141 — Monstres tier 2-3 & boss manquants (M | ★★★)
+### ~~141 — Monstres tier 2-3 & boss manquants (M | ★★★)~~ ✅
 > Prerequis : ← 140 ✅
-- [ ] 10+ monstres niveaux 15-40 : troll, werewolf, naga, wyvern, crystal_golem, cursed_knight, salamander, undine, sylph, clay_golem
-- [ ] Boss de zone : alpha_wolf (foret), will_o_wisp (marais), creeping_shadow (lande)
-- [ ] Patterns IA avances (phases de boss, invocations, adaptations)
-- [ ] Loot tables avancees (equipements rares, materia, materiaux tier 2-3)
+- [x] 10+ monstres niveaux 15-40 : troll, werewolf, naga, wyvern, crystal_golem, cursed_knight, salamander, undine, sylph, clay_golem
+- [x] Boss de zone : alpha_wolf (foret), will_o_wisp (marais), creeping_shadow (lande)
+- [x] Patterns IA avances (phases de boss, invocations, adaptations)
+- [x] Loot tables avancees (equipements rares, materia, materiaux tier 2-3)
 - [x] Placement dans les zones avancees (Collines, Lande, Donjons)
 
 ### 146 — PNJ & dialogues par zone (M | ★★)
@@ -25,7 +25,7 @@
 
 ### Definition of Done
 
-- [ ] 10+ monstres tier 2-3 crees avec stats, IA et loot
-- [ ] 3 boss de zone fonctionnels
+- [x] 10+ monstres tier 2-3 crees avec stats, IA et loot
+- [x] 3 boss de zone fonctionnels
 - [ ] 20+ PNJ places dans les zones avec dialogues
 - [ ] Tests d'integration combat monstres tier 2-3

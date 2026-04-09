@@ -1760,7 +1760,7 @@
 - [x] Vérification des prérequis dans `EquipItemController` (blocage serveur + feedback visuel cadenas)
 - [x] 5 tests unitaires `PlayerItemHelperCanEquipTest`
 
-## 141 — Monstres tier 2-3 & boss manquants (partiel) (2026-04-09) 🔧
+## 141 — Monstres tier 2-3 & boss manquants (2026-04-09) ✅
 
 > Peuplement du Marais Brumeux (map_5) — zone lvl 8-18 avec 16 mobs répartis par difficulté progressive.
 - [x] 3 mobs faciles en lisière nord : zombie, spider, venom_snake
@@ -1769,3 +1769,8 @@
 - [x] 5 mobs nocturnes répartis : ghost, specter, banshee, will_o_wisp, creeping_shadow
 - [x] 1 boss de zone : swamp_hydra (profondeurs sud-est)
 - [x] Difficulté progressive nord→sud cohérente avec les PNJ existants (Morwen, Fergus, Bran)
+
+> Patterns IA avancés : 3 boss de zone promus en vrais boss avec bossPhases, invocations et stats renforcées.
+- [x] alpha_wolf (Forêt) : isBoss, 150 HP, 3 phases, invocation de loups, sort primordial_roar
+- [x] will_o_wisp (Marais) : isBoss, 120 HP, 3 phases, self-heal, sorts light_blessing + holy_nova
+- [x] creeping_shadow (Lande) : isBoss, 180 HP, 3 phases, invocation de fantômes, sort dark_ritual
