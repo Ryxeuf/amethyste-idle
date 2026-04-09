@@ -15,12 +15,14 @@ use Doctrine\ORM\EntityManagerInterface;
  * Parses NPC dialog JSON with conditional branching and variable substitution.
  *
  * Supported conditions in "conditional_next":
- *   - quest:          [ids] — player has completed these quests
- *   - quest_not:      [ids] — player has NOT started/completed these quests
- *   - quest_active:   [ids] — player has these quests in progress (not completed)
- *   - quest_choice:   {"questId": "choiceKey"} — player made this choice on completed quest
- *   - has_item:       [slugs] — player owns at least one of these items
- *   - domain_xp_min:  {"domain_id": min_xp} — player has enough XP in domain
+ *   - quest:              [ids] — player has completed these quests
+ *   - quest_not:          [ids] — player has NOT started/completed these quests
+ *   - quest_active:       [ids] — player has these quests in progress (not completed)
+ *   - quest_choice:       {"questId": "choiceKey"} — player made this choice on completed quest
+ *   - has_item:           [slugs] — player owns at least one of these items
+ *   - domain_xp_min:      {"domain_id": min_xp} — player has enough XP in domain
+ *   - tutorial_step:      [values] — player is on one of these tutorial steps (0-4)
+ *   - tutorial_completed: true — player has completed the tutorial
  *
  * Variable substitution in text ({{var}}):
  *   - {{player_name}} — current player name
@@ -93,6 +95,8 @@ class PnjDialogParser
             'quest_choice' => $this->questChoice($value),
             'has_item' => $this->hasItem($value),
             'domain_xp_min' => $this->domainXpMin($value),
+            'tutorial_step' => $this->tutorialStep($value),
+            'tutorial_completed' => $this->tutorialCompleted(),
             default => true,
         };
     }
@@ -235,5 +239,30 @@ class PnjDialogParser
         }
 
         return true;
+    }
+
+    /**
+     * @param array<int> $steps Tutorial step values (0-4) to match against
+     */
+    private function tutorialStep(array $steps): bool
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return false;
+        }
+
+        $currentStep = $player->getTutorialStep();
+
+        return null !== $currentStep && \in_array($currentStep, $steps, true);
+    }
+
+    private function tutorialCompleted(): bool
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return false;
+        }
+
+        return null === $player->getTutorialStep();
     }
 }

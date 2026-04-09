@@ -24,7 +24,7 @@
 > Prerequis : ∅
 - [x] Sequence tutoriel : deplacement → combat → inventaire → quetes → craft
 - [ ] Indicateurs visuels (fleches, highlights) pour guider le joueur
-- [ ] PNJ tuteur avec dialogues contextuels
+- [x] PNJ tuteur avec dialogues contextuels
 - [x] Possibilite de skip pour les joueurs experimentes
 - [x] Achievement "Premier pas" a la fin du tutoriel
 
