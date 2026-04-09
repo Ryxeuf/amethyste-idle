@@ -1716,9 +1716,9 @@
 - [x] 6 materia supplémentaires pour éléments sous-représentés (Eau ×2, Métal ×2, Bête ×2) utilisant des sorts existants
 - [x] Couverture complète des 8 éléments en materia tier 2-3
 
-## 142 — Armes variées par tier (partiel) (2026-04-09) 🔧
+## ~~142 — Armes variées par tier~~ ✅
 
-> 15 armes ajoutées (5 types × 3 tiers) pour diversifier le combat au-delà des épées existantes.
+> 15 armes ajoutées (5 types × 3 tiers) avec prérequis de compétences pour les tiers 2-3.
 - [x] 5 types d'armes : hache (berserker), bâton (paladin), arc (archer), dague (assassin), lance (knight)
 - [x] Tier 1 (common, lvl 1) : hachette rouillée, bâton de novice, arc court, dague ébréchée, pique en bois
 - [x] Tier 2 (uncommon, lvl 5) : hache de guerre, bâton de cristal, arc long composite, dague de mithril, lance d'acier
@@ -1726,6 +1726,10 @@
 - [x] Profils de stats distincts par type : damage (hache), magic_boost (bâton), precision_boost (arc), critical_boost (dague), damage+range (lance)
 - [x] Raretés, prix et slots materia progressifs par tier
 - [x] Descriptions thématiques en français
+- [x] 12 skills « Maitrise des armes » (T2 + T3 par domaine : soldier, berserker, paladin, archer, assassin, knight)
+- [x] Prérequis sur 18 armes T2/T3 (5 génériques + 4 épées élémentaires par tier)
+- [x] Vérification des prérequis dans `EquipItemController` (blocage serveur + feedback visuel cadenas)
+- [x] 5 tests unitaires `PlayerItemHelperCanEquipTest`
 
 ## 141 — Monstres tier 2-3 & boss manquants (partiel) (2026-04-09) 🔧
 

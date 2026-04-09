@@ -391,6 +391,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'blood-fury']],
                 'requirements' => ['berserk_rang4_1', 'berserk_rang4_2'],
             ],
+
+            // Maitrise des armes (haches)
+            'berserk_weapon_t2' => [
+                'title' => 'Maitrise de la hache (T2)',
+                'slug' => 'berserk-weapon-t2',
+                'description' => 'Permet d\'equiper les haches de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['berserk_apprenti_1'],
+            ],
+            'berserk_weapon_t3' => [
+                'title' => 'Maitrise de la hache (T3)',
+                'slug' => 'berserk-weapon-t3',
+                'description' => 'Permet d\'equiper les haches de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['berserk_weapon_t2'],
+            ],
         ];
     }
 
@@ -671,6 +691,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'iron-maiden']],
                 'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
             ],
+
+            // Maitrise des armes (epees)
+            'soldier_weapon_t2' => [
+                'title' => 'Maitrise de l\'epee (T2)',
+                'slug' => 'soldier-weapon-t2',
+                'description' => 'Permet d\'equiper les epees de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['soldier_apprenti_1'],
+            ],
+            'soldier_weapon_t3' => [
+                'title' => 'Maitrise de l\'epee (T3)',
+                'slug' => 'soldier-weapon-t3',
+                'description' => 'Permet d\'equiper les epees de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'damage' => 1,
+                'requirements' => ['soldier_weapon_t2'],
+            ],
         ];
     }
 
@@ -806,6 +846,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'steel-fortress']],
                 'requirements' => ['knight_rang4_1', 'knight_rang4_2'],
+            ],
+
+            // Maitrise des armes (lances)
+            'knight_weapon_t2' => [
+                'title' => 'Maitrise de la lance (T2)',
+                'slug' => 'knight-weapon-t2',
+                'description' => 'Permet d\'equiper les lances de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'life' => 3,
+                'requirements' => ['knight_apprenti_1'],
+            ],
+            'knight_weapon_t3' => [
+                'title' => 'Maitrise de la lance (T3)',
+                'slug' => 'knight-weapon-t3',
+                'description' => 'Permet d\'equiper les lances de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'life' => 5,
+                'requirements' => ['knight_weapon_t2'],
             ],
         ];
     }
@@ -2605,6 +2665,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'actions' => ['materia' => ['unlock' => 'piercing-arrow']],
                 'requirements' => ['archer_rang4_1', 'archer_rang4_2'],
             ],
+
+            // Maitrise des armes (arcs)
+            'archer_weapon_t2' => [
+                'title' => 'Maitrise de l\'arc (T2)',
+                'slug' => 'archer-weapon-t2',
+                'description' => 'Permet d\'equiper les arcs de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'hit' => 1,
+                'requirements' => ['archer_apprenti_1'],
+            ],
+            'archer_weapon_t3' => [
+                'title' => 'Maitrise de l\'arc (T3)',
+                'slug' => 'archer-weapon-t3',
+                'description' => 'Permet d\'equiper les arcs de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'hit' => 2,
+                'requirements' => ['archer_weapon_t2'],
+            ],
         ];
     }
 
@@ -2883,6 +2963,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'divine-judgment']],
                 'requirements' => ['paladin_rang4_1', 'paladin_rang4_2'],
+            ],
+
+            // Maitrise des armes (batons)
+            'paladin_weapon_t2' => [
+                'title' => 'Maitrise du baton (T2)',
+                'slug' => 'paladin-weapon-t2',
+                'description' => 'Permet d\'equiper les batons de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['paladin_apprenti_1'],
+            ],
+            'paladin_weapon_t3' => [
+                'title' => 'Maitrise du baton (T3)',
+                'slug' => 'paladin-weapon-t3',
+                'description' => 'Permet d\'equiper les batons de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'heal' => 1,
+                'requirements' => ['paladin_weapon_t2'],
             ],
         ];
     }
@@ -3297,6 +3397,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'shadow-dance']],
                 'requirements' => ['assassin_rang4_1', 'assassin_rang4_2'],
+            ],
+
+            // Maitrise des armes (dagues)
+            'assassin_weapon_t2' => [
+                'title' => 'Maitrise de la dague (T2)',
+                'slug' => 'assassin-weapon-t2',
+                'description' => 'Permet d\'equiper les dagues de tier 2',
+                'requiredPoints' => 10,
+                'domain' => $d,
+                'critical' => 1,
+                'requirements' => ['assassin_apprenti_1'],
+            ],
+            'assassin_weapon_t3' => [
+                'title' => 'Maitrise de la dague (T3)',
+                'slug' => 'assassin-weapon-t3',
+                'description' => 'Permet d\'equiper les dagues de tier 3',
+                'requiredPoints' => 25,
+                'domain' => $d,
+                'critical' => 2,
+                'requirements' => ['assassin_weapon_t2'],
             ],
         ];
     }

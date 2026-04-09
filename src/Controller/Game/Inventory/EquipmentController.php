@@ -8,6 +8,7 @@ use App\GameEngine\Player\PlayerActionHelper;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
+use App\Helper\PlayerItemHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,6 +22,7 @@ class EquipmentController extends AbstractController
         private readonly EquipmentSetResolver $equipmentSetResolver,
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly PlayerItemHelper $playerItemHelper,
     ) {
     }
 
@@ -38,9 +40,11 @@ class EquipmentController extends AbstractController
 
         $availableGear = [];
         $availableTools = [];
+        $canEquipMap = [];
         foreach ($bagInventory->getItems() as $item) {
             if ($item->getGenericItem()->isGear() && !$this->gearHelper->isEquipped($item)) {
                 $availableGear[] = $item;
+                $canEquipMap[$item->getId()] = $this->playerItemHelper->canBeEquipped($item);
             }
             if ($item->getGenericItem()->isTool() && !$this->gearHelper->isToolEquipped($item)) {
                 $availableTools[] = $item;
@@ -79,6 +83,7 @@ class EquipmentController extends AbstractController
             'equipped' => $equipped,
             'availableGear' => $availableGear,
             'availableTools' => $availableTools,
+            'canEquipMap' => $canEquipMap,
             'stats' => $stats,
             'player' => $player,
             'activeSets' => $activeSets,

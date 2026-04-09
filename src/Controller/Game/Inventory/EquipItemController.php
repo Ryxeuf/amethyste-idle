@@ -6,6 +6,7 @@ use App\Entity\App\PlayerItem;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
+use App\Helper\PlayerItemHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +20,7 @@ class EquipItemController extends AbstractController
         private readonly GearHelper $gearHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly PlayerItemHelper $playerItemHelper,
     ) {
     }
 
@@ -88,6 +90,12 @@ class EquipItemController extends AbstractController
 
         if (!$genericItem->isGear()) {
             throw new \LogicException('Cet item n\'est pas un équipement');
+        }
+
+        if (!$this->playerItemHelper->canBeEquipped($itemToEquip)) {
+            $this->addFlash('warning', 'Vous n\'avez pas les compétences requises pour équiper cet objet.');
+
+            return $this->redirectToRoute('app_game_inventory_equipment_list');
         }
 
         $slotType = $genericItem->getGearLocation();

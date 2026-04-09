@@ -2,8 +2,10 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Game\SkillFixtures;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
+use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
@@ -99,6 +101,20 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             $manager->persist($item);
             $this->addReference($key, $item);
+        }
+
+        // Second pass: set skill requirements on items
+        foreach ($itemsData as $key => $data) {
+            if (!isset($data['requirements'])) {
+                continue;
+            }
+
+            /** @var Item $item */
+            $item = $this->getReference($key, Item::class);
+
+            foreach ($data['requirements'] as $skillRef) {
+                $item->addRequirement($this->getReference($skillRef, Skill::class));
+            }
         }
 
         $manager->flush();
@@ -2320,6 +2336,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"damage","amount":8}',
+                'requirements' => ['berserk_weapon_t2'],
             ],
             't2_staff' => [
                 'name' => 'Bâton de cristal',
@@ -2337,6 +2354,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"magic_boost","amount":15}',
+                'requirements' => ['paladin_weapon_t2'],
             ],
             't2_bow' => [
                 'name' => 'Arc long composite',
@@ -2354,6 +2372,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"precision_boost","amount":12}',
+                'requirements' => ['archer_weapon_t2'],
             ],
             't2_dagger' => [
                 'name' => 'Dague de mithril',
@@ -2371,6 +2390,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"critical_boost","amount":12}',
+                'requirements' => ['assassin_weapon_t2'],
             ],
             't2_lance' => [
                 'name' => 'Lance d\'acier',
@@ -2388,6 +2408,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'materiaSlots' => 1,
                 'effect' => '{"action":"damage","amount":5,"range":2}',
+                'requirements' => ['knight_weapon_t2'],
             ],
 
             // --- Tier 3 — Armes avancées (epic, niveau 15) ---
@@ -2408,6 +2429,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"damage","amount":18}',
+                'requirements' => ['berserk_weapon_t3'],
             ],
             't3_staff' => [
                 'name' => 'Bâton de l\'archimage',
@@ -2425,6 +2447,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"magic_boost","amount":30}',
+                'requirements' => ['paladin_weapon_t3'],
             ],
             't3_bow' => [
                 'name' => 'Arc du vent hurlant',
@@ -2442,6 +2465,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"precision_boost","amount":25}',
+                'requirements' => ['archer_weapon_t3'],
             ],
             't3_dagger' => [
                 'name' => 'Lame de l\'ombre',
@@ -2459,6 +2483,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"critical_boost","amount":25}',
+                'requirements' => ['assassin_weapon_t3'],
             ],
             't3_lance' => [
                 'name' => 'Lance du chevalier céleste',
@@ -2476,6 +2501,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"damage","amount":12,"range":2}',
+                'requirements' => ['knight_weapon_t3'],
             ],
 
             // --- Récompenses uniques de boss ---
@@ -2705,6 +2731,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"fire","amount":10}',
                 'materiaSlots' => 1,
+                'requirements' => ['soldier_weapon_t2'],
             ],
             't2_water_sword' => [
                 'name' => 'Épée de givre',
@@ -2723,6 +2750,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"water","amount":10}',
                 'materiaSlots' => 1,
+                'requirements' => ['soldier_weapon_t2'],
             ],
             't2_earth_sword' => [
                 'name' => 'Épée tellurique',
@@ -2741,6 +2769,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"earth","amount":10}',
                 'materiaSlots' => 1,
+                'requirements' => ['soldier_weapon_t2'],
             ],
             't2_air_sword' => [
                 'name' => 'Épée du vent',
@@ -2759,6 +2788,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 5,
                 'effect' => '{"action":"elemental_damage_boost","element":"air","amount":10}',
                 'materiaSlots' => 1,
+                'requirements' => ['soldier_weapon_t2'],
             ],
 
             // --- Boucliers (side_weapon) ---
@@ -3179,6 +3209,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"elemental_damage_boost","element":"metal","amount":15}',
+                'requirements' => ['soldier_weapon_t3'],
             ],
             't3_beast_sword' => [
                 'name' => 'Croc-lame sauvage',
@@ -3197,6 +3228,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"elemental_damage_boost","element":"beast","amount":15}',
+                'requirements' => ['soldier_weapon_t3'],
             ],
             't3_light_sword' => [
                 'name' => 'Lame de l\'aube',
@@ -3215,6 +3247,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"elemental_damage_boost","element":"light","amount":15}',
+                'requirements' => ['soldier_weapon_t3'],
             ],
             't3_dark_sword' => [
                 'name' => 'Lame du crépuscule',
@@ -3233,6 +3266,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 15,
                 'materiaSlots' => 2,
                 'effect' => '{"action":"elemental_damage_boost","element":"dark","amount":15}',
+                'requirements' => ['soldier_weapon_t3'],
             ],
 
             // --- Boucliers (side_weapon) ---
@@ -3705,6 +3739,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
         return [
             DomainFixtures::class,
             SpellFixtures::class,
+            SkillFixtures::class,
         ];
     }
 }
