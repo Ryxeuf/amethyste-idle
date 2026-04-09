@@ -14,12 +14,12 @@
 - [x] Prerequis de competences pour les armes avancees
 - [x] Sprites et descriptions
 
-### 143 — Armures & accessoires par tier (M | ★★★)
+### ~~143 — Armures & accessoires par tier (M | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] 15+ pieces : casques, plastrons, jambieres, bottes, gants, capes, boucliers
+- [x] 15+ pieces : casques, plastrons, jambieres, bottes, gants, capes, boucliers
 - [x] Accessoires : 5+ anneaux, 5+ amulettes avec effets varies
-- [ ] Rarete et progression par tier (cuir → metal → mithril)
-- [ ] Sets d'equipement avec bonus complet (2, 3, 4 pieces)
+- [x] Rarete et progression par tier (cuir → metal → mithril)
+- [x] Sets d'equipement avec bonus complet (2, 3, 4 pieces)
 
 ### 144 — Sorts & materia tier 2-3 (M | ★★)
 > Prerequis : ∅

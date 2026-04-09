@@ -62,6 +62,15 @@
 - [x] Progression par rarete (common → uncommon/rare → epic) avec materia slots et effets elemental_damage_boost
 - [x] Loot tables : 28 entrees reparties sur monstres T1 (goblin, zombie, wolf...), T2 (fire_elemental, salamander, undine, sylph...) et T3/boss (crystal_golem, lesser_lich, dragon...)
 
+### 143 — Armures & accessoires par tier (complet) — Armures fer/mithril + sets ✅
+> 13 armures creees (6 fer T2 + 7 mithril T3) avec progression cuir → fer → mithril, protection, et 2 equipment sets.
+- [x] 6 armures fer T2 (Uncommon, lvl 8) : iron_chestplate, iron_greaves, iron_boots, iron_gauntlets, iron_pauldrons, iron_belt_reinforced (protection 3-8)
+- [x] 7 armures mithril T3 (Rare, lvl 15) : mithril_helm, mithril_cuirass, mithril_greaves, mithril_sabatons, mithril_gauntlets, mithril_pauldrons, mithril_girdle (protection 6-14)
+- [x] MAJ iron_helmet existant : ajout protection 6, rarity Uncommon, level 8
+- [x] Set du Forgefer (Iron T2) : 7 pieces, bonus 2/4/6 (protection +4, vie +20, precision +8)
+- [x] Set de Mithril (T3) : 7 pieces, bonus 2/4/6 (protection +8, vie +30, degats +10)
+- [x] Loot tables : 25 entrees — fer sur monstres T2 (wolf, troll, werewolf...), mithril sur T3/boss (crystal_golem, lesser_lich, dragon...)
+
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX

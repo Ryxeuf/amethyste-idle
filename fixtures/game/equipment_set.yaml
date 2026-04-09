@@ -45,6 +45,42 @@ App\Entity\Game\EquipmentSet:
       - '@iron_shield'
       - '@long_sword'
 
+  # === Set Tier 2 — Forgefer (Fer, non-élémentaire) — protection & vie ===
+  set_ironforge:
+    slug: 'ironforge'
+    name: "Set du Forgefer"
+    description: "L'armure standard des chevaliers, forgée dans le meilleur fer du royaume. Porter plusieurs pièces renforce la défense."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'protection', bonus_value: 4 }
+      - { required_pieces: 4, bonus_type: 'life', bonus_value: 20 }
+      - { required_pieces: 6, bonus_type: 'hit', bonus_value: 8 }
+    items:
+      - '@iron_helmet'
+      - '@iron_chestplate'
+      - '@iron_greaves'
+      - '@iron_boots'
+      - '@iron_gauntlets'
+      - '@iron_pauldrons'
+      - '@iron_belt_reinforced'
+
+  # === Set Tier 3 — Mithril (non-élémentaire) — protection & polyvalence ===
+  set_mithril:
+    slug: 'mithril'
+    name: "Set de Mithril"
+    description: "Forgé dans le mithril, un métal aussi rare que légendaire. La protection ultime pour les aventuriers d'élite."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'protection', bonus_value: 8 }
+      - { required_pieces: 4, bonus_type: 'life', bonus_value: 30 }
+      - { required_pieces: 6, bonus_type: 'damage', bonus_value: 10 }
+    items:
+      - '@mithril_helm'
+      - '@mithril_cuirass'
+      - '@mithril_greaves'
+      - '@mithril_sabatons'
+      - '@mithril_gauntlets'
+      - '@mithril_pauldrons'
+      - '@mithril_girdle'
+
   # === Set Tier 3 — Acier Runique (Métal) — dégâts & protection ===
   set_runic_steel:
     slug: 'runic-steel'
