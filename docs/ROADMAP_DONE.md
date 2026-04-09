@@ -1736,6 +1736,15 @@
 - [x] 6 materia supplémentaires pour éléments sous-représentés (Eau ×2, Métal ×2, Bête ×2) utilisant des sorts existants
 - [x] Couverture complète des 8 éléments en materia tier 2-3
 
+## 144 — Sorts & materia tier 2-3 (partiel) (2026-04-09) 🔧
+
+> 16 sorts tier 2-4 ajoutés (2 par élément) : zone/AoE, soins avancés, contrôle. Introduction des effets freeze, silence et berserk dans le système de sorts.
+- [x] 7 sorts de zone AoE : inferno-wave (Feu), tempest-fury (Air), fissure (Terre), blade-storm (Métal), stampede (Bête), holy-nova (Lumière), void-eruption (Ombre)
+- [x] 6 sorts de soin avancés : ember-ward (Feu+bouclier), purifying-spring (Eau+régén), breath-of-wind (Air), stonewall (Terre+bouclier fort), wild-regeneration (Bête+régén forte), holy-nova (Lumière hybride dégâts+soin)
+- [x] 4 sorts de contrôle : glacial-prison (Eau, freeze), metal-silence (Métal, silence), purge (Lumière, silence), abyssal-fury (Ombre, berserk)
+- [x] 3 effets de statut nouvellement utilisés : freeze (ralentissement), silence (blocage sorts), berserk (fureur +dégâts/-défense)
+- [x] Eau portée à 20 sorts (comblage du déficit, était à 18)
+
 ## ~~142 — Armes variées par tier~~ ✅
 
 > 15 armes ajoutées (5 types × 3 tiers) avec prérequis de compétences pour les tiers 2-3.

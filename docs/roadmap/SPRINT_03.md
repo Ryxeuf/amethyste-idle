@@ -25,7 +25,7 @@
 > Prerequis : ∅
 - [ ] 20+ sorts supplementaires couvrant les 8 elements (Feu, Eau, Air, Terre, Metal, Bete, Lumiere, Ombre)
 - [x] Materia epiques et legendaires (6+ nouvelles materia)
-- [ ] Sorts de zone, sorts de soin avances, sorts de controle
+- [x] Sorts de zone, sorts de soin avances, sorts de controle
 - [ ] Equilibrage avec le systeme de synergies elementaires existant
 
 ---
