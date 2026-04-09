@@ -28,6 +28,14 @@
 - [x] 13 sentences de dialogue contextuel : une branche par etape (deplacement, combat, inventaire, quetes, artisanat) + post-tutoriel + details d'aide
 - [x] 6 tests unitaires `PnjDialogParserTutorialTest` (match step, fallthrough, multi-values, completed, in-progress, no player)
 
+### 113 — Tutoriel / onboarding (partiel) — Indicateurs visuels pour guider le joueur ✅
+> Highlights pulses sur les liens de navigation et lien d'action rapide dans la banniere tutoriel.
+- [x] Stimulus controller `tutorial-highlight` : applique une animation pulsee sur les liens de nav pertinents selon l'etape tutoriel active
+- [x] Attributs `data-tutorial-route` sur les liens de nav (Carte, Quetes, Artisanat) pour desktop et mobile
+- [x] Animation CSS `tutorial-pulse` (halo violet) et `tutorial-arrow-bounce` (fleche directionnelle)
+- [x] Lien d'action rapide dans la banniere tutoriel : raccourci vers la page cible (ex: "→ Aller a la Carte")
+- [x] Bouton "Plus" mobile egalement highlight quand les Quetes ou l'Artisanat sont l'etape courante
+
 ### 110 — Correction bugs connus & dette technique (partiel) — Nettoyage PHPStan ✅
 > Nettoyage du code mort et reduction de la baseline PHPStan (528 → 507 entrees, -21).
 - [x] Ajout des return types manquants : `supports(): bool` sur 6 handlers de combat, `mobDied(): void`, `isMob()/isPlayer(): bool`, `mount(): void`
