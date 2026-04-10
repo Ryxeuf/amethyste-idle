@@ -1845,3 +1845,15 @@
 - [x] 1 recette T3 cuir exotique : plastron en fourrure de loup-garou (level 5)
 - [x] 7 items cuir renforcé/exotique dans gear_item.yaml (uncommon T2 + rare T3)
 - [x] Equipment set "Traqueur" (6 pièces cuir renforcé, bonus hit/critique/vie)
+
+## 145 — Recettes craft manquantes — sous-phase Joaillier (2026-04-10)
+
+> 15 recettes joaillier ajoutées (16 total avec copper_ring existant), 15 nouveaux items (5 gemmes intermédiaires + 10 bijoux). Progression de niveau 1 à 10, alignée sur le skill tree joaillier (15 skills).
+- [x] 4 recettes T1 (level 1-2) : taille gemme brute, anneau de fer, amulette de fer, bracelet de fer
+- [x] 4 recettes T2 (level 3-4) : taille gemme fine, anneau d'or serti, amulette d'or, couronne d'or
+- [x] 4 recettes T3 (level 5-6) : taille gemme rare, enchantement de gemme, anneau de mithril serti, amulette de mithril
+- [x] 1 recette T4 (level 8) : gemme prismatique (astrétal + gemmes enchantées)
+- [x] 2 recettes T5 (level 10) : anneau prismatique, amulette prismatique (orichalque + gemme prismatique)
+- [x] 5 items intermédiaires (crafted) : gemme taillée, gemme fine, gemme rare, gemme enchantée, gemme prismatique
+- [x] 10 items bijoux (gear) : iron_ring, iron_amulet, iron_bracelet, gold_ring, gold_amulet, gold_crown, mithril_ring_jewel, mithril_amulet, legendary_ring, legendary_amulet
+- [x] Tous les recipe slugs alignés avec les 15 skills du skill tree joaillier (SkillFixtures)
