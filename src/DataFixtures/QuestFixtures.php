@@ -1139,6 +1139,108 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'gameEvent' => 'event_nuit_ombres',
             ],
+            // --- Quêtes de zone secondaires ---
+            'quest_zone_foret_meute' => [
+                'name' => 'La meute affamée',
+                'description' => 'Diane signale que les loups deviennent agressifs et s\'approchent des sentiers. Éliminez la meute et leur chef pour sécuriser la forêt.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Loup', 'slug' => 'wolf', 'count' => 3],
+                        ['name' => 'Loup alpha', 'slug' => 'alpha_wolf', 'count' => 1],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 100,
+                    'gold' => 60,
+                    'items' => [
+                        ['type' => 'gear', 'count' => 1, 'genericItemSlug' => 'bow'],
+                    ],
+                ],
+            ],
+            'quest_zone_foret_venin' => [
+                'name' => 'Sentinelle contre le venin',
+                'description' => 'Des serpents venimeux et des scorpions infestent les chemins près de l\'entrée de la forêt. Sylvain demande de l\'aide pour les éliminer.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Serpent venimeux', 'slug' => 'venom_snake', 'count' => 3],
+                        ['name' => 'Scorpion', 'slug' => 'scorpion', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 70,
+                    'gold' => 40,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+            ],
+            'quest_zone_mines_automates' => [
+                'name' => 'Automates déréglés',
+                'description' => 'Les automates des galeries profondes sont devenus incontrôlables et menacent les mineurs. Durgan vous demande d\'en détruire quelques-uns pour rouvrir les passages.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Automate rouillé', 'slug' => 'rusty_automaton', 'count' => 3],
+                        ['name' => 'Golem de pierre', 'slug' => 'stone_golem', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 100,
+                    'gold' => 70,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'ore-silver'],
+                    ],
+                ],
+            ],
+            'quest_zone_marais_prime' => [
+                'name' => 'Prime sur les morts-vivants',
+                'description' => 'Bran offre une récompense pour l\'élimination de morts-vivants et de golems champignon qui envahissent les sentiers du marais.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 4],
+                        ['name' => 'Golem champignon', 'slug' => 'mushroom_golem', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 90,
+                    'gold' => 55,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+            ],
+            'quest_zone_marais_appat' => [
+                'name' => 'Appât empoisonné',
+                'description' => 'Oswald prépare un appât spécial pour attirer les gros poissons du marais. Il a besoin de champignons vénéneux que l\'on trouve dans les zones humides.',
+                'requirements' => [
+                    'collect' => [
+                        'poisonous-mushroom' => 5,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 35,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'healing-potion-small'],
+                    ],
+                ],
+            ],
+            'quest_zone_montagne_aerienne' => [
+                'name' => 'Menace aérienne',
+                'description' => 'Kaelen rapporte que les griffons et gargouilles bloquent les sentiers d\'altitude, empêchant toute reconnaissance. Éliminez-les pour rouvrir les voies.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Griffon', 'slug' => 'griffin', 'count' => 3],
+                        ['name' => 'Gargouille', 'slug' => 'gargoyle', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 90,
+                    'items' => [
+                        ['type' => 'gear', 'count' => 1, 'genericItemSlug' => 'silver-amulet'],
+                    ],
+                ],
+            ],
         ];
 
         foreach ($quests as $key => $data) {

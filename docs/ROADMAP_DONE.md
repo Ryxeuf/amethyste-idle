@@ -99,6 +99,16 @@
 - [x] Template `index.html.twig` : bandeau de progression (prochain deblocage) + section recettes verrouilees
 - [x] 4 tests unitaires : getLockedRecipes (filtre, vide), getNextUnlockInfo (donnees, null)
 
+### 148 — Quetes secondaires & contenu narratif (partiel) — Quetes de zone liees aux PNJ ✅
+> 6 quetes secondaires de zone liees a 6 PNJ existants sans quete, avec dialogues conditionnels (offre/progression/completion).
+- [x] Foret : Diane la Chasseuse — "La meute affamee" (kill 3 loups + 1 alpha wolf, recompense: arc)
+- [x] Foret : Sylvain le Garde forestier — "Sentinelle contre le venin" (kill 3 serpents + 2 scorpions, recompense: 2x antidote)
+- [x] Mines : Durgan le Vieux Prospecteur — "Automates deregles" (kill 3 automates + 2 golems, recompense: 2x minerai argent)
+- [x] Marais : Bran le Chasseur — "Prime sur les morts-vivants" (kill 4 zombies + 2 golems champignon, recompense: 3x antidote)
+- [x] Marais : Oswald le Pecheur — "Appat empoisonne" (collect 5 champignons venimeux, recompense: 2x potion de soin)
+- [x] Montagne : Kaelen l'Eclaireur — "Menace aerienne" (kill 3 griffons + 2 gargouilles, recompense: amulette d'argent)
+- [x] Fixture ZoneQuestDialogFixtures : dialogues PNJ avec conditional_next (quete completee/active/disponible)
+
 ---
 
 ## Sprint 3 — Arsenal & Magie

@@ -24,7 +24,7 @@
 ### 148 — Quetes secondaires & contenu narratif (M | ★★)
 > Prerequis : ← 146 (PNJ), ← 140 ✅ (monstres tier 1)
 - [ ] 30+ quetes supplementaires (objectif : 80+ quetes total)
-- [ ] Quetes de zone : 3-5 quetes par zone liees aux PNJ locaux
+- [x] Quetes de zone : 6 quetes liees aux PNJ locaux (Foret, Mines, Marais, Montagne)
 - [ ] Quetes de faction (reputation)
 - [ ] Quetes de decouverte (explorer X zones, trouver Y objets caches)
 - [ ] Diversifier les types : escorte, defend, puzzle, choix moral
