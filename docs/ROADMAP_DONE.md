@@ -1829,3 +1829,10 @@
 - [x] 3 marchands avec stocks limités et horaires (Tormund, Ysolde, Agna)
 - [x] Dialogues ramifiés avec conditions domain_xp_min (herboristerie pour Ysolde, minage pour Agna)
 - [x] Lore contextuel : synergies élémentaires (Kaelen), cristaux résonnants (Durgan), forge volcanique (Tormund)
+
+## 145 — Recettes craft manquantes — sous-phase Forgeron (2026-04-10)
+
+> 10 recettes forgeron supplémentaires pour armes T2-T3 et armures métal.
+- [x] 4 recettes armures fer T2 : plastron, jambières, bottes, gantelets (level 2-3, ingrédients fer + bronze)
+- [x] 6 recettes armures mithril T3 : heaume, cuirasse, grèves, solerets, gantelets, épaulières (level 5-6, ingrédients mithril + platine)
+- [x] Dépendance Game\ItemFixtures ajoutée dans RecipeFixtures pour les items YAML
