@@ -551,7 +551,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // SOLDAT (metal) — 15 skills, DPS CaC combos d'armes
+    // SOLDAT (metal) — 18 skills, DPS CaC combos d'armes
     // =========================================================================
     private function getSoldierSkills(): array
     {
@@ -689,6 +689,26 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'iron-maiden']],
+                'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
+            ],
+
+            // Tier 2-3 — 2 skills supplementaires (total 18)
+            'soldier_t2_barrage' => [
+                'title' => 'Materia : Barrage d\'acier',
+                'slug' => 'soldier-t2-barrage',
+                'description' => 'Permet d\'utiliser la materia Barrage d\'acier — rafale de projectiles metalliques',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'steel-barrage']],
+                'requirements' => ['soldier_rang3_2', 'soldier_rang3_3'],
+            ],
+            'soldier_t3_titanium' => [
+                'title' => 'Materia : Ecrasement de titane',
+                'slug' => 'soldier-t3-titanium',
+                'description' => 'Permet d\'utiliser la materia Ecrasement de titane — frappe devastatrice',
+                'requiredPoints' => 120,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'titanium-crush']],
                 'requirements' => ['soldier_rang4_1', 'soldier_rang4_2'],
             ],
 
@@ -1151,7 +1171,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // GUERISSEUR (eau) — 13 skills, soigneur complet
+    // GUERISSEUR (eau) — 18 skills, soigneur complet
     // =========================================================================
     private function getHealerSkills(): array
     {
@@ -1214,7 +1234,18 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['healer_apprenti_2'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            'healer_rang2_5' => [
+                'title' => 'Empathie',
+                'slug' => 'healer-rang2-5',
+                'description' => 'Renforce le lien empathique avec les allies',
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'heal' => 1,
+                'life' => 2,
+                'requirements' => ['healer_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 5 skills
             'healer_materia_2' => [
                 'title' => 'Materia : Regeneration',
                 'slug' => 'healer-materia-2',
@@ -1252,7 +1283,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['healer_materia_2'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
+            'healer_t2_purify' => [
+                'title' => 'Materia : Source purificatrice',
+                'slug' => 'healer-t2-purify',
+                'description' => 'Permet d\'utiliser la materia Source purificatrice — soin + purification',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'purifying-spring']],
+                'requirements' => ['healer_rang3_2', 'healer_rang2_5'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
             'healer_materia_3' => [
                 'title' => 'Materia : Benediction divine',
                 'slug' => 'healer-materia-3',
@@ -1272,7 +1313,36 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['healer_rang3_3', 'healer_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            'healer_rang4_3' => [
+                'title' => 'Devotion totale',
+                'slug' => 'healer-rang4-3',
+                'description' => 'La devotion du guerisseur amplifie tous ses soins',
+                'requiredPoints' => 90,
+                'domain' => $d,
+                'heal' => 2,
+                'hit' => 1,
+                'requirements' => ['healer_rang3_3', 'healer_rang3_4'],
+            ],
+
+            // Rang 5 (100-150 pts) — 3 skills
+            'healer_t3_prison' => [
+                'title' => 'Materia : Prison glaciale',
+                'slug' => 'healer-t3-prison',
+                'description' => 'Permet d\'utiliser la materia Prison glaciale — immobilise l\'ennemi',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'glacial-prison']],
+                'requirements' => ['healer_materia_3', 'healer_t2_purify'],
+            ],
+            'healer_t3_tide' => [
+                'title' => 'Materia : Maree abyssale',
+                'slug' => 'healer-t3-tide',
+                'description' => 'Permet d\'utiliser la materia Maree abyssale — vague devastatrice',
+                'requiredPoints' => 120,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'abyssal-tide']],
+                'requirements' => ['healer_rang4_2', 'healer_rang4_3'],
+            ],
             'healer_rang5_1' => [
                 'title' => 'Materia : Benediction celeste',
                 'slug' => 'healer-rang5-1',
@@ -1280,7 +1350,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'celestial-blessing']],
-                'requirements' => ['healer_materia_3', 'healer_rang4_2'],
+                'requirements' => ['healer_t3_prison', 'healer_t3_tide'],
             ],
         ];
     }
@@ -1565,7 +1635,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // DEFENSEUR (terre) — 15 skills, tank absorption et murs
+    // DEFENSEUR (terre) — 18 skills, tank absorption et murs
     // =========================================================================
     private function getDefenderSkills(): array
     {
@@ -1628,7 +1698,18 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['defender_apprenti_2'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            'defender_rang2_5' => [
+                'title' => 'Resistance naturelle',
+                'slug' => 'defender-rang2-5',
+                'description' => 'Renforce la constitution naturelle du defenseur',
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'life' => 3,
+                'hit' => 1,
+                'requirements' => ['defender_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 5 skills
             'defender_rang3_1' => [
                 'title' => 'Materia : Mur de fer',
                 'slug' => 'defender-rang3-1',
@@ -1667,7 +1748,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['defender_rang3_1'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
+            'defender_t2_stonewall' => [
+                'title' => 'Materia : Rempart de pierre',
+                'slug' => 'defender-t2-stonewall',
+                'description' => 'Permet d\'utiliser la materia Rempart de pierre — mur defensif puissant',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stonewall']],
+                'requirements' => ['defender_rang2_3', 'defender_rang2_5'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
             'defender_rang4_1' => [
                 'title' => 'Materia : Tremblement de terre',
                 'slug' => 'defender-rang4-1',
@@ -1687,7 +1778,35 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['defender_rang3_3', 'defender_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            'defender_t2_fissure' => [
+                'title' => 'Materia : Fissure',
+                'slug' => 'defender-t2-fissure',
+                'description' => 'Permet d\'utiliser la materia Fissure — faille devastatrice dans le sol',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'fissure']],
+                'requirements' => ['defender_rang3_1', 'defender_rang3_3'],
+            ],
+
+            // Rang 5 (100-150 pts) — 3 skills
+            'defender_t3_quake' => [
+                'title' => 'Materia : Seisme cristallin',
+                'slug' => 'defender-t3-quake',
+                'description' => 'Permet d\'utiliser la materia Seisme cristallin — onde de choc puissante',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'crystal-quake']],
+                'requirements' => ['defender_rang4_1', 'defender_t2_fissure'],
+            ],
+            'defender_t3_obsidian' => [
+                'title' => 'Materia : Lance d\'obsidienne',
+                'slug' => 'defender-t3-obsidian',
+                'description' => 'Permet d\'utiliser la materia Lance d\'obsidienne — projectile perforant',
+                'requiredPoints' => 120,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'obsidian-lance']],
+                'requirements' => ['defender_rang4_2', 'defender_t3_quake'],
+            ],
             'defender_rang5_1' => [
                 'title' => 'Materia : Petrification',
                 'slug' => 'defender-rang5-1',
@@ -1695,7 +1814,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'petrification']],
-                'requirements' => ['defender_rang4_1', 'defender_rang4_2'],
+                'requirements' => ['defender_t3_obsidian'],
             ],
         ];
     }
@@ -1837,7 +1956,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // NECROMANCIEN (ombre) — 13 skills, drain de vie et maledictions
+    // NECROMANCIEN (ombre) — 18 skills, drain de vie et maledictions
     // =========================================================================
     private function getNecromancerSkills(): array
     {
@@ -1900,7 +2019,18 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['necro_apprenti_2'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            'necro_rang2_5' => [
+                'title' => 'Volonte sombre',
+                'slug' => 'necro-rang2-5',
+                'description' => 'La volonte du necromancien renforce sa resistance et ses sorts',
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'damage' => 1,
+                'life' => 2,
+                'requirements' => ['necro_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 5 skills
             'necro_rang3_1' => [
                 'title' => 'Materia : Eclair d\'ombre',
                 'slug' => 'necro-rang3-1',
@@ -1938,7 +2068,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['necro_rang3_1'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
+            'necro_t2_shadow_claw' => [
+                'title' => 'Materia : Griffe d\'ombre',
+                'slug' => 'necro-t2-shadow-claw',
+                'description' => 'Permet d\'utiliser la materia Griffe d\'ombre — laceration spectrale',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'shadow-claw']],
+                'requirements' => ['necro_materia_2', 'necro_rang2_5'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
             'necro_rang4_1' => [
                 'title' => 'Materia : Dechirure d\'ame',
                 'slug' => 'necro-rang4-1',
@@ -1958,7 +2098,35 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['necro_rang3_3', 'necro_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            'necro_t2_nightmare' => [
+                'title' => 'Materia : Pulse cauchemardesque',
+                'slug' => 'necro-t2-nightmare',
+                'description' => 'Permet d\'utiliser la materia Pulse cauchemardesque — terreur en zone',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'nightmare-pulse']],
+                'requirements' => ['necro_rang3_1', 'necro_rang3_3'],
+            ],
+
+            // Rang 5 (100-150 pts) — 3 skills
+            'necro_t3_eruption' => [
+                'title' => 'Materia : Eruption du vide',
+                'slug' => 'necro-t3-eruption',
+                'description' => 'Permet d\'utiliser la materia Eruption du vide — explosion spectrale',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'void-eruption']],
+                'requirements' => ['necro_rang4_1', 'necro_t2_nightmare'],
+            ],
+            'necro_t3_collapse' => [
+                'title' => 'Materia : Effondrement du vide',
+                'slug' => 'necro-t3-collapse',
+                'description' => 'Permet d\'utiliser la materia Effondrement du vide — implosion devastatrice',
+                'requiredPoints' => 120,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'void-collapse']],
+                'requirements' => ['necro_rang4_2', 'necro_t3_eruption'],
+            ],
             'necro_rang5_1' => [
                 'title' => 'Materia : Nova de mort',
                 'slug' => 'necro-rang5-1',
@@ -1966,13 +2134,13 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'death-nova']],
-                'requirements' => ['necro_rang4_1', 'necro_rang4_2'],
+                'requirements' => ['necro_t3_collapse'],
             ],
         ];
     }
 
     // =========================================================================
-    // DRUIDE (bete) — 13 skills, healer/support nature
+    // DRUIDE (bete) — 18 skills, healer/support nature
     // =========================================================================
     private function getDruidSkills(): array
     {
@@ -2035,7 +2203,18 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['druid_apprenti_2'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            'druid_rang2_5' => [
+                'title' => 'Instinct animal',
+                'slug' => 'druid-rang2-5',
+                'description' => 'Developpe les instincts primaux du druide',
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'damage' => 1,
+                'critical' => 1,
+                'requirements' => ['druid_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 5 skills
             'druid_rang3_1' => [
                 'title' => 'Materia : Etreinte de la foret',
                 'slug' => 'druid-rang3-1',
@@ -2074,7 +2253,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['druid_rang3_1'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
+            'druid_t2_regen' => [
+                'title' => 'Materia : Regeneration sauvage',
+                'slug' => 'druid-t2-regen',
+                'description' => 'Permet d\'utiliser la materia Regeneration sauvage — soin de nature tier 2',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'wild-regeneration']],
+                'requirements' => ['druid_rang2_3', 'druid_rang2_5'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
             'druid_rang4_1' => [
                 'title' => 'Materia : Benediction de la nature',
                 'slug' => 'druid-rang4-1',
@@ -2094,7 +2283,35 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['druid_rang3_3', 'druid_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            'druid_t2_claw' => [
+                'title' => 'Materia : Griffes sauvages',
+                'slug' => 'druid-t2-claw',
+                'description' => 'Permet d\'utiliser la materia Griffes sauvages — attaque bestiale rapide',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'claw-swipe']],
+                'requirements' => ['druid_rang3_1', 'druid_rang3_3'],
+            ],
+
+            // Rang 5 (100-150 pts) — 3 skills
+            'druid_t3_stampede' => [
+                'title' => 'Materia : Ruee sauvage',
+                'slug' => 'druid-t3-stampede',
+                'description' => 'Permet d\'utiliser la materia Ruee sauvage — charge bestiale en zone',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'stampede']],
+                'requirements' => ['druid_rang4_1', 'druid_t2_claw'],
+            ],
+            'druid_t3_apex' => [
+                'title' => 'Materia : Predateur supreme',
+                'slug' => 'druid-t3-apex',
+                'description' => 'Permet d\'utiliser la materia Predateur supreme — instinct de tueur',
+                'requiredPoints' => 120,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'apex-predator']],
+                'requirements' => ['druid_rang4_2', 'druid_t3_stampede'],
+            ],
             'druid_rang5_1' => [
                 'title' => 'Materia : Fureur naturelle',
                 'slug' => 'druid-rang5-1',
@@ -2102,7 +2319,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'nature-fury']],
-                'requirements' => ['druid_rang4_1', 'druid_rang4_2'],
+                'requirements' => ['druid_t3_apex'],
             ],
         ];
     }
@@ -2988,7 +3205,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
     }
 
     // =========================================================================
-    // PRETRE (lumiere) — 13 skills, healer pur
+    // PRETRE (lumiere) — 18 skills, healer pur
     // =========================================================================
     private function getPriestSkills(): array
     {
@@ -3051,7 +3268,18 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['priest_apprenti_2'],
             ],
 
-            // Rang 3 (25-50 pts) — 4 skills
+            'priest_rang2_5' => [
+                'title' => 'Benediction passive',
+                'slug' => 'priest-rang2-5',
+                'description' => 'La grace divine renforce le pretre en permanence',
+                'requiredPoints' => 20,
+                'domain' => $d,
+                'heal' => 1,
+                'life' => 2,
+                'requirements' => ['priest_apprenti_2'],
+            ],
+
+            // Rang 3 (25-50 pts) — 5 skills
             'priest_rang3_1' => [
                 'title' => 'Materia : Regeneration',
                 'slug' => 'priest-rang3-1',
@@ -3089,7 +3317,17 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['priest_rang3_1'],
             ],
 
-            // Rang 4 (60-100 pts) — 2 skills
+            'priest_t2_nova' => [
+                'title' => 'Materia : Nova sacree',
+                'slug' => 'priest-t2-nova',
+                'description' => 'Permet d\'utiliser la materia Nova sacree — explosion de lumiere en zone',
+                'requiredPoints' => 35,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'holy-nova']],
+                'requirements' => ['priest_rang2_3', 'priest_rang2_5'],
+            ],
+
+            // Rang 4 (60-100 pts) — 3 skills
             'priest_rang4_1' => [
                 'title' => 'Materia : Benediction celeste',
                 'slug' => 'priest-rang4-1',
@@ -3109,7 +3347,35 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requirements' => ['priest_rang3_3', 'priest_rang3_4'],
             ],
 
-            // Rang 5 (150+ pts) — 1 skill ultime
+            'priest_t2_purge' => [
+                'title' => 'Materia : Purge',
+                'slug' => 'priest-t2-purge',
+                'description' => 'Permet d\'utiliser la materia Purge — dissipe les effets negatifs',
+                'requiredPoints' => 50,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'purge']],
+                'requirements' => ['priest_rang3_1', 'priest_rang3_3'],
+            ],
+
+            // Rang 5 (100-150 pts) — 3 skills
+            'priest_t3_grace' => [
+                'title' => 'Materia : Grace divine',
+                'slug' => 'priest-t3-grace',
+                'description' => 'Permet d\'utiliser la materia Grace divine — soin et protection celeste',
+                'requiredPoints' => 100,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'divine-grace']],
+                'requirements' => ['priest_rang4_1', 'priest_t2_purge'],
+            ],
+            'priest_t3_judgment' => [
+                'title' => 'Materia : Jugement celeste',
+                'slug' => 'priest-t3-judgment',
+                'description' => 'Permet d\'utiliser la materia Jugement celeste — courroux divin',
+                'requiredPoints' => 120,
+                'domain' => $d,
+                'actions' => ['materia' => ['unlock' => 'celestial-judgment']],
+                'requirements' => ['priest_rang4_2', 'priest_t3_grace'],
+            ],
             'priest_rang5_1' => [
                 'title' => 'Materia : Miracle',
                 'slug' => 'priest-rang5-1',
@@ -3117,7 +3383,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'requiredPoints' => 150,
                 'domain' => $d,
                 'actions' => ['materia' => ['unlock' => 'miracle']],
-                'requirements' => ['priest_rang4_1', 'priest_rang4_2'],
+                'requirements' => ['priest_t3_judgment'],
             ],
         ];
     }

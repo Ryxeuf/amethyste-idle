@@ -66,6 +66,19 @@
 
 ---
 
+## Sprint 4 — Progression & Narration
+
+### 147 — Arbres de talent combat (complet) ✅
+> 27 skills ajoutes pour aligner 6 branches combat sur la reference Mineur (18 skills chacune), avec materia unlock tier 2-3 et bonus passifs.
+- [x] Soldat (metal) : +2 skills (16→18) — Barrage d'acier (steel-barrage), Ecrasement de titane (titanium-crush)
+- [x] Defenseur (terre) : +5 skills (13→18) — Resistance naturelle (passif), Rempart de pierre (stonewall), Fissure (fissure), Seisme cristallin (crystal-quake), Lance d'obsidienne (obsidian-lance)
+- [x] Guerisseur (eau) : +5 skills (13→18) — Empathie (passif), Source purificatrice (purifying-spring), Devotion totale (passif), Prison glaciale (glacial-prison), Maree abyssale (abyssal-tide)
+- [x] Druide (bete) : +5 skills (13→18) — Instinct animal (passif), Regeneration sauvage (wild-regeneration), Griffes sauvages (claw-swipe), Ruee sauvage (stampede), Predateur supreme (apex-predator)
+- [x] Necromancien (ombre) : +5 skills (13→18) — Volonte sombre (passif), Griffe d'ombre (shadow-claw), Pulse cauchemardesque (nightmare-pulse), Eruption du vide (void-eruption), Effondrement du vide (void-collapse)
+- [x] Pretre (lumiere) : +5 skills (13→18) — Benediction passive (passif), Nova sacree (holy-nova), Purge (purge), Grace divine (divine-grace), Jugement celeste (celestial-judgment)
+
+---
+
 ## Sprint 3 — Arsenal & Magie
 
 ### 143 — Armures & accessoires par tier (partiel) — Accessoires (anneaux & amulettes) ✅
