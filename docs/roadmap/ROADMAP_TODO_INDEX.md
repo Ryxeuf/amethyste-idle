@@ -41,7 +41,7 @@
 |--------|-------|--------|----------|--------|
 | **Sprint 1** | Stabilite & Onboarding | 3 | Critique | **En cours** |
 | **Sprint 2** | Bestiaire & PNJ | 2 | Haute | A venir |
-| **Sprint 3** | Arsenal & Magie | 3 | Haute | A venir |
+| **Sprint 3** | Arsenal & Magie | 3 | Haute | ✅ **Termine** |
 | **Sprint 4** | Progression & Narration | 3 | Haute | A venir |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | A venir |
 | **Sprint 6** | Social & Economie | 6 | Moyenne | A venir |
