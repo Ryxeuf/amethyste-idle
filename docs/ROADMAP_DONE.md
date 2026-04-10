@@ -77,6 +77,19 @@
 - [x] Necromancien (ombre) : +5 skills (13→18) — Volonte sombre (passif), Griffe d'ombre (shadow-claw), Pulse cauchemardesque (nightmare-pulse), Eruption du vide (void-eruption), Effondrement du vide (void-collapse)
 - [x] Pretre (lumiere) : +5 skills (13→18) — Benediction passive (passif), Nova sacree (holy-nova), Purge (purge), Grace divine (divine-grace), Jugement celeste (celestial-judgment)
 
+### 145 — Recettes craft manquantes (partiel) — Alchimiste : 9 recettes ajoutees ✅
+> 9 recettes Alchimiste ajoutees (11 total), avec 6 sorts et 5 items consommables. Progression de niveau 1 a 5.
+- [x] Base de potion (L1) : intermediaire de craft a partir de menthe et camomille
+- [x] Onguent de guerison (L2) : soin + regeneration (aloe vera, camomille)
+- [x] Potion de soin (L2) : recette pour la potion de soin existante (base + thym + sauge)
+- [x] Potion d'energie (L2) : recette pour la potion d'energie existante (base + ginseng)
+- [x] Fiole de poison (L3) : degats + poison (belladone, champignon venimeux)
+- [x] Elixir de force (L3) : buff berserk (base + ginseng + mandragore)
+- [x] Elixir de defense (L3) : buff bouclier (base + thym + valeriane)
+- [x] Potion de soin majeure (L4) : recette pour la potion majeure existante (2x base + aloe + mandragore)
+- [x] Elixir de vitalite (L5) : soin puissant (2x base + mandragore + ginseng)
+- [x] Correction healing_potion_medium : ajout du spell pour compatibilite combat
+
 ---
 
 ## Sprint 3 — Arsenal & Magie
