@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 /**
  * PNJs de la Forêt des murmures — zone lvl 5-15.
  *
- * 3 PNJ : garde forestier, herboriste, ermite.
+ * 5 PNJ : garde forestier, herboriste, ermite, bûcheron, chasseuse.
  */
 class ForestPnjFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -167,6 +167,70 @@ class ForestPnjFixtures extends Fixture implements DependentFixtureInterface
                         'choices' => [
                             [
                                 'text' => "C'est fascinant. Merci, vieil homme.",
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+
+            // 3 — Martin le Bûcheron (lisière est)
+            [
+                'name' => 'Martin le Bûcheron',
+                'coordinates' => '45.20',
+                'classType' => 'villager',
+                'portrait' => '/styles/images/portraits/villager.png',
+                'dialog' => [
+                    [
+                        'text' => 'Attention où vous mettez les pieds ! Je suis Martin, bûcheron. Je coupe du bois ici depuis vingt ans. La forêt est généreuse, mais il faut savoir la respecter.',
+                        'choices' => [
+                            [
+                                'text' => 'Quels dangers guettent par ici ?',
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Bon courage, Martin.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Les loups rôdent à l'est, surtout à la tombée de la nuit. Et ne vous aventurez pas trop près de la rivière — les serpents s'y cachent dans les hautes herbes. Si vous cherchez du bois de qualité, les chênes au sud sont les meilleurs. Mais gare aux araignées qui nichent dans leurs branches !",
+                        'choices' => [
+                            [
+                                'text' => 'Merci pour les conseils.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+
+            // 4 — Diane la Chasseuse (sentier sud)
+            [
+                'name' => 'Diane la Chasseuse',
+                'coordinates' => '20.48',
+                'classType' => 'guard',
+                'portrait' => '/styles/images/portraits/guard.png',
+                'dialog' => [
+                    [
+                        'text' => 'Chut ! Vous allez faire fuir le gibier. Je suis Diane, chasseuse. Je traque les créatures de cette forêt pour protéger les voyageurs... et pour gagner ma vie, bien sûr.',
+                        'choices' => [
+                            [
+                                'text' => 'Quelles créatures chassez-vous ?',
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Pardon. Je m\'en vais.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => 'Les slimes sont faciles mais rapportent peu. Les loups, en meute, sont redoutables. Mais ce sont les araignées géantes qui paient le mieux — leur soie se vend cher au village. Si vous êtes brave, essayez de traquer un alpha_wolf au nord-est. Attention, il ne chasse jamais seul.',
+                        'choices' => [
+                            [
+                                'text' => 'Je tenterai ma chance. Merci !',
                                 'action' => 'close',
                             ],
                         ],

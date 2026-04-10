@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 /**
  * PNJs du Marais Brumeux — zone lvl 8-18.
  *
- * 3 PNJ : voyante des brumes, herboriste, chasseur.
+ * 5 PNJ : voyante des brumes, herboriste, chasseur, pêcheur, érudite.
  */
 class MaraisPnjFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -167,6 +167,70 @@ class MaraisPnjFixtures extends Fixture implements DependentFixtureInterface
                         'choices' => [
                             [
                                 'text' => 'Merci pour les conseils.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+
+            // 3 — Oswald le Pêcheur (berge nord-est)
+            [
+                'name' => 'Oswald le Pêcheur',
+                'coordinates' => '38.12',
+                'classType' => 'villager',
+                'portrait' => '/styles/images/portraits/villager.png',
+                'dialog' => [
+                    [
+                        'text' => "Hé, doucement ! Vous allez effrayer les poissons. Je suis Oswald. Oui, je pêche dans le marais — ça vous étonne ? Les eaux stagnantes cachent des prises étonnantes, pour qui a la patience d'attendre.",
+                        'choices' => [
+                            [
+                                'text' => 'Que trouve-t-on dans ces eaux ?',
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Je vous laisse à votre pêche.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Des anguilles, des carpes noires, et parfois des choses plus étranges. J'ai remonté un coffre rouillé la semaine dernière — vide, hélas. Mais les anciens disent qu'un trésor dort au fond du marais, englouti depuis des siècles. Et attention aux ochus : ils adorent se cacher sous la surface de l'eau. J'en ai perdu trois cannes à pêche à cause d'eux.",
+                        'choices' => [
+                            [
+                                'text' => 'Bonne pêche, Oswald !',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+
+            // 4 — Isadora l'Érudite (campement ouest)
+            [
+                'name' => "Isadora l'Érudite",
+                'coordinates' => '6.30',
+                'classType' => 'mage',
+                'portrait' => '/styles/images/portraits/mage.png',
+                'dialog' => [
+                    [
+                        'text' => "Ah, un visiteur ! Je suis Isadora, chercheuse de l'Académie de Lumière. J'étudie les phénomènes nécromantiques de ce marais. Les morts-vivants qui errent ici ne sont pas là par hasard.",
+                        'choices' => [
+                            [
+                                'text' => "Qu'avez-vous découvert ?",
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Fascinant. Je dois y aller.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Une énergie sombre imprègne la terre ici. Les zombies sont des cadavres réanimés par cette force, et les banshees semblent être les esprits de ceux qui sont morts dans le marais il y a très longtemps. J'ai relevé des traces d'un ancien rituel au cœur des eaux. Quelqu'un — ou quelque chose — alimente cette magie noire depuis des siècles.",
+                        'choices' => [
+                            [
+                                'text' => 'Soyez prudente, Isadora.',
                                 'action' => 'close',
                             ],
                         ],
