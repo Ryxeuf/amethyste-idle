@@ -13,13 +13,13 @@
 - [x] Skills de deblocage materia pour les sorts tier 2-3
 - [x] Bonus passifs diversifies (degats, survie, soin, critique, vitesse)
 
-### 145 — Recettes craft manquantes (L | ★★★)
+### ~~145 — Recettes craft manquantes (L | ★★★)~~ ✅
 > Prerequis : ← 142 (armes), ← 143 (armures)
 - [x] Tanneur : 15 recettes (armures cuir, capes, accessoires)
 - [x] Alchimiste : 11 recettes (potions, elixirs, poisons, onguents) — 6 sorts, 5 items, 9 recettes ajoutees
 - [x] Joaillier : 15 recettes (anneaux, amulettes, gemmes, sertissage materia)
 - [x] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)
-- [ ] Progression de recettes par niveau de domaine
+- [x] Progression de recettes par niveau de domaine
 
 ### 148 — Quetes secondaires & contenu narratif (M | ★★)
 > Prerequis : ← 146 (PNJ), ← 140 ✅ (monstres tier 1)

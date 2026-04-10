@@ -42,8 +42,9 @@ class CraftingController extends AbstractController
         $canCraftByCraft = [];
         $craftLevels = [];
         $craftToolStatus = [];
-
         $maxCraftByCraft = [];
+        $lockedRecipesByCraft = [];
+        $nextUnlockByCraft = [];
 
         foreach ($crafts as $craft) {
             $recipes = $this->craftingManager->getAvailableRecipes($player, $craft);
@@ -52,6 +53,8 @@ class CraftingController extends AbstractController
             $maxCraftByCraft[$craft] = [];
             $craftLevels[$craft] = $this->craftingManager->getCraftingLevel($player, $craft);
             $craftToolStatus[$craft] = $this->craftingManager->checkCraftTool($player, $craft);
+            $lockedRecipesByCraft[$craft] = $this->craftingManager->getLockedRecipes($player, $craft);
+            $nextUnlockByCraft[$craft] = $this->craftingManager->getNextUnlockInfo($player, $craft);
 
             foreach ($recipes as $recipe) {
                 $canCraftByCraft[$craft][$recipe->getId()] = $this->craftingManager->canCraft($player, $recipe);
@@ -96,6 +99,8 @@ class CraftingController extends AbstractController
             'maxCraftByCraft' => $maxCraftByCraft,
             'craftLevels' => $craftLevels,
             'craftToolStatus' => $craftToolStatus,
+            'lockedRecipesByCraft' => $lockedRecipesByCraft,
+            'nextUnlockByCraft' => $nextUnlockByCraft,
             'player' => $player,
             'playerItems' => array_values($playerItems),
             'enchantmentDefinitions' => $enchantmentDefinitions,

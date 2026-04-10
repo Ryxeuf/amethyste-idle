@@ -90,6 +90,15 @@
 - [x] Elixir de vitalite (L5) : soin puissant (2x base + mandragore + ginseng)
 - [x] Correction healing_potion_medium : ajout du spell pour compatibilite combat
 
+### 145 — Recettes craft manquantes (complet) — Progression de recettes par niveau de domaine ✅
+> Affichage des recettes verrouilees dans l'UI de craft avec indicateur de progression par niveau de domaine.
+- [x] `CraftingManager::getLockedRecipes()` : retourne les recettes verrouilees triees par niveau requis
+- [x] `CraftingManager::getNextUnlockInfo()` : retourne le prochain palier de deblocage (niveau, nombre de recettes)
+- [x] `CraftingController` : transmet recettes verrouilees et infos de progression au template
+- [x] Template `_recipe_card_locked.html.twig` : carte grisee avec cadenas et niveau requis
+- [x] Template `index.html.twig` : bandeau de progression (prochain deblocage) + section recettes verrouilees
+- [x] 4 tests unitaires : getLockedRecipes (filtre, vide), getNextUnlockInfo (donnees, null)
+
 ---
 
 ## Sprint 3 — Arsenal & Magie

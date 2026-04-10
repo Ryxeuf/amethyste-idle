@@ -55,6 +55,22 @@
                 </div>
             {% endif %}
 
+            {# Indicateur de progression #}
+            {% set nextUnlock = nextUnlockByCraft[craft] ?? {nextLevel: null, count: 0, totalLocked: 0} %}
+            {% if nextUnlock.nextLevel is not null %}
+                <div class="mb-4 p-3 bg-purple-900/20 border border-purple-500/20 rounded-lg flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-xs sm:text-sm text-purple-200">
+                        {{ nextUnlock.count }} recette{{ nextUnlock.count > 1 ? 's' : '' }} au niveau {{ nextUnlock.nextLevel }}
+                        {% if nextUnlock.totalLocked > nextUnlock.count %}
+                            ({{ nextUnlock.totalLocked }} verrouillee{{ nextUnlock.totalLocked > 1 ? 's' : '' }} au total)
+                        {% endif %}
+                    </span>
+                </div>
+            {% endif %}
+
             {% if recipesByCraft[craft] is defined and recipesByCraft[craft]|length > 0 %}
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {% for recipe in recipesByCraft[craft] %}
@@ -71,6 +87,25 @@
                 <div class="text-center text-gray-400 py-12">
                     <p class="text-lg">Aucune recette disponible pour cette profession.</p>
                     <p class="text-sm mt-2">Progressez dans le jeu pour debloquer de nouvelles recettes.</p>
+                </div>
+            {% endif %}
+
+            {# Recettes verrouilees #}
+            {% if lockedRecipesByCraft[craft] is defined and lockedRecipesByCraft[craft]|length > 0 %}
+                <div class="mt-6">
+                    <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Recettes verrouilees ({{ lockedRecipesByCraft[craft]|length }})
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {% for recipe in lockedRecipesByCraft[craft] %}
+                            {% include 'game/crafting/_recipe_card_locked.html.twig' with {
+                                recipe: recipe
+                            } %}
+                        {% endfor %}
+                    </div>
                 </div>
             {% endif %}
         </div>

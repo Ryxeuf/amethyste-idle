@@ -266,6 +266,147 @@ class CraftingManagerTest extends TestCase
         $this->assertSame($recipe1, array_values($available)[0]);
     }
 
+    public function testGetLockedRecipesReturnsOnlyHigherLevel(): void
+    {
+        $recipe1 = new Recipe();
+        $recipe1->setName('Basic');
+        $recipe1->setSlug('basic');
+        $recipe1->setCraft('forge');
+        $recipe1->setRequiredLevel(1);
+
+        $recipe2 = new Recipe();
+        $recipe2->setName('Intermediate');
+        $recipe2->setSlug('intermediate');
+        $recipe2->setCraft('forge');
+        $recipe2->setRequiredLevel(3);
+
+        $recipe3 = new Recipe();
+        $recipe3->setName('Advanced');
+        $recipe3->setSlug('advanced');
+        $recipe3->setCraft('forge');
+        $recipe3->setRequiredLevel(5);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')
+            ->with(['craft' => 'forge'], ['requiredLevel' => 'ASC'])
+            ->willReturn([$recipe1, $recipe2, $recipe3]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+
+        // Level 1 -> recipe2 and recipe3 are locked
+        $locked = $this->craftingManager->getLockedRecipes($player, 'forge');
+
+        $this->assertCount(2, $locked);
+        $this->assertSame($recipe2, $locked[0]);
+        $this->assertSame($recipe3, $locked[1]);
+    }
+
+    public function testGetLockedRecipesReturnsEmptyWhenAllUnlocked(): void
+    {
+        $recipe1 = new Recipe();
+        $recipe1->setName('Basic');
+        $recipe1->setSlug('basic');
+        $recipe1->setCraft('forge');
+        $recipe1->setRequiredLevel(1);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')
+            ->with(['craft' => 'forge'], ['requiredLevel' => 'ASC'])
+            ->willReturn([$recipe1]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $domain = $this->createMock(Domain::class);
+        $domain->method('getTitle')->willReturn('Forge');
+
+        $domainExp = new DomainExperience();
+        $domainExp->setDomain($domain);
+        $domainExp->setTotalExperience(500);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection([$domainExp]));
+
+        $locked = $this->craftingManager->getLockedRecipes($player, 'forge');
+
+        $this->assertEmpty($locked);
+    }
+
+    public function testGetNextUnlockInfoReturnsCorrectData(): void
+    {
+        $recipe1 = new Recipe();
+        $recipe1->setName('Basic');
+        $recipe1->setSlug('basic');
+        $recipe1->setCraft('forge');
+        $recipe1->setRequiredLevel(1);
+
+        $recipe2 = new Recipe();
+        $recipe2->setName('Inter A');
+        $recipe2->setSlug('inter-a');
+        $recipe2->setCraft('forge');
+        $recipe2->setRequiredLevel(3);
+
+        $recipe3 = new Recipe();
+        $recipe3->setName('Inter B');
+        $recipe3->setSlug('inter-b');
+        $recipe3->setCraft('forge');
+        $recipe3->setRequiredLevel(3);
+
+        $recipe4 = new Recipe();
+        $recipe4->setName('Advanced');
+        $recipe4->setSlug('advanced');
+        $recipe4->setCraft('forge');
+        $recipe4->setRequiredLevel(5);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')
+            ->with(['craft' => 'forge'], ['requiredLevel' => 'ASC'])
+            ->willReturn([$recipe1, $recipe2, $recipe3, $recipe4]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+
+        // Level 1 -> next unlock at level 3 with 2 recipes, 3 locked total
+        $info = $this->craftingManager->getNextUnlockInfo($player, 'forge');
+
+        $this->assertEquals(3, $info['nextLevel']);
+        $this->assertEquals(2, $info['count']);
+        $this->assertEquals(3, $info['totalLocked']);
+    }
+
+    public function testGetNextUnlockInfoReturnsNullWhenAllUnlocked(): void
+    {
+        $recipe1 = new Recipe();
+        $recipe1->setName('Basic');
+        $recipe1->setSlug('basic');
+        $recipe1->setCraft('forge');
+        $recipe1->setRequiredLevel(1);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')
+            ->with(['craft' => 'forge'], ['requiredLevel' => 'ASC'])
+            ->willReturn([$recipe1]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+
+        $info = $this->craftingManager->getNextUnlockInfo($player, 'forge');
+
+        $this->assertNull($info['nextLevel']);
+        $this->assertEquals(0, $info['count']);
+        $this->assertEquals(0, $info['totalLocked']);
+    }
+
     private function createPlayerWithBagItems(array $itemCounts): Player&MockObject
     {
         $items = [];

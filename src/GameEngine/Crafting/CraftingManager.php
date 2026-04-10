@@ -48,6 +48,53 @@ class CraftingManager
     }
 
     /**
+     * Retourne les recettes verrouilees (niveau insuffisant), triees par niveau requis.
+     *
+     * @return Recipe[]
+     */
+    public function getLockedRecipes(Player $player, string $craft): array
+    {
+        $recipes = $this->entityManager->getRepository(Recipe::class)->findBy(
+            ['craft' => $craft],
+            ['requiredLevel' => 'ASC']
+        );
+
+        $craftingLevel = $this->getCraftingLevel($player, $craft);
+
+        return array_values(array_filter($recipes, function (Recipe $recipe) use ($craftingLevel) {
+            return $craftingLevel < $recipe->getRequiredLevel();
+        }));
+    }
+
+    /**
+     * Retourne les infos de progression : prochain niveau de deblocage et nombre de recettes.
+     *
+     * @return array{nextLevel: int|null, count: int, totalLocked: int}
+     */
+    public function getNextUnlockInfo(Player $player, string $craft): array
+    {
+        $lockedRecipes = $this->getLockedRecipes($player, $craft);
+
+        if (empty($lockedRecipes)) {
+            return ['nextLevel' => null, 'count' => 0, 'totalLocked' => 0];
+        }
+
+        $nextLevel = $lockedRecipes[0]->getRequiredLevel();
+        $countAtNextLevel = 0;
+        foreach ($lockedRecipes as $recipe) {
+            if ($recipe->getRequiredLevel() === $nextLevel) {
+                ++$countAtNextLevel;
+            }
+        }
+
+        return [
+            'nextLevel' => $nextLevel,
+            'count' => $countAtNextLevel,
+            'totalLocked' => count($lockedRecipes),
+        ];
+    }
+
+    /**
      * Verifie si le joueur possede tous les ingredients necessaires.
      *
      * @return array{possible: bool, missing: array}
