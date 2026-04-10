@@ -14,9 +14,9 @@
 - [x] Loot tables avancees (equipements rares, materia, materiaux tier 2-3)
 - [x] Placement dans les zones avancees (Collines, Lande, Donjons)
 
-### 146 — PNJ & dialogues par zone (M | ★★)
+### ~~146 — PNJ & dialogues par zone (M | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] 20+ PNJ instancies a partir des noms definis (fixtures existantes)
+- [x] 20+ PNJ instancies a partir des noms definis (fixtures existantes)
 - [x] 3-5 PNJ par zone : Mines profondes (5 PNJ) et Crete de Ventombre (5 PNJ)
 - [x] Dialogues ramifies avec conditions (domain_xp_min pour Ysolde et Agna)
 - [x] Indicateurs visuels ! (quete dispo) et ? (quete en cours) deja implementes
@@ -27,5 +27,5 @@
 
 - [x] 10+ monstres tier 2-3 crees avec stats, IA et loot
 - [x] 3 boss de zone fonctionnels
-- [ ] 20+ PNJ places dans les zones avec dialogues
+- [x] 20+ PNJ places dans les zones avec dialogues
 - [ ] Tests d'integration combat monstres tier 2-3

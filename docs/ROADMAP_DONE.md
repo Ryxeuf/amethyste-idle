@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-09
+> Derniere mise a jour : 2026-04-10
 
 ---
 
@@ -50,6 +50,19 @@
 - [x] Typage des proprietes : `LocaleListener::$defaultLocale` (constructor promotion), `FightNotificationHandler::$notifications` (array typed)
 - [x] Correction logique `ItemHelper` : remplacement `$array[$key] ?? null` par structure `isset()` + `return` explicite
 - [x] Nettoyage de 8 entrees stale du baseline (attributs/proprietes/conditions inexistants dans le code)
+
+---
+
+## Sprint 2 — Bestiaire & PNJ
+
+### 146 — PNJ & dialogues par zone (complet) ✅
+> 5 PNJ par zone d'aventure (20 total) avec dialogues ramifies, marchands et indications pour les joueurs.
+- [x] Foret des murmures : 5 PNJ (Sylvain garde forestier, Elara herboriste/marchande, Thadeus ermite, Martin bucheron, Diane chasseuse)
+- [x] Mines profondes : 5 PNJ (precedemment implementes)
+- [x] Marais Brumeux : 5 PNJ (Morwen voyante, Fergus herboriste/marchand, Bran chasseur, Oswald pecheur, Isadora erudite)
+- [x] Crete de Ventombre : 5 PNJ (precedemment implementes)
+- [x] Dialogues ramifies avec conditions (domain_xp_min pour Ysolde et Agna)
+- [x] Indicateurs visuels ! (quete dispo) et ? (quete en cours) deja implementes
 
 ---
 

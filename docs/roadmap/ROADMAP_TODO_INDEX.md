@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-04-08
+> Derniere mise a jour : 2026-04-10
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
