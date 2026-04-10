@@ -210,7 +210,7 @@ class MontagnePnjFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'dialog' => [
                     [
-                        'text' => "Entrez, entrez... la grotte vous protégera du vent. Je suis Ysolde. Les blessures de la montagne sont traîtresses — le froid engourdit la douleur, et quand on la sent enfin, il est souvent trop tard.",
+                        'text' => 'Entrez, entrez... la grotte vous protégera du vent. Je suis Ysolde. Les blessures de la montagne sont traîtresses — le froid engourdit la douleur, et quand on la sent enfin, il est souvent trop tard.',
                         'choices' => [
                             [
                                 'text' => 'Voir la boutique',
@@ -264,7 +264,7 @@ class MontagnePnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/knight.png',
                 'dialog' => [
                     [
-                        'text' => "Halte ! Je suis Kaelen, éclaireur de la garde de Ventombre. Au-delà de ce point, seuls les combattants aguerris survivent. Les griffons patrouillent en meute, et les gargouilles sont quasi invulnérables aux armes ordinaires.",
+                        'text' => 'Halte ! Je suis Kaelen, éclaireur de la garde de Ventombre. Au-delà de ce point, seuls les combattants aguerris survivent. Les griffons patrouillent en meute, et les gargouilles sont quasi invulnérables aux armes ordinaires.',
                         'choices' => [
                             [
                                 'text' => 'Comment vaincre les gargouilles ?',
@@ -298,7 +298,7 @@ class MontagnePnjFixtures extends Fixture implements DependentFixtureInterface
                         'text' => "Le Dragon ancestral... personne ne l'a vaincu. Il maîtrise le feu et la terre, et son souffle peut balayer une escouade entière. On dit que seul un guerrier portant l'Éclat de Ventombre pourrait l'affronter. Un cristal ancien, quelque part dans les grottes supérieures... mais je n'y suis jamais allé.",
                         'choices' => [
                             [
-                                'text' => "Je trouverai cet éclat.",
+                                'text' => 'Je trouverai cet éclat.',
                                 'action' => 'close',
                             ],
                             [
