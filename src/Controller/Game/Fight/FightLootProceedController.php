@@ -33,6 +33,8 @@ class FightLootProceedController extends AbstractController
 
     public function __invoke(Request $request): Response
     {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
         $data = json_decode($request->getContent(), true);
         if (!$data || !isset($data['fightId']) || !isset($data['items'])) {
             return new JsonResponse(['error' => 'Invalid request data'], Response::HTTP_BAD_REQUEST);
@@ -47,6 +49,9 @@ class FightLootProceedController extends AbstractController
         }
 
         $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return new JsonResponse(['error' => 'Player not found'], Response::HTTP_NOT_FOUND);
+        }
 
         // Transférer les items de loot sélectionnés vers l'inventaire du joueur
         $selectedItemIds = array_map('intval', $items);
