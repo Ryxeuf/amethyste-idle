@@ -6,12 +6,12 @@
 
 ---
 
-### 147 — Arbres de talent combat (M | ★★★)
+### ~~147 — Arbres de talent combat (M | ★★★)~~ ✅
 > Prerequis : ← 144 (sorts & materia tier 2-3)
-- [ ] 10-15 skills par branche combat : Soldat, Defenseur, Guerisseur, Druide, Necromancien, Magicien blanc
-- [ ] Reequilibrage global : chaque branche doit avoir une profondeur comparable au Mineur (18 skills)
-- [ ] Skills de deblocage materia pour les sorts tier 2-3
-- [ ] Bonus passifs diversifies (degats, survie, soin, critique, vitesse)
+- [x] 10-15 skills par branche combat : Soldat, Defenseur, Guerisseur, Druide, Necromancien, Pretre
+- [x] Reequilibrage global : chaque branche doit avoir une profondeur comparable au Mineur (18 skills)
+- [x] Skills de deblocage materia pour les sorts tier 2-3
+- [x] Bonus passifs diversifies (degats, survie, soin, critique, vitesse)
 
 ### 145 — Recettes craft manquantes (L | ★★★)
 > Prerequis : ← 142 (armes), ← 143 (armures)
