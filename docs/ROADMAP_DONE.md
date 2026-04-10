@@ -1836,3 +1836,12 @@
 - [x] 4 recettes armures fer T2 : plastron, jambières, bottes, gantelets (level 2-3, ingrédients fer + bronze)
 - [x] 6 recettes armures mithril T3 : heaume, cuirasse, grèves, solerets, gantelets, épaulières (level 5-6, ingrédients mithril + platine)
 - [x] Dépendance Game\ItemFixtures ajoutée dans RecipeFixtures pour les items YAML
+
+## 145 — Recettes craft manquantes — sous-phase Tanneur (2026-04-10)
+
+> 12 recettes tanneur ajoutées (total 15 recettes tanneur), 7 nouveaux items cuir T2/T3, 1 equipment set.
+- [x] 5 recettes T1 : lanière de cuir (intermédiaire), gants, ceinture, épaulières, jambières
+- [x] 6 recettes T2 cuir renforcé : plastron, bottes, gants, ceinture, épaulières, jambières (level 3-4, ingrédients cuir épais + lanières + os/crocs)
+- [x] 1 recette T3 cuir exotique : plastron en fourrure de loup-garou (level 5)
+- [x] 7 items cuir renforcé/exotique dans gear_item.yaml (uncommon T2 + rare T3)
+- [x] Equipment set "Traqueur" (6 pièces cuir renforcé, bonus hit/critique/vie)
