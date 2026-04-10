@@ -54,9 +54,14 @@ class EquipmentModifyController extends AbstractController
             ]);
         }
 
-        return $this->render('game/inventory/equipment/_modify.html.twig', [
-            'playerItem' => $playerItem,
-            'slotKey' => $slotKey,
-        ]);
+        if ($request->headers->has('Turbo-Frame')) {
+            return $this->render('game/inventory/equipment/_modify.html.twig', [
+                'playerItem' => $playerItem,
+                'slotKey' => $slotKey,
+            ]);
+        }
+
+        // Full page visit (direct URL, back/forward) — redirect to inventory
+        return $this->redirectToRoute('app_game_inventory');
     }
 }

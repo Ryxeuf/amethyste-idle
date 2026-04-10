@@ -97,6 +97,11 @@ class MateriaSlotController extends AbstractController
             return $this->render('game/inventory/materia/_slot_select_embed.html.twig', $payload);
         }
 
-        return $this->render('game/inventory/materia/_slot_select.html.twig', $payload);
+        if ($request->headers->get('Turbo-Frame') === 'inventory-content') {
+            return $this->render('game/inventory/materia/_slot_select.html.twig', $payload);
+        }
+
+        // Full page visit (direct URL, back/forward) — redirect to inventory
+        return $this->redirectToRoute('app_game_inventory');
     }
 }

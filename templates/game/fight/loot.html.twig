@@ -73,7 +73,7 @@
 			<!-- Liste des objets -->
 			<div class="bg-gray-800 rounded-lg shadow-lg p-6">
 				<h3 class="text-xl font-bold text-purple-400 mb-4">{{ 'game.fight.loot.items_list'|trans }}</h3>
-				<form id="lootForm" method="POST">
+				<form id="lootForm" method="POST" data-turbo="false">
 					<input type="hidden" name="fightId" value="{{ fight.id }}">
 					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 						{% for item in items %}
@@ -125,7 +125,12 @@
 					items: items
 				})
 			})
-			.then(response => response.json())
+			.then(response => {
+				if (!response.ok) {
+					throw new Error('HTTP ' + response.status);
+				}
+				return response.json();
+			})
 			.then(data => {
 				if (data.success) {
 					window.location.href = '{{ path('app_game_map') }}';
