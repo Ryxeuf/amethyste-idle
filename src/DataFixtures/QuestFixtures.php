@@ -1139,6 +1139,147 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 'gameEvent' => 'event_nuit_ombres',
             ],
+            // --- Quêtes de découverte (exploration cachée) ---
+            // Plaine de l'Éveil
+            'quest_discovery_ancient_stele' => [
+                'name' => 'Stèle oubliée',
+                'description' => 'En traversant les plaines, vous apercevez une stèle gravée de runes anciennes, à demi enfouie dans l\'herbe haute. Approchez-vous pour déchiffrer les inscriptions.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '45.22', 'name' => 'Stèle aux runes anciennes'],
+                    ],
+                ],
+                'rewards' => ['xp' => 50, 'gold' => 30],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '42.18'],
+            ],
+            'quest_discovery_forgotten_well' => [
+                'name' => 'Le puits des Anciens',
+                'description' => 'Un puits en ruine, à peine visible sous les herbes, garde encore l\'eau claire d\'une source souterraine oubliée. Examinez-le de plus près.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '32.53', 'name' => 'Puits en ruine'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 55,
+                    'gold' => 30,
+                    'items' => [['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion']],
+                ],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '28.50'],
+            ],
+            // Forêt des Murmures
+            'quest_discovery_fairy_ring' => [
+                'name' => 'Cercle féérique',
+                'description' => 'Un bourdonnement musical flotte dans l\'air. Des lucioles dansent en cercle autour d\'un anneau de champignons lumineux. Approchez-vous du centre du cercle.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '88.32', 'name' => 'Centre du cercle féérique'],
+                    ],
+                ],
+                'rewards' => ['xp' => 70, 'gold' => 45],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '85.28'],
+            ],
+            'quest_discovery_hollow_oak' => [
+                'name' => 'Le chêne millénaire',
+                'description' => 'Un chêne immense et creux se dresse devant vous. Des gravures anciennes ornent l\'intérieur de son tronc. Explorez la cavité pour découvrir ce qu\'elle recèle.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '108.22', 'name' => 'Intérieur du chêne creux'],
+                    ],
+                ],
+                'rewards' => ['xp' => 75, 'gold' => 50],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '105.18'],
+            ],
+            // Marais Brumeux
+            'quest_discovery_sunken_altar' => [
+                'name' => 'Autel englouti',
+                'description' => 'Sous les eaux stagnantes, vous distinguez un autel de pierre couvert de mousse et de symboles effacés. Pataugez jusqu\'à lui pour l\'examiner.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '25.82', 'name' => 'Autel de pierre immergé'],
+                    ],
+                ],
+                'rewards' => ['xp' => 80, 'gold' => 55],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '22.78'],
+            ],
+            'quest_discovery_phospho_grotto' => [
+                'name' => 'Grotte phosphorescente',
+                'description' => 'Une lueur bleu-vert émane d\'une anfractuosité dans la roche. La grotte est tapissée de mousse luminescente. Explorez-la jusqu\'au fond.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '48.102', 'name' => 'Fond de la grotte lumineuse'],
+                    ],
+                ],
+                'rewards' => ['xp' => 85, 'gold' => 50],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '45.98'],
+            ],
+            // Collines Venteuses
+            'quest_discovery_wind_shrine' => [
+                'name' => 'Sanctuaire éolien',
+                'description' => 'Le vent siffle entre des pierres dressées sur la colline. Un ancien sanctuaire dédié aux esprits du vent. Approchez-vous du menhir central.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '145.50', 'name' => 'Menhir central du sanctuaire'],
+                    ],
+                ],
+                'rewards' => ['xp' => 90, 'gold' => 60],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '140.45'],
+            ],
+            // Lande d'Ombre
+            'quest_discovery_shadow_obelisk' => [
+                'name' => 'Obélisque d\'ombre',
+                'description' => 'Un obélisque noir se dresse dans la lande, pulsant d\'une énergie sombre. Des inscriptions décrivent un ancien rituel de protection. Déchiffrez-les.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '58.142', 'name' => 'Obélisque aux inscriptions sombres'],
+                    ],
+                ],
+                'rewards' => ['xp' => 100, 'gold' => 70],
+                'isHidden' => true,
+                'triggerCondition' => ['type' => 'explore', 'map_id' => 1, 'coordinates' => '55.138'],
+            ],
+            // --- Quêtes de découverte (exploration standard multi-points) ---
+            'quest_discovery_cartographer' => [
+                'name' => 'Cartographe des terres oubliées',
+                'description' => 'La cartographe du village vous demande de relever cinq points de repère dans chaque zone pour compléter sa carte des terres oubliées.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '30.30', 'name' => 'Cairn de la Plaine'],
+                        ['map_id' => 1, 'coordinates' => '90.25', 'name' => 'Arbre-signal de la Forêt'],
+                        ['map_id' => 1, 'coordinates' => '35.90', 'name' => 'Balise du Marais'],
+                        ['map_id' => 1, 'coordinates' => '150.60', 'name' => 'Vigie des Collines'],
+                        ['map_id' => 1, 'coordinates' => '60.150', 'name' => 'Tour de guet de la Lande'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 200,
+                    'gold' => 120,
+                    'items' => [['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'life-potion']],
+                ],
+            ],
+            'quest_discovery_sacred_sites' => [
+                'name' => 'Pèlerinage des sites sacrés',
+                'description' => 'Un érudit vous parle de trois anciens sites sacrés disseminés entre les Collines et la Lande. Retrouvez-les pour percer les mystères du passé.',
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '135.80', 'name' => 'Dolmen des Collines'],
+                        ['map_id' => 1, 'coordinates' => '100.135', 'name' => 'Cercle de pierres de la Lande'],
+                        ['map_id' => 1, 'coordinates' => '70.165', 'name' => 'Crypte ancienne'],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 150,
+                    'gold' => 90,
+                    'items' => [['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'healing-potion-small']],
+                ],
+            ],
             // --- Quêtes de zone secondaires ---
             'quest_zone_foret_meute' => [
                 'name' => 'La meute affamée',
