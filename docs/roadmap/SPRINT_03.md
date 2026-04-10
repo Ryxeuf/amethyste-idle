@@ -6,7 +6,7 @@
 
 ---
 
-### 142 — Armes variees par tier (M | ★★★)
+### ~~142 — Armes variees par tier (M | ★★★)~~ ✅
 > Prerequis : ∅
 - [x] 15+ armes reparties sur 3 tiers : epees, haches, batons, arcs, dagues, lances
 - [x] Rarete par tier : common (T1), uncommon/rare (T2), epic (T3)
@@ -21,18 +21,18 @@
 - [x] Rarete et progression par tier (cuir → metal → mithril)
 - [x] Sets d'equipement avec bonus complet (2, 3, 4 pieces)
 
-### 144 — Sorts & materia tier 2-3 (M | ★★)
+### ~~144 — Sorts & materia tier 2-3 (M | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] 20+ sorts supplementaires couvrant les 8 elements (Feu, Eau, Air, Terre, Metal, Bete, Lumiere, Ombre)
+- [x] 20+ sorts supplementaires couvrant les 8 elements (Feu, Eau, Air, Terre, Metal, Bete, Lumiere, Ombre)
 - [x] Materia epiques et legendaires (6+ nouvelles materia)
 - [x] Sorts de zone, sorts de soin avances, sorts de controle
-- [ ] Equilibrage avec le systeme de synergies elementaires existant
+- [x] Equilibrage avec le systeme de synergies elementaires existant
 
 ---
 
 ### Definition of Done
 
-- [ ] 15+ armes, 15+ armures/accessoires, 20+ sorts crees
-- [ ] Stats equilibrees et testees
-- [ ] Progression par tier coherente
-- [ ] Fixtures a jour et verifiees
+- [x] 15+ armes, 15+ armures/accessoires, 20+ sorts crees
+- [x] Stats equilibrees et testees
+- [x] Progression par tier coherente
+- [x] Fixtures a jour et verifiees

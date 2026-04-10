@@ -84,6 +84,13 @@
 - [x] Set de Mithril (T3) : 7 pieces, bonus 2/4/6 (protection +8, vie +30, degats +10)
 - [x] Loot tables : 25 entrees — fer sur monstres T2 (wolf, troll, werewolf...), mithril sur T3/boss (crystal_golem, lesser_lich, dragon...)
 
+### 144 — Sorts & materia tier 2-3 (complet) — Sorts supplementaires + equilibrage synergies ✅
+> 24 sorts supplementaires (3 par element, niveaux 2-4) couvrant les 8 elements, conçus pour les combos synergies. Test d'equilibrage validant les bornes des multiplicateurs.
+- [x] 24 sorts : 3 par element (Feu, Eau, Air, Terre, Metal, Bete, Lumiere, Ombre) aux niveaux 2, 3 et 4
+- [x] Sorts single-target (L2), AOE/controle (L3), puissants (L4) avec effets de statut varies (burn, freeze, poison, paralysis, silence, berserk, poison-strong)
+- [x] Design oriente synergies : chaque sort est equilibre pour les combos elementaires existants (Steam, Sandstorm, Eclipse, Floral Explosion, Forge, Holy Blade, Primal Fury, Venomous Shadow)
+- [x] Test SynergyBalanceTest : validation multiplicateurs dans [1.0-1.5], variance < 30%, couverture elements, output damage tiers 2-4, self-damage ≤ 10%
+
 ---
 
 ## Vague 7 — Qualite, stabilisation & fondations UX
