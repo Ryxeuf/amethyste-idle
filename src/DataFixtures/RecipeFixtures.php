@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Game\ItemFixtures as GameItemFixtures;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -168,6 +169,150 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 25,
                 'xp_reward' => 120,
                 'description' => 'Le métal mythique des anciens, forgé avec l\'astrétal des étoiles.',
+            ],
+
+            // --- Forge T2 : Armures en fer ---
+            'recipe_iron_chestplate' => [
+                'name' => 'Plastron en fer',
+                'slug' => 'recipe-iron-chestplate',
+                'craft' => 'forgeron',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 5],
+                    ['slug' => 'crafted-bronze-ingot', 'quantity' => 2],
+                ],
+                'result_ref' => 'iron_chestplate',
+                'crafting_time' => 12,
+                'xp_reward' => 35,
+                'description' => 'Forge un plastron en fer massif, protection standard des soldats aguerris.',
+            ],
+            'recipe_iron_greaves' => [
+                'name' => 'Jambières en fer',
+                'slug' => 'recipe-iron-greaves',
+                'craft' => 'forgeron',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 4],
+                    ['slug' => 'crafted-bronze-ingot', 'quantity' => 1],
+                ],
+                'result_ref' => 'iron_greaves',
+                'crafting_time' => 10,
+                'xp_reward' => 30,
+                'description' => 'Forge des jambières en fer articulées pour protéger cuisses et genoux.',
+            ],
+            'recipe_iron_boots' => [
+                'name' => 'Bottes en fer',
+                'slug' => 'recipe-iron-boots',
+                'craft' => 'forgeron',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 3],
+                    ['slug' => 'ore-copper', 'quantity' => 2],
+                ],
+                'result_ref' => 'iron_boots',
+                'crafting_time' => 8,
+                'xp_reward' => 25,
+                'description' => 'Forge des bottes renforcées de plaques de fer.',
+            ],
+            'recipe_iron_gauntlets' => [
+                'name' => 'Gantelets en fer',
+                'slug' => 'recipe-iron-gauntlets',
+                'craft' => 'forgeron',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 3],
+                    ['slug' => 'ore-copper', 'quantity' => 1],
+                ],
+                'result_ref' => 'iron_gauntlets',
+                'crafting_time' => 8,
+                'xp_reward' => 25,
+                'description' => 'Forge des gantelets en fer aux jointures renforcées.',
+            ],
+
+            // --- Forge T3 : Armures en mithril ---
+            'recipe_mithril_helm' => [
+                'name' => 'Heaume de mithril',
+                'slug' => 'recipe-mithril-helm',
+                'craft' => 'forgeron',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 2],
+                    ['slug' => 'ore-platinum', 'quantity' => 1],
+                ],
+                'result_ref' => 'mithril_helm',
+                'crafting_time' => 15,
+                'xp_reward' => 60,
+                'description' => 'Forge un heaume de mithril aux reflets argentés, léger et résistant.',
+            ],
+            'recipe_mithril_cuirass' => [
+                'name' => 'Cuirasse de mithril',
+                'slug' => 'recipe-mithril-cuirass',
+                'craft' => 'forgeron',
+                'required_level' => 6,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 4],
+                    ['slug' => 'ore-platinum', 'quantity' => 2],
+                ],
+                'result_ref' => 'mithril_cuirass',
+                'crafting_time' => 20,
+                'xp_reward' => 80,
+                'description' => 'Forge une cuirasse de mithril étincelante, presque aussi légère que le cuir.',
+            ],
+            'recipe_mithril_greaves' => [
+                'name' => 'Grèves de mithril',
+                'slug' => 'recipe-mithril-greaves',
+                'craft' => 'forgeron',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 2],
+                    ['slug' => 'ore-mithril', 'quantity' => 2],
+                ],
+                'result_ref' => 'mithril_greaves',
+                'crafting_time' => 15,
+                'xp_reward' => 60,
+                'description' => 'Forge des grèves de mithril ouvragées, offrant mobilité et protection.',
+            ],
+            'recipe_mithril_sabatons' => [
+                'name' => 'Solerets de mithril',
+                'slug' => 'recipe-mithril-sabatons',
+                'craft' => 'forgeron',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 2],
+                    ['slug' => 'ore-mithril', 'quantity' => 1],
+                ],
+                'result_ref' => 'mithril_sabatons',
+                'crafting_time' => 12,
+                'xp_reward' => 55,
+                'description' => 'Forge des solerets de mithril silencieux malgré leur solidité.',
+            ],
+            'recipe_mithril_gauntlets' => [
+                'name' => 'Gantelets de mithril',
+                'slug' => 'recipe-mithril-gauntlets',
+                'craft' => 'forgeron',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 2],
+                    ['slug' => 'ore-mithril', 'quantity' => 1],
+                ],
+                'result_ref' => 'mithril_gauntlets',
+                'crafting_time' => 12,
+                'xp_reward' => 55,
+                'description' => 'Forge des gantelets de mithril aux articulations souples.',
+            ],
+            'recipe_mithril_pauldrons' => [
+                'name' => 'Épaulières de mithril',
+                'slug' => 'recipe-mithril-pauldrons',
+                'craft' => 'forgeron',
+                'required_level' => 6,
+                'ingredients' => [
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 3],
+                    ['slug' => 'ore-platinum', 'quantity' => 1],
+                ],
+                'result_ref' => 'mithril_pauldrons',
+                'crafting_time' => 15,
+                'xp_reward' => 65,
+                'description' => 'Forge des épaulières de mithril ornées de motifs elfiques.',
             ],
 
             // --- Tannerie (tanneur) ---
@@ -395,6 +540,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             ItemFixtures::class,
+            GameItemFixtures::class,
         ];
     }
 }

@@ -18,7 +18,7 @@
 - [ ] Tanneur : 15 recettes (armures cuir, capes, accessoires)
 - [x] Alchimiste : 11 recettes (potions, elixirs, poisons, onguents) — 6 sorts, 5 items, 9 recettes ajoutees
 - [ ] Joaillier : 15 recettes (anneaux, amulettes, gemmes, sertissage materia)
-- [ ] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)
+- [x] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)
 - [ ] Progression de recettes par niveau de domaine
 
 ### 148 — Quetes secondaires & contenu narratif (M | ★★)
