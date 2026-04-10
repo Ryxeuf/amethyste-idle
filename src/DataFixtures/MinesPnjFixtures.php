@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 /**
  * PNJs des Mines profondes — zone lvl 10-25.
  *
- * 3 PNJ : contremaître mineur, ingénieure mécanicienne, marchand souterrain.
+ * 5 PNJ : contremaître mineur, ingénieure mécanicienne, marchand souterrain, guérisseuse de galerie, vieux prospecteur.
  */
 class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
 {
@@ -181,6 +181,119 @@ class MinesPnjFixtures extends Fixture implements DependentFixtureInterface
                         'choices' => [
                             [
                                 'text' => 'Bonne continuation.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+
+            // 3 — Agna la Guérisseuse de galerie (poste de soins, marchande potions)
+            [
+                'name' => 'Agna la Guérisseuse',
+                'coordinates' => '15.20',
+                'classType' => 'healer',
+                'portrait' => '/styles/images/portraits/healer.png',
+                'shopItems' => ['life-potion', 'healing-potion-small', 'healing-potion-medium', 'antidote'],
+                'opensAt' => 0,
+                'closesAt' => 24,
+                'shopStock' => [
+                    'life-potion' => ['stock' => 6, 'maxStock' => 6, 'restockInterval' => 3600],
+                    'healing-potion-small' => ['stock' => 8, 'maxStock' => 8, 'restockInterval' => 3600],
+                    'healing-potion-medium' => ['stock' => 3, 'maxStock' => 3, 'restockInterval' => 7200],
+                    'antidote' => ['stock' => 6, 'maxStock' => 6, 'restockInterval' => 3600],
+                ],
+                'dialog' => [
+                    [
+                        'text' => "Ah, encore un blessé... Approchez, je suis Agna. Avant, j'étais médecin au village. Maintenant je soigne les mineurs et les aventuriers assez fous pour descendre ici. Les golems frappent fort, mais c'est le gaz des galeries profondes qui est le plus sournois.",
+                        'choices' => [
+                            [
+                                'text' => 'Voir la boutique',
+                                'action' => 'open_shop',
+                                'datas' => [],
+                            ],
+                            [
+                                'text' => 'Le gaz des galeries ?',
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Je vais bien, merci.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Un gaz verdâtre qui suinte des parois profondes. Il empoisonne lentement — vous ne le sentez pas tout de suite, puis vos forces vous quittent d'un coup. Gardez toujours des antidotes sur vous. Et si vous voyez une lueur verte au plafond, faites demi-tour.",
+                        'conditional_next' => [
+                            [
+                                'next' => 2,
+                                'next_condition' => [
+                                    'domain_xp_min' => ['3' => 50],
+                                ],
+                            ],
+                        ],
+                        'choices' => [
+                            [
+                                'text' => 'Compris, merci Agna.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Tiens, vous avez l'œil d'un mineur expérimenté ! Vous connaissez déjà les galeries, n'est-ce pas ? Dans ce cas, un conseil : les filons de mithril se trouvent près des nids de golems de cristal. Le risque en vaut la chandelle, croyez-moi.",
+                        'choices' => [
+                            [
+                                'text' => "J'irai jeter un œil. Merci !",
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+
+            // 4 — Durgan le Vieux Prospecteur (galerie reculée, lore & conseils)
+            [
+                'name' => 'Durgan le Vieux Prospecteur',
+                'coordinates' => '35.5',
+                'classType' => 'mage',
+                'portrait' => '/styles/images/portraits/sage.png',
+                'dialog' => [
+                    [
+                        'text' => "Ha ! Un visiteur dans mes galeries... Je suis Durgan. Ça fait quarante ans que je creuse ici. J'ai vu des choses que personne ne croirait — des cristaux qui chantent, des automates qui pleurent, et le Seigneur de la Forge lui-même...",
+                        'choices' => [
+                            [
+                                'text' => 'Le Seigneur de la Forge ?',
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Des cristaux qui chantent ?',
+                                'action' => 'next',
+                                'datas' => ['next' => 2],
+                            ],
+                            [
+                                'text' => 'Bonne continuation, vieux fou.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Autrefois, c'était le gardien des mines — un automate géant créé par les anciens pour protéger les trésors enfouis. Mais quelque chose l'a corrompu. Maintenant, il détruit tout ce qui entre dans sa salle. Seuls les guerriers portant des armes de métal enchanté ont une chance. La synergie Métal et Feu, voilà ce qu'il faut.",
+                        'choices' => [
+                            [
+                                'text' => 'Et les cristaux ?',
+                                'action' => 'next',
+                            ],
+                            [
+                                'text' => 'Merci pour ces informations.',
+                                'action' => 'close',
+                            ],
+                        ],
+                    ],
+                    [
+                        'text' => "Les cristaux résonnants... on les trouve dans les cavités les plus profondes. Ils émettent un son pur quand on les touche. Les anciens s'en servaient pour alimenter les automates. Si vous en trouvez un intact, gardez-le précieusement — les joailliers du village sauraient en faire quelque chose d'extraordinaire.",
+                        'choices' => [
+                            [
+                                'text' => "Je garderai l'oreille tendue.",
                                 'action' => 'close',
                             ],
                         ],
