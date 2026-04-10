@@ -15,7 +15,7 @@
 
 ### 145 — Recettes craft manquantes (L | ★★★)
 > Prerequis : ← 142 (armes), ← 143 (armures)
-- [ ] Tanneur : 15 recettes (armures cuir, capes, accessoires)
+- [x] Tanneur : 15 recettes (armures cuir, capes, accessoires)
 - [x] Alchimiste : 11 recettes (potions, elixirs, poisons, onguents) — 6 sorts, 5 items, 9 recettes ajoutees
 - [ ] Joaillier : 15 recettes (anneaux, amulettes, gemmes, sertissage materia)
 - [x] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)

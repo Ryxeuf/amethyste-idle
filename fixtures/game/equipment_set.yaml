@@ -45,6 +45,23 @@ App\Entity\Game\EquipmentSet:
       - '@iron_shield'
       - '@long_sword'
 
+  # === Set Tier 2 — Traqueur (Cuir renforcé) — esquive & critique ===
+  set_tracker:
+    slug: 'tracker'
+    name: "Set du Traqueur"
+    description: "Taillé dans le cuir renforcé des bêtes les plus coriaces. Porter plusieurs pièces affûte les réflexes du porteur."
+    bonuses:
+      - { required_pieces: 2, bonus_type: 'hit', bonus_value: 5 }
+      - { required_pieces: 4, bonus_type: 'critical', bonus_value: 8 }
+      - { required_pieces: 6, bonus_type: 'life', bonus_value: 20 }
+    items:
+      - '@hardened_vest'
+      - '@hardened_boots'
+      - '@hardened_gloves'
+      - '@hardened_belt'
+      - '@hardened_shoulders'
+      - '@hardened_pants'
+
   # === Set Tier 2 — Forgefer (Fer, non-élémentaire) — protection & vie ===
   set_ironforge:
     slug: 'ironforge'

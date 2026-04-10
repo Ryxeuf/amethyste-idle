@@ -65,6 +65,96 @@ App\Entity\Game\Item:
     protection: 4
     materia_slots: 1
 
+  # === Armures Cuir Renforcé — Tier 2 (Uncommon, niveau 8) ===
+  hardened_vest (extends item):
+    name: "Plastron de cuir renforce"
+    description: "Un plastron de cuir bouilli et renforce d'os, offrant une protection superieure tout en restant leger"
+    type: "gear"
+    slug: 'hardened-vest'
+    price: 150
+    gear_location: 'chest'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 6
+    materia_slots: 1
+    level: 8
+    space: 2
+  hardened_boots (extends item):
+    name: "Bottes de cuir renforce"
+    description: "Des bottes de cuir epais renforcees de plaques d'os, robustes et souples"
+    type: "gear"
+    slug: 'hardened-boots'
+    price: 100
+    gear_location: 'foot'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 4
+    materia_slots: 1
+    level: 8
+  hardened_gloves (extends item):
+    name: "Gants de cuir renforce"
+    description: "Des gants de cuir epais avec des renforts en crocs de bete, ideaux pour le combat"
+    type: "gear"
+    slug: 'hardened-gloves'
+    price: 100
+    gear_location: 'hand'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 4
+    materia_slots: 1
+    level: 8
+  hardened_belt (extends item):
+    name: "Ceinture de cuir renforce"
+    description: "Une ceinture de cuir tanne epaisse, renforcee par des lanieres tressees"
+    type: "gear"
+    slug: 'hardened-belt'
+    price: 80
+    gear_location: 'belt'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 3
+    materia_slots: 1
+    level: 8
+  hardened_shoulders (extends item):
+    name: "Epaulieres de cuir renforce"
+    description: "Des epaulieres de cuir bouilli ornees de plaques d'os, protectrices et intimidantes"
+    type: "gear"
+    slug: 'hardened-shoulders'
+    price: 130
+    gear_location: 'shoulder'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 5
+    materia_slots: 1
+    level: 8
+    space: 2
+  hardened_pants (extends item):
+    name: "Jambieres de cuir renforce"
+    description: "Des jambieres de cuir epais avec renforts aux genoux, alliant mobilite et protection"
+    type: "gear"
+    slug: 'hardened-pants'
+    price: 120
+    gear_location: 'leg'
+    nbUsages: 150
+    rarity: 'uncommon'
+    protection: 5
+    materia_slots: 1
+    level: 8
+    space: 2
+  exotic_leather_vest (extends item):
+    name: "Plastron de cuir exotique"
+    description: "Un plastron taille dans la fourrure de loup-garou, impregne d'une resistance surnaturelle"
+    type: "gear"
+    slug: 'exotic-leather-vest'
+    price: 400
+    gear_location: 'chest'
+    nbUsages: 200
+    rarity: 'rare'
+    protection: 10
+    materia_slots: 2
+    level: 15
+    space: 3
+
   # === Armures Fer — Tier 2 (Uncommon, niveau 8) ===
   iron_chestplate (extends item):
     name: "Plastron en fer"
