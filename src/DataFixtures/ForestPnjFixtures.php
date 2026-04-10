@@ -182,7 +182,7 @@ class ForestPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/villager.png',
                 'dialog' => [
                     [
-                        'text' => "Attention où vous mettez les pieds ! Je suis Martin, bûcheron. Je coupe du bois ici depuis vingt ans. La forêt est généreuse, mais il faut savoir la respecter.",
+                        'text' => 'Attention où vous mettez les pieds ! Je suis Martin, bûcheron. Je coupe du bois ici depuis vingt ans. La forêt est généreuse, mais il faut savoir la respecter.',
                         'choices' => [
                             [
                                 'text' => 'Quels dangers guettent par ici ?',
@@ -214,7 +214,7 @@ class ForestPnjFixtures extends Fixture implements DependentFixtureInterface
                 'portrait' => '/styles/images/portraits/guard.png',
                 'dialog' => [
                     [
-                        'text' => "Chut ! Vous allez faire fuir le gibier. Je suis Diane, chasseuse. Je traque les créatures de cette forêt pour protéger les voyageurs... et pour gagner ma vie, bien sûr.",
+                        'text' => 'Chut ! Vous allez faire fuir le gibier. Je suis Diane, chasseuse. Je traque les créatures de cette forêt pour protéger les voyageurs... et pour gagner ma vie, bien sûr.',
                         'choices' => [
                             [
                                 'text' => 'Quelles créatures chassez-vous ?',
@@ -227,7 +227,7 @@ class ForestPnjFixtures extends Fixture implements DependentFixtureInterface
                         ],
                     ],
                     [
-                        'text' => "Les slimes sont faciles mais rapportent peu. Les loups, en meute, sont redoutables. Mais ce sont les araignées géantes qui paient le mieux — leur soie se vend cher au village. Si vous êtes brave, essayez de traquer un alpha_wolf au nord-est. Attention, il ne chasse jamais seul.",
+                        'text' => 'Les slimes sont faciles mais rapportent peu. Les loups, en meute, sont redoutables. Mais ce sont les araignées géantes qui paient le mieux — leur soie se vend cher au village. Si vous êtes brave, essayez de traquer un alpha_wolf au nord-est. Attention, il ne chasse jamais seul.',
                         'choices' => [
                             [
                                 'text' => 'Je tenterai ma chance. Merci !',
