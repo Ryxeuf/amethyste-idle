@@ -1774,3 +1774,12 @@
 - [x] alpha_wolf (Forêt) : isBoss, 150 HP, 3 phases, invocation de loups, sort primordial_roar
 - [x] will_o_wisp (Marais) : isBoss, 120 HP, 3 phases, self-heal, sorts light_blessing + holy_nova
 - [x] creeping_shadow (Lande) : isBoss, 180 HP, 3 phases, invocation de fantômes, sort dark_ritual
+
+## 146 — PNJ & dialogues par zone — sous-phase 1 (2026-04-10)
+
+> 5 PNJ ajoutés dans 2 zones (Crête de Ventombre et Mines profondes) pour atteindre 5 PNJ/zone.
+- [x] Crête de Ventombre (map_6) : 3 PNJ ajoutés (Tormund forgeron, Ysolde guérisseuse, Kaelen éclaireur)
+- [x] Mines profondes (map_4) : 2 PNJ ajoutés (Agna guérisseuse, Durgan prospecteur)
+- [x] 3 marchands avec stocks limités et horaires (Tormund, Ysolde, Agna)
+- [x] Dialogues ramifiés avec conditions domain_xp_min (herboristerie pour Ysolde, minage pour Agna)
+- [x] Lore contextuel : synergies élémentaires (Kaelen), cristaux résonnants (Durgan), forge volcanique (Tormund)

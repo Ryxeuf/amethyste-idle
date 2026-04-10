@@ -17,9 +17,9 @@
 ### 146 — PNJ & dialogues par zone (M | ★★)
 > Prerequis : ∅
 - [ ] 20+ PNJ instancies a partir des noms definis (fixtures existantes)
-- [ ] 3-5 PNJ par zone : marchands, queteurs, lore, formateurs
-- [ ] Dialogues ramifies avec conditions (reputation, quetes, domaines)
-- [ ] Indicateurs visuels ! (quete dispo) et ? (quete en cours) deja implementes
+- [x] 3-5 PNJ par zone : Mines profondes (5 PNJ) et Crete de Ventombre (5 PNJ)
+- [x] Dialogues ramifies avec conditions (domain_xp_min pour Ysolde et Agna)
+- [x] Indicateurs visuels ! (quete dispo) et ? (quete en cours) deja implementes
 
 ---
 
