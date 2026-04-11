@@ -129,6 +129,15 @@
 - [x] Montagne : Kaelen l'Eclaireur — "Menace aerienne" (kill 3 griffons + 2 gargouilles, recompense: amulette d'argent)
 - [x] Fixture ZoneQuestDialogFixtures : dialogues PNJ avec conditional_next (quete completee/active/disponible)
 
+### 148 — Quetes secondaires & contenu narratif (partiel) — Quetes de faction (reputation) ✅
+> 4 quetes introductives de faction (1 par faction) avec recompenses de reputation, attachees a 4 PNJ thematiquement lies. Leviers la pile ReputationListener existante via le champ `rewards['reputation']`.
+- [x] Cercle des Mages : Antoine le Mage (pnj_18) — "Echos arcaniques" (kill 2 elementaires feu + 2 feux follets, +300 rep mages, potions)
+- [x] Ordre des Chevaliers : Sebastien le Chevalier (pnj_24) — "Serment du Chevalier" (kill 3 squelettes + 2 zombies, +300 rep chevaliers, bouclier en bois)
+- [x] Confrerie des Ombres : Aurelie l'Archere (pnj_17) — "Dans l'ombre des gobelins" (kill 4 gobelins, +300 rep ombres, potions)
+- [x] Guilde des Marchands : Chloe l'Exploratrice (pnj_26) — "Routes sures pour la Guilde" (kill 3 araignees + 3 rats geants, +300 rep marchands, parchemins de teleport)
+- [x] Fixture FactionQuestDialogFixtures : dialogues PNJ a 6 noeuds reutilisant le format ZoneQuestDialogFixtures (conditional_next par etat de quete)
+- [x] Les quetes exposent `rewards['reputation']` recupere automatiquement par ReputationListener::onQuestCompleted (infra deja en place)
+
 ### 148 — Quetes secondaires & contenu narratif (partiel) — Quetes de decouverte ✅
 > 10 quetes de decouverte ajoutees (8 cachees + 2 standard multi-points) couvrant les 5 zones d'aventure. Total : 69 quetes.
 - [x] Plaine de l'Eveil : 2 quetes cachees (Stele oubliee, Puits des Anciens) — trigger sur exploration, recompense XP/gold/potions

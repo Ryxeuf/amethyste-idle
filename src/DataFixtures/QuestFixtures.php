@@ -1382,6 +1382,86 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // --- Quetes de faction (reputation) ---
+            'quest_faction_mages_intro' => [
+                'name' => 'Échos arcaniques',
+                'description' => 'Antoine le Mage, émissaire du Cercle des Mages, étudie les élémentaires de feu et les feux follets pour ses recherches. Rapportez des preuves de leur élimination pour gagner la confiance du Cercle.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Élémentaire de feu', 'slug' => 'fire_elemental', 'count' => 2],
+                        ['name' => 'Feu follet', 'slug' => 'will_o_wisp', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 120,
+                    'gold' => 60,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'crafted-potion-base'],
+                    ],
+                    'reputation' => [
+                        ['faction_slug' => 'mages', 'amount' => 300],
+                    ],
+                ],
+            ],
+            'quest_faction_chevaliers_intro' => [
+                'name' => 'Serment du Chevalier',
+                'description' => 'Sébastien le Chevalier teste la valeur des aventuriers au nom de l\'Ordre des Chevaliers. Purgez les morts-vivants qui souillent nos terres pour prouver votre honneur.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Squelette', 'slug' => 'skeleton', 'count' => 3],
+                        ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 110,
+                    'gold' => 70,
+                    'items' => [
+                        ['type' => 'gear', 'count' => 1, 'genericItemSlug' => 'wooden-shield'],
+                    ],
+                    'reputation' => [
+                        ['faction_slug' => 'chevaliers', 'amount' => 300],
+                    ],
+                ],
+            ],
+            'quest_faction_ombres_intro' => [
+                'name' => 'Dans l\'ombre des gobelins',
+                'description' => 'Aurélie l\'Archère travaille discrètement pour la Confrérie des Ombres. Un camp de gobelins espionne les routes marchandes — éliminez leurs éclaireurs avant qu\'ils ne deviennent une menace.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 90,
+                    'gold' => 100,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 3, 'genericItemSlug' => 'healing-potion-small'],
+                    ],
+                    'reputation' => [
+                        ['faction_slug' => 'ombres', 'amount' => 300],
+                    ],
+                ],
+            ],
+            'quest_faction_marchands_intro' => [
+                'name' => 'Routes sûres pour la Guilde',
+                'description' => 'Chloé l\'Exploratrice cartographie les routes marchandes pour la Guilde des Marchands. Les araignées et les rats géants menacent les convois — débarrassez les sentiers pour rassurer les caravanes.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Araignée', 'slug' => 'spider', 'count' => 3],
+                        ['name' => 'Rat géant', 'slug' => 'giant_rat', 'count' => 3],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 90,
+                    'gold' => 120,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'scroll-teleport'],
+                    ],
+                    'reputation' => [
+                        ['faction_slug' => 'marchands', 'amount' => 300],
+                    ],
+                ],
+            ],
         ];
 
         foreach ($quests as $key => $data) {

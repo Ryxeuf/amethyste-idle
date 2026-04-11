@@ -25,7 +25,7 @@
 > Prerequis : ← 146 (PNJ), ← 140 ✅ (monstres tier 1)
 - [ ] 30+ quetes supplementaires (objectif : 80+ quetes total)
 - [x] Quetes de zone : 6 quetes liees aux PNJ locaux (Foret, Mines, Marais, Montagne)
-- [ ] Quetes de faction (reputation)
+- [x] Quetes de faction (reputation) — 4 quetes introductives (Mages, Chevaliers, Ombres, Marchands) avec recompenses de reputation via 4 PNJ thematiques
 - [x] Quetes de decouverte (explorer X zones, trouver Y objets caches)
 - [ ] Diversifier les types : escorte, defend, puzzle, choix moral
 
