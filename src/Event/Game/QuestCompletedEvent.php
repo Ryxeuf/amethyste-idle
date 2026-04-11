@@ -13,6 +13,7 @@ class QuestCompletedEvent extends Event
     public function __construct(
         private readonly Player $player,
         private readonly Quest $quest,
+        private readonly ?string $choiceMade = null,
     ) {
     }
 
@@ -24,5 +25,10 @@ class QuestCompletedEvent extends Event
     public function getQuest(): Quest
     {
         return $this->quest;
+    }
+
+    public function getChoiceMade(): ?string
+    {
+        return $this->choiceMade;
     }
 }

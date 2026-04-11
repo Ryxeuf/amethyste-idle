@@ -298,7 +298,7 @@ class QuestController extends AbstractController
         $this->entityManager->persist($player);
         $this->entityManager->flush();
 
-        $this->eventDispatcher->dispatch(new QuestCompletedEvent($player, $quest), QuestCompletedEvent::NAME);
+        $this->eventDispatcher->dispatch(new QuestCompletedEvent($player, $quest, $choiceMade), QuestCompletedEvent::NAME);
 
         return new JsonResponse([
             'success' => true,

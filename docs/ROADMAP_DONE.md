@@ -138,6 +138,16 @@
 - [x] Fixture FactionQuestDialogFixtures : dialogues PNJ a 6 noeuds reutilisant le format ZoneQuestDialogFixtures (conditional_next par etat de quete)
 - [x] Les quetes exposent `rewards['reputation']` recupere automatiquement par ReputationListener::onQuestCompleted (infra deja en place)
 
+### 148 — Quetes secondaires & contenu narratif (partiel) — Quetes a choix moral + cap 80+ ✅
+> 7 quetes ajoutees (5 choix moral + 2 chasse) portant le total a 80 quetes (cap atteint). Le systeme de reputation faction est etendu pour appliquer les consequences du choix selectionne.
+- [x] `QuestCompletedEvent` enrichi d'un parametre optionnel `choiceMade` (compatibilite ascendante preservee)
+- [x] `QuestController::complete` transmet le choix effectue a l'evenement
+- [x] `ReputationListener::onQuestCompleted` lit desormais les gains/pertes de reputation depuis `choiceOutcome[choiceMade].bonusRewards.reputation` (base + choix cumules)
+- [x] Support des variations negatives (`amount < 0`) : un choix peut faire perdre de la reputation
+- [x] 5 quetes a choix moral avec factions opposees : `quest_moral_contrebandier` (Marchands/Ombres), `quest_moral_prisonnier` (Chevaliers/Ombres), `quest_moral_grimoire` (Mages/Marchands/Ombres), `quest_moral_ferme_brulee` (Marchands/Chevaliers), `quest_moral_relique` (3 choix : Mages/Chevaliers/Marchands)
+- [x] 2 quetes de chasse simples : `quest_hunt_scorpions`, `quest_hunt_gargoyles`
+- [x] Test unitaire `ReputationListenerTest` (4 cas : base seule, choix ignore sans choiceMade, choix avec positif+negatif, combinaison base+choix)
+
 ### 148 — Quetes secondaires & contenu narratif (partiel) — Quetes de decouverte ✅
 > 10 quetes de decouverte ajoutees (8 cachees + 2 standard multi-points) couvrant les 5 zones d'aventure. Total : 69 quetes.
 - [x] Plaine de l'Eveil : 2 quetes cachees (Stele oubliee, Puits des Anciens) — trigger sur exploration, recompense XP/gold/potions
