@@ -55,6 +55,17 @@
 
 ## Sprint 2 — Bestiaire & PNJ
 
+### Sprint 2 DoD — Tests d'integration combat monstres tier 2-3 ✅
+> Couverture de non-regression pour les monstres et boss introduits par la tache 141. Tests integrations via `AbstractIntegrationTestCase` (vraie DB + fixtures, transaction par test).
+- [x] `Tier23CombatIntegrationTest` : 7 tests couvrant le chargement, les resistances elementaires, les phases de boss et le flux de combat
+- [x] Verification stats monstres tier 2-3 (level >= 3, difficulty >= 2, life > 0) pour 10 slugs (troll, werewolf, wyvern, cursed_knight, naga, crystal_golem, salamander, undine, sylph, clay_golem)
+- [x] Verification resistances elementaires non vides pour les monstres tier 2 (wyvern, cursed_knight, naga, crystal_golem)
+- [x] Verification des 3 phases (100/50/25% HP) et transitions pour les boss alpha_wolf, will_o_wisp, creeping_shadow
+- [x] Comptage SQL : au moins 10 monstres niveau >= 3 exposes par les fixtures
+- [x] Flux combat : `FightHandler::startFight()` contre wyvern persiste le Fight et lie player/mob
+- [x] Flux combat : demarrer un combat contre alpha_wolf initialise `boss_phase_<mobId>` dans les metadata
+- [x] Flux combat : `MobActionHandler::doAction()` execute le tour d'un will_o_wisp sans exception
+
 ### 146 — PNJ & dialogues par zone (complet) ✅
 > 5 PNJ par zone d'aventure (20 total) avec dialogues ramifies, marchands et indications pour les joueurs.
 - [x] Foret des murmures : 5 PNJ (Sylvain garde forestier, Elara herboriste/marchande, Thadeus ermite, Martin bucheron, Diane chasseuse)
