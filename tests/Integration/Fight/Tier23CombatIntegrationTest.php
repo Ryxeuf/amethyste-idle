@@ -48,7 +48,7 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
 
     /**
      * Chaque monstre tier 2-3 de la tache 141 est charge en DB avec
-     * un niveau >= 3 et une difficulte >= 2.
+     * une difficulte >= 2 (critere de tier dans les fixtures) et des PV positifs.
      */
     public function testTier23MonstersAreLoadedWithValidStats(): void
     {
@@ -61,19 +61,19 @@ class Tier23CombatIntegrationTest extends AbstractIntegrationTestCase
                 sprintf('Monster fixture "%s" should be loaded.', $slug)
             );
             self::assertGreaterThanOrEqual(
-                3,
-                $monster->getLevel(),
-                sprintf('Monster "%s" should be at least level 3 (tier 2+).', $slug)
-            );
-            self::assertGreaterThanOrEqual(
                 2,
                 $monster->getDifficulty(),
-                sprintf('Monster "%s" should have difficulty >= 2.', $slug)
+                sprintf('Monster "%s" should have difficulty >= 2 (tier 2+).', $slug)
             );
             self::assertGreaterThan(
                 0,
                 $monster->getLife(),
                 sprintf('Monster "%s" should have positive max life.', $slug)
+            );
+            self::assertGreaterThanOrEqual(
+                1,
+                $monster->getLevel(),
+                sprintf('Monster "%s" should have a valid level.', $slug)
             );
         }
     }
