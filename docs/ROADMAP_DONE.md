@@ -109,6 +109,16 @@
 - [x] Montagne : Kaelen l'Eclaireur — "Menace aerienne" (kill 3 griffons + 2 gargouilles, recompense: amulette d'argent)
 - [x] Fixture ZoneQuestDialogFixtures : dialogues PNJ avec conditional_next (quete completee/active/disponible)
 
+### 148 — Quetes secondaires & contenu narratif (partiel) — Quetes de decouverte ✅
+> 10 quetes de decouverte ajoutees (8 cachees + 2 standard multi-points) couvrant les 5 zones d'aventure. Total : 69 quetes.
+- [x] Plaine de l'Eveil : 2 quetes cachees (Stele oubliee, Puits des Anciens) — trigger sur exploration, recompense XP/gold/potions
+- [x] Foret des Murmures : 2 quetes cachees (Cercle feerique, Chene millenaire) — auto-declenchees en explorant la foret
+- [x] Marais Brumeux : 2 quetes cachees (Autel englouti, Grotte phosphorescente) — decouverte de lieux mystiques
+- [x] Collines Venteuses : 1 quete cachee (Sanctuaire eolien) — exploration des hauteurs
+- [x] Lande d'Ombre : 1 quete cachee (Obelisque d'ombre) — decouverte de ruines sombres
+- [x] Quete standard "Cartographe des terres oubliees" : 5 points de repere a decouvrir (1 par zone)
+- [x] Quete standard "Pelerinage des sites sacres" : 3 sites sacres entre Collines et Lande
+
 ---
 
 ## Sprint 3 — Arsenal & Magie
