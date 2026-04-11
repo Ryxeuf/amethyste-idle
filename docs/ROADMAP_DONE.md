@@ -1,11 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-10
+> Derniere mise a jour : 2026-04-11
 
 ---
 
-## Sprint 1 — Stabilite & Onboarding
+## Sprint 1 — Stabilite & Onboarding ✅ Termine (2026-04-11)
+
+### 110 — Correction bugs connus & dette technique (final) — Audit GitHub issues ✅
+> Cloture de la tache 110 avec l'audit des issues GitHub ouvertes et la priorisation. Aucune issue ouverte a la date de l'audit, tous les bugs critiques historiques sont corriges et couverts par des tests.
+- [x] Audit complet documente dans `docs/audits/GITHUB_ISSUES_AUDIT_2026-04.md`
+- [x] Verification via MCP GitHub : 0 issue ouverte, 0 PR ouverte
+- [x] Processus de priorisation documente (Critique / Haute / Moyenne / Basse)
+- [x] Synthese de la dette technique PHPStan (niveau 6, baseline stabilisee)
+- [x] Recap des 7 checks de coherence DB integres en CI
+- [x] Sprint 1 **entierement cloture** (Tasks 110, 111, 113) — prochaine etape : Sprint 4 (Sprints 2 et 3 deja termines)
 
 ### 110 — Correction bugs connus & dette technique (partiel) — Bugs critiques gameplay ✅
 > Correction de 4 bugs gameplay critiques : attaque basique, loot, quetes, IA mobs.

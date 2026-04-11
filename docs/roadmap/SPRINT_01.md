@@ -6,21 +6,21 @@
 
 ---
 
-### 110 — Correction bugs connus & dette technique (M | ★★★)
+### ~~110 — Correction bugs connus & dette technique (M | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Audit des issues GitHub ouvertes et priorisation
+- [x] Audit des issues GitHub ouvertes et priorisation (voir `docs/audits/GITHUB_ISSUES_AUDIT_2026-04.md`)
 - [x] Correction des bugs critiques gameplay (combat, inventaire, quetes)
 - [x] Nettoyage code mort detecte par PHPStan
 - [x] Verification coherence DB via `app:game:validate` en CI
 
-### 111 — Equilibrage combat avance (M | ★★★)
+### ~~111 — Equilibrage combat avance (M | ★★★)~~ ✅
 > Prerequis : ∅
 - [x] Rapport d'equilibrage via commande admin : DPS moyen par tier, temps de combat, taux de mort
 - [x] Ajustement formules de degats si ecarts > 30% entre builds
 - [x] Equilibrage donjons : difficulte vs recompenses
 - [x] Equilibrage world boss : HP et loot en fonction du nombre de joueurs actifs
 
-### 113 — Tutoriel / onboarding nouveau joueur (M | ★★★)
+### ~~113 — Tutoriel / onboarding nouveau joueur (M | ★★★)~~ ✅
 > Prerequis : ∅
 - [x] Sequence tutoriel : deplacement → combat → inventaire → quetes → craft
 - [x] Indicateurs visuels (fleches, highlights) pour guider le joueur
@@ -32,7 +32,11 @@
 
 ### Definition of Done
 
-- [ ] Tous les bugs critiques corriges et verifies
-- [ ] Formules de degats equilibrees (ecart < 30%)
-- [ ] Tutoriel fonctionnel de bout en bout
-- [ ] Tests de non-regression passes
+- [x] Tous les bugs critiques corriges et verifies
+- [x] Formules de degats equilibrees (ecart < 30%)
+- [x] Tutoriel fonctionnel de bout en bout
+- [x] Tests de non-regression passes
+
+---
+
+**Statut : ✅ Sprint 1 termine (2026-04-11)** — Voir `docs/ROADMAP_DONE.md` (Sprint 1) et `docs/audits/GITHUB_ISSUES_AUDIT_2026-04.md`.
