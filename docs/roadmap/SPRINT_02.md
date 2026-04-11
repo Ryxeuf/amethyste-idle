@@ -28,4 +28,4 @@
 - [x] 10+ monstres tier 2-3 crees avec stats, IA et loot
 - [x] 3 boss de zone fonctionnels
 - [x] 20+ PNJ places dans les zones avec dialogues
-- [ ] Tests d'integration combat monstres tier 2-3
+- [x] Tests d'integration combat monstres tier 2-3
