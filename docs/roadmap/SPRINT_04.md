@@ -23,11 +23,12 @@
 
 ### 148 — Quetes secondaires & contenu narratif (M | ★★)
 > Prerequis : ← 146 (PNJ), ← 140 ✅ (monstres tier 1)
-- [ ] 30+ quetes supplementaires (objectif : 80+ quetes total)
+- [x] 80+ quetes total (7 quetes ajoutees : 5 choix moral + 2 chasse, 73 → 80)
 - [x] Quetes de zone : 6 quetes liees aux PNJ locaux (Foret, Mines, Marais, Montagne)
 - [x] Quetes de faction (reputation) — 4 quetes introductives (Mages, Chevaliers, Ombres, Marchands) avec recompenses de reputation via 4 PNJ thematiques
 - [x] Quetes de decouverte (explorer X zones, trouver Y objets caches)
-- [ ] Diversifier les types : escorte, defend, puzzle, choix moral
+- [x] Diversifier les types — **choix moral** : 5 quetes a choix moral avec consequences de reputation opposees (ReputationListener etendu pour appliquer la reputation du choix selectionne via QuestCompletedEvent::choiceMade)
+- [ ] Diversifier les types : escorte, defend, puzzle (non traite)
 
 ---
 

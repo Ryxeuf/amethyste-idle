@@ -65,7 +65,29 @@ class ReputationListener implements EventSubscriberInterface
         $quest = $event->getQuest();
         $rewards = $quest->getRewards();
 
+        // 1. Reputation from base rewards.
         $reputationRewards = $rewards['reputation'] ?? [];
+
+        // 2. Reputation from chosen moral-choice bonus rewards (if any).
+        //    A quest with a choiceOutcome can grant/lose reputation on different
+        //    factions depending on the choice made (e.g. siding with a faction
+        //    earns reputation with them while losing some with the opposing one).
+        $choiceMade = $event->getChoiceMade();
+        $choiceOutcome = $quest->getChoiceOutcome();
+        if (null !== $choiceMade && !empty($choiceOutcome)) {
+            foreach ($choiceOutcome as $outcome) {
+                if (($outcome['key'] ?? null) !== $choiceMade) {
+                    continue;
+                }
+                $bonusRewards = $outcome['bonusRewards'] ?? [];
+                $bonusReputation = $bonusRewards['reputation'] ?? [];
+                if (!empty($bonusReputation)) {
+                    $reputationRewards = array_merge($reputationRewards, $bonusReputation);
+                }
+                break;
+            }
+        }
+
         if (empty($reputationRewards)) {
             return;
         }
@@ -76,7 +98,7 @@ class ReputationListener implements EventSubscriberInterface
             $factionSlug = $repReward['faction_slug'] ?? null;
             $amount = (int) ($repReward['amount'] ?? 0);
 
-            if (null === $factionSlug || $amount <= 0) {
+            if (null === $factionSlug || 0 === $amount) {
                 continue;
             }
 

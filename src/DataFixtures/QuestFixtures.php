@@ -1462,6 +1462,265 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // --- Quetes a choix moral (consequences de reputation opposees) ---
+            // --- Quetes de chasse supplementaires ---
+            'quest_hunt_scorpions' => [
+                'name' => 'Fléau des sables',
+                'description' => 'Les scorpions venimeux prolifèrent aux abords du désert et menacent les caravanes de passage. Chassez-en quelques-uns pour sécuriser la piste.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Scorpion', 'slug' => 'scorpion', 'count' => 4],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 85,
+                    'gold' => 55,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'antidote'],
+                    ],
+                ],
+            ],
+            'quest_hunt_gargoyles' => [
+                'name' => 'Les veilleurs de pierre',
+                'description' => 'D\'anciennes gargouilles se sont réveillées et attaquent les pèlerins dans les ruines. Mettez-les hors d\'état de nuire.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gargouille', 'slug' => 'gargoyle', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 130,
+                    'gold' => 90,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'healing-potion-small'],
+                    ],
+                ],
+            ],
+            'quest_moral_contrebandier' => [
+                'name' => 'Le contrebandier démasqué',
+                'description' => 'Vous avez surpris un contrebandier qui fournit les Ombres en artéfacts volés dans les caravanes marchandes. Il vous propose une part du butin pour le laisser filer. Dénoncer ou se taire ?',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 90,
+                    'gold' => 40,
+                ],
+                'choiceOutcome' => [
+                    [
+                        'key' => 'denounce',
+                        'label' => 'Dénoncer aux Marchands',
+                        'bonusRewards' => [
+                            'gold' => 30,
+                            'reputation' => [
+                                ['faction_slug' => 'marchands', 'amount' => 200],
+                                ['faction_slug' => 'ombres', 'amount' => -100],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'accept_bribe',
+                        'label' => 'Accepter la part du butin',
+                        'bonusRewards' => [
+                            'gold' => 120,
+                            'items' => [
+                                ['genericItemSlug' => 'scroll-teleport', 'count' => 2],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'ombres', 'amount' => 150],
+                                ['faction_slug' => 'marchands', 'amount' => -100],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'quest_moral_prisonnier' => [
+                'name' => 'Le prisonnier condamné',
+                'description' => 'Un déserteur des Chevaliers est enchaîné dans les geôles du village, accusé d\'avoir volé pour nourrir un orphelinat. Les Chevaliers exigent l\'exécution, les Ombres vous offrent une fortune pour l\'évader.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 1,
+                            'coordinates' => '12.8',
+                            'name' => 'Geôles du village',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 110,
+                    'gold' => 25,
+                ],
+                'choiceOutcome' => [
+                    [
+                        'key' => 'uphold_justice',
+                        'label' => 'Respecter la sentence',
+                        'bonusRewards' => [
+                            'gold' => 40,
+                            'items' => [
+                                ['genericItemSlug' => 'wooden-shield', 'count' => 1],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'chevaliers', 'amount' => 250],
+                                ['faction_slug' => 'ombres', 'amount' => -75],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'free_prisoner',
+                        'label' => 'Libérer le prisonnier',
+                        'bonusRewards' => [
+                            'gold' => 150,
+                            'items' => [
+                                ['genericItemSlug' => 'healing-potion-small', 'count' => 3],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'ombres', 'amount' => 200],
+                                ['faction_slug' => 'chevaliers', 'amount' => -150],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'quest_moral_grimoire' => [
+                'name' => 'Le grimoire interdit',
+                'description' => 'Un vieux grimoire de magie noire a refait surface au fond d\'une grotte. L\'Ordre des Mages le veut pour l\'étudier à l\'abri, la Guilde des Marchands offre une somme pour l\'acquérir au marché noir.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Spectre', 'slug' => 'specter', 'count' => 2],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 130,
+                    'gold' => 20,
+                ],
+                'choiceOutcome' => [
+                    [
+                        'key' => 'hand_to_mages',
+                        'label' => 'Remettre à l\'Ordre des Mages',
+                        'bonusRewards' => [
+                            'xp' => 80,
+                            'items' => [
+                                ['genericItemSlug' => 'energy-potion-small', 'count' => 3],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'mages', 'amount' => 250],
+                                ['faction_slug' => 'marchands', 'amount' => -50],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'sell_black_market',
+                        'label' => 'Vendre au marché noir',
+                        'bonusRewards' => [
+                            'gold' => 250,
+                            'reputation' => [
+                                ['faction_slug' => 'marchands', 'amount' => 150],
+                                ['faction_slug' => 'mages', 'amount' => -200],
+                                ['faction_slug' => 'ombres', 'amount' => 50],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'quest_moral_ferme_brulee' => [
+                'name' => 'La ferme incendiée',
+                'description' => 'Une ferme isolée a été incendiée par des gobelins. La veuve du fermier implore de l\'aide pour reconstruire, mais le seigneur local refuse de payer et préfère envoyer les Chevaliers punir les coupables.',
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 100,
+                    'gold' => 30,
+                ],
+                'choiceOutcome' => [
+                    [
+                        'key' => 'help_widow',
+                        'label' => 'Financer la reconstruction',
+                        'bonusRewards' => [
+                            'xp' => 60,
+                            'reputation' => [
+                                ['faction_slug' => 'marchands', 'amount' => 100],
+                                ['faction_slug' => 'chevaliers', 'amount' => -25],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'report_to_knights',
+                        'label' => 'Rapporter aux Chevaliers',
+                        'bonusRewards' => [
+                            'gold' => 100,
+                            'items' => [
+                                ['genericItemSlug' => 'leather-boots', 'count' => 1],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'chevaliers', 'amount' => 200],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            'quest_moral_relique' => [
+                'name' => 'La relique du temple oublié',
+                'description' => 'Vous avez trouvé une relique sacrée dans un temple oublié. Les Mages souhaitent la percer à jour, les Chevaliers la veulent pour leur chapelle, et un antiquaire des Marchands propose une petite fortune pour l\'acquérir.',
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'map_id' => 3,
+                            'coordinates' => '22.18',
+                            'name' => 'Temple oublié',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 140,
+                    'gold' => 35,
+                ],
+                'choiceOutcome' => [
+                    [
+                        'key' => 'give_mages',
+                        'label' => 'Offrir aux Mages',
+                        'bonusRewards' => [
+                            'xp' => 100,
+                            'items' => [
+                                ['genericItemSlug' => 'energy-potion-small', 'count' => 2],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'mages', 'amount' => 200],
+                                ['faction_slug' => 'chevaliers', 'amount' => -50],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'give_knights',
+                        'label' => 'Offrir aux Chevaliers',
+                        'bonusRewards' => [
+                            'items' => [
+                                ['genericItemSlug' => 'wooden-shield', 'count' => 1],
+                            ],
+                            'reputation' => [
+                                ['faction_slug' => 'chevaliers', 'amount' => 200],
+                                ['faction_slug' => 'mages', 'amount' => -50],
+                            ],
+                        ],
+                    ],
+                    [
+                        'key' => 'sell_antiquarian',
+                        'label' => 'Vendre à l\'antiquaire',
+                        'bonusRewards' => [
+                            'gold' => 200,
+                            'reputation' => [
+                                ['faction_slug' => 'marchands', 'amount' => 150],
+                                ['faction_slug' => 'mages', 'amount' => -100],
+                                ['faction_slug' => 'chevaliers', 'amount' => -100],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         foreach ($quests as $key => $data) {
