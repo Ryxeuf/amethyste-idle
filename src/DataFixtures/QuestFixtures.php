@@ -1721,6 +1721,99 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+
+            // ── Defend quests ──
+            'quest_defend_forest' => [
+                'name' => 'Défense de la Forêt Sombre',
+                'description' => 'Des trolls envahissent la Forêt Sombre ! Repoussez-les en éliminant ceux qui rôdent dans la zone.',
+                'requirements' => [
+                    'defend' => [
+                        ['monster_slug' => 'troll', 'count' => 3, 'map_id' => 3, 'name' => 'Troll', 'zone_name' => 'Forêt Sombre'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 80,
+                    'xp' => 150,
+                ],
+            ],
+            'quest_defend_mines' => [
+                'name' => 'Sauver les Mines Profondes',
+                'description' => 'Les golems de cristal ont pris le contrôle d\'une galerie. Défendez l\'entrée et éliminez-les avant qu\'ils ne s\'étendent davantage.',
+                'requirements' => [
+                    'defend' => [
+                        ['monster_slug' => 'crystal_golem', 'count' => 4, 'map_id' => 4, 'name' => 'Golem de cristal', 'zone_name' => 'Mines Profondes'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 100,
+                    'xp' => 200,
+                    'items' => [
+                        ['genericItemSlug' => 'iron-ore', 'count' => 5],
+                    ],
+                ],
+            ],
+
+            // ── Escort quests ──
+            'quest_escort_merchant' => [
+                'name' => 'Escorter le marchand itinérant',
+                'description' => 'Un marchand itinérant a besoin d\'être escorté jusqu\'au Village. Accompagnez-le en vous rendant au point de rendez-vous.',
+                'requirements' => [
+                    'escort' => [
+                        ['destination_map_id' => 2, 'destination_coordinates' => '10.10', 'name' => 'Amener le marchand au Village'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 60,
+                    'xp' => 100,
+                ],
+            ],
+            'quest_escort_refugee' => [
+                'name' => 'Réfugiés du Marais',
+                'description' => 'Des villageois se sont perdus dans le Marais. Guidez-les jusqu\'à la sortie en atteignant le point d\'évacuation en Montagne.',
+                'requirements' => [
+                    'escort' => [
+                        ['destination_map_id' => 6, 'destination_coordinates' => '5.5', 'name' => 'Guider les réfugiés en Montagne'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 90,
+                    'xp' => 180,
+                    'reputation' => [
+                        ['faction_slug' => 'chevaliers', 'amount' => 100],
+                    ],
+                ],
+            ],
+
+            // ── Puzzle quests ──
+            'quest_puzzle_sphinx' => [
+                'name' => 'L\'Énigme du Sphinx de Pierre',
+                'description' => 'Un sphinx de pierre bloque le passage dans les Mines. Il pose une énigme : "Je suis née du feu, façonnée par l\'eau, et je dors dans la terre. Qui suis-je ?" Parlez-lui et donnez la bonne réponse.',
+                'requirements' => [
+                    'puzzle' => [
+                        ['pnj_id' => 23, 'answer_key' => 'obsidienne', 'name' => 'Résoudre l\'énigme du Sphinx'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 50,
+                    'xp' => 120,
+                ],
+            ],
+            'quest_puzzle_ancient_runes' => [
+                'name' => 'Les Runes Anciennes',
+                'description' => 'Claire la Sage a découvert d\'anciennes runes dans un grimoire. Elle vous demande : "Quel est l\'élément qui nourrit la lumière et consume l\'ombre ?" Trouvez la réponse.',
+                'requirements' => [
+                    'puzzle' => [
+                        ['pnj_id' => 16, 'answer_key' => 'feu', 'name' => 'Déchiffrer les runes anciennes'],
+                    ],
+                ],
+                'rewards' => [
+                    'gold' => 40,
+                    'xp' => 100,
+                    'items' => [
+                        ['genericItemSlug' => 'scroll-teleport', 'count' => 1],
+                    ],
+                ],
+            ],
         ];
 
         foreach ($quests as $key => $data) {

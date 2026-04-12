@@ -46,6 +46,21 @@ class QuestTrackingFormater
             $tracking['boss_challenge'] = $bossChallenge;
         }
 
+        $defend = $this->formatDefend($requirements);
+        if (!empty($defend)) {
+            $tracking['defend'] = $defend;
+        }
+
+        $escort = $this->formatEscort($requirements);
+        if (!empty($escort)) {
+            $tracking['escort'] = $escort;
+        }
+
+        $puzzle = $this->formatPuzzle($requirements);
+        if (!empty($puzzle)) {
+            $tracking['puzzle'] = $puzzle;
+        }
+
         return $tracking;
     }
 
@@ -202,5 +217,84 @@ class QuestTrackingFormater
         }
 
         return $bossChallenge;
+    }
+
+    /**
+     * Format defend requirements (kill monsters in a specific zone).
+     *
+     * Requirements format: [['monster_slug' => 'zombie', 'count' => 5, 'map_id' => 3, 'name' => 'Zombie', 'zone_name' => 'Forêt']]
+     *
+     * @return array<int, array{count: int, necessary: int, monster_slug: string, map_id: int, name: string, zone_name: string}>
+     */
+    public function formatDefend(array $requirements): array
+    {
+        if (!isset($requirements['defend'])) {
+            return [];
+        }
+        $defend = [];
+        foreach ($requirements['defend'] as $entry) {
+            $defend[] = [
+                'count' => 0,
+                'necessary' => $entry['count'] ?? 1,
+                'monster_slug' => $entry['monster_slug'],
+                'map_id' => $entry['map_id'],
+                'name' => $entry['name'] ?? $entry['monster_slug'],
+                'zone_name' => $entry['zone_name'] ?? 'Zone inconnue',
+            ];
+        }
+
+        return $defend;
+    }
+
+    /**
+     * Format escort requirements (reach a destination on a specific map).
+     *
+     * Requirements format: [['destination_map_id' => 4, 'destination_coordinates' => '15.10', 'name' => 'Escorter le marchand']]
+     *
+     * @return array<int, array{count: int, necessary: int, destination_map_id: int, destination_coordinates: string, name: string}>
+     */
+    public function formatEscort(array $requirements): array
+    {
+        if (!isset($requirements['escort'])) {
+            return [];
+        }
+        $escort = [];
+        foreach ($requirements['escort'] as $entry) {
+            $escort[] = [
+                'count' => 0,
+                'necessary' => 1,
+                'destination_map_id' => $entry['destination_map_id'],
+                'destination_coordinates' => $entry['destination_coordinates'],
+                'name' => $entry['name'] ?? 'Escorte',
+            ];
+        }
+
+        return $escort;
+    }
+
+    /**
+     * Format puzzle requirements (solve a riddle by answering correctly).
+     *
+     * Requirements format: [['pnj_id' => 5, 'answer_key' => 'crystal', 'name' => 'Énigme du Sphinx']]
+     *
+     * @return array<int, array{count: int, necessary: int, pnj_id: int, answer_key: string, name: string}>
+     */
+    public function formatPuzzle(array $requirements): array
+    {
+        if (!isset($requirements['puzzle'])) {
+            return [];
+        }
+        $puzzle = [];
+        foreach ($requirements['puzzle'] as $entry) {
+            $puzzle[] = [
+                'count' => 0,
+                'necessary' => 1,
+                'pnj_id' => $entry['pnj_id'],
+                'answer_key' => $entry['answer_key'],
+                'name' => $entry['name'] ?? 'Énigme',
+            ];
+        }
+
+        return $puzzle;
     }
 }

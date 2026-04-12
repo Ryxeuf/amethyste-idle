@@ -261,6 +261,104 @@ class PlayerQuestUpdater
         }
     }
 
+    /**
+     * Called when a monster is killed in a specific zone (defend quests).
+     */
+    public function updateDefend(string $monsterSlug, int $mapId): void
+    {
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $changed = false;
+
+        foreach ($quests as $quest) {
+            if ($this->playerQuestHelper->isPlayerQuestCompleted($quest)) {
+                continue;
+            }
+            $tracking = $quest->getTracking();
+            if (!isset($tracking['defend'])) {
+                continue;
+            }
+            foreach ($tracking['defend'] as $idx => $entry) {
+                if ($entry['monster_slug'] === $monsterSlug && $entry['map_id'] === $mapId && $entry['count'] < $entry['necessary']) {
+                    ++$tracking['defend'][$idx]['count'];
+                    $changed = true;
+                }
+            }
+            $quest->setTracking($tracking);
+        }
+
+        if ($changed) {
+            $this->entityManager->flush();
+        }
+    }
+
+    /**
+     * Called when a player reaches a destination (escort quests).
+     */
+    public function updateEscort(int $mapId, string $coordinates): void
+    {
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $changed = false;
+
+        foreach ($quests as $quest) {
+            if ($this->playerQuestHelper->isPlayerQuestCompleted($quest)) {
+                continue;
+            }
+            $tracking = $quest->getTracking();
+            if (!isset($tracking['escort'])) {
+                continue;
+            }
+            foreach ($tracking['escort'] as $idx => $entry) {
+                if ($entry['destination_map_id'] === $mapId
+                    && $entry['destination_coordinates'] === $coordinates
+                    && $entry['count'] < $entry['necessary']) {
+                    $tracking['escort'][$idx]['count'] = 1;
+                    $changed = true;
+                }
+            }
+            $quest->setTracking($tracking);
+        }
+
+        if ($changed) {
+            $this->entityManager->flush();
+        }
+    }
+
+    /**
+     * Called when a player submits a puzzle answer for a PNJ.
+     *
+     * @return bool Whether the answer was correct for any quest
+     */
+    public function updatePuzzle(int $pnjId, string $answerKey): bool
+    {
+        $quests = $this->playerQuestHelper->getCurrentQuests();
+        $correct = false;
+
+        foreach ($quests as $quest) {
+            if ($this->playerQuestHelper->isPlayerQuestCompleted($quest)) {
+                continue;
+            }
+            $tracking = $quest->getTracking();
+            if (!isset($tracking['puzzle'])) {
+                continue;
+            }
+            foreach ($tracking['puzzle'] as $idx => $entry) {
+                if ($entry['pnj_id'] === $pnjId && $entry['count'] < $entry['necessary']) {
+                    if (mb_strtolower($entry['answer_key']) === mb_strtolower($answerKey)) {
+                        $tracking['puzzle'][$idx]['count'] = 1;
+                        $correct = true;
+                    }
+                }
+            }
+            $quest->setTracking($tracking);
+        }
+
+        if ($correct) {
+            $this->entityManager->flush();
+        }
+
+        return $correct;
+    }
+
     private function updateTrackingEntries(string $type, string $slug, int $quantity): void
     {
         $quests = $this->playerQuestHelper->getCurrentQuests();
