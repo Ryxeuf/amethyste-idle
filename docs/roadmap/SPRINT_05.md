@@ -15,13 +15,13 @@
 - [x] Commande CRON `app:auction:expire` pour expirer les annonces depassees
 - [x] Migration + fixtures de test
 
-### 117 — Hotel des ventes — UI & recherche (M | ★★★)
+### ~~117 — Hotel des ventes — UI & recherche (M | ★★★)~~ ✅
 > Prerequis : ← 116
-- [ ] Page `/game/auction` : liste paginee avec filtres (type, rarete, prix min/max, nom)
-- [ ] Recherche full-text sur le nom des items
-- [ ] Page "Mes ventes" : annonces actives, historique, revenus
-- [ ] Formulaire de mise en vente depuis l'inventaire (bouton "Vendre")
-- [ ] Confirmation d'achat avec resume (prix + taxes)
+- [x] Page `/game/auction` : liste paginee avec filtres (type, rarete, prix min/max, nom)
+- [x] Recherche full-text sur le nom des items
+- [x] Page "Mes ventes" : annonces actives, historique, revenus
+- [x] Formulaire de mise en vente depuis l'inventaire (bouton "Vendre")
+- [x] Confirmation d'achat avec resume (prix + taxes)
 
 ### 118 — Hotel des ventes — anti-exploit & economie (S | ★★)
 > Prerequis : ← 117

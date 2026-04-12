@@ -1,0 +1,133 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Mettre en vente{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">Mettre en vente</h2>
+                <p class="text-gray-400 text-xs mt-0.5">Frais de mise en vente : 5% du prix</p>
+            </div>
+            <a href="{{ path('app_game_auction') }}"
+               class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                Retour HdV
+            </a>
+        </div>
+
+        <div class="game-card-body">
+            {# Solde joueur #}
+            <div class="flex items-center gap-1.5 mb-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2 w-fit">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-sm font-semibold text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }} Gils</span>
+            </div>
+
+            {% if sellableItems is empty %}
+                <div class="text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p class="text-gray-500 text-sm">Aucun objet vendable dans votre inventaire.</p>
+                    <p class="text-gray-600 text-xs mt-1">Les objets equipes et lies ne peuvent pas etre vendus.</p>
+                </div>
+            {% else %}
+                <form method="POST" action="{{ path('app_game_auction_sell_submit') }}" id="sell-form">
+                    <input type="hidden" name="_token" value="{{ csrf_token('auction_sell') }}">
+
+                    {# Item selection #}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Objet a vendre</label>
+                        <div class="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                            {% for playerItem in sellableItems %}
+                                {% set item = playerItem.genericItem %}
+                                {% set rarityEnum = item.rarityEnum %}
+                                <label class="flex items-center gap-3 bg-gray-700/50 rounded-lg p-2.5 border border-gray-600 cursor-pointer hover:border-purple-500/50 transition-colors has-[:checked]:border-purple-500 has-[:checked]:bg-purple-900/20">
+                                    <input type="radio" name="player_item_id" value="{{ playerItem.id }}"
+                                           class="text-purple-500 focus:ring-purple-500 bg-gray-700 border-gray-600"
+                                           {% if selectedItemId == playerItem.id %}checked{% endif %}
+                                           onchange="updateSellPreview({{ item.price ?? 0 }}, '{{ item.name|e('js') }}')">
+                                    <div class="flex-1 min-w-0">
+                                        <span class="text-sm {% if rarityEnum %}{{ rarityEnum.cssClass }}{% else %}text-white{% endif %}">
+                                            {{ item.name }}
+                                        </span>
+                                        {% if rarityEnum %}
+                                            <span class="px-1 py-0.5 rounded text-[9px] {{ rarityEnum.bgClass }} ml-1">{{ rarityEnum.label }}</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if item.price %}
+                                        <span class="text-gray-500 text-[10px]">Val. {{ item.price }} G</span>
+                                    {% endif %}
+                                </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Price input #}
+                    <div class="mb-4">
+                        <label for="price_per_unit" class="block text-sm font-medium text-gray-300 mb-2">Prix de vente (Gils)</label>
+                        <input type="number" name="price_per_unit" id="price_per_unit" min="1" required
+                               placeholder="Ex: 100"
+                               class="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                               oninput="updateFeePreview()">
+                    </div>
+
+                    {# Preview #}
+                    <div id="sell-preview" class="mb-4 bg-gray-800/50 rounded-lg p-3 border border-gray-600 hidden">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-gray-400">Prix de vente</span>
+                            <span class="text-white" id="preview-price">-</span>
+                        </div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-gray-400">Frais (5%)</span>
+                            <span class="text-red-400" id="preview-fee">-</span>
+                        </div>
+                        <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between text-xs">
+                            <span class="text-gray-400">Duree</span>
+                            <span class="text-gray-300">48 heures</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="sell-submit"
+                            class="w-full px-4 py-2.5 bg-green-600 hover:bg-green-500 text-white text-sm font-medium rounded-lg transition-colors disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                            disabled>
+                        Mettre en vente
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if sellableItems is not empty %}
+<script>
+function updateSellPreview(suggestedPrice, itemName) {
+    var priceInput = document.getElementById('price_per_unit');
+    if (priceInput.value === '' && suggestedPrice > 0) {
+        priceInput.value = suggestedPrice;
+    }
+    updateFeePreview();
+}
+
+function updateFeePreview() {
+    var price = parseInt(document.getElementById('price_per_unit').value) || 0;
+    var preview = document.getElementById('sell-preview');
+    var submitBtn = document.getElementById('sell-submit');
+    var selectedItem = document.querySelector('input[name="player_item_id"]:checked');
+
+    if (price > 0 && selectedItem) {
+        var fee = Math.ceil(price * 0.05);
+        document.getElementById('preview-price').textContent = price.toLocaleString('fr-FR') + ' Gils';
+        document.getElementById('preview-fee').textContent = '-' + fee.toLocaleString('fr-FR') + ' Gils';
+        preview.classList.remove('hidden');
+        submitBtn.disabled = false;
+    } else {
+        preview.classList.add('hidden');
+        submitBtn.disabled = true;
+    }
+}
+</script>
+{% endif %}
+{% endblock %}
