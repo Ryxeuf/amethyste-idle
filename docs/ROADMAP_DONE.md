@@ -1975,3 +1975,14 @@
 - [x] Lien "Hotel des ventes" dans la sidebar admin
 - [x] 8 tests unitaires (prix hors limites, limite atteinte, cooldown actif/expire, prix dans les bornes, cancelledAt set)
 - [x] PHPStan niveau 6 et PHP-CS-Fixer propres
+
+## Sprint 6 — Social & Economie
+
+### 124 — Taxes dynamiques & tresor regional (2026-04-12) ✅
+
+> Taux de taxe ajustable par la guilde controlante, transfert effectif des taxes vers le tresor de guilde, et investissements automatiques (buffs de zone) bases sur le niveau du tresor.
+- [x] Transfert de la taxe regionale vers le tresor de la guilde controlante lors des achats a l'hotel des ventes (`AuctionManager.transferTaxToGuildTreasury`)
+- [x] Route `POST /game/guild/tax/{regionSlug}` : taux ajustable par le chef/officier entre 1% et 10%, avec validations (controle de region, rang)
+- [x] Affichage du taux de taxe actuel par region et formulaire d'ajustement (select + bouton) dans la page ameliorations
+- [x] Systeme d'auto-buffs de zone bases sur le tresor : Benediction regionale (5K, +3% XP), Prosperite (15K, +5% recolte), Fortification (30K, +3% defense)
+- [x] Indicateurs visuels (vert = actif, gris = inactif) pour chaque seuil d'auto-buff avec montant requis

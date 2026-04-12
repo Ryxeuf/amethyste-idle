@@ -40,6 +40,47 @@
                 {% endif %}
             </div>
 
+            {# Tax rate display and adjustment #}
+            {% if data.controllingGuild %}
+                <div class="px-4 py-2 border-t border-gray-700/50 flex items-center justify-between">
+                    <span class="text-[10px] text-gray-400">Taxe regionale : <span class="text-amber-400 font-medium">{{ data.taxRatePercent }}%</span></span>
+                    {% if data.isOurs and canManage %}
+                        <div class="flex items-center gap-1.5">
+                            <select id="tax-rate-{{ data.region.slug }}" class="bg-gray-700 text-white text-[10px] rounded px-1.5 py-0.5 border border-gray-600">
+                                {% for i in 1..10 %}
+                                    <option value="{{ i }}" {% if i == data.taxRatePercent %}selected{% endif %}>{{ i }}%</option>
+                                {% endfor %}
+                            </select>
+                            <button onclick="updateTaxRate('{{ data.region.slug }}')"
+                                    class="px-2 py-0.5 bg-blue-700/50 hover:bg-blue-600 text-blue-300 text-[10px] rounded transition-colors touch-target">
+                                Appliquer
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# Auto-buffs section #}
+            {% if data.isOurs and data.autoBuffs is not empty %}
+                <div class="px-4 py-2 border-t border-gray-700/50">
+                    <p class="text-[10px] text-gray-500 mb-1.5">Investissements automatiques (buffs de zone)</p>
+                    <div class="space-y-1">
+                        {% for buff in data.autoBuffs %}
+                            <div class="flex items-center justify-between text-[10px]">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ buff.active ? 'bg-green-400' : 'bg-gray-600' }}"></span>
+                                    <span class="{{ buff.active ? 'text-green-300' : 'text-gray-500' }}">{{ buff.label }}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="{{ buff.active ? 'text-amber-400' : 'text-gray-600' }}">{{ buff.effect }}</span>
+                                    <span class="text-gray-600 ml-1">({{ buff.threshold|number_format(0, ',', ' ') }} Gils)</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
             {% if data.isOurs and data.upgrades is not empty %}
                 <div class="game-card-body">
                     <div class="space-y-3">
@@ -104,6 +145,27 @@
 </div>
 
 <script>
+async function updateTaxRate(regionSlug) {
+    const select = document.getElementById(`tax-rate-${regionSlug}`);
+    const rate = select.value;
+    if (!confirm(`Modifier le taux de taxe a ${rate}% pour cette region ?`)) return;
+
+    try {
+        const body = new FormData();
+        body.append('rate', rate);
+        const resp = await fetch(`/game/guild/tax/${regionSlug}`, { method: 'POST', body });
+        const data = await resp.json();
+        if (data.success) {
+            showUpgradeMessage(data.message);
+            setTimeout(() => location.reload(), 800);
+        } else {
+            showUpgradeMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showUpgradeMessage('Erreur de connexion', true);
+    }
+}
+
 async function purchaseUpgrade(regionSlug, upgradeSlug, cost) {
     if (!confirm(`Investir ${cost.toLocaleString('fr-FR')} Gils du tresor dans cette amelioration ?`)) return;
 

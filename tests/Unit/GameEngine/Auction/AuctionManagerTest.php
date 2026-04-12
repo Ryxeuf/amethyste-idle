@@ -12,6 +12,7 @@ use App\Entity\Game\Item;
 use App\Enum\AuctionStatus;
 use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
+use App\GameEngine\Guild\TownControlManager;
 use App\Repository\AuctionListingRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class AuctionManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
     private AuctionListingRepository&MockObject $listingRepo;
+    private TownControlManager&MockObject $townControlManager;
     private AuctionManager $manager;
 
     protected function setUp(): void
@@ -31,7 +33,8 @@ class AuctionManagerTest extends TestCase
         $this->listingRepo = $this->createMock(AuctionListingRepository::class);
         $this->listingRepo->method('countActiveBySeller')->willReturn(0);
         $this->listingRepo->method('findLastCancelledAt')->willReturn(null);
-        $this->manager = new AuctionManager($this->em, $this->listingRepo, new NullLogger());
+        $this->townControlManager = $this->createMock(TownControlManager::class);
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger());
     }
 
     public function testCreateListingSuccess(): void
@@ -279,7 +282,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -296,7 +299,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(19);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -314,7 +317,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-2 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -331,7 +334,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-10 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
