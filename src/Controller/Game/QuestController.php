@@ -306,6 +306,33 @@ class QuestController extends AbstractController
         ]);
     }
 
+    #[Route('/puzzle-answer/{pnjId}', name: 'app_game_quest_puzzle_answer', methods: ['POST'])]
+    public function puzzleAnswer(int $pnjId, Request $request, PlayerQuestUpdater $playerQuestUpdater): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $body = json_decode($request->getContent(), true) ?? [];
+        $answerKey = $body['answer'] ?? $request->request->get('answer');
+
+        if (!$answerKey || !\is_string($answerKey)) {
+            return new JsonResponse(['error' => 'Réponse manquante.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $correct = $playerQuestUpdater->updatePuzzle($pnjId, trim($answerKey));
+
+        if ($correct) {
+            return new JsonResponse([
+                'success' => true,
+                'message' => 'Bonne réponse ! L\'énigme est résolue.',
+            ]);
+        }
+
+        return new JsonResponse([
+            'success' => false,
+            'message' => 'Mauvaise réponse. Essayez encore.',
+        ]);
+    }
+
     #[Route('/daily/accept/{id}', name: 'app_game_quest_daily_accept', methods: ['POST'])]
     public function dailyAccept(int $id): Response
     {

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-11
+> Derniere mise a jour : 2026-04-12
 
 ---
 
@@ -157,6 +157,18 @@
 - [x] Lande d'Ombre : 1 quete cachee (Obelisque d'ombre) — decouverte de ruines sombres
 - [x] Quete standard "Cartographe des terres oubliees" : 5 points de repere a decouvrir (1 par zone)
 - [x] Quete standard "Pelerinage des sites sacres" : 3 sites sacres entre Collines et Lande
+
+### 148 — Quetes secondaires & contenu narratif (final) — Types escorte, defense, enigme ✅
+> 3 nouveaux types de quetes (defend, escort, puzzle) avec tracking, listeners, UI et 6 quetes fixtures. Cloture Sprint 4.
+- [x] Type `defend` : tuer X monstres dans une zone specifique (QuestDefendTrackingListener, MobDeadEvent + filtre map_id)
+- [x] Type `escort` : atteindre une destination sur une carte (QuestEscortTrackingListener, PlayerMovedEvent + filtre destination)
+- [x] Type `puzzle` : resoudre une enigme via reponse textuelle (endpoint POST puzzle-answer, validation answer_key)
+- [x] QuestTrackingFormater : 3 nouveaux formatters (formatDefend, formatEscort, formatPuzzle)
+- [x] PlayerQuestUpdater : 3 nouvelles methodes (updateDefend, updateEscort, updatePuzzle)
+- [x] PlayerQuestHelper : types defend/escort/puzzle integres au calcul de progression
+- [x] QuestGiverResolver : detection des 3 nouveaux types
+- [x] Template quest/index.html.twig : affichage tracking, badges colores, filtres, formulaire enigme
+- [x] 6 quetes fixtures : 2 defense (Foret/Mines), 2 escorte (Village/Montagne), 2 enigme (Sphinx/Runes)
 
 ---
 

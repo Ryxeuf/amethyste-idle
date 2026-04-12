@@ -21,20 +21,24 @@
 - [x] Forgeron : 10 recettes supplementaires (armes T2-T3, armures metal)
 - [x] Progression de recettes par niveau de domaine
 
-### 148 — Quetes secondaires & contenu narratif (M | ★★)
+### ~~148 — Quetes secondaires & contenu narratif (M | ★★)~~ ✅
 > Prerequis : ← 146 (PNJ), ← 140 ✅ (monstres tier 1)
 - [x] 80+ quetes total (7 quetes ajoutees : 5 choix moral + 2 chasse, 73 → 80)
 - [x] Quetes de zone : 6 quetes liees aux PNJ locaux (Foret, Mines, Marais, Montagne)
 - [x] Quetes de faction (reputation) — 4 quetes introductives (Mages, Chevaliers, Ombres, Marchands) avec recompenses de reputation via 4 PNJ thematiques
 - [x] Quetes de decouverte (explorer X zones, trouver Y objets caches)
 - [x] Diversifier les types — **choix moral** : 5 quetes a choix moral avec consequences de reputation opposees (ReputationListener etendu pour appliquer la reputation du choix selectionne via QuestCompletedEvent::choiceMade)
-- [ ] Diversifier les types : escorte, defend, puzzle (non traite)
+- [x] Diversifier les types : escorte, defend, puzzle — 3 nouveaux types de quetes (defend, escort, puzzle) avec listeners, tracking, UI, et 6 quetes fixtures
 
 ---
 
 ### Definition of Done
 
-- [ ] 6 branches combat avec 10-15 skills chacune
-- [ ] 55+ recettes de craft reparties sur 4 metiers
-- [ ] 30+ nouvelles quetes jouables
-- [ ] Fixtures et tests d'integration a jour
+- [x] 6 branches combat avec 10-15 skills chacune
+- [x] 55+ recettes de craft reparties sur 4 metiers
+- [x] 30+ nouvelles quetes jouables
+- [x] Fixtures et tests d'integration a jour
+
+---
+
+**Statut : ✅ Sprint 4 termine (2026-04-12)** — Voir `docs/ROADMAP_DONE.md` (Sprint 4).

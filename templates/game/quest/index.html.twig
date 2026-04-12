@@ -60,8 +60,8 @@
                                                     Quete {{ chainInfo.position }}/{{ chainInfo.total }}
                                                 </span>
                                             {% endif %}
-                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50'))) }}">
-                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : 'Divers'))))) }}
+                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : (questType == 'defend' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50' : (questType == 'escort' ? 'bg-teal-900/50 text-teal-300 border border-teal-700/50' : (questType == 'puzzle' ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50')))))) }}">
+                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : (questType == 'defend' ? 'Defense' : (questType == 'escort' ? 'Escorte' : (questType == 'puzzle' ? 'Enigme' : 'Divers')))))))) }}
                                             </span>
                                             {% if quest.hidden %}
                                                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 text-amber-300 border border-amber-700/50">
@@ -206,6 +206,52 @@
                                                     {% if entry.conditions.time_limit is defined %}
                                                         <span class="inline-block">< {{ (entry.conditions.time_limit / 60)|round }}min</span>
                                                     {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if tracking.defend is defined and tracking.defend is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.defend %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">Defendre {{ entry.zone_name|default('Zone') }} — Tuer {{ entry.name }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count }}/{{ entry.necessary }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if tracking.escort is defined and tracking.escort is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.escort %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">{{ entry.name|default('Escorter') }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count >= entry.necessary ? 'Arrive a destination' : 'En route...' }}
+                                                </span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if tracking.puzzle is defined and tracking.puzzle is not empty %}
+                                    <div class="mt-2 space-y-0.5">
+                                        {% for entry in tracking.puzzle %}
+                                            <div class="flex items-center justify-between text-xs">
+                                                <span class="text-gray-300">{{ entry.name|default('Enigme') }}</span>
+                                                <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                                                    {{ entry.count >= entry.necessary ? 'Resolue' : 'Non resolue' }}
+                                                </span>
+                                            </div>
+                                            {% if entry.count < entry.necessary %}
+                                                <div class="mt-1 flex gap-1">
+                                                    <input type="text" id="puzzle-answer-{{ entry.pnj_id }}" placeholder="Votre reponse..."
+                                                           class="flex-1 px-2 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                                                    <button onclick="submitPuzzleAnswer({{ entry.pnj_id }})"
+                                                            class="px-2 py-0.5 text-xs bg-purple-700 hover:bg-purple-600 text-white rounded transition-colors">
+                                                        Repondre
+                                                    </button>
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
@@ -481,6 +527,18 @@
                                 class="px-2.5 py-1 text-[11px] rounded border border-gray-600 bg-gray-800/50 text-gray-400 hover:text-gray-300 transition-colors">
                             Exploration
                         </button>
+                        <button onclick="filterQuests('defend')" id="filter-defend"
+                                class="px-2.5 py-1 text-[11px] rounded border border-gray-600 bg-gray-800/50 text-gray-400 hover:text-gray-300 transition-colors">
+                            Defense
+                        </button>
+                        <button onclick="filterQuests('escort')" id="filter-escort"
+                                class="px-2.5 py-1 text-[11px] rounded border border-gray-600 bg-gray-800/50 text-gray-400 hover:text-gray-300 transition-colors">
+                            Escorte
+                        </button>
+                        <button onclick="filterQuests('puzzle')" id="filter-puzzle"
+                                class="px-2.5 py-1 text-[11px] rounded border border-gray-600 bg-gray-800/50 text-gray-400 hover:text-gray-300 transition-colors">
+                            Enigme
+                        </button>
                     </div>
                 {% endif %}
 
@@ -505,8 +563,8 @@
                                                     Quete {{ chainInfo.position }}/{{ chainInfo.total }}
                                                 </span>
                                             {% endif %}
-                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50'))) }}">
-                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : 'Divers'))))) }}
+                                            <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : (questType == 'defend' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50' : (questType == 'escort' ? 'bg-teal-900/50 text-teal-300 border border-teal-700/50' : (questType == 'puzzle' ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50')))))) }}">
+                                                {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : (questType == 'defend' ? 'Defense' : (questType == 'escort' ? 'Escorte' : (questType == 'puzzle' ? 'Enigme' : 'Divers')))))))) }}
                                             </span>
                                         </div>
                                         <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
@@ -675,7 +733,7 @@ function showTab(tab) {
 }
 
 function filterQuests(type) {
-    const filters = ['all', 'kill', 'collect', 'deliver', 'explore'];
+    const filters = ['all', 'kill', 'collect', 'deliver', 'explore', 'defend', 'escort', 'puzzle'];
     filters.forEach(f => {
         const btn = document.getElementById('filter-' + f);
         if (btn) {
@@ -765,6 +823,28 @@ async function abandonQuest(id) {
             if (el) el.remove();
         } else {
             showMessage(data.error || 'Erreur', true);
+        }
+    } catch (e) {
+        showMessage('Erreur de connexion', true);
+    }
+}
+
+async function submitPuzzleAnswer(pnjId) {
+    const input = document.getElementById(`puzzle-answer-${pnjId}`);
+    if (!input || !input.value.trim()) {
+        showMessage('Entrez une reponse.', true);
+        return;
+    }
+    try {
+        const resp = await fetch(`/game/quests/puzzle-answer/${pnjId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answer: input.value.trim() })
+        });
+        const data = await resp.json();
+        showMessage(data.message, !data.success);
+        if (data.success) {
+            setTimeout(() => location.reload(), 800);
         }
     } catch (e) {
         showMessage('Erreur de connexion', true);

@@ -73,6 +73,15 @@ class QuestGiverResolver
         if (!empty($requirements['boss_challenge'])) {
             return 'boss_challenge';
         }
+        if (!empty($requirements['defend'])) {
+            return 'defend';
+        }
+        if (!empty($requirements['escort'])) {
+            return 'escort';
+        }
+        if (!empty($requirements['puzzle'])) {
+            return 'puzzle';
+        }
 
         return 'other';
     }

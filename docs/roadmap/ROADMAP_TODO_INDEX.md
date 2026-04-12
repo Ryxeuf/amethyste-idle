@@ -1,9 +1,9 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-04-11
+> Derniere mise a jour : 2026-04-12
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2 et 3 termines.** Prochaine etape : Sprint 4 (Progression & Narration).
+> **Sprints 1, 2, 3 et 4 termines.** Prochaine etape : Sprint 5 (Hotel des ventes).
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---
@@ -43,8 +43,8 @@
 | **Sprint 1** | Stabilite & Onboarding | 3 | Critique | ✅ **Termine** |
 | **Sprint 2** | Bestiaire & PNJ | 2 | Haute | ✅ **Termine** |
 | **Sprint 3** | Arsenal & Magie | 3 | Haute | ✅ **Termine** |
-| **Sprint 4** | Progression & Narration | 3 | Haute | **Prochain** |
-| **Sprint 5** | Hotel des ventes | 3 | Moyenne | A venir |
+| **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
+| **Sprint 5** | Hotel des ventes | 3 | Moyenne | **Prochain** |
 | **Sprint 6** | Social & Economie | 6 | Moyenne | A venir |
 | **Sprint 7** | Avatar: Fondations | 12 | Moyenne | A venir |
 | **Sprint 8** | Avatar: Backend & Carte | 10 | Moyenne | A venir |
@@ -54,7 +54,7 @@
 | **Sprint 12** | Technique & i18n | 2 | Basse | A venir |
 
 **Total restant : 61 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
-**Avancement** : Sprints 1 (3), 2 (2) et 3 (3) termines = 8 taches completes / initial 66+
+**Avancement** : Sprints 1 (3), 2 (2), 3 (3) et 4 (3) termines = 11 taches completes / initial 66+
 
 ---
 
@@ -145,8 +145,8 @@ Independant ─ Sprint 7 ──── Sprint 8 ──── Sprint 9 ───�
 1. [Sprint 1 — Stabilite & Onboarding](SPRINT_01.md) ✅
 2. [Sprint 2 — Bestiaire & PNJ](SPRINT_02.md) ✅
 3. [Sprint 3 — Arsenal & Magie](SPRINT_03.md) ✅
-4. **[Sprint 4 — Progression & Narration](SPRINT_04.md)** ← Prochain
-5. **[Sprint 5 — Hotel des ventes](SPRINT_05.md)**
+4. [Sprint 4 — Progression & Narration](SPRINT_04.md) ✅
+5. **[Sprint 5 — Hotel des ventes](SPRINT_05.md)** ← Prochain
 6. **[Sprint 6 — Social & Economie](SPRINT_06.md)**
 7. [Sprint 7 — Avatar: Fondations](SPRINT_07.md)
 8. [Sprint 8 — Avatar: Backend & Carte](SPRINT_08.md)
