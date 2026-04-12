@@ -8,6 +8,7 @@ use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Enum\AuctionStatus;
+use App\GameEngine\Guild\TownControlManager;
 use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -32,6 +33,7 @@ class AuctionManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly AuctionListingRepository $listingRepository,
+        private readonly TownControlManager $townControlManager,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -108,6 +110,8 @@ class AuctionManager
             throw new \InvalidArgumentException('Fonds insuffisants pour cet achat.');
         }
         $listing->getSeller()->addGils($sellerRevenue);
+
+        $this->transferTaxToGuildTreasury($listing, $regionTaxAmount);
 
         $listing->setStatus(AuctionStatus::Sold);
 
@@ -255,6 +259,36 @@ class AuctionManager
 
             throw new \InvalidArgumentException(sprintf('Vous devez attendre %d min %02d s apres avoir annule une annonce avant d\'en creer une nouvelle.', $minutes, $seconds));
         }
+    }
+
+    private function transferTaxToGuildTreasury(AuctionListing $listing, int $taxAmount): void
+    {
+        if ($taxAmount <= 0) {
+            return;
+        }
+
+        $map = $listing->getSeller()->getMap();
+        if ($map === null) {
+            return;
+        }
+
+        $region = $map->getRegion();
+        if ($region === null) {
+            return;
+        }
+
+        $guild = $this->townControlManager->getControllingGuild($region);
+        if ($guild === null) {
+            return;
+        }
+
+        $guild->addGilsTreasury($taxAmount);
+
+        $this->logger->info('Tax transferred to guild treasury', [
+            'region' => $region->getSlug(),
+            'guild' => $guild->getName(),
+            'amount' => $taxAmount,
+        ]);
     }
 
     private function getRegionTaxRate(Player $seller): string

@@ -685,6 +685,8 @@ class GuildController extends AbstractController
                 'controllingGuild' => $controllingGuild,
                 'isOurs' => $isOurs,
                 'upgrades' => $isOurs ? $this->regionUpgradeManager->getUpgradeSummary($region) : [],
+                'taxRatePercent' => (int) round($region->getTaxRateFloat() * 100),
+                'autoBuffs' => $isOurs ? $this->regionUpgradeManager->getActiveAutoBuffs($region) : [],
             ];
         }
 
@@ -695,6 +697,45 @@ class GuildController extends AbstractController
             'membership' => $membership,
             'regionData' => $regionData,
             'canManage' => $canManage,
+        ]);
+    }
+
+    #[Route('/tax/{regionSlug}', name: 'app_game_guild_tax_update', methods: ['POST'])]
+    public function taxUpdate(string $regionSlug, Request $request): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $player = $this->playerHelper->getPlayer();
+
+        $membership = $this->guildManager->getPlayerMembership($player);
+        if (!$membership) {
+            return new JsonResponse(['error' => 'Vous devez etre dans une guilde.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        if (!\in_array($membership->getRank()->value, ['leader', 'officer'], true)) {
+            return new JsonResponse(['error' => 'Seuls le chef et les officiers peuvent modifier le taux de taxe.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $region = $this->entityManager->getRepository(Region::class)->findOneBy(['slug' => $regionSlug]);
+        if ($region === null) {
+            return new JsonResponse(['error' => 'Region introuvable.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $controllingGuild = $this->townControlManager->getControllingGuild($region);
+        if ($controllingGuild === null || $controllingGuild->getId() !== $membership->getGuild()->getId()) {
+            return new JsonResponse(['error' => 'Votre guilde ne controle pas cette region.'], Response::HTTP_FORBIDDEN);
+        }
+
+        $ratePercent = (int) $request->request->get('rate', 0);
+        if ($ratePercent < 1 || $ratePercent > 10) {
+            return new JsonResponse(['error' => 'Le taux de taxe doit etre entre 1% et 10%.'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $region->setTaxRate(sprintf('0.%04d', $ratePercent * 100));
+        $this->entityManager->flush();
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => sprintf('Taux de taxe mis a jour a %d%% pour %s.', $ratePercent, $region->getName()),
         ]);
     }
 

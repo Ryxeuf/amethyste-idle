@@ -11,6 +11,17 @@ use Doctrine\ORM\EntityManagerInterface;
 class RegionUpgradeManager
 {
     /**
+     * Auto-buffs: applied automatically when the controlling guild's treasury exceeds the threshold.
+     *
+     * @var list<array{threshold: int, label: string, effect: string}>
+     */
+    public const AUTO_BUFFS = [
+        ['threshold' => 5_000, 'label' => 'Benediction regionale', 'effect' => '+3% XP pour tous dans la zone'],
+        ['threshold' => 15_000, 'label' => 'Prosperite regionale', 'effect' => '+5% recolte pour tous dans la zone'],
+        ['threshold' => 30_000, 'label' => 'Fortification regionale', 'effect' => '+3% defense pour tous dans la zone'],
+    ];
+
+    /**
      * Upgrade definitions: slug => [label, maxLevel, costs per level].
      *
      * @var array<string, array{label: string, description: string, maxLevel: int, costs: list<int>, effects: list<string>}>
@@ -184,6 +195,27 @@ class RegionUpgradeManager
         $this->entityManager->flush();
 
         return $upgrade;
+    }
+
+    /**
+     * Returns the auto-buffs with their active status based on the controlling guild's treasury.
+     *
+     * @return list<array{threshold: int, label: string, effect: string, active: bool}>
+     */
+    public function getActiveAutoBuffs(Region $region): array
+    {
+        $guild = $this->townControlManager->getControllingGuild($region);
+        $treasury = $guild?->getGilsTreasury() ?? 0;
+
+        $result = [];
+        foreach (self::AUTO_BUFFS as $buff) {
+            $result[] = [
+                ...$buff,
+                'active' => $treasury >= $buff['threshold'],
+            ];
+        }
+
+        return $result;
     }
 
     /**

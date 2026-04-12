@@ -40,11 +40,11 @@
 - [ ] Notification aux encherisseurs si depasses
 - [ ] Ventes flash admin : items rares a prix reduit, duree limitee
 
-### 124 — Taxes dynamiques & tresor regional (S | ★★)
+### ~~124 — Taxes dynamiques & tresor regional (S | ★★)~~ ✅
 > Prerequis : ← GCC ✅ (controle de cite)
-- [ ] Taux de taxe ajustable par la guilde controlante (1% a 10%)
-- [ ] Tresor regional visible par tous les membres
-- [ ] Investissements automatiques (buff zone) si tresor > seuil
+- [x] Taux de taxe ajustable par la guilde controlante (1% a 10%)
+- [x] Tresor regional visible par tous les membres
+- [x] Investissements automatiques (buff zone) si tresor > seuil
 
 ### 125 — Gold sinks avances (S | ★★)
 > Prerequis : ∅
