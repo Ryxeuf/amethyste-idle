@@ -6,14 +6,14 @@
 
 ---
 
-### 116 — Hotel des ventes — entites & backend (L | ★★★)
+### ~~116 — Hotel des ventes — entites & backend (L | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Entite `AuctionListing` : seller, item, quantity, pricePerUnit, expiresAt, status (active/sold/expired/cancelled)
-- [ ] Entite `AuctionTransaction` : listing, buyer, totalPrice, purchasedAt
-- [ ] `AuctionManager` : createListing, buyListing, cancelListing, expireListings
-- [ ] Taxe de mise en vente (5% du prix), taxe regionale si region controlee par une guilde
-- [ ] Commande CRON `app:auction:expire` pour expirer les annonces depassees
-- [ ] Migration + fixtures de test
+- [x] Entite `AuctionListing` : seller, item, quantity, pricePerUnit, expiresAt, status (active/sold/expired/cancelled)
+- [x] Entite `AuctionTransaction` : listing, buyer, totalPrice, purchasedAt
+- [x] `AuctionManager` : createListing, buyListing, cancelListing, expireListings
+- [x] Taxe de mise en vente (5% du prix), taxe regionale si region controlee par une guilde
+- [x] Commande CRON `app:auction:expire` pour expirer les annonces depassees
+- [x] Migration + fixtures de test
 
 ### 117 — Hotel des ventes — UI & recherche (M | ★★★)
 > Prerequis : ← 116

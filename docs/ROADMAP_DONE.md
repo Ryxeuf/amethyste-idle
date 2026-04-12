@@ -1937,3 +1937,18 @@
 - [x] 5 items intermédiaires (crafted) : gemme taillée, gemme fine, gemme rare, gemme enchantée, gemme prismatique
 - [x] 10 items bijoux (gear) : iron_ring, iron_amulet, iron_bracelet, gold_ring, gold_amulet, gold_crown, mithril_ring_jewel, mithril_amulet, legendary_ring, legendary_amulet
 - [x] Tous les recipe slugs alignés avec les 15 skills du skill tree joaillier (SkillFixtures)
+
+---
+
+## Sprint 5 — Hotel des ventes
+
+### 116 — Hotel des ventes — entites & backend (2026-04-12) ✅
+
+> Systeme complet d'hotel des ventes : entites, service metier, taxe de mise en vente (5%) + taxe regionale, commande CRON d'expiration, migration PostgreSQL, tests unitaires.
+- [x] Enum `AuctionStatus` (active, sold, expired, cancelled)
+- [x] Entite `AuctionListing` : seller, playerItem, quantity, pricePerUnit, listingFee, status, expiresAt, regionTaxRate
+- [x] Entite `AuctionTransaction` : listing, buyer, totalPrice, regionTaxAmount, purchasedAt
+- [x] `AuctionManager` : createListing (taxe 5%, retrait item inventaire), buyListing (transfert item + gils, taxe regionale), cancelListing (retour item), expireListings (batch)
+- [x] Commande CRON `app:auction:expire` avec mode loop et dry-run
+- [x] Migration `Version20260412AuctionHouse` (tables auction_listing, auction_transaction, index)
+- [x] 9 tests unitaires `AuctionManagerTest` (creation, achat, annulation, taxes, validations)
