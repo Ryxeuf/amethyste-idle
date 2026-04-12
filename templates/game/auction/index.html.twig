@@ -1,0 +1,144 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Hotel des ventes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">Hotel des ventes</h2>
+                <p class="text-gray-400 text-xs mt-0.5">{{ total }} annonce{{ total > 1 ? 's' : '' }} en cours</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ path('app_game_auction_sell') }}"
+                   class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                    Vendre
+                </a>
+                <a href="{{ path('app_game_auction_my_listings') }}"
+                   class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                    Mes ventes
+                </a>
+            </div>
+        </div>
+
+        <div class="game-card-body">
+            {# Solde joueur #}
+            <div class="flex items-center gap-1.5 mb-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2 w-fit">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span class="text-sm font-semibold text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }} Gils</span>
+            </div>
+
+            {# Filtres #}
+            <form method="GET" action="{{ path('app_game_auction') }}" class="mb-4">
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" name="q" value="{{ search }}" placeholder="Rechercher un objet..."
+                           class="flex-1 bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500">
+                    <select name="type"
+                            class="bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                        <option value="">Tous les types</option>
+                        {% for value, label in itemTypes %}
+                            <option value="{{ value }}" {% if type == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <select name="rarity"
+                            class="bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                        <option value="">Toutes raretes</option>
+                        {% for r in rarities %}
+                            <option value="{{ r.value }}" {% if rarity == r.value %}selected{% endif %}>{{ r.label }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit"
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg transition-colors">
+                        Filtrer
+                    </button>
+                </div>
+            </form>
+
+            {# Liste des annonces #}
+            {% if listings is empty %}
+                <div class="text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <p class="text-gray-500 text-sm">Aucune annonce trouvee.</p>
+                    <p class="text-gray-600 text-xs mt-1">Modifiez vos filtres ou revenez plus tard.</p>
+                </div>
+            {% else %}
+                <div class="space-y-2 sm:space-y-3">
+                    {% for listing in listings %}
+                        {% set item = listing.playerItem.genericItem %}
+                        {% set rarityEnum = item.rarityEnum %}
+                        <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border border-gray-600">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h3 class="font-semibold text-sm sm:text-base {% if rarityEnum %}{{ rarityEnum.cssClass }}{% else %}text-white{% endif %}">
+                                            {{ item.name }}
+                                        </h3>
+                                        {% if rarityEnum %}
+                                            <span class="px-1.5 py-0.5 rounded text-[10px] {{ rarityEnum.bgClass }}">
+                                                {{ rarityEnum.label }}
+                                            </span>
+                                        {% endif %}
+                                        <span class="px-1.5 py-0.5 bg-gray-800 border border-gray-700 text-gray-400 text-[10px] rounded">
+                                            {{ itemTypes[item.type]|default(item.type) }}
+                                        </span>
+                                    </div>
+                                    <p class="text-gray-500 text-xs mt-0.5 truncate">{{ item.description }}</p>
+                                    <div class="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
+                                        <span>Vendeur : <span class="text-gray-300">{{ listing.seller.name }}</span></span>
+                                        <span>Expire : <span class="text-gray-300">{{ listing.expiresAt|date('d/m H\\hi') }}</span></span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end gap-2 flex-shrink-0">
+                                    <div class="text-right">
+                                        <span class="text-yellow-400 font-mono font-semibold text-sm">{{ listing.totalPrice|number_format(0, ',', ' ') }} G</span>
+                                        {% if listing.quantity > 1 %}
+                                            <p class="text-gray-500 text-[10px]">{{ listing.pricePerUnit|number_format(0, ',', ' ') }} G/u x{{ listing.quantity }}</p>
+                                        {% endif %}
+                                    </div>
+                                    {% if listing.seller.id != player.id %}
+                                        <form method="POST" action="{{ path('app_game_auction_buy', {id: listing.id}) }}"
+                                              onsubmit="return confirm('Acheter {{ item.name|e('js') }} pour {{ listing.totalPrice|number_format(0, ',', ' ') }} Gils ?')">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('auction_buy_' ~ listing.id) }}">
+                                            <button type="submit"
+                                                    class="px-3 py-1.5 text-xs rounded-lg transition-colors {% if player.gils < listing.totalPrice %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-purple-600 hover:bg-purple-500 text-white{% endif %}"
+                                                    {% if player.gils < listing.totalPrice %}disabled title="Fonds insuffisants"{% endif %}>
+                                                Acheter
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-gray-500 text-xs italic">Votre annonce</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# Pagination #}
+                {% if pages > 1 %}
+                    <div class="flex items-center justify-center gap-2 mt-4">
+                        {% if page > 1 %}
+                            <a href="{{ path('app_game_auction', {q: search, type: type, rarity: rarity, page: page - 1}) }}"
+                               class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs rounded-lg transition-colors">
+                                Precedent
+                            </a>
+                        {% endif %}
+                        <span class="text-gray-400 text-xs">Page {{ page }}/{{ pages }}</span>
+                        {% if page < pages %}
+                            <a href="{{ path('app_game_auction', {q: search, type: type, rarity: rarity, page: page + 1}) }}"
+                               class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs rounded-lg transition-colors">
+                                Suivant
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1952,3 +1952,13 @@
 - [x] Commande CRON `app:auction:expire` avec mode loop et dry-run
 - [x] Migration `Version20260412AuctionHouse` (tables auction_listing, auction_transaction, index)
 - [x] 9 tests unitaires `AuctionManagerTest` (creation, achat, annulation, taxes, validations)
+
+### 117 — Hotel des ventes — UI & recherche (2026-04-12) ✅
+
+> Interface complete de l'hotel des ventes : navigation, recherche, filtres, mise en vente, achat, annulation, historique.
+- [x] `AuctionListingRepository` : recherche paginee avec filtres (nom, type, rarete), listing par vendeur
+- [x] `AuctionController` : 5 routes (index, my-listings, sell GET/POST, buy, cancel) avec CSRF et flash messages
+- [x] Page `/game/auction` : liste paginee avec filtres (type, rarete, recherche texte), pagination, bouton acheter avec confirmation
+- [x] Page `/game/auction/my-listings` : annonces actives avec annulation, historique avec statuts, revenus totaux
+- [x] Page `/game/auction/sell` : selection d'item, saisie du prix, preview des frais (5%), validation
+- [x] Lien "Hotel des ventes" dans la navigation desktop (dropdown Personnage) et mobile (drawer)

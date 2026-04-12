@@ -6,7 +6,7 @@ use App\Enum\AuctionStatus;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: \App\Repository\AuctionListingRepository::class)]
 #[ORM\Table(name: 'auction_listing')]
 #[ORM\Index(name: 'idx_auction_listing_status', columns: ['status'])]
 #[ORM\Index(name: 'idx_auction_listing_seller', columns: ['seller_id'])]

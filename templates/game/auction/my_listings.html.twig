@@ -1,0 +1,147 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Mes ventes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">Mes ventes</h2>
+                <p class="text-gray-400 text-xs mt-0.5">{{ activeListings|length }} annonce{{ activeListings|length > 1 ? 's' : '' }} active{{ activeListings|length > 1 ? 's' : '' }}</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ path('app_game_auction') }}"
+                   class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                    Retour HdV
+                </a>
+                <a href="{{ path('app_game_auction_sell') }}"
+                   class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm rounded-lg transition-colors">
+                    Vendre
+                </a>
+            </div>
+        </div>
+
+        <div class="game-card-body">
+            {# Stats #}
+            <div class="flex gap-3 mb-4 text-xs">
+                <div class="bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2">
+                    <span class="text-gray-400">Revenus totaux :</span>
+                    <span class="text-yellow-400 font-semibold ml-1">{{ totalRevenue|number_format(0, ',', ' ') }} Gils</span>
+                </div>
+                <div class="bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2">
+                    <span class="text-gray-400">Solde :</span>
+                    <span class="text-yellow-400 font-semibold ml-1">{{ player.gils|number_format(0, ',', ' ') }} Gils</span>
+                </div>
+            </div>
+
+            {# Tabs #}
+            <div class="flex border-b border-gray-700 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+                <button onclick="showAuctionTab('active')" id="tab-active"
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-purple-500 text-purple-400 touch-target">
+                    Actives ({{ activeListings|length }})
+                </button>
+                <button onclick="showAuctionTab('history')" id="tab-history"
+                        class="px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target">
+                    Historique ({{ historyListings|length }})
+                </button>
+            </div>
+
+            {# Active listings #}
+            <div id="panel-active">
+                {% if activeListings is empty %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-500 text-sm">Aucune annonce active.</p>
+                        <p class="text-gray-600 text-xs mt-1">Mettez un objet en vente depuis votre inventaire.</p>
+                    </div>
+                {% else %}
+                    <div class="space-y-2 sm:space-y-3">
+                        {% for listing in activeListings %}
+                            {% set item = listing.playerItem.genericItem %}
+                            {% set rarityEnum = item.rarityEnum %}
+                            <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border border-gray-600">
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="font-semibold text-sm sm:text-base {% if rarityEnum %}{{ rarityEnum.cssClass }}{% else %}text-white{% endif %}">
+                                                {{ item.name }}
+                                            </h3>
+                                            {% if rarityEnum %}
+                                                <span class="px-1.5 py-0.5 rounded text-[10px] {{ rarityEnum.bgClass }}">{{ rarityEnum.label }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex items-center gap-3 mt-1 text-xs text-gray-400">
+                                            <span>Prix : <span class="text-yellow-400 font-mono">{{ listing.totalPrice|number_format(0, ',', ' ') }} G</span></span>
+                                            <span>Expire : <span class="text-gray-300">{{ listing.expiresAt|date('d/m H\\hi') }}</span></span>
+                                        </div>
+                                    </div>
+                                    <form method="POST" action="{{ path('app_game_auction_cancel', {id: listing.id}) }}"
+                                          onsubmit="return confirm('Annuler cette annonce ? L\'objet sera retourne dans votre inventaire.')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('auction_cancel_' ~ listing.id) }}">
+                                        <button type="submit"
+                                                class="px-3 py-1.5 bg-red-600/80 hover:bg-red-500 text-white text-xs rounded-lg transition-colors">
+                                            Annuler
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {# History #}
+            <div id="panel-history" class="hidden">
+                {% if historyListings is empty %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-500 text-sm">Aucun historique de vente.</p>
+                    </div>
+                {% else %}
+                    <div class="space-y-2 sm:space-y-3">
+                        {% for listing in historyListings %}
+                            {% set item = listing.playerItem.genericItem %}
+                            {% set rarityEnum = item.rarityEnum %}
+                            {% set status = listing.status %}
+                            <div class="bg-gray-700/50 rounded-lg p-3 border
+                                {% if status.value == 'sold' %}border-green-600/30{% elseif status.value == 'expired' %}border-orange-600/30{% elseif status.value == 'cancelled' %}border-gray-600{% else %}border-purple-600/30{% endif %}">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="font-medium text-sm {% if rarityEnum %}{{ rarityEnum.cssClass }}{% else %}text-white{% endif %}">
+                                                {{ item.name }}
+                                            </h3>
+                                            <span class="px-1.5 py-0.5 rounded text-[10px]
+                                                {% if status.value == 'sold' %}bg-green-900/50 text-green-400
+                                                {% elseif status.value == 'expired' %}bg-orange-900/50 text-orange-400
+                                                {% elseif status.value == 'cancelled' %}bg-gray-800 text-gray-400
+                                                {% else %}bg-purple-900/50 text-purple-400{% endif %}">
+                                                {{ status.label }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <span class="text-yellow-400 font-mono text-xs">{{ listing.totalPrice|number_format(0, ',', ' ') }} G</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showAuctionTab(tab) {
+    ['active', 'history'].forEach(function(key) {
+        var panel = document.getElementById('panel-' + key);
+        var tabBtn = document.getElementById('tab-' + key);
+        if (panel) panel.classList.toggle('hidden', key !== tab);
+        if (tabBtn) {
+            tabBtn.className = key === tab
+                ? 'px-4 py-2.5 text-sm font-medium border-b-2 border-purple-500 text-purple-400 touch-target'
+                : 'px-4 py-2.5 text-sm font-medium border-b-2 border-transparent text-gray-400 hover:text-gray-300 touch-target';
+        }
+    });
+}
+</script>
+{% endblock %}

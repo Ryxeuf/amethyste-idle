@@ -44,7 +44,7 @@
 | **Sprint 2** | Bestiaire & PNJ | 2 | Haute | ✅ **Termine** |
 | **Sprint 3** | Arsenal & Magie | 3 | Haute | ✅ **Termine** |
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
-| **Sprint 5** | Hotel des ventes | 3 (1 fait) | Moyenne | **En cours** |
+| **Sprint 5** | Hotel des ventes | 3 (2 faits) | Moyenne | **En cours** |
 | **Sprint 6** | Social & Economie | 6 | Moyenne | A venir |
 | **Sprint 7** | Avatar: Fondations | 12 | Moyenne | A venir |
 | **Sprint 8** | Avatar: Backend & Carte | 10 | Moyenne | A venir |
