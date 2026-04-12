@@ -46,6 +46,9 @@ class AuctionListing
     #[ORM\Column(name: 'region_tax_rate', type: 'decimal', precision: 5, scale: 4, options: ['default' => '0.0000'])]
     private string $regionTaxRate = '0.0000';
 
+    #[ORM\Column(name: 'cancelled_at', type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $cancelledAt = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -143,6 +146,18 @@ class AuctionListing
     public function setRegionTaxRate(string $regionTaxRate): self
     {
         $this->regionTaxRate = $regionTaxRate;
+
+        return $this;
+    }
+
+    public function getCancelledAt(): ?\DateTimeInterface
+    {
+        return $this->cancelledAt;
+    }
+
+    public function setCancelledAt(?\DateTimeInterface $cancelledAt): self
+    {
+        $this->cancelledAt = $cancelledAt;
 
         return $this;
     }

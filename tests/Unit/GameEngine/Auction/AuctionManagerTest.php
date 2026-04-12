@@ -10,21 +10,28 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Entity\Game\Item;
 use App\Enum\AuctionStatus;
+use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
+use App\Repository\AuctionListingRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 class AuctionManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
+    private AuctionListingRepository&MockObject $listingRepo;
     private AuctionManager $manager;
 
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->manager = new AuctionManager($this->em);
+        $this->listingRepo = $this->createMock(AuctionListingRepository::class);
+        $this->listingRepo->method('countActiveBySeller')->willReturn(0);
+        $this->listingRepo->method('findLastCancelledAt')->willReturn(null);
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, new NullLogger());
     }
 
     public function testCreateListingSuccess(): void
@@ -232,6 +239,130 @@ class AuctionManagerTest extends TestCase
         $this->manager->cancelListing($other, $listing);
     }
 
+    public function testCreateListingPriceTooLowForRarity(): void
+    {
+        $seller = $this->createPlayer(1, 10000);
+        $item = $this->createPlayerItem(ItemRarity::Rare);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('prix minimum');
+
+        $this->manager->createListing($seller, $item, 10, 1); // min for rare = 50
+    }
+
+    public function testCreateListingPriceTooHighForRarity(): void
+    {
+        $seller = $this->createPlayer(1, 99_999_999);
+        $item = $this->createPlayerItem(ItemRarity::Common);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('prix maximum');
+
+        $this->manager->createListing($seller, $item, 99_999, 1); // max for common = 10000
+    }
+
+    public function testCreateListingPriceWithinBoundsSucceeds(): void
+    {
+        $seller = $this->createPlayer(1, 10000);
+        $item = $this->createPlayerItem(ItemRarity::Rare);
+
+        $this->em->expects($this->once())->method('persist');
+
+        $listing = $this->manager->createListing($seller, $item, 100, 1); // within [50, 500000]
+
+        $this->assertSame(100, $listing->getPricePerUnit());
+    }
+
+    public function testCreateListingMaxActiveListingsReached(): void
+    {
+        $listingRepo = $this->createMock(AuctionListingRepository::class);
+        $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
+        $listingRepo->method('findLastCancelledAt')->willReturn(null);
+
+        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+
+        $seller = $this->createPlayer(1, 10000);
+        $item = $this->createPlayerItem();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('limite');
+
+        $manager->createListing($seller, $item, 100, 1);
+    }
+
+    public function testCreateListingUnderLimitSucceeds(): void
+    {
+        $listingRepo = $this->createMock(AuctionListingRepository::class);
+        $listingRepo->method('countActiveBySeller')->willReturn(19);
+        $listingRepo->method('findLastCancelledAt')->willReturn(null);
+
+        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+
+        $seller = $this->createPlayer(1, 10000);
+        $item = $this->createPlayerItem();
+
+        $this->em->expects($this->once())->method('persist');
+
+        $listing = $manager->createListing($seller, $item, 100, 1);
+
+        $this->assertSame(100, $listing->getPricePerUnit());
+    }
+
+    public function testCreateListingCancelCooldownActive(): void
+    {
+        $listingRepo = $this->createMock(AuctionListingRepository::class);
+        $listingRepo->method('countActiveBySeller')->willReturn(0);
+        $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-2 minutes'));
+
+        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+
+        $seller = $this->createPlayer(1, 10000);
+        $item = $this->createPlayerItem();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('attendre');
+
+        $manager->createListing($seller, $item, 100, 1);
+    }
+
+    public function testCreateListingCancelCooldownExpired(): void
+    {
+        $listingRepo = $this->createMock(AuctionListingRepository::class);
+        $listingRepo->method('countActiveBySeller')->willReturn(0);
+        $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-10 minutes'));
+
+        $manager = new AuctionManager($this->em, $listingRepo, new NullLogger());
+
+        $seller = $this->createPlayer(1, 10000);
+        $item = $this->createPlayerItem();
+
+        $this->em->expects($this->once())->method('persist');
+
+        $listing = $manager->createListing($seller, $item, 100, 1);
+
+        $this->assertSame(100, $listing->getPricePerUnit());
+    }
+
+    public function testCancelListingSetsCancelledAt(): void
+    {
+        $seller = $this->createPlayer(1, 100);
+        $item = $this->createPlayerItem();
+
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(5);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        $this->manager->cancelListing($seller, $listing);
+
+        $this->assertNotNull($listing->getCancelledAt());
+        $this->assertSame(AuctionStatus::Cancelled, $listing->getStatus());
+    }
+
     private function createPlayer(int $id, int $gils, ?Map $map = null): Player
     {
         $player = new Player();
@@ -254,9 +385,11 @@ class AuctionManagerTest extends TestCase
         return $player;
     }
 
-    private function createPlayerItem(): PlayerItem
+    private function createPlayerItem(?ItemRarity $rarity = null): PlayerItem
     {
         $genericItem = $this->createMock(Item::class);
+        $genericItem->method('getRarityEnum')->willReturn($rarity);
+        $genericItem->method('getName')->willReturn('Test Item');
 
         $item = new PlayerItem();
         $item->setGenericItem($genericItem);

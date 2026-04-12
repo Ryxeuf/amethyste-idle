@@ -8,15 +8,31 @@ use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Enum\AuctionStatus;
+use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 
 class AuctionManager
 {
     private const LISTING_FEE_RATE = 0.05;
     private const DEFAULT_DURATION_HOURS = 48;
+    public const MAX_ACTIVE_LISTINGS = 20;
+    public const CANCEL_COOLDOWN_MINUTES = 5;
+
+    /** @var array<string, array{min: int, max: int}> */
+    public const PRICE_LIMITS_BY_RARITY = [
+        'common' => ['min' => 1, 'max' => 10_000],
+        'uncommon' => ['min' => 5, 'max' => 50_000],
+        'rare' => ['min' => 50, 'max' => 500_000],
+        'epic' => ['min' => 200, 'max' => 2_000_000],
+        'legendary' => ['min' => 1_000, 'max' => 10_000_000],
+        'amethyst' => ['min' => 5_000, 'max' => 50_000_000],
+    ];
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly AuctionListingRepository $listingRepository,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -29,6 +45,10 @@ class AuctionManager
         if ($quantity < 1) {
             throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
         }
+
+        $this->validatePriceLimits($playerItem, $pricePerUnit);
+        $this->validateActiveListingsLimit($seller);
+        $this->validateCancelCooldown($seller);
 
         $totalPrice = $pricePerUnit * $quantity;
         $listingFee = (int) ceil($totalPrice * self::LISTING_FEE_RATE);
@@ -52,6 +72,15 @@ class AuctionManager
 
         $this->entityManager->persist($listing);
         $this->entityManager->flush();
+
+        $this->logger->info('Auction listing created', [
+            'listing_id' => $listing->getId(),
+            'seller_id' => $seller->getId(),
+            'item' => $playerItem->getGenericItem()->getName(),
+            'price_per_unit' => $pricePerUnit,
+            'quantity' => $quantity,
+            'listing_fee' => $listingFee,
+        ]);
 
         return $listing;
     }
@@ -94,6 +123,14 @@ class AuctionManager
         $this->entityManager->persist($transaction);
         $this->entityManager->flush();
 
+        $this->logger->info('Auction listing purchased', [
+            'listing_id' => $listing->getId(),
+            'buyer_id' => $buyer->getId(),
+            'seller_id' => $listing->getSeller()->getId(),
+            'total_price' => $totalPrice,
+            'region_tax' => $regionTaxAmount,
+        ]);
+
         return $transaction;
     }
 
@@ -108,10 +145,16 @@ class AuctionManager
         }
 
         $listing->setStatus(AuctionStatus::Cancelled);
+        $listing->setCancelledAt(new \DateTimeImmutable());
 
         $this->returnItemToSeller($listing);
 
         $this->entityManager->flush();
+
+        $this->logger->info('Auction listing cancelled', [
+            'listing_id' => $listing->getId(),
+            'seller_id' => $player->getId(),
+        ]);
     }
 
     public function expireListings(): int
@@ -164,6 +207,54 @@ class AuctionManager
         }
 
         throw new \RuntimeException('Le joueur n\'a pas d\'inventaire sac.');
+    }
+
+    private function validatePriceLimits(PlayerItem $playerItem, int $pricePerUnit): void
+    {
+        $rarity = $playerItem->getGenericItem()->getRarityEnum();
+        if ($rarity === null) {
+            return;
+        }
+
+        $limits = self::PRICE_LIMITS_BY_RARITY[$rarity->value];
+
+        if ($pricePerUnit < $limits['min']) {
+            throw new \InvalidArgumentException(sprintf('Le prix minimum pour un objet %s est de %d Gils.', $rarity->label(), $limits['min']));
+        }
+
+        if ($pricePerUnit > $limits['max']) {
+            throw new \InvalidArgumentException(sprintf('Le prix maximum pour un objet %s est de %s Gils.', $rarity->label(), number_format($limits['max'], 0, ',', ' ')));
+        }
+    }
+
+    private function validateActiveListingsLimit(Player $seller): void
+    {
+        $activeCount = $this->listingRepository->countActiveBySeller($seller);
+
+        if ($activeCount >= self::MAX_ACTIVE_LISTINGS) {
+            throw new \InvalidArgumentException(sprintf('Vous avez atteint la limite de %d annonces actives.', self::MAX_ACTIVE_LISTINGS));
+        }
+    }
+
+    private function validateCancelCooldown(Player $seller): void
+    {
+        $lastCancelledAt = $this->listingRepository->findLastCancelledAt($seller);
+
+        if ($lastCancelledAt === null) {
+            return;
+        }
+
+        $now = new \DateTimeImmutable();
+        $cooldownThreshold = $now->modify('-' . self::CANCEL_COOLDOWN_MINUTES . ' minutes');
+
+        if ($lastCancelledAt > $cooldownThreshold) {
+            $cooldownEnd = \DateTimeImmutable::createFromInterface($lastCancelledAt)->modify('+' . self::CANCEL_COOLDOWN_MINUTES . ' minutes');
+            $remaining = $now->diff($cooldownEnd);
+            $minutes = $remaining->i;
+            $seconds = $remaining->s;
+
+            throw new \InvalidArgumentException(sprintf('Vous devez attendre %d min %02d s apres avoir annule une annonce avant d\'en creer une nouvelle.', $minutes, $seconds));
+        }
     }
 
     private function getRegionTaxRate(Player $seller): string

@@ -23,19 +23,23 @@
 - [x] Formulaire de mise en vente depuis l'inventaire (bouton "Vendre")
 - [x] Confirmation d'achat avec resume (prix + taxes)
 
-### 118 — Hotel des ventes — anti-exploit & economie (S | ★★)
+### ~~118 — Hotel des ventes — anti-exploit & economie (S | ★★)~~ ✅
 > Prerequis : ← 117
-- [ ] Prix minimum et maximum par rarete (eviter les transferts deguises)
-- [ ] Limite d'annonces actives par joueur (20 max)
-- [ ] Cooldown entre annulation et remise en vente (5 min)
-- [ ] Logs des transactions pour audit admin
-- [ ] Dashboard admin : volume d'echanges, prix moyens par item
+- [x] Prix minimum et maximum par rarete (eviter les transferts deguises)
+- [x] Limite d'annonces actives par joueur (20 max)
+- [x] Cooldown entre annulation et remise en vente (5 min)
+- [x] Logs des transactions pour audit admin
+- [x] Dashboard admin : volume d'echanges, prix moyens par item
 
 ---
 
 ### Definition of Done
 
-- [ ] Hotel des ventes fonctionnel (creation, achat, expiration)
-- [ ] Interface utilisateur complete avec recherche
-- [ ] Protections anti-exploit actives
-- [ ] Tests d'integration du flux complet
+- [x] Hotel des ventes fonctionnel (creation, achat, expiration)
+- [x] Interface utilisateur complete avec recherche
+- [x] Protections anti-exploit actives
+- [x] Tests d'integration du flux complet
+
+---
+
+**Statut : ✅ Sprint 5 termine (2026-04-12)** — Voir `docs/ROADMAP_DONE.md` (Sprint 5).
