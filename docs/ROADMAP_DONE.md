@@ -1962,3 +1962,16 @@
 - [x] Page `/game/auction/my-listings` : annonces actives avec annulation, historique avec statuts, revenus totaux
 - [x] Page `/game/auction/sell` : selection d'item, saisie du prix, preview des frais (5%), validation
 - [x] Lien "Hotel des ventes" dans la navigation desktop (dropdown Personnage) et mobile (drawer)
+
+### 118 — Hotel des ventes — anti-exploit & economie (2026-04-12) ✅
+
+> Protections anti-exploit pour l'hotel des ventes : prix min/max par rarete, limite d'annonces actives, cooldown d'annulation, logs de transactions et dashboard admin.
+- [x] Prix min/max par rarete d'item (common: 1-10K, uncommon: 5-50K, rare: 50-500K, epic: 200-2M, legendary: 1K-10M, amethyst: 5K-50M) pour empecher les transferts deguises
+- [x] Limite de 20 annonces actives simultanees par joueur
+- [x] Cooldown de 5 min entre annulation d'annonce et creation d'une nouvelle
+- [x] Champ `cancelledAt` sur `AuctionListing` + migration pour le tracking des annulations
+- [x] Logs PSR structurees sur toutes les operations (creation, achat, annulation) avec details (seller/buyer, prix, taxes)
+- [x] Dashboard admin `/admin/auction` : metriques cles (annonces totales, actives, ventes, volume, prix moyen), top 10 items vendus
+- [x] Lien "Hotel des ventes" dans la sidebar admin
+- [x] 8 tests unitaires (prix hors limites, limite atteinte, cooldown actif/expire, prix dans les bornes, cancelledAt set)
+- [x] PHPStan niveau 6 et PHP-CS-Fixer propres
