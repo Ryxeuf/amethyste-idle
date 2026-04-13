@@ -1997,3 +1997,19 @@
 - [x] Page `/game/services` avec UI complete (transport, reparation, renommage) + liens navigation desktop et mobile
 - [x] `GoldSinkManager` : service metier centralise avec toutes les formules de cout et validations
 - [x] Tests unitaires : rename, repair, degradation, displayName (8 tests)
+
+---
+
+## Sprint 6 — Social & Economie
+
+### 119 — Messagerie joueur a joueur (2026-04-13) ✅
+
+> Systeme de messagerie privee (boite aux lettres in-game) entre joueurs, avec boite de reception, envoi, lu/non-lu, notifications Mercure SSE, limite de 100 messages, et blocage de joueur.
+- [x] Entite `PrivateMessage` : sender, receiver, subject, body, readAt, createdAt + migration PostgreSQL
+- [x] Champ `blocked_players` (JSON) sur `Player` avec methodes `blockPlayer()`, `unblockPlayer()`, `isPlayerBlocked()`
+- [x] `PrivateMessageRepository` : inbox, sent, unread count, enforce limit (100 messages max par joueur)
+- [x] `MessageController` : 6 actions (inbox, read, compose, send, delete, block/unblock) avec protection CSRF
+- [x] Templates : boite de reception avec onglets (reception/envoyes), lecture de message avec reponse, formulaire de composition
+- [x] `MessageExtension` Twig : fonction `message_unread_count()` avec cache pour badge navigation
+- [x] Notification Mercure SSE sur topic `player/{id}/messages` a chaque nouveau message
+- [x] Lien Messages dans le dropdown Social (desktop) et le drawer mobile avec icone enveloppe

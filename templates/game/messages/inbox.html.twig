@@ -1,0 +1,73 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Messagerie{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    {% for type in ['success', 'error'] %}
+        {% for message in app.flashes(type) %}
+            <div class="mb-3 px-4 py-2 rounded text-sm {{ type == 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <h2 class="text-base sm:text-lg font-semibold text-white">Messagerie</h2>
+                <div class="flex gap-1">
+                    <a href="{{ path('app_game_messages_inbox', {tab: 'inbox'}) }}"
+                       class="px-3 py-1 text-xs rounded transition-colors {{ tab == 'inbox' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
+                        Reception
+                        {% set unread = message_unread_count() %}
+                        {% if unread > 0 %}
+                            <span class="ml-1 bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">{{ unread > 99 ? '99+' : unread }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{{ path('app_game_messages_inbox', {tab: 'sent'}) }}"
+                       class="px-3 py-1 text-xs rounded transition-colors {{ tab == 'sent' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
+                        Envoyes
+                    </a>
+                </div>
+            </div>
+            <a href="{{ path('app_game_messages_compose') }}"
+               class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
+                Nouveau message
+            </a>
+        </div>
+        <div class="game-card-body">
+            {% if messages is empty %}
+                <p class="text-gray-400 text-sm text-center py-8">Aucun message.</p>
+            {% else %}
+                <div class="space-y-1">
+                    {% for msg in messages %}
+                        <a href="{{ path('app_game_messages_read', {id: msg.id}) }}"
+                           class="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-gray-700/50 border {{ not msg.read and tab == 'inbox' ? 'border-purple-500/40 bg-purple-900/10' : 'border-gray-700/30' }}">
+                            <div class="w-8 h-8 rounded-full {{ not msg.read and tab == 'inbox' ? 'bg-purple-500/20 text-purple-400' : 'bg-gray-700 text-gray-400' }} flex items-center justify-center text-sm font-bold flex-shrink-0">
+                                {% if tab == 'inbox' %}
+                                    {{ msg.sender.name|first|upper }}
+                                {% else %}
+                                    {{ msg.receiver.name|first|upper }}
+                                {% endif %}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm {{ not msg.read and tab == 'inbox' ? 'text-white font-semibold' : 'text-gray-300' }} truncate">
+                                        {% if tab == 'inbox' %}{{ msg.sender.name }}{% else %}{{ msg.receiver.name }}{% endif %}
+                                    </span>
+                                    <span class="text-xs text-gray-500 flex-shrink-0">{{ msg.createdAt|date('d/m H:i') }}</span>
+                                </div>
+                                <p class="text-xs {{ not msg.read and tab == 'inbox' ? 'text-gray-200' : 'text-gray-500' }} truncate">{{ msg.subject }}</p>
+                            </div>
+                            {% if not msg.read and tab == 'inbox' %}
+                                <div class="w-2 h-2 rounded-full bg-purple-400 flex-shrink-0"></div>
+                            {% endif %}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

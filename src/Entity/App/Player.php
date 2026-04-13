@@ -127,6 +127,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'tutorial_step', type: 'smallint', nullable: true)]
     private ?int $tutorialStep = null;
 
+    #[ORM\Column(name: 'blocked_players', type: 'json', options: ['default' => '[]'])]
+    private array $blockedPlayers = [];
+
     #[ORM\OneToMany(targetEntity: PlayerStatusEffect::class, mappedBy: 'player', cascade: ['remove'])]
     private Collection $statusEffects;
 
@@ -514,5 +517,31 @@ class Player implements CharacterInterface
     public function setTutorialStep(?int $tutorialStep): void
     {
         $this->tutorialStep = $tutorialStep;
+    }
+
+    /** @return int[] */
+    public function getBlockedPlayers(): array
+    {
+        return $this->blockedPlayers;
+    }
+
+    public function isPlayerBlocked(int $playerId): bool
+    {
+        return \in_array($playerId, $this->blockedPlayers, true);
+    }
+
+    public function blockPlayer(int $playerId): void
+    {
+        if (!$this->isPlayerBlocked($playerId)) {
+            $this->blockedPlayers[] = $playerId;
+        }
+    }
+
+    public function unblockPlayer(int $playerId): void
+    {
+        $this->blockedPlayers = array_values(array_filter(
+            $this->blockedPlayers,
+            fn (int $id) => $id !== $playerId,
+        ));
     }
 }

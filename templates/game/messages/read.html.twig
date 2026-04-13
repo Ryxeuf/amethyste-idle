@@ -1,0 +1,48 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ message.subject }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <a href="{{ path('app_game_messages_inbox') }}" class="text-gray-400 hover:text-white text-sm transition-colors">&larr; Retour</a>
+            <div class="flex gap-2">
+                {% if message.receiver.id == player.id %}
+                    <a href="{{ path('app_game_messages_compose', {to: message.sender.id, subject: 'Re: ' ~ message.subject}) }}"
+                       class="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
+                        Repondre
+                    </a>
+                    {% set other = message.sender %}
+                {% else %}
+                    {% set other = message.receiver %}
+                {% endif %}
+                <form action="{{ path('app_game_messages_block', {id: other.id}) }}" method="post" class="inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('message_block_' ~ other.id) }}">
+                    <button type="submit" class="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
+                        {{ player.isPlayerBlocked(other.id) ? 'Debloquer' : 'Bloquer' }}
+                    </button>
+                </form>
+                <form action="{{ path('app_game_messages_delete', {id: message.id}) }}" method="post" class="inline">
+                    <input type="hidden" name="_token" value="{{ csrf_token('message_delete_' ~ message.id) }}">
+                    <button type="submit" class="px-3 py-1 bg-red-600/80 hover:bg-red-500 text-white text-xs rounded transition-colors"
+                            onclick="return confirm('Supprimer ce message ?')">
+                        Supprimer
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="game-card-body">
+            <div class="mb-4 pb-4 border-b border-gray-700">
+                <h2 class="text-white font-semibold text-base mb-2">{{ message.subject }}</h2>
+                <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <span>De : <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="text-purple-400 hover:text-purple-300">{{ message.sender.name }}</a></span>
+                    <span>A : <a href="{{ path('app_game_player_profile', {id: message.receiver.id}) }}" class="text-purple-400 hover:text-purple-300">{{ message.receiver.name }}</a></span>
+                    <span>{{ message.createdAt|date('d/m/Y H:i') }}</span>
+                </div>
+            </div>
+            <div class="text-sm text-gray-200 whitespace-pre-line break-words">{{ message.body }}</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

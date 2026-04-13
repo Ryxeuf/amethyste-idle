@@ -1,0 +1,55 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Nouveau message{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    {% for type in ['success', 'error'] %}
+        {% for message in app.flashes(type) %}
+            <div class="mb-3 px-4 py-2 rounded text-sm {{ type == 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400' }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base sm:text-lg font-semibold text-white">Nouveau message</h2>
+            <a href="{{ path('app_game_messages_inbox') }}" class="text-gray-400 hover:text-white text-sm transition-colors">&larr; Retour</a>
+        </div>
+        <div class="game-card-body">
+            <form action="{{ path('app_game_messages_send') }}" method="post" class="space-y-4" data-turbo="false">
+                <input type="hidden" name="_token" value="{{ csrf_token('message_send') }}">
+
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Destinataire</label>
+                    <input type="text" name="recipient" value="{{ recipient ? recipient.name : '' }}"
+                           placeholder="Nom du joueur" required autocomplete="off"
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Sujet</label>
+                    <input type="text" name="subject" value="{{ replySubject }}" maxlength="100"
+                           placeholder="Sujet du message" required
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Message</label>
+                    <textarea name="body" rows="6" maxlength="2000" required
+                              placeholder="Votre message..."
+                              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none resize-y"></textarea>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm rounded-lg transition-colors">
+                        Envoyer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
