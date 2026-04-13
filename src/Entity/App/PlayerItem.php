@@ -140,6 +140,9 @@ class PlayerItem
     #[ORM\Column(name: 'bound_to_player_id', type: 'integer', nullable: true)]
     private ?int $boundToPlayerId = null;
 
+    #[ORM\Column(name: 'custom_name', type: 'string', length: 100, nullable: true)]
+    private ?string $customName = null;
+
     public function __construct()
     {
         $this->slots = new ArrayCollection();
@@ -337,5 +340,20 @@ class PlayerItem
         }
 
         return 5;
+    }
+
+    public function getCustomName(): ?string
+    {
+        return $this->customName;
+    }
+
+    public function setCustomName(?string $customName): void
+    {
+        $this->customName = $customName;
+    }
+
+    public function getDisplayName(): string
+    {
+        return $this->customName ?? $this->genericItem->getName();
     }
 }

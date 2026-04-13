@@ -46,12 +46,12 @@
 - [x] Tresor regional visible par tous les membres
 - [x] Investissements automatiques (buff zone) si tresor > seuil
 
-### 125 — Gold sinks avances (S | ★★)
+### ~~125 — Gold sinks avances (S | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Enchantement temporaire d'equipement (coute gils, duree limitee)
-- [ ] Renommage d'items (cosmetique, coute gils)
-- [ ] Transport rapide payant entre villes decouvertes
-- [ ] Repair d'equipement (degradation naturelle sur mort)
+- [x] Enchantement temporaire d'equipement (coute gils, duree limitee)
+- [x] Renommage d'items (cosmetique, coute gils)
+- [x] Transport rapide payant entre villes decouvertes
+- [x] Repair d'equipement (degradation naturelle sur mort)
 
 ---
 
