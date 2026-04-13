@@ -1,0 +1,130 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Services{% endblock %}
+
+{% block game_content %}
+<div class="max-w-4xl mx-auto space-y-6 p-4">
+    <h1 class="text-xl font-bold text-purple-300 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Services
+    </h1>
+    <p class="text-sm text-gray-400">Depensez vos Gils pour des services utiles. Solde actuel : <span class="text-yellow-400 font-semibold" id="gils-display">{{ player.gils }}</span> Gils</p>
+
+    {# ── Transport rapide ─────────────────────── #}
+    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/30">
+        <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide mb-3">Transport rapide ({{ travelCost }} Gils)</h2>
+        {% if destinations is empty %}
+            <p class="text-xs text-gray-500">Aucune destination disponible.</p>
+        {% else %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {% for region in destinations %}
+                    <button class="gold-sink-action flex items-center gap-3 bg-gray-700/50 hover:bg-blue-900/30 rounded-lg p-3 text-left transition-colors border border-transparent hover:border-blue-700/50"
+                            data-action="travel" data-region-id="{{ region.id }}">
+                        <div class="w-8 h-8 rounded-full bg-blue-900/30 flex items-center justify-center text-blue-400 shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm text-white font-medium truncate">{{ region.name }}</div>
+                            <div class="text-xs text-gray-500">{{ region.capitalMap.name }}</div>
+                        </div>
+                        <span class="text-xs text-yellow-400 font-medium">{{ travelCost }} G</span>
+                    </button>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Reparation ───────────────────────────── #}
+    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/30">
+        <h2 class="text-sm font-semibold text-orange-400 uppercase tracking-wide mb-3">Reparation d'equipement</h2>
+        {% if repairableItems is empty %}
+            <p class="text-xs text-gray-500">Aucun equipement a reparer.</p>
+        {% else %}
+            <div class="space-y-2">
+                {% for entry in repairableItems %}
+                    {% set pi = entry.item %}
+                    {% set cost = entry.cost %}
+                    <div class="flex items-center gap-3 bg-gray-700/50 rounded-lg p-3">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-sm text-white font-medium truncate">{{ pi.displayName }}</div>
+                            <div class="text-xs text-gray-500">
+                                Durabilite : {{ pi.currentDurability }}/{{ pi.genericItem.durability }}
+                            </div>
+                            <div class="w-full bg-gray-600 rounded-full h-1.5 mt-1">
+                                <div class="bg-orange-500 h-1.5 rounded-full" style="width: {{ (pi.currentDurability / pi.genericItem.durability * 100)|round }}%"></div>
+                            </div>
+                        </div>
+                        <button class="gold-sink-action shrink-0 px-3 py-1.5 text-xs font-medium bg-orange-600/80 hover:bg-orange-500 text-white rounded-lg transition-colors"
+                                data-action="repair" data-item-id="{{ pi.id }}">
+                            Reparer ({{ cost }} G)
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Renommage ────────────────────────────── #}
+    <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/30">
+        <h2 class="text-sm font-semibold text-green-400 uppercase tracking-wide mb-3">Renommer un objet ({{ renameCost }} Gils)</h2>
+        <div class="flex gap-2">
+            <input type="number" id="rename-item-id" placeholder="ID objet" class="bg-gray-700 text-white text-sm rounded-lg px-3 py-2 w-24 border border-gray-600 focus:border-purple-500 focus:outline-none">
+            <input type="text" id="rename-input" placeholder="Nouveau nom" maxlength="50" class="bg-gray-700 text-white text-sm rounded-lg px-3 py-2 flex-1 border border-gray-600 focus:border-purple-500 focus:outline-none">
+            <button class="gold-sink-action shrink-0 px-4 py-2 text-xs font-medium bg-green-600/80 hover:bg-green-500 text-white rounded-lg transition-colors"
+                    data-action="rename">
+                Renommer
+            </button>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Consultez votre inventaire pour trouver l'ID de l'objet a renommer.</p>
+    </div>
+</div>
+
+<div id="gold-sink-toast" class="fixed bottom-4 right-4 z-50 hidden">
+    <div class="bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 shadow-lg text-sm text-white max-w-sm"></div>
+</div>
+
+<script type="module">
+    document.querySelectorAll('.gold-sink-action').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const action = btn.dataset.action;
+            let url, body;
+
+            if (action === 'travel') {
+                url = '{{ path("app_game_services_travel") }}';
+                body = JSON.stringify({ regionId: parseInt(btn.dataset.regionId) });
+            } else if (action === 'repair') {
+                url = '{{ path("app_game_services_repair", {id: 0}) }}'.replace('/0', '/' + btn.dataset.itemId);
+                body = '{}';
+            } else if (action === 'rename') {
+                const itemId = document.getElementById('rename-item-id').value;
+                const name = document.getElementById('rename-input').value;
+                if (!itemId || !name) return;
+                url = '{{ path("app_game_services_rename", {id: 0}) }}'.replace('/0', '/' + itemId);
+                body = JSON.stringify({ name });
+            }
+
+            try {
+                const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
+                const data = await res.json();
+                const toast = document.getElementById('gold-sink-toast');
+                const inner = toast.querySelector('div');
+
+                if (data.success) {
+                    inner.className = 'bg-green-900 border border-green-600 rounded-lg px-4 py-3 shadow-lg text-sm text-green-200 max-w-sm';
+                    inner.textContent = data.message;
+                    document.getElementById('gils-display').textContent = data.gils;
+                    if (action === 'travel') setTimeout(() => location.href = '{{ path("app_game_map") }}', 1000);
+                    if (action === 'repair') setTimeout(() => location.reload(), 1000);
+                } else {
+                    inner.className = 'bg-red-900 border border-red-600 rounded-lg px-4 py-3 shadow-lg text-sm text-red-200 max-w-sm';
+                    inner.textContent = data.error;
+                }
+                toast.classList.remove('hidden');
+                setTimeout(() => toast.classList.add('hidden'), 3000);
+            } catch (err) {
+                console.error(err);
+            }
+        });
+    });
+</script>
+{% endblock %}

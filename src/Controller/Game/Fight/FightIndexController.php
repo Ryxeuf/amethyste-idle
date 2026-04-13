@@ -9,6 +9,7 @@ use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\CombatLogger;
 use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\GoldSink\GoldSinkManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\PlayerHelper;
 use App\Repository\DungeonRunRepository;
@@ -33,6 +34,7 @@ class FightIndexController extends AbstractController
         private readonly DungeonRunRepository $dungeonRunRepository,
         private readonly DungeonManager $dungeonManager,
         private readonly FightRepository $fightRepository,
+        private readonly GoldSinkManager $goldSinkManager,
     ) {
     }
 
@@ -190,6 +192,11 @@ class FightIndexController extends AbstractController
 
         // Nettoyer les effets de statut
         $this->statusEffectManager->clearAllEffects($fight);
+
+        // Degrader la durabilite des items equipes (gold sink)
+        foreach ($fight->getPlayers() as $fightPlayer) {
+            $this->goldSinkManager->degradeEquippedItems($fightPlayer);
+        }
 
         // Dissocier tous les joueurs du combat et les respawn
         foreach ($fight->getPlayers() as $fightPlayer) {

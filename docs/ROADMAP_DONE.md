@@ -1986,3 +1986,14 @@
 - [x] Affichage du taux de taxe actuel par region et formulaire d'ajustement (select + bouton) dans la page ameliorations
 - [x] Systeme d'auto-buffs de zone bases sur le tresor : Benediction regionale (5K, +3% XP), Prosperite (15K, +5% recolte), Fortification (30K, +3% defense)
 - [x] Indicateurs visuels (vert = actif, gris = inactif) pour chaque seuil d'auto-buff avec montant requis
+
+### 125 — Gold sinks avances (2026-04-13) ✅
+
+> Quatre mecaniques de depense de gils pour reguler l'economie du jeu.
+- [x] Enchantement temporaire d'equipement : systeme deja fonctionnel via `EnchantmentManager` (gils + ingredients + duree temporaire)
+- [x] Renommage d'items : champ `customName` sur `PlayerItem`, route POST `/game/services/rename/{id}`, cout 50 Gils, validation regex
+- [x] Transport rapide payant : teleportation vers capitales de region, route POST `/game/services/travel`, cout 100 Gils, verifications (pas en combat/deplacement)
+- [x] Reparation d'equipement : restauration de durabilite via POST `/game/services/repair/{id}`, cout base sur rarete ; degradation automatique de 10% sur defaite en combat
+- [x] Page `/game/services` avec UI complete (transport, reparation, renommage) + liens navigation desktop et mobile
+- [x] `GoldSinkManager` : service metier centralise avec toutes les formules de cout et validations
+- [x] Tests unitaires : rename, repair, degradation, displayName (8 tests)
