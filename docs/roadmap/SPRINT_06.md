@@ -8,13 +8,13 @@
 
 ### Piste A — Social avance
 
-### 119 — Messagerie joueur a joueur (M | ★★)
+### ~~119 — Messagerie joueur a joueur (M | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Entite `PrivateMessage` : sender, receiver, subject, body, readAt, createdAt
-- [ ] Page `/game/messages` : boite de reception, envoi, lu/non-lu
-- [ ] Notification Mercure SSE a la reception
-- [ ] Limite : 100 messages conserves par joueur
-- [ ] Blocage de joueur (ignore list)
+- [x] Entite `PrivateMessage` : sender, receiver, subject, body, readAt, createdAt
+- [x] Page `/game/messages` : boite de reception, envoi, lu/non-lu
+- [x] Notification Mercure SSE a la reception
+- [x] Limite : 100 messages conserves par joueur
+- [x] Blocage de joueur (ignore list)
 
 ### 121 — Systeme de reputation & karma (M | ★★)
 > Prerequis : ← 120 ✅ (profil public joueur)
