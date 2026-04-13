@@ -127,6 +127,7 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'tutorial_step', type: 'smallint', nullable: true)]
     private ?int $tutorialStep = null;
 
+    /** @var int[] */
     #[ORM\Column(name: 'blocked_players', type: 'json', options: ['default' => '[]'])]
     private array $blockedPlayers = [];
 
