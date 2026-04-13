@@ -5,7 +5,6 @@ namespace App\Tests\Unit\GameEngine\GoldSink;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
-use App\Entity\App\Region;
 use App\Entity\Game\Item;
 use App\GameEngine\GoldSink\GoldSinkManager;
 use Doctrine\Common\Collections\ArrayCollection;
