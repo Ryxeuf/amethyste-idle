@@ -8,6 +8,7 @@ use App\Entity\CharacterInterface;
 use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
+use App\Enum\KarmaTitle;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -117,6 +118,9 @@ class Player implements CharacterInterface
 
     #[ORM\Column(name: 'prestige_title', type: 'string', length: 100, nullable: true)]
     private ?string $prestigeTitle = null;
+
+    #[ORM\Column(name: 'reputation_score', type: 'integer', options: ['default' => 0])]
+    private int $reputationScore = 0;
 
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
@@ -474,6 +478,26 @@ class Player implements CharacterInterface
     public function setPrestigeTitle(?string $prestigeTitle): void
     {
         $this->prestigeTitle = $prestigeTitle;
+    }
+
+    public function getReputationScore(): int
+    {
+        return $this->reputationScore;
+    }
+
+    public function setReputationScore(int $reputationScore): void
+    {
+        $this->reputationScore = $reputationScore;
+    }
+
+    public function addReputationScore(int $amount): void
+    {
+        $this->reputationScore += $amount;
+    }
+
+    public function getKarmaTitle(): KarmaTitle
+    {
+        return KarmaTitle::fromScore($this->reputationScore);
     }
 
     public function getRace(): ?Race

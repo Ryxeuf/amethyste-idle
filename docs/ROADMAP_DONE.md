@@ -1,7 +1,18 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-12
+> Derniere mise a jour : 2026-04-14
+
+---
+
+## 121 — Systeme de reputation & karma (partiel) — Fondations (2026-04-14) 🔧
+
+> Sous-phase fondations du systeme de reputation globale. Introduit le score de reputation, les titres (Infame → Legendaire), et le gain automatique via completion de quetes. Les bonus/malus et le systeme de report restent a implementer.
+- [x] Champ `reputation_score` (INT NOT NULL DEFAULT 0) sur Player + migration PostgreSQL
+- [x] Enum `KarmaTitle` (7 titres : Infame, Novice, Connu, Respecte, Honore, Heros, Legendaire) avec seuils ascendants et classes CSS Tailwind
+- [x] Listener `ReputationListener` : +20 reputation par quete reguliere, +5 par quete journaliere
+- [x] Affichage du titre karma et du score sur le profil public (`/game/player/{id}/profile`)
+- [x] Tests unitaires : `KarmaTitleTest` (seuils, progression, labels FR), `ReputationListenerTest` (gain regulier vs daily, accumulation)
 
 ---
 

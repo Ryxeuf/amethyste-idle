@@ -25,6 +25,11 @@
                     {% if targetPlayer.prestigeTitle %}
                     <div class="text-xs text-yellow-300 italic mt-0.5">{{ targetPlayer.prestigeTitle }}</div>
                     {% endif %}
+                    {% set karma = targetPlayer.karmaTitle %}
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs {{ karma.cssClass }} font-semibold">{{ karma.label }}</span>
+                        <span class="text-[10px] text-gray-500">{{ targetPlayer.reputationScore }} pts</span>
+                    </div>
                     <div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
                         {% if targetPlayer.race %}
                             <span>{{ targetPlayer.race.name }}</span>
