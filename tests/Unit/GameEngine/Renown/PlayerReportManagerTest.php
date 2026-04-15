@@ -118,6 +118,9 @@ class PlayerReportManagerTest extends TestCase
         $reported = $this->makePlayer(2);
         $report = new PlayerReport();
         $report->setReporter($reporter)->setReportedPlayer($reported)->setReason(PlayerReportReason::Cheating)->setDescription('Cheat');
+        // Simule un rapport persiste : id assigne par Doctrine apres flush
+        $idRef = new \ReflectionProperty(PlayerReport::class, 'id');
+        $idRef->setValue($report, 42);
 
         $moderator = new User();
 
