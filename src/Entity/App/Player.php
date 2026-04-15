@@ -8,6 +8,7 @@ use App\Entity\CharacterInterface;
 use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
+use App\Enum\CraftSpecialization;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -120,6 +121,9 @@ class Player implements CharacterInterface
 
     #[ORM\Column(name: 'renown_score', type: 'integer', options: ['default' => 0])]
     private int $renownScore = 0;
+
+    #[ORM\Column(name: 'craft_specialization', type: 'string', length: 20, nullable: true, enumType: CraftSpecialization::class)]
+    private ?CraftSpecialization $craftSpecialization = null;
 
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
@@ -492,6 +496,26 @@ class Player implements CharacterInterface
     public function addRenownScore(int $amount): void
     {
         $this->renownScore = max(0, $this->renownScore + $amount);
+    }
+
+    public function getCraftSpecialization(): ?CraftSpecialization
+    {
+        return $this->craftSpecialization;
+    }
+
+    public function setCraftSpecialization(?CraftSpecialization $craftSpecialization): void
+    {
+        $this->craftSpecialization = $craftSpecialization;
+    }
+
+    public function hasCraftSpecialization(): bool
+    {
+        return $this->craftSpecialization !== null;
+    }
+
+    public function isSpecializedIn(string $craft): bool
+    {
+        return $this->craftSpecialization !== null && $this->craftSpecialization->craftSlug() === $craft;
     }
 
     public function getRace(): ?Race

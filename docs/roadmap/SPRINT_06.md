@@ -30,10 +30,10 @@
 
 ### 122 — Metiers specialises (2e tier) (M | ★★)
 > Prerequis : ← 145 (recettes craft)
-- [ ] Specialisations de craft : Maitre Forgeron, Maitre Alchimiste, Maitre Joaillier
+- [x] Specialisations de craft : Maitre Forgeron, Maitre Alchimiste, Maitre Joaillier (+ Maitre Tanneur pour symetrie) — enum `CraftSpecialization`, sous-phase 1
 - [ ] Recettes exclusives par specialisation (items tier 4+)
-- [ ] Bonus qualite +20% si specialise
-- [ ] 1 specialisation par joueur (choix irreversible, deblocage a domain XP 500+)
+- [x] Bonus qualite +20% si specialise — `QualityCalculator` etend `calculateQuality()` avec parametre `specializationBonus`, sous-phase 1
+- [x] 1 specialisation par joueur (choix irreversible, deblocage a domain XP 500+) — champ `craftSpecialization` sur Player, `CraftSpecializationService::canChoose/choose`, UI dans la page craft, sous-phase 1
 
 ### 123 — Encheres temporaires & ventes flash (S | ★)
 > Prerequis : ← 116 (hotel des ventes)

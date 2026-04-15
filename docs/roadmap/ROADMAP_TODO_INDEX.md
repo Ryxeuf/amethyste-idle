@@ -3,7 +3,7 @@
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
 > Derniere mise a jour : 2026-04-15
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4 et 5 termines.** Prochaine etape : Sprint 6 (Social & Economie, 4/6 — task 121 close).
+> **Sprints 1, 2, 3, 4 et 5 termines.** Prochaine etape : Sprint 6 (Social & Economie, 4/6 — task 121 close, task 122 en cours sous-phase 1/2).
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---

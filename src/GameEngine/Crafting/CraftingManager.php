@@ -26,6 +26,7 @@ class CraftingManager
         private readonly GameEventBonusProvider $gameEventBonusProvider,
         private readonly GearHelper $gearHelper,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly CraftSpecializationService $craftSpecializationService,
     ) {
     }
 
@@ -289,7 +290,8 @@ class CraftingManager
         // Determiner la qualite
         $baseQuality = $recipe->getQuality() ?? QualityCalculator::QUALITY_NORMAL;
         $skillLevel = $this->getCraftingLevel($player, $recipe->getCraft());
-        $finalQuality = $this->qualityCalculator->calculateQuality($baseQuality, $skillLevel);
+        $specializationBonus = $this->craftSpecializationService->getQualityBonusFor($player, $recipe->getCraft());
+        $finalQuality = $this->qualityCalculator->calculateQuality($baseQuality, $skillLevel, $specializationBonus);
 
         // Creer l'item resultat
         $resultItem = $recipe->getResult();

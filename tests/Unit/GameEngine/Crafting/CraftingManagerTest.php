@@ -11,6 +11,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Event\CraftEvent;
 use App\GameEngine\Crafting\CraftingManager;
+use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\QualityCalculator;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
@@ -55,6 +56,7 @@ class CraftingManagerTest extends TestCase
             $this->gameEventBonusProvider,
             $this->gearHelper,
             $this->createMock(PlayerActionHelper::class),
+            $this->createMock(CraftSpecializationService::class),
         );
     }
 
