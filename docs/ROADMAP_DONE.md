@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15
+> Derniere mise a jour : 2026-04-15 (task 121 cloturee — report systeme)
 
 ---
 
@@ -2045,3 +2045,15 @@
 - [x] `QuestController::accept()` : blocage avec message `Renommee insuffisante (X requis, vous avez Y)` si score insuffisant
 - [x] Template `game/quest/index.html.twig` : badge ambre `Renommee : <palier>` avec la classe CSS du palier dans la liste des quetes disponibles
 - [x] Tests unitaires `QuestRenownRequirementTest` (6 tests : defaut sans pre-requis, normalisation 0/negatif en null, blocage en dessous du seuil, palier correct pour seuil exact et score intermediaire)
+
+### 121 — Systeme de reputation & karma (final, sous-phase 4) — Report systeme & malus renommee (2026-04-15) ✅
+
+> Derniere sous-phase de la tache 121 : signalement basique entre joueurs avec moderation admin et malus de renommee a la validation. Cloture complete de la tache 121.
+- [x] Enums `PlayerReportReason` (5 raisons : harcelement, spam, triche, contenu inapproprie, autre) et `PlayerReportStatus` (pending, accepted, rejected)
+- [x] Entite `PlayerReport` (reporter, reportedPlayer, reason, description, status, renownMalusApplied, reviewedBy, reviewedAt) + migration PostgreSQL `Version20260415PlayerReport` avec FK CASCADE et 3 index
+- [x] Repository `PlayerReportRepository` : `countRecentReports`, `findForAdmin`, `countForAdmin`
+- [x] Service `PlayerReportManager` : `submitReport` (anti-self-report, cooldown 24h, max 1000 chars), `acceptReport` (applique malus -50 renommee via `PlayerRenownManager::addRenown`), `rejectReport`
+- [x] Route `POST /game/player/{id}/report` (CSRF + flash messages) et formulaire de signalement integre au profil joueur (`templates/game/profile/show.html.twig`)
+- [x] Controller admin `/admin/reports` (`PlayerReportController`, `ROLE_MODERATOR`) : liste filtree par statut, accept/reject avec `AdminLogger`
+- [x] Template `templates/admin/report/index.html.twig` (table avec filtres pending/accepted/rejected/all + pagination) et lien sidebar admin
+- [x] Tests unitaires `PlayerReportManagerTest` (9 tests : creation, anti-self-report, trim, validation longueur, cooldown, accept avec malus, idempotence, reject)

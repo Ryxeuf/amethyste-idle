@@ -7,6 +7,7 @@ use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerAchievement;
 use App\Entity\App\PlayerBestiary;
+use App\GameEngine\Renown\PlayerReportManager;
 use App\Helper\PlayerHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,6 +22,7 @@ class PlayerProfileControllerTest extends TestCase
 {
     private PlayerHelper&MockObject $playerHelper;
     private EntityManagerInterface&MockObject $entityManager;
+    private PlayerReportManager&MockObject $reportManager;
     private PlayerProfileController $controller;
 
     /** @var array<string, mixed>|null */
@@ -30,10 +32,12 @@ class PlayerProfileControllerTest extends TestCase
     {
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->reportManager = $this->createMock(PlayerReportManager::class);
 
         $this->controller = new PlayerProfileController(
             $this->playerHelper,
             $this->entityManager,
+            $this->reportManager,
         );
 
         $this->controller->setContainer($this->createContainer());
