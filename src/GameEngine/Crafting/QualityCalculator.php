@@ -22,10 +22,10 @@ class QualityCalculator
      * Determine la qualite d'un objet fabrique.
      *
      * - Qualite de base definie par la recette
-     * - Chance d'amelioration : skillLevel * 2%
+     * - Chance d'amelioration : skillLevel * 2% (+ bonus specialisation si applicable)
      * - Craft critique : 5% de chance de sauter un palier
      */
-    public function calculateQuality(string $baseQuality, int $skillLevel): string
+    public function calculateQuality(string $baseQuality, int $skillLevel, int $specializationBonus = 0): string
     {
         $currentIndex = array_search($baseQuality, self::QUALITY_TIERS, true);
 
@@ -33,8 +33,8 @@ class QualityCalculator
             $currentIndex = 0;
         }
 
-        // Chance d'amelioration basee sur le niveau : skillLevel * 2%
-        $upgradeChance = min(100, $skillLevel * 2);
+        // Chance d'amelioration basee sur le niveau : skillLevel * 2% + bonus specialisation
+        $upgradeChance = min(100, $skillLevel * 2 + max(0, $specializationBonus));
         $roll = random_int(1, 100);
 
         if ($roll <= $upgradeChance && $currentIndex < count(self::QUALITY_TIERS) - 1) {

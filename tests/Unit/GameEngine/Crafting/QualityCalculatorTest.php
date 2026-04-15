@@ -75,4 +75,34 @@ class QualityCalculatorTest extends TestCase
             $this->assertSame('legendary', $result);
         }
     }
+
+    public function testCalculateQualityWithSpecializationBonusGuaranteesUpgrade(): void
+    {
+        // Avec skillLevel 50 (=100% base) et bonus specialisation, la chance est plafonnee a 100%
+        // donc l'objet est toujours ameliore d'au moins un palier.
+        $baseIndex = array_search('normal', QualityCalculator::QUALITY_TIERS, true);
+        for ($i = 0; $i < 10; ++$i) {
+            $result = $this->calculator->calculateQuality('normal', 50, 20);
+            $resultIndex = array_search($result, QualityCalculator::QUALITY_TIERS, true);
+            $this->assertGreaterThan($baseIndex, $resultIndex);
+        }
+    }
+
+    public function testCalculateQualityWithZeroBonusIsUnchanged(): void
+    {
+        // Le bonus 0 ne modifie pas le comportement : skillLevel 0 = 0% chance = reste normal.
+        for ($i = 0; $i < 20; ++$i) {
+            $result = $this->calculator->calculateQuality('normal', 0, 0);
+            $this->assertSame('normal', $result);
+        }
+    }
+
+    public function testCalculateQualityBonusCannotExceed100Percent(): void
+    {
+        // Bonus enorme : toujours une amelioration, mais jamais au-dela du cap legendary.
+        for ($i = 0; $i < 20; ++$i) {
+            $result = $this->calculator->calculateQuality('legendary', 100, 200);
+            $this->assertSame('legendary', $result);
+        }
+    }
 }

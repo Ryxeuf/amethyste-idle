@@ -12,6 +12,40 @@
     {# Messages flash #}
     {% include 'game/crafting/_craft_result.html.twig' %}
 
+    {# Bloc specialisation de metier (task 122) #}
+    <div class="mb-6 p-4 bg-gray-800/50 border border-purple-500/30 rounded-lg">
+        <h2 class="text-lg font-semibold text-purple-300 mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M6.5 2a.5.5 0 00-.5.5v1.5h-1A1.5 1.5 0 003.5 5.5v11A1.5 1.5 0 005 18h10a1.5 1.5 0 001.5-1.5v-11A1.5 1.5 0 0015 4h-1V2.5a.5.5 0 00-1 0V4H7V2.5a.5.5 0 00-.5-.5z"/>
+            </svg>
+            Specialisation de metier
+        </h2>
+        {% if player.craftSpecialization %}
+            <p class="text-sm text-purple-200">
+                Vous etes <span class="font-bold text-yellow-300">{{ player.craftSpecialization.label }}</span>.
+                <span class="text-gray-300">Bonus : +{{ specializationBonus }}% de chance d'ameliorer la qualite lors du craft en {{ player.craftSpecialization.craftSlug }}.</span>
+            </p>
+        {% elseif specializationCheck.ok %}
+            <p class="text-sm text-gray-300 mb-3">
+                Choisissez une specialisation de maitrise. Le choix est <span class="text-amber-300 font-bold">irreversible</span> et accorde +{{ specializationBonus }}% de chance d'amelioration de qualite sur le metier correspondant.
+            </p>
+            <form method="post" action="{{ path('app_game_craft_specialization') }}" onsubmit="return confirm('Ce choix est irreversible. Confirmer ?');" class="flex flex-wrap gap-2">
+                <input type="hidden" name="_token" value="{{ csrf_token('craft_specialization') }}">
+                {% for spec in specializations %}
+                    <button type="submit" name="specialization" value="{{ spec.value }}"
+                            class="px-3 py-2 text-sm bg-purple-600 hover:bg-purple-500 text-white rounded transition-colors"
+                            title="{{ spec.description }}">
+                        {{ spec.label }}
+                    </button>
+                {% endfor %}
+            </form>
+        {% else %}
+            <p class="text-sm text-gray-400">
+                {{ specializationCheck.reason }}
+            </p>
+        {% endif %}
+    </div>
+
     {# Onglets des professions d'artisanat #}
     <div class="mb-6">
         <div class="border-b border-gray-700">

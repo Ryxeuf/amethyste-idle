@@ -5,7 +5,9 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\EnchantmentDefinition;
 use App\Entity\Game\Recipe;
+use App\Enum\CraftSpecialization;
 use App\GameEngine\Crafting\CraftingManager;
+use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\ExperimentationManager;
 use App\GameEngine\Enchantment\EnchantmentManager;
 use App\Helper\PlayerHelper;
@@ -26,6 +28,7 @@ class CraftingController extends AbstractController
         private readonly EnchantmentManager $enchantmentManager,
         private readonly EntityManagerInterface $em,
         private readonly PlayerHelper $playerHelper,
+        private readonly CraftSpecializationService $craftSpecializationService,
     ) {
     }
 
@@ -106,7 +109,39 @@ class CraftingController extends AbstractController
             'enchantmentDefinitions' => $enchantmentDefinitions,
             'equippedItems' => $equippedItems,
             'activeEnchantments' => $activeEnchantments,
+            'specializations' => $this->craftSpecializationService->getAvailableSpecializations(),
+            'specializationCheck' => $this->craftSpecializationService->canChoose($player),
+            'specializationBonus' => CraftSpecializationService::QUALITY_BONUS_CHANCE,
+            'specializationRequiredXp' => CraftSpecializationService::REQUIRED_DOMAIN_XP,
         ]);
+    }
+
+    #[Route('/specialization', name: 'app_game_craft_specialization', methods: ['POST'])]
+    public function chooseSpecialization(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('craft_specialization', (string) $request->request->get('_token'))) {
+            $this->addFlash('warning', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('app_game_craft');
+        }
+
+        $slug = (string) $request->request->get('specialization');
+        $specialization = CraftSpecialization::tryFrom($slug);
+        if ($specialization === null) {
+            $this->addFlash('warning', 'Specialisation inconnue.');
+
+            return $this->redirectToRoute('app_game_craft');
+        }
+
+        $result = $this->craftSpecializationService->choose($player, $specialization);
+        $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
+
+        return $this->redirectToRoute('app_game_craft');
     }
 
     #[Route('/craft/{slug}', name: 'app_game_craft_execute', methods: ['POST'])]

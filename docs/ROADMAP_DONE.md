@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15 (task 121 cloturee — report systeme)
+> Derniere mise a jour : 2026-04-15 (task 122 sous-phase 1 — fondations metiers specialises)
 
 ---
 
@@ -2057,3 +2057,15 @@
 - [x] Controller admin `/admin/reports` (`PlayerReportController`, `ROLE_MODERATOR`) : liste filtree par statut, accept/reject avec `AdminLogger`
 - [x] Template `templates/admin/report/index.html.twig` (table avec filtres pending/accepted/rejected/all + pagination) et lien sidebar admin
 - [x] Tests unitaires `PlayerReportManagerTest` (9 tests : creation, anti-self-report, trim, validation longueur, cooldown, accept avec malus, idempotence, reject)
+
+### 122 — Metiers specialises (partiel, sous-phase 1) — Fondations & bonus qualite (2026-04-15) 🔧
+
+> Premiere sous-phase de la tache 122 : systeme de choix de specialisation irreversible (4 metiers) accompagne d'un bonus de chance d'amelioration de qualite au craft. Les recettes exclusives restent a faire en sous-phase 2.
+- [x] Enum `CraftSpecialization` (4 cases : Forgeron, Tanneur, Alchimiste, Joaillier) avec `label()`, `craftSlug()`, `description()`
+- [x] Champ `craft_specialization` (VARCHAR(20) nullable) sur `Player` + migration PostgreSQL `Version20260415PlayerCraftSpecialization` (`ADD COLUMN IF NOT EXISTS`) avec `getCraftSpecialization`, `setCraftSpecialization`, `hasCraftSpecialization`, `isSpecializedIn(string)`
+- [x] Service `CraftSpecializationService` : `canChoose(Player)` (seuil `REQUIRED_DOMAIN_XP = 500` sur un domaine de craft, blocage si deja specialise), `choose(Player, spec)` (irreversible + flush), `getQualityBonusFor(Player, craft)` (+20% si la specialisation matche le craft), `getAvailableSpecializations()`
+- [x] `QualityCalculator::calculateQuality(base, skillLevel, specializationBonus = 0)` integre le bonus (plafonne a 100% comme la chance de base)
+- [x] `CraftingManager` passe `CraftSpecializationService::getQualityBonusFor($player, $recipe->getCraft())` au calculator lors du craft
+- [x] Route `POST /game/craft/specialization` (CSRF `craft_specialization`) et bloc UI dans `templates/game/crafting/index.html.twig` : affichage du titre actuel (si specialise), boutons de choix avec confirmation irreversible (si eligible), ou message de seuil (si insuffisant)
+- [x] Tests unitaires : `CraftSpecializationTest` (5 tests : cases, craft slug, label "Maitre", description, tryFrom), `CraftSpecializationServiceTest` (9 tests : list, canChoose seuil/above/already, choose succes/echec, bonus matching/mismatch/absent, XP domaine non-craft ignore), `QualityCalculatorTest` etendu (3 tests : bonus garantit upgrade, bonus 0 inchange, plafond legendary)
+- [ ] Restant (sous-phase 2) : recettes exclusives par specialisation (champ `requiresSpecialization` sur Recipe, filtrage `getAvailableRecipes`, fixtures items tier 4+)
