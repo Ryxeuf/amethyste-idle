@@ -10,6 +10,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Entity\Game\Item;
 use App\Enum\AuctionStatus;
+use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\Guild\TownControlManager;
@@ -344,6 +345,197 @@ class AuctionManagerTest extends TestCase
         $listing = $manager->createListing($seller, $item, 100, 1);
 
         $this->assertSame(100, $listing->getPricePerUnit());
+    }
+
+    public function testCreateAuctionListingSuccess(): void
+    {
+        $seller = $this->createPlayer(1, 1000);
+        $item = $this->createPlayerItem();
+
+        $this->em->expects($this->once())->method('persist');
+
+        $listing = $this->manager->createAuctionListing($seller, $item, 100, 5);
+
+        $this->assertSame(AuctionType::Auction, $listing->getType());
+        $this->assertSame(100, $listing->getPricePerUnit());
+        $this->assertSame(5, $listing->getMinIncrement());
+        $this->assertNull($listing->getCurrentBid());
+        $this->assertNull($listing->getCurrentBidder());
+        $this->assertSame(995, $seller->getGils()); // 1000 - 5% fee = 5
+    }
+
+    public function testPlaceBidSuccess(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 500);
+        $item = $this->createPlayerItem();
+
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->manager->placeBid($bidder, $listing, 120);
+
+        $this->assertSame(120, $listing->getCurrentBid());
+        $this->assertSame($bidder, $listing->getCurrentBidder());
+        $this->assertSame(380, $bidder->getGils()); // 500 - 120 escrow
+    }
+
+    public function testPlaceBidRefundsPreviousBidder(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder1 = $this->createPlayer(2, 500);
+        $bidder2 = $this->createPlayer(3, 1000);
+        $item = $this->createPlayerItem();
+
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->manager->placeBid($bidder1, $listing, 120);
+        $this->assertSame(380, $bidder1->getGils());
+
+        $this->manager->placeBid($bidder2, $listing, 150);
+
+        $this->assertSame(500, $bidder1->getGils()); // refunded
+        $this->assertSame(850, $bidder2->getGils()); // 1000 - 150
+        $this->assertSame($bidder2, $listing->getCurrentBidder());
+        $this->assertSame(150, $listing->getCurrentBid());
+    }
+
+    public function testPlaceBidBelowMinimumIncrement(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder1 = $this->createPlayer(2, 500);
+        $bidder2 = $this->createPlayer(3, 500);
+        $item = $this->createPlayerItem();
+
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+        $this->manager->placeBid($bidder1, $listing, 120);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('130'); // 120 + 10 increment
+
+        $this->manager->placeBid($bidder2, $listing, 125);
+    }
+
+    public function testPlaceBidMinimumAtStartingPriceTotal(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 500);
+        $item = $this->createPlayerItem();
+
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('100'); // startingPrice * quantity
+
+        $this->manager->placeBid($bidder, $listing, 50);
+    }
+
+    public function testPlaceBidOnOwnAuctionFails(): void
+    {
+        $seller = $this->createPlayer(1, 500);
+        $item = $this->createPlayerItem();
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('propre');
+
+        $this->manager->placeBid($seller, $listing, 150);
+    }
+
+    public function testPlaceBidAlreadyHighestBidderFails(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 1000);
+        $item = $this->createPlayerItem();
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->manager->placeBid($bidder, $listing, 120);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('plus offrant');
+
+        $this->manager->placeBid($bidder, $listing, 200);
+    }
+
+    public function testBuyListingFailsOnAuctionType(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $buyer = $this->createPlayer(2, 500);
+        $item = $this->createPlayerItem();
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('enchere');
+
+        $this->manager->buyListing($buyer, $listing);
+    }
+
+    public function testFinalizeAuctionTransfersItemAndGils(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 1000);
+        $item = $this->createPlayerItem();
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->manager->placeBid($bidder, $listing, 200);
+
+        $this->em->expects($this->once())->method('persist');
+
+        $transaction = $this->manager->finalizeAuction($listing);
+
+        $this->assertSame(AuctionStatus::Sold, $listing->getStatus());
+        $this->assertSame(200, $seller->getGils()); // no tax
+        $this->assertSame(200, $transaction->getTotalPrice());
+        // item returned/transferred to buyer
+        $bagInventory = null;
+        foreach ($bidder->getInventories() as $inv) {
+            if ($inv->getType() === Inventory::TYPE_BAG) {
+                $bagInventory = $inv;
+            }
+        }
+        $this->assertSame($bagInventory, $item->getInventory());
+    }
+
+    public function testFinalizeAuctionNoBidderFails(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem();
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('gagnant');
+
+        $this->manager->finalizeAuction($listing);
+    }
+
+    public function testCancelAuctionWithBidderFails(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 1000);
+        $item = $this->createPlayerItem();
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->manager->placeBid($bidder, $listing, 150);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('mises en cours');
+
+        $this->manager->cancelListing($seller, $listing);
+    }
+
+    private function createAuctionListing(Player $seller, PlayerItem $item, int $startingPrice, int $minIncrement): AuctionListing
+    {
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit($startingPrice);
+        $listing->setListingFee(5);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setType(AuctionType::Auction);
+        $listing->setMinIncrement($minIncrement);
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        return $listing;
     }
 
     public function testCancelListingSetsCancelledAt(): void

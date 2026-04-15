@@ -65,13 +65,49 @@
                         </div>
                     </div>
 
+                    {# Listing type #}
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Type d'annonce</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center gap-2 bg-gray-700/50 rounded-lg p-2.5 border border-gray-600 cursor-pointer hover:border-purple-500/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-900/20">
+                                <input type="radio" name="listing_type" value="fixed" checked
+                                       class="text-purple-500 focus:ring-purple-500 bg-gray-700 border-gray-600"
+                                       onchange="toggleAuctionFields(false)">
+                                <div class="flex-1">
+                                    <span class="text-sm text-white">Prix fixe</span>
+                                    <p class="text-[10px] text-gray-500">Duree 48h</p>
+                                </div>
+                            </label>
+                            <label class="flex items-center gap-2 bg-gray-700/50 rounded-lg p-2.5 border border-gray-600 cursor-pointer hover:border-purple-500/50 has-[:checked]:border-purple-500 has-[:checked]:bg-purple-900/20">
+                                <input type="radio" name="listing_type" value="auction"
+                                       class="text-purple-500 focus:ring-purple-500 bg-gray-700 border-gray-600"
+                                       onchange="toggleAuctionFields(true)">
+                                <div class="flex-1">
+                                    <span class="text-sm text-white">Enchere</span>
+                                    <p class="text-[10px] text-gray-500">Duree 24h</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
                     {# Price input #}
                     <div class="mb-4">
-                        <label for="price_per_unit" class="block text-sm font-medium text-gray-300 mb-2">Prix de vente (Gils)</label>
+                        <label for="price_per_unit" class="block text-sm font-medium text-gray-300 mb-2">
+                            <span id="price-label-fixed">Prix de vente (Gils)</span>
+                            <span id="price-label-auction" class="hidden">Prix de depart (Gils)</span>
+                        </label>
                         <input type="number" name="price_per_unit" id="price_per_unit" min="1" required
                                placeholder="Ex: 100"
                                class="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
                                oninput="updateFeePreview()">
+                    </div>
+
+                    {# Auction increment #}
+                    <div class="mb-4 hidden" id="auction-increment-field">
+                        <label for="min_increment" class="block text-sm font-medium text-gray-300 mb-2">Increment minimum (Gils)</label>
+                        <input type="number" name="min_increment" id="min_increment" min="1" value="1"
+                               class="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500">
+                        <p class="text-[10px] text-gray-500 mt-1">Ecart minimum entre deux mises successives.</p>
                     </div>
 
                     {# Preview #}
@@ -86,7 +122,7 @@
                         </div>
                         <div class="border-t border-gray-700 pt-1 mt-1 flex justify-between text-xs">
                             <span class="text-gray-400">Duree</span>
-                            <span class="text-gray-300">48 heures</span>
+                            <span class="text-gray-300" id="preview-duration">48 heures</span>
                         </div>
                     </div>
 
@@ -103,6 +139,13 @@
 
 {% if sellableItems is not empty %}
 <script>
+function toggleAuctionFields(isAuction) {
+    document.getElementById('auction-increment-field').classList.toggle('hidden', !isAuction);
+    document.getElementById('price-label-fixed').classList.toggle('hidden', isAuction);
+    document.getElementById('price-label-auction').classList.toggle('hidden', !isAuction);
+    document.getElementById('preview-duration').textContent = isAuction ? '24 heures' : '48 heures';
+}
+
 function updateSellPreview(suggestedPrice, itemName) {
     var priceInput = document.getElementById('price_per_unit');
     if (priceInput.value === '' && suggestedPrice > 0) {

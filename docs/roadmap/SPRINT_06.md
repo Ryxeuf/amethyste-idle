@@ -37,7 +37,7 @@
 
 ### 123 — Encheres temporaires & ventes flash (S | ★)
 > Prerequis : ← 116 (hotel des ventes)
-- [ ] Type d'annonce "enchere" : prix de depart, increments, duree fixe
+- [x] Type d'annonce "enchere" : prix de depart, increments, duree fixe — enum `AuctionType`, champs `minIncrement`/`currentBid`/`currentBidder` sur `AuctionListing`, methodes `createAuctionListing`/`placeBid`/`finalizeAuction` (escrow + remboursement auto du bidder depasse), UI de mise dans la liste HdV et option "Enchere" dans le formulaire de vente, sous-phase 1
 - [ ] Notification aux encherisseurs si depasses
 - [ ] Ventes flash admin : items rares a prix reduit, duree limitee
 

@@ -86,32 +86,65 @@
                                         <span class="px-1.5 py-0.5 bg-gray-800 border border-gray-700 text-gray-400 text-[10px] rounded">
                                             {{ itemTypes[item.type]|default(item.type) }}
                                         </span>
+                                        {% if listing.isAuction %}
+                                            <span class="px-1.5 py-0.5 bg-amber-900/40 border border-amber-700/50 text-amber-300 text-[10px] rounded">
+                                                Enchere
+                                            </span>
+                                        {% endif %}
                                     </div>
                                     <p class="text-gray-500 text-xs mt-0.5 truncate">{{ item.description }}</p>
                                     <div class="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
                                         <span>Vendeur : <span class="text-gray-300">{{ listing.seller.name }}</span></span>
                                         <span>Expire : <span class="text-gray-300">{{ listing.expiresAt|date('d/m H\\hi') }}</span></span>
+                                        {% if listing.isAuction and listing.currentBidder %}
+                                            <span>Plus offrant : <span class="text-amber-300">{{ listing.currentBidder.name }}</span></span>
+                                        {% endif %}
                                     </div>
                                 </div>
                                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                                    <div class="text-right">
-                                        <span class="text-yellow-400 font-mono font-semibold text-sm">{{ listing.totalPrice|number_format(0, ',', ' ') }} G</span>
-                                        {% if listing.quantity > 1 %}
-                                            <p class="text-gray-500 text-[10px]">{{ listing.pricePerUnit|number_format(0, ',', ' ') }} G/u x{{ listing.quantity }}</p>
+                                    {% if listing.isAuction %}
+                                        {% set minBid = listing.currentBid is null ? listing.totalPrice : listing.currentBid + (listing.minIncrement ?? 1) %}
+                                        <div class="text-right">
+                                            <span class="text-amber-300 font-mono font-semibold text-sm">{{ (listing.currentBid ?? listing.totalPrice)|number_format(0, ',', ' ') }} G</span>
+                                            <p class="text-gray-500 text-[10px]">
+                                                {% if listing.currentBid is null %}Mise initiale{% else %}Mise actuelle{% endif %}
+                                                · Min +{{ (listing.minIncrement ?? 1)|number_format(0, ',', ' ') }}
+                                            </p>
+                                        </div>
+                                        {% if listing.seller.id != player.id %}
+                                            <form method="POST" action="{{ path('app_game_auction_bid', {id: listing.id}) }}" class="flex gap-1">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('auction_bid_' ~ listing.id) }}">
+                                                <input type="number" name="bid_amount" min="{{ minBid }}" value="{{ minBid }}"
+                                                       class="w-24 bg-gray-700/50 border border-gray-600 rounded-lg px-2 py-1 text-xs text-white focus:outline-none focus:border-amber-500">
+                                                <button type="submit"
+                                                        class="px-3 py-1 text-xs rounded-lg transition-colors {% if player.gils < minBid %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-amber-600 hover:bg-amber-500 text-white{% endif %}"
+                                                        {% if player.gils < minBid %}disabled title="Fonds insuffisants"{% endif %}>
+                                                    Encherir
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-gray-500 text-xs italic">Votre enchere</span>
                                         {% endif %}
-                                    </div>
-                                    {% if listing.seller.id != player.id %}
-                                        <form method="POST" action="{{ path('app_game_auction_buy', {id: listing.id}) }}"
-                                              onsubmit="return confirm('Acheter {{ item.name|e('js') }} pour {{ listing.totalPrice|number_format(0, ',', ' ') }} Gils ?')">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('auction_buy_' ~ listing.id) }}">
-                                            <button type="submit"
-                                                    class="px-3 py-1.5 text-xs rounded-lg transition-colors {% if player.gils < listing.totalPrice %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-purple-600 hover:bg-purple-500 text-white{% endif %}"
-                                                    {% if player.gils < listing.totalPrice %}disabled title="Fonds insuffisants"{% endif %}>
-                                                Acheter
-                                            </button>
-                                        </form>
                                     {% else %}
-                                        <span class="text-gray-500 text-xs italic">Votre annonce</span>
+                                        <div class="text-right">
+                                            <span class="text-yellow-400 font-mono font-semibold text-sm">{{ listing.totalPrice|number_format(0, ',', ' ') }} G</span>
+                                            {% if listing.quantity > 1 %}
+                                                <p class="text-gray-500 text-[10px]">{{ listing.pricePerUnit|number_format(0, ',', ' ') }} G/u x{{ listing.quantity }}</p>
+                                            {% endif %}
+                                        </div>
+                                        {% if listing.seller.id != player.id %}
+                                            <form method="POST" action="{{ path('app_game_auction_buy', {id: listing.id}) }}"
+                                                  onsubmit="return confirm('Acheter {{ item.name|e('js') }} pour {{ listing.totalPrice|number_format(0, ',', ' ') }} Gils ?')">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('auction_buy_' ~ listing.id) }}">
+                                                <button type="submit"
+                                                        class="px-3 py-1.5 text-xs rounded-lg transition-colors {% if player.gils < listing.totalPrice %}bg-gray-600 text-gray-400 cursor-not-allowed{% else %}bg-purple-600 hover:bg-purple-500 text-white{% endif %}"
+                                                        {% if player.gils < listing.totalPrice %}disabled title="Fonds insuffisants"{% endif %}>
+                                                    Acheter
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-gray-500 text-xs italic">Votre annonce</span>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                             </div>

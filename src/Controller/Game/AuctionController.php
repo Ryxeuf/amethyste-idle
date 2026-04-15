@@ -4,6 +4,7 @@ namespace App\Controller\Game;
 
 use App\Entity\App\PlayerItem;
 use App\Enum\AuctionStatus;
+use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
 use App\Helper\PlayerHelper;
@@ -135,6 +136,8 @@ class AuctionController extends AbstractController
 
         $playerItemId = $request->request->getInt('player_item_id');
         $pricePerUnit = $request->request->getInt('price_per_unit');
+        $listingType = AuctionType::tryFrom((string) $request->request->get('listing_type', 'fixed')) ?? AuctionType::Fixed;
+        $minIncrement = max(1, $request->request->getInt('min_increment', AuctionManager::AUCTION_MIN_INCREMENT));
 
         $playerItem = $this->entityManager->getRepository(PlayerItem::class)->find($playerItemId);
         if (!$playerItem || $playerItem->getInventory()?->getPlayer()?->getId() !== $player->getId()) {
@@ -144,13 +147,23 @@ class AuctionController extends AbstractController
         }
 
         try {
-            $this->auctionManager->createListing($player, $playerItem, $pricePerUnit);
-            $this->addFlash('success', sprintf(
-                '%s mis en vente pour %d Gils (frais: %d Gils).',
-                $playerItem->getGenericItem()->getName(),
-                $pricePerUnit,
-                (int) ceil($pricePerUnit * 0.05),
-            ));
+            if ($listingType === AuctionType::Auction) {
+                $this->auctionManager->createAuctionListing($player, $playerItem, $pricePerUnit, $minIncrement);
+                $this->addFlash('success', sprintf(
+                    '%s mis aux encheres (depart %d Gils, increment %d Gils).',
+                    $playerItem->getGenericItem()->getName(),
+                    $pricePerUnit,
+                    $minIncrement,
+                ));
+            } else {
+                $this->auctionManager->createListing($player, $playerItem, $pricePerUnit);
+                $this->addFlash('success', sprintf(
+                    '%s mis en vente pour %d Gils (frais: %d Gils).',
+                    $playerItem->getGenericItem()->getName(),
+                    $pricePerUnit,
+                    (int) ceil($pricePerUnit * 0.05),
+                ));
+            }
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
 
@@ -158,6 +171,41 @@ class AuctionController extends AbstractController
         }
 
         return $this->redirectToRoute('app_game_auction_my_listings');
+    }
+
+    #[Route('/bid/{id}', name: 'app_game_auction_bid', methods: ['POST'])]
+    public function bid(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (!$player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('auction_bid_' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_auction');
+        }
+
+        $listing = $this->listingRepository->find($id);
+        if (!$listing) {
+            $this->addFlash('error', 'Annonce introuvable.');
+
+            return $this->redirectToRoute('app_game_auction');
+        }
+
+        $bidAmount = $request->request->getInt('bid_amount');
+
+        try {
+            $this->auctionManager->placeBid($player, $listing, $bidAmount);
+            $this->addFlash('success', sprintf('Mise de %d Gils placee.', $bidAmount));
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_auction');
     }
 
     #[Route('/buy/{id}', name: 'app_game_auction_buy', methods: ['POST'])]

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15 (task 122 sous-phase 2 — recettes exclusives par specialisation)
+> Derniere mise a jour : 2026-04-15 (task 123 sous-phase 1 — type d'annonce enchere)
 
 ---
 
@@ -2079,3 +2079,16 @@
 - [x] Quatre recettes exclusives dans `RecipeFixtures` (niveau 10, 200 XP recompense, ingredients tier 4+ : orichalque, adamantite, astretal, gemme prismatique, peau de drake) avec `required_specialization` mappee a l'enum `CraftSpecialization`
 - [x] Templates `_recipe_card.html.twig` et `_recipe_card_locked.html.twig` : badge jaune `Maitre Forgeron/Tanneur/Alchimiste/Joaillier` affiche sur les cartes recettes exclusives (disponibles ou verrouillees)
 - [x] Tests unitaires `CraftingManagerTest` etendus (5 tests) : recette exclusive masquee si pas de specialisation, visible si specialisation matche, masquee si mismatch, presente dans verrouillees si specialisation manque, refus de craft sans specialisation requise
+
+### 123 — Encheres temporaires & ventes flash (partiel, sous-phase 1) — Type d'annonce "enchere" (2026-04-15) 🔧
+
+> Premiere sous-phase de la tache 123 : ajout du type "enchere" a l'hotel des ventes, avec prix de depart, increment minimum et duree fixe (24h). Les Gils du bidder sont verrouilles en escrow et rembourses automatiquement lors d'une surenchere. A l'expiration avec bidder, l'enchere est finalisee (objet transfere au gagnant, Gils moins taxe au vendeur). Notifications Mercure et ventes flash admin restent a faire (sous-phases 2 et 3).
+- [x] Enum `AuctionType` (2 cases : Fixed, Auction) avec `label()`
+- [x] Extension `AuctionListing` : champs `type`, `minIncrement`, `currentBid`, `currentBidder` (Player nullable avec FK SET NULL) + helpers `isAuction()` et `getCurrentPrice()` + migration PostgreSQL `Version20260415AuctionBidding` (`ADD COLUMN IF NOT EXISTS`, index type + current_bidder_id)
+- [x] `AuctionManager::createAuctionListing(seller, item, startingPrice, minIncrement, quantity)` : frais de mise en vente 5%, duree fixe `AUCTION_DURATION_HOURS = 24`, retrait de l'objet de l'inventaire
+- [x] `AuctionManager::placeBid(bidder, listing, amount)` : escrow Gils, verification du minimum (`currentBid + minIncrement` ou `startingPrice * quantity`), remboursement auto du bidder precedent, blocage proprietaire/bidder courant/enchere expiree ou close
+- [x] `AuctionManager::finalizeAuction(listing)` : transfert de l'objet au gagnant, transfert des Gils (moins taxe regionale) au vendeur, generation `AuctionTransaction` ; appelee automatiquement par `expireListings()` pour les encheres expirees avec bidder
+- [x] `buyListing` rejette les encheres (message explicite), `cancelListing` rejette l'annulation si des mises sont en cours
+- [x] UI : badge "Enchere" et formulaire de mise (input + bouton "Encherir") integres a la liste HdV ; option "Enchere" dans le formulaire de vente avec champ increment minimum et preview ajustee
+- [x] Controller `AuctionController::bid` (route `POST /game/auction/bid/{id}`, CSRF `auction_bid_{id}`) et `sell` dispatche vers `createAuctionListing` si `listing_type=auction`
+- [x] Tests unitaires `AuctionManagerTest` etendus (11 tests ajoutes) : creation enchere, mise valide, surenchere avec remboursement, increment minimum, mise initiale au startingPrice, proprietaire/plus offrant bloques, `buyListing` refuse sur enchere, finalisation avec/sans bidder, annulation bloquee avec mises en cours
