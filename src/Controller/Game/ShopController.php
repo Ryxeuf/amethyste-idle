@@ -174,7 +174,7 @@ class ShopController extends AbstractController
                 $parts[] = sprintf('-%d%% renommée', (int) ($renownDiscount * 100));
             }
             if ($parts !== []) {
-                $message .= ' ('.implode(', ', $parts).')';
+                $message .= ' (' . implode(', ', $parts) . ')';
             }
         }
 
