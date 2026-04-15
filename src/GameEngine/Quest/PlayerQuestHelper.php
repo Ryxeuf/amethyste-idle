@@ -88,6 +88,7 @@ class PlayerQuestHelper
     public function getAvailableQuests(): array
     {
         $player = $this->playerHelper->getPlayer();
+        $playerRenownScore = $player?->getRenownScore() ?? 0;
 
         // Get IDs of active and completed quests
         $activeQuestIds = array_map(
@@ -103,7 +104,9 @@ class PlayerQuestHelper
         // Get all quests not already active or completed (exclude daily + hidden quests)
         $qb = $this->entityManager->getRepository(Quest::class)->createQueryBuilder('q');
         $qb->where('q.isDaily = false')
-           ->andWhere('q.isHidden = false');
+           ->andWhere('q.isHidden = false')
+           ->andWhere('q.minRenownScore IS NULL OR q.minRenownScore <= :playerRenownScore')
+           ->setParameter('playerRenownScore', $playerRenownScore);
         if (!empty($excludeIds)) {
             $qb->andWhere('q.id NOT IN (:excludeIds)')
                ->setParameter('excludeIds', $excludeIds);

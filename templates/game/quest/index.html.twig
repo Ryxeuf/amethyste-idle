@@ -566,6 +566,13 @@
                                             <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : (questType == 'defend' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50' : (questType == 'escort' ? 'bg-teal-900/50 text-teal-300 border border-teal-700/50' : (questType == 'puzzle' ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50')))))) }}">
                                                 {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : (questType == 'defend' ? 'Defense' : (questType == 'escort' ? 'Escorte' : (questType == 'puzzle' ? 'Enigme' : 'Divers')))))))) }}
                                             </span>
+                                            {% if quest.hasRenownRequirement %}
+                                                {% set requiredTier = quest.requiredRenownTier %}
+                                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 border border-amber-700/50 {{ requiredTier.cssClass }}"
+                                                      title="Renommée {{ quest.minRenownScore }} requise ({{ requiredTier.label }})">
+                                                    Renommée : {{ requiredTier.label }}
+                                                </span>
+                                            {% endif %}
                                         </div>
                                         <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
                                         {% if giver %}

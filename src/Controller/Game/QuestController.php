@@ -117,6 +117,13 @@ class QuestController extends AbstractController
 
         $player = $this->playerHelper->getPlayer();
 
+        // Block acceptance if player renown is insufficient
+        if ($quest->hasRenownRequirement() && !$quest->isUnlockedForRenownScore($player->getRenownScore())) {
+            return new JsonResponse([
+                'error' => sprintf('Renommée insuffisante (%d requis, vous avez %d)', $quest->getMinRenownScore(), $player->getRenownScore()),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+
         // Check if already accepted
         $existing = $this->entityManager->getRepository(PlayerQuest::class)->findOneBy([
             'player' => $player,

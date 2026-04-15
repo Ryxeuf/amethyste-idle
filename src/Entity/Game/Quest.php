@@ -4,6 +4,7 @@ namespace App\Entity\Game;
 
 use App\Entity\App\GameEvent;
 use App\Entity\App\PlayerQuest;
+use App\Enum\PlayerRenownTier;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -52,6 +53,14 @@ class Quest
     #[ORM\ManyToOne(targetEntity: GameEvent::class)]
     #[ORM\JoinColumn(name: 'game_event_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?GameEvent $gameEvent = null;
+
+    /**
+     * Score de renommee minimum requis pour voir et accepter la quete.
+     * null = aucune restriction (quete disponible des le palier Novice).
+     * Sinon, compare au score courant du joueur (Player::getRenownScore()).
+     */
+    #[ORM\Column(name: 'min_renown_score', type: 'integer', nullable: true)]
+    private ?int $minRenownScore = null;
 
     #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'quest')]
     private $players;
@@ -247,6 +256,41 @@ class Quest
     public function isEventActive(): bool
     {
         return $this->gameEvent === null || $this->gameEvent->isActive();
+    }
+
+    public function getMinRenownScore(): ?int
+    {
+        return $this->minRenownScore;
+    }
+
+    public function setMinRenownScore(?int $minRenownScore): self
+    {
+        $this->minRenownScore = $minRenownScore !== null && $minRenownScore > 0 ? $minRenownScore : null;
+
+        return $this;
+    }
+
+    public function hasRenownRequirement(): bool
+    {
+        return $this->minRenownScore !== null && $this->minRenownScore > 0;
+    }
+
+    public function isUnlockedForRenownScore(int $playerRenownScore): bool
+    {
+        return !$this->hasRenownRequirement() || $playerRenownScore >= $this->minRenownScore;
+    }
+
+    /**
+     * Palier de renommee minimum necessaire pour cette quete (null si pas de restriction).
+     * Utilise le score seuil pour resoudre le palier exact correspondant au seuil requis.
+     */
+    public function getRequiredRenownTier(): ?PlayerRenownTier
+    {
+        if (!$this->hasRenownRequirement()) {
+            return null;
+        }
+
+        return PlayerRenownTier::fromScore($this->minRenownScore);
     }
 
     public function __toString(): string
