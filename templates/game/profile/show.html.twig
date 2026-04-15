@@ -25,6 +25,12 @@
                     {% if targetPlayer.prestigeTitle %}
                     <div class="text-xs text-yellow-300 italic mt-0.5">{{ targetPlayer.prestigeTitle }}</div>
                     {% endif %}
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs font-semibold {{ renownTier.cssClass }}" title="Renommée : {{ renownScore }} points{% if renownPointsToNext is not null %} ({{ renownPointsToNext }} pour le palier suivant){% endif %}">
+                            ★ {{ renownTier.label }}
+                        </span>
+                        <span class="text-xs text-gray-500">{{ renownScore }} pts</span>
+                    </div>
                     <div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
                         {% if targetPlayer.race %}
                             <span>{{ targetPlayer.race.name }}</span>

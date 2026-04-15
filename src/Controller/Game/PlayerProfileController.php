@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerAchievement;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
+use App\Enum\PlayerRenownTier;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -59,6 +60,11 @@ class PlayerProfileController extends AbstractController
         // Equipped items for the target player
         $equippedItems = $this->getEquippedItemsForPlayer($targetPlayer);
 
+        // Renown (global player reputation)
+        $renownScore = $targetPlayer->getRenownScore();
+        $renownTier = PlayerRenownTier::fromScore($renownScore);
+        $renownPointsToNext = PlayerRenownTier::pointsToNextTier($renownScore);
+
         return $this->render('game/profile/show.html.twig', [
             'targetPlayer' => $targetPlayer,
             'player' => $currentPlayer,
@@ -70,6 +76,9 @@ class PlayerProfileController extends AbstractController
             'totalKills' => $totalKills,
             'skillCount' => $targetPlayer->getSkills()->count(),
             'equippedItems' => $equippedItems,
+            'renownScore' => $renownScore,
+            'renownTier' => $renownTier,
+            'renownPointsToNext' => $renownPointsToNext,
         ]);
     }
 
