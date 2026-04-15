@@ -118,6 +118,9 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'prestige_title', type: 'string', length: 100, nullable: true)]
     private ?string $prestigeTitle = null;
 
+    #[ORM\Column(name: 'renown_score', type: 'integer', options: ['default' => 0])]
+    private int $renownScore = 0;
+
     #[ORM\Column(name: 'discovered_recipes', type: 'json', nullable: true)]
     private ?array $discoveredRecipes = [];
 
@@ -474,6 +477,21 @@ class Player implements CharacterInterface
     public function setPrestigeTitle(?string $prestigeTitle): void
     {
         $this->prestigeTitle = $prestigeTitle;
+    }
+
+    public function getRenownScore(): int
+    {
+        return $this->renownScore;
+    }
+
+    public function setRenownScore(int $renownScore): void
+    {
+        $this->renownScore = max(0, $renownScore);
+    }
+
+    public function addRenownScore(int $amount): void
+    {
+        $this->renownScore = max(0, $this->renownScore + $amount);
     }
 
     public function getRace(): ?Race

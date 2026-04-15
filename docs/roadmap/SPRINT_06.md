@@ -18,8 +18,8 @@
 
 ### 121 — Systeme de reputation & karma (M | ★★)
 > Prerequis : ← 120 ✅ (profil public joueur)
-- [ ] Score de reputation (incremente par quetes, aide groupe, evenements)
-- [ ] Titres de reputation (Novice → Respecte → Legendaire)
+- [x] Score de reputation (incremente par quetes, aide groupe, evenements) — sous-phase 1 : quetes + succes
+- [x] Titres de reputation (Novice → Respecte → Legendaire) — 6 paliers (Novice, Connu, Respecte, Honore, Illustre, Legendaire)
 - [ ] Malus si comportement negatif (report systeme basique)
 - [ ] Bonus reputation : acces a des quetes speciales, reductions PNJ
 

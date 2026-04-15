@@ -2013,3 +2013,14 @@
 - [x] `MessageExtension` Twig : fonction `message_unread_count()` avec cache pour badge navigation
 - [x] Notification Mercure SSE sur topic `player/{id}/messages` a chaque nouveau message
 - [x] Lien Messages dans le dropdown Social (desktop) et le drawer mobile avec icone enveloppe
+
+### 121 — Systeme de reputation & karma (partiel, sous-phase 1) (2026-04-15) 🔧
+
+> Fondations de la renommee globale du joueur (reputation joueur-monde, distincte des factions) : score cumulatif, 6 paliers de titres, progression via quetes et succes, affichage sur le profil public.
+- [x] Enum `PlayerRenownTier` : 6 paliers (Novice 0, Connu 250, Respecte 1000, Honore 3000, Illustre 8000, Legendaire 20000) avec label francais, cssClass, `fromScore()`, `nextTier()`, `pointsToNextTier()`
+- [x] Champ `renown_score` (integer, default 0) sur `Player` avec `getRenownScore`, `setRenownScore`, `addRenownScore` (borne a 0) + migration PostgreSQL `Version20260415PlayerRenownScore`
+- [x] Service `PlayerRenownManager` : `addRenown` (flush + log changement de palier), `getTier`, `getPointsToNextTier`, barèmes par catégorie
+- [x] `PlayerRenownListener` (EventSubscriber) : +5 pts par quete daily, +25 par quete narrative, +10 a 20 par succes selon la categorie (combat/quest/exploration/progression=20, craft/gathering/social=15, autres=10)
+- [x] Affichage sur le profil public : palier avec classe CSS colorée, score actuel, points au palier suivant en tooltip
+- [x] Tests unitaires : `PlayerRenownTierTest` (8 tests), `PlayerRenownManagerTest` (8 tests), `PlayerRenownListenerTest` (3 tests) — 19 tests au total
+- [ ] Restant (sous-phase 2) : malus comportement negatif (report systeme), bonus reputation (quetes speciales, reductions PNJ)
