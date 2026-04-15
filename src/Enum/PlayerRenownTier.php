@@ -53,6 +53,22 @@ enum PlayerRenownTier: string
         };
     }
 
+    /**
+     * Taux de reduction applique par les marchands PNJ selon le palier de renommee.
+     * Progresse par +2% par palier, de 0% (Novice) a 10% (Legendaire).
+     */
+    public function shopDiscount(): float
+    {
+        return match ($this) {
+            self::Novice => 0.0,
+            self::Connu => 0.02,
+            self::Respecte => 0.04,
+            self::Honore => 0.06,
+            self::Illustre => 0.08,
+            self::Legendaire => 0.10,
+        };
+    }
+
     public static function fromScore(int $score): self
     {
         $current = self::Novice;

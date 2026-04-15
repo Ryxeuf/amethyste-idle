@@ -9,6 +9,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
 use App\GameEngine\Guild\RegionBonusProvider;
+use App\GameEngine\Renown\PlayerRenownDiscountProvider;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\World\StaticUtcDayCycleFactorProvider;
 use App\Helper\PlayerHelper;
@@ -26,6 +27,7 @@ class ShopControllerTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private GameTimeService $gameTimeService;
     private RegionBonusProvider&MockObject $regionBonusProvider;
+    private PlayerRenownDiscountProvider $renownDiscountProvider;
     private ShopController $controller;
 
     protected function setUp(): void
@@ -34,12 +36,14 @@ class ShopControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->gameTimeService = new GameTimeService(new StaticUtcDayCycleFactorProvider(1.0));
         $this->regionBonusProvider = $this->createMock(RegionBonusProvider::class);
+        $this->renownDiscountProvider = new PlayerRenownDiscountProvider();
 
         $this->controller = new ShopController(
             $this->playerHelper,
             $this->entityManager,
             $this->gameTimeService,
             $this->regionBonusProvider,
+            $this->renownDiscountProvider,
         );
 
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -72,6 +76,29 @@ class ShopControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
         $this->assertTrue($data['success']);
         $this->assertStringContainsString('acheté', $data['message']);
+    }
+
+    public function testBuyAppliesRenownDiscount(): void
+    {
+        $pnj = $this->createPnjMock(['iron-sword']);
+        $item = $this->createItemMock('iron-sword', 100, 'Épée en fer');
+        $this->setupRepositories(pnj: $pnj, item: $item);
+
+        // Legendaire tier -> 10% renown discount
+        $player = $this->createPlayerMock(500, 20000);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerHelper->method('getBagInventory')->willReturn($this->createMock(Inventory::class));
+
+        // 100 * (1 - 0.10) = 90
+        $player->expects($this->once())->method('removeGils')->with(90);
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $response = $this->controller->buy(1, $this->createBuyRequest('iron-sword'));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getContent(), true);
+        $this->assertTrue($data['success']);
+        $this->assertStringContainsString('renommée', $data['message']);
     }
 
     public function testBuyInsufficientGils(): void
@@ -148,7 +175,7 @@ class ShopControllerTest extends TestCase
         ]));
     }
 
-    private function createPlayerMock(int $gils): Player&MockObject
+    private function createPlayerMock(int $gils, int $renownScore = 0): Player&MockObject
     {
         $currentGils = $gils;
         $player = $this->createMock(Player::class);
@@ -159,6 +186,7 @@ class ShopControllerTest extends TestCase
 
             return true;
         });
+        $player->method('getRenownScore')->willReturn($renownScore);
 
         return $player;
     }

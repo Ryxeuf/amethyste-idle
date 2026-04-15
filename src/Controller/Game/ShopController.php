@@ -5,7 +5,9 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
+use App\Enum\PlayerRenownTier;
 use App\GameEngine\Guild\RegionBonusProvider;
+use App\GameEngine\Renown\PlayerRenownDiscountProvider;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +25,7 @@ class ShopController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly GameTimeService $gameTimeService,
         private readonly RegionBonusProvider $regionBonusProvider,
+        private readonly PlayerRenownDiscountProvider $renownDiscountProvider,
     ) {
     }
 
@@ -48,6 +51,10 @@ class ShopController extends AbstractController
             $stockInfo[$item->getSlug()] = $pnj->getItemStock($item->getSlug());
         }
 
+        $guildDiscount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
+        $renownDiscount = $this->renownDiscountProvider->getShopDiscount($player);
+        $totalDiscount = $this->renownDiscountProvider->combineDiscount($guildDiscount, $player);
+
         return $this->render('game/shop/index.html.twig', [
             'pnj' => $pnj,
             'shopItems' => $shopItems,
@@ -56,6 +63,10 @@ class ShopController extends AbstractController
             'isOpen' => $isOpen,
             'opensAt' => $pnj->getOpensAt(),
             'closesAt' => $pnj->getClosesAt(),
+            'guildDiscount' => $guildDiscount,
+            'renownDiscount' => $renownDiscount,
+            'totalDiscount' => $totalDiscount,
+            'renownTier' => PlayerRenownTier::fromScore($player->getRenownScore()),
         ]);
     }
 
@@ -106,7 +117,10 @@ class ShopController extends AbstractController
         $baseCost = ($item->getPrice() ?? 0) * $quantity;
 
         // Apply guild region discount (10% if player is in controlling guild)
-        $discount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
+        $guildDiscount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
+        $renownDiscount = $this->renownDiscountProvider->getShopDiscount($player);
+        // Renown discount stacks additively with guild discount, capped at MAX_COMBINED_DISCOUNT.
+        $discount = $this->renownDiscountProvider->combineDiscount($guildDiscount, $player);
         $totalCost = $discount > 0
             ? (int) ceil($baseCost * (1 - $discount))
             : $baseCost;
@@ -152,7 +166,16 @@ class ShopController extends AbstractController
 
         $message = sprintf('Vous avez acheté %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost);
         if ($discount > 0) {
-            $message .= sprintf(' (-%d%% guilde)', (int) ($discount * 100));
+            $parts = [];
+            if ($guildDiscount > 0) {
+                $parts[] = sprintf('-%d%% guilde', (int) ($guildDiscount * 100));
+            }
+            if ($renownDiscount > 0) {
+                $parts[] = sprintf('-%d%% renommée', (int) ($renownDiscount * 100));
+            }
+            if ($parts !== []) {
+                $message .= ' (' . implode(', ', $parts) . ')';
+            }
         }
 
         return new JsonResponse([
