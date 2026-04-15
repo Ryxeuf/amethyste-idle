@@ -10,6 +10,7 @@ use App\Entity\App\PlayerItem;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Notification\NotificationService;
 use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -38,6 +39,7 @@ class AuctionManager
         private readonly AuctionListingRepository $listingRepository,
         private readonly TownControlManager $townControlManager,
         private readonly LoggerInterface $logger,
+        private readonly NotificationService $notificationService,
     ) {
     }
 
@@ -324,6 +326,34 @@ class AuctionManager
             'bid_amount' => $bidAmount,
             'previous_bidder_id' => $currentBidder?->getId(),
         ]);
+
+        if ($currentBidder !== null && $currentBid !== null) {
+            $this->notifyOutbid($currentBidder, $listing, $currentBid, $bidAmount);
+        }
+    }
+
+    /**
+     * Notifie l'ancien plus offrant qu'il a ete depasse sur une enchere.
+     * La notification inclut le montant rembourse et la nouvelle mise,
+     * et renvoie vers la liste de l'hotel des ventes pour reagir vite.
+     */
+    private function notifyOutbid(Player $outbidBidder, AuctionListing $listing, int $refundedAmount, int $newBid): void
+    {
+        $itemName = $listing->getPlayerItem()->getGenericItem()->getName();
+
+        $this->notificationService->notify(
+            $outbidBidder,
+            'auction_outbid',
+            'Enchere depassee',
+            sprintf(
+                'Votre mise de %d Gils sur "%s" a ete depassee (nouvelle mise : %d Gils). Vos Gils ont ete rembourses.',
+                $refundedAmount,
+                $itemName,
+                $newBid,
+            ),
+            icon: 'gavel',
+            link: '/game/auction',
+        );
     }
 
     /**

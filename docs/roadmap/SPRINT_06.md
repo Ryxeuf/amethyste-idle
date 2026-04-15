@@ -38,7 +38,7 @@
 ### 123 — Encheres temporaires & ventes flash (S | ★)
 > Prerequis : ← 116 (hotel des ventes)
 - [x] Type d'annonce "enchere" : prix de depart, increments, duree fixe — enum `AuctionType`, champs `minIncrement`/`currentBid`/`currentBidder` sur `AuctionListing`, methodes `createAuctionListing`/`placeBid`/`finalizeAuction` (escrow + remboursement auto du bidder depasse), UI de mise dans la liste HdV et option "Enchere" dans le formulaire de vente, sous-phase 1
-- [ ] Notification aux encherisseurs si depasses
+- [x] Notification aux encherisseurs si depasses — appel `NotificationService::notify` dans `placeBid` avec type `auction_outbid`, icone `gavel` et lien `/game/auction` (persistee + Mercure SSE), sous-phase 2
 - [ ] Ventes flash admin : items rares a prix reduit, duree limitee
 
 ### ~~124 — Taxes dynamiques & tresor regional (S | ★★)~~ ✅
