@@ -14,6 +14,7 @@ use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Notification\NotificationService;
 use App\Repository\AuctionListingRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,6 +27,7 @@ class AuctionManagerTest extends TestCase
     private EntityManagerInterface&MockObject $em;
     private AuctionListingRepository&MockObject $listingRepo;
     private TownControlManager&MockObject $townControlManager;
+    private NotificationService&MockObject $notificationService;
     private AuctionManager $manager;
 
     protected function setUp(): void
@@ -35,7 +37,8 @@ class AuctionManagerTest extends TestCase
         $this->listingRepo->method('countActiveBySeller')->willReturn(0);
         $this->listingRepo->method('findLastCancelledAt')->willReturn(null);
         $this->townControlManager = $this->createMock(TownControlManager::class);
-        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger());
+        $this->notificationService = $this->createMock(NotificationService::class);
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
     }
 
     public function testCreateListingSuccess(): void
@@ -283,7 +286,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -300,7 +303,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(19);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -318,7 +321,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-2 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -335,7 +338,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-10 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -397,6 +400,44 @@ class AuctionManagerTest extends TestCase
         $this->assertSame(850, $bidder2->getGils()); // 1000 - 150
         $this->assertSame($bidder2, $listing->getCurrentBidder());
         $this->assertSame(150, $listing->getCurrentBid());
+    }
+
+    public function testPlaceBidNotifiesOutbidBidder(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder1 = $this->createPlayer(2, 500);
+        $bidder2 = $this->createPlayer(3, 1000);
+        $item = $this->createPlayerItem();
+
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        // 1er bid : pas de notification (aucun ancien enchereur)
+        $this->notificationService->expects($this->once())
+            ->method('notify')
+            ->with(
+                $this->identicalTo($bidder1),
+                'auction_outbid',
+                'Enchere depassee',
+                $this->stringContains('120'),
+                'gavel',
+                '/game/auction',
+            );
+
+        $this->manager->placeBid($bidder1, $listing, 120);
+        $this->manager->placeBid($bidder2, $listing, 150);
+    }
+
+    public function testPlaceBidFirstBidDoesNotNotify(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 500);
+        $item = $this->createPlayerItem();
+
+        $listing = $this->createAuctionListing($seller, $item, 100, 10);
+
+        $this->notificationService->expects($this->never())->method('notify');
+
+        $this->manager->placeBid($bidder, $listing, 120);
     }
 
     public function testPlaceBidBelowMinimumIncrement(): void

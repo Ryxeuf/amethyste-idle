@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15 (task 123 sous-phase 1 — type d'annonce enchere)
+> Derniere mise a jour : 2026-04-15 (task 123 sous-phase 2 — notification aux encherisseurs depasses)
 
 ---
 
@@ -2092,3 +2092,11 @@
 - [x] UI : badge "Enchere" et formulaire de mise (input + bouton "Encherir") integres a la liste HdV ; option "Enchere" dans le formulaire de vente avec champ increment minimum et preview ajustee
 - [x] Controller `AuctionController::bid` (route `POST /game/auction/bid/{id}`, CSRF `auction_bid_{id}`) et `sell` dispatche vers `createAuctionListing` si `listing_type=auction`
 - [x] Tests unitaires `AuctionManagerTest` etendus (11 tests ajoutes) : creation enchere, mise valide, surenchere avec remboursement, increment minimum, mise initiale au startingPrice, proprietaire/plus offrant bloques, `buyListing` refuse sur enchere, finalisation avec/sans bidder, annulation bloquee avec mises en cours
+
+### 123 — Encheres temporaires & ventes flash (partiel, sous-phase 2) — Notification aux encherisseurs depasses (2026-04-15) 🔧
+
+> Deuxieme sous-phase de la tache 123 : lorsqu'un bidder est depasse par une nouvelle mise, il recoit une notification persistee (`PlayerNotification`) + Mercure SSE en temps reel. La notification precise le montant rembourse, le nom de l'objet et la nouvelle mise, et renvoie vers `/game/auction`. Reste la sous-phase 3 (ventes flash admin).
+- [x] Injection de `NotificationService` dans `AuctionManager` (dependance obligatoire)
+- [x] Methode privee `notifyOutbid(bidder, listing, refundedAmount, newBid)` appelee dans `placeBid` apres remboursement et flush, uniquement si un enchereur precedent existe
+- [x] Notification de type `auction_outbid` avec icone `gavel`, titre "Enchere depassee" et lien `/game/auction` (format : "Votre mise de X Gils sur "Objet" a ete depassee (nouvelle mise : Y Gils). Vos Gils ont ete rembourses.")
+- [x] Tests unitaires `AuctionManagerTest` etendus (2 tests ajoutes) : notification avec arguments exacts sur surenchere, aucune notification a la premiere mise ; mise a jour des 4 instanciations `new AuctionManager(...)` pour inclure le mock `NotificationService`
