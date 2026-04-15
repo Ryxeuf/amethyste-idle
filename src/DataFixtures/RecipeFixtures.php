@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\DataFixtures\Game\ItemFixtures as GameItemFixtures;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\Enum\CraftSpecialization;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -32,6 +33,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
 
             if (isset($data['quality'])) {
                 $recipe->setQuality($data['quality']);
+            }
+
+            if (isset($data['required_specialization'])) {
+                $recipe->setRequiredSpecialization($data['required_specialization']);
             }
 
             $manager->persist($recipe);
@@ -928,6 +933,78 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 25,
                 'xp_reward' => 120,
                 'description' => 'Chef-d\'œuvre ultime : une amulette d\'orichalque irradiant de puissance prismatique.',
+            ],
+
+            // === Recettes exclusives aux maitres artisans (task 122 sous-phase 2) ===
+            // Chacune requiert la specialisation correspondante et un niveau eleve.
+
+            'recipe_masterwork_blade' => [
+                'name' => 'Lame du maitre forgeron',
+                'slug' => 'recipe-masterwork-blade',
+                'craft' => 'forgeron',
+                'required_level' => 10,
+                'required_specialization' => CraftSpecialization::Forgeron,
+                'ingredients' => [
+                    ['slug' => 'crafted-orichalcum-ingot', 'quantity' => 3],
+                    ['slug' => 'crafted-adamantite-ingot', 'quantity' => 2],
+                    ['slug' => 'ore-starmetal', 'quantity' => 2],
+                ],
+                'result_ref' => 'masterwork_blade',
+                'crafting_time' => 30,
+                'xp_reward' => 200,
+                'description' => 'Reservee aux Maitres Forgerons. Forge la lame ultime, signature des grands artisans.',
+            ],
+
+            'recipe_masterwork_drakehide_cloak' => [
+                'name' => 'Manteau du maitre tanneur',
+                'slug' => 'recipe-masterwork-drakehide-cloak',
+                'craft' => 'tanneur',
+                'required_level' => 10,
+                'required_specialization' => CraftSpecialization::Tanneur,
+                'ingredients' => [
+                    ['slug' => 'leather-dragon-scale', 'quantity' => 4],
+                    ['slug' => 'leather-werewolf-fur', 'quantity' => 2],
+                    ['slug' => 'leather-bone', 'quantity' => 2],
+                ],
+                'result_ref' => 'masterwork_drakehide_cloak',
+                'crafting_time' => 30,
+                'xp_reward' => 200,
+                'description' => 'Reservee aux Maitres Tanneurs. Coud un manteau ouvrage dans la peau d\'un drake ancestral.',
+            ],
+
+            'recipe_masterwork_grand_elixir' => [
+                'name' => 'Grand elixir du maitre alchimiste',
+                'slug' => 'recipe-masterwork-grand-elixir',
+                'craft' => 'alchimiste',
+                'required_level' => 10,
+                'required_specialization' => CraftSpecialization::Alchimiste,
+                'ingredients' => [
+                    ['slug' => 'crafted-potion-base', 'quantity' => 3],
+                    ['slug' => 'plant-mandrake', 'quantity' => 3],
+                    ['slug' => 'plant-ginseng', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-prismatic', 'quantity' => 1],
+                ],
+                'result_ref' => 'masterwork_grand_elixir',
+                'crafting_time' => 25,
+                'xp_reward' => 180,
+                'description' => 'Reservee aux Maitres Alchimistes. Distille un elixir parfait infuse d\'energie prismatique.',
+            ],
+
+            'recipe_masterwork_starforged_ring' => [
+                'name' => 'Anneau du maitre joaillier',
+                'slug' => 'recipe-masterwork-starforged-ring',
+                'craft' => 'joaillier',
+                'required_level' => 10,
+                'required_specialization' => CraftSpecialization::Joaillier,
+                'ingredients' => [
+                    ['slug' => 'crafted-orichalcum-ingot', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-prismatic', 'quantity' => 2],
+                    ['slug' => 'ore-starmetal', 'quantity' => 2],
+                ],
+                'result_ref' => 'masterwork_starforged_ring',
+                'crafting_time' => 30,
+                'xp_reward' => 200,
+                'description' => 'Reservee aux Maitres Joailliers. Cisele un anneau pulsant d\'energie pure.',
             ],
         ];
     }

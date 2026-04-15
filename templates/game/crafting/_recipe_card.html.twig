@@ -33,6 +33,11 @@
                     {{ qualityLabels[recipe.quality] ?? 'Normal' }}
                 </span>
             {% endif %}
+            {% if recipe.requiredSpecialization %}
+                <span class="text-xs bg-yellow-900/60 text-yellow-300 border border-yellow-700/50 px-2 py-1 rounded-full whitespace-nowrap" title="Recette exclusive a la specialisation {{ recipe.requiredSpecialization.label }}">
+                    {{ recipe.requiredSpecialization.label }}
+                </span>
+            {% endif %}
             {% if recipe.requiredLevel > 1 %}
                 <span class="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded-full whitespace-nowrap">
                     Niv. {{ recipe.requiredLevel }}

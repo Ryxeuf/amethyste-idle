@@ -9,6 +9,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\Enum\CraftSpecialization;
 use App\Event\CraftEvent;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftSpecializationService;
@@ -407,6 +408,144 @@ class CraftingManagerTest extends TestCase
         $this->assertNull($info['nextLevel']);
         $this->assertEquals(0, $info['count']);
         $this->assertEquals(0, $info['totalLocked']);
+    }
+
+    public function testGetAvailableRecipesHidesSpecializationExclusiveWhenPlayerHasNoSpecialization(): void
+    {
+        $publicRecipe = new Recipe();
+        $publicRecipe->setName('Public');
+        $publicRecipe->setSlug('public');
+        $publicRecipe->setCraft('forgeron');
+        $publicRecipe->setRequiredLevel(1);
+
+        $exclusiveRecipe = new Recipe();
+        $exclusiveRecipe->setName('Master Blade');
+        $exclusiveRecipe->setSlug('master-blade');
+        $exclusiveRecipe->setCraft('forgeron');
+        $exclusiveRecipe->setRequiredLevel(1);
+        $exclusiveRecipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')->with(['craft' => 'forgeron'])->willReturn([$publicRecipe, $exclusiveRecipe]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+        $player->method('getCraftSpecialization')->willReturn(null);
+
+        $available = $this->craftingManager->getAvailableRecipes($player, 'forgeron');
+
+        $this->assertCount(1, $available);
+        $this->assertSame($publicRecipe, array_values($available)[0]);
+    }
+
+    public function testGetAvailableRecipesIncludesExclusiveWhenPlayerHasMatchingSpecialization(): void
+    {
+        $exclusiveRecipe = new Recipe();
+        $exclusiveRecipe->setName('Master Blade');
+        $exclusiveRecipe->setSlug('master-blade');
+        $exclusiveRecipe->setCraft('forgeron');
+        $exclusiveRecipe->setRequiredLevel(1);
+        $exclusiveRecipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')->with(['craft' => 'forgeron'])->willReturn([$exclusiveRecipe]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+        $player->method('getCraftSpecialization')->willReturn(CraftSpecialization::Forgeron);
+
+        $available = $this->craftingManager->getAvailableRecipes($player, 'forgeron');
+
+        $this->assertCount(1, $available);
+        $this->assertSame($exclusiveRecipe, array_values($available)[0]);
+    }
+
+    public function testGetAvailableRecipesHidesExclusiveWhenSpecializationMismatch(): void
+    {
+        $exclusiveRecipe = new Recipe();
+        $exclusiveRecipe->setName('Master Blade');
+        $exclusiveRecipe->setSlug('master-blade');
+        $exclusiveRecipe->setCraft('forgeron');
+        $exclusiveRecipe->setRequiredLevel(1);
+        $exclusiveRecipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')->with(['craft' => 'forgeron'])->willReturn([$exclusiveRecipe]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+        $player->method('getCraftSpecialization')->willReturn(CraftSpecialization::Joaillier);
+
+        $available = $this->craftingManager->getAvailableRecipes($player, 'forgeron');
+
+        $this->assertEmpty($available);
+    }
+
+    public function testGetLockedRecipesIncludesExclusiveWhenSpecializationMissing(): void
+    {
+        $publicRecipe = new Recipe();
+        $publicRecipe->setName('Public');
+        $publicRecipe->setSlug('public');
+        $publicRecipe->setCraft('forgeron');
+        $publicRecipe->setRequiredLevel(1);
+
+        $exclusiveRecipe = new Recipe();
+        $exclusiveRecipe->setName('Master Blade');
+        $exclusiveRecipe->setSlug('master-blade');
+        $exclusiveRecipe->setCraft('forgeron');
+        $exclusiveRecipe->setRequiredLevel(1);
+        $exclusiveRecipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
+
+        $repo = $this->createMock(EntityRepository::class);
+        $repo->method('findBy')
+            ->with(['craft' => 'forgeron'], ['requiredLevel' => 'ASC'])
+            ->willReturn([$publicRecipe, $exclusiveRecipe]);
+        $this->entityManager->method('getRepository')
+            ->with(Recipe::class)
+            ->willReturn($repo);
+
+        $player = $this->createMock(Player::class);
+        $player->method('getDomainExperiences')->willReturn(new ArrayCollection());
+        $player->method('getCraftSpecialization')->willReturn(null);
+
+        $locked = $this->craftingManager->getLockedRecipes($player, 'forgeron');
+
+        $this->assertCount(1, $locked);
+        $this->assertSame($exclusiveRecipe, $locked[0]);
+    }
+
+    public function testCraftRefusesExclusiveRecipeWithoutSpecialization(): void
+    {
+        $resultItem = $this->createMock(Item::class);
+        $resultItem->method('getId')->willReturn(99);
+
+        $recipe = new Recipe();
+        $recipe->setName('Master Blade');
+        $recipe->setSlug('master-blade');
+        $recipe->setCraft('forgeron');
+        $recipe->setIngredients([['slug' => 'iron', 'quantity' => 1]]);
+        $recipe->setResult($resultItem);
+        $recipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
+
+        $player = $this->createPlayerWithBagItems(['iron' => 5]);
+        $player->method('getCraftSpecialization')->willReturn(null);
+
+        $this->playerItemGenerator->expects($this->never())->method('generateFromItemId');
+
+        $result = $this->craftingManager->craft($player, $recipe);
+
+        $this->assertFalse($result['success']);
+        $this->assertNull($result['item']);
+        $this->assertStringContainsString('reservee', $result['message']);
     }
 
     private function createPlayerWithBagItems(array $itemCounts): Player&MockObject

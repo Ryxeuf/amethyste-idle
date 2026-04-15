@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\CraftSpecialization;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -49,6 +50,13 @@ class Recipe
 
     #[ORM\Column(type: 'text', nullable: true)]
     private ?string $description = null;
+
+    /**
+     * Specialisation requise pour fabriquer la recette (exclusive aux maitres artisans).
+     * Si null, la recette est accessible sans specialisation.
+     */
+    #[ORM\Column(name: 'required_specialization', type: 'string', length: 20, nullable: true, enumType: CraftSpecialization::class)]
+    private ?CraftSpecialization $requiredSpecialization = null;
 
     public function __toString(): string
     {
@@ -190,5 +198,25 @@ class Recipe
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getRequiredSpecialization(): ?CraftSpecialization
+    {
+        return $this->requiredSpecialization;
+    }
+
+    public function setRequiredSpecialization(?CraftSpecialization $requiredSpecialization): self
+    {
+        $this->requiredSpecialization = $requiredSpecialization;
+
+        return $this;
+    }
+
+    /**
+     * Indique si cette recette est exclusive a une specialisation.
+     */
+    public function isSpecializationExclusive(): bool
+    {
+        return $this->requiredSpecialization !== null;
     }
 }
