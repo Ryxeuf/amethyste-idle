@@ -528,10 +528,11 @@ class CraftingManagerTest extends TestCase
         $resultItem = $this->createMock(Item::class);
         $resultItem->method('getId')->willReturn(99);
 
+        // Use 'forge' (not in CRAFT_TOOL_TYPES) to isolate the specialization check from checkCraftTool.
         $recipe = new Recipe();
         $recipe->setName('Master Blade');
         $recipe->setSlug('master-blade');
-        $recipe->setCraft('forgeron');
+        $recipe->setCraft('forge');
         $recipe->setIngredients([['slug' => 'iron', 'quantity' => 1]]);
         $recipe->setResult($resultItem);
         $recipe->setRequiredSpecialization(CraftSpecialization::Forgeron);
