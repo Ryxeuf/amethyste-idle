@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15 (task 123 sous-phase 2 — notification aux encherisseurs depasses)
+> Derniere mise a jour : 2026-04-15 (Sprint 7 AVT-10 & AVT-11 — integration blueprints avatar)
 
 ---
 
@@ -2100,3 +2100,23 @@
 - [x] Methode privee `notifyOutbid(bidder, listing, refundedAmount, newBid)` appelee dans `placeBid` apres remboursement et flush, uniquement si un enchereur precedent existe
 - [x] Notification de type `auction_outbid` avec icone `gavel`, titre "Enchere depassee" et lien `/game/auction` (format : "Votre mise de X Gils sur "Objet" a ete depassee (nouvelle mise : Y Gils). Vos Gils ont ete rembourses.")
 - [x] Tests unitaires `AuctionManagerTest` etendus (2 tests ajoutes) : notification avec arguments exacts sur surenchere, aucune notification a la premiere mise ; mise a jour des 4 instanciations `new AuctionManager(...)` pour inclure le mock `NotificationService`
+
+---
+
+## Sprint 7 — Avatar: Fondations
+
+### AVT-10 — Integrer AvatarTextureComposer.js (2026-04-15) ✅
+
+> Integration dans le projet du blueprint `AvatarTextureComposer.js` issu du pack avatar (`data/amethyste-avatar-pack/assets/lib/avatar/`). Le composer empile les layers (body + outfit + hair + head + tints / alpha) sur une `PIXI.RenderTexture` pour produire une sprite sheet composite reutilisable par `SpriteAnimator`. Dormant tant que `AvatarAnimatorFactory` (AVT-12) ne l'utilise pas — aucune regression sur le pipeline legacy.
+- [x] Fichier `assets/lib/avatar/AvatarTextureComposer.js` : classe ES module avec constructor `{ renderer }` (garde-fou si `renderer` manquant) et `compose({ baseTexture, layers })`
+- [x] Compatibilite PixiJS v8 confirmee : `PIXI.RenderTexture.create({ width, height })`, `renderer.render({ container, target, clear })`, `container.destroy({ children: true })`
+- [x] Support des proprietes optionnelles par layer (`tint`, `alpha`, `visible: false`)
+- [x] Pas d'impact runtime : aucun import depuis le code existant, activation via AVT-12
+
+### AVT-11 — Integrer AvatarSpriteSheetCache.js (2026-04-15) ✅
+
+> Integration du cache LRU (128 entrees max) pour les textures composites d'avatar. La cle est un hash de composition genere cote backend (`AvatarHashGenerator`). Sur `set`/`get`, la cle est re-inseree en queue de `Map` pour preserver l'ordre MRU. En overflow, la texture la plus ancienne est detruite (`texture.destroy(true)`) et retiree.
+- [x] Fichier `assets/lib/avatar/AvatarSpriteSheetCache.js` : classe ES module avec constructor `(maxEntries = 128)`, methodes `get`, `set`, `delete`, `clear`, getter `size`
+- [x] Strategie LRU basee sur l'ordre d'insertion de `Map` (delete puis re-set pour rapprocher de la tete)
+- [x] Nettoyage des textures remplacees / expulsees via `destroy(true)` (garde-fou si la texture ne possede pas la methode)
+- [x] Pas d'impact runtime : consomme par `AvatarAnimatorFactory` (AVT-12) une fois cable

@@ -46,7 +46,7 @@
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 5/6 | Moyenne | En cours |
-| **Sprint 7** | Avatar: Fondations | 12 | Moyenne | A venir |
+| **Sprint 7** | Avatar: Fondations | 2/12 | Moyenne | En cours |
 | **Sprint 8** | Avatar: Backend & Carte | 10 | Moyenne | A venir |
 | **Sprint 9** | Avatar: Personnage & Equipement | 8 | Moyenne | A venir |
 | **Sprint 10** | Avatar: Polish & Animations | 8 | Basse | A venir |
@@ -54,7 +54,7 @@
 | **Sprint 12** | Technique & i18n | 2 | Basse | A venir |
 
 **Total restant : 59 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
-**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3) termines + Sprint 6 (5/6 en cours) = 19 taches completes / initial 66+
+**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3) termines + Sprint 6 (5/6 en cours) + Sprint 7 (2/12 en cours) = 21 taches completes / initial 66+
 
 ---
 
