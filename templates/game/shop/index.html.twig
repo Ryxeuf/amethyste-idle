@@ -24,6 +24,22 @@
                 <a href="{{ path('app_game_map') }}" class="text-purple-200/70 hover:text-white text-xs sm:text-sm">Retour</a>
             </div>
         </div>
+
+        {% if guildDiscount > 0 or renownDiscount > 0 %}
+            <div class="game-card-body pt-2 pb-0 flex flex-wrap items-center gap-2 text-xs">
+                <span class="text-purple-200/70">Réductions marchand :</span>
+                {% if guildDiscount > 0 %}
+                    <span class="inline-flex items-center gap-1 rounded bg-emerald-900/50 border border-emerald-700/50 px-2 py-0.5 text-emerald-300">
+                        Guilde -{{ (guildDiscount * 100)|round }}%
+                    </span>
+                {% endif %}
+                {% if renownDiscount > 0 %}
+                    <span class="inline-flex items-center gap-1 rounded bg-purple-900/50 border border-purple-700/50 px-2 py-0.5 {{ renownTier.cssClass }}" title="Palier de renommée : {{ renownTier.label }}">
+                        Renommée -{{ (renownDiscount * 100)|round }}%
+                    </span>
+                {% endif %}
+            </div>
+        {% endif %}
         <div class="game-card-body">
 
         {% if not isOpen %}
@@ -43,6 +59,16 @@
                         {% for item in shopItems %}
                             {% set itemStock = stockInfo[item.slug] ?? null %}
                             {% set outOfStock = itemStock is not null and itemStock <= 0 %}
+                            {% set basePrice = item.price|default(0) %}
+                            {% set effectivePrice = basePrice %}
+                            {% if guildDiscount > 0 %}
+                                {% set effectivePrice = (effectivePrice * (1 - guildDiscount))|round(0, 'ceil') %}
+                            {% endif %}
+                            {% if renownDiscount > 0 %}
+                                {% set effectivePrice = (effectivePrice * (1 - renownDiscount))|round(0, 'ceil') %}
+                            {% endif %}
+                            {% set effectivePrice = effectivePrice|round(0, 'ceil') %}
+                            {% set hasDiscount = effectivePrice < basePrice %}
                             <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors{% if outOfStock %} opacity-50{% endif %}"
                                  data-item-slug="{{ item.slug }}">
                                 <div class="flex-1 min-w-0">
@@ -59,10 +85,15 @@
                                             {% if outOfStock %}Rupture{% else %}x{{ itemStock }}{% endif %}
                                         </span>
                                     {% endif %}
-                                    <span class="text-yellow-400 text-sm font-mono whitespace-nowrap">{{ item.price }} G</span>
-                                    <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ item.price }}, {{ pnj.id }})"
-                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if not isOpen or player.gils < item.price or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
-                                            {% if not isOpen or player.gils < item.price or outOfStock %}disabled{% endif %}
+                                    <span class="text-sm font-mono whitespace-nowrap">
+                                        {% if hasDiscount %}
+                                            <span class="text-gray-500 line-through mr-1">{{ basePrice }}</span>
+                                        {% endif %}
+                                        <span class="text-yellow-400">{{ effectivePrice }} G</span>
+                                    </span>
+                                    <button onclick="buyItem('{{ item.slug }}', '{{ item.name }}', {{ effectivePrice }}, {{ pnj.id }})"
+                                            class="px-3 py-2 bg-purple-600 hover:bg-purple-500 active:bg-purple-700 text-white text-xs rounded-lg transition-colors touch-target{% if not isOpen or player.gils < effectivePrice or outOfStock %} opacity-50 cursor-not-allowed{% endif %}"
+                                            {% if not isOpen or player.gils < effectivePrice or outOfStock %}disabled{% endif %}
                                             id="buy-btn-{{ item.slug }}">
                                         {% if not isOpen %}Fermé{% elseif outOfStock %}Rupture{% else %}Acheter{% endif %}
                                     </button>

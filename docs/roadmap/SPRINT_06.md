@@ -21,7 +21,9 @@
 - [x] Score de reputation (incremente par quetes, aide groupe, evenements) — sous-phase 1 : quetes + succes
 - [x] Titres de reputation (Novice → Respecte → Legendaire) — 6 paliers (Novice, Connu, Respecte, Honore, Illustre, Legendaire)
 - [ ] Malus si comportement negatif (report systeme basique)
-- [ ] Bonus reputation : acces a des quetes speciales, reductions PNJ
+- [ ] Bonus reputation :
+  - [x] Reductions PNJ — 0% a 5% par palier, cumulatif multiplicativement avec la guilde controlante
+  - [ ] Acces a des quetes speciales
 
 ---
 

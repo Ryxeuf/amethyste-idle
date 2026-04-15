@@ -53,6 +53,23 @@ enum PlayerRenownTier: string
         };
     }
 
+    /**
+     * Reduction appliquee sur le prix des achats chez les PNJ marchands.
+     * Bonus progressif : 0 % au palier Novice, +1 % par palier, plafonne a 5 % au Legendaire.
+     * La reduction se cumule multiplicativement avec la reduction de guilde controlante.
+     */
+    public function getShopDiscount(): float
+    {
+        return match ($this) {
+            self::Novice => 0.0,
+            self::Connu => 0.01,
+            self::Respecte => 0.02,
+            self::Honore => 0.03,
+            self::Illustre => 0.04,
+            self::Legendaire => 0.05,
+        };
+    }
+
     public static function fromScore(int $score): self
     {
         $current = self::Novice;

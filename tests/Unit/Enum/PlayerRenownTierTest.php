@@ -71,4 +71,30 @@ class PlayerRenownTierTest extends TestCase
             $this->assertStringStartsWith('text-', $tier->cssClass());
         }
     }
+
+    public function testShopDiscountProgression(): void
+    {
+        $this->assertSame(0.0, PlayerRenownTier::Novice->getShopDiscount());
+        $this->assertSame(0.01, PlayerRenownTier::Connu->getShopDiscount());
+        $this->assertSame(0.02, PlayerRenownTier::Respecte->getShopDiscount());
+        $this->assertSame(0.03, PlayerRenownTier::Honore->getShopDiscount());
+        $this->assertSame(0.04, PlayerRenownTier::Illustre->getShopDiscount());
+        $this->assertSame(0.05, PlayerRenownTier::Legendaire->getShopDiscount());
+    }
+
+    public function testShopDiscountIsMonotonicallyIncreasing(): void
+    {
+        $previous = -0.0001;
+        foreach (PlayerRenownTier::cases() as $tier) {
+            $this->assertGreaterThan($previous, $tier->getShopDiscount(), sprintf('Tier %s discount must be > previous', $tier->value));
+            $previous = $tier->getShopDiscount();
+        }
+    }
+
+    public function testShopDiscountCappedAtFivePercent(): void
+    {
+        foreach (PlayerRenownTier::cases() as $tier) {
+            $this->assertLessThanOrEqual(0.05, $tier->getShopDiscount(), sprintf('Tier %s discount must be <= 5%%', $tier->value));
+        }
+    }
 }

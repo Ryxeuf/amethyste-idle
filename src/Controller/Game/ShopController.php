@@ -5,6 +5,7 @@ namespace App\Controller\Game;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
+use App\Enum\PlayerRenownTier;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\World\GameTimeService;
 use App\Helper\PlayerHelper;
@@ -48,6 +49,10 @@ class ShopController extends AbstractController
             $stockInfo[$item->getSlug()] = $pnj->getItemStock($item->getSlug());
         }
 
+        $guildDiscount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
+        $renownTier = PlayerRenownTier::fromScore($player->getRenownScore());
+        $renownDiscount = $renownTier->getShopDiscount();
+
         return $this->render('game/shop/index.html.twig', [
             'pnj' => $pnj,
             'shopItems' => $shopItems,
@@ -56,6 +61,9 @@ class ShopController extends AbstractController
             'isOpen' => $isOpen,
             'opensAt' => $pnj->getOpensAt(),
             'closesAt' => $pnj->getClosesAt(),
+            'guildDiscount' => $guildDiscount,
+            'renownTier' => $renownTier,
+            'renownDiscount' => $renownDiscount,
         ]);
     }
 
@@ -106,10 +114,18 @@ class ShopController extends AbstractController
         $baseCost = ($item->getPrice() ?? 0) * $quantity;
 
         // Apply guild region discount (10% if player is in controlling guild)
-        $discount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
-        $totalCost = $discount > 0
-            ? (int) ceil($baseCost * (1 - $discount))
-            : $baseCost;
+        $guildDiscount = $this->regionBonusProvider->getShopDiscount($player, $player->getMap());
+        // Apply renown discount (up to 5% at Legendaire), cumulative multiplicatively
+        $renownTier = PlayerRenownTier::fromScore($player->getRenownScore());
+        $renownDiscount = $renownTier->getShopDiscount();
+
+        $totalCost = $baseCost;
+        if ($guildDiscount > 0) {
+            $totalCost = (int) ceil($totalCost * (1 - $guildDiscount));
+        }
+        if ($renownDiscount > 0) {
+            $totalCost = (int) ceil($totalCost * (1 - $renownDiscount));
+        }
 
         if ($player->getGils() < $totalCost) {
             return new JsonResponse([
@@ -151,8 +167,11 @@ class ShopController extends AbstractController
         $remainingStock = $pnj->getItemStock($itemSlug);
 
         $message = sprintf('Vous avez acheté %dx %s pour %d Gils.', $quantity, $item->getName(), $totalCost);
-        if ($discount > 0) {
-            $message .= sprintf(' (-%d%% guilde)', (int) ($discount * 100));
+        if ($guildDiscount > 0) {
+            $message .= sprintf(' (-%d%% guilde)', (int) ($guildDiscount * 100));
+        }
+        if ($renownDiscount > 0) {
+            $message .= sprintf(' (-%d%% renommée)', (int) round($renownDiscount * 100));
         }
 
         return new JsonResponse([

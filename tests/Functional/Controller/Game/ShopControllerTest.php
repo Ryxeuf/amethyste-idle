@@ -90,6 +90,73 @@ class ShopControllerTest extends TestCase
         $this->assertStringContainsString('Pas assez de Gils', $data['error']);
     }
 
+    public function testBuyAppliesRenownDiscount(): void
+    {
+        // Legendaire score = 5% discount on a 100-gils item => 95
+        $pnj = $this->createPnjMock(['iron-sword']);
+        $item = $this->createItemMock('iron-sword', 100, 'Épée en fer');
+        $this->setupRepositories(pnj: $pnj, item: $item);
+
+        $player = $this->createPlayerMock(500, renownScore: 20000);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerHelper->method('getBagInventory')->willReturn($this->createMock(Inventory::class));
+
+        $player->expects($this->once())->method('removeGils')->with(95);
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $response = $this->controller->buy(1, $this->createBuyRequest('iron-sword'));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getContent(), true);
+        $this->assertTrue($data['success']);
+        $this->assertStringContainsString('-5% renommée', $data['message']);
+    }
+
+    public function testBuyNoviceNoRenownDiscount(): void
+    {
+        // Novice score = 0% discount
+        $pnj = $this->createPnjMock(['iron-sword']);
+        $item = $this->createItemMock('iron-sword', 100, 'Épée en fer');
+        $this->setupRepositories(pnj: $pnj, item: $item);
+
+        $player = $this->createPlayerMock(500, renownScore: 0);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerHelper->method('getBagInventory')->willReturn($this->createMock(Inventory::class));
+
+        $player->expects($this->once())->method('removeGils')->with(100);
+
+        $response = $this->controller->buy(1, $this->createBuyRequest('iron-sword'));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getContent(), true);
+        $this->assertTrue($data['success']);
+        $this->assertStringNotContainsString('renommée', $data['message']);
+    }
+
+    public function testBuyStacksGuildAndRenownDiscounts(): void
+    {
+        // 100 * (1 - 0.10) = 90, puis 90 * (1 - 0.02) = 88.2 => ceil = 89 (Respecte tier = 1000)
+        $pnj = $this->createPnjMock(['iron-sword']);
+        $item = $this->createItemMock('iron-sword', 100, 'Épée en fer');
+        $this->setupRepositories(pnj: $pnj, item: $item);
+
+        $player = $this->createPlayerMock(500, renownScore: 1000);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->playerHelper->method('getBagInventory')->willReturn($this->createMock(Inventory::class));
+
+        $this->regionBonusProvider->method('getShopDiscount')->willReturn(0.10);
+
+        $player->expects($this->once())->method('removeGils')->with(89);
+
+        $response = $this->controller->buy(1, $this->createBuyRequest('iron-sword'));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $data = json_decode($response->getContent(), true);
+        $this->assertTrue($data['success']);
+        $this->assertStringContainsString('-10% guilde', $data['message']);
+        $this->assertStringContainsString('-2% renommée', $data['message']);
+    }
+
     public function testBuyItemNotInShop(): void
     {
         $pnj = $this->createPnjMock(['potion-heal']);
@@ -148,7 +215,7 @@ class ShopControllerTest extends TestCase
         ]));
     }
 
-    private function createPlayerMock(int $gils): Player&MockObject
+    private function createPlayerMock(int $gils, int $renownScore = 0): Player&MockObject
     {
         $currentGils = $gils;
         $player = $this->createMock(Player::class);
@@ -159,6 +226,8 @@ class ShopControllerTest extends TestCase
 
             return true;
         });
+        $player->method('getRenownScore')->willReturn($renownScore);
+        $player->method('getMap')->willReturn(null);
 
         return $player;
     }

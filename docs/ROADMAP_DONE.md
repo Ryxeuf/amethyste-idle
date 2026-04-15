@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-12
+> Derniere mise a jour : 2026-04-15
 
 ---
 
@@ -2024,3 +2024,15 @@
 - [x] Affichage sur le profil public : palier avec classe CSS colorée, score actuel, points au palier suivant en tooltip
 - [x] Tests unitaires : `PlayerRenownTierTest` (8 tests), `PlayerRenownManagerTest` (8 tests), `PlayerRenownListenerTest` (3 tests) — 19 tests au total
 - [ ] Restant (sous-phase 2) : malus comportement negatif (report systeme), bonus reputation (quetes speciales, reductions PNJ)
+
+### 121 — Systeme de reputation & karma (partiel, sous-phase 2) — Reductions PNJ (2026-04-15) 🔧
+
+> Deuxieme tranche des bonus de renommee : reductions chez les marchands PNJ proportionnelles au palier de renommee du joueur. La reduction se cumule multiplicativement avec la reduction de la guilde controlante.
+- [x] Methode `PlayerRenownTier::getShopDiscount()` : 0% (Novice), 1% (Connu), 2% (Respecte), 3% (Honore), 4% (Illustre), 5% (Legendaire)
+- [x] `ShopController::buy` applique la reduction apres la reduction guilde (multiplicative : `totalCost = baseCost * (1 - guildDiscount) * (1 - renownDiscount)`)
+- [x] `ShopController::index` transmet `guildDiscount`, `renownTier` et `renownDiscount` au template
+- [x] Template `shop/index.html.twig` : badges de reduction (guilde + renommee) sous le header, prix barre + prix effectif par item, bouton `Acheter` desactive si gils insuffisants pour le prix effectif
+- [x] Message d'achat enrichi : `-X% guilde (-Y% renommee)` affiche dynamiquement selon les reductions actives
+- [x] Tests unitaires `PlayerRenownTierTest` : `testShopDiscountProgression`, `testShopDiscountIsMonotonicallyIncreasing`, `testShopDiscountCappedAtFivePercent`
+- [x] Tests fonctionnels `ShopControllerTest` : achat avec renommee Legendaire (-5%), Novice sans reduction, cumul guilde 10% + renommee 2% = 89 gils sur 100 base
+- [ ] Restant (sous-phase 3) : malus comportement negatif, acces a des quetes speciales
