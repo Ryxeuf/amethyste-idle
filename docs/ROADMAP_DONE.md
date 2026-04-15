@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-12
+> Derniere mise a jour : 2026-04-15
 
 ---
 
@@ -2023,4 +2023,15 @@
 - [x] `PlayerRenownListener` (EventSubscriber) : +5 pts par quete daily, +25 par quete narrative, +10 a 20 par succes selon la categorie (combat/quest/exploration/progression=20, craft/gathering/social=15, autres=10)
 - [x] Affichage sur le profil public : palier avec classe CSS colorée, score actuel, points au palier suivant en tooltip
 - [x] Tests unitaires : `PlayerRenownTierTest` (8 tests), `PlayerRenownManagerTest` (8 tests), `PlayerRenownListenerTest` (3 tests) — 19 tests au total
-- [ ] Restant (sous-phase 2) : malus comportement negatif (report systeme), bonus reputation (quetes speciales, reductions PNJ)
+- [ ] Restant (sous-phase 3) : malus comportement negatif (report systeme), bonus reputation (quetes speciales)
+
+### 121 — Systeme de reputation & karma (partiel, sous-phase 2) — Reductions marchand PNJ (2026-04-15) 🔧
+
+> Bonus gameplay concret lie au palier de renommee : les marchands PNJ accordent une reduction croissante au joueur selon sa notoriete globale.
+- [x] Methode `shopDiscount()` sur l'enum `PlayerRenownTier` : 0% (Novice), 2% (Connu), 4% (Respecte), 6% (Honore), 8% (Illustre), 10% (Legendaire)
+- [x] Service `PlayerRenownDiscountProvider` : `getShopDiscount(Player)` et `combineDiscount(float, Player)` avec plafond combine (`MAX_COMBINED_DISCOUNT = 50%`) pour eviter le cumul abusif avec la reduction de guilde
+- [x] `ShopController::index` : transmet `guildDiscount`, `renownDiscount`, `totalDiscount`, `renownTier` au template pour affichage
+- [x] `ShopController::buy` : applique la reduction cumulee (guilde + renommee, plafond 50%) au cout total et enrichit le message avec le detail des reductions appliquees
+- [x] Template `game/shop/index.html.twig` : banniere "Remise marchand" avec detail par source, prix barre si reduction, bouton/affordance recalcules sur le prix effectif
+- [x] Tests unitaires `PlayerRenownDiscountProviderTest` (8 tests : bornes par palier, coherence enum, cumul, plafonnement, clamp negatif)
+- [x] `ShopControllerTest::testBuyAppliesRenownDiscount` : verification end-to-end du prix applique et du message
