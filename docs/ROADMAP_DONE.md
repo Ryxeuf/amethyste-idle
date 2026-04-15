@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15 (Sprint 7 AVT-10 & AVT-11 — integration blueprints avatar)
+> Derniere mise a jour : 2026-04-16 (task 123 sous-phase 3 — ventes flash admin, Sprint 6 termine + Sprint 7 AVT-10 & AVT-11)
 
 ---
 
@@ -2100,6 +2100,19 @@
 - [x] Methode privee `notifyOutbid(bidder, listing, refundedAmount, newBid)` appelee dans `placeBid` apres remboursement et flush, uniquement si un enchereur precedent existe
 - [x] Notification de type `auction_outbid` avec icone `gavel`, titre "Enchere depassee" et lien `/game/auction` (format : "Votre mise de X Gils sur "Objet" a ete depassee (nouvelle mise : Y Gils). Vos Gils ont ete rembourses.")
 - [x] Tests unitaires `AuctionManagerTest` etendus (2 tests ajoutes) : notification avec arguments exacts sur surenchere, aucune notification a la premiere mise ; mise a jour des 4 instanciations `new AuctionManager(...)` pour inclure le mock `NotificationService`
+
+### 123 — Encheres temporaires & ventes flash (final, sous-phase 3) — Ventes flash admin (2026-04-15) ✅
+
+> Troisieme et derniere sous-phase de la tache 123 : les administrateurs peuvent creer des "ventes flash" temporaires (items a prix reduit, duree courte 1 a 12 heures). Les ventes flash ignorent les frais de mise en vente, la limite d'annonces actives et les bornes de prix par rarete (prix libre). Clot la tache 123 **et** le Sprint 6 (6/6).
+- [x] Enum `AuctionType::Flash` ajoute avec `label() = 'Vente flash'` (pas de migration necessaire : colonne `type VARCHAR(20)` deja presente depuis la sous-phase 1)
+- [x] `AuctionListing::isFlash()` helper
+- [x] `AuctionManager::createFlashSaleListing(admin, item, price, duration, qty)` : `listingFee=0`, duree `[FLASH_SALE_MIN_DURATION_HOURS=1, FLASH_SALE_MAX_DURATION_HOURS=12]` heures (defaut 2h), ignore `validatePriceLimits`/`validateActiveListingsLimit`/`validateCancelCooldown`, conserve la taxe regionale
+- [x] `AuctionManager::cancelFlashSale(admin, listing)` : annulation admin sans cooldown, retour de l'objet au sac, garde-fous type/owner
+- [x] `AuctionListingRepository::findActiveFlashSales()` pour alimenter le dashboard admin
+- [x] `AuctionController` (admin) : routes `/admin/auction/flash/new` (GET + POST) et `/admin/auction/flash/{id}/cancel`, CSRF `admin_flash_sale` et `admin_flash_cancel_{id}`, selection depuis le sac du personnage admin
+- [x] Templates : `admin/auction/flash_new.html.twig` (formulaire) + section "Ventes flash actives" dans `admin/auction/index.html.twig` (tableau + bouton "Nouvelle vente flash")
+- [x] Badge "Flash" rose dans la liste HdV joueur (`game/auction/index.html.twig`) en plus du badge "Enchere" existant (placeBid/buyListing continuent de fonctionner : Flash != Auction, donc `buyListing` accepte)
+- [x] Tests unitaires `AuctionManagerTest` etendus (8 tests ajoutes) : creation vente flash, ignore bornes de prix par rarete, ignore limite d'annonces actives, duree invalide rejettee, prix 0 rejette, annulation admin succes, annulation par non-proprietaire refusee, annulation sur listing non-flash refusee, `buyListing` accepte Flash (1000 Gils, 50 achat, seller admin recoit 50)
 
 ---
 

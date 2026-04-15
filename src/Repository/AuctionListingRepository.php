@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\App\AuctionListing;
 use App\Entity\App\Player;
 use App\Enum\AuctionStatus;
+use App\Enum\AuctionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -85,6 +86,26 @@ class AuctionListingRepository extends ServiceEntityRepository
         }
 
         return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * @return AuctionListing[]
+     */
+    public function findActiveFlashSales(): array
+    {
+        return $this->createQueryBuilder('l')
+            ->join('l.playerItem', 'pi')->addSelect('pi')
+            ->join('pi.genericItem', 'gi')->addSelect('gi')
+            ->join('l.seller', 's')->addSelect('s')
+            ->where('l.type = :type')
+            ->andWhere('l.status = :status')
+            ->andWhere('l.expiresAt > :now')
+            ->setParameter('type', AuctionType::Flash)
+            ->setParameter('status', AuctionStatus::Active)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->orderBy('l.expiresAt', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     public function countActiveBySeller(Player $seller): int

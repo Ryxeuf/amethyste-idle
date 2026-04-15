@@ -28,6 +28,61 @@
         </div>
     </div>
 
+    {# Flash sales #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
+        <div class="flex items-center justify-between mb-4">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-200">Ventes flash actives</h2>
+                <p class="text-gray-500 text-xs mt-0.5">Items rares a prix reduit et duree limitee, mis en vente par l'administration.</p>
+            </div>
+            <a href="{{ path('admin_auction_flash_new') }}"
+               class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-white text-sm rounded-lg transition-colors">
+                Nouvelle vente flash
+            </a>
+        </div>
+
+        {% if flashSales|length > 0 %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead>
+                        <tr class="text-gray-500 uppercase text-xs border-b border-gray-800">
+                            <th class="py-3 px-4">Item</th>
+                            <th class="py-3 px-4">Vendeur</th>
+                            <th class="py-3 px-4 text-right">Prix / u</th>
+                            <th class="py-3 px-4 text-right">Qte</th>
+                            <th class="py-3 px-4">Expire</th>
+                            <th class="py-3 px-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for listing in flashSales %}
+                            {% set item = listing.playerItem.genericItem %}
+                            <tr class="border-b border-gray-800/50 hover:bg-gray-800/30">
+                                <td class="py-2 px-4 text-gray-200">{{ item.name }}</td>
+                                <td class="py-2 px-4 text-gray-400">{{ listing.seller.name }}</td>
+                                <td class="py-2 px-4 text-right text-yellow-400 font-mono">{{ listing.pricePerUnit|number_format(0, ',', ' ') }} G</td>
+                                <td class="py-2 px-4 text-right text-gray-300">x{{ listing.quantity }}</td>
+                                <td class="py-2 px-4 text-gray-400">{{ listing.expiresAt|date('d/m H\\hi') }}</td>
+                                <td class="py-2 px-4 text-right">
+                                    <form method="POST" action="{{ path('admin_auction_flash_cancel', {id: listing.id}) }}"
+                                          onsubmit="return confirm('Annuler cette vente flash ?')" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_flash_cancel_' ~ listing.id) }}">
+                                        <button type="submit"
+                                                class="px-2 py-1 bg-red-700 hover:bg-red-600 text-white text-xs rounded transition-colors">
+                                            Annuler
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-sm">Aucune vente flash active.</p>
+        {% endif %}
+    </div>
+
     {# Top items sold #}
     <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <h2 class="text-lg font-semibold text-gray-200 mb-4">Top items vendus</h2>

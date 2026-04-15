@@ -90,6 +90,10 @@
                                             <span class="px-1.5 py-0.5 bg-amber-900/40 border border-amber-700/50 text-amber-300 text-[10px] rounded">
                                                 Enchere
                                             </span>
+                                        {% elseif listing.isFlash %}
+                                            <span class="px-1.5 py-0.5 bg-pink-900/40 border border-pink-700/50 text-pink-300 text-[10px] rounded font-semibold uppercase tracking-wider">
+                                                Flash
+                                            </span>
                                         {% endif %}
                                     </div>
                                     <p class="text-gray-500 text-xs mt-0.5 truncate">{{ item.description }}</p>

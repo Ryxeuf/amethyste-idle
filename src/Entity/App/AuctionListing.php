@@ -244,6 +244,11 @@ class AuctionListing
         return $this->type === AuctionType::Auction;
     }
 
+    public function isFlash(): bool
+    {
+        return $this->type === AuctionType::Flash;
+    }
+
     /**
      * Pour les encheres: prix courant a payer = currentBid s'il existe, sinon startingPrice (= pricePerUnit).
      * Pour les prix fixes: pricePerUnit.
