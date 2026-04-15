@@ -62,14 +62,14 @@
 
 ### Phase 2 — Composition de textures par layers
 
-### AVT-10 — Integrer AvatarTextureComposer.js (S | ★★★)
+### ~~AVT-10 — Integrer AvatarTextureComposer.js (S | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Copier depuis blueprint dans `assets/lib/avatar/`
-- [ ] Verifier compatibilite PixiJS v8 (RenderTexture API)
+- [x] Copier depuis blueprint dans `assets/lib/avatar/`
+- [x] Verifier compatibilite PixiJS v8 (RenderTexture API)
 
-### AVT-11 — Integrer AvatarSpriteSheetCache.js (S | ★★)
+### ~~AVT-11 — Integrer AvatarSpriteSheetCache.js (S | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Copier depuis blueprint, cache LRU 128 entrees
+- [x] Copier depuis blueprint, cache LRU 128 entrees
 
 ### AVT-12 — Adapter AvatarAnimatorFactory.js (M | ★★★)
 > Prerequis : ← AVT-06, AVT-10, AVT-11
