@@ -8,10 +8,13 @@ use App\Entity\App\PlayerAchievement;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Enum\PlayerRenownTier;
+use App\Enum\PlayerReportReason;
+use App\GameEngine\Renown\PlayerReportManager;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -22,6 +25,7 @@ class PlayerProfileController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerReportManager $reportManager,
     ) {
     }
 
@@ -80,6 +84,55 @@ class PlayerProfileController extends AbstractController
             'renownTier' => $renownTier,
             'renownPointsToNext' => $renownPointsToNext,
         ]);
+    }
+
+    #[Route('/game/player/{id}/report', name: 'app_game_player_report', methods: ['POST'])]
+    public function report(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $reportedPlayer = $this->entityManager->getRepository(Player::class)->find($id);
+        if (!$reportedPlayer) {
+            throw $this->createNotFoundException('Joueur introuvable.');
+        }
+
+        $reporter = $this->playerHelper->getPlayer();
+        if (!$reporter || $reporter->getId() === $reportedPlayer->getId()) {
+            $this->addFlash('error', 'Vous ne pouvez pas vous signaler vous-meme.');
+
+            return $this->redirectToRoute('app_game_player_profile', ['id' => $id]);
+        }
+
+        if (!$this->isCsrfTokenValid('report_player_' . $id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'Jeton CSRF invalide.');
+
+            return $this->redirectToRoute('app_game_player_profile', ['id' => $id]);
+        }
+
+        $reason = PlayerReportReason::tryFrom((string) $request->request->get('reason', ''));
+        if ($reason === null) {
+            $this->addFlash('error', 'Raison invalide.');
+
+            return $this->redirectToRoute('app_game_player_profile', ['id' => $id]);
+        }
+
+        $description = (string) $request->request->get('description', '');
+
+        try {
+            $report = $this->reportManager->submitReport($reporter, $reportedPlayer, $reason, $description);
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('app_game_player_profile', ['id' => $id]);
+        }
+
+        if ($report === null) {
+            $this->addFlash('error', 'Vous avez deja signale ce joueur recemment. Merci d\'attendre 24h.');
+        } else {
+            $this->addFlash('success', 'Signalement envoye. Un moderateur le traitera prochainement.');
+        }
+
+        return $this->redirectToRoute('app_game_player_profile', ['id' => $id]);
     }
 
     #[Route('/game/player/achievement/{id}/toggle-featured', name: 'app_game_player_achievement_toggle_featured', methods: ['POST'])]
