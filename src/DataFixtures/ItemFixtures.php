@@ -2983,6 +2983,74 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'level' => 18,
             ],
 
+            // === Tier 4+ : Chefs-d'oeuvre exclusifs aux maitres artisans (task 122) ===
+            // Chacun necessite la specialisation correspondante pour etre fabrique.
+
+            // Maitre Forgeron — lame de maitre
+            'masterwork_blade' => [
+                'name' => 'Lame du maitre forgeron',
+                'description' => 'Lame d\'orichalque trempee dans le sang d\'etoile, signature des plus grands forgerons.',
+                'type' => 'gear',
+                'slug' => 'masterwork-blade',
+                'gear_location' => Item::GEAR_LOCATION_MAIN_WEAPON,
+                'price' => 3500,
+                'space' => 2,
+                'energy_cost' => 0,
+                'nb_usages' => 500,
+                'rarity' => ItemRarity::Legendary,
+                'materiaSlots' => 3,
+                'level' => 20,
+            ],
+
+            // Maitre Tanneur — manteau de maitre
+            'masterwork_drakehide_cloak' => [
+                'name' => 'Manteau du maitre tanneur',
+                'description' => 'Cape ouvragee dans la peau d\'un drake ancestral, souple comme la soie et solide comme l\'acier.',
+                'type' => 'gear',
+                'slug' => 'masterwork-drakehide-cloak',
+                'gear_location' => Item::GEAR_LOCATION_CHEST,
+                'price' => 3200,
+                'space' => 2,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Legendary,
+                'protection' => 12,
+                'materiaSlots' => 3,
+                'level' => 20,
+            ],
+
+            // Maitre Alchimiste — elixir supreme
+            'masterwork_grand_elixir' => [
+                'name' => 'Grand elixir du maitre alchimiste',
+                'description' => 'Distillation parfaite de mandragore, ginseng et essence prismatique. Restaure pleinement le porteur.',
+                'type' => 'stuff',
+                'slug' => 'masterwork-grand-elixir',
+                'spell' => 'elixir_vitality_spell',
+                'effect' => '{"action":"use_spell","slug":"elixir-vitality"}',
+                'price' => 1500,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => 1,
+                'rarity' => ItemRarity::Legendary,
+            ],
+
+            // Maitre Joaillier — anneau de maitre
+            'masterwork_starforged_ring' => [
+                'name' => 'Anneau du maitre joaillier',
+                'description' => 'Anneau d\'orichalque serti d\'une gemme prismatique parfaitement taillee, pulsant d\'energie pure.',
+                'type' => 'gear',
+                'slug' => 'masterwork-starforged-ring',
+                'gear_location' => Item::GEAR_LOCATION_RING_1,
+                'price' => 4000,
+                'space' => 1,
+                'energy_cost' => 0,
+                'nb_usages' => -1,
+                'rarity' => ItemRarity::Legendary,
+                'protection' => 8,
+                'materiaSlots' => 4,
+                'level' => 20,
+            ],
+
             // === Équipement Tier 2 — Variantes élémentaires (Feu, Eau, Terre, Air) ===
             // Chaque pièce octroie +10% de dégâts de l'élément correspondant.
             // 7 pièces × 4 éléments = 28 items.

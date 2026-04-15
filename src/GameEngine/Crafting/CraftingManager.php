@@ -33,6 +33,9 @@ class CraftingManager
     /**
      * Retourne les recettes disponibles pour un joueur et un type d'artisanat.
      *
+     * Les recettes exclusives a une specialisation ne sont retournees que si le joueur
+     * possede la specialisation correspondante.
+     *
      * @return Recipe[]
      */
     public function getAvailableRecipes(Player $player, string $craft): array
@@ -42,14 +45,25 @@ class CraftingManager
         ]);
 
         $craftingLevel = $this->getCraftingLevel($player, $craft);
+        $playerSpecialization = $player->getCraftSpecialization();
 
-        return array_filter($recipes, function (Recipe $recipe) use ($craftingLevel) {
-            return $craftingLevel >= $recipe->getRequiredLevel();
+        return array_filter($recipes, function (Recipe $recipe) use ($craftingLevel, $playerSpecialization) {
+            if ($craftingLevel < $recipe->getRequiredLevel()) {
+                return false;
+            }
+
+            $required = $recipe->getRequiredSpecialization();
+            if ($required !== null && $required !== $playerSpecialization) {
+                return false;
+            }
+
+            return true;
         });
     }
 
     /**
-     * Retourne les recettes verrouilees (niveau insuffisant), triees par niveau requis.
+     * Retourne les recettes verrouilees (niveau insuffisant ou specialisation manquante),
+     * triees par niveau requis.
      *
      * @return Recipe[]
      */
@@ -61,9 +75,19 @@ class CraftingManager
         );
 
         $craftingLevel = $this->getCraftingLevel($player, $craft);
+        $playerSpecialization = $player->getCraftSpecialization();
 
-        return array_values(array_filter($recipes, function (Recipe $recipe) use ($craftingLevel) {
-            return $craftingLevel < $recipe->getRequiredLevel();
+        return array_values(array_filter($recipes, function (Recipe $recipe) use ($craftingLevel, $playerSpecialization) {
+            if ($craftingLevel < $recipe->getRequiredLevel()) {
+                return true;
+            }
+
+            $required = $recipe->getRequiredSpecialization();
+            if ($required !== null && $required !== $playerSpecialization) {
+                return true;
+            }
+
+            return false;
         }));
     }
 
@@ -265,6 +289,17 @@ class CraftingManager
                 'item' => null,
                 'quality' => null,
                 'message' => $toolCheck['message'],
+            ];
+        }
+
+        // Vérifier la spécialisation requise (recettes exclusives task 122)
+        $requiredSpec = $recipe->getRequiredSpecialization();
+        if ($requiredSpec !== null && $player->getCraftSpecialization() !== $requiredSpec) {
+            return [
+                'success' => false,
+                'item' => null,
+                'quality' => null,
+                'message' => sprintf('Cette recette est reservee aux %s.', $requiredSpec->label()),
             ];
         }
 

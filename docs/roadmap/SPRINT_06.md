@@ -28,10 +28,10 @@
 
 ### Piste B — Contenu economique
 
-### 122 — Metiers specialises (2e tier) (M | ★★)
+### ~~122 — Metiers specialises (2e tier) (M | ★★)~~ ✅
 > Prerequis : ← 145 (recettes craft)
 - [x] Specialisations de craft : Maitre Forgeron, Maitre Alchimiste, Maitre Joaillier (+ Maitre Tanneur pour symetrie) — enum `CraftSpecialization`, sous-phase 1
-- [ ] Recettes exclusives par specialisation (items tier 4+)
+- [x] Recettes exclusives par specialisation (items tier 4+) — champ `requiredSpecialization` sur `Recipe`, filtrage dans `CraftingManager::getAvailableRecipes/getLockedRecipes`, garde-fou dans `craft()`, 4 items + 4 recettes Maitre (lame, manteau drake, grand elixir, anneau astral), badges dans templates, sous-phase 2
 - [x] Bonus qualite +20% si specialise — `QualityCalculator` etend `calculateQuality()` avec parametre `specializationBonus`, sous-phase 1
 - [x] 1 specialisation par joueur (choix irreversible, deblocage a domain XP 500+) — champ `craftSpecialization` sur Player, `CraftSpecializationService::canChoose/choose`, UI dans la page craft, sous-phase 1
 

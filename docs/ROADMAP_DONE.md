@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-15 (task 122 sous-phase 1 — fondations metiers specialises)
+> Derniere mise a jour : 2026-04-15 (task 122 sous-phase 2 — recettes exclusives par specialisation)
 
 ---
 
@@ -2068,4 +2068,14 @@
 - [x] `CraftingManager` passe `CraftSpecializationService::getQualityBonusFor($player, $recipe->getCraft())` au calculator lors du craft
 - [x] Route `POST /game/craft/specialization` (CSRF `craft_specialization`) et bloc UI dans `templates/game/crafting/index.html.twig` : affichage du titre actuel (si specialise), boutons de choix avec confirmation irreversible (si eligible), ou message de seuil (si insuffisant)
 - [x] Tests unitaires : `CraftSpecializationTest` (5 tests : cases, craft slug, label "Maitre", description, tryFrom), `CraftSpecializationServiceTest` (9 tests : list, canChoose seuil/above/already, choose succes/echec, bonus matching/mismatch/absent, XP domaine non-craft ignore), `QualityCalculatorTest` etendu (3 tests : bonus garantit upgrade, bonus 0 inchange, plafond legendary)
-- [ ] Restant (sous-phase 2) : recettes exclusives par specialisation (champ `requiresSpecialization` sur Recipe, filtrage `getAvailableRecipes`, fixtures items tier 4+)
+
+### 122 — Metiers specialises (sous-phase 2) — Recettes exclusives par specialisation (2026-04-15) ✅
+
+> Seconde et derniere sous-phase de la tache 122 : les recettes exclusives sont desormais reservees aux maitres artisans correspondants. Quatre chefs-d'oeuvre de niveau 20 (un par specialisation) sont introduits comme recompense de specialisation.
+- [x] Champ `required_specialization` (VARCHAR(20) nullable, `enumType: CraftSpecialization`) sur l'entite `Recipe` + migration PostgreSQL `Version20260415RecipeSpecializationExclusive` (`ADD COLUMN IF NOT EXISTS`) avec `getRequiredSpecialization`, `setRequiredSpecialization`, `isSpecializationExclusive`
+- [x] `CraftingManager::getAvailableRecipes` et `getLockedRecipes` filtrent les recettes : une recette exclusive n'apparait dans les recettes disponibles que si la specialisation du joueur correspond, sinon elle bascule dans les verrouillees (raison `specialisation manquante` aux cotes du niveau)
+- [x] Garde-fou serveur dans `CraftingManager::craft()` : refus avec message `Cette recette est reservee aux Maitres X.` si un joueur tente de fabriquer (URL directe) sans la specialisation requise
+- [x] Quatre items Maitre tier 5 (rarete `Legendary`, niveau 20, 3-4 emplacements de materia) ajoutes dans `ItemFixtures` : `masterwork_blade` (arme, Forgeron), `masterwork_drakehide_cloak` (chest +12 protection, Tanneur), `masterwork_grand_elixir` (consommable, Alchimiste), `masterwork_starforged_ring` (anneau, Joaillier)
+- [x] Quatre recettes exclusives dans `RecipeFixtures` (niveau 10, 200 XP recompense, ingredients tier 4+ : orichalque, adamantite, astretal, gemme prismatique, peau de drake) avec `required_specialization` mappee a l'enum `CraftSpecialization`
+- [x] Templates `_recipe_card.html.twig` et `_recipe_card_locked.html.twig` : badge jaune `Maitre Forgeron/Tanneur/Alchimiste/Joaillier` affiche sur les cartes recettes exclusives (disponibles ou verrouillees)
+- [x] Tests unitaires `CraftingManagerTest` etendus (5 tests) : recette exclusive masquee si pas de specialisation, visible si specialisation matche, masquee si mismatch, presente dans verrouillees si specialisation manque, refus de craft sans specialisation requise
