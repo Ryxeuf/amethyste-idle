@@ -2023,7 +2023,7 @@
 - [x] `PlayerRenownListener` (EventSubscriber) : +5 pts par quete daily, +25 par quete narrative, +10 a 20 par succes selon la categorie (combat/quest/exploration/progression=20, craft/gathering/social=15, autres=10)
 - [x] Affichage sur le profil public : palier avec classe CSS colorée, score actuel, points au palier suivant en tooltip
 - [x] Tests unitaires : `PlayerRenownTierTest` (8 tests), `PlayerRenownManagerTest` (8 tests), `PlayerRenownListenerTest` (3 tests) — 19 tests au total
-- [ ] Restant (sous-phase 3) : malus comportement negatif (report systeme), bonus reputation (quetes speciales)
+- [ ] Restant (sous-phase 4) : malus comportement negatif (report systeme)
 
 ### 121 — Systeme de reputation & karma (partiel, sous-phase 2) — Reductions marchand PNJ (2026-04-15) 🔧
 
@@ -2035,3 +2035,13 @@
 - [x] Template `game/shop/index.html.twig` : banniere "Remise marchand" avec detail par source, prix barre si reduction, bouton/affordance recalcules sur le prix effectif
 - [x] Tests unitaires `PlayerRenownDiscountProviderTest` (8 tests : bornes par palier, coherence enum, cumul, plafonnement, clamp negatif)
 - [x] `ShopControllerTest::testBuyAppliesRenownDiscount` : verification end-to-end du prix applique et du message
+
+### 121 — Systeme de reputation & karma (partiel, sous-phase 3) — Quetes gatees par la renommee (2026-04-15) 🔧
+
+> Troisieme bonus lie a la renommee : certaines quetes speciales exigent un score de renommee minimum pour etre visibles et acceptees, offrant un contenu progressif reserve aux joueurs influents.
+- [x] Champ `min_renown_score` (INTEGER, nullable) sur `Quest` + migration PostgreSQL `Version20260415QuestMinRenownScore` (`ADD COLUMN IF NOT EXISTS`)
+- [x] Helpers sur `Quest` : `hasRenownRequirement()`, `isUnlockedForRenownScore(int)`, `getRequiredRenownTier(): ?PlayerRenownTier`
+- [x] `PlayerQuestHelper::getAvailableQuests()` : filtre DQL `q.minRenownScore IS NULL OR q.minRenownScore <= :playerRenownScore` pour masquer les quetes verrouillees
+- [x] `QuestController::accept()` : blocage avec message `Renommee insuffisante (X requis, vous avez Y)` si score insuffisant
+- [x] Template `game/quest/index.html.twig` : badge ambre `Renommee : <palier>` avec la classe CSS du palier dans la liste des quetes disponibles
+- [x] Tests unitaires `QuestRenownRequirementTest` (6 tests : defaut sans pre-requis, normalisation 0/negatif en null, blocage en dessous du seuil, palier correct pour seuil exact et score intermediaire)
