@@ -13,6 +13,7 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftingManager;
+use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\QualityCalculator;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
@@ -71,6 +72,7 @@ class EventBonusIntegrationTest extends TestCase
             $bonusProvider,
             $this->createMock(\App\Helper\GearHelper::class),
             $this->createMock(PlayerActionHelper::class),
+            $this->createMock(CraftSpecializationService::class),
         );
 
         $result = $craftingManager->craft($player, $recipe);
@@ -124,6 +126,7 @@ class EventBonusIntegrationTest extends TestCase
             $bonusProvider,
             $this->createMock(\App\Helper\GearHelper::class),
             $this->createMock(PlayerActionHelper::class),
+            $this->createMock(CraftSpecializationService::class),
         );
 
         $result = $manager->craft($player, $recipe);
