@@ -8,6 +8,7 @@ use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Enum\AuctionStatus;
+use App\Enum\AuctionType;
 use App\GameEngine\Guild\TownControlManager;
 use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +18,8 @@ class AuctionManager
 {
     private const LISTING_FEE_RATE = 0.05;
     private const DEFAULT_DURATION_HOURS = 48;
+    public const AUCTION_DURATION_HOURS = 24;
+    public const AUCTION_MIN_INCREMENT = 1;
     public const MAX_ACTIVE_LISTINGS = 20;
     public const CANCEL_COOLDOWN_MINUTES = 5;
 
@@ -97,6 +100,10 @@ class AuctionManager
             throw new \InvalidArgumentException('Cette annonce a expire.');
         }
 
+        if ($listing->isAuction()) {
+            throw new \InvalidArgumentException('Cette annonce est une enchere : utilisez la mise pour enchereir.');
+        }
+
         if ($listing->getSeller()->getId() === $buyer->getId()) {
             throw new \InvalidArgumentException('Vous ne pouvez pas acheter votre propre annonce.');
         }
@@ -148,6 +155,10 @@ class AuctionManager
             throw new \InvalidArgumentException('Vous ne pouvez annuler que vos propres annonces.');
         }
 
+        if ($listing->isAuction() && $listing->getCurrentBidder() !== null) {
+            throw new \InvalidArgumentException('Impossible d\'annuler une enchere avec des mises en cours.');
+        }
+
         $listing->setStatus(AuctionStatus::Cancelled);
         $listing->setCancelledAt(new \DateTimeImmutable());
 
@@ -178,8 +189,12 @@ class AuctionManager
         $count = 0;
         /** @var AuctionListing $listing */
         foreach ($expired as $listing) {
-            $listing->setStatus(AuctionStatus::Expired);
-            $this->returnItemToSeller($listing);
+            if ($listing->isAuction() && $listing->getCurrentBidder() !== null) {
+                $this->finalizeAuction($listing);
+            } else {
+                $listing->setStatus(AuctionStatus::Expired);
+                $this->returnItemToSeller($listing);
+            }
             ++$count;
         }
 
@@ -188,6 +203,173 @@ class AuctionManager
         }
 
         return $count;
+    }
+
+    /**
+     * Cree une annonce de type enchere.
+     * L'acheteur verrouille les Gils en placant une mise (escrow).
+     * A l'expiration, le plus offrant remporte l'objet (cf. finalizeAuction).
+     */
+    public function createAuctionListing(Player $seller, PlayerItem $playerItem, int $startingPrice, int $minIncrement = self::AUCTION_MIN_INCREMENT, int $quantity = 1): AuctionListing
+    {
+        if ($startingPrice < 1) {
+            throw new \InvalidArgumentException('Le prix de depart doit etre superieur a 0.');
+        }
+
+        if ($minIncrement < 1) {
+            throw new \InvalidArgumentException('L\'increment minimum doit etre superieur a 0.');
+        }
+
+        if ($quantity < 1) {
+            throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
+        }
+
+        $this->validatePriceLimits($playerItem, $startingPrice);
+        $this->validateActiveListingsLimit($seller);
+        $this->validateCancelCooldown($seller);
+
+        $totalPrice = $startingPrice * $quantity;
+        $listingFee = (int) ceil($totalPrice * self::LISTING_FEE_RATE);
+
+        if (!$seller->removeGils($listingFee)) {
+            throw new \InvalidArgumentException('Fonds insuffisants pour payer les frais de mise en vente.');
+        }
+
+        $regionTaxRate = $this->getRegionTaxRate($seller);
+
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($playerItem);
+        $listing->setQuantity($quantity);
+        $listing->setPricePerUnit($startingPrice);
+        $listing->setListingFee($listingFee);
+        $listing->setRegionTaxRate($regionTaxRate);
+        $listing->setType(AuctionType::Auction);
+        $listing->setMinIncrement($minIncrement);
+        $listing->setExpiresAt(new \DateTimeImmutable('+' . self::AUCTION_DURATION_HOURS . ' hours'));
+
+        $playerItem->setInventory(null);
+
+        $this->entityManager->persist($listing);
+        $this->entityManager->flush();
+
+        $this->logger->info('Auction listing created', [
+            'listing_id' => $listing->getId(),
+            'seller_id' => $seller->getId(),
+            'item' => $playerItem->getGenericItem()->getName(),
+            'starting_price' => $startingPrice,
+            'min_increment' => $minIncrement,
+            'quantity' => $quantity,
+            'listing_fee' => $listingFee,
+        ]);
+
+        return $listing;
+    }
+
+    /**
+     * Place une mise sur une enchere. La mise est verrouillee en escrow
+     * (Gils deduits du bidder) ; en cas de surenchere, la mise precedente
+     * est remboursee au bidder precedent.
+     */
+    public function placeBid(Player $bidder, AuctionListing $listing, int $bidAmount): void
+    {
+        if (!$listing->isActive()) {
+            throw new \InvalidArgumentException('Cette annonce n\'est plus disponible.');
+        }
+
+        if ($listing->isExpired()) {
+            throw new \InvalidArgumentException('Cette enchere a expire.');
+        }
+
+        if (!$listing->isAuction()) {
+            throw new \InvalidArgumentException('Cette annonce n\'est pas une enchere.');
+        }
+
+        if ($listing->getSeller()->getId() === $bidder->getId()) {
+            throw new \InvalidArgumentException('Vous ne pouvez pas enchereir sur votre propre annonce.');
+        }
+
+        $currentBidder = $listing->getCurrentBidder();
+        if ($currentBidder !== null && $currentBidder->getId() === $bidder->getId()) {
+            throw new \InvalidArgumentException('Vous etes deja le plus offrant.');
+        }
+
+        $increment = $listing->getMinIncrement() ?? self::AUCTION_MIN_INCREMENT;
+        $currentBid = $listing->getCurrentBid();
+        $minAllowed = $currentBid !== null
+            ? $currentBid + $increment
+            : $listing->getPricePerUnit() * $listing->getQuantity();
+
+        if ($bidAmount < $minAllowed) {
+            throw new \InvalidArgumentException(sprintf('La mise doit etre d\'au moins %d Gils.', $minAllowed));
+        }
+
+        if (!$bidder->removeGils($bidAmount)) {
+            throw new \InvalidArgumentException('Fonds insuffisants pour cette mise.');
+        }
+
+        // Rembourser l'ancien plus offrant
+        if ($currentBidder !== null && $currentBid !== null) {
+            $currentBidder->addGils($currentBid);
+        }
+
+        $listing->setCurrentBid($bidAmount);
+        $listing->setCurrentBidder($bidder);
+
+        $this->entityManager->flush();
+
+        $this->logger->info('Auction bid placed', [
+            'listing_id' => $listing->getId(),
+            'bidder_id' => $bidder->getId(),
+            'bid_amount' => $bidAmount,
+            'previous_bidder_id' => $currentBidder?->getId(),
+        ]);
+    }
+
+    /**
+     * Finalise une enchere expiree avec un gagnant : l'objet part au bidder,
+     * les Gils verrouilles (diminues de la taxe regionale) vont au vendeur.
+     */
+    public function finalizeAuction(AuctionListing $listing): AuctionTransaction
+    {
+        if (!$listing->isAuction()) {
+            throw new \InvalidArgumentException('Cette annonce n\'est pas une enchere.');
+        }
+
+        $winner = $listing->getCurrentBidder();
+        $winningBid = $listing->getCurrentBid();
+
+        if ($winner === null || $winningBid === null) {
+            throw new \InvalidArgumentException('Cette enchere n\'a pas de gagnant.');
+        }
+
+        $regionTaxAmount = (int) floor($winningBid * (float) $listing->getRegionTaxRate());
+        $sellerRevenue = $winningBid - $regionTaxAmount;
+
+        // Les Gils etaient deja verrouilles chez le bidder : on les transfere au vendeur.
+        $listing->getSeller()->addGils($sellerRevenue);
+        $this->transferTaxToGuildTreasury($listing, $regionTaxAmount);
+
+        $listing->setStatus(AuctionStatus::Sold);
+        $this->transferItemToBuyer($winner, $listing->getPlayerItem());
+
+        $transaction = new AuctionTransaction();
+        $transaction->setListing($listing);
+        $transaction->setBuyer($winner);
+        $transaction->setTotalPrice($winningBid);
+        $transaction->setRegionTaxAmount($regionTaxAmount);
+        $transaction->setPurchasedAt(new \DateTimeImmutable());
+
+        $this->entityManager->persist($transaction);
+
+        $this->logger->info('Auction finalized', [
+            'listing_id' => $listing->getId(),
+            'winner_id' => $winner->getId(),
+            'winning_bid' => $winningBid,
+            'region_tax' => $regionTaxAmount,
+        ]);
+
+        return $transaction;
     }
 
     private function transferItemToBuyer(Player $buyer, PlayerItem $item): void

@@ -3,6 +3,7 @@
 namespace App\Entity\App;
 
 use App\Enum\AuctionStatus;
+use App\Enum\AuctionType;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
@@ -48,6 +49,19 @@ class AuctionListing
 
     #[ORM\Column(name: 'cancelled_at', type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $cancelledAt = null;
+
+    #[ORM\Column(name: 'type', type: 'string', length: 20, enumType: AuctionType::class, options: ['default' => 'fixed'])]
+    private AuctionType $type = AuctionType::Fixed;
+
+    #[ORM\Column(name: 'min_increment', type: 'integer', nullable: true)]
+    private ?int $minIncrement = null;
+
+    #[ORM\Column(name: 'current_bid', type: 'integer', nullable: true)]
+    private ?int $currentBid = null;
+
+    #[ORM\ManyToOne(targetEntity: Player::class)]
+    #[ORM\JoinColumn(name: 'current_bidder_id', referencedColumnName: 'id', nullable: true)]
+    private ?Player $currentBidder = null;
 
     public function getId(): ?int
     {
@@ -175,5 +189,71 @@ class AuctionListing
     public function isExpired(): bool
     {
         return $this->expiresAt < new \DateTimeImmutable();
+    }
+
+    public function getType(): AuctionType
+    {
+        return $this->type;
+    }
+
+    public function setType(AuctionType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getMinIncrement(): ?int
+    {
+        return $this->minIncrement;
+    }
+
+    public function setMinIncrement(?int $minIncrement): self
+    {
+        $this->minIncrement = $minIncrement;
+
+        return $this;
+    }
+
+    public function getCurrentBid(): ?int
+    {
+        return $this->currentBid;
+    }
+
+    public function setCurrentBid(?int $currentBid): self
+    {
+        $this->currentBid = $currentBid;
+
+        return $this;
+    }
+
+    public function getCurrentBidder(): ?Player
+    {
+        return $this->currentBidder;
+    }
+
+    public function setCurrentBidder(?Player $currentBidder): self
+    {
+        $this->currentBidder = $currentBidder;
+
+        return $this;
+    }
+
+    public function isAuction(): bool
+    {
+        return $this->type === AuctionType::Auction;
+    }
+
+    /**
+     * Pour les encheres: prix courant a payer = currentBid s'il existe, sinon startingPrice (= pricePerUnit).
+     * Pour les prix fixes: pricePerUnit.
+     */
+    public function getCurrentPrice(): int
+    {
+        if ($this->type === AuctionType::Auction && $this->currentBid !== null) {
+            return $this->currentBid;
+        }
+
+        return $this->pricePerUnit;
     }
 }
