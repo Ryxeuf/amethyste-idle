@@ -46,11 +46,16 @@ class IndexController extends AbstractController
         $coordinates = $player->getCoordinates();
         [$x, $y] = array_map('intval', explode('.', $coordinates));
 
+        $baseDelay = 120;
+        $defaultSpeed = 10;
+        $stepDelay = max(40, (int) round($baseDelay * $defaultSpeed / max(1, $player->getSpeed())));
+
         return $this->render('game/map/index.html.twig', [
             'mapId' => $player->getMap()->getId(),
             'playerX' => $x,
             'playerY' => $y,
             'playerId' => $player->getId(),
+            'stepDelay' => $stepDelay,
         ]);
     }
 }
