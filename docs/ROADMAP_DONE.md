@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (task 123 sous-phase 3 — ventes flash admin, Sprint 6 termine + Sprint 7 AVT-10 & AVT-11)
+> Derniere mise a jour : 2026-04-16 (Sprint 7 AVT-01 — inventaire des assets avatar)
 
 ---
 
@@ -2133,3 +2133,11 @@
 - [x] Strategie LRU basee sur l'ordre d'insertion de `Map` (delete puis re-set pour rapprocher de la tete)
 - [x] Nettoyage des textures remplacees / expulsees via `destroy(true)` (garde-fou si la texture ne possede pas la methode)
 - [x] Pas d'impact runtime : consomme par `AvatarAnimatorFactory` (AVT-12) une fois cable
+
+### AVT-01 — Inventorier les assets disponibles (2026-04-16) ✅
+
+> Inventaire complet de tous les sprites personnage du projet. Verification de la coherence dimensionnelle entre layers. Correction des erreurs de documentation (ASSETS.md referençait 72x128 / 24x32 alors que le format reel est 96x128 / 32x32).
+- [x] Inventaire detaille dans `docs/avatar-asset-inventory.md` : 188 sprites individuels (96x128), 6 multi-sheets (384x256), 50 personnages uniques (18 Male, 25 Female, 7 Soldier), 39 sprite keys configures dans `SpriteConfigProvider` (7 joueurs, 11 PNJ, 21 mobs)
+- [x] Coherence verifiee : 100% des sprites utilises en jeu respectent le format 96x128 / 32x32 (single) ou 384x256 / 32x32 (multi). 2 multi-sheets non standards identifies (TechsheetB 384x280, palett13 384x304) — non utilises en jeu
+- [x] Correction ASSETS.md : dimensions 72x128 → 96x128, frames 24x32 → 32x32, reference `MapApiController::getSpriteConfig()` → `SpriteConfigProvider`
+- [x] Structure cible documentee pour les assets modulaires avatar (`assets/styles/images/avatar/` avec sous-dossiers body, hair, beard, face, gear, tools) et variantes MVP recommandees

@@ -5,8 +5,8 @@
 Tous les sprites personnage/monstre/PNJ utilisent le format **RPG Maker VX/MV** :
 
 ### Single character (un personnage par fichier)
-- **Dimensions** : 72x128 px (3 colonnes x 4 lignes)
-- **Taille par frame** : 24x32 px
+- **Dimensions** : 96x128 px (3 colonnes x 4 lignes)
+- **Taille par frame** : 32x32 px
 - **Layout** :
   - Ligne 0 = face (bas)
   - Ligne 1 = gauche
@@ -42,21 +42,21 @@ assets/styles/images/
 
 ## Comment ajouter un nouveau sprite
 
-1. Créer/obtenir un sprite au format RPG Maker VX (72x128 single ou 12col x 8row multi)
+1. Créer/obtenir un sprite au format RPG Maker VX (96x128 single ou 12col x 8row multi)
 2. Placer dans le dossier approprié (`character/`, `Animal/`, etc.)
-3. Ajouter la config sprite dans `MapApiController::getSpriteConfig()`
+3. Ajouter la config sprite dans `SpriteConfigProvider` (`src/GameEngine/Map/SpriteConfigProvider.php`)
 4. Le `SpriteAnimator.js` détecte automatiquement la taille des frames
 
 ## Configuration backend
 
-Dans `src/Controller/Api/MapApiController.php` > `getSpriteConfig()` :
+Dans `src/GameEngine/Map/SpriteConfigProvider.php` :
 
 ```php
-'mon_sprite_key' => [
-    'sheet' => $this->packages->getUrl('styles/images/character/MonSprite.png'),
-    'type' => 'single',  // ou 'multi'
-    'charIndex' => 0,    // uniquement pour 'multi'
-],
+// Single character (96x128, 3x4)
+'mon_sprite_key' => $this->single('character/MonSprite.png', 'player'),
+
+// Multi character (384x256, 12x8, 8 personnages)
+'mob_key' => $this->multi('monsters.png', 0, 'mob'),  // charIndex 0-7
 ```
 
 ## Sources d'assets compatibles

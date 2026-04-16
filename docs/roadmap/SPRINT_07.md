@@ -9,10 +9,10 @@
 
 ### Phase 0 — Preparation des assets
 
-### AVT-01 — Inventorier les assets disponibles (S | ★★★)
+### ~~AVT-01 — Inventorier les assets disponibles (S | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Lister tous les body, outfits, hairstyles fournis dans le pack
-- [ ] Verifier la coherence de taille entre layers (memes dimensions)
+- [x] Lister tous les body, outfits, hairstyles fournis dans le pack — inventaire complet dans `docs/avatar-asset-inventory.md` : 188 sprites individuels (96x128), 6 multi-sheets, 50 personnages uniques, 7 joueurs / 11 PNJ / 21 mobs configures
+- [x] Verifier la coherence de taille entre layers (memes dimensions) — 100% des sprites utilises en jeu respectent le format 96x128 / 32x32 (single) ou 384x256 / 32x32 (multi). Correction des dimensions erronees dans ASSETS.md (72x128 → 96x128)
 
 ### AVT-02 — Documenter le layout exact du spritesheet (S | ★★★)
 > Prerequis : ← AVT-01
