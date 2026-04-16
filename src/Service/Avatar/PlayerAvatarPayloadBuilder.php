@@ -52,14 +52,14 @@ final class PlayerAvatarPayloadBuilder
             'renderMode' => 'avatar',
             'avatarHash' => $hash,
             'avatar' => [
-                'baseSheet' => self::AVATAR_BASE_PATH . '/body/' . ($appearance['body'] ?? 'human_m_light') . '.png',
+                'baseSheet' => self::AVATAR_BASE_PATH . '/body/' . $appearance['body'] . '.png',
                 'layers' => $layers,
             ],
         ];
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array{body: string, hair: string|null, hairColor: string|null, beard: string|null, beardColor: string|null, faceMark: string|null}
      */
     private function extractAppearance(Player $player): array
     {
@@ -76,6 +76,8 @@ final class PlayerAvatarPayloadBuilder
     }
 
     /**
+     * @param array{body: string, hair: string|null, hairColor: string|null, beard: string|null, beardColor: string|null, faceMark: string|null} $appearance
+     *
      * @return list<array{sheet: string, tint?: int}>
      */
     private function buildVisibleLayers(array $appearance): array
