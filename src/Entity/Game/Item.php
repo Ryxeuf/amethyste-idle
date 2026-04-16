@@ -222,6 +222,9 @@ class Item
     #[ORM\Column(name: 'is_cosmetic', type: 'boolean', options: ['default' => false])]
     private bool $isCosmetic = false;
 
+    #[ORM\Column(name: 'avatar_sheet', type: 'string', length: 255, nullable: true)]
+    private ?string $avatarSheet = null;
+
     #[ORM\ManyToOne(targetEntity: EquipmentSet::class, inversedBy: 'items')]
     #[ORM\JoinColumn(name: 'equipment_set_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?EquipmentSet $equipmentSet = null;
@@ -618,5 +621,15 @@ class Item
     public function hasEquipmentSet(): bool
     {
         return $this->equipmentSet !== null;
+    }
+
+    public function getAvatarSheet(): ?string
+    {
+        return $this->avatarSheet;
+    }
+
+    public function setAvatarSheet(?string $avatarSheet): void
+    {
+        $this->avatarSheet = $avatarSheet;
     }
 }

@@ -25,10 +25,10 @@
 - [ ] Construire le payload avec baseSheet + layers
 - [ ] Brancher sur `GearHelper` pour les items equipes
 
-### AVT-16 — Ajouter `avatarSheet` sur Item (S | ★★)
+### ~~AVT-16 — Ajouter `avatarSheet` sur Item (S | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Champ nullable string : chemin vers le sprite sheet du layer visuel de l'item
-- [ ] Migration Doctrine
+- [x] Champ nullable string : chemin vers le sprite sheet du layer visuel de l'item
+- [x] Migration Doctrine
 
 ### AVT-17 — Enrichir `/api/map/entities` (M | ★★★)
 > Prerequis : ← AVT-15

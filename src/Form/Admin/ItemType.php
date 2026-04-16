@@ -93,6 +93,11 @@ class ItemType extends AbstractType
                 'required' => false,
                 'placeholder' => '-- Aucun --',
             ])
+            ->add('avatarSheet', TextType::class, [
+                'label' => 'Avatar sheet',
+                'help' => 'Chemin vers le sprite sheet du layer visuel (ex: avatar/outfit/iron_armor.png)',
+                'required' => false,
+            ])
         ;
 
         $builder->get('materiaSlotConfig')->addModelTransformer(new CallbackTransformer(
