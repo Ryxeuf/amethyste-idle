@@ -138,6 +138,7 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'blocked_players', type: 'json', options: ['default' => '[]'])]
     private array $blockedPlayers = [];
 
+    /** @var array<string, string>|null */
     #[ORM\Column(name: 'avatar_appearance', type: 'json', nullable: true)]
     private ?array $avatarAppearance = null;
 
@@ -600,11 +601,13 @@ class Player implements CharacterInterface
         ));
     }
 
+    /** @return array<string, string>|null */
     public function getAvatarAppearance(): ?array
     {
         return $this->avatarAppearance;
     }
 
+    /** @param array<string, string>|null $avatarAppearance */
     public function setAvatarAppearance(?array $avatarAppearance): void
     {
         $this->avatarAppearance = $avatarAppearance;
