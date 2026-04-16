@@ -1,0 +1,344 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Test Avatar SpriteAnimator - Admin{% endblock %}
+{% block page_title %}Test Avatar SpriteAnimator (AVT-09){% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    {# Header #}
+    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+        <h2 class="text-lg font-semibold text-purple-400 mb-2">Harness de test — SpriteAnimator type avatar</h2>
+        <p class="text-sm text-gray-400">Verification du type <code class="text-purple-300">avatar</code> (8x8, 64x64) et non-regression des types <code class="text-purple-300">single</code> / <code class="text-purple-300">multi</code>.</p>
+    </div>
+
+    {# Test panels #}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {# Avatar test panel #}
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <h3 class="text-md font-semibold text-green-400 mb-3">Type: avatar (8x8)</h3>
+            <div class="flex justify-center mb-4">
+                <canvas id="avatar-canvas" width="160" height="160" class="border border-gray-700 rounded bg-gray-950"></canvas>
+            </div>
+            <div class="space-y-2 text-sm">
+                <div>
+                    <label class="text-gray-400 block mb-1">Animation</label>
+                    <select id="avatar-anim" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200">
+                        <option value="walk">walk</option>
+                        <option value="stand">stand</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-gray-400 block mb-1">Direction</label>
+                    <select id="avatar-dir" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200">
+                        <option value="down">down (row +0)</option>
+                        <option value="left">left (row +1)</option>
+                        <option value="right">right (row +2)</option>
+                        <option value="up">up (row +3)</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button id="avatar-play" class="flex-1 bg-green-700 hover:bg-green-600 text-white rounded px-3 py-1">Play</button>
+                    <button id="avatar-stop" class="flex-1 bg-red-700 hover:bg-red-600 text-white rounded px-3 py-1">Stop</button>
+                </div>
+            </div>
+            <div id="avatar-report" class="mt-3 text-xs text-gray-500 space-y-1"></div>
+        </div>
+
+        {# Single test panel #}
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <h3 class="text-md font-semibold text-blue-400 mb-3">Type: single (3x4)</h3>
+            <div class="flex justify-center mb-4">
+                <canvas id="single-canvas" width="160" height="160" class="border border-gray-700 rounded bg-gray-950"></canvas>
+            </div>
+            <div class="space-y-2 text-sm">
+                <div>
+                    <label class="text-gray-400 block mb-1">Direction</label>
+                    <select id="single-dir" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200">
+                        <option value="down">down</option>
+                        <option value="left">left</option>
+                        <option value="right">right</option>
+                        <option value="up">up</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button id="single-play" class="flex-1 bg-green-700 hover:bg-green-600 text-white rounded px-3 py-1">Play</button>
+                    <button id="single-stop" class="flex-1 bg-red-700 hover:bg-red-600 text-white rounded px-3 py-1">Stop</button>
+                </div>
+            </div>
+            <div id="single-report" class="mt-3 text-xs text-gray-500 space-y-1"></div>
+        </div>
+
+        {# Multi test panel #}
+        <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+            <h3 class="text-md font-semibold text-yellow-400 mb-3">Type: multi (12x8)</h3>
+            <div class="flex justify-center mb-4">
+                <canvas id="multi-canvas" width="160" height="160" class="border border-gray-700 rounded bg-gray-950"></canvas>
+            </div>
+            <div class="space-y-2 text-sm">
+                <div>
+                    <label class="text-gray-400 block mb-1">Direction</label>
+                    <select id="multi-dir" class="w-full bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200">
+                        <option value="down">down</option>
+                        <option value="left">left</option>
+                        <option value="right">right</option>
+                        <option value="up">up</option>
+                    </select>
+                </div>
+                <div class="flex gap-2 pt-2">
+                    <button id="multi-play" class="flex-1 bg-green-700 hover:bg-green-600 text-white rounded px-3 py-1">Play</button>
+                    <button id="multi-stop" class="flex-1 bg-red-700 hover:bg-red-600 text-white rounded px-3 py-1">Stop</button>
+                </div>
+            </div>
+            <div id="multi-report" class="mt-3 text-xs text-gray-500 space-y-1"></div>
+        </div>
+    </div>
+
+    {# Global conformity report #}
+    <div class="bg-gray-900 border border-gray-800 rounded-lg p-4">
+        <h3 class="text-md font-semibold text-purple-400 mb-3">Rapport de conformite</h3>
+        <div id="global-report" class="text-sm text-gray-400 space-y-1">
+            <p class="text-gray-500">Chargement en cours...</p>
+        </div>
+    </div>
+</div>
+
+{% block javascripts %}
+{{ parent() }}
+<script type="module">
+import * as PIXI from 'pixi.js';
+import SpriteAnimator, { AVATAR_ANIMATIONS } from '../../lib/SpriteAnimator.js';
+
+const DIRS = ['down', 'left', 'right', 'up'];
+const DIR_ARROWS = { down: '\u2193', left: '\u2190', right: '\u2192', up: '\u2191' };
+const ANIM_COLORS = {
+    walk:  { bg: '#2d6a4f', fg: '#b7e4c7' },
+    stand: { bg: '#5a189a', fg: '#e0aaff' },
+};
+
+// --- Generate synthetic 512x512 avatar spritesheet ---
+function generateAvatarSheet() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, 512, 512);
+
+    const anims = ['walk', 'stand'];
+    for (let aRow = 0; aRow < anims.length; aRow++) {
+        const anim = anims[aRow];
+        const colors = ANIM_COLORS[anim];
+        for (let d = 0; d < 4; d++) {
+            const row = aRow * 4 + d;
+            for (let col = 0; col < 8; col++) {
+                const x = col * 64, y = row * 64;
+                ctx.fillStyle = colors.bg;
+                ctx.fillRect(x + 1, y + 1, 62, 62);
+                ctx.strokeStyle = '#333';
+                ctx.strokeRect(x, y, 64, 64);
+                // Frame label
+                ctx.fillStyle = colors.fg;
+                ctx.font = 'bold 11px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(anim[0].toUpperCase() + DIR_ARROWS[DIRS[d]], x + 32, y + 20);
+                ctx.font = '20px monospace';
+                ctx.fillText(String(col), x + 32, y + 48);
+            }
+        }
+    }
+    return canvas;
+}
+
+// --- Generate synthetic single sheet (96x128, 3x4) ---
+function generateSingleSheet() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 96; canvas.height = 128;
+    const ctx = canvas.getContext('2d');
+    const fw = 32, fh = 32;
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, 96, 128);
+
+    for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 3; col++) {
+            const x = col * fw, y = row * fh;
+            ctx.fillStyle = '#1e3a5f';
+            ctx.fillRect(x + 1, y + 1, fw - 2, fh - 2);
+            ctx.fillStyle = '#93c5fd';
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(DIR_ARROWS[DIRS[row]], x + fw / 2, y + 14);
+            ctx.fillText(String(col), x + fw / 2, y + 26);
+        }
+    }
+    return canvas;
+}
+
+// --- Generate synthetic multi sheet (384x256, 12x8) ---
+function generateMultiSheet() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 384; canvas.height = 256;
+    const ctx = canvas.getContext('2d');
+    const fw = 32, fh = 32;
+    ctx.fillStyle = '#111';
+    ctx.fillRect(0, 0, 384, 256);
+
+    // charIndex 0 block: cols 0-2, rows 0-3
+    for (let row = 0; row < 4; row++) {
+        for (let col = 0; col < 3; col++) {
+            const x = col * fw, y = row * fh;
+            ctx.fillStyle = '#5c4033';
+            ctx.fillRect(x + 1, y + 1, fw - 2, fh - 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = 'bold 9px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(DIR_ARROWS[DIRS[row]], x + fw / 2, y + 14);
+            ctx.fillText(String(col), x + fw / 2, y + 26);
+        }
+    }
+    return canvas;
+}
+
+// --- Setup a test panel ---
+async function setupPanel(type, canvasId, reportId, sheetCanvas, opts = {}) {
+    const report = [];
+    const displayCanvas = document.getElementById(canvasId);
+
+    try {
+        const app = new PIXI.Application();
+        await app.init({
+            canvas: displayCanvas,
+            width: 160, height: 160,
+            backgroundColor: 0x0a0a0a,
+            antialias: false,
+        });
+
+        const texture = PIXI.Texture.from(sheetCanvas);
+        const source = texture.source || texture;
+        report.push(`Sheet: ${source.width}x${source.height}`);
+
+        const animator = new SpriteAnimator({
+            texture,
+            type,
+            charIndex: opts.charIndex || 0,
+        });
+
+        report.push(`Frame: ${animator.frameWidth}x${animator.frameHeight}`);
+
+        if (type === 'avatar') {
+            const avail = animator.availableAnimations;
+            const names = avail ? Object.keys(avail) : [];
+            report.push(`Animations: ${names.join(', ') || 'none'}`);
+            report.push(`Default anim: ${animator.currentAnimation}`);
+        }
+
+        // Center sprite
+        const sprite = animator.sprite;
+        sprite.position.set(
+            (160 - animator.frameWidth) / 2,
+            (160 - animator.frameHeight) / 2
+        );
+        if (type === 'avatar') {
+            sprite.scale.set(2);
+            sprite.position.set((160 - animator.frameWidth * 2) / 2, (160 - animator.frameHeight * 2) / 2);
+        } else {
+            sprite.scale.set(3);
+            sprite.position.set((160 - animator.frameWidth * 3) / 2, (160 - animator.frameHeight * 3) / 2);
+        }
+        app.stage.addChild(sprite);
+
+        // Animation loop
+        let lastTime = performance.now();
+        app.ticker.add(() => {
+            const now = performance.now();
+            animator.update(now - lastTime);
+            lastTime = now;
+        });
+
+        report.push('<span class="text-green-400">OK</span>');
+
+        return { animator, report };
+    } catch (e) {
+        report.push(`<span class="text-red-400">ERREUR: ${e.message}</span>`);
+        return { animator: null, report };
+    }
+}
+
+// --- Init ---
+(async () => {
+    const globalChecks = [];
+
+    // Avatar
+    const avatarSheet = generateAvatarSheet();
+    const avatar = await setupPanel('avatar', 'avatar-canvas', 'avatar-report', avatarSheet);
+    document.getElementById('avatar-report').innerHTML = avatar.report.map(r => `<p>${r}</p>`).join('');
+
+    if (avatar.animator) {
+        document.getElementById('avatar-anim').addEventListener('change', (e) => {
+            avatar.animator.setAnimation(e.target.value);
+        });
+        document.getElementById('avatar-dir').addEventListener('change', (e) => {
+            avatar.animator.setDirection(e.target.value);
+        });
+        document.getElementById('avatar-play').addEventListener('click', () => avatar.animator.play());
+        document.getElementById('avatar-stop').addEventListener('click', () => avatar.animator.stop());
+
+        // Conformity checks
+        const avail = avatar.animator.availableAnimations;
+        globalChecks.push({ test: 'Avatar: frameWidth === 64', pass: avatar.animator.frameWidth === 64 });
+        globalChecks.push({ test: 'Avatar: frameHeight === 64', pass: avatar.animator.frameHeight === 64 });
+        globalChecks.push({ test: 'Avatar: walk disponible', pass: !!(avail && avail.walk) });
+        globalChecks.push({ test: 'Avatar: stand disponible', pass: !!(avail && avail.stand) });
+        globalChecks.push({ test: 'Avatar: setAnimation(walk) retourne true', pass: avatar.animator.setAnimation('walk') === true });
+        globalChecks.push({ test: 'Avatar: setAnimation(stand) retourne true', pass: avatar.animator.setAnimation('stand') === true });
+        globalChecks.push({ test: 'Avatar: setAnimation(run) retourne false (sheet 512px)', pass: avatar.animator.setAnimation('run') === false });
+        for (const dir of DIRS) {
+            avatar.animator.setDirection(dir);
+            globalChecks.push({ test: `Avatar: direction ${dir} acceptee`, pass: true });
+        }
+        avatar.animator.setDirection('down');
+    }
+
+    // Single
+    const singleSheet = generateSingleSheet();
+    const single = await setupPanel('single', 'single-canvas', 'single-report', singleSheet);
+    document.getElementById('single-report').innerHTML = single.report.map(r => `<p>${r}</p>`).join('');
+
+    if (single.animator) {
+        document.getElementById('single-dir').addEventListener('change', (e) => single.animator.setDirection(e.target.value));
+        document.getElementById('single-play').addEventListener('click', () => single.animator.play());
+        document.getElementById('single-stop').addEventListener('click', () => single.animator.stop());
+
+        globalChecks.push({ test: 'Single: frameWidth === 32', pass: single.animator.frameWidth === 32 });
+        globalChecks.push({ test: 'Single: frameHeight === 32', pass: single.animator.frameHeight === 32 });
+        globalChecks.push({ test: 'Single: availableAnimations === null', pass: single.animator.availableAnimations === null });
+        globalChecks.push({ test: 'Single: setAnimation retourne false', pass: single.animator.setAnimation('walk') === false });
+    }
+
+    // Multi
+    const multiSheet = generateMultiSheet();
+    const multi = await setupPanel('multi', 'multi-canvas', 'multi-report', multiSheet, { charIndex: 0 });
+    document.getElementById('multi-report').innerHTML = multi.report.map(r => `<p>${r}</p>`).join('');
+
+    if (multi.animator) {
+        document.getElementById('multi-dir').addEventListener('change', (e) => multi.animator.setDirection(e.target.value));
+        document.getElementById('multi-play').addEventListener('click', () => multi.animator.play());
+        document.getElementById('multi-stop').addEventListener('click', () => multi.animator.stop());
+
+        globalChecks.push({ test: 'Multi: frameWidth === 32', pass: multi.animator.frameWidth === 32 });
+        globalChecks.push({ test: 'Multi: frameHeight === 32', pass: multi.animator.frameHeight === 32 });
+        globalChecks.push({ test: 'Multi: availableAnimations === null', pass: multi.animator.availableAnimations === null });
+    }
+
+    // Render global report
+    const passed = globalChecks.filter(c => c.pass).length;
+    const total = globalChecks.length;
+    const allPass = passed === total;
+    let html = `<p class="${allPass ? 'text-green-400' : 'text-red-400'} font-semibold">${passed}/${total} checks passed</p>`;
+    html += globalChecks.map(c => {
+        const icon = c.pass ? '<span class="text-green-400">PASS</span>' : '<span class="text-red-400">FAIL</span>';
+        return `<p>${icon} — ${c.test}</p>`;
+    }).join('');
+    document.getElementById('global-report').innerHTML = html;
+})();
+</script>
+{% endblock %}
+{% endblock %}

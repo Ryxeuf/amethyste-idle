@@ -46,7 +46,7 @@
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
-| **Sprint 7** | Avatar: Fondations | 9/12 | Moyenne | En cours |
+| **Sprint 7** | Avatar: Fondations | 10/12 | Moyenne | En cours |
 | **Sprint 8** | Avatar: Backend & Carte | 2/10 | Moyenne | En cours |
 | **Sprint 9** | Avatar: Personnage & Equipement | 8 | Moyenne | A venir |
 | **Sprint 10** | Avatar: Polish & Animations | 8 | Basse | A venir |

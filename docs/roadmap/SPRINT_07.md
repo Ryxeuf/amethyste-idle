@@ -53,10 +53,10 @@
 - [x] Frame plus grande (64x64 vs 24x32) → ajuster ancrage et scale
 - [x] Alignement correct sur les tiles 32x32
 
-### AVT-09 — Tests manuels : type avatar isole (S | ★★)
+### ~~AVT-09 — Tests manuels : type avatar isole (S | ★★)~~ ✅
 > Prerequis : ← AVT-06
-- [ ] Charger un spritesheet 8x8 brut et verifier toutes les animations/directions
-- [ ] Verifier que les types `single` et `multi` ne sont pas impactes
+- [x] Charger un spritesheet 8x8 brut et verifier toutes les animations/directions
+- [x] Verifier que les types `single` et `multi` ne sont pas impactes
 
 ---
 
