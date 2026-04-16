@@ -48,7 +48,9 @@ class AvatarInventoryCommand extends Command
         $io->title('Avatar Asset Inventory');
 
         $basePath = $this->projectDir . '/assets/styles/images';
+        /** @var array<string, array{label: string, files: list<array{name: string, width: int, height: int, format: string, filesize: int}>, exists: bool}> $categories */
         $categories = [];
+        /** @var list<string> $alerts */
         $alerts = [];
         $totalFiles = 0;
 
@@ -66,10 +68,16 @@ class AvatarInventoryCommand extends Command
             $finder = new Finder();
             $finder->files()->in($dirPath)->name('*.png')->sortByName();
 
+            /** @var list<array{name: string, width: int, height: int, format: string, filesize: int}> $files */
             $files = [];
             foreach ($finder as $file) {
-                $size = @getimagesize($file->getRealPath());
-                if ($size === false) {
+                $realPath = $file->getRealPath();
+                if (false === $realPath) {
+                    continue;
+                }
+
+                $size = @getimagesize($realPath);
+                if (false === $size) {
                     $alerts[] = sprintf('Impossible de lire : %s/%s', $relDir, $file->getRelativePathname());
                     continue;
                 }
@@ -79,7 +87,7 @@ class AvatarInventoryCommand extends Command
                     'width' => $size[0],
                     'height' => $size[1],
                     'format' => $this->classifyFormat($size[0], $size[1]),
-                    'filesize' => $file->getSize(),
+                    'filesize' => (int) $file->getSize(),
                 ];
                 ++$totalFiles;
             }
@@ -109,7 +117,7 @@ class AvatarInventoryCommand extends Command
             }
 
             $io->text(sprintf('  <info>%s</info> — %d fichier(s)', $cat['label'], \count($cat['files'])));
-            $rows = array_map(fn (array $f) => [
+            $rows = array_map(fn (array $f): array => [
                 $f['name'],
                 sprintf('%dx%d', $f['width'], $f['height']),
                 $f['format'],
@@ -128,10 +136,10 @@ class AvatarInventoryCommand extends Command
                 continue;
             }
 
-            $dimensions = array_unique(array_map(
-                fn (array $f) => sprintf('%dx%d', $f['width'], $f['height']),
+            $dimensions = array_values(array_unique(array_map(
+                fn (array $f): string => sprintf('%dx%d', $f['width'], $f['height']),
                 $cat['files']
-            ));
+            )));
 
             if (\count($dimensions) === 1) {
                 $io->text(sprintf('  <info>OK</info>  %s — toutes en %s', $cat['label'], $dimensions[0]));
@@ -152,10 +160,10 @@ class AvatarInventoryCommand extends Command
         $avatarReady = 0;
 
         foreach ($avatarDirs as $dir) {
-            $cat = $categories[$dir] ?? ['exists' => false, 'files' => []];
-            $count = \count($cat['files'] ?? []);
+            $cat = $categories[$dir] ?? null;
+            $count = null !== $cat ? \count($cat['files']) : 0;
 
-            if ($cat['exists'] && $count > 0) {
+            if (null !== $cat && $cat['exists'] && $count > 0) {
                 $io->text(sprintf('  <info>OK</info>  %s/ — %d asset(s)', $dir, $count));
                 ++$avatarReady;
             } else {
@@ -173,7 +181,7 @@ class AvatarInventoryCommand extends Command
         // --- Summary ---
         $io->section('Resume');
         $io->text(sprintf('  Total fichiers scannes : %d', $totalFiles));
-        $activeCategories = \count(array_filter($categories, fn ($c) => $c['exists'] && !empty($c['files'])));
+        $activeCategories = \count(array_filter($categories, fn (array $c): bool => $c['exists'] && !empty($c['files'])));
         $io->text(sprintf('  Categories actives : %d', $activeCategories));
         $io->text(sprintf('  Avatar 8x8 prets : %d/4 repertoires', $avatarReady));
 
@@ -187,7 +195,7 @@ class AvatarInventoryCommand extends Command
 
         // --- Export ---
         $exportPath = $input->getOption('export');
-        if (null !== $exportPath) {
+        if (\is_string($exportPath)) {
             $fullPath = str_starts_with($exportPath, '/') ? $exportPath : $this->projectDir . '/' . $exportPath;
             $dir = \dirname($fullPath);
             if (!is_dir($dir)) {
@@ -204,15 +212,15 @@ class AvatarInventoryCommand extends Command
     {
         // Avatar 8×8 (square, divisible by 8)
         if ($width === $height && $width % 8 === 0 && $width >= 128) {
-            $fw = $width / 8;
+            $fw = (int) ($width / 8);
 
             return sprintf('avatar 8x8 (%dx%d/frame)', $fw, $fw);
         }
 
         // Single 3×4 (one character)
         if ($width % 3 === 0 && $height % 4 === 0) {
-            $fw = $width / 3;
-            $fh = $height / 4;
+            $fw = (int) ($width / 3);
+            $fh = (int) ($height / 4);
             if ($fw >= 16 && $fw <= 64 && $fh >= 16 && $fh <= 64) {
                 return sprintf('single 3x4 (%dx%d/frame)', $fw, $fh);
             }
@@ -220,8 +228,8 @@ class AvatarInventoryCommand extends Command
 
         // Multi 12×8 (8 characters in a 4×2 grid of 3×4 blocks)
         if ($width % 12 === 0 && $height % 8 === 0) {
-            $fw = $width / 12;
-            $fh = $height / 8;
+            $fw = (int) ($width / 12);
+            $fh = (int) ($height / 8);
             if ($fw >= 16 && $fw <= 64 && $fh >= 16 && $fh <= 64) {
                 return sprintf('multi 12x8 (%dx%d/frame)', $fw, $fh);
             }
@@ -230,7 +238,7 @@ class AvatarInventoryCommand extends Command
         return 'autre';
     }
 
-    /** @return array<int, array{name: string, width: int, height: int, format: string, filesize: int}> */
+    /** @return list<array{name: string, width: int, height: int, format: string, filesize: int}> */
     private function scanRootSheets(string $basePath): array
     {
         $results = [];
@@ -242,7 +250,12 @@ class AvatarInventoryCommand extends Command
             $finder->files()->in($charPath)->depth(0)->name('*.png')->sortByName();
 
             foreach ($finder as $file) {
-                $size = @getimagesize($file->getRealPath());
+                $realPath = $file->getRealPath();
+                if (false === $realPath) {
+                    continue;
+                }
+
+                $size = @getimagesize($realPath);
                 if (false === $size) {
                     continue;
                 }
@@ -251,7 +264,7 @@ class AvatarInventoryCommand extends Command
                     'width' => $size[0],
                     'height' => $size[1],
                     'format' => $this->classifyFormat($size[0], $size[1]),
-                    'filesize' => $file->getSize(),
+                    'filesize' => (int) $file->getSize(),
                 ];
             }
         }
@@ -286,6 +299,10 @@ class AvatarInventoryCommand extends Command
         return sprintf('%.1f MB', $bytes / 1_048_576);
     }
 
+    /**
+     * @param array<string, array{label: string, files: list<array{name: string, width: int, height: int, format: string, filesize: int}>, exists: bool}> $categories
+     * @param list<string> $alerts
+     */
     private function generateMarkdown(array $categories, array $alerts, int $totalFiles, int $avatarReady): string
     {
         $lines = [
@@ -299,7 +316,7 @@ class AvatarInventoryCommand extends Command
             '## Resume',
             '',
             sprintf('- **Total fichiers scannes** : %d', $totalFiles),
-            sprintf('- **Categories actives** : %d', \count(array_filter($categories, fn ($c) => $c['exists'] && !empty($c['files'])))),
+            sprintf('- **Categories actives** : %d', \count(array_filter($categories, fn (array $c): bool => $c['exists'] && !empty($c['files'])))),
             sprintf('- **Avatar 8x8 prets** : %d/4 repertoires', $avatarReady),
             '',
         ];
@@ -338,7 +355,10 @@ class AvatarInventoryCommand extends Command
 
             $lines[] = '';
 
-            $dims = array_unique(array_map(fn ($f) => sprintf('%dx%d', $f['width'], $f['height']), $cat['files']));
+            $dims = array_values(array_unique(array_map(
+                fn (array $f): string => sprintf('%dx%d', $f['width'], $f['height']),
+                $cat['files']
+            )));
             if (\count($dims) === 1) {
                 $lines[] = sprintf('**Coherence** : OK — toutes en %s', $dims[0]);
             } else {
