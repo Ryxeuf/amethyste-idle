@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-01 — inventaire assets avatar, Sprint 7 en cours 3/12)
+> Derniere mise a jour : 2026-04-16 (AVT-02 & AVT-05 — layout spritesheet 8x8 et ASSETS.md, Sprint 7 en cours 5/12)
 
 ---
 
@@ -2142,3 +2142,20 @@
 - [x] Coherence : OK pour personnages (Male, Female, Soldier, Animal — tous 96x128), alertes sur monstres (6 tailles) et multi-sheets racine (3 tailles)
 - [x] Constat avatar 8x8 : aucun asset au nouveau format disponible — les 4 repertoires `avatar/{body,hair,outfit,head}/` sont manquants, a creer quand le pack 8x8 sera acquis
 - [x] Option `--export` pour generer automatiquement le rapport markdown
+
+### AVT-02 — Documenter le layout exact du spritesheet (2026-04-16) ✅
+
+> Specification complete du format de spritesheet avatar 8x8 : dimensions, grille, mapping des animations, composition multi-layers, ancrage sur la carte. Document de reference pour AVT-06 (SpriteAnimator type `avatar`) et la creation d'assets graphiques.
+- [x] Taille totale : 512x512 px (base), taille par frame : 64x64 px — puissances de 2, optimal GPU
+- [x] Mapping des animations : walk (rows 0-3) + stand/idle (rows 4-7) pour le sheet de base 8x8 ; animations etendues run/jump/push/pull en rows additionnelles (sheet extensible en hauteur)
+- [x] Reference sheet annotee dans `docs/avatar-spritesheet-layout.md` : grille visuelle, cycle de marche 8 frames, convention de directions, code de reference JS pour `AVATAR_ANIMATIONS`
+- [x] Specifications composition multi-layers : memes dimensions et layout pour chaque layer (body, outfit, hair, head_gear), z-order defini, support du tinting PixiJS
+- [x] Comparaison legacy vs avatar, guide ancrage/scale sur tiles 32x32, specifications pour artistes
+
+### AVT-05 — Mettre a jour ASSETS.md (2026-04-16) ✅
+
+> Ajout de la section "Format avatar 8x8" dans ASSETS.md avec resume du layout documente en AVT-02. Correction des dimensions legacy erronees (72x128 → 96x128, 24x32 → 32x32). Mise a jour de la reference SpriteConfigProvider.
+- [x] Section "Format avatar 8x8 (joueurs)" ajoutee : dimensions, grille, layers, lien vers la specification complete
+- [x] Correction dimensions legacy : 72x128 → 96x128, 24x32 → 32x32 (confirmees par l'inventaire AVT-01)
+- [x] Reference mise a jour : `MapApiController::getSpriteConfig()` → `SpriteConfigProvider`
+- [x] Instructions ajout sprite separees : legacy (mob/PNJ) et avatar (joueur)
