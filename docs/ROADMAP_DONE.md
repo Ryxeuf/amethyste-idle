@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-09 — Test harness avatar SpriteAnimator)
+> Derniere mise a jour : 2026-04-16 (AVT-16 — avatarSheet sur Item)
 
 ---
 
@@ -2227,3 +2227,11 @@
 - [x] Hash deterministe : `ksort` sur appearance, `sort` sur layers, puis `hash('sha256', json_encode(...))`
 - [x] Format version inclus dans le hash pour invalidation de cache lors de changements de format
 - [x] Tests unitaires `AvatarHashGeneratorTest` : 8 cas couverts (SHA256 valide, determinisme, sensibilite aux changements, insensibilite a l'ordre des cles/layers, format version)
+
+### AVT-16 — Ajouter `avatarSheet` sur Item (2026-04-16) ✅
+
+> Champ `avatarSheet` (string 255, nullable) sur l'entite `Item` pour stocker le chemin vers le sprite sheet du layer visuel d'un item equipe. Permet au systeme avatar de savoir quel layer afficher quand le joueur porte un equipement (ex: `avatar/outfit/iron_armor.png`). Migration idempotente. Champ ajoute dans le formulaire admin.
+- [x] Champ ORM `avatarSheet` (string 255, nullable) sur `Item`
+- [x] Migration `Version20260416ItemAvatarSheet` — ALTER TABLE idempotent
+- [x] Getter/setter `getAvatarSheet()` / `setAvatarSheet()`
+- [x] Champ `avatarSheet` ajoute dans le formulaire admin `ItemType`
