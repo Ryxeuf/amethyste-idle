@@ -301,7 +301,7 @@ class AvatarInventoryCommand extends Command
 
     /**
      * @param array<string, array{label: string, files: list<array{name: string, width: int, height: int, format: string, filesize: int}>, exists: bool}> $categories
-     * @param list<string> $alerts
+     * @param list<string>                                                                                                                                $alerts
      */
     private function generateMarkdown(array $categories, array $alerts, int $totalFiles, int $avatarReady): string
     {
