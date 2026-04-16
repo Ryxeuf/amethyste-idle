@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-08 — Positionnement avatar dans tile, Sprint 7 en cours 8/12)
+> Derniere mise a jour : 2026-04-16 (AVT-12 — AvatarAnimatorFactory, Sprint 7 en cours 9/12)
 
 ---
 
@@ -2189,3 +2189,11 @@
 - [x] Ancrage centre-bas (0.5, 1) conserve — les pieds du personnage restent alignes sur le bas du tile
 - [x] Positionnement emote ajuste pour utiliser les dimensions visuelles (`frameW * scale`, `frameH * scale`) au lieu des dimensions brutes
 - [x] Types legacy (single/multi) non impactes — le scale n'est applique que si `frameWidth > tileSize`
+
+### AVT-12 — Adapter AvatarAnimatorFactory.js (2026-04-16) ✅
+
+> Adaptation du blueprint `AvatarAnimatorFactory.js` depuis `data/amethyste-avatar-pack/` vers `assets/lib/avatar/`. La factory fournit deux pipelines de creation de SpriteAnimator : legacy (spriteKey → type single/multi) pour les mobs et PNJ, et avatar (baseSheet + layers → texture composite → type avatar) pour les joueurs. Correction du type de sortie du blueprint original (`'single'` → `'avatar'`) pour exploiter le format 8x8 multi-animations.
+- [x] `createFromAvatarPayload(avatarHash, avatarPayload)` compose les layers via `AvatarTextureComposer`, cache via `AvatarSpriteSheetCache`, retourne un `SpriteAnimator` avec `type: 'avatar'`
+- [x] `createFromLegacySpriteKey(spriteKey)` identique au pipeline existant (type single/multi)
+- [x] `invalidateAvatarHash(hash)` et `clear()` pour la gestion du cache
+- [x] Deux pipelines coexistent : legacy pour mobs/PNJ, avatar pour joueurs — aucun impact sur le rendu existant

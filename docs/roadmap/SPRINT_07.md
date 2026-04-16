@@ -71,11 +71,11 @@
 > Prerequis : ∅
 - [x] Copier depuis blueprint, cache LRU 128 entrees
 
-### AVT-12 — Adapter AvatarAnimatorFactory.js (M | ★★★)
+### ~~AVT-12 — Adapter AvatarAnimatorFactory.js (M | ★★★)~~ ✅
 > Prerequis : ← AVT-06, AVT-10, AVT-11
-- [ ] `createFromAvatarPayload()` cree un SpriteAnimator avec `type: 'avatar'`
-- [ ] `createFromLegacySpriteKey()` reste identique (type single/multi)
-- [ ] Deux pipelines coexistent : legacy pour mobs/PNJ, avatar pour joueurs
+- [x] `createFromAvatarPayload()` cree un SpriteAnimator avec `type: 'avatar'`
+- [x] `createFromLegacySpriteKey()` reste identique (type single/multi)
+- [x] Deux pipelines coexistent : legacy pour mobs/PNJ, avatar pour joueurs
 
 ---
 
