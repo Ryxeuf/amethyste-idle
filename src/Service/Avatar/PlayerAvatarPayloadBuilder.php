@@ -43,7 +43,7 @@ final class PlayerAvatarPayloadBuilder
         $hash = $this->hashGenerator->generate(
             $appearance,
             array_map(
-                static fn (array $layer): string => (string) ($layer['sheet'] ?? ''),
+                static fn (array $layer): string => $layer['sheet'],
                 $layers,
             ),
         );

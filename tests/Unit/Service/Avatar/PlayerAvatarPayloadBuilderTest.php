@@ -56,7 +56,7 @@ class PlayerAvatarPayloadBuilderTest extends TestCase
 
         $hairLayer = $result['avatar']['layers'][0];
         $this->assertSame('/assets/styles/images/avatar/hair/long_02.png', $hairLayer['sheet']);
-        $this->assertSame(0xc0392b, $hairLayer['tint']);
+        $this->assertSame(0xC0392B, $hairLayer['tint']);
     }
 
     public function testBuildIncludesGearLayers(): void
@@ -168,7 +168,7 @@ class PlayerAvatarPayloadBuilderTest extends TestCase
         $this->assertCount(3, $layers);
         $this->assertSame('/assets/styles/images/avatar/hair/short_01.png', $layers[0]['sheet']);
         $this->assertSame('/assets/styles/images/avatar/beard/full_01.png', $layers[1]['sheet']);
-        $this->assertSame(0x8b4513, $layers[1]['tint']);
+        $this->assertSame(0x8B4513, $layers[1]['tint']);
         $this->assertSame('/assets/styles/images/avatar/facemark/scar_01.png', $layers[2]['sheet']);
     }
 
