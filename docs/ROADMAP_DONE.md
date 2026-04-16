@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (Sprint 7 AVT-01 — inventaire des assets avatar)
+> Derniere mise a jour : 2026-04-16 (AVT-02 & AVT-05 — layout spritesheet 8x8 et ASSETS.md, Sprint 7 en cours 5/12)
 
 ---
 
@@ -2136,8 +2136,26 @@
 
 ### AVT-01 — Inventorier les assets disponibles (2026-04-16) ✅
 
-> Inventaire complet de tous les sprites personnage du projet. Verification de la coherence dimensionnelle entre layers. Correction des erreurs de documentation (ASSETS.md referençait 72x128 / 24x32 alors que le format reel est 96x128 / 32x32).
-- [x] Inventaire detaille dans `docs/avatar-asset-inventory.md` : 188 sprites individuels (96x128), 6 multi-sheets (384x256), 50 personnages uniques (18 Male, 25 Female, 7 Soldier), 39 sprite keys configures dans `SpriteConfigProvider` (7 joueurs, 11 PNJ, 21 mobs)
-- [x] Coherence verifiee : 100% des sprites utilises en jeu respectent le format 96x128 / 32x32 (single) ou 384x256 / 32x32 (multi). 2 multi-sheets non standards identifies (TechsheetB 384x280, palett13 384x304) — non utilises en jeu
-- [x] Correction ASSETS.md : dimensions 72x128 → 96x128, frames 24x32 → 32x32, reference `MapApiController::getSpriteConfig()` → `SpriteConfigProvider`
-- [x] Structure cible documentee pour les assets modulaires avatar (`assets/styles/images/avatar/` avec sous-dossiers body, hair, beard, face, gear, tools) et variantes MVP recommandees
+> Inventaire complet des assets personnages disponibles dans le projet, avec verification de la coherence de taille entre layers. Commande Symfony `app:avatar:inventory` creee pour automatiser l'audit (re-executable quand de nouveaux assets sont ajoutes). Document d'inventaire genere dans `docs/audits/AVATAR_ASSET_INVENTORY.md`.
+- [x] Commande `app:avatar:inventory` : scanne 10 repertoires d'assets, classifie le format (single 3x4, multi 12x8, avatar 8x8), verifie la coherence des tailles, analyse l'ecart avec le systeme avatar 8x8
+- [x] Inventaire : 248 fichiers scannes (69 Male, 91 Female, 28 Soldier, 47 Monster, 1 Boss, 6 Animal, 7 multi-sheets racine), tous en format RPG Maker VX (96x128, 32x32/frame)
+- [x] Coherence : OK pour personnages (Male, Female, Soldier, Animal — tous 96x128), alertes sur monstres (6 tailles) et multi-sheets racine (3 tailles)
+- [x] Constat avatar 8x8 : aucun asset au nouveau format disponible — les 4 repertoires `avatar/{body,hair,outfit,head}/` sont manquants, a creer quand le pack 8x8 sera acquis
+- [x] Option `--export` pour generer automatiquement le rapport markdown
+
+### AVT-02 — Documenter le layout exact du spritesheet (2026-04-16) ✅
+
+> Specification complete du format de spritesheet avatar 8x8 : dimensions, grille, mapping des animations, composition multi-layers, ancrage sur la carte. Document de reference pour AVT-06 (SpriteAnimator type `avatar`) et la creation d'assets graphiques.
+- [x] Taille totale : 512x512 px (base), taille par frame : 64x64 px — puissances de 2, optimal GPU
+- [x] Mapping des animations : walk (rows 0-3) + stand/idle (rows 4-7) pour le sheet de base 8x8 ; animations etendues run/jump/push/pull en rows additionnelles (sheet extensible en hauteur)
+- [x] Reference sheet annotee dans `docs/avatar-spritesheet-layout.md` : grille visuelle, cycle de marche 8 frames, convention de directions, code de reference JS pour `AVATAR_ANIMATIONS`
+- [x] Specifications composition multi-layers : memes dimensions et layout pour chaque layer (body, outfit, hair, head_gear), z-order defini, support du tinting PixiJS
+- [x] Comparaison legacy vs avatar, guide ancrage/scale sur tiles 32x32, specifications pour artistes
+
+### AVT-05 — Mettre a jour ASSETS.md (2026-04-16) ✅
+
+> Ajout de la section "Format avatar 8x8" dans ASSETS.md avec resume du layout documente en AVT-02. Correction des dimensions legacy erronees (72x128 → 96x128, 24x32 → 32x32). Mise a jour de la reference SpriteConfigProvider.
+- [x] Section "Format avatar 8x8 (joueurs)" ajoutee : dimensions, grille, layers, lien vers la specification complete
+- [x] Correction dimensions legacy : 72x128 → 96x128, 24x32 → 32x32 (confirmees par l'inventaire AVT-01)
+- [x] Reference mise a jour : `MapApiController::getSpriteConfig()` → `SpriteConfigProvider`
+- [x] Instructions ajout sprite separees : legacy (mob/PNJ) et avatar (joueur)
