@@ -85,6 +85,7 @@ Chaque layer doit etre une sprite sheet **512x512** (8x8, 64x64 par frame) avec 
 
 ### Sprite legacy (mob, PNJ)
 
+
 1. Créer/obtenir un sprite au format RPG Maker VX (96x128 single ou 12col x 8row multi)
 2. Placer dans le dossier approprié (`character/`, `Animal/`, etc.)
 3. Ajouter la config sprite dans `SpriteConfigProvider` (`src/GameEngine/Map/SpriteConfigProvider.php`)
