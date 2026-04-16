@@ -140,6 +140,39 @@ export default class SpriteAnimator {
         return this._availableAnimations;
     }
 
+    /** Current animation name (avatar type only) */
+    get currentAnimation() {
+        return this._currentAnimation;
+    }
+
+    /**
+     * Switch the active animation for avatar type sprites.
+     * Only available for 'avatar' type. The animation must exist in the spritesheet.
+     * When playing, immediately switches to the new animation from frame 0.
+     * When idle, the change takes effect on the next play() call.
+     *
+     * @param {string} name - Animation name ('walk', 'stand', 'run', 'jump', 'push', 'pull')
+     * @returns {boolean} true if animation was set, false if unavailable or not avatar type
+     */
+    setAnimation(name) {
+        if (this._type !== 'avatar') return false;
+        if (!this._availableAnimations || !this._availableAnimations[name]) return false;
+
+        if (name === this._currentAnimation) return true;
+
+        this._currentAnimation = name;
+        this._elapsed = 0;
+        this._frameIndex = 0;
+
+        if (!this._playing) {
+            const anim = AVATAR_ANIMATIONS[name];
+            const row = anim.startRow + DIRECTION_ROW[this._direction];
+            this._sprite.texture = this._getTexture(row, 0);
+        }
+
+        return true;
+    }
+
     /**
      * Set facing direction.
      * @param {'up'|'down'|'left'|'right'} dir
@@ -158,28 +191,24 @@ export default class SpriteAnimator {
         }
     }
 
-    /** Start walk animation */
+    /** Start animation (walk by default, or current animation set via setAnimation) */
     play() {
         if (this._playing) return;
         this._playing = true;
         this._state = ANIM_STATE.WALK;
         this._elapsed = 0;
         this._frameIndex = 0;
-        if (this._type === 'avatar') {
-            this._currentAnimation = 'walk';
-        }
         // Reset breathing offset when walking
         this._sprite.position.y = this._baseY;
     }
 
-    /** Stop walk animation and return to idle frame */
+    /** Stop animation and return to idle frame */
     stop() {
         this._playing = false;
         this._state = ANIM_STATE.IDLE;
         this._elapsed = 0;
         this._frameIndex = 0;
         if (this._type === 'avatar') {
-            this._currentAnimation = 'walk';
             const row = AVATAR_ANIMATIONS.stand.startRow + DIRECTION_ROW[this._direction];
             this._sprite.texture = this._getTexture(row, 0);
         } else {

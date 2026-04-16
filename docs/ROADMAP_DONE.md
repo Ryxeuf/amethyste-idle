@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-06 — type avatar dans SpriteAnimator.js, Sprint 7 en cours 6/12)
+> Derniere mise a jour : 2026-04-16 (AVT-07 — setAnimation() dans SpriteAnimator.js, Sprint 7 en cours 7/12)
 
 ---
 
@@ -2172,3 +2172,12 @@
 - [x] Getter `availableAnimations` expose pour AVT-07/AVT-12
 - [x] `AVATAR_ANIMATIONS` exporte pour reutilisation en aval
 - [x] Types legacy `single`/`multi` inchanges — aucune regression
+
+### AVT-07 — Methode `setAnimation(name)` + animation courante (2026-04-16) ✅
+
+> Ajout de la methode publique `setAnimation(name)` dans `SpriteAnimator.js` pour permettre le switch entre animations (walk, stand, run, jump, push, pull) sur les sprites de type `avatar`. Suppression du forcage `_currentAnimation = 'walk'` dans `play()` et `stop()` qui empechait toute persistance d'animation.
+- [x] Methode `setAnimation(name)` : valide le type avatar, verifie la disponibilite de l'animation dans le spritesheet, reset l'animation si en cours de lecture, met a jour le sprite si a l'arret
+- [x] Getter `currentAnimation` : expose le nom de l'animation active
+- [x] `play()` : ne force plus `_currentAnimation = 'walk'` — respecte l'animation definie par `setAnimation()`
+- [x] `stop()` : ne force plus `_currentAnimation = 'walk'` — l'animation persiste entre play/stop, l'idle reste sur `stand`
+- [x] Animation par defaut : `walk` (compatibilite mouvement existant)
