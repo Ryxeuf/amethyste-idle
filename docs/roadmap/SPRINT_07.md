@@ -48,10 +48,10 @@
 - [x] Switcher entre stand/walk/run/jump/push/pull
 - [x] Animation par defaut : `walk` (compatibilite mouvement)
 
-### AVT-08 — Adapter le positionnement dans le tile (S | ★★)
+### ~~AVT-08 — Adapter le positionnement dans le tile (S | ★★)~~ ✅
 > Prerequis : ← AVT-06
-- [ ] Frame plus grande (64x64 vs 24x32) → ajuster ancrage et scale
-- [ ] Alignement correct sur les tiles 32x32
+- [x] Frame plus grande (64x64 vs 24x32) → ajuster ancrage et scale
+- [x] Alignement correct sur les tiles 32x32
 
 ### AVT-09 — Tests manuels : type avatar isole (S | ★★)
 > Prerequis : ← AVT-06

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-07 — setAnimation() dans SpriteAnimator.js, Sprint 7 en cours 7/12)
+> Derniere mise a jour : 2026-04-16 (AVT-08 — Positionnement avatar dans tile, Sprint 7 en cours 8/12)
 
 ---
 
@@ -2181,3 +2181,11 @@
 - [x] `play()` : ne force plus `_currentAnimation = 'walk'` — respecte l'animation definie par `setAnimation()`
 - [x] `stop()` : ne force plus `_currentAnimation = 'walk'` — l'animation persiste entre play/stop, l'idle reste sur `stand`
 - [x] Animation par defaut : `walk` (compatibilite mouvement existant)
+
+### AVT-08 — Adapter le positionnement dans le tile (2026-04-16) ✅
+
+> Les frames avatar (64x64) sont 2x plus grandes que les tiles (32x32). Ajout d'un scale automatique dans le map controller pour que les sprites s'alignent correctement, et adaptation du positionnement emote pour utiliser les dimensions visuelles (apres scale).
+- [x] Scale automatique `tileSize / frameWidth` applique dans `_createEntitySprite()` et `_createPlayerMarker()` quand la frame depasse la taille du tile
+- [x] Ancrage centre-bas (0.5, 1) conserve — les pieds du personnage restent alignes sur le bas du tile
+- [x] Positionnement emote ajuste pour utiliser les dimensions visuelles (`frameW * scale`, `frameH * scale`) au lieu des dimensions brutes
+- [x] Types legacy (single/multi) non impactes — le scale n'est applique que si `frameWidth > tileSize`

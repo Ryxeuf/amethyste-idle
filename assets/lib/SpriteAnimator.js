@@ -316,10 +316,12 @@ export default class SpriteAnimator {
         // Emote timer
         if (this._emoteContainer && this._emoteDuration > 0) {
             this._emoteTimer += deltaMs;
-            // Floating bob effect on emote
+            // Floating bob effect on emote (use visual size accounting for scale)
             if (this._emoteContainer) {
-                this._emoteContainer.position.y = -this._frameH - 4 + Math.sin(this._emoteTimer * 0.005) * 2;
-                this._emoteContainer.position.x = this._frameW / 2;
+                const visualH = this._frameH * this._sprite.scale.y;
+                const visualW = this._frameW * this._sprite.scale.x;
+                this._emoteContainer.position.y = -visualH - 4 + Math.sin(this._emoteTimer * 0.005) * 2;
+                this._emoteContainer.position.x = visualW / 2;
             }
             if (this._emoteTimer >= this._emoteDuration) {
                 // Fade out emote
