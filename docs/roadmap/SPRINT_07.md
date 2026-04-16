@@ -14,11 +14,11 @@
 - [x] Lister tous les body, outfits, hairstyles fournis dans le pack
 - [x] Verifier la coherence de taille entre layers (memes dimensions)
 
-### AVT-02 — Documenter le layout exact du spritesheet (S | ★★★)
+### ~~AVT-02 — Documenter le layout exact du spritesheet (S | ★★★)~~ ✅
 > Prerequis : ← AVT-01
-- [ ] Taille totale (ex: 512x512), taille par frame (ex: 64x64)
-- [ ] Mapping precis des animations par zone de la grille 8x8
-- [ ] Reference sheet annotee (quelles cols/rows = quelle animation)
+- [x] Taille totale (ex: 512x512), taille par frame (ex: 64x64) — sheet base 512x512, frame 64x64, extensible en hauteur
+- [x] Mapping precis des animations par zone de la grille 8x8 — walk (rows 0-3) + stand (rows 4-7), animations etendues rows 8+
+- [x] Reference sheet annotee (quelles cols/rows = quelle animation) — voir `docs/avatar-spritesheet-layout.md`
 
 ### AVT-03 — Organiser les assets dans le projet (S | ★★)
 > Prerequis : ← AVT-01
@@ -29,9 +29,9 @@
 - [ ] Superposer body + outfit + hair dans un editeur d'image
 - [ ] Confirmer que les layers s'alignent sur les 64 frames
 
-### AVT-05 — Mettre a jour ASSETS.md (S | ★)
+### ~~AVT-05 — Mettre a jour ASSETS.md (S | ★)~~ ✅
 > Prerequis : ← AVT-02
-- [ ] Ajouter la section "Format avatar 8x8" avec le layout documente
+- [x] Ajouter la section "Format avatar 8x8" avec le layout documente — section ajoutee dans ASSETS.md, dimensions legacy corrigees (72x128 → 96x128, 24x32 → 32x32)
 
 ---
 
