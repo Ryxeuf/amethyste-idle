@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-13 — Champs avatar Player, Sprint 8 entame)
+> Derniere mise a jour : 2026-04-16 (AVT-09 — Test harness avatar SpriteAnimator)
 
 ---
 
@@ -2189,6 +2189,15 @@
 - [x] Ancrage centre-bas (0.5, 1) conserve — les pieds du personnage restent alignes sur le bas du tile
 - [x] Positionnement emote ajuste pour utiliser les dimensions visuelles (`frameW * scale`, `frameH * scale`) au lieu des dimensions brutes
 - [x] Types legacy (single/multi) non impactes — le scale n'est applique que si `frameWidth > tileSize`
+
+### AVT-09 — Tests manuels : type avatar isole (2026-04-16) ✅
+
+> Page de test admin (`/admin/avatar-test`) avec harness visuel PixiJS pour verifier le SpriteAnimator type `avatar` (8x8, 64x64) et la non-regression des types `single` et `multi`. Genere des spritesheets synthetiques via Canvas (labels animation/direction/frame), instancie les trois types cote a cote avec controles interactifs (animation, direction, play/stop), et execute une batterie de checks automatises (frame size, animations detectees, setAnimation, setDirection).
+- [x] Controller `AvatarTestController` sur `/admin/avatar-test` avec lien sidebar
+- [x] Generation synthetique de spritesheets : avatar 512x512 (8x8), single 96x128 (3x4), multi 384x256 (12x8)
+- [x] Controles interactifs : switch animation (walk/stand), direction (4 dirs), play/stop pour chaque type
+- [x] Batterie de 15+ checks automatises : frame dimensions, animations disponibles, setAnimation retour, non-regression single/multi
+- [x] Types legacy (single/multi) testes en parallele : frame size 32x32, pas d'availableAnimations, setAnimation retourne false
 
 ### AVT-12 — Adapter AvatarAnimatorFactory.js (2026-04-16) ✅
 
