@@ -643,6 +643,10 @@ export default class extends Controller {
         if (animator) {
             const sprite = animator.sprite;
             sprite.anchor.set(0.5, 1);
+            if (animator.frameWidth > this._tileSize) {
+                const scale = this._tileSize / animator.frameWidth;
+                sprite.scale.set(scale);
+            }
             sprite.position.set(this._tileSize / 2, this._tileSize);
             animator.setBaseY(this._tileSize);
             container.addChild(sprite);
@@ -798,6 +802,10 @@ export default class extends Controller {
             this._playerAnimator.setBaseY(this._tileSize);
             const sprite = animator.sprite;
             sprite.anchor.set(0.5, 1);
+            if (animator.frameWidth > this._tileSize) {
+                const scale = this._tileSize / animator.frameWidth;
+                sprite.scale.set(scale);
+            }
             sprite.position.set(this._tileSize / 2, this._tileSize);
             this._playerMarker.addChild(sprite);
         } else {
