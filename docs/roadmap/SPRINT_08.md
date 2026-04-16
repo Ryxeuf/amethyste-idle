@@ -15,9 +15,9 @@
 - [x] Migration Doctrine + valeurs par defaut pour joueurs existants
 - [x] Structure JSON : `{ "body": "human_m_light", "hair": "short_01", "hairColor": "#d6b25e", "outfit": "starter_tunic" }`
 
-### AVT-14 — Integrer AvatarHashGenerator (S | ★★)
+### ~~AVT-14 — Integrer AvatarHashGenerator (S | ★★)~~ ✅
 > Prerequis : ∅
-- [ ] Copier depuis blueprint, adapter namespace, enregistrer comme service
+- [x] Copier depuis blueprint, adapter namespace, enregistrer comme service
 
 ### AVT-15 — Integrer PlayerAvatarPayloadBuilder (M | ★★★)
 > Prerequis : ← AVT-13, AVT-14

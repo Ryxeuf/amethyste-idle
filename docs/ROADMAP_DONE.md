@@ -2210,3 +2210,11 @@
 - [x] Getters/setters + `hasAvatar()` utilitaire
 - [x] Valeurs par defaut pour joueurs existants : NULL (apparence), 1 (version) — fallback legacy preserve
 - [x] Tests unitaires `PlayerAvatarTest` : 8 cas couverts (defaults, setters, updatedAt, hasAvatar)
+
+### AVT-14 — Integrer AvatarHashGenerator (2026-04-16) ✅
+
+> Service PHP pur qui genere un hash SHA256 deterministe a partir de l'apparence du joueur et de ses layers visibles. Le hash sert de cle de cache pour le frontend (AvatarSpriteSheetCache) : meme apparence = meme hash = texture deja composee. Copie depuis le blueprint `data/amethyste-avatar-pack/`, enregistre automatiquement par l'autowiring Symfony.
+- [x] Classe `App\Service\Avatar\AvatarHashGenerator` avec methode `generate(array $appearance, array $visibleLayers, string $formatVersion): string`
+- [x] Hash deterministe : `ksort` sur appearance, `sort` sur layers, puis `hash('sha256', json_encode(...))`
+- [x] Format version inclus dans le hash pour invalidation de cache lors de changements de format
+- [x] Tests unitaires `AvatarHashGeneratorTest` : 8 cas couverts (SHA256 valide, determinisme, sensibilite aux changements, insensibilite a l'ordre des cles/layers, format version)
