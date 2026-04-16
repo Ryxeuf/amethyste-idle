@@ -277,7 +277,7 @@ class AuctionManager
      *  - ignorent les frais de mise en vente (LISTING_FEE_RATE)
      *  - ignorent la limite d'annonces actives et le cooldown d'annulation
      *  - ignorent les bornes de prix par rarete (prix libre, potentiellement tres bas)
-     *  - conservent la taxe regionale pour coherence avec les autres ventes
+     *  - conservent la taxe regionale pour coherence avec les autres ventes.
      */
     public function createFlashSaleListing(Player $adminSeller, PlayerItem $playerItem, int $pricePerUnit, int $durationHours = self::FLASH_SALE_DEFAULT_DURATION_HOURS, int $quantity = 1): AuctionListing
     {
@@ -290,11 +290,7 @@ class AuctionManager
         }
 
         if ($durationHours < self::FLASH_SALE_MIN_DURATION_HOURS || $durationHours > self::FLASH_SALE_MAX_DURATION_HOURS) {
-            throw new \InvalidArgumentException(sprintf(
-                'La duree d\'une vente flash doit etre comprise entre %d et %d heures.',
-                self::FLASH_SALE_MIN_DURATION_HOURS,
-                self::FLASH_SALE_MAX_DURATION_HOURS,
-            ));
+            throw new \InvalidArgumentException(sprintf('La duree d\'une vente flash doit etre comprise entre %d et %d heures.', self::FLASH_SALE_MIN_DURATION_HOURS, self::FLASH_SALE_MAX_DURATION_HOURS));
         }
 
         $regionTaxRate = $this->getRegionTaxRate($adminSeller);
