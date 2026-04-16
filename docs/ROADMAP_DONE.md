@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-16 — avatarSheet sur Item)
+> Derniere mise a jour : 2026-04-16 (AVT-15 — PlayerAvatarPayloadBuilder)
 
 ---
 
@@ -2235,3 +2235,12 @@
 - [x] Migration `Version20260416ItemAvatarSheet` — ALTER TABLE idempotent
 - [x] Getter/setter `getAvatarSheet()` / `setAvatarSheet()`
 - [x] Champ `avatarSheet` ajoute dans le formulaire admin `ItemType`
+
+### AVT-15 — Integrer PlayerAvatarPayloadBuilder (2026-04-16) ✅
+
+> Service PHP qui construit le payload avatar complet pour un joueur : extrait l'apparence depuis `Player::getAvatarAppearance()`, compose les layers visibles (gear equipe via `GearHelper`, cheveux, barbe, marques faciales) avec l'ordre de rendu correct, et genere le hash deterministe via `AvatarHashGenerator`. Retourne `null` si le joueur n'a pas d'avatar (fallback legacy).
+- [x] `extractAppearance()` lit les vrais champs `Player::getAvatarAppearance()`
+- [x] `buildVisibleLayers()` compose les layers dans l'ordre : gear (body) → hair → beard → faceMark → head gear
+- [x] Integration `GearHelper::getEquippedGearByLocation()` + `Item::getAvatarSheet()` pour les layers d'equipement
+- [x] Conversion `hairColor`/`beardColor` hex → int tint pour le rendu PixiJS
+- [x] Tests unitaires `PlayerAvatarPayloadBuilderTest` : 7 cas couverts (no avatar, appearance, gear, gear sans sheet, ordre layers, beard/faceMark, determinisme hash)

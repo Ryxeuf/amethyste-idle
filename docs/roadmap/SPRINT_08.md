@@ -19,11 +19,11 @@
 > Prerequis : ∅
 - [x] Copier depuis blueprint, adapter namespace, enregistrer comme service
 
-### AVT-15 — Integrer PlayerAvatarPayloadBuilder (M | ★★★)
+### ~~AVT-15 — Integrer PlayerAvatarPayloadBuilder (M | ★★★)~~ ✅
 > Prerequis : ← AVT-13, AVT-14
-- [ ] Adapter `extractAppearance()` pour lire les vrais champs Player
-- [ ] Construire le payload avec baseSheet + layers
-- [ ] Brancher sur `GearHelper` pour les items equipes
+- [x] Adapter `extractAppearance()` pour lire les vrais champs Player
+- [x] Construire le payload avec baseSheet + layers
+- [x] Brancher sur `GearHelper` pour les items equipes
 
 ### ~~AVT-16 — Ajouter `avatarSheet` sur Item (S | ★★)~~ ✅
 > Prerequis : ∅
