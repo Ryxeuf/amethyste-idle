@@ -43,10 +43,10 @@
 - [x] Nouvelle branche dans `_buildFrames()` : 8 rows x 8 cols
 - [x] Mapping configurable des animations (stand, walk, run, jump, push, pull)
 
-### AVT-07 — Methode `setAnimation(name)` + animation courante (S | ★★★)
+### ~~AVT-07 — Methode `setAnimation(name)` + animation courante (S | ★★★)~~ ✅
 > Prerequis : ← AVT-06
-- [ ] Switcher entre stand/walk/run/jump/push/pull
-- [ ] Animation par defaut : `walk` (compatibilite mouvement)
+- [x] Switcher entre stand/walk/run/jump/push/pull
+- [x] Animation par defaut : `walk` (compatibilite mouvement)
 
 ### AVT-08 — Adapter le positionnement dans le tile (S | ★★)
 > Prerequis : ← AVT-06

@@ -3,7 +3,7 @@
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
 > Derniere mise a jour : 2026-04-16
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 6/12 taches completees.
+> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 7/12 taches completees.
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---
@@ -46,7 +46,7 @@
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
-| **Sprint 7** | Avatar: Fondations | 6/12 | Moyenne | En cours |
+| **Sprint 7** | Avatar: Fondations | 7/12 | Moyenne | En cours |
 | **Sprint 8** | Avatar: Backend & Carte | 10 | Moyenne | A venir |
 | **Sprint 9** | Avatar: Personnage & Equipement | 8 | Moyenne | A venir |
 | **Sprint 10** | Avatar: Polish & Animations | 8 | Basse | A venir |
