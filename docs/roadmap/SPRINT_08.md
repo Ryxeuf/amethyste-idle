@@ -9,11 +9,11 @@
 
 ### Phase 3 — Backend : entite Player + API avatar
 
-### AVT-13 — Ajouter les champs avatar sur Player (M | ★★★)
+### ~~AVT-13 — Ajouter les champs avatar sur Player (M | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] `avatarAppearance` (JSON nullable), `avatarHash` (string 64), `avatarVersion` (int), `avatarUpdatedAt` (datetime)
-- [ ] Migration Doctrine + valeurs par defaut pour joueurs existants
-- [ ] Structure JSON : `{ "body": "human_m_light", "hair": "short_01", "hairColor": "#d6b25e", "outfit": "starter_tunic" }`
+- [x] `avatarAppearance` (JSON nullable), `avatarHash` (string 64), `avatarVersion` (int), `avatarUpdatedAt` (datetime)
+- [x] Migration Doctrine + valeurs par defaut pour joueurs existants
+- [x] Structure JSON : `{ "body": "human_m_light", "hair": "short_01", "hairColor": "#d6b25e", "outfit": "starter_tunic" }`
 
 ### AVT-14 — Integrer AvatarHashGenerator (S | ★★)
 > Prerequis : ∅

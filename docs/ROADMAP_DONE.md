@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-12 — AvatarAnimatorFactory, Sprint 7 en cours 9/12)
+> Derniere mise a jour : 2026-04-16 (AVT-13 — Champs avatar Player, Sprint 8 entame)
 
 ---
 
@@ -2197,3 +2197,16 @@
 - [x] `createFromLegacySpriteKey(spriteKey)` identique au pipeline existant (type single/multi)
 - [x] `invalidateAvatarHash(hash)` et `clear()` pour la gestion du cache
 - [x] Deux pipelines coexistent : legacy pour mobs/PNJ, avatar pour joueurs — aucun impact sur le rendu existant
+
+---
+
+## Sprint 8 — Avatar: Backend & Carte
+
+### AVT-13 — Ajouter les champs avatar sur Player (2026-04-16) ✅
+
+> Ajout des 4 colonnes avatar sur l'entite Player : `avatarAppearance` (JSON nullable), `avatarHash` (string 64 nullable), `avatarVersion` (int default 1), `avatarUpdatedAt` (datetime_immutable nullable). Migration idempotente avec `ADD COLUMN IF NOT EXISTS`. Structure JSON documentee : `{ "body": "human_m_light", "hair": "short_01", "hairColor": "#d6b25e", "outfit": "starter_tunic" }`. Methode utilitaire `hasAvatar()` pour detecter si un joueur a un avatar configure. Le setter `setAvatarAppearance()` met a jour automatiquement `avatarUpdatedAt`.
+- [x] 4 champs ORM sur Player : `avatarAppearance`, `avatarHash`, `avatarVersion`, `avatarUpdatedAt`
+- [x] Migration `Version20260416PlayerAvatarAppearance` — ALTER TABLE idempotent + COMMENT pour datetime_immutable
+- [x] Getters/setters + `hasAvatar()` utilitaire
+- [x] Valeurs par defaut pour joueurs existants : NULL (apparence), 1 (version) — fallback legacy preserve
+- [x] Tests unitaires `PlayerAvatarTest` : 8 cas couverts (defaults, setters, updatedAt, hasAvatar)

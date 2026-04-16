@@ -138,6 +138,19 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'blocked_players', type: 'json', options: ['default' => '[]'])]
     private array $blockedPlayers = [];
 
+    /** @var array<string, string>|null */
+    #[ORM\Column(name: 'avatar_appearance', type: 'json', nullable: true)]
+    private ?array $avatarAppearance = null;
+
+    #[ORM\Column(name: 'avatar_hash', type: 'string', length: 64, nullable: true)]
+    private ?string $avatarHash = null;
+
+    #[ORM\Column(name: 'avatar_version', type: 'integer', options: ['default' => 1])]
+    private int $avatarVersion = 1;
+
+    #[ORM\Column(name: 'avatar_updated_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $avatarUpdatedAt = null;
+
     #[ORM\OneToMany(targetEntity: PlayerStatusEffect::class, mappedBy: 'player', cascade: ['remove'])]
     private Collection $statusEffects;
 
@@ -586,5 +599,48 @@ class Player implements CharacterInterface
             $this->blockedPlayers,
             fn (int $id) => $id !== $playerId,
         ));
+    }
+
+    /** @return array<string, string>|null */
+    public function getAvatarAppearance(): ?array
+    {
+        return $this->avatarAppearance;
+    }
+
+    /** @param array<string, string>|null $avatarAppearance */
+    public function setAvatarAppearance(?array $avatarAppearance): void
+    {
+        $this->avatarAppearance = $avatarAppearance;
+        $this->avatarUpdatedAt = new \DateTimeImmutable();
+    }
+
+    public function getAvatarHash(): ?string
+    {
+        return $this->avatarHash;
+    }
+
+    public function setAvatarHash(?string $avatarHash): void
+    {
+        $this->avatarHash = $avatarHash;
+    }
+
+    public function getAvatarVersion(): int
+    {
+        return $this->avatarVersion;
+    }
+
+    public function setAvatarVersion(int $avatarVersion): void
+    {
+        $this->avatarVersion = $avatarVersion;
+    }
+
+    public function getAvatarUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->avatarUpdatedAt;
+    }
+
+    public function hasAvatar(): bool
+    {
+        return $this->avatarAppearance !== null;
     }
 }
