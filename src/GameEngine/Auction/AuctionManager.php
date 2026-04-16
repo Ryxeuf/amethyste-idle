@@ -23,6 +23,9 @@ class AuctionManager
     public const AUCTION_MIN_INCREMENT = 1;
     public const MAX_ACTIVE_LISTINGS = 20;
     public const CANCEL_COOLDOWN_MINUTES = 5;
+    public const FLASH_SALE_MIN_DURATION_HOURS = 1;
+    public const FLASH_SALE_MAX_DURATION_HOURS = 12;
+    public const FLASH_SALE_DEFAULT_DURATION_HOURS = 2;
 
     /** @var array<string, array{min: int, max: int}> */
     public const PRICE_LIMITS_BY_RARITY = [
@@ -266,6 +269,88 @@ class AuctionManager
         ]);
 
         return $listing;
+    }
+
+    /**
+     * Cree une vente flash administrative : item vendu par l'admin (seller) a prix reduit,
+     * pour une duree courte et limitee. Les ventes flash :
+     *  - ignorent les frais de mise en vente (LISTING_FEE_RATE)
+     *  - ignorent la limite d'annonces actives et le cooldown d'annulation
+     *  - ignorent les bornes de prix par rarete (prix libre, potentiellement tres bas)
+     *  - conservent la taxe regionale pour coherence avec les autres ventes.
+     */
+    public function createFlashSaleListing(Player $adminSeller, PlayerItem $playerItem, int $pricePerUnit, int $durationHours = self::FLASH_SALE_DEFAULT_DURATION_HOURS, int $quantity = 1): AuctionListing
+    {
+        if ($pricePerUnit < 1) {
+            throw new \InvalidArgumentException('Le prix doit etre superieur a 0.');
+        }
+
+        if ($quantity < 1) {
+            throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
+        }
+
+        if ($durationHours < self::FLASH_SALE_MIN_DURATION_HOURS || $durationHours > self::FLASH_SALE_MAX_DURATION_HOURS) {
+            throw new \InvalidArgumentException(sprintf('La duree d\'une vente flash doit etre comprise entre %d et %d heures.', self::FLASH_SALE_MIN_DURATION_HOURS, self::FLASH_SALE_MAX_DURATION_HOURS));
+        }
+
+        $regionTaxRate = $this->getRegionTaxRate($adminSeller);
+
+        $listing = new AuctionListing();
+        $listing->setSeller($adminSeller);
+        $listing->setPlayerItem($playerItem);
+        $listing->setQuantity($quantity);
+        $listing->setPricePerUnit($pricePerUnit);
+        $listing->setListingFee(0);
+        $listing->setRegionTaxRate($regionTaxRate);
+        $listing->setType(AuctionType::Flash);
+        $listing->setExpiresAt(new \DateTimeImmutable('+' . $durationHours . ' hours'));
+
+        $playerItem->setInventory(null);
+
+        $this->entityManager->persist($listing);
+        $this->entityManager->flush();
+
+        $this->logger->info('Flash sale listing created', [
+            'listing_id' => $listing->getId(),
+            'admin_id' => $adminSeller->getId(),
+            'item' => $playerItem->getGenericItem()->getName(),
+            'price_per_unit' => $pricePerUnit,
+            'quantity' => $quantity,
+            'duration_hours' => $durationHours,
+        ]);
+
+        return $listing;
+    }
+
+    /**
+     * Annulation d'une vente flash par l'administrateur proprietaire.
+     * Ignore le cooldown standard et retourne l'objet au seller admin.
+     */
+    public function cancelFlashSale(Player $adminSeller, AuctionListing $listing): void
+    {
+        if (!$listing->isFlash()) {
+            throw new \InvalidArgumentException('Cette annonce n\'est pas une vente flash.');
+        }
+
+        if (!$listing->isActive()) {
+            throw new \InvalidArgumentException('Cette annonce n\'est plus active.');
+        }
+
+        if ($listing->getSeller()->getId() !== $adminSeller->getId()) {
+            throw new \InvalidArgumentException('Vous ne pouvez annuler que vos propres ventes flash.');
+        }
+
+        $listing->setStatus(AuctionStatus::Cancelled);
+        $listing->setCancelledAt(new \DateTimeImmutable());
+
+        $this->returnItemToSeller($listing);
+
+        $this->entityManager->flush();
+
+        $this->logger->info('Flash sale cancelled', [
+            'listing_id' => $listing->getId(),
+            'admin_id' => $adminSeller->getId(),
+        ]);
     }
 
     /**

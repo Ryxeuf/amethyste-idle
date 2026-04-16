@@ -3,7 +3,7 @@
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
 > Derniere mise a jour : 2026-04-15
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4 et 5 termines.** Prochaine etape : Sprint 6 (Social & Economie, 5/6 — task 121 close, task 122 close).
+> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Prochaine etape : Sprint 7 (Avatar : Fondations).
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---
@@ -45,7 +45,7 @@
 | **Sprint 3** | Arsenal & Magie | 3 | Haute | ✅ **Termine** |
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
-| **Sprint 6** | Social & Economie | 5/6 | Moyenne | En cours |
+| **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
 | **Sprint 7** | Avatar: Fondations | 2/12 | Moyenne | En cours |
 | **Sprint 8** | Avatar: Backend & Carte | 10 | Moyenne | A venir |
 | **Sprint 9** | Avatar: Personnage & Equipement | 8 | Moyenne | A venir |
@@ -53,8 +53,8 @@
 | **Sprint 11** | Monde vivant | 6 | Basse | A venir |
 | **Sprint 12** | Technique & i18n | 2 | Basse | A venir |
 
-**Total restant : 59 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
-**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3) termines + Sprint 6 (5/6 en cours) + Sprint 7 (2/12 en cours) = 21 taches completes / initial 66+
+**Total restant : 58 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
+**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3) et 6 (6) termines + Sprint 7 (2/12 en cours) = 22 taches completes / initial 66+
 
 ---
 
@@ -147,8 +147,8 @@ Independant ─ Sprint 7 ──── Sprint 8 ──── Sprint 9 ───�
 3. [Sprint 3 — Arsenal & Magie](SPRINT_03.md) ✅
 4. [Sprint 4 — Progression & Narration](SPRINT_04.md) ✅
 5. [Sprint 5 — Hotel des ventes](SPRINT_05.md) ✅
-6. **[Sprint 6 — Social & Economie](SPRINT_06.md)** ← Prochain
-7. [Sprint 7 — Avatar: Fondations](SPRINT_07.md)
+6. [Sprint 6 — Social & Economie](SPRINT_06.md) ✅
+7. **[Sprint 7 — Avatar: Fondations](SPRINT_07.md)** ← Prochain
 8. [Sprint 8 — Avatar: Backend & Carte](SPRINT_08.md)
 9. [Sprint 9 — Avatar: Personnage & Equipement](SPRINT_09.md)
 10. [Sprint 10 — Avatar: Polish & Animations](SPRINT_10.md)

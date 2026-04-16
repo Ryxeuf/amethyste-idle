@@ -579,6 +579,177 @@ class AuctionManagerTest extends TestCase
         return $listing;
     }
 
+    public function testCreateFlashSaleListingSuccess(): void
+    {
+        $admin = $this->createPlayer(1, 0); // flash sales ont 0 frais -> pas besoin de Gils
+        $item = $this->createPlayerItem();
+
+        $this->em->expects($this->once())->method('persist');
+        $this->em->expects($this->once())->method('flush');
+
+        $listing = $this->manager->createFlashSaleListing($admin, $item, 50, 2, 1);
+
+        $this->assertSame(AuctionType::Flash, $listing->getType());
+        $this->assertSame(50, $listing->getPricePerUnit());
+        $this->assertSame(0, $listing->getListingFee());
+        $this->assertSame(AuctionStatus::Active, $listing->getStatus());
+        $this->assertNull($item->getInventory());
+        $this->assertTrue($listing->isFlash());
+    }
+
+    public function testCreateFlashSaleIgnoresRarityPriceBounds(): void
+    {
+        $admin = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem(ItemRarity::Legendary);
+
+        $this->em->expects($this->once())->method('persist');
+
+        // Pour un Legendary, min normal = 1000. En flash, un prix casse (50) reste accepte.
+        $listing = $this->manager->createFlashSaleListing($admin, $item, 50, 1, 1);
+
+        $this->assertSame(50, $listing->getPricePerUnit());
+    }
+
+    public function testCreateFlashSaleIgnoresActiveListingLimit(): void
+    {
+        $listingRepo = $this->createMock(AuctionListingRepository::class);
+        $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
+        $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-30 seconds'));
+
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
+
+        $admin = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem();
+
+        $this->em->expects($this->once())->method('persist');
+
+        $listing = $manager->createFlashSaleListing($admin, $item, 100, 2, 1);
+
+        $this->assertSame(AuctionType::Flash, $listing->getType());
+    }
+
+    public function testCreateFlashSaleInvalidDuration(): void
+    {
+        $admin = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('duree');
+
+        $this->manager->createFlashSaleListing($admin, $item, 100, 99, 1);
+    }
+
+    public function testCreateFlashSaleInvalidPrice(): void
+    {
+        $admin = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem();
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('prix');
+
+        $this->manager->createFlashSaleListing($admin, $item, 0, 2, 1);
+    }
+
+    public function testCancelFlashSaleSuccess(): void
+    {
+        $admin = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem();
+
+        $listing = new AuctionListing();
+        $listing->setSeller($admin);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(0);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setType(AuctionType::Flash);
+        $listing->setExpiresAt(new \DateTimeImmutable('+2 hours'));
+
+        $this->em->expects($this->once())->method('flush');
+
+        $this->manager->cancelFlashSale($admin, $listing);
+
+        $this->assertSame(AuctionStatus::Cancelled, $listing->getStatus());
+        $this->assertNotNull($listing->getCancelledAt());
+        // item retourne au sac admin
+        $bag = null;
+        foreach ($admin->getInventories() as $inv) {
+            if ($inv->getType() === Inventory::TYPE_BAG) {
+                $bag = $inv;
+            }
+        }
+        $this->assertSame($bag, $item->getInventory());
+    }
+
+    public function testCancelFlashSaleNotOwnerFails(): void
+    {
+        $admin = $this->createPlayer(1, 0);
+        $other = $this->createPlayer(2, 0);
+        $item = $this->createPlayerItem();
+
+        $listing = new AuctionListing();
+        $listing->setSeller($admin);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(0);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setType(AuctionType::Flash);
+        $listing->setExpiresAt(new \DateTimeImmutable('+2 hours'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('propres');
+
+        $this->manager->cancelFlashSale($other, $listing);
+    }
+
+    public function testCancelFlashSaleRejectsNonFlashListing(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $item = $this->createPlayerItem();
+
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(5);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setExpiresAt(new \DateTimeImmutable('+2 hours'));
+        // type par defaut = Fixed
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('vente flash');
+
+        $this->manager->cancelFlashSale($seller, $listing);
+    }
+
+    public function testBuyFlashSaleListingSuccess(): void
+    {
+        $admin = $this->createPlayer(1, 0);
+        $buyer = $this->createPlayer(2, 1000);
+        $item = $this->createPlayerItem();
+
+        $listing = new AuctionListing();
+        $listing->setSeller($admin);
+        $listing->setPlayerItem($item);
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(50);
+        $listing->setListingFee(0);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setType(AuctionType::Flash);
+        $listing->setExpiresAt(new \DateTimeImmutable('+2 hours'));
+
+        $this->em->expects($this->once())->method('persist');
+
+        $transaction = $this->manager->buyListing($buyer, $listing);
+
+        $this->assertSame(AuctionStatus::Sold, $listing->getStatus());
+        $this->assertSame(950, $buyer->getGils()); // 1000 - 50
+        $this->assertSame(50, $admin->getGils());
+        $this->assertSame(50, $transaction->getTotalPrice());
+    }
+
     public function testCancelListingSetsCancelledAt(): void
     {
         $seller = $this->createPlayer(1, 100);

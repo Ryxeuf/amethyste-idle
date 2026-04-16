@@ -1,0 +1,73 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Nouvelle vente flash - Admin{% endblock %}
+{% block page_title %}Nouvelle vente flash{% endblock %}
+
+{% block body %}
+    <div class="max-w-2xl">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6">
+            <div class="mb-6">
+                <p class="text-sm text-gray-400">
+                    Creez une vente flash administrative : un item de votre inventaire est propose au jeu entier
+                    a un prix reduit, pour une duree limitee. Aucun frais de mise en vente n'est preleve.
+                </p>
+            </div>
+
+            {% if sellableItems|length == 0 %}
+                <p class="text-yellow-400 text-sm">
+                    Votre sac ne contient aucun objet vendable. Ajoutez un item pour lancer une vente flash.
+                </p>
+                <p class="mt-4">
+                    <a href="{{ path('admin_auction_index') }}" class="text-purple-400 hover:text-purple-300 text-sm">&larr; Retour</a>
+                </p>
+            {% else %}
+                <form method="POST" action="{{ path('admin_auction_flash_create') }}" class="space-y-4">
+                    <input type="hidden" name="_token" value="{{ csrf_token('admin_flash_sale') }}">
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Objet</label>
+                        <select name="player_item_id" required
+                                class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                            {% for playerItem in sellableItems %}
+                                {% set item = playerItem.genericItem %}
+                                <option value="{{ playerItem.id }}">
+                                    {{ item.name }}{% if item.rarityEnum %} [{{ item.rarityEnum.label }}]{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Prix par unite (Gils)</label>
+                            <input type="number" name="price_per_unit" min="1" value="100" required
+                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Quantite</label>
+                            <input type="number" name="quantity" min="1" value="1" required
+                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">
+                                Duree (h, {{ minDuration }}-{{ maxDuration }})
+                            </label>
+                            <input type="number" name="duration_hours" min="{{ minDuration }}" max="{{ maxDuration }}"
+                                   value="{{ defaultDuration }}" required
+                                   class="w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3 pt-2">
+                        <button type="submit"
+                                class="px-4 py-2 bg-pink-600 hover:bg-pink-500 text-white text-sm rounded-lg transition-colors">
+                            Lancer la vente flash
+                        </button>
+                        <a href="{{ path('admin_auction_index') }}"
+                           class="text-gray-400 hover:text-gray-200 text-sm">Annuler</a>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

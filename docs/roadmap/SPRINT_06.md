@@ -1,4 +1,4 @@
-## Sprint 6 — Social & Economie
+## Sprint 6 — Social & Economie ✅ Termine
 
 > **6 taches** | Priorite : **Moyenne** | Origine : Vague 9, Pistes B & C
 > Objectif : enrichir les interactions sociales et l'economie du jeu.
@@ -35,11 +35,11 @@
 - [x] Bonus qualite +20% si specialise — `QualityCalculator` etend `calculateQuality()` avec parametre `specializationBonus`, sous-phase 1
 - [x] 1 specialisation par joueur (choix irreversible, deblocage a domain XP 500+) — champ `craftSpecialization` sur Player, `CraftSpecializationService::canChoose/choose`, UI dans la page craft, sous-phase 1
 
-### 123 — Encheres temporaires & ventes flash (S | ★)
+### ~~123 — Encheres temporaires & ventes flash (S | ★)~~ ✅
 > Prerequis : ← 116 (hotel des ventes)
 - [x] Type d'annonce "enchere" : prix de depart, increments, duree fixe — enum `AuctionType`, champs `minIncrement`/`currentBid`/`currentBidder` sur `AuctionListing`, methodes `createAuctionListing`/`placeBid`/`finalizeAuction` (escrow + remboursement auto du bidder depasse), UI de mise dans la liste HdV et option "Enchere" dans le formulaire de vente, sous-phase 1
 - [x] Notification aux encherisseurs si depasses — appel `NotificationService::notify` dans `placeBid` avec type `auction_outbid`, icone `gavel` et lien `/game/auction` (persistee + Mercure SSE), sous-phase 2
-- [ ] Ventes flash admin : items rares a prix reduit, duree limitee
+- [x] Ventes flash admin : items rares a prix reduit, duree limitee — `AuctionType::Flash`, `AuctionManager::createFlashSaleListing`/`cancelFlashSale` (frais 0, duree 1-12h, ignore limites et rarete), admin UI `/admin/auction/flash/new`, section "Ventes flash actives" dans le dashboard admin, badge "Flash" dans la liste HdV joueur, sous-phase 3
 
 ### ~~124 — Taxes dynamiques & tresor regional (S | ★★)~~ ✅
 > Prerequis : ← GCC ✅ (controle de cite)
@@ -58,8 +58,8 @@
 
 ### Definition of Done
 
-- [ ] Messagerie fonctionnelle avec notifications temps reel
-- [ ] Systeme de reputation avec titres et bonus
-- [ ] Specialisations de metier operationnelles
-- [ ] Encheres et taxes dynamiques actives
-- [ ] Gold sinks implementes et equilibres
+- [x] Messagerie fonctionnelle avec notifications temps reel
+- [x] Systeme de reputation avec titres et bonus
+- [x] Specialisations de metier operationnelles
+- [x] Encheres et taxes dynamiques actives
+- [x] Gold sinks implementes et equilibres
