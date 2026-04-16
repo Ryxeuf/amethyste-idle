@@ -72,12 +72,12 @@ class AvatarInventoryCommand extends Command
             $files = [];
             foreach ($finder as $file) {
                 $realPath = $file->getRealPath();
-                if (false === $realPath) {
+                if ($realPath === false) {
                     continue;
                 }
 
                 $size = @getimagesize($realPath);
-                if (false === $size) {
+                if ($size === false) {
                     $alerts[] = sprintf('Impossible de lire : %s/%s', $relDir, $file->getRelativePathname());
                     continue;
                 }
@@ -161,9 +161,9 @@ class AvatarInventoryCommand extends Command
 
         foreach ($avatarDirs as $dir) {
             $cat = $categories[$dir] ?? null;
-            $count = null !== $cat ? \count($cat['files']) : 0;
+            $count = $cat !== null ? \count($cat['files']) : 0;
 
-            if (null !== $cat && $cat['exists'] && $count > 0) {
+            if ($cat !== null && $cat['exists'] && $count > 0) {
                 $io->text(sprintf('  <info>OK</info>  %s/ — %d asset(s)', $dir, $count));
                 ++$avatarReady;
             } else {
@@ -251,12 +251,12 @@ class AvatarInventoryCommand extends Command
 
             foreach ($finder as $file) {
                 $realPath = $file->getRealPath();
-                if (false === $realPath) {
+                if ($realPath === false) {
                     continue;
                 }
 
                 $size = @getimagesize($realPath);
-                if (false === $size) {
+                if ($size === false) {
                     continue;
                 }
                 $results[] = [
@@ -273,7 +273,7 @@ class AvatarInventoryCommand extends Command
         $demonsPath = $basePath . '/demons.png';
         if (file_exists($demonsPath)) {
             $size = @getimagesize($demonsPath);
-            if (false !== $size) {
+            if ($size !== false) {
                 $results[] = [
                     'name' => 'demons.png',
                     'width' => $size[0],
