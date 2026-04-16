@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-02 & AVT-05 — layout spritesheet 8x8 et ASSETS.md, Sprint 7 en cours 5/12)
+> Derniere mise a jour : 2026-04-16 (AVT-06 — type avatar dans SpriteAnimator.js, Sprint 7 en cours 6/12)
 
 ---
 
@@ -2159,3 +2159,16 @@
 - [x] Correction dimensions legacy : 72x128 → 96x128, 24x32 → 32x32 (confirmees par l'inventaire AVT-01)
 - [x] Reference mise a jour : `MapApiController::getSpriteConfig()` → `SpriteConfigProvider`
 - [x] Instructions ajout sprite separees : legacy (mob/PNJ) et avatar (joueur)
+
+### AVT-06 — Ajouter le type `avatar` dans SpriteAnimator.js (2026-04-16) ✅
+
+> Extension de `SpriteAnimator.js` pour supporter le nouveau format avatar 8x8 (64x64 par frame). Le type `avatar` coexiste avec les types legacy `single` et `multi` sans les affecter. Support complet de la grille 8 colonnes × N lignes avec detection automatique des animations disponibles selon la hauteur du spritesheet.
+- [x] Constantes `AVATAR_ANIMATIONS` (walk, stand, run, jump, push, pull), `AVATAR_FRAME_SIZE` (64), `AVATAR_COLS` (8), `AVATAR_IDLE_FPS` (4) — mapping configurable exporte
+- [x] `_computeFrameSize()` : branche avatar avec frame 64x64 fixe, 8 colonnes, totalRows auto-detecte depuis hauteur
+- [x] `_buildFrames()` : construction de la grille complete totalRows × 8 colonnes pour avatar + appel `_detectAvailableAnimations()`
+- [x] `_detectAvailableAnimations()` : detecte les animations disponibles (walk+stand pour 512px, +run pour 768px, etc.) selon la hauteur du spritesheet
+- [x] `update()` : walk avatar utilise les 8 frames sequentiellement (vs pattern `[0,1,2,1]` legacy) ; idle avatar utilise l'animation stand a 4 FPS (pas de breathing programmatique)
+- [x] `play()`, `stop()`, `setDirection()`, constructeur : gestion correcte du type avatar (stand/walk switching, frame initiale)
+- [x] Getter `availableAnimations` expose pour AVT-07/AVT-12
+- [x] `AVATAR_ANIMATIONS` exporte pour reutilisation en aval
+- [x] Types legacy `single`/`multi` inchanges — aucune regression

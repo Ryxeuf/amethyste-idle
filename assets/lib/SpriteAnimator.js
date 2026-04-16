@@ -3,16 +3,21 @@ import * as PIXI from 'pixi.js';
 /**
  * Animated sprite system for RPG Maker VX/MV sprite sheets.
  *
- * Supports two layouts:
+ * Supports three layouts:
  * - "single": one character per sheet (3 columns × 4 rows)
  * - "multi": multiple characters per sheet (12 columns × 8 rows),
  *   each character is a 3×4 block identified by `charIndex` (0-7).
+ * - "avatar": modular avatar system (8 columns × 8+ rows, 64×64 frames),
+ *   supports multiple animations (walk, stand, run, jump, push, pull)
+ *   auto-detected from sheet height.
  *
  * Row order: 0=down, 1=left, 2=right, 3=up
- * Column order: 0,1,2 = walk cycle (column 1 = idle/stand frame)
+ * Column order (single/multi): 0,1,2 = walk cycle (column 1 = idle/stand frame)
+ * Column order (avatar): 0-7 = sequential animation frames
  *
  * Features:
- * - Idle breathing animation (subtle Y oscillation when stationary)
+ * - Idle breathing animation (subtle Y oscillation when stationary) — legacy types
+ * - Animated idle (stand) from spritesheet frames — avatar type
  * - Emote bubbles above sprites (!, ?, ♥, ...)
  * - Animation states: idle, walk, interact
  */
@@ -20,6 +25,25 @@ import * as PIXI from 'pixi.js';
 const DIRECTION_ROW = { down: 0, left: 1, right: 2, up: 3 };
 const WALK_FRAMES = [0, 1, 2, 1]; // left foot, stand, right foot, stand
 const DEFAULT_ANIM_FPS = 8;
+
+/** Avatar spritesheet constants */
+const AVATAR_FRAME_SIZE = 64;
+const AVATAR_COLS = 8;
+const AVATAR_IDLE_FPS = 4;
+
+/**
+ * Animation mapping for avatar type.
+ * Each animation occupies 4 consecutive rows (one per direction).
+ * Available animations are auto-detected from sheet height.
+ */
+const AVATAR_ANIMATIONS = {
+    walk:  { startRow: 0,  frames: 8 },
+    stand: { startRow: 4,  frames: 8 },
+    run:   { startRow: 8,  frames: 8 },
+    jump:  { startRow: 12, frames: 8 },
+    push:  { startRow: 16, frames: 8 },
+    pull:  { startRow: 20, frames: 8 },
+};
 
 /** Available emote types with their display character */
 const EMOTE_TYPES = {
@@ -40,16 +64,16 @@ const ANIM_STATE = {
     INTERACT: 'interact',
 };
 
-export { EMOTE_TYPES, ANIM_STATE };
+export { EMOTE_TYPES, ANIM_STATE, AVATAR_ANIMATIONS };
 
 export default class SpriteAnimator {
     /**
      * @param {object} opts
      * @param {PIXI.Texture} opts.texture - The loaded sprite sheet base texture
-     * @param {string} opts.type - "single" or "multi"
+     * @param {string} opts.type - "single", "multi", or "avatar"
      * @param {number} [opts.charIndex=0] - Character index for multi sheets (0-7)
      * @param {number} [opts.animFps=8] - Animation speed in frames per second
-     * @param {boolean} [opts.enableBreathing=true] - Enable idle breathing effect
+     * @param {boolean} [opts.enableBreathing=true] - Enable idle breathing effect (legacy types only)
      */
     constructor({ texture, type = 'single', charIndex = 0, animFps = DEFAULT_ANIM_FPS, enableBreathing = true }) {
         this._baseTexture = texture;
@@ -63,8 +87,12 @@ export default class SpriteAnimator {
         this._frameIndex = 0;
         this._state = ANIM_STATE.IDLE;
 
-        // Idle breathing effect
-        this._breathingEnabled = enableBreathing;
+        // Avatar animation tracking
+        this._currentAnimation = 'walk';
+        this._availableAnimations = null;
+
+        // Idle breathing effect (legacy types only)
+        this._breathingEnabled = enableBreathing && type !== 'avatar';
         this._breathElapsed = Math.random() * 3000; // desync between sprites
         this._breathAmplitude = 1.5; // pixels
         this._breathSpeed = 0.0015; // radians per ms
@@ -78,7 +106,12 @@ export default class SpriteAnimator {
         this._computeFrameSize();
         this._buildFrames();
 
-        this._sprite = new PIXI.Sprite(this._getTexture(DIRECTION_ROW.down, 1));
+        if (this._type === 'avatar') {
+            const row = AVATAR_ANIMATIONS.stand.startRow + DIRECTION_ROW.down;
+            this._sprite = new PIXI.Sprite(this._getTexture(row, 0));
+        } else {
+            this._sprite = new PIXI.Sprite(this._getTexture(DIRECTION_ROW.down, 1));
+        }
         this._sprite.roundPixels = true;
     }
 
@@ -102,6 +135,11 @@ export default class SpriteAnimator {
         return this._state;
     }
 
+    /** Available animations for avatar type (null for legacy types) */
+    get availableAnimations() {
+        return this._availableAnimations;
+    }
+
     /**
      * Set facing direction.
      * @param {'up'|'down'|'left'|'right'} dir
@@ -110,7 +148,12 @@ export default class SpriteAnimator {
         if (DIRECTION_ROW[dir] !== undefined && dir !== this._direction) {
             this._direction = dir;
             if (!this._playing) {
-                this._sprite.texture = this._getTexture(DIRECTION_ROW[dir], 1);
+                if (this._type === 'avatar') {
+                    const row = AVATAR_ANIMATIONS.stand.startRow + DIRECTION_ROW[dir];
+                    this._sprite.texture = this._getTexture(row, 0);
+                } else {
+                    this._sprite.texture = this._getTexture(DIRECTION_ROW[dir], 1);
+                }
             }
         }
     }
@@ -122,6 +165,9 @@ export default class SpriteAnimator {
         this._state = ANIM_STATE.WALK;
         this._elapsed = 0;
         this._frameIndex = 0;
+        if (this._type === 'avatar') {
+            this._currentAnimation = 'walk';
+        }
         // Reset breathing offset when walking
         this._sprite.position.y = this._baseY;
     }
@@ -132,7 +178,13 @@ export default class SpriteAnimator {
         this._state = ANIM_STATE.IDLE;
         this._elapsed = 0;
         this._frameIndex = 0;
-        this._sprite.texture = this._getTexture(DIRECTION_ROW[this._direction], 1);
+        if (this._type === 'avatar') {
+            this._currentAnimation = 'walk';
+            const row = AVATAR_ANIMATIONS.stand.startRow + DIRECTION_ROW[this._direction];
+            this._sprite.texture = this._getTexture(row, 0);
+        } else {
+            this._sprite.texture = this._getTexture(DIRECTION_ROW[this._direction], 1);
+        }
     }
 
     /** @returns {boolean} */
@@ -254,6 +306,16 @@ export default class SpriteAnimator {
 
         if (this._playing) {
             this._elapsed += deltaMs;
+
+            if (this._type === 'avatar') {
+                const anim = AVATAR_ANIMATIONS[this._currentAnimation] || AVATAR_ANIMATIONS.walk;
+                const frameDuration = 1000 / this._animFps;
+                this._frameIndex = Math.floor(this._elapsed / frameDuration) % anim.frames;
+                const row = anim.startRow + DIRECTION_ROW[this._direction];
+                this._sprite.texture = this._getTexture(row, this._frameIndex);
+                return;
+            }
+
             const frameDuration = 1000 / this._animFps;
             const totalFrames = WALK_FRAMES.length;
 
@@ -265,7 +327,18 @@ export default class SpriteAnimator {
             return;
         }
 
-        // Idle breathing animation
+        // Avatar idle: animated stand from spritesheet frames
+        if (this._type === 'avatar') {
+            this._elapsed += deltaMs;
+            const anim = AVATAR_ANIMATIONS.stand;
+            const frameDuration = 1000 / AVATAR_IDLE_FPS;
+            this._frameIndex = Math.floor(this._elapsed / frameDuration) % anim.frames;
+            const row = anim.startRow + DIRECTION_ROW[this._direction];
+            this._sprite.texture = this._getTexture(row, this._frameIndex);
+            return;
+        }
+
+        // Legacy idle breathing animation
         if (this._breathingEnabled) {
             this._breathElapsed += deltaMs;
             const breathOffset = Math.sin(this._breathElapsed * this._breathSpeed) * this._breathAmplitude;
@@ -292,7 +365,12 @@ export default class SpriteAnimator {
         const w = source.width;
         const h = source.height;
 
-        if (this._type === 'multi') {
+        if (this._type === 'avatar') {
+            this._frameW = AVATAR_FRAME_SIZE;
+            this._frameH = AVATAR_FRAME_SIZE;
+            this._cols = AVATAR_COLS;
+            this._totalRows = Math.floor(h / AVATAR_FRAME_SIZE);
+        } else if (this._type === 'multi') {
             // 12 columns × 8 rows total, each char is 3×4 block
             this._frameW = Math.floor(w / 12);
             this._frameH = Math.floor(h / 8);
@@ -304,9 +382,29 @@ export default class SpriteAnimator {
     }
 
     _buildFrames() {
-        // Pre-build all 4 rows × 3 columns of textures for this character
         this._frames = [];
+        const source = this._baseTexture.source || this._baseTexture;
 
+        if (this._type === 'avatar') {
+            // Build full grid: totalRows × 8 columns
+            for (let row = 0; row < this._totalRows; row++) {
+                const rowTextures = [];
+                for (let col = 0; col < AVATAR_COLS; col++) {
+                    const frame = new PIXI.Rectangle(
+                        col * this._frameW,
+                        row * this._frameH,
+                        this._frameW,
+                        this._frameH,
+                    );
+                    rowTextures.push(new PIXI.Texture({ source, frame }));
+                }
+                this._frames.push(rowTextures);
+            }
+            this._detectAvailableAnimations();
+            return;
+        }
+
+        // Legacy: pre-build 4 rows × 3 columns for this character
         let offsetX = 0;
         let offsetY = 0;
 
@@ -317,8 +415,6 @@ export default class SpriteAnimator {
             offsetX = charCol * 3 * this._frameW;
             offsetY = charRow * 4 * this._frameH;
         }
-
-        const source = this._baseTexture.source || this._baseTexture;
 
         for (let row = 0; row < 4; row++) {
             const rowTextures = [];
@@ -333,6 +429,16 @@ export default class SpriteAnimator {
                 rowTextures.push(texture);
             }
             this._frames.push(rowTextures);
+        }
+    }
+
+    /** Detect which animations are available based on sheet height */
+    _detectAvailableAnimations() {
+        this._availableAnimations = {};
+        for (const [name, def] of Object.entries(AVATAR_ANIMATIONS)) {
+            if (def.startRow + 4 <= this._totalRows) {
+                this._availableAnimations[name] = def;
+            }
         }
     }
 

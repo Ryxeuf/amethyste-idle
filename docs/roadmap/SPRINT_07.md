@@ -37,11 +37,11 @@
 
 ### Phase 1 — SpriteAnimator multi-animations
 
-### AVT-06 — Ajouter le type `avatar` dans SpriteAnimator.js (M | ★★★)
+### ~~AVT-06 — Ajouter le type `avatar` dans SpriteAnimator.js (M | ★★★)~~ ✅
 > Prerequis : ← AVT-02
-- [ ] Nouvelle branche dans `_computeFrameSize()` : grille 8x8
-- [ ] Nouvelle branche dans `_buildFrames()` : 8 rows x 8 cols
-- [ ] Mapping configurable des animations (stand, walk, run, jump, push, pull)
+- [x] Nouvelle branche dans `_computeFrameSize()` : grille 8x8
+- [x] Nouvelle branche dans `_buildFrames()` : 8 rows x 8 cols
+- [x] Mapping configurable des animations (stand, walk, run, jump, push, pull)
 
 ### AVT-07 — Methode `setAnimation(name)` + animation courante (S | ★★★)
 > Prerequis : ← AVT-06
