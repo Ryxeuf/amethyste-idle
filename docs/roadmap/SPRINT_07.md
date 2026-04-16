@@ -9,10 +9,10 @@
 
 ### Phase 0 — Preparation des assets
 
-### AVT-01 — Inventorier les assets disponibles (S | ★★★)
+### ~~AVT-01 — Inventorier les assets disponibles (S | ★★★)~~ ✅
 > Prerequis : ∅
-- [ ] Lister tous les body, outfits, hairstyles fournis dans le pack
-- [ ] Verifier la coherence de taille entre layers (memes dimensions)
+- [x] Lister tous les body, outfits, hairstyles fournis dans le pack
+- [x] Verifier la coherence de taille entre layers (memes dimensions)
 
 ### AVT-02 — Documenter le layout exact du spritesheet (S | ★★★)
 > Prerequis : ← AVT-01

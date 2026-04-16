@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (task 123 sous-phase 3 — ventes flash admin, Sprint 6 termine + Sprint 7 AVT-10 & AVT-11)
+> Derniere mise a jour : 2026-04-16 (AVT-01 — inventaire assets avatar, Sprint 7 en cours 3/12)
 
 ---
 
@@ -2133,3 +2133,12 @@
 - [x] Strategie LRU basee sur l'ordre d'insertion de `Map` (delete puis re-set pour rapprocher de la tete)
 - [x] Nettoyage des textures remplacees / expulsees via `destroy(true)` (garde-fou si la texture ne possede pas la methode)
 - [x] Pas d'impact runtime : consomme par `AvatarAnimatorFactory` (AVT-12) une fois cable
+
+### AVT-01 — Inventorier les assets disponibles (2026-04-16) ✅
+
+> Inventaire complet des assets personnages disponibles dans le projet, avec verification de la coherence de taille entre layers. Commande Symfony `app:avatar:inventory` creee pour automatiser l'audit (re-executable quand de nouveaux assets sont ajoutes). Document d'inventaire genere dans `docs/audits/AVATAR_ASSET_INVENTORY.md`.
+- [x] Commande `app:avatar:inventory` : scanne 10 repertoires d'assets, classifie le format (single 3x4, multi 12x8, avatar 8x8), verifie la coherence des tailles, analyse l'ecart avec le systeme avatar 8x8
+- [x] Inventaire : 248 fichiers scannes (69 Male, 91 Female, 28 Soldier, 47 Monster, 1 Boss, 6 Animal, 7 multi-sheets racine), tous en format RPG Maker VX (96x128, 32x32/frame)
+- [x] Coherence : OK pour personnages (Male, Female, Soldier, Animal — tous 96x128), alertes sur monstres (6 tailles) et multi-sheets racine (3 tailles)
+- [x] Constat avatar 8x8 : aucun asset au nouveau format disponible — les 4 repertoires `avatar/{body,hair,outfit,head}/` sont manquants, a creer quand le pack 8x8 sera acquis
+- [x] Option `--export` pour generer automatiquement le rapport markdown
