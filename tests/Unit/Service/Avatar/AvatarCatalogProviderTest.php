@@ -19,6 +19,8 @@ class AvatarCatalogProviderTest extends TestCase
         $this->tmpDir = sys_get_temp_dir() . '/avatar_catalog_test_' . uniqid();
         mkdir($this->tmpDir . '/assets/styles/images/avatar/body', 0777, true);
         mkdir($this->tmpDir . '/assets/styles/images/avatar/hair', 0777, true);
+        mkdir($this->tmpDir . '/assets/styles/images/avatar/outfit', 0777, true);
+        mkdir($this->tmpDir . '/assets/styles/images/avatar/head', 0777, true);
     }
 
     protected function tearDown(): void
@@ -92,6 +94,52 @@ class AvatarCatalogProviderTest extends TestCase
         $urls = $provider->getAllSheetUrls();
 
         $this->assertCount(3, $urls);
+    }
+
+    public function testGetCreationChoicesReturnsFourCategories(): void
+    {
+        $provider = $this->createProvider([]);
+
+        $choices = $provider->getCreationChoices();
+
+        $this->assertArrayHasKey('body', $choices);
+        $this->assertArrayHasKey('hair', $choices);
+        $this->assertArrayHasKey('outfit', $choices);
+        $this->assertArrayHasKey('head', $choices);
+    }
+
+    public function testGetCreationChoicesScansOutfitAndHead(): void
+    {
+        touch($this->tmpDir . '/assets/styles/images/avatar/body/human_v00.png');
+        touch($this->tmpDir . '/assets/styles/images/avatar/hair/bob_v00.png');
+        touch($this->tmpDir . '/assets/styles/images/avatar/outfit/forester_v01.png');
+        touch($this->tmpDir . '/assets/styles/images/avatar/outfit/forester_v02.png');
+        touch($this->tmpDir . '/assets/styles/images/avatar/head/pointy_v01.png');
+
+        $provider = $this->createProvider([]);
+
+        $choices = $provider->getCreationChoices();
+
+        $this->assertCount(1, $choices['body']);
+        $this->assertSame('human_v00', $choices['body'][0]['slug']);
+        $this->assertCount(1, $choices['hair']);
+        $this->assertCount(2, $choices['outfit']);
+        $this->assertSame('forester_v01', $choices['outfit'][0]['slug']);
+        $this->assertStringContainsString('outfit/forester_v01.png', $choices['outfit'][0]['sheet']);
+        $this->assertCount(1, $choices['head']);
+        $this->assertSame('pointy_v01', $choices['head'][0]['slug']);
+    }
+
+    public function testGetCreationChoicesHandlesEmptyDirectories(): void
+    {
+        $provider = $this->createProvider([]);
+
+        $choices = $provider->getCreationChoices();
+
+        $this->assertSame([], $choices['body']);
+        $this->assertSame([], $choices['hair']);
+        $this->assertSame([], $choices['outfit']);
+        $this->assertSame([], $choices['head']);
     }
 
     /**

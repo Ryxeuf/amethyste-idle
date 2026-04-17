@@ -37,6 +37,21 @@ final class AvatarCatalogProvider
     }
 
     /**
+     * Choix d'apparence proposes dans l'ecran de creation de personnage.
+     *
+     * @return array{body: list<array{slug: string, sheet: string}>, hair: list<array{slug: string, sheet: string}>, outfit: list<array{slug: string, sheet: string}>, head: list<array{slug: string, sheet: string}>}
+     */
+    public function getCreationChoices(): array
+    {
+        return [
+            'body' => $this->scanCategory('body'),
+            'hair' => $this->scanCategory('hair'),
+            'outfit' => $this->scanCategory('outfit'),
+            'head' => $this->scanCategory('head'),
+        ];
+    }
+
+    /**
      * @return list<string> All unique sheet URLs (body + hair + beard + facemark + gear) for preloading
      */
     public function getAllSheetUrls(): array
