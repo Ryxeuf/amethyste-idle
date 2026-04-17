@@ -19,6 +19,7 @@ use App\GameEngine\World\GameTimeService;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
+use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -40,6 +41,7 @@ class MapApiController extends AbstractController
         private readonly TilesetRegistry $tilesetRegistry,
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly TownControlManager $townControlManager,
+        private readonly PlayerAvatarPayloadBuilder $avatarPayloadBuilder,
     ) {
     }
 
@@ -154,14 +156,24 @@ class MapApiController extends AbstractController
             if ($radius > 0 && (abs($ex - $px) > $radius || abs($ey - $py) > $radius)) {
                 continue;
             }
-            $players[] = [
+            $playerData = [
                 'id' => $p->getId(),
                 'name' => $p->getName(),
                 'x' => $ex,
                 'y' => $ey,
                 'self' => $p->getId() === $player->getId(),
                 'spriteKey' => 'player_default',
+                'renderMode' => 'legacy',
             ];
+
+            $avatarPayload = $this->avatarPayloadBuilder->buildForMapEntity($p);
+            if ($avatarPayload !== null) {
+                $playerData['renderMode'] = $avatarPayload['renderMode'];
+                $playerData['avatarHash'] = $avatarPayload['avatarHash'];
+                $playerData['avatar'] = $avatarPayload['avatar'];
+            }
+
+            $players[] = $playerData;
         }
 
         $timeOfDay = $this->gameTimeService->getTimeOfDay();

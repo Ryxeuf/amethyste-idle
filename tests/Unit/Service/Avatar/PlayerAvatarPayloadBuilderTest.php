@@ -172,6 +172,76 @@ class PlayerAvatarPayloadBuilderTest extends TestCase
         $this->assertSame('/assets/styles/images/avatar/facemark/scar_01.png', $layers[2]['sheet']);
     }
 
+    public function testBuildForMapEntityReturnsNullWhenNoAvatar(): void
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('hasAvatar')->willReturn(false);
+
+        $this->assertNull($this->builder->buildForMapEntity($player));
+    }
+
+    public function testBuildForMapEntityReturnsAppearanceLayersWithoutGear(): void
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('hasAvatar')->willReturn(true);
+        $player->method('getAvatarAppearance')->willReturn([
+            'body' => 'human_f_dark',
+            'hair' => 'long_02',
+            'hairColor' => '#c0392b',
+            'beard' => 'full_01',
+            'beardColor' => '#8b4513',
+            'faceMark' => 'scar_01',
+        ]);
+
+        $result = $this->builder->buildForMapEntity($player);
+
+        $this->assertNotNull($result);
+        $this->assertSame('avatar', $result['renderMode']);
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $result['avatarHash']);
+        $this->assertSame('/assets/styles/images/avatar/body/human_f_dark.png', $result['avatar']['baseSheet']);
+
+        $layers = $result['avatar']['layers'];
+        $this->assertCount(3, $layers);
+        $this->assertSame('/assets/styles/images/avatar/hair/long_02.png', $layers[0]['sheet']);
+        $this->assertSame(0xC0392B, $layers[0]['tint']);
+        $this->assertSame('/assets/styles/images/avatar/beard/full_01.png', $layers[1]['sheet']);
+        $this->assertSame(0x8B4513, $layers[1]['tint']);
+        $this->assertSame('/assets/styles/images/avatar/facemark/scar_01.png', $layers[2]['sheet']);
+    }
+
+    public function testBuildForMapEntityDoesNotCallGearHelper(): void
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('hasAvatar')->willReturn(true);
+        $player->method('getAvatarAppearance')->willReturn([
+            'body' => 'human_m_light',
+            'hair' => 'short_01',
+        ]);
+
+        $this->gearHelper->expects($this->never())->method('getEquippedGearByLocation');
+
+        $result = $this->builder->buildForMapEntity($player);
+
+        $this->assertNotNull($result);
+        $this->assertCount(1, $result['avatar']['layers']);
+    }
+
+    public function testBuildForMapEntityHashIsDeterministic(): void
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('hasAvatar')->willReturn(true);
+        $player->method('getAvatarAppearance')->willReturn([
+            'body' => 'human_m_light',
+            'hair' => 'short_01',
+            'hairColor' => '#d6b25e',
+        ]);
+
+        $result1 = $this->builder->buildForMapEntity($player);
+        $result2 = $this->builder->buildForMapEntity($player);
+
+        $this->assertSame($result1['avatarHash'], $result2['avatarHash']);
+    }
+
     public function testHashIsDeterministic(): void
     {
         $player = $this->createMock(Player::class);
