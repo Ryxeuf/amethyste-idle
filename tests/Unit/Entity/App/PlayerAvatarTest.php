@@ -70,6 +70,40 @@ class PlayerAvatarTest extends TestCase
         $this->assertSame($hash, $player->getAvatarHash());
     }
 
+    public function testSetAvatarHashTouchesUpdatedAtWhenChanged(): void
+    {
+        $player = new Player();
+        $this->assertNull($player->getAvatarUpdatedAt());
+
+        $player->setAvatarHash(hash('sha256', 'first'));
+
+        $firstUpdatedAt = $player->getAvatarUpdatedAt();
+        $this->assertInstanceOf(\DateTimeImmutable::class, $firstUpdatedAt);
+
+        usleep(1000);
+        $player->setAvatarHash(hash('sha256', 'second'));
+
+        $secondUpdatedAt = $player->getAvatarUpdatedAt();
+        $this->assertInstanceOf(\DateTimeImmutable::class, $secondUpdatedAt);
+        $this->assertGreaterThan($firstUpdatedAt, $secondUpdatedAt);
+    }
+
+    public function testSetAvatarHashDoesNotTouchUpdatedAtWhenUnchanged(): void
+    {
+        $hash = hash('sha256', 'stable');
+
+        $player = new Player();
+        $player->setAvatarHash($hash);
+
+        $firstUpdatedAt = $player->getAvatarUpdatedAt();
+        $this->assertNotNull($firstUpdatedAt);
+
+        usleep(1000);
+        $player->setAvatarHash($hash);
+
+        $this->assertSame($firstUpdatedAt, $player->getAvatarUpdatedAt());
+    }
+
     public function testAvatarVersionDefaultsToOne(): void
     {
         $player = new Player();

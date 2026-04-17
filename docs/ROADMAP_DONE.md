@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-03 — Organiser les assets avatar)
+> Derniere mise a jour : 2026-04-17 (AVT-28 — Recalcul automatique du hash avatar)
 
 ---
 
@@ -2300,3 +2300,11 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-28 — Recalcul automatique du hash avatar sur changement d'equipement (2026-04-17) ✅
+
+> Couple le cycle d'equipement joueur au pipeline avatar. Nouveau service `AvatarHashRecalculator` qui, via `PlayerAvatarPayloadBuilder`, recalcule le `avatarHash` du joueur apres chaque appel a `GearSetter::setGear` / `unsetGear`. La methode `Player::setAvatarHash` est rendue idempotente : elle ne touche `avatarUpdatedAt` que si la valeur change effectivement, ce qui permettra a un futur subscriber Mercure (AVT-29) de n'emettre que les vraies mises a jour. Premier jalon Sprint 9 (Phase 6 — Equipement visible & Mercure).
+- [x] Nouveau service `App\Service\Avatar\AvatarHashRecalculator` (build payload, compare, persist)
+- [x] `GearSetter::setGear` et `unsetGear` appellent le recalculateur apres `flush` (skipped si l'inventaire n'a pas de joueur)
+- [x] `Player::setAvatarHash` touche `avatarUpdatedAt` uniquement quand le hash change
+- [x] Tests unitaires : `AvatarHashRecalculatorTest` (5 cas), `GearSetterTest` (4 cas), `PlayerAvatarTest` etendu (change/no-op)

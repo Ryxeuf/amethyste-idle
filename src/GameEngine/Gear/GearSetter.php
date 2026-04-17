@@ -2,16 +2,21 @@
 
 namespace App\GameEngine\Gear;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Exception\ItemNotEquippedException;
 use App\Exception\ItemNotGearException;
 use App\Helper\GearHelper;
+use App\Service\Avatar\AvatarHashRecalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GearSetter
 {
-    public function __construct(private readonly GearHelper $gearHelper, private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly GearHelper $gearHelper,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly AvatarHashRecalculator $avatarHashRecalculator,
+    ) {
     }
 
     /**
@@ -33,6 +38,8 @@ class GearSetter
         $gear->setGear($this->gearHelper->getPlayerItemGearByLocation($location));
 
         $this->entityManager->flush();
+
+        $this->recalculateAvatarHashFor($gear);
     }
 
     /**
@@ -49,6 +56,17 @@ class GearSetter
 
         if ($flush) {
             $this->entityManager->flush();
+            $this->recalculateAvatarHashFor($gear);
+        }
+    }
+
+    private function recalculateAvatarHashFor(PlayerItem $gear): void
+    {
+        $inventory = $gear->getInventory();
+        $player = $inventory?->getPlayer();
+
+        if ($player instanceof Player) {
+            $this->avatarHashRecalculator->recalculate($player);
         }
     }
 }
