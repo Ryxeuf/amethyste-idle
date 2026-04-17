@@ -2301,6 +2301,14 @@
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
 
+### AVT-29 — Publication Mercure `map/avatar` quand le hash change (2026-04-17) ✅
+
+> Publie un event temps reel sur le topic `map/avatar` a chaque fois que l'avatar d'un joueur change effectivement (recalcul du hash). Nouveau service `App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher` injecte dans `AvatarHashRecalculator` : quand `recalculate()` detecte un nouveau hash, il persiste la valeur puis emet un Update Mercure contenant le `playerId`, le `mapId`, le nouveau `avatarHash`, le payload complet (`renderMode`, `avatar.baseSheet`, `avatar.layers`) et l'horodatage `avatarUpdatedAt`. Les clients subscrits (autres joueurs sur la carte) peuvent ainsi invalider leur cache de texture et recomposer le rendu du joueur en temps reel — integration client couverte par AVT-30.
+- [x] Nouveau service `App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher` (topic `map/avatar`, type `avatar_updated`)
+- [x] `AvatarHashRecalculator::recalculate()` appelle `publish()` uniquement quand le hash change, garantissant le no-op lors d'un recalcul equivalent
+- [x] Payload base sur `PlayerAvatarPayloadBuilder::buildForMapEntity()` pour coherence avec `/api/map/entities`
+- [x] Tests unitaires : `AvatarUpdatedPublisherTest` (null payload, publication complete) et `AvatarHashRecalculatorTest` etendu (expectations `publish` couvertes sur 4 scenarios)
+
 ### AVT-28 — Recalcul automatique du hash avatar sur changement d'equipement (2026-04-17) ✅
 
 > Couple le cycle d'equipement joueur au pipeline avatar. Nouveau service `AvatarHashRecalculator` qui, via `PlayerAvatarPayloadBuilder`, recalcule le `avatarHash` du joueur apres chaque appel a `GearSetter::setGear` / `unsetGear`. La methode `Player::setAvatarHash` est rendue idempotente : elle ne touche `avatarUpdatedAt` que si la valeur change effectivement, ce qui permettra a un futur subscriber Mercure (AVT-29) de n'emettre que les vraies mises a jour. Premier jalon Sprint 9 (Phase 6 — Equipement visible & Mercure).

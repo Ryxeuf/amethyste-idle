@@ -43,10 +43,10 @@
 - [x] Hook sur changement d'equipement dans `GearSetter::setGear`/`unsetGear` — appel direct du service `AvatarHashRecalculator`
 - [x] Recalcul `avatarHash` + `avatarUpdatedAt` — `Player::setAvatarHash` touche `avatarUpdatedAt` uniquement quand la valeur change
 
-### AVT-29 — Publication Mercure `player.avatar.updated` (M | ★★★)
+### ~~AVT-29 — Publication Mercure `player.avatar.updated` (M | ★★★)~~ ✅
 > Prerequis : ← AVT-28
-- [ ] Quand le hash change : publier le nouveau payload avatar
-- [ ] Le client invalide le cache et recompose la texture
+- [x] Quand le hash change : publier le nouveau payload avatar — nouveau service `App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher` (topic `map/avatar`, type `avatar_updated`), appele depuis `AvatarHashRecalculator::recalculate()` uniquement quand le hash change effectivement
+- [ ] Le client invalide le cache et recompose la texture — cote serveur pret, integration client couverte par AVT-30
 
 ### AVT-30 — Gestion cote client des updates Mercure (M | ★★)
 > Prerequis : ← AVT-20, AVT-29
