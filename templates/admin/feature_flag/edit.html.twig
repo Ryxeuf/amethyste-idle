@@ -1,0 +1,59 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Modifier "{{ flag.slug }}" - Admin{% endblock %}
+{% block page_title %}Feature flag : {{ flag.slug }}{% endblock %}
+
+{% block body %}
+    <div class="space-y-6">
+        {% include 'admin/feature_flag/_form.html.twig' %}
+
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 sm:p-6">
+            <h2 class="text-lg font-semibold text-gray-200 mb-1">Utilisateurs specifiques</h2>
+            <p class="text-sm text-gray-500 mb-4">
+                Le flag est actif pour ces utilisateurs meme quand il est desactive globalement.
+                {% if flag.enabled %}
+                    <span class="text-green-400">Actuellement actif pour tout le monde (global).</span>
+                {% endif %}
+            </p>
+
+            <form method="post" action="{{ path('admin_feature_flag_add_user', {id: flag.id}) }}" class="flex flex-wrap items-center gap-2 mb-6">
+                <input type="hidden" name="_token" value="{{ csrf_token('add_user' ~ flag.id) }}">
+                <input type="text" name="identifier" placeholder="Email ou username..." required
+                       class="flex-1 min-w-[200px] bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500">
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">+ Ajouter</button>
+            </form>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-800 text-gray-400">
+                            <th class="text-left px-3 py-2 font-medium">ID</th>
+                            <th class="text-left px-3 py-2 font-medium">Username</th>
+                            <th class="text-left px-3 py-2 font-medium">Email</th>
+                            <th class="text-right px-3 py-2 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800">
+                        {% for user in flag.users %}
+                            <tr class="hover:bg-gray-800 transition-colors">
+                                <td class="px-3 py-2 text-gray-500">{{ user.id }}</td>
+                                <td class="px-3 py-2 text-gray-200">{{ user.username ?? '-' }}</td>
+                                <td class="px-3 py-2 text-gray-400">{{ user.email }}</td>
+                                <td class="px-3 py-2 text-right">
+                                    <form method="post" action="{{ path('admin_feature_flag_remove_user', {id: flag.id, userId: user.id}) }}" onsubmit="return confirm('Retirer cet utilisateur du flag ?');" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('remove_user' ~ flag.id ~ '_' ~ user.id) }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Retirer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="px-3 py-6 text-center text-gray-500">Aucun utilisateur specifique assigne.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Feature Flags - Admin{% endblock %}
+{% block page_title %}Feature Flags{% endblock %}
+
+{% block body %}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+        <form method="get" class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+            <input type="text" name="q" value="{{ search }}" placeholder="Rechercher (slug, nom)..."
+                   class="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-purple-500 w-full sm:w-64">
+            <select name="status" class="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500">
+                <option value="" {% if statusFilter == '' %}selected{% endif %}>Tous les statuts</option>
+                <option value="enabled" {% if statusFilter == 'enabled' %}selected{% endif %}>Actives globalement</option>
+                <option value="disabled" {% if statusFilter == 'disabled' %}selected{% endif %}>Desactives</option>
+            </select>
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">Filtrer</button>
+            {% if search or statusFilter %}
+                <a href="{{ path('admin_feature_flag_index') }}" class="text-gray-500 hover:text-gray-300 text-sm">Effacer</a>
+            {% endif %}
+        </form>
+        <a href="{{ path('admin_feature_flag_new') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap">+ Nouveau flag</a>
+    </div>
+
+    <div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-gray-800 text-gray-400">
+                        <th class="text-left px-4 py-3 font-medium">Slug</th>
+                        <th class="text-left px-4 py-3 font-medium">Nom</th>
+                        <th class="text-left px-4 py-3 font-medium">Statut global</th>
+                        <th class="text-left px-4 py-3 font-medium">Users</th>
+                        <th class="text-left px-4 py-3 font-medium">Mis a jour</th>
+                        <th class="text-right px-4 py-3 font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for flag in flags %}
+                        <tr class="hover:bg-gray-800 transition-colors">
+                            <td class="px-4 py-3 font-mono text-purple-300 whitespace-nowrap">{{ flag.slug }}</td>
+                            <td class="px-4 py-3 text-gray-200">{{ flag.name }}</td>
+                            <td class="px-4 py-3">
+                                {% if flag.enabled %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-green-900 text-green-300">Active</span>
+                                {% else %}
+                                    <span class="inline-flex px-2 py-0.5 text-xs rounded-full bg-gray-800 text-gray-400">Desactive</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-gray-400">{{ flag.users|length }}</td>
+                            <td class="px-4 py-3 text-gray-500 text-xs">{{ flag.updatedAt|date('Y-m-d H:i') }}</td>
+                            <td class="px-4 py-3 text-right">
+                                <div class="flex items-center justify-end gap-2">
+                                    <form method="post" action="{{ path('admin_feature_flag_toggle', {id: flag.id}) }}" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ flag.id) }}">
+                                        <button type="submit" class="{% if flag.enabled %}text-yellow-400 hover:text-yellow-300{% else %}text-green-400 hover:text-green-300{% endif %} text-sm">
+                                            {{ flag.enabled ? 'Desactiver' : 'Activer' }}
+                                        </button>
+                                    </form>
+                                    <a href="{{ path('admin_feature_flag_edit', {id: flag.id}) }}" class="text-purple-400 hover:text-purple-300 text-sm">Modifier</a>
+                                    <form method="post" action="{{ path('admin_feature_flag_delete', {id: flag.id}) }}" onsubmit="return confirm('Supprimer ce feature flag ?');" class="inline">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ flag.id) }}">
+                                        <button type="submit" class="text-red-400 hover:text-red-300 text-sm">Supprimer</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center text-gray-500">Aucun feature flag trouve.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if totalPages is defined and totalPages > 1 %}
+        {% include 'admin/_pagination.html.twig' %}
+    {% endif %}
+{% endblock %}
