@@ -48,10 +48,11 @@
 - [x] Instanciation apres chargement des textures
 - [x] Precharger les sheets avatar depuis `avatarCatalog`
 
-### AVT-20 — Remplacer `_createAnimator()` par `_createAnimatorForEntity()` (M | ★★★)
+### ~~AVT-20 — Remplacer `_createAnimator()` par `_createAnimatorForEntity()` (M | ★★★)~~ ✅
 > Prerequis : ← AVT-19
-- [ ] Si `entity.renderMode === 'avatar'` → pipeline composition
-- [ ] Sinon → pipeline legacy (spriteKey, inchange)
+- [x] Si `entity.renderMode === 'avatar'` → pipeline composition via `AvatarAnimatorFactory.createFromAvatarPayload`
+- [x] Sinon → pipeline legacy (spriteKey, inchange) via `_createAnimator`
+- [x] `_createEntitySprite` recoit desormais l'entite complete (renderMode, avatar, avatarHash inclus)
 
 ### AVT-21 — Gerer le joueur local (self) (S | ★★)
 > Prerequis : ← AVT-20

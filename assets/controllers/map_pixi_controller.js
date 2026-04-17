@@ -634,6 +634,28 @@ export default class extends Controller {
         });
     }
 
+    /**
+     * Dispatch animator creation between avatar and legacy pipelines.
+     * Players with renderMode === 'avatar' go through AvatarAnimatorFactory.
+     * Mobs, PNJs and legacy players fall back to spriteKey lookup.
+     */
+    _createAnimatorForEntity(entity) {
+        if (
+            entity
+            && entity.renderMode === 'avatar'
+            && entity.avatar
+            && this._avatarFactory
+        ) {
+            const animator = this._avatarFactory.createFromAvatarPayload(
+                entity.avatarHash || null,
+                entity.avatar,
+            );
+            if (animator) return animator;
+        }
+
+        return this._createAnimator(entity?.spriteKey);
+    }
+
     // --- Entity Rendering ---
 
     async _loadEntities() {
@@ -644,15 +666,15 @@ export default class extends Controller {
 
         for (const p of data.players) {
             if (p.self) continue;
-            this._createEntitySprite('player', p.id, p.x, p.y, p.spriteKey, p.name, { name: p.name, playerId: p.id });
+            this._createEntitySprite('player', p, p.name, { name: p.name, playerId: p.id });
         }
 
         for (const mob of data.mobs) {
-            this._createEntitySprite('mob', mob.id, mob.x, mob.y, mob.spriteKey, 'M', { name: mob.name, level: mob.level, isWorldBoss: mob.isWorldBoss || false });
+            this._createEntitySprite('mob', mob, 'M', { name: mob.name, level: mob.level, isWorldBoss: mob.isWorldBoss || false });
         }
 
         for (const pnj of data.pnjs) {
-            this._createEntitySprite('pnj', pnj.id, pnj.x, pnj.y, pnj.spriteKey, pnj.name?.[0] ?? 'N', { name: pnj.name, questIndicator: pnj.questIndicator });
+            this._createEntitySprite('pnj', pnj, pnj.name?.[0] ?? 'N', { name: pnj.name, questIndicator: pnj.questIndicator });
         }
 
         for (const portal of (data.portals || [])) {
@@ -669,9 +691,10 @@ export default class extends Controller {
         this._createPlayerMarker();
     }
 
-    _createEntitySprite(type, id, x, y, spriteKey, label, meta = {}) {
+    _createEntitySprite(type, entity, label, meta = {}) {
+        const { id, x, y } = entity;
         const key = `${type}_${id}`;
-        const animator = this._createAnimator(spriteKey);
+        const animator = this._createAnimatorForEntity(entity);
 
         const container = this._acquireEntityContainer();
 

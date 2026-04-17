@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-19 — Instancier AvatarAnimatorFactory dans le map controller)
+> Derniere mise a jour : 2026-04-17 (AVT-20 — Dispatch avatar/legacy dans le map controller)
 
 ---
 
@@ -2269,3 +2269,11 @@
 - [x] Import et instanciation de `AvatarAnimatorFactory` dans `map_pixi_controller.js`
 - [x] Préchargement des sheets avatar depuis `avatarCatalog` (config API)
 - [x] Nettoyage du cache avatar dans `disconnect()`
+
+### AVT-20 — Dispatch avatar/legacy via `_createAnimatorForEntity()` (2026-04-17) ✅
+
+> Le controller PixiJS dispatche desormais la creation d'animator entre le pipeline avatar (joueurs avec `renderMode === 'avatar'` + `avatar` payload + `avatarHash`) et le pipeline legacy (mobs, PNJ, joueurs sans avatar). `_createEntitySprite` recoit l'entite complete au lieu du seul `spriteKey`, ce qui permet d'inspecter `renderMode` et de choisir la branche appropriee. Les mobs et PNJ conservent strictement le chemin legacy.
+- [x] Nouvelle methode `_createAnimatorForEntity(entity)` : dispatch renderMode avatar vs legacy
+- [x] `_createEntitySprite(type, entity, label, meta)` : signature simplifiee, prend l'entite complete
+- [x] `_loadEntities` passe l'entite brute (avec renderMode, avatar, avatarHash) au lieu de champs individuels
+- [x] Fallback legacy automatique si la composition avatar echoue (factory absente, payload invalide)
