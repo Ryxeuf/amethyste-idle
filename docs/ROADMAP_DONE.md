@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-17 — Enrichir /api/map/entities avec avatar)
+> Derniere mise a jour : 2026-04-17 (AVT-18 — Enrichir /api/map/config avec avatarCatalog)
 
 ---
 
@@ -2254,3 +2254,11 @@
 - [x] Conservation de `spriteKey: 'player_default'` en fallback pour le pipeline legacy
 - [x] Methode `buildForMapEntity()` : payload d'apparence sans gear (evite la dependance session GearHelper)
 - [x] Tests unitaires : 4 nouveaux cas (no avatar, layers sans gear, pas d'appel GearHelper, determinisme hash)
+
+### AVT-18 — Enrichir `/api/map/config` avec avatarCatalog (2026-04-17) ✅
+
+> L'endpoint `/api/map/config` expose desormais un `avatarCatalog` structuré par catégorie (body, hair, beard, facemark, gear) listant toutes les sheets avatar disponibles pour le préchargement côté client. Le catalogue scanne dynamiquement le répertoire `assets/styles/images/avatar/` et requête les items avec `avatarSheet` en base.
+- [x] Service `AvatarCatalogProvider` : scan filesystem par catégorie + requête items avec avatarSheet
+- [x] Méthode `getAllSheetUrls()` : liste aplatie de toutes les URLs pour préchargement PixiJS
+- [x] Injection dans `MapApiController::config()` et ajout de `avatarCatalog` à la réponse JSON
+- [x] Tests unitaires `AvatarCatalogProviderTest` : 5 cas (catégories, scan body, répertoires manquants, gear sheets, flatten URLs)

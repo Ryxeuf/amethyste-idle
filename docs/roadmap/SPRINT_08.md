@@ -35,9 +35,9 @@
 - [x] Joueurs : ajouter `renderMode`, `avatarHash`, `avatar` (baseSheet + layers)
 - [x] Conserver `spriteKey` en fallback (`renderMode: 'legacy'` si pas d'avatar)
 
-### AVT-18 — Enrichir `/api/map/config` (S | ★★)
+### ~~AVT-18 — Enrichir `/api/map/config` (S | ★★)~~ ✅
 > Prerequis : ← AVT-16
-- [ ] Ajouter `avatarCatalog` : liste des sheets avatar a precharger
+- [x] Ajouter `avatarCatalog` : liste des sheets avatar a precharger
 
 ---
 

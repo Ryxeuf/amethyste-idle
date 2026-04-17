@@ -19,6 +19,7 @@ use App\GameEngine\World\GameTimeService;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
+use App\Service\Avatar\AvatarCatalogProvider;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,6 +43,7 @@ class MapApiController extends AbstractController
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly TownControlManager $townControlManager,
         private readonly PlayerAvatarPayloadBuilder $avatarPayloadBuilder,
+        private readonly AvatarCatalogProvider $avatarCatalogProvider,
     ) {
     }
 
@@ -66,6 +68,7 @@ class MapApiController extends AbstractController
             'mapId' => $map->getId(),
             'tilesets' => $tilesets,
             'sprites' => $this->spriteConfigProvider->getFullConfig(),
+            'avatarCatalog' => $this->avatarCatalogProvider->getCatalog(),
             'weather' => [
                 'type' => $weather->value,
                 'label' => $weather->label(),
