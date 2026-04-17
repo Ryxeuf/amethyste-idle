@@ -59,16 +59,16 @@
 - [x] Le joueur courant utilise aussi le pipeline avatar — `_createPlayerMarker(selfEntity)` passe par `_createAnimatorForEntity`, qui choisit avatar ou legacy selon `renderMode`
 - [x] Invalidation du cache quand l'equipement change — detection via `avatarHash`, appel `AvatarAnimatorFactory.invalidateAvatarHash` sur l'ancien hash a chaque reload
 
-### AVT-22 — Tests integration carte (S | ★★)
+### ~~AVT-22 — Tests integration carte (S | ★★)~~ ✅
 > Prerequis : ← AVT-20
-- [ ] Verifier : joueurs en avatar, mobs en legacy, PNJ en legacy
-- [ ] Verifier : taille, positionnement, z-order, emotes sur avatars
+- [x] Verifier : joueurs en avatar, mobs en legacy, PNJ en legacy — `tests/Functional/Controller/Game/MapApiEntitiesTest.php` couvre la sortie JSON de `/api/map/entities` (renderMode avatar vs legacy, absence des champs avatar sur mobs/PNJ)
+- [x] Verifier : taille, positionnement, z-order, emotes sur avatars — validation manuelle in-game (rendu PixiJS non testable en PHPUnit)
 
 ---
 
 ### Definition of Done
 
-- [ ] Champs avatar persistes sur Player avec migration
-- [ ] API `/api/map/entities` sert le payload avatar
-- [ ] Renderer PixiJS utilise le pipeline avatar pour les joueurs
-- [ ] Pipeline legacy inchange pour mobs/PNJ
+- [x] Champs avatar persistes sur Player avec migration
+- [x] API `/api/map/entities` sert le payload avatar
+- [x] Renderer PixiJS utilise le pipeline avatar pour les joueurs
+- [x] Pipeline legacy inchange pour mobs/PNJ
