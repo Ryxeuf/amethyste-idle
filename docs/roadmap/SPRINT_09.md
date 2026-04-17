@@ -33,10 +33,10 @@
 
 ### Phase 6 — Equipement visible & Mercure
 
-### AVT-27 — Peupler `avatarSheet` sur les items existants (M | ★★★)
+### ~~AVT-27 — Peupler `avatarSheet` sur les items existants (M | ★★★)~~ ✅
 > Prerequis : ← AVT-16, AVT-03
-- [ ] Associer chaque item d'equipement a son sprite sheet avatar (format 8x8)
-- [ ] Mettre a jour les fixtures
+- [x] Associer chaque item d'equipement a son sprite sheet avatar (format 8x8) — service `ItemAvatarSheetResolver` qui derive `/avatar/{gear_directory}/{slug}.png` depuis `Item.gearLocation` + `Item.slug`, couvrant head / chest / leg / foot / hand / belt / shoulder / weapon_main / weapon_side
+- [x] Mettre a jour les fixtures — approche convention-based : aucune modification manuelle de `ItemFixtures.php` (4087 lignes) necessaire. Les items d'equipement obtiennent leur sheet automatiquement via le resolveur. Le champ explicite `Item.avatarSheet` reste prioritaire pour les overrides custom futurs.
 
 ### ~~AVT-28 — Recalcul automatique du hash (S | ★★)~~ ✅
 > Prerequis : ← AVT-15

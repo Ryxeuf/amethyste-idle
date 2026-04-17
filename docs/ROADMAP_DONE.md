@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-28 — Recalcul automatique du hash avatar)
+> Derniere mise a jour : 2026-04-17 (AVT-27 — Resolveur convention-based pour `avatarSheet`)
 
 ---
 
@@ -2308,3 +2308,11 @@
 - [x] `GearSetter::setGear` et `unsetGear` appellent le recalculateur apres `flush` (skipped si l'inventaire n'a pas de joueur)
 - [x] `Player::setAvatarHash` touche `avatarUpdatedAt` uniquement quand le hash change
 - [x] Tests unitaires : `AvatarHashRecalculatorTest` (5 cas), `GearSetterTest` (4 cas), `PlayerAvatarTest` etendu (change/no-op)
+
+### AVT-27 — Resolveur convention-based pour `avatarSheet` (2026-04-17) ✅
+
+> Associe automatiquement chaque item d'equipement a son sprite sheet avatar (format 8x8) sans modifier la fixture `ItemFixtures.php` (4087 lignes). Le nouveau service `App\Service\Avatar\ItemAvatarSheetResolver` derive le chemin `/{avatar_base}/{gear_directory}/{slug}.png` depuis `Item.gearLocation` + `Item.slug`. Le champ explicite `Item.avatarSheet` reste prioritaire pour permettre des overrides custom. `PlayerAvatarPayloadBuilder::getGearLayer()` passe desormais par le resolveur au lieu d'appeler `getAvatarSheet()` directement, ce qui active instantanement l'affichage des layers d'equipement pour tous les items existants des que les sheets 8x8 sont livrees.
+- [x] `src/Service/Avatar/ItemAvatarSheetResolver.php` : mapping `gearLocation → directory` (head, chest, leg, foot, hand, belt, shoulder, weapon_main, weapon_side)
+- [x] `PlayerAvatarPayloadBuilder` injecte le resolveur et l'utilise dans `getGearLayer()`
+- [x] `tests/Unit/Service/Avatar/ItemAvatarSheetResolverTest.php` : 9 cas (override explicite, chaine vide fallback, 9 locations visibles via dataProvider, 3 locations non-visibles neck/ring, item non-gear, gear sans location, gear avec slug vide)
+- [x] `tests/Unit/Service/Avatar/PlayerAvatarPayloadBuilderTest.php` adapte pour injecter le resolveur
