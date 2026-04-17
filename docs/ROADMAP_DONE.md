@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-22 — Tests integration carte avatar/legacy)
+> Derniere mise a jour : 2026-04-17 (AVT-03 — Organiser les assets avatar)
 
 ---
 
@@ -2293,3 +2293,10 @@
 - [x] Isolation manuelle : restauration de l'avatar d'origine en `tearDown()` (pas de transaction auto)
 - [x] Skip gracieux si fixtures absentes ou rayon sans mobs/PNJ
 - [x] Validation rendu visuel (taille, z-order, emotes) : verification manuelle in-game (non testable en PHPUnit, relève du pipeline PixiJS)
+
+### AVT-03 — Organiser les assets dans le projet (2026-04-17) ✅
+
+> Creation de la structure d'accueil des sheets avatar 8x8 sous `assets/styles/images/avatar/{body,hair,outfit,head}/` avec `.gitkeep` pour le tracking git, et README documentant le format requis (512x512, 8x8, RGBA), la convention de nommage `{categorie}_{style}_{variante}.png`, le z-order de composition (body → outfit → hair → head_gear) et les regles d'alignement pixel-perfect. Debloque AVT-23 (formulaire creation), AVT-27 (avatarSheet sur items) et permet de demarrer AVT-04 des qu'un asset reel est fourni.
+- [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
+- [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
+- [x] Convention de nommage et z-order documentes a la racine du repertoire
