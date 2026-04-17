@@ -621,7 +621,12 @@ class Player implements CharacterInterface
 
     public function setAvatarHash(?string $avatarHash): void
     {
+        if ($this->avatarHash === $avatarHash) {
+            return;
+        }
+
         $this->avatarHash = $avatarHash;
+        $this->avatarUpdatedAt = new \DateTimeImmutable();
     }
 
     public function getAvatarVersion(): int

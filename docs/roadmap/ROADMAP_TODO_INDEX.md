@@ -48,7 +48,7 @@
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
 | **Sprint 7** | Avatar: Fondations | 11/12 | Moyenne | En cours |
 | **Sprint 8** | Avatar: Backend & Carte | 10/10 | Moyenne | ✅ **Termine** |
-| **Sprint 9** | Avatar: Personnage & Equipement | 8 | Moyenne | A venir |
+| **Sprint 9** | Avatar: Personnage & Equipement | 1/8 | Moyenne | En cours |
 | **Sprint 10** | Avatar: Polish & Animations | 8 | Basse | A venir |
 | **Sprint 11** | Monde vivant | 6 | Basse | A venir |
 | **Sprint 12** | Technique & i18n | 2 | Basse | A venir |

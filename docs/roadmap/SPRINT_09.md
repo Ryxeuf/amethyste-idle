@@ -38,10 +38,10 @@
 - [ ] Associer chaque item d'equipement a son sprite sheet avatar (format 8x8)
 - [ ] Mettre a jour les fixtures
 
-### AVT-28 — Recalcul automatique du hash (S | ★★)
+### ~~AVT-28 — Recalcul automatique du hash (S | ★★)~~ ✅
 > Prerequis : ← AVT-15
-- [ ] EventSubscriber sur changement d'equipement
-- [ ] Recalcul `avatarHash` + `avatarUpdatedAt`
+- [x] Hook sur changement d'equipement dans `GearSetter::setGear`/`unsetGear` — appel direct du service `AvatarHashRecalculator`
+- [x] Recalcul `avatarHash` + `avatarUpdatedAt` — `Player::setAvatarHash` touche `avatarUpdatedAt` uniquement quand la valeur change
 
 ### AVT-29 — Publication Mercure `player.avatar.updated` (M | ★★★)
 > Prerequis : ← AVT-28
