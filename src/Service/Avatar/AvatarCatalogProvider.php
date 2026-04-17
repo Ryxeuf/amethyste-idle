@@ -12,7 +12,6 @@ final class AvatarCatalogProvider
 {
     private const AVATAR_DIR = 'styles/images/avatar';
     private const CATEGORIES = ['body', 'hair', 'beard', 'facemark'];
-    private const CREATION_CATEGORIES = ['body', 'hair', 'outfit', 'head'];
 
     public function __construct(
         private readonly Packages $packages,
@@ -44,14 +43,12 @@ final class AvatarCatalogProvider
      */
     public function getCreationChoices(): array
     {
-        $choices = [];
-
-        foreach (self::CREATION_CATEGORIES as $category) {
-            $choices[$category] = $this->scanCategory($category);
-        }
-
-        /** @var array{body: list<array{slug: string, sheet: string}>, hair: list<array{slug: string, sheet: string}>, outfit: list<array{slug: string, sheet: string}>, head: list<array{slug: string, sheet: string}>} $choices */
-        return $choices;
+        return [
+            'body' => $this->scanCategory('body'),
+            'hair' => $this->scanCategory('hair'),
+            'outfit' => $this->scanCategory('outfit'),
+            'head' => $this->scanCategory('head'),
+        ];
     }
 
     /**
