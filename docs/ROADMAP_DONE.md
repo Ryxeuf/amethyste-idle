@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-20 — Dispatch avatar/legacy dans le map controller)
+> Derniere mise a jour : 2026-04-17 (AVT-21 — Joueur local via pipeline avatar + invalidation cache)
 
 ---
 
@@ -2277,3 +2277,11 @@
 - [x] `_createEntitySprite(type, entity, label, meta)` : signature simplifiee, prend l'entite complete
 - [x] `_loadEntities` passe l'entite brute (avec renderMode, avatar, avatarHash) au lieu de champs individuels
 - [x] Fallback legacy automatique si la composition avatar echoue (factory absente, payload invalide)
+
+### AVT-21 — Gerer le joueur local (self) via le pipeline avatar (2026-04-17) ✅
+
+> Le joueur courant (self) utilise desormais le meme pipeline de rendu que les autres joueurs. `_loadEntities` capture l'entite self (au lieu de la skipper simplement) et la transmet a `_createPlayerMarker(selfEntity)`, qui delegue au dispatcher `_createAnimatorForEntity` pour choisir avatar ou legacy selon `renderMode`. La detection du changement d'equipement (nouveau `avatarHash`) invalide l'ancienne entree LRU du cache de texture composite, evitant que la version stale reste en memoire. Si aucune entite self n'est fournie (init initial), le fallback `player_default` reste en place.
+- [x] `_loadEntities` capture le `selfEntity` et le passe a `_createPlayerMarker`
+- [x] `_createPlayerMarker(selfEntity = null)` appelle `_createAnimatorForEntity(selfEntity)` si l'entite est fournie, sinon fallback legacy `player_default`
+- [x] Suivi de `_selfAvatarHash` entre reloads et appel `AvatarAnimatorFactory.invalidateAvatarHash(oldHash)` a chaque changement d'equipement detecte
+- [x] Reinitialisation de `_selfAvatarHash` dans `disconnect()`
