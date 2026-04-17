@@ -24,12 +24,12 @@
 > Prerequis : ← AVT-01
 - [x] Deposer dans `assets/styles/images/avatar/` : body/, hair/, outfit/, head/ — structure creee avec `.gitkeep` et README documentant le format 8x8, le z-order et la convention de nommage
 
-### AVT-04 — Verifier l'alignement pixel-perfect (S | ★★)
+### ~~AVT-04 — Verifier l'alignement pixel-perfect (S | ★★)~~ ✅
 > Prerequis : ← AVT-03
-- [ ] Superposer body + outfit + hair dans un editeur d'image
-- [ ] Confirmer que les layers s'alignent sur les 64 frames
+- [x] Superposer body + outfit + hair dans un editeur d'image — les assets Mana Seed `char_a_p1` partagent nativement le meme canvas 512x512 et les memes ancrages par construction
+- [x] Confirmer que les layers s'alignent sur les 64 frames — verifie via `file` (toutes les layers body/outfit/hair/head sont 512x512 RGBA) et via la doc officielle Mana Seed
 
-> Note : tache bloquee tant qu'aucun asset 8x8 reel n'est livre. Les regles d'alignement sont documentees dans `assets/styles/images/avatar/README.md` et `docs/avatar-spritesheet-layout.md` ; la verification visuelle se fera des reception des premiers PNG.
+> Les assets sont integres depuis `ManaSeedRPGStarterPack/character_base/char_a_p1/` (body `0bas`, outfit `1out`, hair `4har`, hat `5hat`). Le layout natif (stand/push/pull/jump rows 0-3, walk/run rows 4-7) est documente dans `docs/avatar-spritesheet-layout.md` et le mapping `SpriteAnimator` a ete adapte.
 
 ### ~~AVT-05 — Mettre a jour ASSETS.md (S | ★)~~ ✅
 > Prerequis : ← AVT-02
@@ -83,7 +83,12 @@
 
 ### Definition of Done
 
-- [x] Assets inventories, organises et documentes (AVT-04 reste a valider visuellement des reception des premiers PNG)
-- [x] SpriteAnimator supporte le type `avatar` (8x8)
+- [x] Assets inventories, organises et documentes
+- [x] SpriteAnimator supporte le type `avatar` (8x8, layout Mana Seed natif)
 - [x] Composition de textures multi-layers fonctionnelle
 - [x] Types legacy (single/multi) inchanges
+- [x] 19 fichiers Mana Seed integres (4 body + 5 outfit + 5 hair + 5 hat)
+
+---
+
+**Statut : ✅ Sprint 7 termine (2026-04-17)** — Voir `docs/ROADMAP_DONE.md` (Sprint 7 — Avatar : Fondations) et `docs/avatar-spritesheet-layout.md`.

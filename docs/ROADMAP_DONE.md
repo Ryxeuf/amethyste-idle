@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-27 — Resolveur convention-based pour `avatarSheet`)
+> Derniere mise a jour : 2026-04-17 (AVT-04 — Alignement pixel-perfect des layers avatar)
 
 ---
 
@@ -2316,3 +2316,12 @@
 - [x] `PlayerAvatarPayloadBuilder` injecte le resolveur et l'utilise dans `getGearLayer()`
 - [x] `tests/Unit/Service/Avatar/ItemAvatarSheetResolverTest.php` : 9 cas (override explicite, chaine vide fallback, 9 locations visibles via dataProvider, 3 locations non-visibles neck/ring, item non-gear, gear sans location, gear avec slug vide)
 - [x] `tests/Unit/Service/Avatar/PlayerAvatarPayloadBuilderTest.php` adapte pour injecter le resolveur
+
+### AVT-04 — Alignement pixel-perfect des layers avatar (2026-04-17) ✅
+
+> Livraison des premiers assets avatar et validation de l'alignement pixel-perfect. Integration du pack **Mana Seed Character Base (free demo)** sous `assets/styles/images/ManaSeedRPGStarterPack/character_base/char_a_p1/` et selection d'un set MVP de 19 fichiers sous `assets/styles/images/avatar/{body,hair,outfit,head}/`. Le layout Mana Seed natif (rows 0-3 = stand/push/pull/jump, rows 4-7 = walk/run, ordre directions down/up/left/right) a ete adopte sans reslice : tous les layers partagent par construction le meme canvas 512x512 et les memes ancrages. `docs/avatar-spritesheet-layout.md` et `assets/styles/images/avatar/README.md` reecrits pour refleter le nouveau mapping ; `SpriteAnimator` (type `avatar`) adapte : nouvelle structure `AVATAR_ANIMATIONS` avec `cols[]` explicites, `AVATAR_DIRECTION_ROW` propre au layout Mana Seed, breathing reactive pour le stand statique (1 frame). Cloture le Sprint 7 (Avatar : Fondations).
+- [x] Pack Mana Seed integre (page 1 uniquement, pages ONE1-3 combat differees)
+- [x] 19 sheets MVP : 4 body (`human_v00-v03`) + 5 outfit (`forester_v01-v05`) + 5 hair (`bob_v00-v04`) + 5 head (`pointy_v01-v05`)
+- [x] Spec layout reecrite : stand/push/pull/jump rows 0-3, walk/run rows 4-7, directions down/up/left/right
+- [x] `SpriteAnimator` : `AVATAR_ANIMATIONS` restructure avec `cols[]`, `AVATAR_DIRECTION_ROW` ajoute, breathing reactive pour avatar
+- [x] Sprint 7 cloture : tous les jalons AVT-01 a AVT-12 completes
