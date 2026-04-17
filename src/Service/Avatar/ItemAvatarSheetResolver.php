@@ -47,7 +47,7 @@ final class ItemAvatarSheetResolver
         }
 
         $slug = $item->getSlug();
-        if ($slug === null || $slug === '') {
+        if ($slug === '') {
             return null;
         }
 
