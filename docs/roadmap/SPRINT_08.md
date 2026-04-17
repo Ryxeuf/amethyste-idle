@@ -43,10 +43,10 @@
 
 ### Phase 4 — Integration dans le renderer map
 
-### AVT-19 — Instancier AvatarAnimatorFactory dans le map controller (M | ★★★)
+### ~~AVT-19 — Instancier AvatarAnimatorFactory dans le map controller (M | ★★★)~~ ✅
 > Prerequis : ← AVT-12, AVT-17
-- [ ] Instanciation apres chargement des textures
-- [ ] Precharger les sheets avatar depuis `avatarCatalog`
+- [x] Instanciation apres chargement des textures
+- [x] Precharger les sheets avatar depuis `avatarCatalog`
 
 ### AVT-20 — Remplacer `_createAnimator()` par `_createAnimatorForEntity()` (M | ★★★)
 > Prerequis : ← AVT-19

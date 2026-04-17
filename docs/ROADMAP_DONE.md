@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-18 — Enrichir /api/map/config avec avatarCatalog)
+> Derniere mise a jour : 2026-04-17 (AVT-19 — Instancier AvatarAnimatorFactory dans le map controller)
 
 ---
 
@@ -2262,3 +2262,10 @@
 - [x] Méthode `getAllSheetUrls()` : liste aplatie de toutes les URLs pour préchargement PixiJS
 - [x] Injection dans `MapApiController::config()` et ajout de `avatarCatalog` à la réponse JSON
 - [x] Tests unitaires `AvatarCatalogProviderTest` : 5 cas (catégories, scan body, répertoires manquants, gear sheets, flatten URLs)
+
+### AVT-19 — Instancier AvatarAnimatorFactory dans le map controller (2026-04-17) ✅
+
+> Le controller PixiJS de la carte instancie desormais `AvatarAnimatorFactory` après le chargement des textures. Les sheets avatar du catalogue (body, hair, beard, facemark, gear) sont préchargées au même titre que les sprites legacy. La factory est nettoyée proprement lors du `disconnect()`.
+- [x] Import et instanciation de `AvatarAnimatorFactory` dans `map_pixi_controller.js`
+- [x] Préchargement des sheets avatar depuis `avatarCatalog` (config API)
+- [x] Nettoyage du cache avatar dans `disconnect()`
