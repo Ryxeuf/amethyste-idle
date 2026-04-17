@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Service\Avatar;
 
 use App\Entity\App\Player;
+use App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class AvatarHashRecalculator
@@ -12,6 +13,7 @@ final class AvatarHashRecalculator
     public function __construct(
         private readonly PlayerAvatarPayloadBuilder $payloadBuilder,
         private readonly EntityManagerInterface $entityManager,
+        private readonly AvatarUpdatedPublisher $avatarUpdatedPublisher,
     ) {
     }
 
@@ -43,6 +45,8 @@ final class AvatarHashRecalculator
         $player->setAvatarHash($newHash);
         $this->entityManager->persist($player);
         $this->entityManager->flush();
+
+        $this->avatarUpdatedPublisher->publish($player);
 
         return true;
     }

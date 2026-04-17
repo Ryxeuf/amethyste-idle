@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Avatar;
 
 use App\Entity\App\Player;
+use App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher;
 use App\Helper\GearHelper;
 use App\Service\Avatar\AvatarHashGenerator;
 use App\Service\Avatar\AvatarHashRecalculator;
@@ -18,6 +19,7 @@ class AvatarHashRecalculatorTest extends TestCase
 {
     private GearHelper&MockObject $gearHelper;
     private EntityManagerInterface&MockObject $entityManager;
+    private AvatarUpdatedPublisher&MockObject $publisher;
     private AvatarHashRecalculator $recalculator;
     private PlayerAvatarPayloadBuilder $payloadBuilder;
 
@@ -25,12 +27,17 @@ class AvatarHashRecalculatorTest extends TestCase
     {
         $this->gearHelper = $this->createMock(GearHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->publisher = $this->createMock(AvatarUpdatedPublisher::class);
         $this->payloadBuilder = new PlayerAvatarPayloadBuilder(
             new AvatarHashGenerator(),
             $this->gearHelper,
             new ItemAvatarSheetResolver(),
         );
-        $this->recalculator = new AvatarHashRecalculator($this->payloadBuilder, $this->entityManager);
+        $this->recalculator = new AvatarHashRecalculator(
+            $this->payloadBuilder,
+            $this->entityManager,
+            $this->publisher,
+        );
     }
 
     public function testRecalculateReturnsFalseWhenPlayerHasNoAvatar(): void
@@ -38,6 +45,7 @@ class AvatarHashRecalculatorTest extends TestCase
         $player = new Player();
 
         $this->entityManager->expects($this->never())->method('flush');
+        $this->publisher->expects($this->never())->method('publish');
 
         $this->assertFalse($this->recalculator->recalculate($player));
     }
@@ -50,6 +58,7 @@ class AvatarHashRecalculatorTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist')->with($player);
         $this->entityManager->expects($this->once())->method('flush');
+        $this->publisher->expects($this->once())->method('publish')->with($player);
 
         $this->assertTrue($this->recalculator->recalculate($player));
         $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', (string) $player->getAvatarHash());
@@ -66,6 +75,7 @@ class AvatarHashRecalculatorTest extends TestCase
         $player->setAvatarHash($expected['avatarHash']);
 
         $this->entityManager->expects($this->never())->method('flush');
+        $this->publisher->expects($this->never())->method('publish');
 
         $this->assertFalse($this->recalculator->recalculate($player));
         $this->assertSame($expected['avatarHash'], $player->getAvatarHash());
@@ -82,6 +92,7 @@ class AvatarHashRecalculatorTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist')->with($player);
         $this->entityManager->expects($this->once())->method('flush');
+        $this->publisher->expects($this->once())->method('publish')->with($player);
 
         $this->assertTrue($this->recalculator->recalculate($player));
         $this->assertNotSame($oldHash, $player->getAvatarHash());

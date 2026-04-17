@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\GameEngine\Gear\GearSetter;
+use App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher;
 use App\Helper\GearHelper;
 use App\Service\Avatar\AvatarHashGenerator;
 use App\Service\Avatar\AvatarHashRecalculator;
@@ -36,6 +37,7 @@ class GearSetterTest extends TestCase
                 new ItemAvatarSheetResolver(),
             ),
             $this->entityManager,
+            $this->createMock(AvatarUpdatedPublisher::class),
         );
         $this->gearSetter = new GearSetter(
             $this->gearHelper,
