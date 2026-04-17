@@ -30,10 +30,10 @@
 - [x] Champ nullable string : chemin vers le sprite sheet du layer visuel de l'item
 - [x] Migration Doctrine
 
-### AVT-17 — Enrichir `/api/map/entities` (M | ★★★)
+### ~~AVT-17 — Enrichir `/api/map/entities` (M | ★★★)~~ ✅
 > Prerequis : ← AVT-15
-- [ ] Joueurs : ajouter `renderMode`, `avatarHash`, `avatar` (baseSheet + layers)
-- [ ] Conserver `spriteKey` en fallback (`renderMode: 'legacy'` si pas d'avatar)
+- [x] Joueurs : ajouter `renderMode`, `avatarHash`, `avatar` (baseSheet + layers)
+- [x] Conserver `spriteKey` en fallback (`renderMode: 'legacy'` si pas d'avatar)
 
 ### AVT-18 — Enrichir `/api/map/config` (S | ★★)
 > Prerequis : ← AVT-16

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-16 (AVT-15 — PlayerAvatarPayloadBuilder)
+> Derniere mise a jour : 2026-04-17 (AVT-17 — Enrichir /api/map/entities avec avatar)
 
 ---
 
@@ -2244,3 +2244,13 @@
 - [x] Integration `GearHelper::getEquippedGearByLocation()` + `Item::getAvatarSheet()` pour les layers d'equipement
 - [x] Conversion `hairColor`/`beardColor` hex → int tint pour le rendu PixiJS
 - [x] Tests unitaires `PlayerAvatarPayloadBuilderTest` : 7 cas couverts (no avatar, appearance, gear, gear sans sheet, ordre layers, beard/faceMark, determinisme hash)
+
+### AVT-17 — Enrichir `/api/map/entities` avec avatar (2026-04-17) ✅
+
+> L'endpoint `/api/map/entities` sert desormais les donnees avatar pour chaque joueur sur la carte. Les joueurs avec un avatar configuré recoivent `renderMode: 'avatar'`, `avatarHash` et le payload `avatar` (baseSheet + layers d'apparence). Les joueurs sans avatar gardent `renderMode: 'legacy'` avec `spriteKey` en fallback.
+- [x] Injection de `PlayerAvatarPayloadBuilder` dans `MapApiController`
+- [x] Ajout de `renderMode` sur chaque entite joueur (`'avatar'` ou `'legacy'`)
+- [x] Ajout de `avatarHash` et `avatar` (baseSheet + layers) pour les joueurs avec avatar
+- [x] Conservation de `spriteKey: 'player_default'` en fallback pour le pipeline legacy
+- [x] Methode `buildForMapEntity()` : payload d'apparence sans gear (evite la dependance session GearHelper)
+- [x] Tests unitaires : 4 nouveaux cas (no avatar, layers sans gear, pas d'appel GearHelper, determinisme hash)

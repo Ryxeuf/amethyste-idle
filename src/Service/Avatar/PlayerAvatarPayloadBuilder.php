@@ -59,6 +59,69 @@ final class PlayerAvatarPayloadBuilder
     }
 
     /**
+     * @return array{renderMode: string, avatarHash: string, avatar: array{baseSheet: string, layers: list<array{sheet: string, tint?: int}>}}|null
+     */
+    public function buildForMapEntity(Player $player): ?array
+    {
+        if (!$player->hasAvatar()) {
+            return null;
+        }
+
+        $appearance = $this->extractAppearance($player);
+        $layers = $this->buildAppearanceLayers($appearance);
+
+        $hash = $this->hashGenerator->generate(
+            $appearance,
+            array_map(
+                static fn (array $layer): string => $layer['sheet'],
+                $layers,
+            ),
+            'avatar-map-v1',
+        );
+
+        return [
+            'renderMode' => 'avatar',
+            'avatarHash' => $hash,
+            'avatar' => [
+                'baseSheet' => self::AVATAR_BASE_PATH . '/body/' . $appearance['body'] . '.png',
+                'layers' => $layers,
+            ],
+        ];
+    }
+
+    /**
+     * @param array{body: string, hair: string|null, hairColor: string|null, beard: string|null, beardColor: string|null, faceMark: string|null} $appearance
+     *
+     * @return list<array{sheet: string, tint?: int}>
+     */
+    private function buildAppearanceLayers(array $appearance): array
+    {
+        $layers = [];
+
+        if (!empty($appearance['hair'])) {
+            $layer = ['sheet' => self::AVATAR_BASE_PATH . '/hair/' . $appearance['hair'] . '.png'];
+            if (!empty($appearance['hairColor'])) {
+                $layer['tint'] = self::hexToInt($appearance['hairColor']);
+            }
+            $layers[] = $layer;
+        }
+
+        if (!empty($appearance['beard'])) {
+            $layer = ['sheet' => self::AVATAR_BASE_PATH . '/beard/' . $appearance['beard'] . '.png'];
+            if (!empty($appearance['beardColor'])) {
+                $layer['tint'] = self::hexToInt($appearance['beardColor']);
+            }
+            $layers[] = $layer;
+        }
+
+        if (!empty($appearance['faceMark'])) {
+            $layers[] = ['sheet' => self::AVATAR_BASE_PATH . '/facemark/' . $appearance['faceMark'] . '.png'];
+        }
+
+        return $layers;
+    }
+
+    /**
      * @return array{body: string, hair: string|null, hairColor: string|null, beard: string|null, beardColor: string|null, faceMark: string|null}
      */
     private function extractAppearance(Player $player): array
