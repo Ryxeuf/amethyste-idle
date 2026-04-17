@@ -161,7 +161,7 @@ class MapApiEntitiesTest extends WebTestCase
         $this->assertArrayHasKey('mobs', $data);
         $this->assertArrayHasKey('pnjs', $data);
 
-        /** @var array{players: list<array<string, mixed>>, mobs: list<array<string, mixed>>, pnjs: list<array<string, mixed>>} $data */
+        /* @var array{players: list<array<string, mixed>>, mobs: list<array<string, mixed>>, pnjs: list<array<string, mixed>>} $data */
         return $data;
     }
 
