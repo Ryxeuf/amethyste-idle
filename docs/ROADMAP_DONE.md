@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-21 — Joueur local via pipeline avatar + invalidation cache)
+> Derniere mise a jour : 2026-04-17 (AVT-22 — Tests integration carte avatar/legacy)
 
 ---
 
@@ -2285,3 +2285,11 @@
 - [x] `_createPlayerMarker(selfEntity = null)` appelle `_createAnimatorForEntity(selfEntity)` si l'entite est fournie, sinon fallback legacy `player_default`
 - [x] Suivi de `_selfAvatarHash` entre reloads et appel `AvatarAnimatorFactory.invalidateAvatarHash(oldHash)` a chaque changement d'equipement detecte
 - [x] Reinitialisation de `_selfAvatarHash` dans `disconnect()`
+
+### AVT-22 — Tests integration carte avatar/legacy (2026-04-17) ✅
+
+> Tests d'integration `WebTestCase` qui verifient le payload JSON de `/api/map/entities` : joueur avec avatar → `renderMode=avatar` + `avatarHash` + `avatar.baseSheet` + layers ; joueur sans avatar → `renderMode=legacy` + `spriteKey=player_default` ; mobs et PNJ → pipeline legacy strict (spriteKey seul, aucun champ avatar). Cloture le Sprint 8 (Avatar : Backend & Carte).
+- [x] `tests/Functional/Controller/Game/MapApiEntitiesTest.php` : 4 cas couverts (legacy player, avatar player, mobs legacy, PNJ legacy)
+- [x] Isolation manuelle : restauration de l'avatar d'origine en `tearDown()` (pas de transaction auto)
+- [x] Skip gracieux si fixtures absentes ou rayon sans mobs/PNJ
+- [x] Validation rendu visuel (taille, z-order, emotes) : verification manuelle in-game (non testable en PHPUnit, relève du pipeline PixiJS)

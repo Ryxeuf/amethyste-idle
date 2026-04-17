@@ -3,7 +3,7 @@
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
 > Derniere mise a jour : 2026-04-16
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 8/12 taches completees.
+> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 8/12 taches completees. Sprint 8 (Avatar : Backend & Carte) — 10/10 taches completees.
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---
@@ -47,14 +47,14 @@
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
 | **Sprint 7** | Avatar: Fondations | 10/12 | Moyenne | En cours |
-| **Sprint 8** | Avatar: Backend & Carte | 9/10 | Moyenne | En cours |
+| **Sprint 8** | Avatar: Backend & Carte | 10/10 | Moyenne | ✅ **Termine** |
 | **Sprint 9** | Avatar: Personnage & Equipement | 8 | Moyenne | A venir |
 | **Sprint 10** | Avatar: Polish & Animations | 8 | Basse | A venir |
 | **Sprint 11** | Monde vivant | 6 | Basse | A venir |
 | **Sprint 12** | Technique & i18n | 2 | Basse | A venir |
 
-**Total restant : 56 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
-**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3) et 6 (6) termines + Sprint 7 (6/12 en cours) = 26 taches completes / initial 66+
+**Total restant : 55 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
+**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6) et 8 (10) termines + Sprint 7 (10/12 en cours) = 40 taches completes / initial 66+
 
 ---
 
