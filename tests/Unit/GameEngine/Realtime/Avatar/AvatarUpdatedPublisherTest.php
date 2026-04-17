@@ -6,6 +6,9 @@ namespace App\Tests\Unit\GameEngine\Realtime\Avatar;
 
 use App\Entity\App\Player;
 use App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher;
+use App\Helper\GearHelper;
+use App\Service\Avatar\AvatarHashGenerator;
+use App\Service\Avatar\ItemAvatarSheetResolver;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -16,13 +19,22 @@ use Symfony\Component\Mercure\Update;
 class AvatarUpdatedPublisherTest extends TestCase
 {
     private HubInterface&MockObject $hub;
-    private PlayerAvatarPayloadBuilder&MockObject $payloadBuilder;
+    private GearHelper&MockObject $gearHelper;
+    private PlayerAvatarPayloadBuilder $payloadBuilder;
     private AvatarUpdatedPublisher $publisher;
 
     protected function setUp(): void
     {
         $this->hub = $this->createMock(HubInterface::class);
-        $this->payloadBuilder = $this->createMock(PlayerAvatarPayloadBuilder::class);
+        $this->gearHelper = $this->createMock(GearHelper::class);
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
+
+        $this->payloadBuilder = new PlayerAvatarPayloadBuilder(
+            new AvatarHashGenerator(),
+            $this->gearHelper,
+            new ItemAvatarSheetResolver(),
+        );
+
         $this->publisher = new AvatarUpdatedPublisher(
             $this->hub,
             $this->payloadBuilder,
@@ -30,11 +42,10 @@ class AvatarUpdatedPublisherTest extends TestCase
         );
     }
 
-    public function testPublishSkipsWhenPayloadIsNull(): void
+    public function testPublishSkipsWhenPlayerHasNoAvatar(): void
     {
         $player = new Player();
 
-        $this->payloadBuilder->method('buildForMapEntity')->with($player)->willReturn(null);
         $this->hub->expects($this->never())->method('publish');
 
         $this->publisher->publish($player);
@@ -46,17 +57,6 @@ class AvatarUpdatedPublisherTest extends TestCase
         $player->setAvatarAppearance(['body' => 'human_m_light']);
         $this->setPrivateId($player, 77);
 
-        $payload = [
-            'renderMode' => 'avatar',
-            'avatarHash' => str_repeat('a', 64),
-            'avatar' => [
-                'baseSheet' => '/assets/styles/images/avatar/body/human_m_light.png',
-                'layers' => [],
-            ],
-        ];
-
-        $this->payloadBuilder->method('buildForMapEntity')->with($player)->willReturn($payload);
-
         $this->hub->expects($this->once())
             ->method('publish')
             ->with($this->callback(function (Update $update): bool {
@@ -66,9 +66,10 @@ class AvatarUpdatedPublisherTest extends TestCase
                 return $data['topic'] === AvatarUpdatedPublisher::TOPIC
                     && $data['type'] === AvatarUpdatedPublisher::EVENT_TYPE
                     && $data['playerId'] === 77
-                    && $data['avatarHash'] === str_repeat('a', 64)
+                    && is_string($data['avatarHash'])
                     && $data['renderMode'] === 'avatar'
-                    && isset($data['avatar']['baseSheet']);
+                    && isset($data['avatar']['baseSheet'])
+                    && str_ends_with($data['avatar']['baseSheet'], 'human_m_light.png');
             }));
 
         $this->publisher->publish($player);

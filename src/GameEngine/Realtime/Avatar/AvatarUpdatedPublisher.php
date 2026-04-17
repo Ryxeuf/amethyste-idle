@@ -15,7 +15,7 @@ use Symfony\Component\Mercure\Update;
  * changes. Subscribers (other players on the map) invalidate their texture
  * cache for that player and recompose the avatar from the new payload.
  */
-final class AvatarUpdatedPublisher
+class AvatarUpdatedPublisher
 {
     public const TOPIC = 'map/avatar';
     public const EVENT_TYPE = 'avatar_updated';
