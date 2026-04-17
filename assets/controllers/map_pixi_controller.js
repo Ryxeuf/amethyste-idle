@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import * as PIXI from 'pixi.js';
 import SpriteAnimator, { directionFromDelta, EMOTE_TYPES } from '../lib/SpriteAnimator.js';
+import AvatarAnimatorFactory from '../lib/avatar/AvatarAnimatorFactory.js';
 
 export default class extends Controller {
     static values = {
@@ -55,6 +56,7 @@ export default class extends Controller {
         this._slowFrameCount = 0;
         this._frameCount = 0;
 
+        this._avatarFactory = null;
         this._playerAnimator = null;
         this._playerDirection = 'down';
         this._lastEntityLoadX = this.playerXValue;
@@ -174,6 +176,10 @@ export default class extends Controller {
         if (this._eventSource) {
             this._eventSource.close();
             this._eventSource = null;
+        }
+        if (this._avatarFactory) {
+            this._avatarFactory.clear();
+            this._avatarFactory = null;
         }
         if (this._playerAnimator) {
             this._playerAnimator.destroy();
@@ -408,7 +414,36 @@ export default class extends Controller {
             );
         }
 
+        // Preload avatar catalog sheets (body, hair, beard, facemark, gear)
+        const avatarCatalog = config.avatarCatalog || {};
+        const avatarSheets = new Set();
+        for (const category of ['body', 'hair', 'beard', 'facemark']) {
+            for (const entry of avatarCatalog[category] || []) {
+                if (entry.sheet) avatarSheets.add(entry.sheet);
+            }
+        }
+        for (const gearSheet of avatarCatalog.gear || []) {
+            if (gearSheet) avatarSheets.add(gearSheet);
+        }
+        for (const sheet of avatarSheets) {
+            if (!spriteSheets.has(sheet)) {
+                loadPromises.push(
+                    PIXI.Assets.load(sheet).then((texture) => {
+                        texture.source.scaleMode = 'nearest';
+                        this._spriteTextures[sheet] = texture;
+                    }).catch(() => {})
+                );
+            }
+        }
+
         await Promise.all(loadPromises);
+
+        // Instantiate avatar factory after all textures are loaded
+        this._avatarFactory = new AvatarAnimatorFactory({
+            renderer: this._app.renderer,
+            spriteConfig: this._spriteConfig,
+            spriteTextures: this._spriteTextures,
+        });
 
         // Build animated tile frame textures from config
         this._tileAnimations = config.tileAnimations || {};
