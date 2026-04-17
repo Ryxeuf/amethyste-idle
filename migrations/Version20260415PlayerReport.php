@@ -30,7 +30,7 @@ final class Version20260415PlayerReport extends AbstractMigration
                 created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
                 CONSTRAINT fk_player_report_reporter FOREIGN KEY (reporter_id) REFERENCES player(id) ON DELETE CASCADE,
                 CONSTRAINT fk_player_report_reported FOREIGN KEY (reported_player_id) REFERENCES player(id) ON DELETE CASCADE,
-                CONSTRAINT fk_player_report_reviewer FOREIGN KEY (reviewed_by_id) REFERENCES "user"(id) ON DELETE SET NULL
+                CONSTRAINT fk_player_report_reviewer FOREIGN KEY (reviewed_by_id) REFERENCES users(id) ON DELETE SET NULL
             )
         SQL);
 
