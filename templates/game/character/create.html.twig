@@ -2,6 +2,48 @@
 
 {% block title %}Créer un personnage{% endblock %}
 
+{% macro avatar_choice_group(field, label, required) %}
+    <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">
+            {{ label }}{% if required %} <span class="text-red-400">*</span>{% endif %}
+        </label>
+        {% if field|length > 0 %}
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {% for child in field %}
+                    <label for="{{ child.vars.id }}" class="relative cursor-pointer group">
+                        <input type="radio"
+                               id="{{ child.vars.id }}"
+                               name="{{ child.vars.full_name }}"
+                               value="{{ child.vars.value }}"
+                               class="sr-only peer"
+                               {{ child.vars.checked ? 'checked' : '' }}>
+                        <div class="p-1.5 rounded-lg border-2 border-gray-600 bg-gray-900 bg-opacity-50 transition-all duration-200
+                                    hover:border-gray-500 peer-checked:border-purple-500 peer-checked:bg-purple-900 peer-checked:bg-opacity-30">
+                            {% set sheet = child.vars.attr['data-sheet'] ?? null %}
+                            <div class="w-full aspect-square rounded bg-gray-950 overflow-hidden flex items-center justify-center">
+                                {% if sheet %}
+                                    <img src="{{ sheet }}"
+                                         alt="{{ child.vars.value }}"
+                                         class="w-12 h-12 object-none object-left-top"
+                                         style="image-rendering: pixelated; object-position: -128px -320px;">
+                                {% else %}
+                                    <span class="text-gray-600 text-xs">—</span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-1 text-center text-[11px] text-gray-400 truncate">{{ child.vars.value }}</div>
+                        </div>
+                    </label>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-sm text-gray-500 italic">Aucun choix disponible.</p>
+        {% endif %}
+        {% if field.vars.errors|length > 0 %}
+            <p class="mt-2 text-sm text-red-400">{{ field.vars.errors[0].message }}</p>
+        {% endif %}
+    </div>
+{% endmacro %}
+
 {% block body %}
 <div class="flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 py-12">
     <div class="w-full max-w-2xl">
@@ -46,6 +88,40 @@
                         {% if form.name.vars.errors|length > 0 %}
                             <p class="mt-1 text-sm text-red-400">{{ form.name.vars.errors[0].message }}</p>
                         {% endif %}
+                    </div>
+
+                    {# Apparence #}
+                    <div class="space-y-5 pt-2">
+                        <h2 class="text-lg font-semibold text-gray-200">Apparence</h2>
+
+                        {{ _self.avatar_choice_group(form.body, 'Corps', true) }}
+                        {{ _self.avatar_choice_group(form.hair, 'Coiffure', false) }}
+
+                        {# Couleur de cheveux #}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Couleur de cheveux</label>
+                            <div class="flex flex-wrap gap-2">
+                                {% for child in form.hairColor %}
+                                    <label for="{{ child.vars.id }}" class="relative cursor-pointer">
+                                        <input type="radio"
+                                               id="{{ child.vars.id }}"
+                                               name="{{ child.vars.full_name }}"
+                                               value="{{ child.vars.value }}"
+                                               class="sr-only peer"
+                                               {{ child.vars.checked ? 'checked' : '' }}>
+                                        <span class="block w-8 h-8 rounded-full border-2 border-gray-600 transition
+                                                     peer-checked:border-purple-400 peer-checked:ring-2 peer-checked:ring-purple-500 peer-checked:ring-offset-2 peer-checked:ring-offset-gray-800"
+                                              style="background-color: {{ child.vars.value }};"
+                                              title="{{ child.vars.label }}"></span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                            {% if form.hairColor.vars.errors|length > 0 %}
+                                <p class="mt-2 text-sm text-red-400">{{ form.hairColor.vars.errors[0].message }}</p>
+                            {% endif %}
+                        </div>
+
+                        {{ _self.avatar_choice_group(form.outfit, 'Tenue de depart', false) }}
                     </div>
 
                     {# Choix de la race #}

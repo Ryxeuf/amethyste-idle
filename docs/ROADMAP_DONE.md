@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-04 — Alignement pixel-perfect des layers avatar)
+> Derniere mise a jour : 2026-04-17 (AVT-23 — Champs d'apparence dans le formulaire de creation)
 
 ---
 
@@ -2300,6 +2300,15 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-23 — Champs d'apparence dans le formulaire de creation de personnage (2026-04-17) ✅
+
+> Ajoute les choix d'apparence a l'ecran de creation de personnage : body (skin tone), hair, hairColor et outfit de depart. Les listes body/hair/outfit/head sont alimentees dynamiquement depuis les sheets Mana Seed deposees dans `assets/styles/images/avatar/` via la nouvelle methode `AvatarCatalogProvider::getCreationChoices()`. Le `CharacterCreateType` expose chaque choix en `ChoiceType` expanded + une palette de 6 couleurs hex pour `hairColor`, et chaque option porte un attribut HTML `data-sheet` pointant vers l'asset — prerequis consommable par le futur controleur de preview temps reel (AVT-24) et par la persistance `avatarAppearance` a la creation (AVT-25). Debloque AVT-24, AVT-25, AVT-26.
+- [x] `AvatarCatalogProvider::getCreationChoices()` scanne les 4 categories (body, hair, outfit, head) via la routine existante `scanCategory()`, renvoie `{slug, sheet}` pour chaque entree
+- [x] `CharacterCreateType` etendu : 4 champs `ChoiceType` expanded (body/hair/outfit/head) + palette `HAIR_COLORS` (Blond, Chatain, Brun, Noir, Roux, Argent) synchronisee avec le tint applique par `PlayerAvatarPayloadBuilder`
+- [x] Attribut `data-sheet` propage via `choice_attr` sur chaque option pour permettre au futur `character_creator_controller.js` (AVT-24) de composer la preview sans requete supplementaire
+- [x] Template `game/character/create.html.twig` : macro `avatar_choice_group` (grille responsive 3-4 cols, preview 12x12 pixelated, etat `peer-checked`) + bloc dedie pour la palette hairColor (pastilles colorees)
+- [x] Tests unitaires `AvatarCatalogProviderTest` : couvre les 4 categories, le scan outfit/head avec deux variantes, la robustesse quand les repertoires sont vides
 
 ### AVT-29 — Publication Mercure `map/avatar` quand le hash change (2026-04-17) ✅
 

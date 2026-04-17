@@ -9,10 +9,11 @@
 
 ### Phase 5 — Ecran de creation de personnage
 
-### AVT-23 — Ajouter les champs d'apparence au formulaire (M | ★★★)
+### ~~AVT-23 — Ajouter les champs d'apparence au formulaire (M | ★★★)~~ ✅
 > Prerequis : ← AVT-13
-- [ ] `CharacterCreateType` : choix body (genre x skin tone), hair, hairColor, outfit de depart
-- [ ] Liste des choix alimentee depuis les assets disponibles dans `avatar/`
+- [x] `CharacterCreateType` : choix body (skin tone), hair, hairColor, outfit de depart — 4 champs `ChoiceType` expanded + palette hairColor hex de 6 tons
+- [x] Liste des choix alimentee depuis les assets disponibles dans `avatar/` — nouvelle methode `AvatarCatalogProvider::getCreationChoices()` qui scanne body/hair/outfit/head
+- [x] Preview sprite `data-sheet` exposee sur chaque option via `choice_attr` (consommable par le futur `character_creator_controller.js` — AVT-24)
 
 ### AVT-24 — Preview temps reel (L | ★★★)
 > Prerequis : ← AVT-10, AVT-23
