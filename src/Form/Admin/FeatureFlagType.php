@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 
+/**
+ * @extends AbstractType<FeatureFlag>
+ */
 class FeatureFlagType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
