@@ -48,13 +48,13 @@
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
 | **Sprint 7** | Avatar: Fondations | 11/12 | Moyenne | En cours |
 | **Sprint 8** | Avatar: Backend & Carte | 10/10 | Moyenne | ✅ **Termine** |
-| **Sprint 9** | Avatar: Personnage & Equipement | 3/8 | Moyenne | En cours |
+| **Sprint 9** | Avatar: Personnage & Equipement | 4/8 | Moyenne | En cours |
 | **Sprint 10** | Avatar: Polish & Animations | 8 | Basse | A venir |
 | **Sprint 11** | Monde vivant | 6 | Basse | A venir |
 | **Sprint 12** | Technique & i18n | 2 | Basse | A venir |
 
-**Total restant : 51 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
-**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6) et 8 (10) termines + Sprint 7 (11/12 en cours) + Sprint 9 (3/8 en cours) = 44 taches completes / initial 66+
+**Total restant : 50 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
+**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6) et 8 (10) termines + Sprint 7 (11/12 en cours) + Sprint 9 (4/8 en cours) = 45 taches completes / initial 66+
 
 ---
 

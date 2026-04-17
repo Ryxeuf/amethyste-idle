@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\GameEngine\Realtime\Avatar;
 
+use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher;
 use App\Helper\GearHelper;
@@ -75,9 +76,32 @@ class AvatarUpdatedPublisherTest extends TestCase
         $this->publisher->publish($player);
     }
 
-    private function setPrivateId(Player $player, int $id): void
+    public function testPublishIncludesMapIdAndTimestamp(): void
     {
-        $ref = new \ReflectionProperty(Player::class, 'id');
-        $ref->setValue($player, $id);
+        $map = new Map();
+        $this->setPrivateId($map, 42, Map::class);
+
+        $player = new Player();
+        $player->setMap($map);
+        $player->setAvatarAppearance(['body' => 'human_m_light']);
+        $this->setPrivateId($player, 7);
+
+        $this->hub->expects($this->once())
+            ->method('publish')
+            ->with($this->callback(function (Update $update): bool {
+                $data = json_decode($update->getData(), true);
+
+                return $data['mapId'] === 42
+                    && $data['playerId'] === 7
+                    && is_string($data['avatarUpdatedAt']);
+            }));
+
+        $this->publisher->publish($player);
+    }
+
+    private function setPrivateId(object $entity, int $id, ?string $class = null): void
+    {
+        $ref = new \ReflectionProperty($class ?? $entity::class, 'id');
+        $ref->setValue($entity, $id);
     }
 }
