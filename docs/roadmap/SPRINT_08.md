@@ -54,10 +54,10 @@
 - [x] Sinon → pipeline legacy (spriteKey, inchange) via `_createAnimator`
 - [x] `_createEntitySprite` recoit desormais l'entite complete (renderMode, avatar, avatarHash inclus)
 
-### AVT-21 — Gerer le joueur local (self) (S | ★★)
+### ~~AVT-21 — Gerer le joueur local (self) (S | ★★)~~ ✅
 > Prerequis : ← AVT-20
-- [ ] Le joueur courant utilise aussi le pipeline avatar
-- [ ] Invalidation du cache quand l'equipement change
+- [x] Le joueur courant utilise aussi le pipeline avatar — `_createPlayerMarker(selfEntity)` passe par `_createAnimatorForEntity`, qui choisit avatar ou legacy selon `renderMode`
+- [x] Invalidation du cache quand l'equipement change — detection via `avatarHash`, appel `AvatarAnimatorFactory.invalidateAvatarHash` sur l'ancien hash a chaque reload
 
 ### AVT-22 — Tests integration carte (S | ★★)
 > Prerequis : ← AVT-20

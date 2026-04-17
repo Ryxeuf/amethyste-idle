@@ -59,6 +59,7 @@ export default class extends Controller {
         this._avatarFactory = null;
         this._playerAnimator = null;
         this._playerDirection = 'down';
+        this._selfAvatarHash = null;
         this._lastEntityLoadX = this.playerXValue;
         this._lastEntityLoadY = this.playerYValue;
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
@@ -181,6 +182,7 @@ export default class extends Controller {
             this._avatarFactory.clear();
             this._avatarFactory = null;
         }
+        this._selfAvatarHash = null;
         if (this._playerAnimator) {
             this._playerAnimator.destroy();
             this._playerAnimator = null;
@@ -664,8 +666,12 @@ export default class extends Controller {
 
         this._clearEntities();
 
+        let selfEntity = null;
         for (const p of data.players) {
-            if (p.self) continue;
+            if (p.self) {
+                selfEntity = p;
+                continue;
+            }
             this._createEntitySprite('player', p, p.name, { name: p.name, playerId: p.id });
         }
 
@@ -688,7 +694,7 @@ export default class extends Controller {
         this._regionControl = data.regionControl || null;
         this._updateRegionControlOverlay();
 
-        this._createPlayerMarker();
+        this._createPlayerMarker(selfEntity);
     }
 
     _createEntitySprite(type, entity, label, meta = {}) {
@@ -849,8 +855,17 @@ export default class extends Controller {
         return texture;
     }
 
-    _createPlayerMarker() {
-        const animator = this._createAnimator('player_default');
+    _createPlayerMarker(selfEntity = null) {
+        // Equipment change -> new avatarHash from server; drop the stale LRU entry.
+        const newHash = selfEntity?.avatarHash ?? null;
+        if (this._selfAvatarHash && this._selfAvatarHash !== newHash && this._avatarFactory) {
+            this._avatarFactory.invalidateAvatarHash(this._selfAvatarHash);
+        }
+        this._selfAvatarHash = newHash;
+
+        const animator = selfEntity
+            ? this._createAnimatorForEntity(selfEntity)
+            : this._createAnimator('player_default');
 
         this._playerMarker = new PIXI.Container();
 
