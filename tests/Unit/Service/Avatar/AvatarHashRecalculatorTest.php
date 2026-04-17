@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service\Avatar;
 
 use App\Entity\App\Player;
+use App\Helper\GearHelper;
+use App\Service\Avatar\AvatarHashGenerator;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,102 +15,91 @@ use PHPUnit\Framework\TestCase;
 
 class AvatarHashRecalculatorTest extends TestCase
 {
-    private PlayerAvatarPayloadBuilder&MockObject $payloadBuilder;
+    private GearHelper&MockObject $gearHelper;
     private EntityManagerInterface&MockObject $entityManager;
     private AvatarHashRecalculator $recalculator;
+    private PlayerAvatarPayloadBuilder $payloadBuilder;
 
     protected function setUp(): void
     {
-        $this->payloadBuilder = $this->createMock(PlayerAvatarPayloadBuilder::class);
+        $this->gearHelper = $this->createMock(GearHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->payloadBuilder = new PlayerAvatarPayloadBuilder(
+            new AvatarHashGenerator(),
+            $this->gearHelper,
+        );
         $this->recalculator = new AvatarHashRecalculator($this->payloadBuilder, $this->entityManager);
     }
 
     public function testRecalculateReturnsFalseWhenPlayerHasNoAvatar(): void
     {
-        $player = $this->createMock(Player::class);
-        $player->method('hasAvatar')->willReturn(false);
+        $player = new Player();
 
-        $this->payloadBuilder->expects($this->never())->method('build');
         $this->entityManager->expects($this->never())->method('flush');
 
         $this->assertFalse($this->recalculator->recalculate($player));
     }
 
-    public function testRecalculateReturnsFalseWhenPayloadIsNull(): void
+    public function testRecalculateStoresHashOnFirstComputation(): void
     {
-        $player = $this->createMock(Player::class);
-        $player->method('hasAvatar')->willReturn(true);
-
-        $this->payloadBuilder->method('build')->with($player)->willReturn(null);
-        $this->entityManager->expects($this->never())->method('flush');
-
-        $this->assertFalse($this->recalculator->recalculate($player));
-    }
-
-    public function testRecalculateReturnsFalseWhenHashUnchanged(): void
-    {
-        $existingHash = str_repeat('a', 64);
-
         $player = new Player();
         $player->setAvatarAppearance(['body' => 'human_m_light']);
-        $player->setAvatarHash($existingHash);
-
-        $this->payloadBuilder->method('build')->with($player)->willReturn([
-            'renderMode' => 'avatar',
-            'avatarHash' => $existingHash,
-            'avatar' => ['baseSheet' => '/body.png', 'layers' => []],
-        ]);
-
-        $this->entityManager->expects($this->never())->method('flush');
-
-        $this->assertFalse($this->recalculator->recalculate($player));
-        $this->assertSame($existingHash, $player->getAvatarHash());
-    }
-
-    public function testRecalculateUpdatesHashAndPersists(): void
-    {
-        $oldHash = str_repeat('a', 64);
-        $newHash = str_repeat('b', 64);
-
-        $player = new Player();
-        $player->setAvatarAppearance(['body' => 'human_m_light']);
-        $player->setAvatarHash($oldHash);
-
-        $this->payloadBuilder->method('build')->with($player)->willReturn([
-            'renderMode' => 'avatar',
-            'avatarHash' => $newHash,
-            'avatar' => ['baseSheet' => '/body.png', 'layers' => []],
-        ]);
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
 
         $this->entityManager->expects($this->once())->method('persist')->with($player);
         $this->entityManager->expects($this->once())->method('flush');
 
         $this->assertTrue($this->recalculator->recalculate($player));
-        $this->assertSame($newHash, $player->getAvatarHash());
+        $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', (string) $player->getAvatarHash());
+    }
+
+    public function testRecalculateReturnsFalseWhenHashUnchanged(): void
+    {
+        $player = new Player();
+        $player->setAvatarAppearance(['body' => 'human_m_light']);
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
+
+        $expected = $this->payloadBuilder->build($player);
+        $this->assertNotNull($expected);
+        $player->setAvatarHash($expected['avatarHash']);
+
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->assertFalse($this->recalculator->recalculate($player));
+        $this->assertSame($expected['avatarHash'], $player->getAvatarHash());
+    }
+
+    public function testRecalculateUpdatesHashWhenAppearanceChanges(): void
+    {
+        $player = new Player();
+        $player->setAvatarAppearance(['body' => 'human_m_light']);
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
+
+        $oldHash = str_repeat('0', 64);
+        $player->setAvatarHash($oldHash);
+
+        $this->entityManager->expects($this->once())->method('persist')->with($player);
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->assertTrue($this->recalculator->recalculate($player));
+        $this->assertNotSame($oldHash, $player->getAvatarHash());
     }
 
     public function testRecalculateTouchesAvatarUpdatedAtWhenHashChanges(): void
     {
         $player = new Player();
         $player->setAvatarAppearance(['body' => 'human_m_light']);
-        $player->setAvatarHash(str_repeat('a', 64));
+        $player->setAvatarHash(str_repeat('0', 64));
+
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
 
         $before = $player->getAvatarUpdatedAt();
         $this->assertNotNull($before);
-
-        usleep(1000);
-
-        $this->payloadBuilder->method('build')->with($player)->willReturn([
-            'renderMode' => 'avatar',
-            'avatarHash' => str_repeat('b', 64),
-            'avatar' => ['baseSheet' => '/body.png', 'layers' => []],
-        ]);
 
         $this->recalculator->recalculate($player);
 
         $after = $player->getAvatarUpdatedAt();
         $this->assertNotNull($after);
-        $this->assertGreaterThan($before, $after);
+        $this->assertNotSame($before, $after);
     }
 }

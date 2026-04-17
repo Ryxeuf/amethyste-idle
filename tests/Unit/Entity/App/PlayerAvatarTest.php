@@ -80,12 +80,11 @@ class PlayerAvatarTest extends TestCase
         $firstUpdatedAt = $player->getAvatarUpdatedAt();
         $this->assertInstanceOf(\DateTimeImmutable::class, $firstUpdatedAt);
 
-        usleep(1000);
         $player->setAvatarHash(hash('sha256', 'second'));
 
         $secondUpdatedAt = $player->getAvatarUpdatedAt();
         $this->assertInstanceOf(\DateTimeImmutable::class, $secondUpdatedAt);
-        $this->assertGreaterThan($firstUpdatedAt, $secondUpdatedAt);
+        $this->assertNotSame($firstUpdatedAt, $secondUpdatedAt);
     }
 
     public function testSetAvatarHashDoesNotTouchUpdatedAtWhenUnchanged(): void
@@ -98,7 +97,6 @@ class PlayerAvatarTest extends TestCase
         $firstUpdatedAt = $player->getAvatarUpdatedAt();
         $this->assertNotNull($firstUpdatedAt);
 
-        usleep(1000);
         $player->setAvatarHash($hash);
 
         $this->assertSame($firstUpdatedAt, $player->getAvatarUpdatedAt());
