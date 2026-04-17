@@ -25,6 +25,7 @@ final class PlayerAvatarPayloadBuilder
     public function __construct(
         private readonly AvatarHashGenerator $hashGenerator,
         private readonly GearHelper $gearHelper,
+        private readonly ItemAvatarSheetResolver $itemAvatarSheetResolver,
     ) {
     }
 
@@ -192,7 +193,7 @@ final class PlayerAvatarPayloadBuilder
             return null;
         }
 
-        $sheet = $equipped->getGenericItem()->getAvatarSheet();
+        $sheet = $this->itemAvatarSheetResolver->resolve($equipped->getGenericItem());
         if ($sheet === null) {
             return null;
         }

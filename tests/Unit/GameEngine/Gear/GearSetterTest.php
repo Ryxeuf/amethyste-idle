@@ -12,6 +12,7 @@ use App\GameEngine\Gear\GearSetter;
 use App\Helper\GearHelper;
 use App\Service\Avatar\AvatarHashGenerator;
 use App\Service\Avatar\AvatarHashRecalculator;
+use App\Service\Avatar\ItemAvatarSheetResolver;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,7 +30,11 @@ class GearSetterTest extends TestCase
         $this->gearHelper = $this->createMock(GearHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->avatarHashRecalculator = new AvatarHashRecalculator(
-            new PlayerAvatarPayloadBuilder(new AvatarHashGenerator(), $this->gearHelper),
+            new PlayerAvatarPayloadBuilder(
+                new AvatarHashGenerator(),
+                $this->gearHelper,
+                new ItemAvatarSheetResolver(),
+            ),
             $this->entityManager,
         );
         $this->gearSetter = new GearSetter(

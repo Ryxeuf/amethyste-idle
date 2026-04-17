@@ -9,6 +9,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Helper\GearHelper;
 use App\Service\Avatar\AvatarHashGenerator;
+use App\Service\Avatar\ItemAvatarSheetResolver;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +25,7 @@ class PlayerAvatarPayloadBuilderTest extends TestCase
         $this->builder = new PlayerAvatarPayloadBuilder(
             new AvatarHashGenerator(),
             $this->gearHelper,
+            new ItemAvatarSheetResolver(),
         );
     }
 

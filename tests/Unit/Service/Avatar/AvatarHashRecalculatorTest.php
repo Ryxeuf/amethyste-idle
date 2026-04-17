@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Helper\GearHelper;
 use App\Service\Avatar\AvatarHashGenerator;
 use App\Service\Avatar\AvatarHashRecalculator;
+use App\Service\Avatar\ItemAvatarSheetResolver;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,6 +28,7 @@ class AvatarHashRecalculatorTest extends TestCase
         $this->payloadBuilder = new PlayerAvatarPayloadBuilder(
             new AvatarHashGenerator(),
             $this->gearHelper,
+            new ItemAvatarSheetResolver(),
         );
         $this->recalculator = new AvatarHashRecalculator($this->payloadBuilder, $this->entityManager);
     }
