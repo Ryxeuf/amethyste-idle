@@ -2945,6 +2945,9 @@ export default class extends Controller {
         this.shakeCamera(3, 200);
         this._vibrate([20, 50, 20]);
 
+        // Player jump animation (avatar only) frames the zone change
+        this._playPlayerAvatarAnimation('jump');
+
         // Fade out effect
         await this._fadeTransition(true);
 
@@ -2993,6 +2996,36 @@ export default class extends Controller {
 
         // Fade in
         await this._fadeTransition(false);
+
+        // Restore default walk animation after the jump
+        this._restorePlayerAvatarWalkAnimation();
+    }
+
+    /**
+     * Trigger an avatar animation on the local player (no-op for legacy sprites).
+     * SpriteAnimator.setAnimation returns false for non-avatar types, so this is safe.
+     *
+     * @param {string} name - Animation name ('jump', 'run', 'push', 'pull', ...)
+     * @returns {boolean} true if the animation was switched on
+     */
+    _playPlayerAvatarAnimation(name) {
+        if (!this._playerAnimator || typeof this._playerAnimator.setAnimation !== 'function') {
+            return false;
+        }
+        if (!this._playerAnimator.setAnimation(name)) {
+            return false;
+        }
+        this._playerAnimator.play();
+        return true;
+    }
+
+    /** Reset the player avatar to the default walk-then-stand state. */
+    _restorePlayerAvatarWalkAnimation() {
+        if (!this._playerAnimator || typeof this._playerAnimator.setAnimation !== 'function') {
+            return;
+        }
+        this._playerAnimator.setAnimation('walk');
+        this._playerAnimator.stop();
     }
 
     _fadeTransition(fadeOut) {
