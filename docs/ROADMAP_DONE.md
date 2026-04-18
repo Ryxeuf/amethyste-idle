@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-18 (AVT-31 — Animation Run activee en mode sprint (Shift))
+> Derniere mise a jour : 2026-04-18 (AVT-36 — Lazy loading des sheets avatar visibles)
 
 ---
 
@@ -2300,6 +2300,16 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-36 — Lazy loading intelligent des sheets avatar (2026-04-18) ✅
+
+> Troisieme tache du Sprint 10 (Avatar : Polish & Animations). Supprime le preload systematique du catalogue avatar au boot (`config.avatarCatalog` body + hair + beard + facemark + gear) qui chargeait plusieurs dizaines de sheets meme quand un seul joueur etait visible. Les sheets sont desormais recuperees a la demande par `AvatarSheetLoader` (nouveau module dans `assets/lib/avatar/`), avec deduplication des appels concurrents et reutilisation du cache texture partage (`_spriteTextures`). Le helper `_ensureAvatarSheetsForEntities(players)` est appele au debut de `_loadEntities` pour recolter les sheets de tous les joueurs visibles (baseSheet + layers[].sheet des avatars `renderMode === 'avatar'`) et attendre leur chargement en parallele avant la composition des textures. Les joueurs qui arrivent ulterieurement passent par `map/respawn -> _loadEntities`, qui reapplique la meme logique. Les sprites legacy (mobs, PNJ, joueurs fallback) restent pre-charges via `spriteConfig` — aucune regression sur les entites non-avatar.
+- [x] Nouveau module `assets/lib/avatar/AvatarSheetLoader.js` (~120 lignes) : `ensureSheet(path)` / `ensurePayload(payload)` / `ensurePayloads(payloads)` avec Map de promesses en cours pour deduper
+- [x] Hook `onTextureLoaded` dans le loader : applique `scaleMode = 'nearest'` des qu'une sheet arrive (coherent avec le preload existant)
+- [x] Suppression du bloc de preload avatar catalog dans `_initPixi()` (21 lignes retirees)
+- [x] `_ensureAvatarSheetsForEntities(players)` appele au debut de `_loadEntities` (avant les `_createEntitySprite` / `_createPlayerMarker`)
+- [x] Diff total : +48 / -23 lignes dans `assets/controllers/map_pixi_controller.js`, +122 lignes nouveau module
+- [x] Graceful degradation inchangee : un layer dont la sheet echoue au chargement est silencieusement ignore par `AvatarAnimatorFactory.createFromAvatarPayload` (comportement deja existant)
 
 ### AVT-31 — Animation Run en mode sprint (Shift) (2026-04-18) ✅
 
