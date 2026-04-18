@@ -60,6 +60,11 @@ export default class extends Controller {
         this._playerAnimator = null;
         this._playerDirection = 'down';
         this._selfAvatarHash = null;
+        // Sprint mode: when Shift is held, use 'run' animation + faster step delay.
+        // No server-side change: the move request is unaffected, only client-side
+        // tween duration and avatar animation differ.
+        this._sprintActive = false;
+        this._sprintSpeedFactor = 0.6;
         this._lastEntityLoadX = this.playerXValue;
         this._lastEntityLoadY = this.playerYValue;
         this._entityLoadThreshold = 5; // Reload entities every 5 tiles moved
@@ -174,6 +179,15 @@ export default class extends Controller {
         if (this._onKeyDown) {
             document.removeEventListener('keydown', this._onKeyDown);
         }
+        if (this._onKeyUp) {
+            document.removeEventListener('keyup', this._onKeyUp);
+            this._onKeyUp = null;
+        }
+        if (this._onBlur) {
+            window.removeEventListener('blur', this._onBlur);
+            this._onBlur = null;
+        }
+        this._sprintActive = false;
         if (this._eventSource) {
             this._eventSource.close();
             this._eventSource = null;
@@ -329,6 +343,11 @@ export default class extends Controller {
 
         this._onKeyDown = (e) => this._handleKeyDown(e);
         document.addEventListener('keydown', this._onKeyDown);
+        this._onKeyUp = (e) => this._handleKeyUp(e);
+        document.addEventListener('keyup', this._onKeyUp);
+        // Reset sprint state if the window loses focus while Shift is held.
+        this._onBlur = () => { this._sprintActive = false; };
+        window.addEventListener('blur', this._onBlur);
 
         // Swipe tracking
         this._swipeStart = null;
@@ -2511,6 +2530,13 @@ export default class extends Controller {
             return;
         }
 
+        // Track sprint key (Shift). Handled even during animation so the next
+        // queued move picks up the new state.
+        if (e.key === 'Shift') {
+            this._sprintActive = true;
+            return;
+        }
+
         if (this._animating || this._dialogOpen) return;
         const dir = {
             ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
@@ -2522,6 +2548,12 @@ export default class extends Controller {
         if (!dir) return;
         e.preventDefault();
         this._moveInDirection(dir);
+    }
+
+    _handleKeyUp(e) {
+        if (e.key === 'Shift') {
+            this._sprintActive = false;
+        }
     }
 
     // --- Joystick & Directional Movement ---
@@ -2846,8 +2878,20 @@ export default class extends Controller {
         this._cancelRequested = false;
         this._pendingNewTarget = null;
 
-        // Start walk animation
+        // Sprint mode: select 'run' avatar animation + shorter per-tile tween.
+        // Sprint state is captured once at the start to keep speed consistent
+        // across the whole path (no stutter if Shift is released mid-move).
+        const sprinting = this._sprintActive === true;
+        const stepDelay = sprinting
+            ? Math.max(30, Math.round(this.stepDelayValue * this._sprintSpeedFactor))
+            : this.stepDelayValue;
+
+        // Start walk/run animation
         if (this._playerAnimator) {
+            if (sprinting && typeof this._playerAnimator.setAnimation === 'function') {
+                // setAnimation returns false for legacy (non-avatar) sprites — harmless.
+                this._playerAnimator.setAnimation('run');
+            }
             this._playerAnimator.play();
         }
 
@@ -2872,14 +2916,17 @@ export default class extends Controller {
                 }
             }
 
-            await this._tweenTo(from, to, this.stepDelayValue);
+            await this._tweenTo(from, to, stepDelay);
             this._playerX = to.x;
             this._playerY = to.y;
             this._detectZone(to.x, to.y);
         }
 
-        // Stop walk animation
+        // Stop walk/run animation and restore walk as the default for the next move.
         if (this._playerAnimator) {
+            if (sprinting && typeof this._playerAnimator.setAnimation === 'function') {
+                this._playerAnimator.setAnimation('walk');
+            }
             this._playerAnimator.stop();
         }
 

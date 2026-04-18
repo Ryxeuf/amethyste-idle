@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-18 (AVT-32 — Animation Jump declenchee sur teleportation/changement de zone)
+> Derniere mise a jour : 2026-04-18 (AVT-31 — Animation Run activee en mode sprint (Shift))
 
 ---
 
@@ -2300,6 +2300,16 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-31 — Animation Run en mode sprint (Shift) (2026-04-18) ✅
+
+> Deuxieme tache du Sprint 10 (Avatar : Polish & Animations). Exploite l'animation `run` livree par AVT-06/AVT-07 pour offrir un mode "sprint" declenche cote client : maintenir la touche Shift pendant un deplacement fait passer l'avatar en animation `run` et reduit le step delay a 60 % (plancher 30 ms) le temps de parcourir la trajectoire. L'etat `_sprintActive` est suivi via les handlers `keydown`/`keyup` (+ reset sur `blur` pour couvrir la perte de focus) et est capture une seule fois au debut de `_animateAlongPath` pour garantir une vitesse coherente sur tout le chemin meme si Shift est relache en cours de route. A la fin du deplacement, l'animator repasse sur `walk` + `stop()` pour que le prochain mouvement reprenne le cycle normal. Aucun changement cote serveur : l'API `/api/map/move` valide les cibles comme avant, seule la duree du tween client varie. Les sprites legacy (mobs, PNJ, joueurs en mode fallback) ne sont pas impactes — `SpriteAnimator.setAnimation` retourne `false` en dehors du type `avatar` et le guard saute silencieusement.
+- [x] `_sprintActive` + `_sprintSpeedFactor` initialises dans `connect()`
+- [x] Handlers `_handleKeyUp` (Shift relache), listener `blur` (reset), desinscription dans `disconnect()`
+- [x] `_handleKeyDown` detecte Shift meme pendant une animation (pour que le mouvement suivant prenne en compte le nouvel etat)
+- [x] `_animateAlongPath` : capture `sprinting` au debut, `setAnimation('run')` si actif, tween reduit, restauration `setAnimation('walk')` + `stop()` a la fin
+- [x] Aucun impact sur les sprites legacy (guard `typeof setAnimation === 'function'` + retour `false` pour les types `single`/`multi`)
+- [x] Diff total ~60 lignes ajoutees dans `assets/controllers/map_pixi_controller.js`
 
 ### AVT-32 — Animation Jump sur teleportation et changement de zone (2026-04-18) ✅
 
