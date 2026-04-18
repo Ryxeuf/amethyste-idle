@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Race;
 use App\Entity\User;
 use App\Enum\TutorialStep;
+use App\Service\Avatar\AvatarHashRecalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PlayerFactory
@@ -18,19 +19,25 @@ class PlayerFactory
     private const BASE_SPEED = 10;
     private const BASE_HIT = 50;
     private const SPAWN_COORDINATES = '20.20';
+    private const DEFAULT_BODY = 'human_m_light';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly AvatarHashRecalculator $avatarHashRecalculator,
     ) {
     }
 
-    public function createPlayer(User $user, string $name, Race $race): Player
+    /**
+     * @param array{body?: string|null, hair?: string|null, hairColor?: string|null}|null $appearance
+     */
+    public function createPlayer(User $user, string $name, Race $race, ?array $appearance = null): Player
     {
         $player = new Player();
         $player->setUser($user);
         $player->setName($name);
         $player->setRace($race);
         $player->setClassType('player');
+        $player->setAvatarAppearance($this->normalizeAppearance($appearance));
 
         $modifiers = $race->getStatModifiers();
         $lifeMod = (int) ($modifiers['life'] ?? 0);
@@ -61,7 +68,31 @@ class PlayerFactory
 
         $this->entityManager->flush();
 
+        $this->avatarHashRecalculator->recalculate($player);
+
         return $player;
+    }
+
+    /**
+     * @param array{body?: string|null, hair?: string|null, hairColor?: string|null}|null $appearance
+     *
+     * @return array<string, string>
+     */
+    private function normalizeAppearance(?array $appearance): array
+    {
+        $body = isset($appearance['body']) && $appearance['body'] !== '' ? $appearance['body'] : self::DEFAULT_BODY;
+
+        $normalized = ['body' => $body];
+
+        if (isset($appearance['hair']) && $appearance['hair'] !== '' && $appearance['hair'] !== null) {
+            $normalized['hair'] = $appearance['hair'];
+        }
+
+        if (isset($appearance['hairColor']) && $appearance['hairColor'] !== '' && $appearance['hairColor'] !== null) {
+            $normalized['hairColor'] = $appearance['hairColor'];
+        }
+
+        return $normalized;
     }
 
     private function createInventories(Player $player): void

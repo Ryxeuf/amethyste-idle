@@ -21,9 +21,9 @@
 - [ ] Mini canvas PixiJS composant les layers en temps reel au changement
 - [ ] Ou fallback : images statiques pre-generees
 
-### AVT-25 — Persister l'apparence a la creation (S | ★★)
+### ~~AVT-25 — Persister l'apparence a la creation (S | ★★)~~ ✅
 > Prerequis : ← AVT-23
-- [ ] `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash`
+- [x] `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash` — la fabrique normalise les choix body/hair/hairColor du formulaire, seed `Player::avatarAppearance`, puis delegue le calcul du hash + la publication Mercure a `AvatarHashRecalculator::recalculate()` apres flush. Defaut `human_m_light` si aucune selection.
 
 ### AVT-26 — Lier Race au body de base (S | ★★)
 > Prerequis : ← AVT-25

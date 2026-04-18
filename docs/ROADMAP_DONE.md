@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-23 — Champs d'apparence dans le formulaire de creation)
+> Derniere mise a jour : 2026-04-18 (AVT-25 — Persister l'apparence a la creation)
 
 ---
 
@@ -2300,6 +2300,14 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-25 — Persister l'apparence a la creation (2026-04-18) ✅
+
+> Ferme la boucle entre le formulaire de creation de personnage (AVT-23) et le pipeline de rendu avatar (AVT-13..AVT-15). `PlayerFactory` accepte desormais un tableau d'apparence optionnel (body / hair / hairColor), normalise les entrees (defaut `human_m_light`, elimine les chaines vides et les valeurs nulles), seed `Player::avatarAppearance` avant persistance, puis delegue le calcul du hash a `AvatarHashRecalculator::recalculate()` apres flush. Le `CharacterController::create()` extrait les trois champs du formulaire et les passe a la fabrique. Le recalculateur publie ensuite sur `map/avatar` (AVT-29) — un joueur nouvellement cree apparait avec un avatar coherent pour tous les observateurs de la carte des sa premiere spawn. Debloque AVT-26 (lier Race au body de base).
+- [x] `App\Service\PlayerFactory` : injecte `AvatarHashRecalculator`, accepte `?array $appearance`, normalise body/hair/hairColor et seed `Player::avatarAppearance` avant persist
+- [x] Appel `AvatarHashRecalculator::recalculate()` apres flush pour calculer `avatarHash` + publier `map/avatar`
+- [x] `CharacterController::create()` : extrait body/hair/hairColor du formulaire et les passe a la fabrique via un helper `stringOrNull()`
+- [x] Tests unitaires `PlayerFactoryTest` : 4 cas (apparence fournie, defaut body, champs vides ignores, appel recalculator une fois)
 
 ### AVT-23 — Champs d'apparence dans le formulaire de creation de personnage (2026-04-17) ✅
 

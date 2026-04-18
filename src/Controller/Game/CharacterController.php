@@ -70,7 +70,13 @@ class CharacterController extends AbstractController
                 ]);
             }
 
-            $player = $this->playerFactory->createPlayer($user, $name, $race);
+            $appearance = [
+                'body' => $this->stringOrNull($form->get('body')->getData()),
+                'hair' => $this->stringOrNull($form->get('hair')->getData()),
+                'hairColor' => $this->stringOrNull($form->get('hairColor')->getData()),
+            ];
+
+            $player = $this->playerFactory->createPlayer($user, $name, $race, $appearance);
             $this->playerHelper->setActivePlayer($player);
 
             return $this->redirectToRoute('app_game');
@@ -108,5 +114,14 @@ class CharacterController extends AbstractController
         return $this->render('game/character/select.html.twig', [
             'players' => $players,
         ]);
+    }
+
+    private function stringOrNull(mixed $value): ?string
+    {
+        if (!is_string($value) || $value === '') {
+            return null;
+        }
+
+        return $value;
     }
 }
