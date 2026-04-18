@@ -2,6 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import * as PIXI from 'pixi.js';
 import SpriteAnimator, { directionFromDelta, EMOTE_TYPES } from '../lib/SpriteAnimator.js';
 import AvatarAnimatorFactory from '../lib/avatar/AvatarAnimatorFactory.js';
+import AvatarSheetLoader from '../lib/avatar/AvatarSheetLoader.js';
 
 export default class extends Controller {
     static values = {
@@ -57,6 +58,9 @@ export default class extends Controller {
         this._frameCount = 0;
 
         this._avatarFactory = null;
+        // AVT-36: lazy loader — sheets are fetched on demand per visible avatar
+        // instead of preloading the entire avatar catalog at boot.
+        this._avatarSheetLoader = null;
         this._playerAnimator = null;
         this._playerDirection = 'down';
         this._selfAvatarHash = null;
@@ -435,31 +439,23 @@ export default class extends Controller {
             );
         }
 
-        // Preload avatar catalog sheets (body, hair, beard, facemark, gear)
-        const avatarCatalog = config.avatarCatalog || {};
-        const avatarSheets = new Set();
-        for (const category of ['body', 'hair', 'beard', 'facemark']) {
-            for (const entry of avatarCatalog[category] || []) {
-                if (entry.sheet) avatarSheets.add(entry.sheet);
-            }
-        }
-        for (const gearSheet of avatarCatalog.gear || []) {
-            if (gearSheet) avatarSheets.add(gearSheet);
-        }
-        for (const sheet of avatarSheets) {
-            if (!spriteSheets.has(sheet)) {
-                loadPromises.push(
-                    PIXI.Assets.load(sheet).then((texture) => {
-                        texture.source.scaleMode = 'nearest';
-                        this._spriteTextures[sheet] = texture;
-                    }).catch(() => {})
-                );
-            }
-        }
-
         await Promise.all(loadPromises);
 
-        // Instantiate avatar factory after all textures are loaded
+        // AVT-36: avatar catalog sheets are now loaded on demand (see
+        // `_ensureAvatarSheetsForEntities`). The catalog itself is still
+        // consumed by the character creation screen, but not preloaded here.
+
+        this._avatarSheetLoader = new AvatarSheetLoader({
+            assetsLoader: PIXI.Assets,
+            spriteTextures: this._spriteTextures,
+            onTextureLoaded: (texture) => {
+                if (texture && texture.source) {
+                    texture.source.scaleMode = 'nearest';
+                }
+            },
+        });
+
+        // Instantiate avatar factory after the sprite pipeline is ready.
         this._avatarFactory = new AvatarAnimatorFactory({
             renderer: this._app.renderer,
             spriteConfig: this._spriteConfig,
@@ -685,6 +681,11 @@ export default class extends Controller {
 
         this._clearEntities();
 
+        // AVT-36: ensure only the avatar sheets actually used by the visible
+        // players are loaded before we build their sprites. Rare sheets land
+        // on demand; unused ones never hit the network.
+        await this._ensureAvatarSheetsForEntities(data.players || []);
+
         let selfEntity = null;
         for (const p of data.players) {
             if (p.self) {
@@ -714,6 +715,30 @@ export default class extends Controller {
         this._updateRegionControlOverlay();
 
         this._createPlayerMarker(selfEntity);
+    }
+
+    /**
+     * AVT-36: Ensure every avatar sheet referenced by the given players is
+     * loaded before their sprites are composed. Non-avatar entities (legacy
+     * spriteKey) are unaffected — their sheets come from the sprite config
+     * preload at boot.
+     *
+     * @param {Array<{ renderMode?: string, avatar?: { baseSheet?: string, layers?: Array<{ sheet?: string }> } }>} players
+     * @returns {Promise<void>}
+     */
+    async _ensureAvatarSheetsForEntities(players) {
+        if (!this._avatarSheetLoader) return;
+
+        const payloads = [];
+        for (const player of players) {
+            if (player && player.renderMode === 'avatar' && player.avatar) {
+                payloads.push(player.avatar);
+            }
+        }
+
+        if (payloads.length === 0) return;
+
+        await this._avatarSheetLoader.ensurePayloads(payloads);
     }
 
     _createEntitySprite(type, entity, label, meta = {}) {
