@@ -15,11 +15,11 @@
 - [x] Liste des choix alimentee depuis les assets disponibles dans `avatar/` — nouvelle methode `AvatarCatalogProvider::getCreationChoices()` qui scanne body/hair/outfit/head
 - [x] Preview sprite `data-sheet` exposee sur chaque option via `choice_attr` (consommable par le futur `character_creator_controller.js` — AVT-24)
 
-### AVT-24 — Preview temps reel (L | ★★★)
+### ~~AVT-24 — Preview temps reel (L | ★★★)~~ ✅
 > Prerequis : ← AVT-10, AVT-23
-- [ ] Stimulus controller `character_creator_controller.js`
-- [ ] Mini canvas PixiJS composant les layers en temps reel au changement
-- [ ] Ou fallback : images statiques pre-generees
+- [x] Stimulus controller `character_creator_controller.js` — ecoute les changements body/outfit/hair/hairColor et re-rend le canvas a chaque selection
+- [ ] Mini canvas PixiJS composant les layers en temps reel au changement — non retenu
+- [x] Ou fallback : images statiques pre-generees — canvas 64x64 compose la frame stand-down (col 0, row 0) de chaque sheet Mana Seed ; tint du cheveux applique via pipeline multiply + destination-in (pas de dependance PixiJS)
 
 ### AVT-25 — Persister l'apparence a la creation (S | ★★)
 > Prerequis : ← AVT-23

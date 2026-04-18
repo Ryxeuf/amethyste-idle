@@ -68,7 +68,20 @@
                     </div>
                 {% endfor %}
 
-                {{ form_start(form, { attr: { 'class': 'space-y-6', 'data-turbo': 'false' } }) }}
+                {{ form_start(form, { attr: { 'class': 'space-y-6', 'data-turbo': 'false', 'data-controller': 'character-creator' } }) }}
+
+                    {# Preview avatar (AVT-24) — compose body/outfit/hair+tint dans un canvas 64x64 #}
+                    <div class="flex items-center justify-center">
+                        <div class="p-3 rounded-xl border-2 border-gray-700 bg-gray-900 bg-opacity-60">
+                            <canvas data-character-creator-target="canvas"
+                                    width="64" height="64"
+                                    class="w-32 h-32 block"
+                                    style="image-rendering: pixelated;"
+                                    aria-label="Apercu de l'apparence selectionnee"></canvas>
+                            <p class="mt-1 text-center text-[11px] text-gray-500 uppercase tracking-wider">Apercu</p>
+                        </div>
+                    </div>
+
 
                     {# Nom du personnage #}
                     <div>

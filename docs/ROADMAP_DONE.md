@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-17 (AVT-23 — Champs d'apparence dans le formulaire de creation)
+> Derniere mise a jour : 2026-04-18 (AVT-24 — Preview avatar temps reel a la creation de personnage)
 
 ---
 
@@ -2300,6 +2300,16 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-24 — Preview avatar temps reel a la creation de personnage (2026-04-18) ✅
+
+> Ferme la boucle visuelle entre le formulaire de creation (AVT-23) et le rendu avatar : un panneau d'apercu 64x64 pixelise (affiche 128x128 via CSS) compose en direct le corps, la tenue et la coiffure teintee des qu'une option change. Approche "fallback : images statiques pre-generees" retenue (pas de PixiJS requis cote client) : un `<canvas>` Stimulus est peuple a partir de la frame stand-down (col 0, row 0) de chaque spritesheet Mana Seed, dans l'ordre body -> outfit -> hair. Le tint de cheveux reproduit fidelement le pipeline PixiJS (`sprite.tint`) via `globalCompositeOperation = 'multiply'` puis `destination-in` pour preserver le canal alpha. Debloque la Definition of Done Sprint 9 (cote creation de personnage) et completea visuellement le travail d'AVT-25 / AVT-26 (persistance apparence, race -> body).
+- [x] Nouveau `assets/controllers/character_creator_controller.js` (Stimulus) — ecoute les changements des radios `body[]` / `outfit[]` / `hair[]` / `hairColor[]` via un seul listener `change` sur le formulaire
+- [x] Cache interne d'images (`Map<url, Image>`) : les sheets deja chargees ne sont pas re-telechargees, et le canvas est re-rendu des qu'une image termine son chargement (`onload` one-shot)
+- [x] Composition canvas 64x64 avec `imageSmoothingEnabled = false` (rendu pixelise) ; une frame 64x64 (col 0, row 0) par layer
+- [x] Tint cheveux pipeline deux passes : multiply color + mask via `destination-in` (preserve l'alpha de la sheet originale)
+- [x] Template `game/character/create.html.twig` : panneau d'apercu avec canvas 128x128 (CSS), `image-rendering: pixelated`, `data-controller="character-creator"` pose sur le `<form>` via `form_start`
+- [x] Aucune modification PHP requise (le `data-sheet` a ete expose par AVT-23) — diff total ~130 lignes
 
 ### AVT-23 — Champs d'apparence dans le formulaire de creation de personnage (2026-04-17) ✅
 
