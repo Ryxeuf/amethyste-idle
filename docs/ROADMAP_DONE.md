@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-18 (AVT-24 — Preview avatar temps reel a la creation de personnage)
+> Derniere mise a jour : 2026-04-18 (AVT-32 — Animation Jump declenchee sur teleportation/changement de zone)
 
 ---
 
@@ -2300,6 +2300,15 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-32 — Animation Jump sur teleportation et changement de zone (2026-04-18) ✅
+
+> Premiere tache du Sprint 10 (Avatar : Polish & Animations). Exploite l'animation `jump` deja livree par AVT-06 et AVT-07 pour donner du feedback visuel pendant les transitions de carte. `_handlePortalTransition` declenche desormais `setAnimation('jump')` + `play()` sur le `_playerAnimator` du joueur local juste avant le fade-out (300 ms) du portail, puis revient sur `walk` + `stop()` apres le fade-in. Deux helpers internes (`_playPlayerAvatarAnimation(name)`, `_restorePlayerAvatarWalkAnimation()`) sont conçus pour rester sans effet sur les sprites legacy : `SpriteAnimator.setAnimation` retourne `false` quand le type n'est pas `avatar`, et le helper sort silencieusement. La sous-tache "traversee d'obstacle" est laissee non couverte : aucun systeme de franchissement d'obstacles n'existe actuellement (a re-considerer si AVT-33 push/pull introduit des objets interactifs).
+- [x] `_playPlayerAvatarAnimation(name)` : guard sur l'existence de `setAnimation`, declenche `play()` si l'animation est disponible, retourne un booleen
+- [x] `_restorePlayerAvatarWalkAnimation()` : revient a `walk` puis `stop()` (le prochain mouvement reprendra le cycle de marche correctement)
+- [x] `_handlePortalTransition` : appel jump avant `_fadeTransition(true)`, appel restore apres `_fadeTransition(false)`
+- [x] Aucun impact sur les sprites legacy (mobs, PNJ) ni sur les sessions sans rendu avatar (rendu fallback red circle)
+- [x] Diff total ~30 lignes ajoutees dans `assets/controllers/map_pixi_controller.js` (fichier deja > 400 lignes, modifications confinees)
 
 ### AVT-24 — Preview avatar temps reel a la creation de personnage (2026-04-18) ✅
 

@@ -11,9 +11,11 @@
 > Prerequis : ← AVT-07
 - [ ] Activer quand le joueur a un buff de vitesse ou sprint
 
-### AVT-32 — Animation Jump (S | ★★)
+### ~~AVT-32 — Animation Jump (S | ★★)~~ ✅
 > Prerequis : ← AVT-07
-- [ ] Traversee d'obstacle, teleportation, changement de zone
+- [x] Teleportation / changement de zone — `_handlePortalTransition` declenche `setAnimation('jump')` sur le `_playerAnimator` avant le fade-out, puis revient sur `walk` + `stop()` apres le fade-in
+- [x] Helpers `_playPlayerAvatarAnimation(name)` et `_restorePlayerAvatarWalkAnimation()` (no-op pour les sprites legacy : `setAnimation` retourne `false`)
+- [ ] Traversee d'obstacle — non applicable : aucun mecanisme d'obstacle franchissable n'existe encore (a re-evaluer si AVT-33 push/pull introduit des objets interactifs)
 
 ### AVT-33 — Animations Push/Pull (S | ★)
 > Prerequis : ← AVT-07
