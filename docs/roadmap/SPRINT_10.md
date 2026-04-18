@@ -7,9 +7,9 @@
 
 ---
 
-### AVT-31 — Animation Run (S | ★★)
+### ~~AVT-31 — Animation Run (S | ★★)~~ ✅
 > Prerequis : ← AVT-07
-- [ ] Activer quand le joueur a un buff de vitesse ou sprint
+- [x] Activer quand le joueur a un buff de vitesse ou sprint — mode sprint active par la touche Shift : `setAnimation('run')` + step delay multiplie par 0.6 pendant l'animation de deplacement. `_sprintActive` maintenu via `keydown`/`keyup` (+ reset sur `blur`), capture unique au debut de `_animateAlongPath` pour garantir la coherence visuelle sur toute la trajectoire. Aucun changement serveur : seule la duree de tween cote client varie, l'API `/api/map/move` reste inchangee. Aucun impact sur les sprites legacy (`SpriteAnimator.setAnimation` retourne `false` en dehors du type `avatar`).
 
 ### ~~AVT-32 — Animation Jump (S | ★★)~~ ✅
 > Prerequis : ← AVT-07
