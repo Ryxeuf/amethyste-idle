@@ -84,11 +84,11 @@ class PlayerFactory
 
         $normalized = ['body' => $body];
 
-        if (isset($appearance['hair']) && $appearance['hair'] !== '' && $appearance['hair'] !== null) {
+        if (isset($appearance['hair']) && $appearance['hair'] !== '') {
             $normalized['hair'] = $appearance['hair'];
         }
 
-        if (isset($appearance['hairColor']) && $appearance['hairColor'] !== '' && $appearance['hairColor'] !== null) {
+        if (isset($appearance['hairColor']) && $appearance['hairColor'] !== '') {
             $normalized['hairColor'] = $appearance['hairColor'];
         }
 
