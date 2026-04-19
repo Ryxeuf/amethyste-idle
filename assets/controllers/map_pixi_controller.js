@@ -3,6 +3,7 @@ import * as PIXI from 'pixi.js';
 import SpriteAnimator, { directionFromDelta, EMOTE_TYPES } from '../lib/SpriteAnimator.js';
 import AvatarAnimatorFactory from '../lib/avatar/AvatarAnimatorFactory.js';
 import AvatarSheetLoader from '../lib/avatar/AvatarSheetLoader.js';
+import AvatarTexturePersistentCache from '../lib/avatar/AvatarTexturePersistentCache.js';
 
 export default class extends Controller {
     static values = {
@@ -455,11 +456,17 @@ export default class extends Controller {
             },
         });
 
+        // AVT-37: persistent IndexedDB cache survives page reloads. Writes
+        // are fire-and-forget after each composition; reads are triggered
+        // explicitly via `prefetchFromPersistentCache` in `_loadEntities`.
+        const persistentAvatarCache = new AvatarTexturePersistentCache();
+
         // Instantiate avatar factory after the sprite pipeline is ready.
         this._avatarFactory = new AvatarAnimatorFactory({
             renderer: this._app.renderer,
             spriteConfig: this._spriteConfig,
             spriteTextures: this._spriteTextures,
+            persistentCache: persistentAvatarCache,
         });
 
         // Build animated tile frame textures from config
@@ -730,15 +737,28 @@ export default class extends Controller {
         if (!this._avatarSheetLoader) return;
 
         const payloads = [];
+        const hashes = [];
         for (const player of players) {
             if (player && player.renderMode === 'avatar' && player.avatar) {
                 payloads.push(player.avatar);
+                if (player.avatarHash) hashes.push(player.avatarHash);
             }
         }
 
         if (payloads.length === 0) return;
 
-        await this._avatarSheetLoader.ensurePayloads(payloads);
+        // AVT-37: prefetch composites from IndexedDB in parallel with sheet
+        // loading. Hydrated textures land in the in-memory LRU before the
+        // factory is asked to compose, avoiding redundant GPU work across
+        // sessions. Misses are silent — composition falls back to sheets.
+        const prefetch = this._avatarFactory
+            ? this._avatarFactory.prefetchFromPersistentCache(hashes)
+            : Promise.resolve(0);
+
+        await Promise.all([
+            this._avatarSheetLoader.ensurePayloads(payloads),
+            prefetch,
+        ]);
     }
 
     _createEntitySprite(type, entity, label, meta = {}) {

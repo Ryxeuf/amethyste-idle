@@ -2,7 +2,7 @@
 
 > **8 taches** | Priorite : **Basse** | Origine : Plan Avatar, Phase 7
 >
-> Avancement : 3/8 (AVT-31, AVT-32, AVT-36).
+> Avancement : 4/8 (AVT-31, AVT-32, AVT-36, AVT-37).
 > Objectif : exploiter pleinement les animations 8x8 et ameliorer la qualite visuelle.
 > Prerequis : Sprint 9 (creation personnage + equipement visible)
 > Reference detaillee : [PLAN_AVATAR_SYSTEM.md](PLAN_AVATAR_SYSTEM.md)
@@ -38,10 +38,10 @@
 - [x] Precharger uniquement les sheets des joueurs visibles — nouveau module `assets/lib/avatar/AvatarSheetLoader.js` qui charge a la demande via `PIXI.Assets.load`, avec deduplication des chargements concurrents. Le boot du controleur `map_pixi_controller` n'itere plus sur `config.avatarCatalog` (suppression du preload body/hair/beard/facemark/gear).
 - [x] Lazy load les sheets rares au besoin — `_ensureAvatarSheetsForEntities(players)` appele au debut de `_loadEntities` scanne les `avatar.baseSheet` + `avatar.layers[].sheet` des joueurs visibles et attend leur chargement en parallele avant de composer les textures. Toute arrivee ulterieure de joueur passe par `map/respawn` -> `_loadEntities`, qui reapplique la meme logique.
 
-### AVT-37 — Cache IndexedDB (M | ★★)
+### ~~AVT-37 — Cache IndexedDB (M | ★★)~~ ✅
 > Prerequis : ← AVT-11
-- [ ] Persister les textures composites entre sessions
-- [ ] Invalidation par `avatarHash`
+- [x] Persister les textures composites entre sessions — nouveau module `assets/lib/avatar/AvatarTexturePersistentCache.js` (wrapper IndexedDB, store `avatar_textures`, keye par `hash`, TTL 30 jours). Ecriture fire-and-forget apres chaque composition (`renderer.extract.canvas().toBlob('image/png')`). Prefetch parallele des hashs des joueurs visibles dans `_ensureAvatarSheetsForEntities` via `AvatarAnimatorFactory.prefetchFromPersistentCache`, re-hydrate le cache memoire avant la premiere frame (`createImageBitmap` + `PIXI.Texture.from` avec `scaleMode='nearest'`).
+- [x] Invalidation par `avatarHash` — `AvatarAnimatorFactory.invalidateAvatarHash` supprime en memoire ET en IndexedDB. Changement d'equipement -> backend recalcule `avatarHash` -> Mercure notifie -> client invalide. Defensif : tout echec IndexedDB (non supporte, quota, erreur) retombe silencieusement sur la composition synchrone.
 
 ### AVT-38 — Variantes raciales & cosmetiques supplementaires (L | ★★)
 > Prerequis : ← AVT-26
