@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-19 (AVT-37 — Cache IndexedDB pour les textures composites d'avatar)
+> Derniere mise a jour : 2026-04-19 (AVT-34 — Paper doll dans l'inventaire)
 
 ---
 
@@ -2300,6 +2300,15 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-34 — Paper doll dans l'inventaire (2026-04-19) ✅
+
+> Cinquieme tache du Sprint 10 (Avatar : Polish & Animations). Affiche le personnage equipe dans l'ecran d'inventaire (`/game/inventory`, onglet equipement) en composant body + gear + appearance dans un canvas 64x64 dedie. Le payload server-side reutilise `PlayerAvatarPayloadBuilder::build()` (meme ordre de layers que le rendu carte : foot/leg/chest/belt/shoulder/hand/side_weapon/main_weapon, puis hair/beard/facemark, puis head). Le rendu client reutilise le pipeline Canvas2D du `character_creator_controller` (aucune dependance PixiJS, tint multiply via destination-in pour les cheveux/barbes). La silhouette SVG existante reste affichee pour les joueurs sans avatar (cas legacy ou fixtures). Debloque la cinquieme case du Sprint 10 ; AVT-35 (personnalisation post-creation) reste bloquee tant que AVT-25 n'est pas mergee.
+- [x] `EquipmentController` : injection de `PlayerAvatarPayloadBuilder`, ajout du parametre `avatarPayload` au render (~5 lignes)
+- [x] Template `_list.html.twig` : remplacement du SVG silhouette par un canvas + fallback SVG conserve quand `avatarPayload` est null (~30 lignes modifiees)
+- [x] Nouveau Stimulus controller `paper_doll_controller.js` (~110 lignes) : compose `baseSheet` + `layers[]` sur la frame stand-down (col 0, row 0), cache d'images en memoire, support du tint via canvas temporaire (multiply + destination-in)
+- [x] Test fonctionnel `EquipmentControllerTest` : verifie que `avatarPayload` est passe au template (cas avatar present + cas legacy null)
+- [x] Mise a jour roadmap : SPRINT_10 (4/8 -> 5/8) + ROADMAP_TODO_INDEX (50 -> 51 taches completes)
 
 ### AVT-37 — Cache IndexedDB pour les textures composites d'avatar (2026-04-19) ✅
 
