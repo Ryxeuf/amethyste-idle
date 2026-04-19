@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-18 (AVT-36 — Lazy loading des sheets avatar visibles)
+> Derniere mise a jour : 2026-04-19 (AVT-37 — Cache IndexedDB pour les textures composites d'avatar)
 
 ---
 
@@ -2300,6 +2300,15 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### AVT-37 — Cache IndexedDB pour les textures composites d'avatar (2026-04-19) ✅
+
+> Quatrieme tache du Sprint 10 (Avatar : Polish & Animations). Persiste les textures composites d'avatar entre sessions via IndexedDB, en complement du cache LRU memoire (AvatarSpriteSheetCache, 128 entrees). Au retour d'un joueur, les avatars deja composes sont re-hydrates depuis le disque avant la premiere frame, evitant la recomposition GPU complete (body + outfit + hair + head) que chaque `map/entities` declenchait historiquement. Invalidation automatique a chaque changement d'equipement (le backend recalcule `avatarHash`, le client appelle `invalidateAvatarHash` qui supprime memoire + disque). Defensif : si IndexedDB est indisponible, stale ou en erreur, chaque appel retombe silencieusement sur la composition synchrone via `AvatarTextureComposer` — aucun chemin rendu critique ne bloque sur le disque.
+- [x] Nouveau module `assets/lib/avatar/AvatarTexturePersistentCache.js` (~170 lignes) : wrapper IndexedDB avec `get(hash)` / `set(hash, blob)` / `delete(hash)` / `clear()` tous async non-throwing, garde `indexedDB === undefined`, store `avatar_textures` keye par `hash`, valeur `{hash, blob, updatedAt}`, TTL 30 jours (purge a la lecture)
+- [x] `AvatarAnimatorFactory` etendu : nouveau parametre constructor `persistentCache`, `prefetchFromPersistentCache(hashes)` deduplique et hydrate en parallele, `_persistCompositeAsync(hash, texture)` post-composition (`renderer.extract.canvas()` -> `toBlob('image/png')` -> `persistentCache.set()` fire-and-forget), `_textureFromBlob(blob)` via `createImageBitmap` + `PIXI.Texture.from` avec `scaleMode = 'nearest'`, `invalidateAvatarHash` / `clear` propagent sur le cache persistant
+- [x] `map_pixi_controller._ensureAvatarSheetsForEntities` collecte les `avatarHash` des joueurs visibles et appelle `prefetchFromPersistentCache(hashes)` en parallele du chargement des sheets (Promise.all) — le hit IndexDB ne retarde jamais le hit sheet-loader
+- [x] Graceful degradation : navigateur sans IndexedDB, quota depasse, DB corrompue -> `_disabled = true` + toutes les methodes retournent `null`/`false` silencieusement ; la composition synchrone existante continue de fonctionner
+- [x] Diff total : +170 lignes nouveau module, +95 / 0 lignes `AvatarAnimatorFactory.js`, +22 / 0 lignes `map_pixi_controller.js`
 
 ### AVT-36 — Lazy loading intelligent des sheets avatar (2026-04-18) ✅
 
