@@ -51,7 +51,7 @@
 | **Sprint 9** | Avatar: Personnage & Equipement | 5/8 | Moyenne | En cours |
 | **Sprint 10** | Avatar: Polish & Animations | 4/8 | Basse | En cours |
 | **Sprint 11** | Monde vivant | 6 | Basse | A venir |
-| **Sprint 12** | Technique & i18n | 2 | Basse | A venir |
+| **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phase 1) |
 
 **Total restant : 45 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
 **Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6) et 8 (10) termines + Sprint 7 (11/12 en cours) + Sprint 9 (5/8 en cours) + Sprint 10 (4/8 en cours) = 50 taches completes / initial 66+
