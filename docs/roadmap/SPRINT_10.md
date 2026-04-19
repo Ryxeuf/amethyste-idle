@@ -2,7 +2,7 @@
 
 > **8 taches** | Priorite : **Basse** | Origine : Plan Avatar, Phase 7
 >
-> Avancement : 4/8 (AVT-31, AVT-32, AVT-36, AVT-37).
+> Avancement : 5/8 (AVT-31, AVT-32, AVT-34, AVT-36, AVT-37).
 > Objectif : exploiter pleinement les animations 8x8 et ameliorer la qualite visuelle.
 > Prerequis : Sprint 9 (creation personnage + equipement visible)
 > Reference detaillee : [PLAN_AVATAR_SYSTEM.md](PLAN_AVATAR_SYSTEM.md)
@@ -23,10 +23,10 @@
 > Prerequis : ← AVT-07
 - [ ] Interaction avec objets du monde (meubles, leviers, puzzles)
 
-### AVT-34 — Paper doll dans l'inventaire (L | ★★★)
+### ~~AVT-34 — Paper doll dans l'inventaire (L | ★★★)~~ ✅
 > Prerequis : ← AVT-20, AVT-27
-- [ ] Preview du personnage equipe dans l'ecran d'inventaire
-- [ ] Composition PixiJS dans un canvas dedie
+- [x] Preview du personnage equipe dans l'ecran d'inventaire — payload server-side via `PlayerAvatarPayloadBuilder::build()` injecte au template par `EquipmentController`, fallback silhouette SVG conserve quand `hasAvatar()` est faux
+- [x] Composition Canvas2D dans un canvas dedie 64x64 — nouveau Stimulus controller `paper_doll_controller.js` qui compose `baseSheet` + `layers` (gear puis hair/beard/facemark + tint multiply) sur la frame stand-down, en reutilisant le pipeline du `character_creator_controller` (pas de PixiJS, pas de dependance importmap)
 
 ### AVT-35 — Ecran de personnalisation post-creation (M | ★★)
 > Prerequis : ← AVT-25
