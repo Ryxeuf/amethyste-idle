@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-19 (AVT-37 — Cache IndexedDB pour les textures composites d'avatar)
+> Derniere mise a jour : 2026-04-19 (134 — Load testing k6 sous-phase 1 : infrastructure + scenario guest-browsing)
 
 ---
 
@@ -2300,6 +2300,16 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### 134 — Load testing & scaling (partiel, sous-phase 1) — Infrastructure k6 + scenario guest-browsing (2026-04-19) 🔧
+
+> Premier jalon de la tache 134 du Sprint 12 (Technique & i18n). Met en place l'infrastructure k6 pour tester la charge du serveur FrankenPHP + Symfony + PostgreSQL. Sous-phase non invasive : uniquement des scripts dans `scripts/load-test/`, aucun changement de code applicatif ou de schema. Le scenario `guest-browsing` simule des visiteurs anonymes parcourant `/`, `/login`, `/register`, `/demo`, `/health` et `/metrics` — l'endpoint `/metrics` declenche plusieurs `COUNT()` Doctrine sur `player`, `fight` et `mob`, premier candidat probable pour les optimisations de la sous-phase 2 (identification goulots d'etranglement). Les scenarios authentifies (login + carte + combat) et l'integration CI nightly seront couverts par les sous-phases suivantes.
+- [x] `scripts/load-test/config.js` : env vars centralisees (BASE_URL, VUS, DURATION, RAMP_UP, RAMP_DOWN, THINK_TIME_MIN/MAX), thresholds globaux (p95<800ms, p99<2s, <1% erreurs, >95% checks), helper `rampingOptions()` pour scenario "ramp-up -> plateau -> ramp-down"
+- [x] `scripts/load-test/scenarios/guest-browsing.js` : scenario 6 endpoints groupes (`landing`, `auth-pages`, `demo`, `monitoring`), checks par endpoint (status, Content-Type, body non vide, body Prometheus), metriques custom `html_page_fail` + `metrics_endpoint_latency`, export JSON via `handleSummary` pour integration CI
+- [x] `scripts/load-test/README.md` : installation k6 (macOS/Debian/Docker), documentation des env vars et thresholds, instructions pour lancer le test cible 200 VUs / 5 min, section "Interpretation des resultats" orientee Doctrine / Mercure / FrankenPHP, roadmap sous-phases suivantes
+- [ ] Identification goulots d'etranglement (DB, Mercure, FrankenPHP) — sous-phase 2
+- [ ] Optimisations : connection pooling, cache Redis, horizontal scaling plan — sous-phase 3
+- [ ] Objectif 200 joueurs simultanes sans degradation — sous-phase finale
 
 ### AVT-37 — Cache IndexedDB pour les textures composites d'avatar (2026-04-19) ✅
 
