@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-19 (134 — Load testing k6 sous-phase 1 : infrastructure + scenario guest-browsing)
+> Derniere mise a jour : 2026-04-19 (130 — Montures & deplacement rapide sous-phase 1 : entite Mount + catalogue de 4 montures)
 
 ---
 
@@ -2300,6 +2300,18 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### 130 — Montures & deplacement rapide (partiel, sous-phase 1) — Entite Mount + catalogue (2026-04-19) 🔧
+
+> Premier jalon de la tache 130 du Sprint 11 (Monde vivant). Pose les fondations data pour le systeme de montures : entite, table, enum de types d'obtention, et un petit catalogue de 4 montures couvrant les trois sources d'obtention principales (achat, quete, drop). Sous-phase non invasive : aucun changement de logique gameplay, aucun nouveau endpoint, aucun impact sur l'UI. Les sous-phases suivantes ajouteront l'equipement cote joueur (relation `Player` -> `Mount`), le bonus de vitesse en deplacement, l'animation sprite en monture et la teleportation rapide entre villes decouvertes.
+- [x] Entite `App\Entity\Game\Mount` (table `game_mounts`) avec slug unique, description, sprite sheet + icone, speedBonus (defaut 50), obtentionType enum string (`quest`/`drop`/`purchase`/`achievement`), gilCost nullable, requiredLevel (defaut 1), flag `enabled`, timestamps via `TimestampableEntity`
+- [x] Migration `Version20260419MountCatalog` : `CREATE TABLE IF NOT EXISTS game_mounts` + index unique slug + index enabled (idempotent pour environnement deja provisionne)
+- [x] `MountFixtures` : 4 montures de base — Cheval brun (achat, 2500 gils, lvl 5, +50%), Loup sauvage (quete, lvl 15, +60%), Chocobo jaune (quete, lvl 30, +75%), Sanglier colossal (drop rare, lvl 20, +40%)
+- [x] Tests unitaires `MountTest` : 11 cas couvrant defaults, contraintes (speedBonus >= 0, obtentionType whitelist, gilCost >= 0 ou null, requiredLevel >= 1), setters fluents, toggle `enabled`
+- [ ] Obtention via quete, drop rare, ou achat — catalogue pret (champ `obtentionType`), reste a brancher aux systemes de quetes / loot / boutique
+- [ ] Vitesse de deplacement +50% quand monte — sous-phase 2
+- [ ] Animation sprite monte sur la carte — sous-phase 3
+- [ ] Teleportation rapide entre villes decouvertes — sous-phase 4
 
 ### 134 — Load testing & scaling (partiel, sous-phase 1) — Infrastructure k6 + scenario guest-browsing (2026-04-19) 🔧
 
