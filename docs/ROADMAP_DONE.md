@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-19 (130 — Montures & deplacement rapide sous-phase 1 : entite Mount + catalogue de 4 montures)
+> Derniere mise a jour : 2026-04-19 (130 — Montures & deplacement rapide sous-phase 2 : possession de montures cote joueur)
 
 ---
 
@@ -2308,10 +2308,19 @@
 - [x] Migration `Version20260419MountCatalog` : `CREATE TABLE IF NOT EXISTS game_mounts` + index unique slug + index enabled (idempotent pour environnement deja provisionne)
 - [x] `MountFixtures` : 4 montures de base — Cheval brun (achat, 2500 gils, lvl 5, +50%), Loup sauvage (quete, lvl 15, +60%), Chocobo jaune (quete, lvl 30, +75%), Sanglier colossal (drop rare, lvl 20, +40%)
 - [x] Tests unitaires `MountTest` : 11 cas couvrant defaults, contraintes (speedBonus >= 0, obtentionType whitelist, gilCost >= 0 ou null, requiredLevel >= 1), setters fluents, toggle `enabled`
-- [ ] Obtention via quete, drop rare, ou achat — catalogue pret (champ `obtentionType`), reste a brancher aux systemes de quetes / loot / boutique
-- [ ] Vitesse de deplacement +50% quand monte — sous-phase 2
-- [ ] Animation sprite monte sur la carte — sous-phase 3
-- [ ] Teleportation rapide entre villes decouvertes — sous-phase 4
+- [ ] Obtention via quete, drop rare, ou achat — modele de possession livre en sous-phase 2, reste a brancher aux systemes de quetes / loot / boutique
+- [ ] Vitesse de deplacement +50% quand monte — sous-phase 3
+- [ ] Animation sprite monte sur la carte — sous-phase 4
+- [ ] Teleportation rapide entre villes decouvertes — sous-phase 5
+
+### 130 — Montures & deplacement rapide (partiel, sous-phase 2) — Possession cote joueur (2026-04-19) 🔧
+
+> Deuxieme jalon de la tache 130 du Sprint 11 (Monde vivant). Ajoute le modele de possession de montures par les joueurs : entite de liaison `PlayerMount` avec source d'obtention tracee, service `MountGranter` idempotent, et tests unitaires. Sous-phase non invasive : aucun controller, aucun changement de logique gameplay, aucun endpoint expose. Pre-requis naturel pour les sous-phases 3-5 (vitesse, rendu, teleportation), qui necessitent toutes de savoir qu'un joueur donne possede telle ou telle monture. Les sources supportees (`quest`, `drop`, `purchase`, `achievement`, `admin`) permettent de tracer le chemin d'obtention pour de futurs tableaux de bord et achievements (p.ex. "Ecurie rassemblee"). L'idempotence protege contre les double-grants accidentels : un drop repete ou une quete re-validee ne cree jamais de doublon et preserve la source d'obtention initiale.
+- [x] Entite `App\Entity\App\PlayerMount` (table `player_mount`) : FK `player_id` (CASCADE DELETE) + FK `mount_id`, `obtained_at` datetime immutable, `source` VARCHAR(32) whitelistee via `PlayerMount::getSources()`, UNIQUE(player_id, mount_id), INDEX (player_id)
+- [x] Repository `PlayerMountRepository` : `findOneByPlayerAndMount()` pour la deduplication, `findByPlayer()` ordonne par date d'obtention
+- [x] Migration `Version20260419PlayerMount` (idempotente) : `CREATE TABLE IF NOT EXISTS player_mount` + index unique + index player + FK via `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint ...) THEN ALTER TABLE ... END IF; END $$` (pattern PostgreSQL documente dans CLAUDE.md)
+- [x] Service `App\GameEngine\Mount\MountGranter` : `grant(Player, Mount, string $source): PlayerMount` idempotent (retourne l'enregistrement existant sans nouveau persist/flush quand le joueur possede deja la monture) ; `playerOwnsMount(Player, Mount): bool` helper pour les futures integrations
+- [x] Tests unitaires : `MountGranterTest` (5 cas — creation, idempotence preservant la source initiale, rejet source invalide, `playerOwnsMount` true/false) + `PlayerMountTest` (5 cas — defaults, obtainedAt explicite, rejet source invalide, liste des sources, tous les setters valides)
 
 ### 134 — Load testing & scaling (partiel, sous-phase 1) — Infrastructure k6 + scenario guest-browsing (2026-04-19) 🔧
 
