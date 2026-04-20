@@ -38,7 +38,8 @@
 
 ### 131 — Events live & outils GM (M | ★★★)
 > Prerequis : ← 79 (evenements bonus)
-- [ ] Interface admin pour lancer des events en temps reel
+> Avancement : sous-phase 1/4 livree (bouton admin "Lancer maintenant" decale `startsAt` a maintenant, preserve la duree originale, bascule en `active` et dispatche `GameEventActivatedEvent`). Sous-phases 2-4 restent a faire.
+- [x] Interface admin pour lancer des events en temps reel — nouvelle action `GameEventController::launchNow` (route `POST /admin/events/{id}/launch-now`, CSRF `launch_now{id}`) + bouton "Lancer" dans le template `admin/event/index.html.twig` pour les statuts `scheduled`/`completed`/`cancelled`. Preserve la duree (`endsAt - startsAt`) quand positive, fallback 1h sinon. Appelle `EventDispatcher` (topic global existant via `GameEventActivatedEvent`) et `AdminLogger` (action `launch_now`). Tests fonctionnels dans `GameEventControllerTest` : succes nominal, rejet CSRF invalide, refus si deja actif, fallback duree nulle.
 - [ ] Types : spawn de boss special, buff global, quete ephemere
 - [ ] Historique des events lances
 - [ ] Annonce globale via Mercure SSE
