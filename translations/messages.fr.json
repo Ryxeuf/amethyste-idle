@@ -63,6 +63,7 @@
       "craft": "Artisanat",
       "factions": "Factions",
       "friends": "Amis",
+      "rankings": "Classement",
       "menu": {
         "adventure": "Aventure",
         "character": "Personnage",
@@ -445,6 +446,24 @@
       },
       "error_action": "Une erreur est survenue lors de l'action.",
       "difficulty": "Difficulté %level%/5"
+    },
+    "ranking": {
+      "title": "Classement",
+      "subtitle": "Comparez vos exploits avec ceux des autres aventuriers",
+      "tab": {
+        "kills": "Éliminations"
+      },
+      "col": {
+        "rank": "Rang",
+        "player": "Joueur",
+        "kills": "Éliminations"
+      },
+      "your_rank": "Votre rang : #%rank%",
+      "your_rank_none": "Non classé (aucune élimination)",
+      "your_kills": "Vos éliminations : %count%",
+      "empty": "Aucun joueur classé pour l'instant. Soyez le premier !",
+      "top_limit_note": "Top %limit% joueurs (classement global, toutes saisons confondues)",
+      "you": "Vous"
     },
     "bestiary": {
       "title": "Bestiaire",

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (135 — Localisation i18n sous-phase 1 : selecteur de langue securise, whitelist `enabled_locales`)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 1 : page `/game/rankings` + classement all-time mobs tues)
 
 ---
 
@@ -2312,6 +2312,21 @@
 - [ ] Vitesse de deplacement +50% quand monte — sous-phase 2
 - [ ] Animation sprite monte sur la carte — sous-phase 3
 - [ ] Teleportation rapide entre villes decouvertes — sous-phase 4
+
+### 132 — Classement saisonnier global (partiel, sous-phase 1) — Page `/game/rankings` + top killers (2026-04-20) 🔧
+
+> Premier jalon de la tache 132 du Sprint 11 (Monde vivant). Pose les fondations du systeme de classement en livrant une page `/game/rankings` read-only qui affiche le top 50 des joueurs par nombre total de mobs tues (all-time, toutes saisons confondues). Sous-phase non invasive : aucun changement de schema, aucune nouvelle entite, exploite `PlayerBestiary.killCount` deja alimente par le pipeline combat/bestiaire. Les sous-phases suivantes ajouteront des criteres supplementaires (XP gagnee, quetes completees), la saisonnalite (liee a `InfluenceSeason`) et les recompenses de fin de saison.
+- [x] `RankingController` (route `GET /game/rankings`, nom `app_game_rankings`) : injection `PlayerHelper` + `PlayerBestiaryRepository`, garde `ROLE_USER`, redirige vers `app_game` si aucun personnage, rend `game/ranking/index.html.twig` avec `topKillers`, `playerRank`, `playerTotalKills`, `topLimit=50`
+- [x] `PlayerBestiaryRepository::findTopKillers(int $limit = 50)` : DQL `GROUP BY pb.player + SUM(pb.killCount) + HAVING > 0`, re-hydrate les entites `Player` via un `findBy(['id' => $ids])` pour eviter le N+1 en listant les noms
+- [x] `PlayerBestiaryRepository::getPlayerKillRank(Player)` : calcule le rang 1-based en comptant les joueurs ayant un total de kills strictement superieur (via DQL + `\count` en PHP pour contourner la limitation `HAVING + COUNT(DISTINCT)`). Retourne `null` si le joueur n'a aucun kill.
+- [x] Template `templates/game/ranking/index.html.twig` : tableau trie (rang / nom / kills) avec highlight du joueur courant (`bg-purple-900/30`), icones medailles top 3, note sur la limite du top 50, onglets preparatoires (un seul onglet "Eliminations" actif pour la v1)
+- [x] Menu de navigation : lien ajoute dans le dropdown Social desktop (icone barres verticales) + dans le drawer mobile, `social_routes` etend `app_game_rankings`
+- [x] Traductions FR/EN : nouveau bloc `game.ranking.*` (title, subtitle, tab.kills, col.rank, col.player, col.kills, your_rank, your_rank_none, your_kills, empty, top_limit_note, you) + entree `game.nav.rankings`
+- [x] Tests `tests/Functional/Controller/Game/RankingControllerTest.php` (3 cas) : rendu nominal avec top + rang joueur, redirection `302` si aucun player, joueur non classe (`playerRank=null`, `topKillers=[]`) — pattern container/twig mock identique a `BestiaryControllerTest`
+- [x] Diff total : ~280 lignes ajoutees (controller + repo + template + tests + traductions + navigation), 0 ligne supprimee
+- [ ] Classement individuel par XP gagnee / quetes completees (sous-phase 2 : ajouter criteres et onglets dedies)
+- [ ] Saisonnalite liee a `InfluenceSeason` (sous-phase 3 : reset/archivage periodique du classement)
+- [ ] Recompenses de fin de saison : titres, cosmetiques, items exclusifs (sous-phase 4)
 
 ### 135 — Localisation i18n (partiel, sous-phase 1) — Selecteur de langue securise (2026-04-20) 🔧
 
