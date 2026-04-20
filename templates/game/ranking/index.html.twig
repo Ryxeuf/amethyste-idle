@@ -3,8 +3,8 @@
 {% block title %}{{ 'game.ranking.title'|trans }}{% endblock %}
 
 {% block game_content %}
-{% set valueKey = tab == 'quests' ? 'totalQuests' : 'totalKills' %}
-{% set colLabel = tab == 'quests' ? 'game.ranking.col.quests'|trans : 'game.ranking.col.kills'|trans %}
+{% set valueKey = tab == 'quests' ? 'totalQuests' : (tab == 'xp' ? 'totalXp' : 'totalKills') %}
+{% set colLabel = tab == 'quests' ? 'game.ranking.col.quests'|trans : (tab == 'xp' ? 'game.ranking.col.xp'|trans : 'game.ranking.col.kills'|trans) %}
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
@@ -24,6 +24,10 @@
                    class="px-3 py-2 text-xs font-medium {% if tab == 'quests' %}text-white border-b-2 border-purple-500 -mb-px{% else %}text-gray-400 hover:text-gray-200{% endif %}">
                     {{ 'game.ranking.tab.quests'|trans }}
                 </a>
+                <a href="{{ path('app_game_rankings', {tab: 'xp'}) }}"
+                   class="px-3 py-2 text-xs font-medium {% if tab == 'xp' %}text-white border-b-2 border-purple-500 -mb-px{% else %}text-gray-400 hover:text-gray-200{% endif %}">
+                    {{ 'game.ranking.tab.xp'|trans }}
+                </a>
             </div>
 
             {# Resume du rang du joueur #}
@@ -41,6 +45,8 @@
                     <span class="text-gray-400">
                         {% if tab == 'quests' %}
                             {{ 'game.ranking.your_quests'|trans({'%count%': playerTotal}) }}
+                        {% elseif tab == 'xp' %}
+                            {{ 'game.ranking.your_xp'|trans({'%count%': playerTotal}) }}
                         {% else %}
                             {{ 'game.ranking.your_kills'|trans({'%count%': playerTotal}) }}
                         {% endif %}

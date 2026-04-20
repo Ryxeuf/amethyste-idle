@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Helper\PlayerHelper;
+use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,12 +16,14 @@ class RankingController extends AbstractController
     private const int TOP_LIMIT = 50;
     private const string TAB_KILLS = 'kills';
     private const string TAB_QUESTS = 'quests';
-    private const array TABS = [self::TAB_KILLS, self::TAB_QUESTS];
+    private const string TAB_XP = 'xp';
+    private const array TABS = [self::TAB_KILLS, self::TAB_QUESTS, self::TAB_XP];
 
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerBestiaryRepository $bestiaryRepository,
         private readonly PlayerQuestCompletedRepository $questCompletedRepository,
+        private readonly DomainExperienceRepository $domainExperienceRepository,
     ) {
     }
 
@@ -49,6 +52,10 @@ class RankingController extends AbstractController
             $data['topEntries'] = $this->questCompletedRepository->findTopQuestCompleters(self::TOP_LIMIT);
             $data['playerRank'] = $this->questCompletedRepository->getPlayerQuestRank($player);
             $data['playerTotal'] = $this->questCompletedRepository->countQuestsCompleted($player);
+        } elseif (self::TAB_XP === $tab) {
+            $data['topEntries'] = $this->domainExperienceRepository->findTopXpEarners(self::TOP_LIMIT);
+            $data['playerRank'] = $this->domainExperienceRepository->getPlayerXpRank($player);
+            $data['playerTotal'] = $this->domainExperienceRepository->getTotalXpEarned($player);
         } else {
             $data['topEntries'] = $this->bestiaryRepository->findTopKillers(self::TOP_LIMIT);
             $data['playerRank'] = $this->bestiaryRepository->getPlayerKillRank($player);

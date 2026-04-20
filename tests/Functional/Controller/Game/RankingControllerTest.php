@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Controller\Game;
 use App\Controller\Game\RankingController;
 use App\Entity\App\Player;
 use App\Helper\PlayerHelper;
+use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,6 +21,7 @@ class RankingControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private PlayerBestiaryRepository&MockObject $bestiaryRepository;
     private PlayerQuestCompletedRepository&MockObject $questCompletedRepository;
+    private DomainExperienceRepository&MockObject $domainExperienceRepository;
     private RankingController $controller;
 
     /** @var array<string, mixed>|null */
@@ -30,11 +32,13 @@ class RankingControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->bestiaryRepository = $this->createMock(PlayerBestiaryRepository::class);
         $this->questCompletedRepository = $this->createMock(PlayerQuestCompletedRepository::class);
+        $this->domainExperienceRepository = $this->createMock(DomainExperienceRepository::class);
 
         $this->controller = new RankingController(
             $this->playerHelper,
             $this->bestiaryRepository,
             $this->questCompletedRepository,
+            $this->domainExperienceRepository,
         );
 
         $this->controller->setContainer($this->createContainer());
@@ -59,6 +63,7 @@ class RankingControllerTest extends TestCase
             ->method('getTotalKills')->with($player)->willReturn(150);
 
         $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
+        $this->domainExperienceRepository->expects($this->never())->method('findTopXpEarners');
 
         $response = $this->controller->index(new Request());
 
@@ -91,6 +96,7 @@ class RankingControllerTest extends TestCase
             ->method('countQuestsCompleted')->with($player)->willReturn(17);
 
         $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
+        $this->domainExperienceRepository->expects($this->never())->method('findTopXpEarners');
 
         $response = $this->controller->index(new Request(['tab' => 'quests']));
 
@@ -127,6 +133,54 @@ class RankingControllerTest extends TestCase
         $response = $this->controller->index(new Request());
 
         $this->assertEquals(302, $response->getStatusCode());
+    }
+
+    public function testIndexXpTabShowsXpRanking(): void
+    {
+        $player = $this->createMock(Player::class);
+        $other = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $topXp = [
+            ['player' => $other, 'totalXp' => 12500],
+            ['player' => $player, 'totalXp' => 9800],
+        ];
+
+        $this->domainExperienceRepository->expects($this->once())
+            ->method('findTopXpEarners')->with(50)->willReturn($topXp);
+        $this->domainExperienceRepository->expects($this->once())
+            ->method('getPlayerXpRank')->with($player)->willReturn(2);
+        $this->domainExperienceRepository->expects($this->once())
+            ->method('getTotalXpEarned')->with($player)->willReturn(9800);
+
+        $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
+        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
+
+        $response = $this->controller->index(new Request(['tab' => 'xp']));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('xp', $this->capturedTemplateParams['tab']);
+        $this->assertSame($topXp, $this->capturedTemplateParams['topEntries']);
+        $this->assertSame(2, $this->capturedTemplateParams['playerRank']);
+        $this->assertSame(9800, $this->capturedTemplateParams['playerTotal']);
+    }
+
+    public function testIndexHandlesUnrankedPlayerInXpTab(): void
+    {
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->domainExperienceRepository->method('findTopXpEarners')->willReturn([]);
+        $this->domainExperienceRepository->method('getPlayerXpRank')->willReturn(null);
+        $this->domainExperienceRepository->method('getTotalXpEarned')->willReturn(0);
+
+        $response = $this->controller->index(new Request(['tab' => 'xp']));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('xp', $this->capturedTemplateParams['tab']);
+        $this->assertNull($this->capturedTemplateParams['playerRank']);
+        $this->assertSame(0, $this->capturedTemplateParams['playerTotal']);
+        $this->assertSame([], $this->capturedTemplateParams['topEntries']);
     }
 
     public function testIndexHandlesUnrankedPlayerInQuestsTab(): void
