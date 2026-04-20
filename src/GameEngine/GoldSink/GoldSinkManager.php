@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
+use App\Repository\PlayerVisitedRegionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class GoldSinkManager
@@ -25,6 +26,7 @@ class GoldSinkManager
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerVisitedRegionRepository $visitedRegionRepository,
     ) {
     }
 
@@ -64,10 +66,16 @@ class GoldSinkManager
     {
         $regions = $this->entityManager->getRepository(Region::class)->findAll();
         $currentRegion = $player->getMap()?->getRegion();
+        $visitedIds = $this->visitedRegionRepository->findVisitedRegionIds($player);
+        $visitedSet = array_flip($visitedIds);
 
-        return array_filter($regions, function (Region $r) use ($currentRegion) {
-            return $r->getCapitalMap() !== null && $r !== $currentRegion;
-        });
+        return array_values(array_filter($regions, function (Region $r) use ($currentRegion, $visitedSet) {
+            if ($r->getCapitalMap() === null || $r === $currentRegion) {
+                return false;
+            }
+
+            return isset($visitedSet[(int) $r->getId()]);
+        }));
     }
 
     public function getTravelCost(Player $player, Region $destination): int
@@ -96,6 +104,10 @@ class GoldSinkManager
         $currentRegion = $player->getMap()?->getRegion();
         if ($currentRegion === $destination) {
             return ['success' => false, 'message' => 'Vous etes deja dans cette region.'];
+        }
+
+        if (!$this->visitedRegionRepository->hasVisited($player, $destination)) {
+            return ['success' => false, 'message' => 'Vous devez d\'abord decouvrir cette region a pied.'];
         }
 
         $cost = $this->getTravelCost($player, $destination);
