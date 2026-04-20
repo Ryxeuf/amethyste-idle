@@ -1,7 +1,18 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4b.1 : affichage des titres de podium sur la page classement)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4b.1b : affichage des titres de podium sur le profil public)
+
+---
+
+## 132 — Classement saisonnier sous-phase 4b.1b : titres de podium sur le profil public (2026-04-20)
+
+> Prolongement direct de la sous-phase 4b.1 : les titres saisonniers d'un joueur sont desormais visibles par tous les visiteurs de son profil public (`/game/player/{id}/profile`), pas uniquement sur son propre `/game/rankings`. Permet aux joueurs de mettre en valeur leurs accomplissements saisonniers aupres du reste de la communaute et complete l'affichage avant la sous-phase 4b.2 (recompenses cosmetiques / items exclusifs).
+
+- [x] `PlayerProfileController::show` : injection de `PlayerSeasonRewardRepository`, nouveau parametre template `playerTitles = findByPlayer($targetPlayer)` (les titres sont ceux du joueur cible, pas du viewer, pour que tout visiteur voie les accomplissements du profil consulte).
+- [x] `templates/game/profile/show.html.twig` : rangee de badges ajoutee dans l'en-tete du profil, sous le `prestigeTitle` (ou a sa place si absent). Reutilise exactement le meme code couleur (or/argent/bronze selon `title.rank`) et le meme tooltip (`game.ranking.titles.season_tooltip`) que `/game/rankings` pour unifier la convention visuelle — zero traduction supplementaire requise.
+- [x] Tests `PlayerProfileControllerTest` : setup etendu avec mock `PlayerSeasonRewardRepository` injecte dans le constructeur (defaut `findByPlayer -> []` pour ne pas casser les tests existants). Deux nouveaux cas : `testShowPassesPlayerTitlesToTemplate` (un `findByPlayer($targetPlayer)` retourne 2 titres mockes -> propage au template via `playerTitles`) et `testShowPassesEmptyTitlesWhenPlayerHasNone` (defaut empty -> tableau vide dans le template).
+- [x] Roadmap : `SPRINT_11.md` sous-phase 4b.1b cochee (detaillant l'implementation), `ROADMAP_TODO_INDEX.md` a mettre a jour si le compteur d'avancement Sprint 11 varie.
 
 ---
 

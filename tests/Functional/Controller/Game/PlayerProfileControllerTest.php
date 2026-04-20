@@ -3,12 +3,16 @@
 namespace App\Tests\Functional\Controller\Game;
 
 use App\Controller\Game\PlayerProfileController;
+use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerAchievement;
 use App\Entity\App\PlayerBestiary;
+use App\Entity\App\PlayerSeasonReward;
+use App\Enum\RankingTab;
 use App\GameEngine\Renown\PlayerReportManager;
 use App\Helper\PlayerHelper;
+use App\Repository\PlayerSeasonRewardRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -23,6 +27,7 @@ class PlayerProfileControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private EntityManagerInterface&MockObject $entityManager;
     private PlayerReportManager&MockObject $reportManager;
+    private PlayerSeasonRewardRepository&MockObject $seasonRewardRepository;
     private PlayerProfileController $controller;
 
     /** @var array<string, mixed>|null */
@@ -33,11 +38,14 @@ class PlayerProfileControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->reportManager = $this->createMock(PlayerReportManager::class);
+        $this->seasonRewardRepository = $this->createMock(PlayerSeasonRewardRepository::class);
+        $this->seasonRewardRepository->method('findByPlayer')->willReturn([]);
 
         $this->controller = new PlayerProfileController(
             $this->playerHelper,
             $this->entityManager,
             $this->reportManager,
+            $this->seasonRewardRepository,
         );
 
         $this->controller->setContainer($this->createContainer());
@@ -111,6 +119,87 @@ class PlayerProfileControllerTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertFalse($this->capturedTemplateParams['isOwnProfile']);
+    }
+
+    public function testShowPassesPlayerTitlesToTemplate(): void
+    {
+        $targetPlayer = $this->createPlayerMock(55);
+        $currentPlayer = $this->createPlayerMock(1);
+
+        $this->playerHelper->method('getPlayer')->willReturn($currentPlayer);
+
+        $playerRepo = $this->createMock(EntityRepository::class);
+        $playerRepo->method('find')->with(55)->willReturn($targetPlayer);
+
+        $achievementRepo = $this->createMock(EntityRepository::class);
+        $achievementRepo->method('findBy')->willReturn([]);
+
+        $this->entityManager->method('getRepository')->willReturnCallback(
+            fn (string $class) => match ($class) {
+                Player::class => $playerRepo,
+                PlayerAchievement::class => $achievementRepo,
+                default => $this->createMock(EntityRepository::class),
+            },
+        );
+
+        $season = $this->createMock(InfluenceSeason::class);
+        $title1 = $this->createMock(PlayerSeasonReward::class);
+        $title1->method('getRank')->willReturn(1);
+        $title1->method('getTab')->willReturn(RankingTab::Kills);
+        $title1->method('getSeason')->willReturn($season);
+        $title2 = $this->createMock(PlayerSeasonReward::class);
+        $title2->method('getRank')->willReturn(3);
+        $title2->method('getTab')->willReturn(RankingTab::Xp);
+        $title2->method('getSeason')->willReturn($season);
+
+        $dedicatedRewardRepo = $this->createMock(PlayerSeasonRewardRepository::class);
+        $dedicatedRewardRepo
+            ->expects($this->once())
+            ->method('findByPlayer')
+            ->with($targetPlayer)
+            ->willReturn([$title1, $title2]);
+
+        $controller = new PlayerProfileController(
+            $this->playerHelper,
+            $this->entityManager,
+            $this->reportManager,
+            $dedicatedRewardRepo,
+        );
+        $controller->setContainer($this->createContainer());
+
+        $response = $controller->show(55);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('playerTitles', $this->capturedTemplateParams);
+        $this->assertSame([$title1, $title2], $this->capturedTemplateParams['playerTitles']);
+    }
+
+    public function testShowPassesEmptyTitlesWhenPlayerHasNone(): void
+    {
+        $targetPlayer = $this->createPlayerMock(77);
+        $currentPlayer = $this->createPlayerMock(77);
+
+        $this->playerHelper->method('getPlayer')->willReturn($currentPlayer);
+
+        $playerRepo = $this->createMock(EntityRepository::class);
+        $playerRepo->method('find')->with(77)->willReturn($targetPlayer);
+
+        $achievementRepo = $this->createMock(EntityRepository::class);
+        $achievementRepo->method('findBy')->willReturn([]);
+
+        $this->entityManager->method('getRepository')->willReturnCallback(
+            fn (string $class) => match ($class) {
+                Player::class => $playerRepo,
+                PlayerAchievement::class => $achievementRepo,
+                default => $this->createMock(EntityRepository::class),
+            },
+        );
+
+        $response = $this->controller->show(77);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertArrayHasKey('playerTitles', $this->capturedTemplateParams);
+        $this->assertSame([], $this->capturedTemplateParams['playerTitles']);
     }
 
     public function testToggleFeaturedSuccess(): void

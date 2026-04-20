@@ -25,6 +25,19 @@
                     {% if targetPlayer.prestigeTitle %}
                     <div class="text-xs text-yellow-300 italic mt-0.5">{{ targetPlayer.prestigeTitle }}</div>
                     {% endif %}
+                    {% if playerTitles is defined and playerTitles|length > 0 %}
+                        <div class="mt-1 flex flex-wrap gap-1">
+                            {% for title in playerTitles %}
+                                {% set rankColor = title.rank == 1 ? 'text-yellow-300 border-yellow-500/50 bg-yellow-900/20'
+                                    : (title.rank == 2 ? 'text-gray-200 border-gray-400/50 bg-gray-700/40'
+                                    : 'text-orange-300 border-orange-500/50 bg-orange-900/20') %}
+                                <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium {{ rankColor }}"
+                                      title="{{ 'game.ranking.titles.season_tooltip'|trans({'%season%': title.season.name, '%tab%': ('game.ranking.tab.' ~ title.tab.value)|trans}) }}">
+                                    <span aria-hidden="true">&#9733;</span>{{ title.titleLabel }}
+                                </span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <div class="flex items-center gap-2 mt-1">
                         <span class="text-xs font-semibold {{ renownTier.cssClass }}" title="Renommée : {{ renownScore }} points{% if renownPointsToNext is not null %} ({{ renownPointsToNext }} pour le palier suivant){% endif %}">
                             ★ {{ renownTier.label }}
