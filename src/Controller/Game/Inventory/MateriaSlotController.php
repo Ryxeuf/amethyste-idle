@@ -102,6 +102,6 @@ class MateriaSlotController extends AbstractController
         }
 
         // Full page visit (direct URL, back/forward) — redirect to inventory
-        return $this->redirectToRoute('app_game_inventory');
+        return $this->redirectToRoute('app_game_inventory_index');
     }
 }
