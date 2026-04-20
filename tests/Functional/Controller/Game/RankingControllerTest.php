@@ -3,8 +3,8 @@
 namespace App\Tests\Functional\Controller\Game;
 
 use App\Controller\Game\RankingController;
-use App\Entity\App\Player;
 use App\Entity\App\InfluenceSeason;
+use App\Entity\App\Player;
 use App\Entity\App\PlayerSeasonReward;
 use App\Enum\RankingTab;
 use App\Helper\PlayerHelper;
