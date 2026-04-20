@@ -449,16 +449,19 @@
       "title": "Rankings",
       "subtitle": "Compare your deeds with other adventurers",
       "tab": {
-        "kills": "Kills"
+        "kills": "Kills",
+        "quests": "Quests"
       },
       "col": {
         "rank": "Rank",
         "player": "Player",
-        "kills": "Kills"
+        "kills": "Kills",
+        "quests": "Quests completed"
       },
       "your_rank": "Your rank: #%rank%",
-      "your_rank_none": "Unranked (no kills yet)",
+      "your_rank_none": "Unranked",
       "your_kills": "Your kills: %count%",
+      "your_quests": "Your quests completed: %count%",
       "empty": "No ranked players yet. Be the first!",
       "top_limit_note": "Top %limit% players (all-time global ranking)",
       "you": "You"

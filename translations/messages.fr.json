@@ -451,16 +451,19 @@
       "title": "Classement",
       "subtitle": "Comparez vos exploits avec ceux des autres aventuriers",
       "tab": {
-        "kills": "Éliminations"
+        "kills": "Éliminations",
+        "quests": "Quêtes"
       },
       "col": {
         "rank": "Rang",
         "player": "Joueur",
-        "kills": "Éliminations"
+        "kills": "Éliminations",
+        "quests": "Quêtes complétées"
       },
       "your_rank": "Votre rang : #%rank%",
-      "your_rank_none": "Non classé (aucune élimination)",
+      "your_rank_none": "Non classé",
       "your_kills": "Vos éliminations : %count%",
+      "your_quests": "Vos quêtes complétées : %count%",
       "empty": "Aucun joueur classé pour l'instant. Soyez le premier !",
       "top_limit_note": "Top %limit% joueurs (classement global, toutes saisons confondues)",
       "you": "Vous"

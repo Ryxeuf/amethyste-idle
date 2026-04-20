@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 1 : page `/game/rankings` + classement all-time mobs tues)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 2a : onglet quetes completees dans `/game/rankings`)
+
+---
+
+## 132 — Classement saisonnier sous-phase 2a : classement quetes completees (2026-04-20)
+
+> Extension de `/game/rankings` avec un second classement : nombre de quetes completees all-time. La page expose desormais un systeme d'onglets (`?tab=kills` / `?tab=quests`) qui partage le meme chrome (rang joueur, top 50, zero state).
+
+- [x] `PlayerQuestCompletedRepository` dedie (couple `#[ORM\Entity(repositoryClass: ...)]` sur `PlayerQuestCompleted`) avec 3 methodes miroir du repo bestiaire : `countQuestsCompleted(Player)`, `findTopQuestCompleters(int)` (COUNT + GROUP BY + hydratation `Player` via un second `findBy`), `getPlayerQuestRank(Player)` (comptage des joueurs strictement au-dessus).
+- [x] `RankingController` accepte `?tab=kills|quests` (whitelist, fallback silencieux vers `kills` si valeur inconnue). Les cles du template sont normalisees (`topEntries`, `playerTotal`, `tab`) pour reutiliser le meme markup.
+- [x] Template `game/ranking/index.html.twig` : onglets cliquables (`<a href>`), table unique dont le header et la valeur varient selon `tab` (helper Twig `attribute(entry, valueKey)`). Zero state et resume du rang partages entre onglets.
+- [x] Traductions FR/EN etendues : `tab.quests`, `col.quests`, `your_quests`. `your_rank_none` generalise ("Non classe" / "Unranked" sans mention kills).
+- [x] Tests `RankingControllerTest` etendus a 5 cas : default tab kills (appels bestiaire uniquement), tab quests (appels quest repo uniquement, bestiaire jamais touche), tab inconnu (fallback kills), redirection sans player (aucun appel repo), joueur non classe dans l'onglet quests.
+- [x] Roadmap : `SPRINT_11.md` sous-phase 2a cochee, avancement remis a jour ; sous-phase 2b (XP gagnee) isolee comme prochain jalon.
 
 ---
 

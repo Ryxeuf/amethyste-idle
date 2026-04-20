@@ -4,22 +4,28 @@ namespace App\Controller\Game;
 
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerBestiaryRepository;
+use App\Repository\PlayerQuestCompletedRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class RankingController extends AbstractController
 {
     private const int TOP_LIMIT = 50;
+    private const string TAB_KILLS = 'kills';
+    private const string TAB_QUESTS = 'quests';
+    private const array TABS = [self::TAB_KILLS, self::TAB_QUESTS];
 
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerBestiaryRepository $bestiaryRepository,
+        private readonly PlayerQuestCompletedRepository $questCompletedRepository,
     ) {
     }
 
     #[Route('/game/rankings', name: 'app_game_rankings', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -28,16 +34,27 @@ class RankingController extends AbstractController
             return $this->redirectToRoute('app_game');
         }
 
-        $topKillers = $this->bestiaryRepository->findTopKillers(self::TOP_LIMIT);
-        $playerRank = $this->bestiaryRepository->getPlayerKillRank($player);
-        $playerTotalKills = $this->bestiaryRepository->getTotalKills($player);
+        $tab = (string) $request->query->get('tab', self::TAB_KILLS);
+        if (!\in_array($tab, self::TABS, true)) {
+            $tab = self::TAB_KILLS;
+        }
 
-        return $this->render('game/ranking/index.html.twig', [
+        $data = [
             'player' => $player,
-            'topKillers' => $topKillers,
-            'playerRank' => $playerRank,
-            'playerTotalKills' => $playerTotalKills,
+            'tab' => $tab,
             'topLimit' => self::TOP_LIMIT,
-        ]);
+        ];
+
+        if (self::TAB_QUESTS === $tab) {
+            $data['topEntries'] = $this->questCompletedRepository->findTopQuestCompleters(self::TOP_LIMIT);
+            $data['playerRank'] = $this->questCompletedRepository->getPlayerQuestRank($player);
+            $data['playerTotal'] = $this->questCompletedRepository->countQuestsCompleted($player);
+        } else {
+            $data['topEntries'] = $this->bestiaryRepository->findTopKillers(self::TOP_LIMIT);
+            $data['playerRank'] = $this->bestiaryRepository->getPlayerKillRank($player);
+            $data['playerTotal'] = $this->bestiaryRepository->getTotalKills($player);
+        }
+
+        return $this->render('game/ranking/index.html.twig', $data);
     }
 }

@@ -3,11 +3,12 @@
 namespace App\Entity\App;
 
 use App\Entity\Game\Quest;
+use App\Repository\PlayerQuestCompletedRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: PlayerQuestCompletedRepository::class)]
 #[ORM\Table(name: 'player_quest_completed')]
 #[ORM\UniqueConstraint(name: 'player_quest_completed_unique', columns: ['player_id', 'quest_id'])]
 #[UniqueEntity(
