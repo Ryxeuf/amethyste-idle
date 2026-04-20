@@ -4,7 +4,10 @@ framework:
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true
-    
+
+    # Locales supportees par le jeu (135 — Localisation i18n)
+    enabled_locales: ['fr', 'en']
+
     # Enables the translator
     translator: { fallbacks: ['%default_locale%'] }
 

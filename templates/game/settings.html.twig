@@ -38,12 +38,18 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
+                        <div
+                            data-controller="locale-switcher"
+                            data-locale-switcher-url-template-value="{{ path('app_change_locale', {locale: '__LOCALE__'}) }}"
+                        >
                             <label for="language" class="block text-sm font-medium text-gray-300 mb-1">{{ 'game.settings.general.language'|trans }}</label>
-                            <select id="language" name="language" class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
-                                <option value="fr">Francais</option>
-                                <option value="en">English</option>
-                                <option value="es">Espanol</option>
+                            <select
+                                id="language"
+                                name="language"
+                                data-action="change->locale-switcher#change"
+                                class="bg-gray-700 text-white shadow-sm focus:ring-purple-500 focus:border-purple-500 block w-full text-sm border-gray-600 rounded-lg py-2.5 px-3">
+                                <option value="fr"{% if app.request.locale == 'fr' %} selected{% endif %}>Francais</option>
+                                <option value="en"{% if app.request.locale == 'en' %} selected{% endif %}>English</option>
                             </select>
                         </div>
                         <div>
