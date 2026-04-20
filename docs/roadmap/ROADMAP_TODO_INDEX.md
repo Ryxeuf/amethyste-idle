@@ -1,9 +1,9 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-04-19
+> Derniere mise a jour : 2026-04-20
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 11/12 taches completees (AVT-04 bloque sur livraison d'assets). Sprint 8 (Avatar : Backend & Carte) — 10/10 taches completees. Sprint 9 (Avatar : Personnage & Equipement) — 5/8 taches completees (AVT-24 ajoute). Sprint 10 (Avatar : Polish) — 4/8 taches completees (AVT-32 jump animation, AVT-31 run animation via sprint Shift, AVT-36 lazy loading, AVT-37 cache IndexedDB). Sprint 11 (Monde vivant) — 130 sous-phase 1 livree (catalogue Mount).
+> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 11/12 taches completees (AVT-04 bloque sur livraison d'assets). Sprint 8 (Avatar : Backend & Carte) — 10/10 taches completees. Sprint 9 (Avatar : Personnage & Equipement) — 5/8 taches completees (AVT-24 ajoute). Sprint 10 (Avatar : Polish) — 4/8 taches completees (AVT-32 jump animation, AVT-31 run animation via sprint Shift, AVT-36 lazy loading, AVT-37 cache IndexedDB). Sprint 11 (Monde vivant) — 130 sous-phases 1 (catalogue Mount) + 2a (fondation ownership PlayerMount) livrees.
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---
