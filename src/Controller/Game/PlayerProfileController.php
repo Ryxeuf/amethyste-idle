@@ -11,6 +11,7 @@ use App\Enum\PlayerRenownTier;
 use App\Enum\PlayerReportReason;
 use App\GameEngine\Renown\PlayerReportManager;
 use App\Helper\PlayerHelper;
+use App\Repository\PlayerSeasonRewardRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,6 +27,7 @@ class PlayerProfileController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerReportManager $reportManager,
+        private readonly PlayerSeasonRewardRepository $seasonRewardRepository,
     ) {
     }
 
@@ -69,6 +71,9 @@ class PlayerProfileController extends AbstractController
         $renownTier = PlayerRenownTier::fromScore($renownScore);
         $renownPointsToNext = PlayerRenownTier::pointsToNextTier($renownScore);
 
+        // Seasonal podium titles (sous-phase 4b.1b : visibles sur le profil public)
+        $playerTitles = $this->seasonRewardRepository->findByPlayer($targetPlayer);
+
         return $this->render('game/profile/show.html.twig', [
             'targetPlayer' => $targetPlayer,
             'player' => $currentPlayer,
@@ -83,6 +88,7 @@ class PlayerProfileController extends AbstractController
             'renownScore' => $renownScore,
             'renownTier' => $renownTier,
             'renownPointsToNext' => $renownPointsToNext,
+            'playerTitles' => $playerTitles,
         ]);
     }
 
