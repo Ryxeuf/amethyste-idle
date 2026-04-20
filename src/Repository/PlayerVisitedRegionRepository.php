@@ -33,7 +33,7 @@ class PlayerVisitedRegionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return int[] Region IDs visited by the player.
+     * @return int[] region IDs visited by the player
      */
     public function findVisitedRegionIds(Player $player): array
     {
