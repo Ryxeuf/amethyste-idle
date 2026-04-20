@@ -6,6 +6,7 @@ use App\Helper\PlayerHelper;
 use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
+use App\Repository\PlayerSeasonRewardRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,6 +25,7 @@ class RankingController extends AbstractController
         private readonly PlayerBestiaryRepository $bestiaryRepository,
         private readonly PlayerQuestCompletedRepository $questCompletedRepository,
         private readonly DomainExperienceRepository $domainExperienceRepository,
+        private readonly PlayerSeasonRewardRepository $seasonRewardRepository,
     ) {
     }
 
@@ -46,6 +48,7 @@ class RankingController extends AbstractController
             'player' => $player,
             'tab' => $tab,
             'topLimit' => self::TOP_LIMIT,
+            'playerTitles' => $this->seasonRewardRepository->findByPlayer($player),
         ];
 
         if (self::TAB_QUESTS === $tab) {

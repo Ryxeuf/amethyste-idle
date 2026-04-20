@@ -4,10 +4,14 @@ namespace App\Tests\Functional\Controller\Game;
 
 use App\Controller\Game\RankingController;
 use App\Entity\App\Player;
+use App\Entity\App\InfluenceSeason;
+use App\Entity\App\PlayerSeasonReward;
+use App\Enum\RankingTab;
 use App\Helper\PlayerHelper;
 use App\Repository\DomainExperienceRepository;
 use App\Repository\PlayerBestiaryRepository;
 use App\Repository\PlayerQuestCompletedRepository;
+use App\Repository\PlayerSeasonRewardRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -22,6 +26,7 @@ class RankingControllerTest extends TestCase
     private PlayerBestiaryRepository&MockObject $bestiaryRepository;
     private PlayerQuestCompletedRepository&MockObject $questCompletedRepository;
     private DomainExperienceRepository&MockObject $domainExperienceRepository;
+    private PlayerSeasonRewardRepository&MockObject $seasonRewardRepository;
     private RankingController $controller;
 
     /** @var array<string, mixed>|null */
@@ -33,12 +38,15 @@ class RankingControllerTest extends TestCase
         $this->bestiaryRepository = $this->createMock(PlayerBestiaryRepository::class);
         $this->questCompletedRepository = $this->createMock(PlayerQuestCompletedRepository::class);
         $this->domainExperienceRepository = $this->createMock(DomainExperienceRepository::class);
+        $this->seasonRewardRepository = $this->createMock(PlayerSeasonRewardRepository::class);
+        $this->seasonRewardRepository->method('findByPlayer')->willReturn([]);
 
         $this->controller = new RankingController(
             $this->playerHelper,
             $this->bestiaryRepository,
             $this->questCompletedRepository,
             $this->domainExperienceRepository,
+            $this->seasonRewardRepository,
         );
 
         $this->controller->setContainer($this->createContainer());
@@ -181,6 +189,36 @@ class RankingControllerTest extends TestCase
         $this->assertNull($this->capturedTemplateParams['playerRank']);
         $this->assertSame(0, $this->capturedTemplateParams['playerTotal']);
         $this->assertSame([], $this->capturedTemplateParams['topEntries']);
+    }
+
+    public function testIndexPassesPlayerTitlesToTemplate(): void
+    {
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $season = $this->createMock(InfluenceSeason::class);
+        $reward = new PlayerSeasonReward($season, $player, RankingTab::Kills, 1, 'Champion des chasseurs — Saison 1');
+
+        $repo = $this->createMock(PlayerSeasonRewardRepository::class);
+        $repo->expects($this->once())->method('findByPlayer')->with($player)->willReturn([$reward]);
+
+        $controller = new RankingController(
+            $this->playerHelper,
+            $this->bestiaryRepository,
+            $this->questCompletedRepository,
+            $this->domainExperienceRepository,
+            $repo,
+        );
+        $controller->setContainer($this->createContainer());
+
+        $this->bestiaryRepository->method('findTopKillers')->willReturn([]);
+        $this->bestiaryRepository->method('getPlayerKillRank')->willReturn(null);
+        $this->bestiaryRepository->method('getTotalKills')->willReturn(0);
+
+        $response = $controller->index(new Request());
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame([$reward], $this->capturedTemplateParams['playerTitles']);
     }
 
     public function testIndexHandlesUnrankedPlayerInQuestsTab(): void

@@ -1,7 +1,19 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4a : titres de podium de fin de saison)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4b.1 : affichage des titres de podium sur la page classement)
+
+---
+
+## 132 — Classement saisonnier sous-phase 4b.1 : affichage des titres de podium (2026-04-20)
+
+> Expose dans l'UI les titres persistes par la sous-phase 4a. A l'ouverture de `/game/rankings`, le joueur voit desormais la liste de ses titres saisonniers (tous onglets confondus) sous forme de badges colores or/argent/bronze au-dessus du resume de rang. Premiere utilisation concrete de la table `player_season_reward`.
+
+- [x] `RankingController` : injection de `PlayerSeasonRewardRepository`, ajout de `playerTitles = findByPlayer($player)` dans les parametres template (toutes saisons confondues, tri par `awardedAt` decroissant via le repository).
+- [x] `templates/game/ranking/index.html.twig` : nouvelle section "Mes titres saisonniers" (visible uniquement si `playerTitles|length > 0`), badges `rounded-full` avec code couleur par rang (rang 1 = or / rang 2 = argent / rang 3 = bronze), libelle direct du `title.titleLabel`, tooltip `saison — onglet` via `title` HTML.
+- [x] Traductions FR/EN : `game.ranking.titles.heading` ("Mes titres saisonniers" / "My seasonal titles"), `game.ranking.titles.season_tooltip` ("%season% — %tab%").
+- [x] Tests `RankingControllerTest` : setup etendu avec mock `PlayerSeasonRewardRepository` (defaut `findByPlayer -> []` pour ne pas casser les 7 tests existants), nouveau test `testIndexPassesPlayerTitlesToTemplate` verifiant qu'un `PlayerSeasonReward` construit sur (saison mockee, player, Kills, 1, "Champion ... — Saison 1") est bien injecte dans `playerTitles`.
+- [x] Roadmap : `SPRINT_11.md` sous-phase 4 decoupee en 4b.1 (livree) et 4b.2 (cosmetiques + items exclusifs restants), compteurs d'index mis a jour.
 
 ---
 

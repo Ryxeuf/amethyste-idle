@@ -30,6 +30,26 @@
                 </a>
             </div>
 
+            {# Titres saisonniers du joueur #}
+            {% if playerTitles is defined and playerTitles|length > 0 %}
+                <div class="mb-4">
+                    <h3 class="text-xs font-semibold text-gray-300 uppercase tracking-wide mb-2">
+                        {{ 'game.ranking.titles.heading'|trans }}
+                    </h3>
+                    <div class="flex flex-wrap gap-2">
+                        {% for title in playerTitles %}
+                            {% set rankColor = title.rank == 1 ? 'text-yellow-300 border-yellow-500/50 bg-yellow-900/20'
+                                : (title.rank == 2 ? 'text-gray-200 border-gray-400/50 bg-gray-700/40'
+                                : 'text-orange-300 border-orange-500/50 bg-orange-900/20') %}
+                            <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium {{ rankColor }}"
+                                  title="{{ 'game.ranking.titles.season_tooltip'|trans({'%season%': title.season.name, '%tab%': ('game.ranking.tab.' ~ title.tab.value)|trans}) }}">
+                                <span aria-hidden="true">&#9733;</span>{{ title.titleLabel }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
             {# Resume du rang du joueur #}
             <div class="flex flex-wrap gap-3 mb-4 text-xs">
                 <div class="bg-gray-700/50 rounded-lg px-3 py-2 border border-gray-600">
