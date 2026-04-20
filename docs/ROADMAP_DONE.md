@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4b.1b : affichage des titres de podium sur le profil public)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4b.1c : Hall of Fame des saisons archivees)
+
+---
+
+## 132 — Classement saisonnier sous-phase 4b.1c : Hall of Fame des saisons archivees (2026-04-20)
+
+> Expose dans l'UI les snapshots persistes par la sous-phase 3. Ouvre une nouvelle page publique listant les podiums des saisons archivees, accessible depuis l'en-tete de `/game/rankings`. Permet a tout joueur de consulter l'histoire competitive du serveur sans dependre du systeme d'attribution de titres (4a) ou de cosmetiques (4b.2 a venir).
+
+- [x] `PlayerSeasonRankingSnapshotRepository` etendu avec deux methodes : `findArchivedSeasons(int $limit = 10)` retourne les saisons distinctes ayant au moins un snapshot (sous-requete EXISTS sur `PlayerSeasonRankingSnapshot.season`), triees par `seasonNumber DESC` ; `findPodiumBySeasonAndTab(InfluenceSeason, RankingTab, int $limit = 3)` retourne le top-N pour un (saison, onglet) trie par rang ASC. Reutilise l'infrastructure de la sous-phase 3 sans nouvelle table ni migration.
+- [x] Controller `App\Controller\Game\RankingHistoryController` (route `GET /game/rankings/history`, name `app_game_rankings_history`) : recupere les 10 dernieres saisons archivees, construit un tableau `podiums` contenant pour chaque saison son podium top-3 par onglet (`kills` / `quests` / `xp`). Redirection vers `app_game` si pas de player.
+- [x] Template `templates/game/ranking/history.html.twig` : carte par saison avec en-tete (nom + numero), grille 3 colonnes (kills / quests / xp), badges or/argent/bronze pour le top-3 (reutilise la convention visuelle des badges de titres), fallback "Aucun champion enregistre" si la saison n'a pas de snapshot pour un onglet, message vide invitant a attendre la fin de saison si aucune saison n'est encore archivee. Lien retour vers `/game/rankings`.
+- [x] `templates/game/ranking/index.html.twig` : lien "Voir le Hall of Fame" ajoute dans l'en-tete (a droite du titre).
+- [x] Traductions FR/EN : `game.ranking.history.{title, subtitle, link, back_to_current, season_number, no_data, empty, note}`.
+- [x] Tests `RankingHistoryControllerTest` (3 cas) : `testIndexBuildsPodiumsForArchivedSeasons` (2 saisons, 6 appels `findPodiumBySeasonAndTab` avec limit=3, mapping correct par onglet), `testIndexPassesEmptyPodiumsWhenNoArchivedSeason` (aucun appel a `findPodiumBySeasonAndTab`), `testIndexRedirectsWhenNoPlayer` (302 sans appel repository).
+- [x] Roadmap : `SPRINT_11.md` 132 sous-phase 4b.1c cochee, ligne d'avancement Sprint 11 mise a jour pour inclure le Hall of Fame.
 
 ---
 
