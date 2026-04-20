@@ -12,7 +12,9 @@
       "Bash(cd /var/www/amethyste-idle && docker compose *)",
       "Bash(cd /var/www/amethyste-idle && ./scripts/*)",
       "Bash(ls *)",
-      "Bash(git *)"
+      "Bash(git *)",
+      "Skill",
+      "Monitor"
     ],
     "deny": [
       "Bash(php bin/console *)",
