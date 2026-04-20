@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 2b : onglet XP totale dans `/game/rankings`)
+> Derniere mise a jour : 2026-04-20 (130 — Montures sous-phase 5 : decouverte de region requise pour le fast travel)
+
+---
+
+## 130 — Montures & deplacement rapide sous-phase 5 : fast travel verrouille par decouverte (2026-04-20)
+
+> Le service `GoldSinkManager::fastTravel` existait deja (cout 100 gils, teleporte vers la capitale d'une region) mais autorisait n'importe quelle region disposant d'une `capitalMap`. Cette sous-phase ajoute la mecanique de decouverte : un joueur ne peut se teleporter que vers les regions ou il a deja mis les pieds, ce qui transforme l'exploration en prerequis (et en valeur) du raccourci. Independante des sous-phases 2-4 (ownership / equipement de monture / animations) — peut etre livree avant que PR #428 ne merge.
+
+- [x] Entite `App\Entity\App\PlayerVisitedRegion` (table `player_visited_region`, UNIQUE `player_id + region_id`, index `player_id`, FK CASCADE vers `player` et `region`, `first_visited_at` en `datetime_immutable`). Constructeur `__construct(Player, Region)` qui stamp `first_visited_at` immediatement.
+- [x] `App\Repository\PlayerVisitedRegionRepository` : `hasVisited(Player, Region): bool` (COUNT scalaire) et `findVisitedRegionIds(Player): int[]` (DQL `IDENTITY(pvr.region)` avec hydratation legere pour le filtre des destinations).
+- [x] Migration `Version20260420PlayerVisitedRegion` : `CREATE TABLE IF NOT EXISTS`, `CREATE UNIQUE INDEX IF NOT EXISTS`, FK CASCADE via blocs `DO $$ BEGIN IF NOT EXISTS ...` (idempotent, conforme CLAUDE.md piege Postgres).
+- [x] `App\GameEngine\Region\RegionDiscoveryTracker` (subscriber `EventSubscriberInterface`) : enregistre la region courante a chaque `PlayerMovedEvent`. Methode publique `recordCurrentRegion(Player, bool $flush = true): bool` (no-op si pas de map, pas de region, ou deja visitee).
+- [x] `GoldSinkManager` modifie : injection du nouveau repository ; `getAvailableDestinations(Player)` filtre desormais par regions visitees (en plus du filtre `capitalMap !== null` et `currentRegion !== r`) ; `fastTravel(Player, Region)` rejette explicitement les destinations non visitees avec le message "Vous devez d'abord decouvrir cette region a pied.".
+- [x] Tests `GoldSinkManagerTest` etendus (7 cas existants + 4 nouveaux) : `testGetAvailableDestinationsKeepsOnlyVisitedRegionsExceptCurrent` (4 regions, garde uniquement la region 2 visitee, exclut current/non-visitee/sans-capitale), `testFastTravelRejectsUnvisitedRegion` (gils preserves, aucun flush), `testFastTravelSucceedsWhenDestinationVisited` (player.map mis a jour, coordonnees centrees, gils debites), `testFastTravelStillRejectsCurrentRegionEvenIfVisited` (court-circuite avant l'appel hasVisited).
+- [x] Tests `RegionDiscoveryTrackerTest` (5 cas) : `testOnPlayerMovedPersistsNewVisit`, `testRecordCurrentRegionIsIdempotent`, `testRecordCurrentRegionDoesNothingWithoutRegion` (pas de map / map sans region), `testRecordCurrentRegionWithoutFlush`, `testSubscribedEventsListsPlayerMoved`.
+- [x] Roadmap : `SPRINT_11.md` 130 sous-phase 5 cochee + detail implementation, `ROADMAP_TODO_INDEX.md` mis a jour.
 
 ---
 

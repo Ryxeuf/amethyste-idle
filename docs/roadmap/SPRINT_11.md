@@ -25,12 +25,12 @@
 
 ### 130 — Montures & deplacement rapide (M | ★★)
 > Prerequis : ∅
-> Avancement : sous-phase 1 livree (catalogue de montures). Sous-phases 2-4 restent a faire.
+> Avancement : sous-phases 1 (catalogue de montures) et 5 (fast travel verrouille par decouverte) livrees. Sous-phases 2-4 (ownership, vitesse, animations) restent a faire.
 - [x] Entite `Mount` : slug, name, speedBonus, sprite — entite `App\Entity\Game\Mount` (table `game_mounts`) avec slug unique, description, sprite sheet + icone, speedBonus (defaut 50), obtentionType enum (`quest`/`drop`/`purchase`/`achievement`), gilCost, requiredLevel, flag enabled + timestamps. Migration `Version20260419MountCatalog`. Fixtures de base (4 montures : cheval brun, loup sauvage, chocobo jaune, sanglier colossal) couvrant les 3 types d'obtention principaux. Tests unitaires validant les contraintes (speedBonus >= 0, obtentionType whitelist, gilCost >= 0 ou null, requiredLevel >= 1).
 - [ ] Obtention via quete, drop rare, ou achat — catalogue pret (champ `obtentionType`), reste a brancher aux systemes de quetes / loot / boutique
 - [ ] Vitesse de deplacement +50% quand monte
 - [ ] Animation sprite monte sur la carte
-- [ ] Teleportation rapide entre villes decouvertes (cout en gils)
+- [x] Teleportation rapide entre villes decouvertes (cout en gils) — sous-phase 5 livree (2026-04-20). Le service `GoldSinkManager::fastTravel` (deja existant) est desormais conditionne par la decouverte de la region cible : nouvelle entite `App\Entity\App\PlayerVisitedRegion` (table `player_visited_region`, UNIQUE `player_id + region_id`, FK CASCADE), repository `PlayerVisitedRegionRepository` (`hasVisited` + `findVisitedRegionIds`), subscriber `App\GameEngine\Region\RegionDiscoveryTracker` qui enregistre la region courante a chaque `PlayerMovedEvent` (idempotent). `GoldSinkManager::getAvailableDestinations` filtre desormais par regions visitees ; `fastTravel` refuse explicitement les regions inconnues avec un message dedie. Migration `Version20260420PlayerVisitedRegion` (idempotente). Tests : `RegionDiscoveryTrackerTest` (5 cas), extension de `GoldSinkManagerTest` (4 nouveaux cas). Independante des sous-phases 2-4 (ownership, vitesse, animations).
 
 ---
 
