@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-19 (130 — Montures & deplacement rapide sous-phase 1 : entite Mount + catalogue de 4 montures)
+> Derniere mise a jour : 2026-04-20 (135 — Localisation i18n sous-phase 1 : selecteur de langue securise, whitelist `enabled_locales`)
 
 ---
 
@@ -2312,6 +2312,18 @@
 - [ ] Vitesse de deplacement +50% quand monte — sous-phase 2
 - [ ] Animation sprite monte sur la carte — sous-phase 3
 - [ ] Teleportation rapide entre villes decouvertes — sous-phase 4
+
+### 135 — Localisation i18n (partiel, sous-phase 1) — Selecteur de langue securise (2026-04-20) 🔧
+
+> Premier jalon de la tache 135 du Sprint 12 (Technique & i18n). Cable et securise le selecteur de langue dans `/game/settings` qui etait jusque-la un simple `<select>` cosmetique (aucune action backend, liste hardcodee avec `es` non supporte). Whiteliste les locales valides au niveau Symfony (`framework.yaml:enabled_locales`), valide strictement `LocaleController::changeLocale` contre cette whitelist (fallback `default_locale` en cas de valeur inconnue, empeche le stockage de payloads exotiques en session), contraint la route par regex (`[a-zA-Z_]{2,10}`), limite les methodes HTTP a GET/POST, et verifie que le referer pointe vers le meme host avant de rediriger (neutralise les tentatives d'open-redirect). Cote template, un controller Stimulus `locale-switcher` redirige vers `/change-locale/{locale}` au changement de selection ; l'option `selected` reflete `app.request.locale` pour que la valeur affichee corresponde a la locale active. L'entree `es` (Espanol) est retiree faute de traductions. Sous-phases suivantes couvriront la traduction EN exhaustive, le contenu de jeu multilingue (items, sorts) et l'extraction XLIFF si besoin.
+- [x] `config/packages/framework.yaml` : `enabled_locales: ['fr', 'en']` expose `%kernel.enabled_locales%` aux services
+- [x] `src/Controller/LocaleController.php` (~50 lignes, reecrit) : `#[Autowire('%kernel.enabled_locales%')]` + `#[Autowire('%kernel.default_locale%')]`, validation `in_array($locale, $this->enabledLocales, true)` avec fallback defaut, regex `locale => '[a-zA-Z_]{2,10}'` sur la route, methodes limitees a `GET`/`POST`, helper prive `isSafeReferer()` parsant l'URL et comparant le host
+- [x] `templates/game/settings.html.twig` : suppression de l'option `es`, ajout de `selected` conditionnel sur l'option courante via `app.request.locale`, wrapper `data-controller="locale-switcher"` avec value `url-template-value` calculee par `path('app_change_locale', {locale: '__LOCALE__'})`, action `change->locale-switcher#change`
+- [x] Nouveau `assets/controllers/locale_switcher_controller.js` (~15 lignes) : Stimulus controller avec `urlTemplateValue` et methode `change(event)` qui remplace `__LOCALE__` (encodeURIComponent) et effectue `window.location.href = url`
+- [x] Tests unitaires `tests/Functional/Controller/LocaleControllerTest.php` (6 cas) : locale valide persistee en session, locale invalide fallback defaut, payload malveillant (`../../../etc/passwd`) neutralise, referer `http://localhost/...` suivi, referer externe `https://evil.example.com/...` ignore -> home, referer absent -> home
+- [x] Diff total : ~140 lignes ajoutees (controller + tests + template/js/yaml), 0 ligne supprimee hors refactor controller
+- [ ] Traduction EN prioritaire exhaustive — couverture JSON existante a auditer
+- [ ] Contenu de jeu multilingue (noms items, descriptions sorts) — necessitera un systeme de traduction dedie (non entame)
 
 ### 134 — Load testing & scaling (partiel, sous-phase 1) — Infrastructure k6 + scenario guest-browsing (2026-04-19) 🔧
 
