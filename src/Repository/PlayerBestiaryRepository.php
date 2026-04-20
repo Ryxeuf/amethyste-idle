@@ -70,7 +70,7 @@ class PlayerBestiaryRepository extends ServiceEntityRepository
      */
     public function findTopKillers(int $limit = 50): array
     {
-        /** @var array<int, array{player: Player, totalKills: string|int|null}> $rows */
+        /** @var array<int, array{playerId: string|int, totalKills: string|int|null}> $rows */
         $rows = $this->createQueryBuilder('pb')
             ->select('IDENTITY(pb.player) AS playerId', 'SUM(pb.killCount) AS totalKills')
             ->groupBy('pb.player')
