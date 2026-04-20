@@ -92,7 +92,7 @@ class SeasonRewardsManager
         return sprintf(
             '%s %s — Saison %d',
             self::RANK_PREFIXES[$rank] ?? self::RANK_PREFIXES[3],
-            self::TAB_LABELS[$tab->value] ?? $tab->value,
+            self::TAB_LABELS[$tab->value],
             $season->getSeasonNumber(),
         );
     }
