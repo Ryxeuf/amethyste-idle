@@ -467,7 +467,11 @@
       "your_xp": "Your total XP: %count%",
       "empty": "No ranked players yet. Be the first!",
       "top_limit_note": "Top %limit% players (all-time global ranking)",
-      "you": "You"
+      "you": "You",
+      "titles": {
+        "heading": "My seasonal titles",
+        "season_tooltip": "%season% — %tab%"
+      }
     },
     "factions": {
       "title": "Factions",

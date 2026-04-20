@@ -469,7 +469,11 @@
       "your_xp": "Votre XP totale : %count%",
       "empty": "Aucun joueur classé pour l'instant. Soyez le premier !",
       "top_limit_note": "Top %limit% joueurs (classement global, toutes saisons confondues)",
-      "you": "Vous"
+      "you": "Vous",
+      "titles": {
+        "heading": "Mes titres saisonniers",
+        "season_tooltip": "%season% — %tab%"
+      }
     },
     "bestiary": {
       "title": "Bestiaire",
