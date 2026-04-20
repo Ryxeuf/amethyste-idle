@@ -8,6 +8,7 @@ use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
+use App\GameEngine\Season\SeasonRewardsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -30,6 +31,7 @@ class SeasonTickCommand extends Command
         private readonly TownControlManager $townControlManager,
         private readonly PrestigeTitleManager $prestigeTitleManager,
         private readonly SeasonRankingSnapshotService $rankingSnapshotService,
+        private readonly SeasonRewardsManager $rewardsManager,
     ) {
         parent::__construct();
     }
@@ -75,6 +77,9 @@ class SeasonTickCommand extends Command
         // Archive top-N individual rankings (task 132 sous-phase 3)
         $snapshotCounts = $this->rankingSnapshotService->snapshot($activeSeason);
 
+        // Award podium titles (task 132 sous-phase 4)
+        $rewardCounts = $this->rewardsManager->awardPodium($activeSeason);
+
         $this->seasonManager->endSeason($activeSeason);
 
         $controlSummary = [];
@@ -93,6 +98,13 @@ class SeasonTickCommand extends Command
             $snapshotCounts['kills'] ?? 0,
             $snapshotCounts['quests'] ?? 0,
             $snapshotCounts['xp'] ?? 0,
+        ));
+
+        $io->info(sprintf(
+            'Titres du podium attribués : %d kills, %d quêtes, %d XP.',
+            $rewardCounts['kills'] ?? 0,
+            $rewardCounts['quests'] ?? 0,
+            $rewardCounts['xp'] ?? 0,
         ));
     }
 

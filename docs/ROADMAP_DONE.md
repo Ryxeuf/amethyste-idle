@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 3 : archivage a la fin de saison)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4a : titres de podium de fin de saison)
+
+---
+
+## 132 — Classement saisonnier sous-phase 4a : titres de podium de fin de saison (2026-04-20)
+
+> Pose la fondation des recompenses de fin de saison. A partir des snapshots deja figes par la sous-phase 3, attribue un titre cosmetique au top-3 (Champion / Vice-champion / Troisieme) de chaque onglet de classement (kills / quests / xp). Les titres ne sont pas encore exposes dans l'UI — la sous-phase 4b couvrira l'affichage dans le profil + les cosmetiques / items exclusifs.
+
+- [x] Entite `App\Entity\App\PlayerSeasonReward` (table `player_season_reward`, UNIQUE `season_id + tab + player_id`, index `(season_id)` et `(player_id)`, FK CASCADE vers `influence_season` et `player`). Colonnes : `tab` (enum string `RankingTab`), `rank_position` contrainte 1-3 via le constructeur (`InvalidArgumentException` si hors podium), `title_label` (VARCHAR 120, rejette chaine vide/whitespace), `awarded_at` (`datetime_immutable` stampe a la construction).
+- [x] Repository `App\Repository\PlayerSeasonRewardRepository` : `countForSeason(InfluenceSeason)` (support idempotence), `findByPlayer(Player)` trie par date d'attribution decroissante (pour futur affichage historique).
+- [x] Migration idempotente `Version20260420SeasonReward` : `CREATE TABLE IF NOT EXISTS`, `CREATE UNIQUE INDEX IF NOT EXISTS`, FK CASCADE via blocs `DO $$ BEGIN IF NOT EXISTS ...` (conforme CLAUDE.md piege Postgres).
+- [x] Service `App\GameEngine\Season\SeasonRewardsManager::awardPodium(InfluenceSeason)` : lit les snapshots via `PlayerSeasonRankingSnapshotRepository::findBySeasonAndTab` pour chaque `RankingTab::cases()`, filtre les rangs 1 a 3 (constante `PODIUM_SIZE = 3`), persiste une `PlayerSeasonReward` par entree. Generation du libelle : `sprintf('%s %s — Saison %d', prefix[rank], tabLabel[tab], season.number)`, avec prefixes `Champion / Vice-champion / Troisieme` et labels `des chasseurs / des aventuriers / du savoir`. Idempotent via `countForSeason`. Retourne `['kills' => N, 'quests' => N, 'xp' => N]`.
+- [x] Hook `SeasonTickCommand::handleExpiredSeasons` : injection du nouveau service, appel `awardPodium($activeSeason)` juste apres `snapshot($activeSeason)` et avant `endSeason`. Sortie console enrichie avec "Titres du podium attribués : %d kills, %d quêtes, %d XP.".
+- [x] Tests `SeasonRewardsManagerTest` (5 cas) : `testAwardsPodiumForEachTabAndIgnoresBelowTopThree` (4 kills top-4 + 1 quest + 0 xp -> 4 persists, assertions libelles exacts incluant le rang 2/3), `testAwardPodiumIsIdempotentWhenAlreadyAwarded` (aucune lecture snapshot ni persist ni flush), `testAwardPodiumFlushesEvenWhenAllTabsEmpty` (flush meme sans persist), `testEntityRejectsRankOutsidePodium` (rang 4 = exception), `testEntityRejectsEmptyTitleLabel` (whitespace = exception).
+- [x] `SeasonTickCommandTest::testEndExpiredSeasonAttributesControlAndEnds` etendu : mock `SeasonRewardsManager`, assertion `awardPodium` appele une fois, verification que "Titres du podium attribués" apparait dans la sortie.
+- [x] Roadmap : `SPRINT_11.md` 132 sous-phase 4 decoupee en 4a (livree) et 4b (cosmetiques + affichage), `ROADMAP_TODO_INDEX.md` compteurs et note Sprint 11 a mettre a jour.
 
 ---
 
