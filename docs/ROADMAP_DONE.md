@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 2a : onglet quetes completees dans `/game/rankings`)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 2b : onglet XP totale dans `/game/rankings`)
+
+---
+
+## 132 — Classement saisonnier sous-phase 2b : classement XP totale (2026-04-20)
+
+> Troisieme classement de `/game/rankings` : XP totale agregee sur toutes les `DomainExperience` d'un joueur (toutes les voies de talent). Permet de suivre les profils les plus investis en progression, sans violer la regle "pas de niveau global" (CLAUDE.md n°6) — seule la somme des XP par domaine est exposee.
+
+- [x] `DomainExperienceRepository` etendu avec 3 methodes alignees sur `PlayerBestiaryRepository` / `PlayerQuestCompletedRepository` : `getTotalXpEarned(Player)` (SUM de.totalExperience, COALESCE 0), `findTopXpEarners(int)` (SUM + GROUP BY de.player, HAVING > 0, hydratation `Player` via un second `findBy`), `getPlayerXpRank(Player)` (comptage des joueurs strictement au-dessus du total courant).
+- [x] `RankingController` : `DomainExperienceRepository` injecte, constante `TAB_XP` ajoutee a la whitelist `TABS`. Branche `elseif TAB_XP === $tab` qui route vers les nouvelles methodes ; fallback `TAB_KILLS` inchange pour les valeurs inconnues.
+- [x] Template `game/ranking/index.html.twig` : nouvel onglet `xp` (3e lien dans le header), `valueKey` resolu dynamiquement (`totalQuests` / `totalXp` / `totalKills`), `colLabel` via `game.ranking.col.xp`. Resume du rang etend le `if/elseif/else` avec la cle `your_xp`.
+- [x] Traductions FR/EN etendues : `tab.xp` ("Expérience" / "Experience"), `col.xp` ("XP totale" / "Total XP"), `your_xp` ("Votre XP totale : %count%" / "Your total XP: %count%"). JSON validee syntaxiquement.
+- [x] Tests `RankingControllerTest` portes de 5 a 7 cas : ajout de `testIndexXpTabShowsXpRanking` (top XP + rang + total personnel, `findTopKillers` / `findTopQuestCompleters` jamais appeles) et `testIndexHandlesUnrankedPlayerInXpTab` (XP=0 => rank=null, total=0, tableau vide). Les tests existants kills/quests ajoutent `$domainExperienceRepository->expects($this->never())` sur `findTopXpEarners` pour verifier l'etancheite inter-onglets.
+- [x] Roadmap : `SPRINT_11.md` sous-phase 2b cochee (avancement 2b livree), `ROADMAP_TODO_INDEX.md` mis a jour (compteur et note Sprint 11).
 
 ---
 
