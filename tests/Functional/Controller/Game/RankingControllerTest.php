@@ -6,9 +6,11 @@ use App\Controller\Game\RankingController;
 use App\Entity\App\Player;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerBestiaryRepository;
+use App\Repository\PlayerQuestCompletedRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment as TwigEnvironment;
@@ -17,6 +19,7 @@ class RankingControllerTest extends TestCase
 {
     private PlayerHelper&MockObject $playerHelper;
     private PlayerBestiaryRepository&MockObject $bestiaryRepository;
+    private PlayerQuestCompletedRepository&MockObject $questCompletedRepository;
     private RankingController $controller;
 
     /** @var array<string, mixed>|null */
@@ -26,16 +29,18 @@ class RankingControllerTest extends TestCase
     {
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->bestiaryRepository = $this->createMock(PlayerBestiaryRepository::class);
+        $this->questCompletedRepository = $this->createMock(PlayerQuestCompletedRepository::class);
 
         $this->controller = new RankingController(
             $this->playerHelper,
             $this->bestiaryRepository,
+            $this->questCompletedRepository,
         );
 
         $this->controller->setContainer($this->createContainer());
     }
 
-    public function testIndexRendersTopKillersAndPlayerRank(): void
+    public function testIndexDefaultTabShowsKillsRanking(): void
     {
         $player = $this->createMock(Player::class);
         $other = $this->createMock(Player::class);
@@ -47,27 +52,69 @@ class RankingControllerTest extends TestCase
         ];
 
         $this->bestiaryRepository->expects($this->once())
-            ->method('findTopKillers')
-            ->with(50)
-            ->willReturn($topKillers);
+            ->method('findTopKillers')->with(50)->willReturn($topKillers);
         $this->bestiaryRepository->expects($this->once())
-            ->method('getPlayerKillRank')
-            ->with($player)
-            ->willReturn(2);
+            ->method('getPlayerKillRank')->with($player)->willReturn(2);
         $this->bestiaryRepository->expects($this->once())
-            ->method('getTotalKills')
-            ->with($player)
-            ->willReturn(150);
+            ->method('getTotalKills')->with($player)->willReturn(150);
 
-        $response = $this->controller->index();
+        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
+
+        $response = $this->controller->index(new Request());
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertNotNull($this->capturedTemplateParams);
+        $this->assertSame('kills', $this->capturedTemplateParams['tab']);
         $this->assertSame($player, $this->capturedTemplateParams['player']);
-        $this->assertSame($topKillers, $this->capturedTemplateParams['topKillers']);
+        $this->assertSame($topKillers, $this->capturedTemplateParams['topEntries']);
         $this->assertSame(2, $this->capturedTemplateParams['playerRank']);
-        $this->assertSame(150, $this->capturedTemplateParams['playerTotalKills']);
+        $this->assertSame(150, $this->capturedTemplateParams['playerTotal']);
         $this->assertSame(50, $this->capturedTemplateParams['topLimit']);
+    }
+
+    public function testIndexQuestsTabShowsQuestRanking(): void
+    {
+        $player = $this->createMock(Player::class);
+        $other = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $topQuests = [
+            ['player' => $other, 'totalQuests' => 42],
+            ['player' => $player, 'totalQuests' => 17],
+        ];
+
+        $this->questCompletedRepository->expects($this->once())
+            ->method('findTopQuestCompleters')->with(50)->willReturn($topQuests);
+        $this->questCompletedRepository->expects($this->once())
+            ->method('getPlayerQuestRank')->with($player)->willReturn(2);
+        $this->questCompletedRepository->expects($this->once())
+            ->method('countQuestsCompleted')->with($player)->willReturn(17);
+
+        $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
+
+        $response = $this->controller->index(new Request(['tab' => 'quests']));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('quests', $this->capturedTemplateParams['tab']);
+        $this->assertSame($topQuests, $this->capturedTemplateParams['topEntries']);
+        $this->assertSame(2, $this->capturedTemplateParams['playerRank']);
+        $this->assertSame(17, $this->capturedTemplateParams['playerTotal']);
+    }
+
+    public function testIndexUnknownTabFallsBackToKills(): void
+    {
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->bestiaryRepository->expects($this->once())->method('findTopKillers')->willReturn([]);
+        $this->bestiaryRepository->method('getPlayerKillRank')->willReturn(null);
+        $this->bestiaryRepository->method('getTotalKills')->willReturn(0);
+        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
+
+        $response = $this->controller->index(new Request(['tab' => 'guilds']));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('kills', $this->capturedTemplateParams['tab']);
     }
 
     public function testIndexRedirectsWhenNoPlayer(): void
@@ -75,28 +122,28 @@ class RankingControllerTest extends TestCase
         $this->playerHelper->method('getPlayer')->willReturn(null);
 
         $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
-        $this->bestiaryRepository->expects($this->never())->method('getPlayerKillRank');
+        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
 
-        $response = $this->controller->index();
+        $response = $this->controller->index(new Request());
 
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testIndexHandlesUnrankedPlayer(): void
+    public function testIndexHandlesUnrankedPlayerInQuestsTab(): void
     {
         $player = $this->createMock(Player::class);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $this->bestiaryRepository->method('findTopKillers')->willReturn([]);
-        $this->bestiaryRepository->method('getPlayerKillRank')->willReturn(null);
-        $this->bestiaryRepository->method('getTotalKills')->willReturn(0);
+        $this->questCompletedRepository->method('findTopQuestCompleters')->willReturn([]);
+        $this->questCompletedRepository->method('getPlayerQuestRank')->willReturn(null);
+        $this->questCompletedRepository->method('countQuestsCompleted')->willReturn(0);
 
-        $response = $this->controller->index();
+        $response = $this->controller->index(new Request(['tab' => 'quests']));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertNull($this->capturedTemplateParams['playerRank']);
-        $this->assertSame(0, $this->capturedTemplateParams['playerTotalKills']);
-        $this->assertSame([], $this->capturedTemplateParams['topKillers']);
+        $this->assertSame(0, $this->capturedTemplateParams['playerTotal']);
+        $this->assertSame([], $this->capturedTemplateParams['topEntries']);
     }
 
     private function createContainer(): ContainerInterface&MockObject

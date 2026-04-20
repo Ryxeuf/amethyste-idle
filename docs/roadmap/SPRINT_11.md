@@ -45,9 +45,10 @@
 
 ### 132 — Classement saisonnier global (M | ★★)
 > Prerequis : ← 92 (classement guildes)
-> Avancement : sous-phase 1 livree (page `/game/rankings` + classement mobs tues all-time). Sous-phases 2-4 restent a faire.
+> Avancement : sous-phases 1 et 2a livrees (page `/game/rankings` + onglets kills / quetes completees). Sous-phases 2b (XP gagnee), 3 et 4 restent a faire.
 - [x] Page `/game/rankings` avec onglets (individuel) — route `app_game_rankings` (`GET /game/rankings`), controller `RankingController` (injection `PlayerHelper` + `PlayerBestiaryRepository`). Template `game/ranking/index.html.twig` affiche le top 50 par mobs tues (tableau avec rang, nom joueur, total kills) + le rang du joueur courant (`getPlayerKillRank`) + son compteur personnel. Lien ajoute dans le dropdown Social (desktop) et dans le drawer mobile. Traductions FR/EN ajoutees (`game.ranking.*`, `game.nav.rankings`). Tests `RankingControllerTest` (3 cas : top + rang joueur, redirection sans player, joueur non classe). Aucun prerequis bloquant — le classement exploite `PlayerBestiaryRepository::findTopKillers` (DQL group by + sum kill_count) sans dependre du systeme de saisons guilde.
-- [ ] Classement individuel : XP gagnee, quetes completees par saison — sous-phase 2 (ajouter d'autres criteres + onglets dedies dans la meme page)
+- [x] Classement individuel — quetes completees (sous-phase 2a) — nouveau `PlayerQuestCompletedRepository` (methodes `findTopQuestCompleters` / `countQuestsCompleted` / `getPlayerQuestRank` basees sur COUNT + GROUP BY sur `player_quest_completed`). `RankingController` accepte `?tab=kills|quests` (fallback `kills` si tab inconnu) et choisit le dataset approprie. Template refactore autour de `topEntries` / `playerTotal` / `tab` ; les onglets sont des liens ancrant le parametre de query. Traductions FR/EN etendues (`tab.quests`, `col.quests`, `your_quests`, simplification de `your_rank_none`). Tests `RankingControllerTest` etendus (5 cas : default tab kills, tab quests, tab inconnu, redirection, joueur non classe dans quests).
+- [ ] Classement individuel — XP gagnee par saison (sous-phase 2b)
 - [ ] Saisonnalite : lier le classement a `InfluenceSeason` (reset/archivage par saison) — sous-phase 3
 - [ ] Recompenses de fin de saison : titres, cosmetiques, items exclusifs — sous-phase 4
 
