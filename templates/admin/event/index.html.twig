@@ -72,6 +72,12 @@
                                 </button>
                             </form>
                         {% endif %}
+                        {% if event.status in ['scheduled', 'completed', 'cancelled'] %}
+                            <form method="post" action="{{ path('admin_event_launch_now', {id: event.id}) }}" class="inline" onsubmit="return confirm('Lancer cet evenement immediatement ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('launch_now' ~ event.id) }}">
+                                <button type="submit" class="text-purple-400 hover:text-purple-300 text-sm mr-2" title="Decaler startsAt a maintenant et activer">Lancer</button>
+                            </form>
+                        {% endif %}
                         <a href="{{ path('admin_event_edit', {id: event.id}) }}" class="text-blue-400 hover:text-blue-300 text-sm mr-2">Modifier</a>
                         {% if event.status != 'cancelled' %}
                             <form method="post" action="{{ path('admin_event_cancel', {id: event.id}) }}" class="inline">

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-19 (130 — Montures & deplacement rapide sous-phase 1 : entite Mount + catalogue de 4 montures)
+> Derniere mise a jour : 2026-04-20 (131 — Events live & outils GM sous-phase 1 : bouton admin "Lancer maintenant")
 
 ---
 
@@ -2300,6 +2300,16 @@
 - [x] Structure : `body/`, `hair/`, `outfit/`, `head/` avec `.gitkeep` dans chaque sous-dossier
 - [x] README pointant vers `docs/avatar-spritesheet-layout.md` pour la specification complete
 - [x] Convention de nommage et z-order documentes a la racine du repertoire
+
+### 131 — Events live & outils GM (partiel, sous-phase 1) — Bouton admin "Lancer maintenant" (2026-04-20) 🔧
+
+> Premier jalon de la tache 131 du Sprint 11 (Monde vivant). Debloque le GM pour lancer un evenement programme a l'instant present, sans passer par la modification manuelle des timestamps. Sous-phase non invasive : reutilise entierement l'infrastructure existante (`GameEvent`, `GameEventActivatedEvent`, `AdminLogger`) et n'ajoute qu'une action controller + un bouton UI. Les sous-phases suivantes couvriront les nouveaux types d'evenements (boss special, buff global, quete ephemere), la page d'historique, et les annonces Mercure globales dediees.
+- [x] Nouvelle action `GameEventController::launchNow` (route `POST /admin/events/{id}/launch-now`, CSRF `launch_now{id}`) : decale `startsAt` a `now`, preserve la duree originale (`endsAt - startsAt`) ou fallback 1h si non positive, bascule le statut en `active`, touche `updatedAt`, flush, dispatche `GameEventActivatedEvent` et log via `AdminLogger` (action `launch_now`)
+- [x] Bouton "Lancer" ajoute dans `templates/admin/event/index.html.twig` pour les statuts `scheduled`, `completed` et `cancelled` (avec confirm JS `onsubmit`) — les evenements deja `active` ne peuvent pas etre relances
+- [x] Tests fonctionnels `GameEventControllerTest` (4 cas) : succes nominal (shift des timestamps + dispatch + log), rejet CSRF invalide (aucun effet de bord), refus si deja actif (message flash + redirect), fallback duree nulle -> 1h
+- [ ] Types : spawn de boss special, buff global, quete ephemere — sous-phase 2
+- [ ] Historique des events lances — sous-phase 3
+- [ ] Annonce globale via Mercure SSE (complement) — sous-phase 4
 
 ### 130 — Montures & deplacement rapide (partiel, sous-phase 1) — Entite Mount + catalogue (2026-04-19) 🔧
 
