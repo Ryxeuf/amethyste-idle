@@ -7,6 +7,7 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Season\SeasonRankingSnapshotService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -28,6 +29,7 @@ class SeasonTickCommand extends Command
         private readonly SeasonManager $seasonManager,
         private readonly TownControlManager $townControlManager,
         private readonly PrestigeTitleManager $prestigeTitleManager,
+        private readonly SeasonRankingSnapshotService $rankingSnapshotService,
     ) {
         parent::__construct();
     }
@@ -70,6 +72,9 @@ class SeasonTickCommand extends Command
         // Update prestige titles for controlling guild members
         $this->prestigeTitleManager->updateTitles($activeSeason);
 
+        // Archive top-N individual rankings (task 132 sous-phase 3)
+        $snapshotCounts = $this->rankingSnapshotService->snapshot($activeSeason);
+
         $this->seasonManager->endSeason($activeSeason);
 
         $controlSummary = [];
@@ -81,6 +86,13 @@ class SeasonTickCommand extends Command
             'Saison "%s" terminée. Contrôle attribué :%s',
             $activeSeason->getName(),
             $controlSummary !== [] ? "\n" . implode("\n", $controlSummary) : ' aucune région contestable',
+        ));
+
+        $io->info(sprintf(
+            'Classement archivé : %d kills, %d quêtes, %d XP.',
+            $snapshotCounts['kills'] ?? 0,
+            $snapshotCounts['quests'] ?? 0,
+            $snapshotCounts['xp'] ?? 0,
         ));
     }
 

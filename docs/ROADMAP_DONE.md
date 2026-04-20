@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (130 — Montures sous-phase 5 : decouverte de region requise pour le fast travel)
+> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 3 : archivage a la fin de saison)
+
+---
+
+## 132 — Classement saisonnier sous-phase 3 : archivage a la fin de saison (2026-04-20)
+
+> Quand une saison d'influence se termine, le top-N (par defaut 50) de chaque onglet du classement individuel (`kills` / `quests` / `xp`) est fige dans une table d'archive. Prepare la sous-phase 4 (recompenses de fin de saison) et permet plus tard l'exposition d'un historique consultable `/game/rankings?season=N`. Aucun changement UI dans cette sous-phase (le classement temps reel reste inchange et reste affiche par defaut).
+
+- [x] Enum string `App\Enum\RankingTab` (`kills` / `quests` / `xp`) pour typer la colonne `tab` de l'archive.
+- [x] Entite `App\Entity\App\PlayerSeasonRankingSnapshot` (table `player_season_ranking_snapshot`) : FK CASCADE vers `influence_season` et `player`, UNIQUE `season_id + tab + rank_position`, index `(season_id, tab)` + `player_id`. Colonnes : `rank_position` (>=1), `player_name` (nom fige au moment du snapshot, resiste au renommage), `total_value` en `bigint` (supporte de gros totaux XP), `snapshotted_at` en `datetime_immutable`. Constructeur strict (rejette rank<1 et totalValue<0 via `InvalidArgumentException`).
+- [x] `App\Repository\PlayerSeasonRankingSnapshotRepository` : `findBySeasonAndTab(InfluenceSeason, RankingTab)` (lecture ordonnee par rang), `countForSeason(InfluenceSeason)` (support de l'idempotence).
+- [x] Migration idempotente `Version20260420SeasonRankingSnapshot` : `CREATE TABLE IF NOT EXISTS`, `CREATE UNIQUE INDEX IF NOT EXISTS`, FK CASCADE via blocs `DO $$ BEGIN IF NOT EXISTS ...` (conforme CLAUDE.md piege Postgres).
+- [x] Service `App\GameEngine\Season\SeasonRankingSnapshotService::snapshot(InfluenceSeason, int $limit = 50)` : pour chaque onglet, lit le top-N via les 3 repositories existants (`PlayerBestiaryRepository::findTopKillers`, `PlayerQuestCompletedRepository::findTopQuestCompleters`, `DomainExperienceRepository::findTopXpEarners`), persiste chaque ligne avec son rang 1-based, retourne le decompte `['kills' => N, 'quests' => N, 'xp' => N]`. Idempotent : si `countForSeason > 0`, retourne `[0, 0, 0]` sans rien persister.
+- [x] Hook `SeasonTickCommand::handleExpiredSeasons` : injection du nouveau service, appel `snapshot($activeSeason)` entre `updateTitles` et `endSeason`. Sortie console enrichie avec "Classement archivé : %d kills, %d quêtes, %d XP.".
+- [x] Tests unitaires `SeasonRankingSnapshotServiceTest` (6 cas) : `testSnapshotPersistsTopRowsForEachTab` (4 persists assertionnes avec rang / nom / valeur), `testSnapshotIsIdempotentWhenAlreadyArchived` (aucune lecture ni flush si `countForSeason > 0`), `testSnapshotHandlesEmptyRankings`, `testSnapshotRespectsCustomLimit` (passe la limite aux 3 repos), `testEntityRejectsInvalidRank`, `testEntityRejectsNegativeTotal`.
+- [x] `SeasonTickCommandTest` etendu : mock `SeasonRankingSnapshotService`, assertion `snapshot($season)` appele une fois dans `testEndExpiredSeasonAttributesControlAndEnds`, verification que "Classement archivé" apparait dans la sortie.
+- [x] Roadmap : `SPRINT_11.md` 132 sous-phase 3 cochee (avancement 3/4), `ROADMAP_TODO_INDEX.md` mis a jour.
 
 ---
 

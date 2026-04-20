@@ -8,6 +8,7 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Season\SeasonRankingSnapshotService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,6 +22,7 @@ class SeasonTickCommandTest extends TestCase
     private SeasonManager&MockObject $seasonManager;
     private TownControlManager&MockObject $townControlManager;
     private PrestigeTitleManager&MockObject $prestigeTitleManager;
+    private SeasonRankingSnapshotService&MockObject $rankingSnapshotService;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -30,6 +32,7 @@ class SeasonTickCommandTest extends TestCase
         $this->seasonManager = $this->createMock(SeasonManager::class);
         $this->townControlManager = $this->createMock(TownControlManager::class);
         $this->prestigeTitleManager = $this->createMock(PrestigeTitleManager::class);
+        $this->rankingSnapshotService = $this->createMock(SeasonRankingSnapshotService::class);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
         $this->em->method('getRepository')
@@ -41,6 +44,7 @@ class SeasonTickCommandTest extends TestCase
             $this->seasonManager,
             $this->townControlManager,
             $this->prestigeTitleManager,
+            $this->rankingSnapshotService,
         );
 
         $app = new Application();
@@ -72,6 +76,11 @@ class SeasonTickCommandTest extends TestCase
             ->method('endSeason')
             ->with($season);
 
+        $this->rankingSnapshotService->expects($this->once())
+            ->method('snapshot')
+            ->with($season)
+            ->willReturn(['kills' => 3, 'quests' => 2, 'xp' => 1]);
+
         // Ensure next season is created
         $nextSeason = $this->createSeason(2, SeasonStatus::Scheduled, '+1 day', '+29 days');
         $this->seasonRepo->method('findOneBy')
@@ -84,6 +93,7 @@ class SeasonTickCommandTest extends TestCase
         $this->assertSame(0, $this->tester->getStatusCode());
         $this->assertStringContainsString('terminée', $this->tester->getDisplay());
         $this->assertStringContainsString('Les Valeureux', $this->tester->getDisplay());
+        $this->assertStringContainsString('Classement archivé', $this->tester->getDisplay());
     }
 
     public function testDoesNotEndActiveSeasonBeforeEndsAt(): void
