@@ -85,7 +85,7 @@
                     </div>
 
                     {# -- Dropdown: Social -- #}
-                    {% set social_routes = ['app_game_friends', 'app_game_guild', 'app_game_party', 'app_game_chat_index', 'app_game_factions', 'app_game_messages_inbox'] %}
+                    {% set social_routes = ['app_game_friends', 'app_game_guild', 'app_game_party', 'app_game_chat_index', 'app_game_factions', 'app_game_messages_inbox', 'app_game_rankings'] %}
                     <div class="relative" data-dropdown-group>
                         <button data-action="click->game-nav#toggleDropdown"
                                 class="flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition-colors
@@ -104,6 +104,7 @@
                             {{ _self.nav_link('app_game_party', 'Groupe', current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />') }}
                             {{ _self.nav_link('app_game_friends', 'game.nav.friends'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />') }}
                             {{ _self.nav_link('app_game_factions', 'game.nav.factions'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />') }}
+                            {{ _self.nav_link('app_game_rankings', 'game.nav.rankings'|trans, current_route, '<path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 17V9m4 8V5m4 12v-6m4 6v-9" />') }}
                         </div>
                     </div>
                 </div>
@@ -239,7 +240,7 @@
                 {# Plus (drawer toggle) #}
                 <button data-action="click->game-nav#toggleMobileDrawer" data-mobile-drawer-area data-tutorial-route="quests craft"
                         class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 px-0.5 text-gray-400 text-[0.625rem] leading-none bg-transparent border-0
-                               {% if current_route in ['app_game_quests', 'app_game_skills', 'app_game_craft', 'app_game_bestiary', 'app_game_catalog', 'app_game_achievements', 'app_game_journal', 'app_game_friends', 'app_game_guild', 'app_game_party', 'app_game_factions', 'app_game_messages_inbox'] or current_route starts with 'app_game_auction' or current_route starts with 'app_game_messages' %}active{% endif %}"
+                               {% if current_route in ['app_game_quests', 'app_game_skills', 'app_game_craft', 'app_game_bestiary', 'app_game_catalog', 'app_game_achievements', 'app_game_journal', 'app_game_friends', 'app_game_guild', 'app_game_party', 'app_game_factions', 'app_game_messages_inbox', 'app_game_rankings'] or current_route starts with 'app_game_auction' or current_route starts with 'app_game_messages' %}active{% endif %}"
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-[1.375rem] h-[1.375rem] mb-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
@@ -373,6 +374,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                     </svg>
                     <span>{{ 'game.nav.factions'|trans }}</span>
+                </a>
+                {# Classement #}
+                <a href="{{ path('app_game_rankings') }}"
+                   class="mobile-drawer-item {% if current_route == 'app_game_rankings' %}active{% endif %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v18h18M7 17V9m4 8V5m4 12v-6m4 6v-9" />
+                    </svg>
+                    <span>{{ 'game.nav.rankings'|trans }}</span>
                 </a>
             </div>
         </div>

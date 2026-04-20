@@ -61,6 +61,7 @@
       "settings": "Settings",
       "factions": "Factions",
       "friends": "Friends",
+      "rankings": "Rankings",
       "menu": {
         "adventure": "Adventure",
         "character": "Character",
@@ -443,6 +444,24 @@
       },
       "error_action": "An error occurred while performing the action.",
       "difficulty": "Difficulty %level%/5"
+    },
+    "ranking": {
+      "title": "Rankings",
+      "subtitle": "Compare your deeds with other adventurers",
+      "tab": {
+        "kills": "Kills"
+      },
+      "col": {
+        "rank": "Rank",
+        "player": "Player",
+        "kills": "Kills"
+      },
+      "your_rank": "Your rank: #%rank%",
+      "your_rank_none": "Unranked (no kills yet)",
+      "your_kills": "Your kills: %count%",
+      "empty": "No ranked players yet. Be the first!",
+      "top_limit_note": "Top %limit% players (all-time global ranking)",
+      "you": "You"
     },
     "factions": {
       "title": "Factions",
