@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.b.a : cablage du filter `localized_monster_name` dans les templates)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.c.a : infrastructure multilingue pour les noms de sorts)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.a : infrastructure multilingue pour les noms de sorts (2026-04-21)
+
+> Etend le pattern des sous-phases 3a (Item) et 3e.a (Monster) a `Spell.name`. Meme contrat, meme normalisation, memes fallbacks gracieux. Premier jalon de la sous-phase 3e.c (extension aux entites Spell / Quest / Pnj) : les livraisons suivantes couvriront 3e.c.b (cablage templates combat / materia / quetes qui referencent des sorts) puis 3e.c.c (fixtures EN). Totalement retrocompatible : aucun template ni controller modifie, les sorts existants conservent `name_translations = null` et continuent d'etre rendus via `spell.name`.
+
+- [x] Migration `migrations/Version20260421SpellNameTranslations.php` (26 lignes) : `ALTER TABLE game_spells ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict des migrations 3a (Item) et 3e.a (Monster).
+- [x] `App\Entity\Game\Spell` (+43 lignes, total 324, sous la limite de 400) : nouvelle propriete `?array $nameTranslations` (colonne Doctrine `json`, nullable). Nouvelle methode `getLocalizedName(?string $locale): string` — fallback sur `$this->name` si `$locale` est `null`/vide, si `$this->nameTranslations` est `null`, si la locale n'est pas presente, ou si sa valeur est une chaine blanche ou non-string. Nouvelle methode `getNameTranslations(): array<string, string>` (defaut `[]`). Nouveau setter `setNameTranslations(?array $translations): Spell` avec normalisation : cles vides ignorees, valeurs non-string ou blanches ignorees, tableau final ramene a `null` si vide (stockage compact en DB). Retour fluent (`$this`).
+- [x] Tests `tests/Unit/Entity/Game/SpellLocalizationTest.php` (nouveau, 7 cas, 87 lignes, miroir exact de `MonsterLocalizationTest` / `ItemLocalizationTest`) : fallback sans traductions (null/vide/FR/EN), traduction matchee EN/DE, fallback sur locale absente (es/ja), normalisation cles/valeurs invalides, reset via `null`, compaction vers `null` quand toutes les entrees sont invalides, defaut `[]` sur un sort neuf.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c decoupee pour faire apparaitre 3e.c.a (livree), 3e.c.b (cablage) et 3e.c.c (fixtures EN). `ROADMAP_TODO_INDEX.md` : avancement Sprint 12 met a jour la ligne 135.
+
+**Diff** : 43 lignes `Spell.php` + 87 lignes tests + 26 lignes migration + roadmap. Aucun template touche, aucun fixture modifie, aucun controller ou service. Isolation totale : prepare les sous-phases 3e.c.b (cablage combat / materia / loot de sort) et 3e.c.c (fixtures EN) sans preempter leurs decisions.
 
 ---
 
