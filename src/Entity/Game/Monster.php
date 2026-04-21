@@ -164,7 +164,7 @@ class Monster
     {
         $normalized = [];
         foreach ($translations ?? [] as $locale => $value) {
-            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+            if ($locale !== '' && trim($value) !== '') {
                 $normalized[$locale] = $value;
             }
         }
