@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.b.a : cablage du filter `localized_monster_name` dans les templates)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.b.c : cablage du tracking de quetes via `QuestMonsterBySlugResolver`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.b.c : cablage du tracking de quetes (2026-04-21)
+
+> Ferme la derniere surface UI qui affichait des noms de monstres non localises : le journal de quetes (`/game/quests`). Contrairement au bestiaire, au profil ou au combat (tous cables en 3e.b.a) qui manipulent directement des entites `Monster`, le journal de quetes rend des tableaux associatifs issus de colonnes JSON (`PlayerQuest.tracking`, `PlayerDailyQuest.tracking`, `Quest.requirements`). Ces arrays figent le nom FR au moment de l'acceptation (pour le tracking) ou dans les fixtures (pour les requirements). La sous-phase ajoute une resolution a l'affichage : le controller charge en une requete les `Monster` referencees, et le template applique `localized_monster_name` quand l'entite est trouvee, avec fallback transparent sur le nom fige sinon. Totalement retrocompatible : aucune migration, aucun fixture touche, la semantique du tracking JSON reste inchangee.
+
+- [x] `src/GameEngine/Quest/QuestMonsterBySlugResolver.php` (nouveau, 102 lignes) : service autowire qui prend les 4 collections exposees au template (`activeQuests: PlayerQuest[]`, `activeDailyQuests: PlayerDailyQuest[]`, `availableQuests: Quest[]`, `availableDailyQuests: Quest[]`), agrege les slugs referencees dans `tracking['monsters']` et `requirements['monsters']`, filtre les slugs invalides (non-string, vides), deduplique cross-sources, et charge les entites correspondantes en **une seule requete** `findBy(['slug' => ...])`. Renvoie un map `['slug' => Monster]` (vide si aucune reference, ce qui evite un `findBy([])` sur une table chaude).
+- [x] `src/Controller/Game/QuestController.php` (+10 lignes, 493 au total) : injection du resolver dans le constructeur, appel apres la construction des autres datasets, passage de `monstersBySlug` au template `game/quest/index.html.twig`.
+- [x] `templates/game/quest/index.html.twig` (+8 lignes nettes, 927 au total) : 4 emplacements modifies — `tracking.monsters` en quete active + quotidienne active, `requirements.monsters` en quete disponible + quotidienne disponible. Chaque bloc remplace `{{ monster.name }}` par `{% set monsterEntity = monstersBySlug[monster.slug] ?? null %}{{ monsterEntity ? monsterEntity|localized_monster_name : monster.name }}`. Le nom fige dans le tracking JSON sert de fallback (filter `localized_monster_name` retournant '' sur null).
+- [x] Tests `tests/Unit/GameEngine/Quest/QuestMonsterBySlugResolverTest.php` (nouveau, 5 cas, 175 lignes) : `testResolveCollectsSlugsFromAllSourcesAndBuildsMap` (multi-sources + assertion sur les slugs passes a `findBy`), `testResolveReturnsEmptyWhenNoMonstersReferenced` (aucun appel a `findBy`), `testResolveIgnoresInvalidOrMissingSlugs` (cles `slug` absente, vide, non-string, valeur `monsters` non-array), `testResolveDeduplicatesSlugsAcrossSources` (`findBy` appele avec un seul slug), `testResolveHandlesMissingMonstersKey` (tracking sans cle `monsters`).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.b.c cochee + detail implementation + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : avancement Sprint 12 met a jour la ligne 135.
+
+**Diff** : +18 -4 lignes templates/controller, +102 lignes resolver, +175 lignes tests, + roadmap. Aucune migration, aucun fixture, aucune modification des entites ou des services existants. La colonne `name_translations` de `game_monsters` (sous-phase 3e.a) est desormais consommee sur la surface quete des qu'une traduction EN est peuplee (sous-phase 3e.b.b a venir).
 
 ---
 

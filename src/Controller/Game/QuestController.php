@@ -12,6 +12,7 @@ use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\PlayerQuestUpdater;
 use App\GameEngine\Quest\QuestGiverResolver;
+use App\GameEngine\Quest\QuestMonsterBySlugResolver;
 use App\GameEngine\Quest\QuestTrackingFormater;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
@@ -35,6 +36,7 @@ class QuestController extends AbstractController
         private readonly InventoryHelper $inventoryHelper,
         private readonly QuestGiverResolver $questGiverResolver,
         private readonly DailyQuestService $dailyQuestService,
+        private readonly QuestMonsterBySlugResolver $questMonsterBySlugResolver,
     ) {
     }
 
@@ -84,6 +86,13 @@ class QuestController extends AbstractController
             $questChains[$quest->getId()] = $this->questGiverResolver->getChainInfo($quest);
         }
 
+        $monstersBySlug = $this->questMonsterBySlugResolver->resolve(
+            $activeQuests,
+            $activeDailyQuests,
+            $availableQuests,
+            $availableDailyQuests,
+        );
+
         return $this->render('game/quest/index.html.twig', [
             'activeQuests' => $activeQuests,
             'completedQuests' => $completedQuests,
@@ -97,6 +106,7 @@ class QuestController extends AbstractController
             'completedDailyQuests' => $completedDailyQuests,
             'availableDailyQuests' => $availableDailyQuests,
             'dailyQuestProgress' => $dailyQuestProgress,
+            'monstersBySlug' => $monstersBySlug,
         ]);
     }
 
