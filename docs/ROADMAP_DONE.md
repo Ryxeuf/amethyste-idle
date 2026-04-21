@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (132 — Classement saisonnier sous-phase 4b.2 : badges cosmetiques sur les titres de podium)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 2a : parite de cles FR/EN sur l'UI)
+
+---
+
+## 135 — Localisation i18n sous-phase 2a : parite de cles FR/EN sur l'UI (2026-04-21)
+
+> Complete la premiere passe de traduction anglaise de l'UI en comblant les cles presentes en FR mais manquantes en EN. Avant cette sous-phase, la page `/game/bestiary` et deux liens de navigation principaux (`Bestiaire`, `Artisanat`) affichaient leur identifiant de cle brute en anglais (`game.bestiary.title`, `game.nav.bestiary`, `game.nav.craft`, etc.) a cause du fallback Symfony. Apres, parite stricte entre les deux fichiers : 432 cles de chaque cote.
+
+- [x] Audit systematique de `translations/messages.{fr,en}.json` via `flatten` + diff ensembliste : 19 cles manquantes en EN, 0 cle orpheline en FR.
+- [x] Ajout dans `messages.en.json` : `game.nav.bestiary` = "Bestiary", `game.nav.craft` = "Crafting" (ordre aligne avec FR, inseres apres `settings`).
+- [x] Ajout du bloc complet `game.bestiary.*` (17 cles) avec preservation des placeholders `%count%`, `%total%`, `%level%`, `%percent%`, `%kills%`, `%required%`, `%monster%` : `title`, `subtitle`, `discovered`, `total_kills`, `kills`, `tier_weaknesses`, `tier_loot`, `tier_title`, `weaknesses`, `loot_table`, `loot_probability`, `next_tier`, `empty`, `empty_hint`, `boss`, `level`, `difficulty`.
+- [x] Verification : 432 cles FR = 432 cles EN (parite totale, diff ensembliste = ensemble vide).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 2 decoupee en 2a (livree), 2b (audit `debug:translation`) et 2c (contenu de jeu multilingue) ; avancement Sprint 12 mis a jour.
+
+**Diff** : ~25 lignes ajoutees sur 1 fichier JSON, 0 modification PHP/Twig (les templates referencaient deja ces cles), 0 impact sur FR. Note : aucun test PHPUnit ajoute — la modification ne touche que des donnees de traduction validees syntaxiquement par `json.load()`.
 
 ---
 
