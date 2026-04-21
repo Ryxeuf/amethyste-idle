@@ -21,7 +21,7 @@
                 </div>
                 <div class="min-w-0">
                     <p class="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300/90">{{ 'game.inventory.materia_socket.title'|trans }}</p>
-                    <h2 class="text-sm sm:text-base font-bold text-white mt-0.5 truncate">{{ gearItem.genericItem.name }}</h2>
+                    <h2 class="text-sm sm:text-base font-bold text-white mt-0.5 truncate">{{ gearItem.genericItem|localized_name }}</h2>
                     <p class="text-[10px] sm:text-xs text-slate-400 mt-1 flex flex-wrap items-center gap-1.5">
                         {% if slot.element is not null and slot.element.value != 'none' %}
                             <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-900/60 border border-white/10">

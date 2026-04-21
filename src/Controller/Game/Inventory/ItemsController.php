@@ -5,6 +5,7 @@ namespace App\Controller\Game\Inventory;
 use App\Helper\ItemHelper;
 use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -15,13 +16,14 @@ class ItemsController extends AbstractController
     {
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $bagInventory = $this->playerHelper->getBagInventory();
         $playerItems = $bagInventory->getItems();
 
+        $locale = $request->getLocale();
         $grouped = [];
         foreach ($playerItems as $item) {
             if ($item->getGenericItem()->isObject()) {
@@ -30,7 +32,7 @@ class ItemsController extends AbstractController
                 if (!isset($grouped[$slug])) {
                     $grouped[$slug] = [
                         'id' => $item->getId(),
-                        'name' => $genericItem->getName(),
+                        'name' => $genericItem->getLocalizedName($locale),
                         'type' => 'Consommable',
                         'quantity' => 0,
                         'description' => $genericItem->getDescription(),

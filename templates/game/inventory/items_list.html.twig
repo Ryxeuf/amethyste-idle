@@ -9,7 +9,7 @@
              data-item-id="{{ item.id }}"
              data-is-gear="{{ item.genericItem.isEquipment ? 'true' : 'false' }}">
             <div class="flex justify-between items-start">
-                <h3 class="text-lg font-semibold text-purple-400">{{ item.genericItem.name }}</h3>
+                <h3 class="text-lg font-semibold text-purple-400">{{ item.genericItem|localized_name }}</h3>
                 <span class="bg-gray-700 text-gray-300 px-2 py-1 rounded text-sm">{{ item.quantity }}</span>
             </div>
             <p class="text-gray-400 text-sm mt-1">{{ item.genericItem.type }}</p>

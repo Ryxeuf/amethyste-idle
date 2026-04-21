@@ -61,7 +61,7 @@
                             <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors{% if outOfStock %} opacity-50{% endif %}"
                                  data-item-slug="{{ item.slug }}">
                                 <div class="flex-1 min-w-0">
-                                    <span class="font-medium text-sm {% if item.rarity == 'amethyst' %}text-fuchsia-400{% elseif item.rarity == 'legendary' %}text-yellow-400{% elseif item.rarity == 'epic' %}text-purple-300{% elseif item.rarity == 'rare' %}text-blue-300{% elseif item.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ item.name }}</span>
+                                    <span class="font-medium text-sm {% if item.rarity == 'amethyst' %}text-fuchsia-400{% elseif item.rarity == 'legendary' %}text-yellow-400{% elseif item.rarity == 'epic' %}text-purple-300{% elseif item.rarity == 'rare' %}text-blue-300{% elseif item.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ item|localized_name }}</span>
                                     {% if item.rarity and item.rarity != 'common' %}
                                         <span class="text-[9px] ml-1 inv-tooltip-rarity inv-tooltip-rarity--{{ item.rarity }}">{{ item.rarity|capitalize }}</span>
                                     {% endif %}
@@ -103,7 +103,7 @@
                             <div class="flex items-center justify-between bg-gray-700/50 rounded-lg p-3 hover:bg-gray-700 transition-colors"
                                  id="sell-item-{{ playerItem.id }}">
                                 <div class="flex-1 min-w-0">
-                                    <span class="font-medium text-sm {% if playerItem.genericItem.rarity == 'amethyst' %}text-fuchsia-400{% elseif playerItem.genericItem.rarity == 'legendary' %}text-yellow-400{% elseif playerItem.genericItem.rarity == 'epic' %}text-purple-300{% elseif playerItem.genericItem.rarity == 'rare' %}text-blue-300{% elseif playerItem.genericItem.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ playerItem.genericItem.name }}</span>
+                                    <span class="font-medium text-sm {% if playerItem.genericItem.rarity == 'amethyst' %}text-fuchsia-400{% elseif playerItem.genericItem.rarity == 'legendary' %}text-yellow-400{% elseif playerItem.genericItem.rarity == 'epic' %}text-purple-300{% elseif playerItem.genericItem.rarity == 'rare' %}text-blue-300{% elseif playerItem.genericItem.rarity == 'uncommon' %}text-green-300{% else %}text-white{% endif %}">{{ playerItem.genericItem|localized_name }}</span>
                                     <span class="text-gray-500 text-xs ml-1">({{ playerItem.genericItem.type }})</span>
                                 </div>
                                 <div class="flex items-center gap-3 ml-3">

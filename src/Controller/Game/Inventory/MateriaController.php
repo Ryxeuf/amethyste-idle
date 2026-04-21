@@ -4,6 +4,7 @@ namespace App\Controller\Game\Inventory;
 
 use App\Helper\PlayerHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,7 +15,7 @@ class MateriaController extends AbstractController
     {
     }
 
-    public function __invoke(): Response
+    public function __invoke(Request $request): Response
     {
         // Vérifier si l'utilisateur est connecté
         $this->denyAccessUnlessGranted('ROLE_USER');
@@ -26,6 +27,7 @@ class MateriaController extends AbstractController
         $playerItems = $materiaInventory->getItems();
 
         // Transformer et grouper les materia par slug+element+level
+        $locale = $request->getLocale();
         $grouped = [];
         foreach ($playerItems as $item) {
             if ($item->isMateria()) {
@@ -34,7 +36,7 @@ class MateriaController extends AbstractController
                 if (!isset($grouped[$key])) {
                     $grouped[$key] = [
                         'id' => $item->getId(),
-                        'name' => $genericItem->getName(),
+                        'name' => $genericItem->getLocalizedName($locale),
                         'level' => $genericItem->getLevel() ?? 1,
                         'element' => $genericItem->getElement()->value,
                         'rarity' => $genericItem->getRarity(),
