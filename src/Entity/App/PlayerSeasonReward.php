@@ -40,6 +40,9 @@ class PlayerSeasonReward
     #[ORM\Column(name: 'title_label', type: 'string', length: 120)]
     private string $titleLabel;
 
+    #[ORM\Column(name: 'cosmetic_icon', type: 'string', length: 60, nullable: true)]
+    private ?string $cosmeticIcon = null;
+
     #[ORM\Column(name: 'awarded_at', type: 'datetime_immutable')]
     private \DateTimeImmutable $awardedAt;
 
@@ -49,6 +52,7 @@ class PlayerSeasonReward
         RankingTab $tab,
         int $rank,
         string $titleLabel,
+        ?string $cosmeticIcon = null,
     ) {
         if ($rank < 1 || $rank > 3) {
             throw new \InvalidArgumentException('Rank must be between 1 and 3 (podium only).');
@@ -62,6 +66,7 @@ class PlayerSeasonReward
         $this->tab = $tab;
         $this->rank = $rank;
         $this->titleLabel = $titleLabel;
+        $this->cosmeticIcon = $cosmeticIcon !== null && trim($cosmeticIcon) !== '' ? $cosmeticIcon : null;
         $this->awardedAt = new \DateTimeImmutable();
     }
 
@@ -93,6 +98,11 @@ class PlayerSeasonReward
     public function getTitleLabel(): string
     {
         return $this->titleLabel;
+    }
+
+    public function getCosmeticIcon(): ?string
+    {
+        return $this->cosmeticIcon;
     }
 
     public function getAwardedAt(): \DateTimeImmutable

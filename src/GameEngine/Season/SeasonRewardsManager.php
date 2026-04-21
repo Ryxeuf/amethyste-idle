@@ -33,6 +33,29 @@ class SeasonRewardsManager
         3 => 'Troisieme',
     ];
 
+    /**
+     * Mapping (onglet, rang) -> identifiant d'icone cosmetique. Rendu visuel
+     * cote templates (`game/ranking/index.html.twig`, `game/profile/show.html.twig`).
+     * Convention : `<tab_theme>_<rank_metal>` (ex: `hunter_gold`).
+     */
+    private const array COSMETIC_ICONS = [
+        'kills' => [
+            1 => 'hunter_gold',
+            2 => 'hunter_silver',
+            3 => 'hunter_bronze',
+        ],
+        'quests' => [
+            1 => 'adventurer_gold',
+            2 => 'adventurer_silver',
+            3 => 'adventurer_bronze',
+        ],
+        'xp' => [
+            1 => 'scholar_gold',
+            2 => 'scholar_silver',
+            3 => 'scholar_bronze',
+        ],
+    ];
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerSeasonRankingSnapshotRepository $snapshotRepository,
@@ -79,6 +102,7 @@ class SeasonRewardsManager
                 $tab,
                 $rank,
                 $this->buildTitleLabel($tab, $rank, $season),
+                $this->resolveCosmeticIcon($tab, $rank),
             );
             $this->entityManager->persist($reward);
             ++$created;
@@ -95,5 +119,10 @@ class SeasonRewardsManager
             self::TAB_LABELS[$tab->value],
             $season->getSeasonNumber(),
         );
+    }
+
+    private function resolveCosmeticIcon(RankingTab $tab, int $rank): ?string
+    {
+        return self::COSMETIC_ICONS[$tab->value][$rank] ?? null;
     }
 }

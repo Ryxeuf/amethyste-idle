@@ -1,7 +1,24 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-20 (132 — Classement saisonnier sous-phase 4b.1b : affichage des titres de podium sur le profil public)
+> Derniere mise a jour : 2026-04-21 (132 — Classement saisonnier sous-phase 4b.2 : badges cosmetiques sur les titres de podium)
+
+---
+
+## 132 — Classement saisonnier sous-phase 4b.2 : badges cosmetiques sur les titres de podium (2026-04-21)
+
+> Materialise la promesse de "recompense cosmetique" de la sous-phase 4b. Chaque titre de podium (deja persiste depuis la sous-phase 4a) porte desormais un embleme visuel unique par onglet — epees croisees pour les chasseurs, etendard pour les aventuriers, etoile du savoir pour les savants — en plus du code couleur rang (or/argent/bronze) deja en place. Implementation materialisee au niveau du badge (pas d'infrastructure `PlayerItem`) pour eviter de creer des items cosmetiques fictifs et rester proportionnee au gain visuel.
+
+- [x] Entite `App\Entity\App\PlayerSeasonReward` : nouveau champ `cosmeticIcon` (`VARCHAR(60)`, nullable, Doctrine), constructeur enrichi d'un parametre optionnel `?string $cosmeticIcon = null` (normalisation : chaine whitespace-only retombe sur `null`) + getter `getCosmeticIcon()`. Retrocompatible : tous les appels existants (`new PlayerSeasonReward(...)` sans icone) restent valides.
+- [x] Migration idempotente `Version20260421SeasonRewardCosmeticIcon` : `ALTER TABLE player_season_reward ADD COLUMN IF NOT EXISTS cosmetic_icon VARCHAR(60) DEFAULT NULL`, `down` symetrique `DROP COLUMN IF EXISTS`.
+- [x] Service `App\GameEngine\Season\SeasonRewardsManager` : nouveau mapping interne `COSMETIC_ICONS[tab][rank]` (9 identifiants `{hunter,adventurer,scholar}_{gold,silver,bronze}`). `awardTab()` resout l'icone via `resolveCosmeticIcon()` (fallback `null` si tab inconnu) et la passe au constructeur de `PlayerSeasonReward`. Convention de nommage : `<tab_theme>_<rank_metal>`.
+- [x] Template `templates/game/ranking/index.html.twig` : badge des titres etendu. Le theme de l'icone est derive via `title.cosmeticIcon|default('')|split('_')|first`, puis mappe a un glyphe HTML dedie (`&#9876;` epees croisees / `&#9873;` etendard / `&#10070;` etoile a 4 branches) avec fallback sur l'etoile originale (`&#9733;`) pour les titres legacy sans icone. Tooltip etendu avec le label de l'embleme.
+- [x] Template `templates/game/profile/show.html.twig` : meme logique appliquee au badge du profil public, convention visuelle unifiee avec `/game/rankings`.
+- [x] Traductions FR/EN : `game.ranking.titles.cosmetic.{hunter,adventurer,scholar}` avec une courte description ("Embleme du chasseur (épées croisées)" / "Hunter's crest (crossed blades)", etc.) concatenee au tooltip principal via `—`.
+- [x] Tests `SeasonRewardsManagerTest` etendus a 7 cas (etait 5) : le cas multi-onglets gagne 4 assertions sur `getCosmeticIcon()` (hunter_gold/silver/bronze + adventurer_gold), ajout de `testAwardPodiumAssignsScholarIconOnXpTab` (onglet xp rang 1 -> `scholar_gold`), `testEntityAcceptsCosmeticIconViaConstructor` (propagation directe du parametre), `testEntityNormalizesBlankCosmeticIconToNull` (chaine whitespace -> `null`).
+- [x] Roadmap : `SPRINT_11.md` sous-phase 4b.2 cochee et detaillee, ligne d'avancement 132 mise a jour ; `ROADMAP_TODO_INDEX.md` a synchroniser (sous-phase 4b.2 livree).
+
+**Diff** : ~180 lignes ajoutees sur 9 fichiers. Aucune mise a jour de fixtures ou d'inventaire. Independant de la PR 441 (Hall of Fame sous-phase 4b.1c) — les deux sous-phases partagent l'infrastructure `PlayerSeasonReward` + `PlayerSeasonRankingSnapshotRepository` mais ne se chevauchent pas.
 
 ---
 

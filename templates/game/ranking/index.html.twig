@@ -41,9 +41,17 @@
                             {% set rankColor = title.rank == 1 ? 'text-yellow-300 border-yellow-500/50 bg-yellow-900/20'
                                 : (title.rank == 2 ? 'text-gray-200 border-gray-400/50 bg-gray-700/40'
                                 : 'text-orange-300 border-orange-500/50 bg-orange-900/20') %}
+                            {% set cosmeticIconTheme = title.cosmeticIcon|default('')|split('_')|first %}
+                            {% set cosmeticTooltip = cosmeticIconTheme ? ('game.ranking.titles.cosmetic.' ~ cosmeticIconTheme)|trans : '' %}
                             <span class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-medium {{ rankColor }}"
-                                  title="{{ 'game.ranking.titles.season_tooltip'|trans({'%season%': title.season.name, '%tab%': ('game.ranking.tab.' ~ title.tab.value)|trans}) }}">
-                                <span aria-hidden="true">&#9733;</span>{{ title.titleLabel }}
+                                  title="{{ 'game.ranking.titles.season_tooltip'|trans({'%season%': title.season.name, '%tab%': ('game.ranking.tab.' ~ title.tab.value)|trans}) }}{% if cosmeticTooltip %} — {{ cosmeticTooltip }}{% endif %}">
+                                <span aria-hidden="true">
+                                {%- if cosmeticIconTheme == 'hunter' -%}&#9876;
+                                {%- elseif cosmeticIconTheme == 'adventurer' -%}&#9873;
+                                {%- elseif cosmeticIconTheme == 'scholar' -%}&#10070;
+                                {%- else -%}&#9733;
+                                {%- endif -%}
+                                </span>{{ title.titleLabel }}
                             </span>
                         {% endfor %}
                     </div>

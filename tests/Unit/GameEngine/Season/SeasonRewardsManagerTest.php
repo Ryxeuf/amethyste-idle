@@ -89,6 +89,65 @@ class SeasonRewardsManagerTest extends TestCase
         $this->assertSame('Vice-champion des chasseurs — Saison 3', $persisted[1]->getTitleLabel());
         $this->assertSame('Troisieme des chasseurs — Saison 3', $persisted[2]->getTitleLabel());
         $this->assertSame('Champion des aventuriers — Saison 3', $persisted[3]->getTitleLabel());
+
+        // Chaque podium recoit un identifiant d'icone cosmetique unique (sous-phase 4b.2)
+        $this->assertSame('hunter_gold', $persisted[0]->getCosmeticIcon());
+        $this->assertSame('hunter_silver', $persisted[1]->getCosmeticIcon());
+        $this->assertSame('hunter_bronze', $persisted[2]->getCosmeticIcon());
+        $this->assertSame('adventurer_gold', $persisted[3]->getCosmeticIcon());
+    }
+
+    public function testAwardPodiumAssignsScholarIconOnXpTab(): void
+    {
+        $season = $this->createSeason(5);
+        $p1 = $this->createPlayer(10, 'Eve');
+
+        $this->rewardRepo->method('countForSeason')->with($season)->willReturn(0);
+        $this->snapshotRepo->method('findBySeasonAndTab')
+            ->willReturnCallback(function (InfluenceSeason $s, RankingTab $tab) use ($season, $p1) {
+                return $tab === RankingTab::Xp
+                    ? [$this->createSnapshot($season, $tab, 1, $p1, 9999)]
+                    : [];
+            });
+
+        $persisted = [];
+        $this->em->method('persist')->willReturnCallback(static function (object $entity) use (&$persisted): void {
+            $persisted[] = $entity;
+        });
+
+        $this->service->awardPodium($season);
+
+        $this->assertCount(1, $persisted);
+        $this->assertInstanceOf(PlayerSeasonReward::class, $persisted[0]);
+        $this->assertSame('scholar_gold', $persisted[0]->getCosmeticIcon());
+    }
+
+    public function testEntityAcceptsCosmeticIconViaConstructor(): void
+    {
+        $reward = new PlayerSeasonReward(
+            $this->createSeason(2),
+            $this->createPlayer(1, 'Alice'),
+            RankingTab::Kills,
+            2,
+            'Vice-champion des chasseurs — Saison 2',
+            'hunter_silver',
+        );
+
+        $this->assertSame('hunter_silver', $reward->getCosmeticIcon());
+    }
+
+    public function testEntityNormalizesBlankCosmeticIconToNull(): void
+    {
+        $reward = new PlayerSeasonReward(
+            $this->createSeason(2),
+            $this->createPlayer(1, 'Alice'),
+            RankingTab::Kills,
+            1,
+            'Champion des chasseurs — Saison 2',
+            '   ',
+        );
+
+        $this->assertNull($reward->getCosmeticIcon());
     }
 
     public function testAwardPodiumIsIdempotentWhenAlreadyAwarded(): void
