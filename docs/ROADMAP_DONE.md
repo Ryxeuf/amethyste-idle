@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.a : infrastructure multilingue pour les noms de monstres)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.b.a : cablage du filter `localized_monster_name` dans les templates)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.b.a : cablage du filter `localized_monster_name` dans les templates (2026-04-21)
+
+> Consomme l'infrastructure posee par la sous-phase 3e.a (colonne `name_translations` + methode `Monster::getLocalizedName`) en cablant trois templates joueur pour afficher le nom de monstre localise selon la locale courante. Avant cette sous-phase, meme quand des traductions EN etaient presentes en base, les templates utilisaient `monster.name` qui retourne le nom FR de reference — la colonne ajoutee par 3e.a etait inerte. Apres, des que la sous-phase 3e.b.b livrera des fixtures EN, les 3 templates basculeront automatiquement en anglais lorsque la locale de session est `en`, et resteront en francais avec `fr` (ou sur un fallback gracieux pour toute locale sans traduction). Sous-phase volontairement limitee au cablage (pas de fixtures EN — a suivre en 3e.b.b) pour garder le diff minimal et respecter la convention des sous-phases de la tache 135.
+
+- [x] `src/Twig/MonsterLocalizationExtension.php` (nouveau, 45 lignes) : extension Twig declarant le filter `localized_monster_name`. Prend un `?Monster $monster`, recupere la locale courante via `RequestStack::getCurrentRequest()->getLocale()` et delegue a `Monster::getLocalizedName($locale)`. Renvoie une chaine vide si `$monster === null` (defense en profondeur). Fallback transparent sur `Monster::name` si RequestStack est vide (context console / tests unitaires) ou si la locale est une chaine vide. Miroir strict de `ItemLocalizationExtension` (sous-phase 3b) — meme pattern, meme signature, meme fallback. Nom distinct (`localized_monster_name` vs `localized_name`) pour eviter la collision Twig entre filters typehintes sur entites differentes.
+- [x] Templates cables avec `{{ monster|localized_monster_name }}` (3 fichiers, 5 occurrences) : `templates/game/bestiary/index.html.twig` (nom d'en-tete de la carte monstre + 2 usages dans `|trans({'%monster%': ...})` pour le tier_title), `templates/game/profile/show.html.twig` (liste des titres de chasseur sur le profil public), `templates/game/fight/index.html.twig` (bouton de depecage `game.fight.butcher` avec le nom du monstre). Le template `templates/game/quest/index.html.twig` n'est pas cable volontairement : `tracking.monsters` y est un tableau associatif (et non une entite `Monster`) assemble cote controller pour l'affichage du tracking de quete ; le cablage passera par la construction cote controller dans une sous-phase future (3e.b.c).
+- [x] Tests `tests/Unit/Twig/MonsterLocalizationExtensionTest.php` (nouveau, 5 cas, ~75 lignes) : `testFilterReturnsTranslationMatchingCurrentLocale` (EN avec traduction -> Goblin), `testFilterFallsBackToBaseNameWhenTranslationMissing` (EN sans traduction -> fallback FR Gobelin), `testFilterFallsBackToBaseNameWhenRequestStackIsEmpty` (RequestStack vide -> fallback FR), `testFilterReturnsEmptyStringForNullMonster` (defense en profondeur), `testFilterIsRegistered` (meta-assertion sur `getFilters()`). Miroir strict de `ItemLocalizationExtensionTest`. Pure unit test (pas de kernel).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e decoupee pour faire apparaitre 3e.b.a (cablage, livree) et 3e.b.b (fixtures EN, a faire). `ROADMAP_TODO_INDEX.md` : mise a jour de la ligne Sprint 12 avec la nouvelle sous-phase.
+
+**Diff** : ~45 lignes extension + ~75 lignes tests + 5 edits templates (5 occurrences) + roadmap. Aucun migration, aucun fixture, aucun controller ou service modifie. Isolation totale : prepare la sous-phase 3e.b.b (fixtures EN pour les noms de monstres) sans preempter ses decisions.
 
 ---
 

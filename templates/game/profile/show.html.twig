@@ -279,7 +279,7 @@
             <div class="flex flex-wrap gap-2">
                 {% for entry in hunterEntries %}
                     <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-900/30 text-red-400 text-xs rounded-full border border-red-700/30">
-                        {{ entry.monster.name }} ({{ entry.killCount }})
+                        {{ entry.monster|localized_monster_name }} ({{ entry.killCount }})
                     </span>
                 {% endfor %}
             </div>
