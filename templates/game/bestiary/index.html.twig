@@ -41,7 +41,7 @@
                             <div class="flex items-start justify-between gap-2 mb-2">
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-2">
-                                        <h3 class="text-white font-semibold text-sm sm:text-base">{{ monster.name }}</h3>
+                                        <h3 class="text-white font-semibold text-sm sm:text-base">{{ monster|localized_monster_name }}</h3>
                                         {% if monster.boss %}
                                             <span class="px-1.5 py-0.5 bg-red-900/60 border border-red-700 text-red-300 text-[10px] rounded">{{ 'game.bestiary.boss'|trans }}</span>
                                         {% endif %}
@@ -73,7 +73,7 @@
                                     {{ 'game.bestiary.tier_loot'|trans }}
                                 </span>
                                 <span class="px-1.5 py-0.5 rounded text-[10px] {% if entry.hunterTitle %}bg-purple-900/60 border border-purple-700 text-purple-300{% else %}bg-gray-800 border border-gray-700 text-gray-500{% endif %}">
-                                    {{ 'game.bestiary.tier_title'|trans({'%monster%': monster.name}) }}
+                                    {{ 'game.bestiary.tier_title'|trans({'%monster%': monster|localized_monster_name}) }}
                                 </span>
                             </div>
 
@@ -122,7 +122,7 @@
                             {# Hunter title (tier 3) #}
                             {% if entry.hunterTitle %}
                                 <div class="mt-2 pt-2 border-t border-gray-600">
-                                    <span class="text-purple-300 text-xs font-medium">{{ 'game.bestiary.tier_title'|trans({'%monster%': monster.name}) }}</span>
+                                    <span class="text-purple-300 text-xs font-medium">{{ 'game.bestiary.tier_title'|trans({'%monster%': monster|localized_monster_name}) }}</span>
                                 </div>
                             {% endif %}
                         </div>

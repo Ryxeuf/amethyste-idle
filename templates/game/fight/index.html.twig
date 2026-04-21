@@ -587,7 +587,7 @@
 										class="butcher-btn w-full px-3 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all font-medium touch-target text-sm"
 										data-mob-id="{{ mob.id }}"
 										onclick="butcherMob({{ mob.id }}, this)">
-										{{ 'game.fight.butcher'|trans({'%name%': mob.monster.name}) }}
+										{{ 'game.fight.butcher'|trans({'%name%': mob.monster|localized_monster_name}) }}
 									</button>
 									<div id="butcher-result-{{ mob.id }}" class="mt-1"></div>
 								</div>
