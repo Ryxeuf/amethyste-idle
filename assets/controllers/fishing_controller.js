@@ -88,7 +88,9 @@ export default class extends Controller {
 
             if (result.success) {
                 this.messageTarget.textContent = result.message || 'Prise !';
-                this.messageTarget.className = 'text-green-400 text-sm mt-2 font-bold';
+                this.messageTarget.className = result.perfect
+                    ? 'text-yellow-300 text-sm mt-2 font-bold'
+                    : 'text-green-400 text-sm mt-2 font-bold';
             } else {
                 this.messageTarget.textContent = result.message || 'Raté !';
                 this.messageTarget.className = 'text-red-400 text-sm mt-2';

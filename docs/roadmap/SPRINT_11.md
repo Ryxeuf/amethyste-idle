@@ -59,9 +59,11 @@
 
 ### 133 — Mini-jeux (peche amelioree, courses) (M | ★)
 > Prerequis : ∅
-- [ ] Peche active : mini-jeu timing (barre de progression, fenetre de clic)
+> Avancement : sous-phase 1 (peche avec zone parfaite) livree 2026-04-21. Courses et autres recompenses restent a faire.
+- [x] Peche active : mini-jeu timing (barre de progression, fenetre de clic) — sous-phase 1 livree 2026-04-21. La boucle de base (panel Stimulus `fishing_controller.js`, `FishingManager::completeFishing`, route `POST /api/gathering/fish`) existait deja (fail <30, success 30-70, fail >70). Sous-phase 1 etend la mecanique : constantes `SUCCESS_MIN`/`SUCCESS_MAX`/`PERFECT_MIN`/`PERFECT_MAX` exposees publiquement, detection de zone parfaite 45-55 inclusive, **aucune reduction de durabilite** dans la zone parfaite (conserve la canne a peche sur un coup reussi), flag `perfect: true` dans la JSON response, prefixe `Parfait !` sur le message de succes. Le template `game/map/index.html.twig` ajoute une bande `bg-green-400/70` sur 45-55 (titre accessible via `game.fishing.perfect_zone` FR/EN). Le controleur JS applique une classe `text-yellow-300` au message quand `result.perfect` est vrai. Signature retour : `array{success, perfect, item, message}` (ajout de `perfect`, retro-compatible pour les autres consommateurs qui ignorent simplement la cle).
 - [ ] Courses entre joueurs : parcours avec chrono, classement
-- [ ] Recompenses specifiques par mini-jeu
+- [~] Recompenses specifiques par mini-jeu
+  - [x] **Peche — bonus timing parfait (sous-phase 1)** — zone 45-55 preserve la durabilite de la canne + feedback visuel dedie. La recompense est economique (pas de consommation d'outil) plutot qu'un drop bonus pour rester en coherence avec la regle PvE cooperative (aucun effet de rarete introduit).
 
 ---
 

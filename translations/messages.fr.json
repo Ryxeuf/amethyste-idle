@@ -480,6 +480,9 @@
         }
       }
     },
+    "fishing": {
+      "perfect_zone": "Zone parfaite — aucune usure de la canne"
+    },
     "bestiary": {
       "title": "Bestiaire",
       "subtitle": "Catalogue des monstres rencontrés",

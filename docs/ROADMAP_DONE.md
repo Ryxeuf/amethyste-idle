@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (131 — Events live & outils GM sous-phase 4 : annonce globale Mercure)
+> Derniere mise a jour : 2026-04-21 (133 — Mini-jeux sous-phase 1 : peche avec zone parfaite)
+
+---
+
+## 133 — Mini-jeux sous-phase 1 : peche active avec zone parfaite (2026-04-21)
+
+> Premiere sous-phase de la tache 133 (Mini-jeux). La boucle de base du mini-jeu de peche avec barre de tension oscillante (panel Stimulus + `FishingManager::completeFishing` + route `POST /api/gathering/fish`) existait deja en production (succes 30-70, echec <30 sans usure, echec >70 avec usure x2). Cette sous-phase introduit une **zone parfaite** 45-55 qui recompense la precision du joueur en preservant la durabilite de la canne a peche (aucune reduction) tout en lui donnant un feedback visuel distinct. Aucune nouvelle mecanique de drop ou de rarete introduite (coherent avec la regle PvE cooperative du projet).
+
+- [x] `App\GameEngine\Job\FishingManager` : constantes publiques `SUCCESS_MIN = 30`, `SUCCESS_MAX = 70`, `PERFECT_MIN = 45`, `PERFECT_MAX = 55`. Detection `perfect = $tension >= PERFECT_MIN && $tension <= PERFECT_MAX` dans la branche succes. Si `perfect`, la canne n'est pas reduite (skip `$fishingRod->reduceDurability(1)`). Le flush final est conserve pour persister `setUsedAt` sur le spot.
+- [x] Signature de retour etendue : `array{success: bool, perfect: bool, item: ?array, message: string}`. Ajout de la cle `perfect` dans toutes les branches (false sur fail low, fail high, no-rod ; true uniquement en zone parfaite). Message prefixe par `Parfait !` quand `perfect && caughtItem !== null`. Retrocompatible pour les consommateurs qui ignorent la nouvelle cle.
+- [x] `templates/game/map/index.html.twig` : ajout d'une bande `bg-green-400/70` sur `left: 45%; width: 10%` dans la barre de tension, avec `title="{{ 'game.fishing.perfect_zone'|trans }}"` pour l'accessibilite. La bande se superpose a la zone de succes existante (`bg-green-700/50` sur 30-70) pour marquer visuellement la sous-zone parfaite.
+- [x] `assets/controllers/fishing_controller.js` : le gestionnaire `catch()` lit `result.perfect` et applique `text-yellow-300 text-sm mt-2 font-bold` au message quand c'est vrai, `text-green-400 ...` sinon. Ne modifie pas la logique d'oscillation, ni la fermeture auto 2s.
+- [x] Traductions FR + EN : `game.fishing.perfect_zone` (FR = "Zone parfaite — aucune usure de la canne", EN = "Perfect zone — no rod wear"). Parite stricte conservee.
+- [x] Tests `tests/Unit/GameEngine/Job/FishingManagerTest.php` (nouveau, 6 cas) : `testCompleteFishingWithoutRodReturnsFailure` (no flush, no dispatch), `testCompleteFishingTooLowFails` (tension 10, no reduceDurability, dispatch unique), `testCompleteFishingTooHighDamagesRod` (tension 85, `reduceDurability(2)`, flush), `testCompleteFishingNormalSuccessReducesDurability` (tension 35, `reduceDurability(1)`, item retourne, message sans prefixe), `testCompleteFishingPerfectPreservesDurability` (tension 50, **never** reduceDurability, message prefixe `Parfait !`), `testCompleteFishingPerfectBoundariesAreInclusive` (tension 45 et 55 sont toutes les deux parfaites).
+- [x] Roadmap : `SPRINT_11.md` 133 — premier bullet coche (mini-jeu timing existait deja, avec note d'implementation), troisieme bullet etendu avec sous-phase 1 livree ; `ROADMAP_TODO_INDEX.md` avancement Sprint 11 (133 sous-phase 1) mis a jour.
+
+**Diff** : ~30 lignes FishingManager + ~190 lignes de tests + ~10 lignes Twig/JS + 2 lignes de traduction + roadmap. Aucune migration, aucun changement de schema, aucune dependance ajoutee. Isolation stricte : le mini-jeu reste fonctionnel a l'identique pour les joueurs qui tombent hors de la zone 45-55 (comportement 30-70 classique inchange). Prepare la sous-phase 2 (courses entre joueurs) et les futures recompenses specifiques par mini-jeu (bullet 3 sera completement ferme quand les courses et le depecage auront leur propre bonus).
 
 ---
 

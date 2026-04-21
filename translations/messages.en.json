@@ -480,6 +480,9 @@
         }
       }
     },
+    "fishing": {
+      "perfect_zone": "Perfect zone — no rod wear"
+    },
     "bestiary": {
       "title": "Bestiary",
       "subtitle": "Catalog of encountered monsters",
