@@ -111,7 +111,7 @@
                                     <div class="space-y-0.5 mt-1">
                                         {% for monsterItem in monster.monsterItems %}
                                             <div class="flex items-center justify-between text-xs">
-                                                <span class="text-gray-300">{{ monsterItem.item.name }}</span>
+                                                <span class="text-gray-300">{{ monsterItem.item|localized_name }}</span>
                                                 <span class="text-gray-400">{{ 'game.bestiary.loot_probability'|trans({'%percent%': monsterItem.probability}) }}</span>
                                             </div>
                                         {% endfor %}
