@@ -31,6 +31,35 @@ class GameEventBonusProviderTest extends TestCase
 
         $this->assertSame(1.0, $this->provider->getXpMultiplier());
         $this->assertSame(1.0, $this->provider->getDropMultiplier());
+        $this->assertSame(1.0, $this->provider->getGatheringMultiplier());
+    }
+
+    public function testReturnsGatheringMultiplierFromActiveEvent(): void
+    {
+        $event = $this->createBonusEvent(GameEvent::TYPE_GATHERING_BONUS, ['multiplier' => 2.0]);
+
+        $this->repository->method('findBy')->willReturnCallback(
+            fn (array $criteria) => $criteria['type'] === GameEvent::TYPE_GATHERING_BONUS ? [$event] : [],
+        );
+
+        $this->assertSame(2.0, $this->provider->getGatheringMultiplier());
+    }
+
+    public function testGatheringMultiplierIndependentOfDropMultiplier(): void
+    {
+        $gathering = $this->createBonusEvent(GameEvent::TYPE_GATHERING_BONUS, ['multiplier' => 2.0]);
+        $drop = $this->createBonusEvent(GameEvent::TYPE_DROP_BONUS, ['multiplier' => 3.0]);
+
+        $this->repository->method('findBy')->willReturnCallback(
+            static fn (array $criteria) => match ($criteria['type']) {
+                GameEvent::TYPE_GATHERING_BONUS => [$gathering],
+                GameEvent::TYPE_DROP_BONUS => [$drop],
+                default => [],
+            },
+        );
+
+        $this->assertSame(2.0, $this->provider->getGatheringMultiplier());
+        $this->assertSame(3.0, $this->provider->getDropMultiplier());
     }
 
     public function testReturnsXpMultiplierFromActiveEvent(): void

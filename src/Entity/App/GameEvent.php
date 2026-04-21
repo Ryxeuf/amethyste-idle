@@ -16,6 +16,7 @@ class GameEvent
     public const TYPE_BOSS_SPAWN = 'boss_spawn';
     public const TYPE_XP_BONUS = 'xp_bonus';
     public const TYPE_DROP_BONUS = 'drop_bonus';
+    public const TYPE_GATHERING_BONUS = 'gathering_bonus';
     public const TYPE_INVASION = 'invasion';
     public const TYPE_CUSTOM = 'custom';
 
@@ -184,6 +185,7 @@ class GameEvent
             self::TYPE_BOSS_SPAWN => 'Spawn de boss',
             self::TYPE_XP_BONUS => 'Bonus XP',
             self::TYPE_DROP_BONUS => 'Bonus drop',
+            self::TYPE_GATHERING_BONUS => 'Bonus recolte',
             self::TYPE_INVASION => 'Invasion',
             self::TYPE_CUSTOM => 'Personnalise',
             default => $this->type,
