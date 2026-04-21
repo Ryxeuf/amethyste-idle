@@ -45,6 +45,7 @@
                             {% if event.type == 'boss_spawn' %}bg-red-900 text-red-300
                             {% elseif event.type == 'xp_bonus' %}bg-green-900 text-green-300
                             {% elseif event.type == 'drop_bonus' %}bg-yellow-900 text-yellow-300
+                            {% elseif event.type == 'gathering_bonus' %}bg-emerald-900 text-emerald-300
                             {% elseif event.type == 'invasion' %}bg-purple-900 text-purple-300
                             {% else %}bg-gray-700 text-gray-300{% endif %}">
                             {{ event.typeLabel }}

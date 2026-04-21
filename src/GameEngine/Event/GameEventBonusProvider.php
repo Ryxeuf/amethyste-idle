@@ -35,6 +35,16 @@ class GameEventBonusProvider
         return $this->getMultiplier(GameEvent::TYPE_DROP_BONUS, $map);
     }
 
+    /**
+     * Get the gathering multiplier from active gathering_bonus events.
+     * Applies to non-combat resource gathering (mining, herboristerie, fishing, skinning).
+     * Returns 1.0 if no active bonus.
+     */
+    public function getGatheringMultiplier(?Map $map = null): float
+    {
+        return $this->getMultiplier(GameEvent::TYPE_GATHERING_BONUS, $map);
+    }
+
     private function getMultiplier(string $type, ?Map $map): float
     {
         $events = $this->entityManager->getRepository(GameEvent::class)->findBy([

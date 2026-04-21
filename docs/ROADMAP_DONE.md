@@ -18,6 +18,23 @@
 
 ---
 
+## 131 — Events live & outils GM sous-phase 2a : nouveau type `gathering_bonus` (2026-04-21)
+
+> Premiere sous-phase de la tache 131 sous-phase 2 ("Types : spawn de boss special, buff global, quete ephemere"). Le "buff global" est materialise par un nouveau type d'evenement `TYPE_GATHERING_BONUS` qui multiplie temporairement la quantite de ressources recoltees via `GatheringManager::gather()`. Le pattern miroir `TYPE_XP_BONUS` / `TYPE_DROP_BONUS` est strictement reproduit (stacking multiplicatif, filtre global vs map-specific, parametre `multiplier` en JSON), ce qui permet a l'admin de lancer un "Festival de la recolte" aussi simplement qu'un "Festival de la Lune" (XP bonus) ou qu'une "Chasse abondante" (drop bonus). Les autres sous-types de la sous-phase 2 sont deja partiellement couverts : `TYPE_BOSS_SPAWN` par `WorldBossManager`, `TYPE_INVASION` par `InvasionManager`, et les bonus multiplicatifs globaux XP/drop/gathering couvrent la notion de "buff global". Seule la "quete ephemere" reste a concevoir (decision reportee : dependrait d'une evolution de l'entite `Quest` qui n'a pas d'impact urgent).
+
+- [x] `App\Entity\App\GameEvent` : nouvelle constante `TYPE_GATHERING_BONUS = 'gathering_bonus'` + entree dans `getTypeLabel()` ("Bonus recolte").
+- [x] `App\GameEngine\Event\GameEventBonusProvider::getGatheringMultiplier(?Map $map = null): float` : reutilise le meme `getMultiplier()` prive que les deux methodes existantes (resoud la filtration `status = ACTIVE` + `type = TYPE_GATHERING_BONUS` + match map_id ou event global). Retourne `1.0` en l'absence d'event actif.
+- [x] `App\GameEngine\Gathering\GatheringManager` : nouvelle dependance `GameEventBonusProvider` (auto-wiring Symfony preserve la retrocompatibilite DI). `gather()` scale la quantite finale via `$quantity = max(1, (int) round($baseQuantity * $multiplier))`. Le comportement par defaut (multiplier=1.0) est strictement identique a l'ancien (round preserve l'entier, max garantit quantite >= 1).
+- [x] `App\Controller\Admin\GameEventController::history()` : `TYPE_GATHERING_BONUS` ajoute a la whitelist du filtre `type`, donc les events de ce type apparaissent dans l'historique et peuvent etre filtres.
+- [x] Templates admin : `admin/event/form.html.twig` expose le choix "Bonus recolte" a la creation/modification, `admin/event/index.html.twig` et `admin/event/history.html.twig` rendent un badge emeraude (`bg-emerald-900 text-emerald-300`) pour differencier le type. Filtre rapide "Bonus recolte" ajoute dans `history.html.twig`.
+- [x] `App\DataFixtures\GameEventFixtures` : nouvel event `event_recolte_abondante` (scheduled +5d → +8d, multiplier 1.5) pour peupler les environnements de dev/test.
+- [x] Tests `GameEventBonusProviderTest` etendus (10 cas au total, +2 nouveaux) : `testReturnsDefaultMultiplierWhenNoActiveEvents` couvre desormais les trois methodes, nouveau `testReturnsGatheringMultiplierFromActiveEvent` (multiplier=2.0) et `testGatheringMultiplierIndependentOfDropMultiplier` (independance stricte entre les deux types via `willReturnCallback` + `match($criteria['type'])`).
+- [x] Roadmap : `SPRINT_11.md` 131 sous-phase 2a cochee + detail implementation + etat d'avancement mis a jour ; `ROADMAP_TODO_INDEX.md` a synchroniser (ajouter 131 sous-phase 2a).
+
+**Diff** : ~40 lignes PHP (entite + provider + manager + controller) + ~10 lignes Twig + ~40 lignes de tests + ~10 lignes de fixtures + roadmap. Aucune migration Doctrine, aucune dependance ajoutee, aucune modification de signature cassante. Isolation stricte : meme si aucun event de type `gathering_bonus` n'est jamais cree, le code se comporte comme avant (multiplier=1.0 par defaut). Prepare l'integration future aux autres systemes de recolte hors `GatheringManager` : `HarvestManager` (minerai / plantes), `FishingManager` (mini-jeu de peche avec tension bar, sous-phase 1 de 133), `ButcheringManager` (depecage post-combat) sont independants et devront explicitement appeler `getGatheringMultiplier()` pour beneficier de l'effet.
+
+---
+
 ## 133 — Mini-jeux sous-phase 1 : peche active avec zone parfaite (2026-04-21)
 
 > Premiere sous-phase de la tache 133 (Mini-jeux). La boucle de base du mini-jeu de peche avec barre de tension oscillante (panel Stimulus + `FishingManager::completeFishing` + route `POST /api/gathering/fish`) existait deja en production (succes 30-70, echec <30 sans usure, echec >70 avec usure x2). Cette sous-phase introduit une **zone parfaite** 45-55 qui recompense la precision du joueur en preservant la durabilite de la canne a peche (aucune reduction) tout en lui donnant un feedback visuel distinct. Aucune nouvelle mecanique de drop ou de rarete introduite (coherent avec la regle PvE cooperative du projet).
