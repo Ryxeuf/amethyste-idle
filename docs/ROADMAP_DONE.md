@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3b : cablage du filter `localized_name` dans les templates shop/inventaire/bestiaire)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.a : infrastructure multilingue pour les noms de monstres)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.a : infrastructure multilingue pour les noms de monstres (2026-04-21)
+
+> Etend le pattern de la sous-phase 3a (colonne JSON + accesseurs localises) a `Monster.name`. Meme contrat, meme normalisation, memes fallbacks gracieux. Premiere sous-phase de la serie 3e (extension aux entites gameplay hors Item) : les sous-phases suivantes couvriront 3e.b (cablage bestiaire / loot / combat) puis 3e.c (Spell, Quest, Pnj). Totalement retrocompatible : aucun template ni controller modifie, les monstres existants conservent `name_translations = null` et continuent d'etre rendus via `monster.name`.
+
+- [x] Migration `migrations/Version20260421MonsterNameTranslations.php` : `ALTER TABLE game_monsters ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict de la migration ajoutee en sous-phase 3a pour `game_items`.
+- [x] `App\Entity\Game\Monster` : nouvelle propriete `?array $nameTranslations` (colonne Doctrine `json`, nullable). Nouvelle methode `getLocalizedName(?string $locale): string` — fallback sur `$this->name` si `$locale` est `null`/vide, si `$this->nameTranslations` est `null`, si la locale n'est pas presente, ou si sa valeur est une chaine blanche ou non-string. Nouvelle methode `getNameTranslations(): array<string, string>` (defaut `[]`). Nouveau setter `setNameTranslations(?array $translations): self` avec normalisation : cles vides ignorees, valeurs non-string ou blanches ignorees, tableau final ramene a `null` si vide (stockage compact en DB). Retourne `$this` (fluent, aligne avec `Item::setNameTranslations`). Monster.php passe de 318 a 361 lignes (reste sous la limite de 400).
+- [x] Tests `tests/Unit/Entity/Game/MonsterLocalizationTest.php` (7 cas, miroir exact de `ItemLocalizationTest`) : fallback sans traductions (null/vide/FR/EN), traduction matchee EN/DE, fallback sur locale absente (es/ja), normalisation cles/valeurs invalides, reset via `null`, compaction vers `null` quand toutes les entrees sont invalides, defaut `[]` sur un monstre neuf.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3 decoupee pour faire apparaitre 3e.a (livree), 3e.b (cablage bestiaire/loot/combat) et 3e.c (Spell/Quest/Pnj). `ROADMAP_TODO_INDEX.md` : avancement Sprint 12 met a jour la ligne 135.
+
+**Diff** : ~43 lignes `Monster.php` + ~87 lignes tests + 26 lignes migration + roadmap. Aucun template touche, aucun fixture modifie, aucun controller ou service. Isolation totale : prepare la sous-phase 3e.b (cablage du bestiaire `templates/game/bestiary/index.html.twig` pour les noms d'en-tete et les fixtures EN) sans preempter ses decisions.
 
 ---
 
