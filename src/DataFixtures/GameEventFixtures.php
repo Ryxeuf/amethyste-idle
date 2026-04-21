@@ -169,6 +169,15 @@ class GameEventFixtures extends Fixture
                 'ends_at' => '+5 days',
                 'parameters' => ['multiplier' => 1.75],
             ],
+            'event_recolte_abondante' => [
+                'name' => 'Recolte abondante',
+                'type' => GameEvent::TYPE_GATHERING_BONUS,
+                'description' => 'Les ressources naturelles poussent avec vigueur : peche, depecage et herboristerie rendent plus de materiaux pendant l\'evenement.',
+                'status' => GameEvent::STATUS_SCHEDULED,
+                'starts_at' => '+5 days',
+                'ends_at' => '+8 days',
+                'parameters' => ['multiplier' => 1.5],
+            ],
             'event_world_boss_wyrm' => [
                 'name' => 'Apparition du Wyrm Ancien',
                 'type' => GameEvent::TYPE_BOSS_SPAWN,

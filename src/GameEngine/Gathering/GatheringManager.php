@@ -7,6 +7,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\GatheringEvent;
 use App\Event\GatheringXpEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\Helper\InventoryHelper;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +21,7 @@ class GatheringManager
         private readonly ToolDurabilityManager $toolDurabilityManager,
         private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly InventoryHelper $inventoryHelper,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -66,8 +68,11 @@ class GatheringManager
             return ['success' => false, 'item' => null, 'quantity' => 0, 'message' => 'Rien à récolter ici.'];
         }
 
-        // 6. Add item to player inventory
-        $quantity = random_int(1, 1 + intdiv($skillLevel, 3));
+        // 6. Add item to player inventory — quantity is scaled by the active gathering_bonus
+        // multiplier (1.0 by default) so events can temporarily boost gathering yield.
+        $baseQuantity = random_int(1, 1 + intdiv($skillLevel, 3));
+        $multiplier = $this->gameEventBonusProvider->getGatheringMultiplier($player->getMap());
+        $quantity = max(1, (int) round($baseQuantity * $multiplier));
         for ($i = 0; $i < $quantity; ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($gathered->getId());
             $this->inventoryHelper->addItem($playerItem, false);

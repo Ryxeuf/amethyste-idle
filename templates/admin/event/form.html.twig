@@ -25,6 +25,7 @@
                     <option value="boss_spawn" {% if event is defined and event.type == 'boss_spawn' %}selected{% endif %}>Spawn de boss</option>
                     <option value="xp_bonus" {% if event is defined and event.type == 'xp_bonus' %}selected{% endif %}>Bonus XP</option>
                     <option value="drop_bonus" {% if event is defined and event.type == 'drop_bonus' %}selected{% endif %}>Bonus drop</option>
+                    <option value="gathering_bonus" {% if event is defined and event.type == 'gathering_bonus' %}selected{% endif %}>Bonus recolte</option>
                     <option value="invasion" {% if event is defined and event.type == 'invasion' %}selected{% endif %}>Invasion</option>
                     <option value="custom" {% if (event is not defined) or event.type == 'custom' %}selected{% endif %}>Personnalise</option>
                 </select>

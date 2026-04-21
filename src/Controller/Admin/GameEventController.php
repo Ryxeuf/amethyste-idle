@@ -72,6 +72,7 @@ class GameEventController extends AbstractController
             GameEvent::TYPE_BOSS_SPAWN,
             GameEvent::TYPE_XP_BONUS,
             GameEvent::TYPE_DROP_BONUS,
+            GameEvent::TYPE_GATHERING_BONUS,
             GameEvent::TYPE_INVASION,
             GameEvent::TYPE_CUSTOM,
         ], true)) {
