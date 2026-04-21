@@ -472,7 +472,12 @@
       "you": "Vous",
       "titles": {
         "heading": "Mes titres saisonniers",
-        "season_tooltip": "%season% — %tab%"
+        "season_tooltip": "%season% — %tab%",
+        "cosmetic": {
+          "hunter": "Embleme du chasseur (épées croisées)",
+          "adventurer": "Embleme de l'aventurier (étendard)",
+          "scholar": "Embleme du savant (étoile du savoir)"
+        }
       }
     },
     "bestiary": {

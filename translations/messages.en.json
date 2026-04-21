@@ -470,7 +470,12 @@
       "you": "You",
       "titles": {
         "heading": "My seasonal titles",
-        "season_tooltip": "%season% — %tab%"
+        "season_tooltip": "%season% — %tab%",
+        "cosmetic": {
+          "hunter": "Hunter's crest (crossed blades)",
+          "adventurer": "Adventurer's crest (banner)",
+          "scholar": "Scholar's crest (star of knowledge)"
+        }
       }
     },
     "factions": {
