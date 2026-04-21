@@ -20,6 +20,7 @@ final class ItemLocalizationExtension extends AbstractExtension
     {
         return [
             new TwigFilter('localized_name', [$this, 'localizedName']),
+            new TwigFilter('localized_description', [$this, 'localizedDescription']),
         ];
     }
 
@@ -30,6 +31,15 @@ final class ItemLocalizationExtension extends AbstractExtension
         }
 
         return $item->getLocalizedName($this->currentLocale());
+    }
+
+    public function localizedDescription(?Item $item): string
+    {
+        if ($item === null) {
+            return '';
+        }
+
+        return $item->getLocalizedDescription($this->currentLocale());
     }
 
     private function currentLocale(): ?string

@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3b : cablage du filter `localized_name` dans les templates shop/inventaire/bestiaire)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3d : infrastructure multilingue pour les descriptions d'items + filter Twig `localized_description`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3d : infrastructure multilingue pour les descriptions d'items (2026-04-21)
+
+> Etend le pattern de la sous-phase 3a (colonne JSON + accesseurs localises) a `Item.description`. Meme contrat, meme normalisation, memes fallbacks gracieux. Le filter Twig `localized_description` est ajoute en meme temps a l'extension existante pour eviter une PR d'infrastructure "filtre seul" a part : les templates restent strictement intacts tant que la sous-phase 3d.b (cablage) ne les cible pas. Totalement retrocompatible, aucun contenu de donnees modifie (les items existants conservent `description_translations = null`).
+
+- [x] Migration `migrations/Version20260421ItemDescriptionTranslations.php` : `ALTER TABLE game_items ADD COLUMN IF NOT EXISTS description_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict de la migration `Version20260421ItemNameTranslations`.
+- [x] `App\Entity\Game\Item` : nouvelle propriete `?array $descriptionTranslations` (colonne Doctrine `json`, nullable). Nouvelle methode `getLocalizedDescription(?string $locale): string` — fallback sur `$this->description` si `$locale` est `null`/vide, si `$this->descriptionTranslations` est `null`, si la locale n'est pas presente, ou si sa valeur est une chaine blanche. Nouvelle methode `getDescriptionTranslations(): array<string, string>` (defaut `[]`). Nouveau setter `setDescriptionTranslations(?array $translations): Item` avec normalisation : cles vides ignorees, valeurs non-string ou blanches ignorees, tableau final ramene a `null` si vide (stockage compact en DB). Retourne `$this` (fluent, coherent avec `setNameTranslations`).
+- [x] `App\Twig\ItemLocalizationExtension` : nouvelle methode `localizedDescription(?Item $item): string` et nouveau filter Twig `localized_description` enregistre dans `getFilters()` (total porte a 2 filters). Defense en profondeur identique au filter `localized_name` : renvoie `''` si `$item === null`, delegue sinon a `Item::getLocalizedDescription($this->currentLocale())`. Reutilise la methode privee `currentLocale()` deja en place (lecture `RequestStack::getCurrentRequest()->getLocale()`).
+- [x] Tests `tests/Unit/Entity/Game/ItemLocalizationTest.php` etendus (+7 cas, total 14) : miroir exact des 7 cas existants pour `name`, adaptes a `description` (fallback sans traductions, traduction matchee EN/DE, fallback sur locale absente, normalisation cle/valeur vides, reset via `null`, compaction vers `null` sur entrees blanches, defaut `[]` sur nouveau item).
+- [x] Tests `tests/Unit/Twig/ItemLocalizationExtensionTest.php` etendus (+3 cas, total 8) : `testDescriptionFilterReturnsTranslationMatchingCurrentLocale`, `testDescriptionFilterFallsBackToBaseDescriptionWhenTranslationMissing`, `testDescriptionFilterReturnsEmptyStringForNullItem`. `testFilterIsRegistered` mis a jour pour asserter la presence des deux filters (`localized_name` + `localized_description`) sans dependre de l'ordre.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d cochee + detail implementation + ajout dans la ligne de progression de la tache 135. `ROADMAP_TODO_INDEX.md` a synchroniser (ajouter sous-phase 3d).
+
+**Diff** : ~43 lignes `Item.php` + ~10 lignes `ItemLocalizationExtension.php` + ~93 lignes tests entite + ~33 lignes tests extension + 26 lignes migration + roadmap. Aucun template touche, aucun fixture modifie, aucun controller ni service. Isolation totale : debloque la sous-phase 3d.b (cablage des templates catalog/loot/auction pour `description`) et la sous-phase 3d.c (fixtures EN des descriptions d'items) sans preempter leurs decisions ni imposer de contrat sur les consommateurs existants.
 
 ---
 
