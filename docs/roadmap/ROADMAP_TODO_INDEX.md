@@ -3,7 +3,7 @@
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
 > Derniere mise a jour : 2026-04-21
 > **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 11/12 taches completees (AVT-04 bloque sur livraison d'assets). Sprint 8 (Avatar : Backend & Carte) — 10/10 taches completees. Sprint 9 (Avatar : Personnage & Equipement) — 5/8 taches completees (AVT-24 ajoute). Sprint 10 (Avatar : Polish) — 4/8 taches completees (AVT-32 jump animation, AVT-31 run animation via sprint Shift, AVT-36 lazy loading, AVT-37 cache IndexedDB). Sprint 11 (Monde vivant) — 130 sous-phases 1 + 5 livrees (catalogue Mount + fast travel verrouille par decouverte de region), 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b livrees (page `/game/rankings` avec onglets kills + quetes completees + XP totale, archivage a la fin de saison, titres de podium top-3 attribues a la fin de saison + affichage des titres sur la page classement + affichage sur le profil public). Sprint 12 (Technique & i18n) — 134 sous-phase 1 livree (infra k6), 135 sous-phases 1 + 2a livrees (selecteur de langue securise + parite de cles FR/EN sur l'UI).
+> **Sprints 1, 2, 3, 4, 5 et 6 termines.** Sprint 7 (Avatar : Fondations) en cours — 11/12 taches completees (AVT-04 bloque sur livraison d'assets). Sprint 8 (Avatar : Backend & Carte) — 10/10 taches completees. Sprint 9 (Avatar : Personnage & Equipement) — 5/8 taches completees (AVT-24 ajoute). Sprint 10 (Avatar : Polish) — 4/8 taches completees (AVT-32 jump animation, AVT-31 run animation via sprint Shift, AVT-36 lazy loading, AVT-37 cache IndexedDB). Sprint 11 (Monde vivant) — 130 sous-phases 1 + 5 livrees (catalogue Mount + fast travel verrouille par decouverte de region), 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b livrees (page `/game/rankings` avec onglets kills + quetes completees + XP totale, archivage a la fin de saison, titres de podium top-3 attribues a la fin de saison + affichage des titres sur la page classement + affichage sur le profil public). Sprint 12 (Technique & i18n) — 134 sous-phase 1 livree (infra k6), 135 sous-phases 1 + 2a + 2b livrees (selecteur de langue securise + parite de cles FR/EN sur l'UI + audit des cles utilisees avec script re-executable).
 > **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
 
 ---
@@ -51,7 +51,7 @@
 | **Sprint 9** | Avatar: Personnage & Equipement | 5/8 | Moyenne | En cours |
 | **Sprint 10** | Avatar: Polish & Animations | 4/8 | Basse | En cours |
 | **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 5, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.2) |
-| **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phase 1, 135 sous-phase 1) |
+| **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phase 1, 135 sous-phases 1 + 2a + 2b) |
 
 **Total restant : 45 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
 **Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6) et 8 (10) termines + Sprint 7 (11/12 en cours) + Sprint 9 (5/8 en cours) + Sprint 10 (4/8 en cours) = 50 taches completes / initial 66+

@@ -222,6 +222,11 @@
       "start_quest": "Start Quest",
       "fast_travel": "Fast Travel",
       "exploration_message": "You begin exploring this region...",
+      "aria_label": "Interactive world map",
+      "dialog_aria": "NPC dialog",
+      "close_dialog": "Close dialog",
+      "dialog_choices": "Dialog choices",
+      "dialog_next": "Continue",
       "regions": {
         "forest": "Mystic Forest",
         "mountains": "Misty Mountains",
@@ -430,6 +435,7 @@
       "energy": "Energy",
       "level_short": "Lv.",
       "turn": "Turn",
+      "turns": "turns",
       "actions": "Actions",
       "log": {
         "title": "Combat Log",
