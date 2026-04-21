@@ -59,6 +59,8 @@
       "shop": "Shop",
       "skills": "Skills",
       "settings": "Settings",
+      "bestiary": "Bestiary",
+      "craft": "Crafting",
       "factions": "Factions",
       "friends": "Friends",
       "rankings": "Rankings",
@@ -477,6 +479,25 @@
           "scholar": "Scholar's crest (star of knowledge)"
         }
       }
+    },
+    "bestiary": {
+      "title": "Bestiary",
+      "subtitle": "Catalog of encountered monsters",
+      "discovered": "%count%/%total% monsters discovered",
+      "total_kills": "%count% total kills",
+      "kills": "%count% kill(s)",
+      "tier_weaknesses": "Weaknesses revealed",
+      "tier_loot": "Loot table visible",
+      "tier_title": "Hunter of %monster%",
+      "weaknesses": "Elemental resistances",
+      "loot_table": "Loot table",
+      "loot_probability": "%percent%% chance",
+      "next_tier": "Next tier: %kills%/%required% kills",
+      "empty": "No monsters encountered yet",
+      "empty_hint": "Fight monsters on the map to fill your bestiary",
+      "boss": "Boss",
+      "level": "Level %level%",
+      "difficulty": "Difficulty %level%/5"
     },
     "factions": {
       "title": "Factions",
