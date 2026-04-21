@@ -291,7 +291,7 @@ class Item
     {
         $normalized = [];
         foreach ($translations ?? [] as $locale => $value) {
-            if (\is_string($locale) && $locale !== '' && \is_string($value) && trim($value) !== '') {
+            if ($locale !== '' && trim($value) !== '') {
                 $normalized[$locale] = $value;
             }
         }
