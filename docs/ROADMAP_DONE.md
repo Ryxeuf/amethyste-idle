@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (131 — Events live & outils GM sous-phase 3 : historique des events lances)
+> Derniere mise a jour : 2026-04-21 (131 — Events live & outils GM sous-phase 4 : annonce globale Mercure)
+
+---
+
+## 131 — Events live & outils GM sous-phase 4 : annonce globale Mercure (2026-04-21)
+
+> Ferme la sous-phase 4 de la tache 131. La chaine complete serveur->client existe deja depuis la tache 79 (2026-03-22) : `GameEventAnnouncementHandler` souscrit a `GameEventActivatedEvent::NAME`, publie sur le topic Mercure `event/announce` (payload `{topic, type: 'activated', event: {id, name, type, typeLabel, description, endsAt, mapId}}`), et `assets/controllers/event_notification_controller.js` affiche un toast + met a jour le HUD badge cote client. Le trigger manuel existait aussi deja via `GameEventController::toggle()` qui dispatche l'event sur transition `SCHEDULED -> ACTIVE`, mais le controller admin n'avait aucune couverture de test. Cette sous-phase ferme ce gap de non-regression sans toucher au code applicatif — garantit que la chaine "admin clique Activer -> annonce Mercure globale" ne se brisera pas silencieusement lors de futures evolutions du toggle.
+
+- [x] `tests/Functional/Controller/Admin/GameEventControllerToggleTest.php` : nouveau fichier de tests unitaires dedies a `GameEventController::toggle()`, pattern container/twig mock aligne sur `GameEventHistoryControllerTest` et `AcquireControllerTest` (mock `ContainerInterface` qui expose `router`, `request_stack` avec session FlashBag, et `security.csrf.token_manager`).
+- [x] 3 cas couverts : (1) `testToggleFromScheduledToActiveDispatchesActivatedEvent` — verifie que le CSRF valide + status SCHEDULED declenche `em->flush()`, dispatch d'un `GameEventActivatedEvent` portant l'entite cible avec le nom d'event `GameEventActivatedEvent::NAME`, log admin `toggle / GameEvent / 42 / "Test event → active"`, status final `ACTIVE`, redirect 302 ; (2) `testToggleFromActiveToCompletedDoesNotDispatchActivatedEvent` — ACTIVE -> COMPLETED declenche le flush mais jamais le dispatch (evite un double-fire de l'annonce a la cloture) ; (3) `testToggleWithInvalidCsrfDoesNothing` — CSRF rejete = no-op complet (aucun flush, aucun dispatch, aucun log, status inchange).
+- [x] Zero modification de code applicatif : aucun diff sur `GameEventController`, `GameEventAnnouncementHandler`, templates ou configuration. Uniquement un nouveau fichier de tests (~150 lignes) qui documente le comportement existant et previent la regression.
+- [x] Roadmap : `SPRINT_11.md` sous-phase 4 cochee + detail d'implementation + cross-reference tache 79 ; `ROADMAP_TODO_INDEX.md` avancement Sprint 11 mis a jour (131 sous-phases 3 + 4).
+
+**Diff** : ~150 lignes (1 fichier de tests + mises a jour roadmap). Isolation totale : independante de la PR #429 (sous-phase 1 "Lancer maintenant") qui reutilisera exactement le meme pipeline `dispatch -> GameEventAnnouncementHandler -> Mercure`. Independante de la sous-phase 2 (types avances) qui s'appuiera aussi sur ce meme pipeline.
 
 ---
 
