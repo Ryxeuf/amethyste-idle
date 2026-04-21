@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (133 — Mini-jeux sous-phase 1 : peche avec zone parfaite)
+> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3a : infrastructure multilingue pour les noms d'items)
+
+---
+
+## 135 — Localisation i18n sous-phase 3a : infrastructure multilingue pour les noms d'items (2026-04-21)
+
+> Pose la premiere pierre de la sous-phase 3 "Contenu de jeu multilingue" en ajoutant une colonne JSON `name_translations` sur l'entite `Item` et une methode `getLocalizedName(?string $locale)` avec fallback gracieux. Infrastructure pure, aucun template ni controller modifie : les consommateurs existants continuent d'utiliser `item.name` (rendu FR par defaut) tant que la sous-phase 3b ne les aura pas cables. Totalement retrocompatible, aucun contenu de donnees ajoute (les items existants conservent `name_translations = null`).
+
+- [x] Migration `migrations/Version20260421ItemNameTranslations.php` : `ALTER TABLE game_items ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`.
+- [x] `App\Entity\Game\Item` : nouvelle propriete `?array $nameTranslations` (colonne Doctrine `json`, nullable). Nouvelle methode `getLocalizedName(?string $locale): string` — fallback sur `$this->name` si `$locale` est `null`/vide, si `$this->nameTranslations` est `null`, si la locale n'est pas presente, ou si sa valeur est une chaine blanche. Nouvelle methode `getNameTranslations(): array<string, string>` (defaut `[]`). Nouveau setter `setNameTranslations(?array $translations): Item` avec normalisation : cles non-string ou vides ignorees, valeurs non-string ou blanches ignorees, tableau final ramene a `null` si vide (stockage compact en DB). Retourne `$this` (fluent, coherent avec les autres setters de l'entite).
+- [x] Tests `tests/Unit/Entity/Game/ItemLocalizationTest.php` (7 cas) : `testGetLocalizedNameFallsBackToBaseNameWhenNoTranslations` (null/vide/FR/EN tous sans traductions retournent le nom de base), `testGetLocalizedNameReturnsMatchingTranslation` (EN + DE lookup), `testGetLocalizedNameFallsBackWhenLocaleMissing` (ES/JA sans entree), `testSetNameTranslationsIgnoresBlankValuesAndInvalidKeys` (cle vide, valeur blanche, valeur vide tous filtres), `testSetNameTranslationsWithNullResetsStorage`, `testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull` (compaction en `null`), `testGetNameTranslationsDefaultsToEmptyArray`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3 decoupee en 3a (livree), 3b (cablage templates) et 3c (fixtures EN). `ROADMAP_TODO_INDEX.md` avancement Sprint 12 met a jour la ligne 135.
+
+**Diff** : ~65 lignes `Item.php` + ~75 lignes tests + 27 lignes migration + roadmap. Aucun template touche, aucun fixture modifie, aucun controller ou service. Isolation totale : debloque la sous-phase 2c (traduction EN des items) et la sous-phase 3b (cablage dans templates/helpers) sans preempter leurs decisions.
 
 ---
 
