@@ -15,6 +15,11 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class FishingManager
 {
+    public const SUCCESS_MIN = 30;
+    public const SUCCESS_MAX = 70;
+    public const PERFECT_MIN = 45;
+    public const PERFECT_MAX = 55;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly HarvestItemGenerator $harvestItemGenerator,
@@ -90,27 +95,27 @@ class FishingManager
 
     /**
      * Termine la pêche en fonction de la valeur de tension (0-100).
-     * 30-70 = succès, <30 = trop faible, >70 = trop fort (perte de durabilité).
+     * 30-70 = succès, 45-55 = zone parfaite (pas d'usure), <30 = trop faible, >70 = trop fort.
      *
-     * @return array{success: bool, item: ?array, message: string}
+     * @return array{success: bool, perfect: bool, item: ?array, message: string}
      */
     public function completeFishing(Player $player, ObjectLayer $spot, int $tension): array
     {
         $fishingRod = $this->getPlayerFishingRod($player);
         if ($fishingRod === null) {
-            return ['success' => false, 'item' => null, 'message' => 'Vous n\'avez pas de canne à pêche.'];
+            return ['success' => false, 'perfect' => false, 'item' => null, 'message' => 'Vous n\'avez pas de canne à pêche.'];
         }
 
-        if ($tension < 30) {
+        if ($tension < self::SUCCESS_MIN) {
             $this->eventDispatcher->dispatch(
                 new FishingEvent($player, $spot),
                 FishingEvent::NAME
             );
 
-            return ['success' => false, 'item' => null, 'message' => 'Trop faible ! Le poisson s\'échappe.'];
+            return ['success' => false, 'perfect' => false, 'item' => null, 'message' => 'Trop faible ! Le poisson s\'échappe.'];
         }
 
-        if ($tension > 70) {
+        if ($tension > self::SUCCESS_MAX) {
             $broken = $fishingRod->reduceDurability(2);
             $this->entityManager->persist($fishingRod);
             $this->entityManager->flush();
@@ -125,10 +130,12 @@ class FishingManager
                 $message .= ' Votre canne à pêche est brisée !';
             }
 
-            return ['success' => false, 'item' => null, 'message' => $message];
+            return ['success' => false, 'perfect' => false, 'item' => null, 'message' => $message];
         }
 
-        // Succès (30-70)
+        // Succès (30-70) — zone parfaite (45-55) preserve la durabilite de la canne
+        $perfect = $tension >= self::PERFECT_MIN && $tension <= self::PERFECT_MAX;
+
         $items = $this->harvestItemGenerator->generateHarvestItems($spot);
         $caughtItem = $items[0] ?? null;
 
@@ -136,9 +143,10 @@ class FishingManager
             $this->inventoryHelper->addItem($caughtItem, false);
         }
 
-        // Réduire la durabilité normalement
-        $fishingRod->reduceDurability(1);
-        $this->entityManager->persist($fishingRod);
+        if (!$perfect) {
+            $fishingRod->reduceDurability(1);
+            $this->entityManager->persist($fishingRod);
+        }
 
         // Marquer le spot comme utilisé
         $spot->setUsedAt(new \DateTime());
@@ -149,15 +157,22 @@ class FishingManager
             FishingEvent::NAME
         );
 
+        $message = $caughtItem !== null
+            ? 'Vous avez pêché : ' . $caughtItem->getGenericItem()->getName()
+            : 'Aucune prise cette fois.';
+
+        if ($perfect && $caughtItem !== null) {
+            $message = 'Parfait ! ' . $message;
+        }
+
         return [
             'success' => true,
+            'perfect' => $perfect,
             'item' => $caughtItem !== null ? [
                 'name' => $caughtItem->getGenericItem()->getName(),
                 'slug' => $caughtItem->getGenericItem()->getSlug(),
             ] : null,
-            'message' => $caughtItem !== null
-                ? 'Vous avez pêché : ' . $caughtItem->getGenericItem()->getName()
-                : 'Aucune prise cette fois.',
+            'message' => $message,
         ];
     }
 
