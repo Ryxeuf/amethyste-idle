@@ -38,9 +38,10 @@
 
 ### 131 — Events live & outils GM (M | ★★★)
 > Prerequis : ← 79 (evenements bonus)
+> Avancement : sous-phase 3 (historique des events lances) livree 2026-04-21. Sous-phases 1 (bouton "Lancer maintenant", PR #429), 2 (types avances) et 4 (annonce Mercure) restent a faire.
 - [ ] Interface admin pour lancer des events en temps reel
 - [ ] Types : spawn de boss special, buff global, quete ephemere
-- [ ] Historique des events lances
+- [x] Historique des events lances (sous-phase 3) — livree 2026-04-21. Nouvelle route `GET /admin/events/history` (`admin_event_history`) dans `GameEventController::history()` qui liste les events passes (`status IN ('completed', 'cancelled')`) tries par `endsAt DESC`, avec filtres optionnels par `status` (whitelist `completed|cancelled`) et `type` (whitelist `boss_spawn|xp_bonus|drop_bonus|invasion|custom`) valides cote serveur pour eviter l'injection DQL. Pagination 25/page (reutilise `admin/_pagination.html.twig`). Template `admin/event/history.html.twig` : tableau avec nom, type, statut, debut, fin, duree calculee en heures (`endsAt - startsAt`), carte, + lien retour vers `/admin/events`. Aucun lien ajoute dans `index.html.twig` (evite les conflits avec la PR #429 sous-phase 1 ; la sidebar admin surligne deja l'entree "Planificateur" pour toutes les routes `admin_event_*`). Tests `GameEventHistoryControllerTest` (7 cas : rendu du template, filtre par defaut sur `STATUS_COMPLETED|STATUS_CANCELLED`, acceptation du filtre `status=cancelled`, rejet silencieux des statuts hors whitelist, acceptation du filtre `type=boss_spawn`, rejet des types inconnus, pagination `ceil(total/25)`).
 - [ ] Annonce globale via Mercure SSE
 
 ### 132 — Classement saisonnier global (M | ★★)

@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 2a : parite de cles FR/EN sur l'UI)
+> Derniere mise a jour : 2026-04-21 (131 — Events live & outils GM sous-phase 3 : historique des events lances)
+
+---
+
+## 131 — Events live & outils GM sous-phase 3 : historique des events lances (2026-04-21)
+
+> Expose dans l'admin une page dediee a l'historique des evenements termines ou annules. Avant cette sous-phase, un admin pouvait seulement filtrer le planificateur `/admin/events` par `?status=completed` ou `?status=cancelled` sur l'UI principale, sans vue consolidee, sans tri par date de fin, sans colonne "duree" et sans filtrage combine status + type. La page `/admin/events/history` comble ces lacunes et prepare la sous-phase 4 (annonces Mercure) en separant la consultation retrospective de la gestion en cours. Independante de la sous-phase 1 (PR #429 "Lancer maintenant") et de la sous-phase 2 (types avances) : ne touche aucune des actions existantes, ne modifie pas `index.html.twig` (evite les conflits de merge avec la PR #429).
+
+- [x] `App\Controller\Admin\GameEventController::history()` : nouvelle action `GET /admin/events/history` (nom `admin_event_history`, methode GET uniquement). Construit un `QueryBuilder` filtrant sur `e.status IN (:pastStatuses)` avec pour parametre par defaut `[STATUS_COMPLETED, STATUS_CANCELLED]`. Accepte en query `status` (whitelist stricte `completed|cancelled`) et `type` (whitelist stricte des 5 constantes `TYPE_*` de `GameEvent`) — toute valeur hors whitelist est ignoree silencieusement, aucun DQL n'est construit pour eviter l'injection.
+- [x] Tri par `e.endsAt DESC` (les events termines les plus recents apparaissent en premier). Pagination 25 lignes/page via `$request->query->getInt('page')` + `setFirstResult` / `setMaxResults`.
+- [x] Template `templates/admin/event/history.html.twig` : en-tete avec retour vers `/admin/events`, deux rangees de filtres (status : Tous / Termines / Annules, type : Tous / Boss / Bonus XP / Bonus drop / Invasion / Personnalise), tableau a 7 colonnes (Nom / Type / Statut / Debut / Fin / Duree / Carte). Duree calculee cote template via `(event.endsAt.timestamp - event.startsAt.timestamp) / 3600` arrondie a 0.1h (protection plancher 0 pour les events corrompus avec `endsAt < startsAt`). Reutilise `admin/_pagination.html.twig`. Aucun lien ajoute dans `index.html.twig` — la navigation passe par la sidebar qui surligne `admin_event_*` quelle que soit la sous-route.
+- [x] Tests `tests/Functional/Controller/Admin/GameEventHistoryControllerTest.php` (7 cas, pattern `DashboardControllerTest` avec mock `EntityManagerInterface` + `Environment` + `ContainerInterface`) : `testHistoryRendersHistoryTemplate` (template name + pagination par defaut), `testHistoryFiltersOnPastStatusesByDefault` (assertion sur le `where('e.status IN (:pastStatuses)')` + `setParameter('pastStatuses', [COMPLETED, CANCELLED])`), `testHistoryAppliesStatusFilterWhenProvided` (status=cancelled ajoute `andWhere('e.status = :status')`), `testHistoryIgnoresInvalidStatusFilter` (status=scheduled ne declenche aucun `andWhere` mais est renvoye tel quel au template pour surligner aucun onglet), `testHistoryAppliesTypeFilterWhenWhitelisted` (type=boss_spawn ajoute `andWhere('e.type = :type')`), `testHistoryIgnoresUnknownType` (type=not_a_real_type ne declenche aucun `andWhere`), `testHistoryComputesPaginationFromTotal` (total=60, page=2 -> `currentPage=2`, `totalPages=3=ceil(60/25)`).
+- [x] Roadmap : `SPRINT_11.md` 131 sous-phase 3 cochee + detail implementation, avancement Sprint 11 met a jour la ligne 131. Compteurs `ROADMAP_TODO_INDEX.md` synchrones (Sprint 11 : 130 s1+s5, 131 s3, 132 s1+s2a+s2b+s3+s4a+s4b.1+s4b.2 livrees).
+
+**Diff** : ~80 lignes PHP + ~85 lignes Twig + ~190 lignes de tests + ~20 lignes roadmap. Aucune migration Doctrine, aucune dependance ajoutee, aucun template existant modifie (evite les conflits avec la PR #429). Isolation stricte : meme si la PR #429 n'est jamais mergee, cette sous-phase reste fonctionnelle en production — elle n'utilise que des actions existantes (`toggle`, `cancel`, `delete`, changement de statut via `SeasonTickCommand` ou autres lifecycle subscribers).
 
 ---
 
