@@ -52,14 +52,45 @@ class ItemLocalizationExtensionTest extends TestCase
         $this->assertSame('', $extension->localizedName(null));
     }
 
+    public function testDescriptionFilterReturnsTranslationMatchingCurrentLocale(): void
+    {
+        $item = (new Item())
+            ->setDescription('Epee forgee en acier trempe.')
+            ->setDescriptionTranslations(['en' => 'A sword forged from tempered steel.']);
+
+        $extension = new ItemLocalizationExtension($this->stackWithLocale('en'));
+
+        $this->assertSame('A sword forged from tempered steel.', $extension->localizedDescription($item));
+    }
+
+    public function testDescriptionFilterFallsBackToBaseDescriptionWhenTranslationMissing(): void
+    {
+        $item = (new Item())
+            ->setDescription('Epee forgee en acier trempe.')
+            ->setDescriptionTranslations(['de' => 'Ein aus Stahl geschmiedetes Schwert.']);
+
+        $extension = new ItemLocalizationExtension($this->stackWithLocale('en'));
+
+        $this->assertSame('Epee forgee en acier trempe.', $extension->localizedDescription($item));
+    }
+
+    public function testDescriptionFilterReturnsEmptyStringForNullItem(): void
+    {
+        $extension = new ItemLocalizationExtension($this->stackWithLocale('en'));
+
+        $this->assertSame('', $extension->localizedDescription(null));
+    }
+
     public function testFilterIsRegistered(): void
     {
         $extension = new ItemLocalizationExtension(new RequestStack());
 
         $filters = $extension->getFilters();
 
-        $this->assertCount(1, $filters);
-        $this->assertSame('localized_name', $filters[0]->getName());
+        $this->assertCount(2, $filters);
+        $filterNames = array_map(static fn ($filter) => $filter->getName(), $filters);
+        $this->assertContains('localized_name', $filterNames);
+        $this->assertContains('localized_description', $filterNames);
     }
 
     private function stackWithLocale(string $locale): RequestStack

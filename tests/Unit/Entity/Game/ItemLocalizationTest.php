@@ -84,4 +84,97 @@ class ItemLocalizationTest extends TestCase
 
         $this->assertSame([], $item->getNameTranslations());
     }
+
+    public function testGetLocalizedDescriptionFallsBackToBaseDescriptionWhenNoTranslations(): void
+    {
+        $item = new Item();
+        $item->setDescription('Epee forgee en acier trempe.');
+
+        $this->assertSame('Epee forgee en acier trempe.', $item->getLocalizedDescription('en'));
+        $this->assertSame('Epee forgee en acier trempe.', $item->getLocalizedDescription('fr'));
+        $this->assertSame('Epee forgee en acier trempe.', $item->getLocalizedDescription(null));
+        $this->assertSame('Epee forgee en acier trempe.', $item->getLocalizedDescription(''));
+    }
+
+    public function testGetLocalizedDescriptionReturnsMatchingTranslation(): void
+    {
+        $item = new Item();
+        $item->setDescription('Epee forgee en acier trempe.');
+        $item->setDescriptionTranslations([
+            'en' => 'A sword forged from tempered steel.',
+            'de' => 'Ein aus gehartetem Stahl geschmiedetes Schwert.',
+        ]);
+
+        $this->assertSame('A sword forged from tempered steel.', $item->getLocalizedDescription('en'));
+        $this->assertSame('Ein aus gehartetem Stahl geschmiedetes Schwert.', $item->getLocalizedDescription('de'));
+    }
+
+    public function testGetLocalizedDescriptionFallsBackWhenLocaleMissing(): void
+    {
+        $item = new Item();
+        $item->setDescription('Restaure 50 points de vie.');
+        $item->setDescriptionTranslations(['en' => 'Restores 50 HP.']);
+
+        $this->assertSame('Restaure 50 points de vie.', $item->getLocalizedDescription('es'));
+        $this->assertSame('Restaure 50 points de vie.', $item->getLocalizedDescription('ja'));
+    }
+
+    public function testSetDescriptionTranslationsIgnoresBlankValuesAndInvalidKeys(): void
+    {
+        $item = new Item();
+        $item->setDescription('Baton noueux taille dans un chene millenaire.');
+        $item->setDescriptionTranslations([
+            'en' => 'A gnarled staff carved from an ancient oak.',
+            'de' => '   ',
+            '' => 'Invalid key',
+            'es' => '',
+        ]);
+
+        $this->assertSame(
+            ['en' => 'A gnarled staff carved from an ancient oak.'],
+            $item->getDescriptionTranslations()
+        );
+        $this->assertSame(
+            'A gnarled staff carved from an ancient oak.',
+            $item->getLocalizedDescription('en')
+        );
+        $this->assertSame(
+            'Baton noueux taille dans un chene millenaire.',
+            $item->getLocalizedDescription('de')
+        );
+        $this->assertSame(
+            'Baton noueux taille dans un chene millenaire.',
+            $item->getLocalizedDescription('es')
+        );
+    }
+
+    public function testSetDescriptionTranslationsWithNullResetsStorage(): void
+    {
+        $item = new Item();
+        $item->setDescription('Bouclier en bois renforce.');
+        $item->setDescriptionTranslations(['en' => 'A reinforced wooden shield.']);
+        $item->setDescriptionTranslations(null);
+
+        $this->assertSame([], $item->getDescriptionTranslations());
+        $this->assertSame('Bouclier en bois renforce.', $item->getLocalizedDescription('en'));
+    }
+
+    public function testSetDescriptionTranslationsWithOnlyInvalidEntriesResetsToNull(): void
+    {
+        $item = new Item();
+        $item->setDescription('Dague effilee.');
+        $item->setDescriptionTranslations(['en' => 'A sharpened dagger.']);
+        $item->setDescriptionTranslations(['en' => '   ', 'de' => '']);
+
+        $this->assertSame([], $item->getDescriptionTranslations());
+        $this->assertSame('Dague effilee.', $item->getLocalizedDescription('en'));
+    }
+
+    public function testGetDescriptionTranslationsDefaultsToEmptyArray(): void
+    {
+        $item = new Item();
+        $item->setDescription('Orbe magique.');
+
+        $this->assertSame([], $item->getDescriptionTranslations());
+    }
 }
