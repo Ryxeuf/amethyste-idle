@@ -54,6 +54,50 @@ class GameEventController extends AbstractController
         ]);
     }
 
+    #[Route('/history', name: 'history', methods: ['GET'])]
+    public function history(Request $request): Response
+    {
+        $type = (string) $request->query->get('type', '');
+        $status = (string) $request->query->get('status', '');
+
+        $qb = $this->em->getRepository(GameEvent::class)->createQueryBuilder('e')
+            ->where('e.status IN (:pastStatuses)')
+            ->setParameter('pastStatuses', [GameEvent::STATUS_COMPLETED, GameEvent::STATUS_CANCELLED]);
+
+        if (\in_array($status, [GameEvent::STATUS_COMPLETED, GameEvent::STATUS_CANCELLED], true)) {
+            $qb->andWhere('e.status = :status')->setParameter('status', $status);
+        }
+
+        if ($type !== '' && \in_array($type, [
+            GameEvent::TYPE_BOSS_SPAWN,
+            GameEvent::TYPE_XP_BONUS,
+            GameEvent::TYPE_DROP_BONUS,
+            GameEvent::TYPE_INVASION,
+            GameEvent::TYPE_CUSTOM,
+        ], true)) {
+            $qb->andWhere('e.type = :type')->setParameter('type', $type);
+        }
+
+        $qb->orderBy('e.endsAt', 'DESC');
+
+        $page = max(1, $request->query->getInt('page', 1));
+        $limit = 25;
+        $total = (int) (clone $qb)->select('COUNT(e.id)')->resetDQLPart('orderBy')->getQuery()->getSingleScalarResult();
+        $events = $qb->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+
+        return $this->render('admin/event/history.html.twig', [
+            'events' => $events,
+            'status' => $status,
+            'type' => $type,
+            'currentPage' => $page,
+            'totalPages' => max(1, (int) ceil($total / $limit)),
+            'total' => $total,
+        ]);
+    }
+
     #[Route('/new', name: 'new')]
     public function new(Request $request): Response
     {

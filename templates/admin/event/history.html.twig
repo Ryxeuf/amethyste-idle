@@ -1,0 +1,90 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Historique des evenements - Admin{% endblock %}
+{% block page_title %}Historique des evenements{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <div>
+        <h1 class="text-xl sm:text-2xl font-bold">Historique des evenements</h1>
+        <p class="text-gray-500 text-sm mt-1">Evenements termines ou annules, tries par date de fin.</p>
+    </div>
+    <a href="{{ path('admin_event_index') }}" class="bg-gray-800 hover:bg-gray-700 text-gray-200 px-4 py-2 rounded-lg text-sm transition-colors">&larr; Retour au planificateur</a>
+</div>
+
+{# Status filters #}
+<div class="flex flex-wrap gap-2 mb-3">
+    <a href="{{ path('admin_event_history', {type: type}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == '' %}bg-purple-900 text-purple-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Tous</a>
+    <a href="{{ path('admin_event_history', {status: 'completed', type: type}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == 'completed' %}bg-gray-700 text-gray-300{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Termines</a>
+    <a href="{{ path('admin_event_history', {status: 'cancelled', type: type}) }}" class="px-3 py-1.5 rounded-lg text-sm {% if status == 'cancelled' %}bg-red-900 text-red-200{% else %}bg-gray-800 text-gray-400 hover:text-gray-200{% endif %} transition-colors">Annules</a>
+</div>
+
+{# Type filters #}
+<div class="flex flex-wrap gap-2 mb-4">
+    <a href="{{ path('admin_event_history', {status: status}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == '' %}bg-purple-900 text-purple-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Tous types</a>
+    <a href="{{ path('admin_event_history', {status: status, type: 'boss_spawn'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'boss_spawn' %}bg-red-900 text-red-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Boss</a>
+    <a href="{{ path('admin_event_history', {status: status, type: 'xp_bonus'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'xp_bonus' %}bg-green-900 text-green-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Bonus XP</a>
+    <a href="{{ path('admin_event_history', {status: status, type: 'drop_bonus'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'drop_bonus' %}bg-yellow-900 text-yellow-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Bonus drop</a>
+    <a href="{{ path('admin_event_history', {status: status, type: 'invasion'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'invasion' %}bg-purple-900 text-purple-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Invasion</a>
+    <a href="{{ path('admin_event_history', {status: status, type: 'custom'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'custom' %}bg-gray-700 text-gray-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Personnalise</a>
+</div>
+
+<p class="text-gray-400 text-sm mb-4">{{ total }} evenement(s) dans l'historique</p>
+
+{% if events|length > 0 %}
+<div class="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="border-b border-gray-800">
+                <tr>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Nom</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Type</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Statut</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Debut</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Fin</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Duree</th>
+                    <th class="px-4 py-3 text-gray-400 font-medium">Carte</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-800">
+                {% for event in events %}
+                {% set durationSec = event.endsAt.timestamp - event.startsAt.timestamp %}
+                {% if durationSec < 0 %}{% set durationSec = 0 %}{% endif %}
+                {% set durationHours = (durationSec / 3600)|round(1) %}
+                <tr class="hover:bg-gray-800 transition-colors">
+                    <td class="px-4 py-3 text-gray-200 font-medium">{{ event.name }}</td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex px-2 py-0.5 text-xs rounded-full
+                            {% if event.type == 'boss_spawn' %}bg-red-900 text-red-300
+                            {% elseif event.type == 'xp_bonus' %}bg-green-900 text-green-300
+                            {% elseif event.type == 'drop_bonus' %}bg-yellow-900 text-yellow-300
+                            {% elseif event.type == 'invasion' %}bg-purple-900 text-purple-300
+                            {% else %}bg-gray-700 text-gray-300{% endif %}">
+                            {{ event.typeLabel }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="inline-flex px-2 py-0.5 text-xs rounded-full
+                            {% if event.status == 'cancelled' %}bg-red-900 text-red-300
+                            {% else %}bg-gray-700 text-gray-300{% endif %}">
+                            {{ event.statusLabel }}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.startsAt|date('d/m/Y H:i') }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.endsAt|date('d/m/Y H:i') }}</td>
+                    <td class="px-4 py-3 text-gray-400">{{ durationHours }} h</td>
+                    <td class="px-4 py-3 text-gray-400">{{ event.map ? event.map.name : 'Global' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if totalPages > 1 %}
+    {% include 'admin/_pagination.html.twig' %}
+{% endif %}
+{% else %}
+<p class="text-gray-500">Aucun evenement dans l'historique.</p>
+{% endif %}
+{% endblock %}
