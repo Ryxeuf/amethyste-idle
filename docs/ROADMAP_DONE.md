@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3c : fixtures EN pour 35 items de debut de jeu)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.b.b.suite : fixtures EN pour le reste du bestiaire, niveaux 3+ et boss)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.b.b.suite : fixtures EN pour le reste du bestiaire (2026-04-22)
+
+> Complete la sous-phase 3e.b.b (qui couvrait les monstres de niveaux 1-3) en peuplant les traductions EN des 22 monstres restants du bestiaire. Avant cette sous-phase, les monstres de niveau 3+ (necromancer, will_o_wisp), tous les monstres de niveau 4-5, et l'ensemble des boss d'Acte 1-3 (niveaux 10 a 30) retombaient sur le fallback FR meme en locale `en` dans les templates `/game/bestiary`, `/game/profile` (titres de chasseur), ecran de combat et bouton de depecage. Apres, le bestiaire est a 100% de parite FR/EN sur les noms affiches (47/47 monstres traduits).
+
+- [x] `src/DataFixtures/MonsterFixtures.php` (+22 lignes, 1156 au total) : 22 entrees `name_translations => ['en' => '...']` ajoutees juste apres `name` (pattern identique aux 25 monstres deja traduits en 3e.b.b). Aucune migration, aucune modification de loader ou d'entite : la cle `name_translations` etait deja reconnue par le loader depuis 3e.b.b et normalisee par `Monster::setNameTranslations()`.
+- [x] Niveau 3 (2) : `necromancer → Necromancer`, `will_o_wisp → Will-o'-the-Wisp`.
+- [x] Niveau 4 (5) : `alpha_wolf → Alpha Wolf`, `griffin → Griffin`, `minotaur → Minotaur`, `stone_golem → Stone Golem`, `sylph → Sylph`.
+- [x] Niveau 5 (3) : `clay_golem → Clay Golem`, `creeping_shadow → Creeping Shadow`, `dragon → Ancestral Dragon`.
+- [x] Niveaux 10-18 (7) : `wyvern → Wyvern`, `cursed_knight → Cursed Knight`, `naga → Naga`, `crystal_golem → Crystal Golem`, `forest_guardian → Forest Guardian`, `corrupted_archdruid → Corrupted Archdruid`, `lesser_lich → Lesser Lich`.
+- [x] Boss Acte 2-3 — niveaux 20-30 (5) : `forge_lord → Forge Lord`, `swamp_hydra → Swamp Hydra`, `abyssal_blacksmith → Abyssal Blacksmith`, `ancient_wyrm → Ancient Wyrm`, `convergence_guardian → Guardian of the Convergence`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.b.b.suite ajoutee et cochee + avancement mis a jour. `ROADMAP_TODO_INDEX.md` met a jour l'avancement 135.
+
+**Diff** : +22 lignes `MonsterFixtures.php` + roadmap. Aucune migration, aucun template ni controller touche. Zero impact FR (le fallback transparent de `Monster::getLocalizedName` preserve le rendu actuel quand la locale est FR ou que la traduction est absente). Couverture des tests existants `MonsterLocalizationTest` (7 cas sur la normalisation du setter) conservee — la diff etant purement data, aucun test dedie n'est ajoute.
 
 ---
 

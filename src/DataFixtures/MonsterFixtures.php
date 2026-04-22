@@ -257,6 +257,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'griffin' => [
                 'name' => 'Griffon',
+                'name_translations' => ['en' => 'Griffin'],
                 'life' => 65,
                 'hit' => 85,
                 'speed' => 15,
@@ -272,6 +273,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'minotaur' => [
                 'name' => 'Minotaure',
+                'name_translations' => ['en' => 'Minotaur'],
                 'life' => 90,
                 'hit' => 75,
                 'speed' => 6,
@@ -290,6 +292,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'stone_golem' => [
                 'name' => 'Golem de pierre',
+                'name_translations' => ['en' => 'Stone Golem'],
                 'life' => 120,
                 'hit' => 70,
                 'speed' => 4,
@@ -418,6 +421,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'sylph' => [
                 'name' => 'Sylphe',
+                'name_translations' => ['en' => 'Sylph'],
                 'life' => 35,
                 'hit' => 90,
                 'speed' => 16,
@@ -433,6 +437,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'clay_golem' => [
                 'name' => 'Golem d\'argile',
+                'name_translations' => ['en' => 'Clay Golem'],
                 'life' => 85,
                 'hit' => 70,
                 'speed' => 3,
@@ -469,6 +474,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'alpha_wolf' => [
                 'name' => 'Loup alpha',
+                'name_translations' => ['en' => 'Alpha Wolf'],
                 'life' => 150,
                 'hit' => 90,
                 'speed' => 14,
@@ -519,6 +525,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'will_o_wisp' => [
                 'name' => 'Feu follet',
+                'name_translations' => ['en' => 'Will-o\'-the-Wisp'],
                 'life' => 120,
                 'hit' => 88,
                 'speed' => 15,
@@ -562,6 +569,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'creeping_shadow' => [
                 'name' => 'Ombre rampante',
+                'name_translations' => ['en' => 'Creeping Shadow'],
                 'life' => 180,
                 'hit' => 88,
                 'speed' => 8,
@@ -613,6 +621,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Monstres tier 2 (tâche 47) — lvl 10-15 ===
             'wyvern' => [
                 'name' => 'Wyverne',
+                'name_translations' => ['en' => 'Wyvern'],
                 'life' => 110,
                 'hit' => 88,
                 'speed' => 14,
@@ -632,6 +641,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'cursed_knight' => [
                 'name' => 'Chevalier maudit',
+                'name_translations' => ['en' => 'Cursed Knight'],
                 'life' => 140,
                 'hit' => 82,
                 'speed' => 7,
@@ -651,6 +661,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'naga' => [
                 'name' => 'Naga',
+                'name_translations' => ['en' => 'Naga'],
                 'life' => 120,
                 'hit' => 90,
                 'speed' => 11,
@@ -667,6 +678,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crystal_golem' => [
                 'name' => 'Golem de cristal',
+                'name_translations' => ['en' => 'Crystal Golem'],
                 'life' => 180,
                 'hit' => 75,
                 'speed' => 4,
@@ -688,6 +700,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Monstres tier 2 avancés (tâche 65) — lvl 15-25 ===
             'corrupted_archdruid' => [
                 'name' => 'Archidruide corrompu',
+                'name_translations' => ['en' => 'Corrupted Archdruid'],
                 'life' => 160,
                 'hit' => 82,
                 'speed' => 9,
@@ -710,6 +723,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'lesser_lich' => [
                 'name' => 'Liche mineure',
+                'name_translations' => ['en' => 'Lesser Lich'],
                 'life' => 130,
                 'hit' => 85,
                 'speed' => 8,
@@ -737,6 +751,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'swamp_hydra' => [
                 'name' => 'Hydre des marais',
+                'name_translations' => ['en' => 'Swamp Hydra'],
                 'life' => 220,
                 'hit' => 80,
                 'speed' => 6,
@@ -758,6 +773,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'abyssal_blacksmith' => [
                 'name' => 'Forgeron abyssal',
+                'name_translations' => ['en' => 'Abyssal Blacksmith'],
                 'life' => 260,
                 'hit' => 78,
                 'speed' => 5,
@@ -779,6 +795,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Monstre invocateur (tâche 69) ===
             'necromancer' => [
                 'name' => 'Nécromancien',
+                'name_translations' => ['en' => 'Necromancer'],
                 'life' => 40,
                 'hit' => 75,
                 'speed' => 6,
@@ -804,6 +821,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Boss de zone (tâche 66) ===
             'forest_guardian' => [
                 'name' => 'Gardien de la Forêt',
+                'name_translations' => ['en' => 'Forest Guardian'],
                 'life' => 400,
                 'hit' => 82,
                 'speed' => 9,
@@ -845,6 +863,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'forge_lord' => [
                 'name' => 'Seigneur de la Forge',
+                'name_translations' => ['en' => 'Forge Lord'],
                 'life' => 500,
                 'hit' => 80,
                 'speed' => 7,
@@ -894,6 +913,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === World boss (tâche 71) ===
             'ancient_wyrm' => [
                 'name' => 'Wyrm Ancien',
+                'name_translations' => ['en' => 'Ancient Wyrm'],
                 'life' => 2000,
                 'hit' => 95,
                 'speed' => 8,
@@ -942,6 +962,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'dragon' => [
                 'name' => 'Dragon ancestral',
+                'name_translations' => ['en' => 'Ancestral Dragon'],
                 'life' => 250,
                 'hit' => 90,
                 'speed' => 12,
@@ -990,6 +1011,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Boss final : Gardien de la Convergence (tache 94 — Acte 3) ===
             'convergence_guardian' => [
                 'name' => 'Gardien de la Convergence',
+                'name_translations' => ['en' => 'Guardian of the Convergence'],
                 'life' => 800,
                 'hit' => 90,
                 'speed' => 10,
