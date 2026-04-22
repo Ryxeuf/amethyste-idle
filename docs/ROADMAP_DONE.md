@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-21 (135 — Localisation i18n sous-phase 3e.b.a : cablage du filter `localized_monster_name` dans les templates)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.b.b : fixtures EN pour 24 monstres de niveaux 1-3)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.b.b : fixtures EN pour 24 monstres de niveaux 1-3 (2026-04-22)
+
+> Consomme l'infrastructure des sous-phases 3e.a (colonne `name_translations` sur `Monster`) et 3e.b.a (filter Twig `localized_monster_name` cable dans bestiaire/profile/fight) en peuplant les traductions EN des monstres visibles en debut de jeu. Avant cette sous-phase, meme en locale EN, les trois templates cables retombaient systematiquement sur `Monster::name` (nom FR) car la colonne `name_translations` etait vide pour tous les monstres. Apres, les 24 monstres de niveaux 1-3 affichent leur nom anglais des que la locale de session est `en`, et restent en francais avec `fr` (ou sur un fallback gracieux pour toute locale sans traduction).
+
+- [x] `src/DataFixtures/MonsterFixtures.php` (+29 lignes, 1156 au total) : le loader accepte desormais la cle optionnelle `name_translations` (array) dans chaque entree du tableau PHP de monstres, qui est relayee a `Monster::setNameTranslations()` juste avant la boucle `setCreatedAt` / `persist`. La normalisation (cles vides filtrees, valeurs non-string ignorees, compaction vers `null` si vide) est deja assuree par le setter cote entite — le loader se contente de passer le tableau tel quel.
+- [x] Niveau 1 (7 monstres) : `slime → Slime`, `goblin → Goblin`, `bat → Bat`, `giant_rat → Giant Rat`, `zombie → Zombie`, `wolf → Wolf`, `beetle → Beetle`.
+- [x] Niveau 2 (10 monstres) : `skeleton → Skeleton`, `spider → Spider`, `venom_snake → Venomous Snake`, `taiju → Taiju`, `specter → Specter`, `banshee → Banshee`, `scorpion → Scorpion`, `mushroom_golem → Mushroom Golem`, `ghost → Ghost`, `undine → Undine`.
+- [x] Niveau 3 (7 monstres) : `ochu → Ochu`, `werewolf → Werewolf`, `gargoyle → Gargoyle`, `troll → Troll`, `fire_elemental → Fire Elemental`, `salamander → Salamander`, `rusty_automaton → Rusty Automaton`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.b.b cochee + detail d'implementation + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.b.b.
+
+**Diff** : +29 lignes `MonsterFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les 49 autres monstres (tier 4+, boss, donjons, acte 2+) conservent leur nom FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures (par boucle tier / rarete). Les tests de l'entite `Monster::setNameTranslations` (7 cas dans `MonsterLocalizationTest`) couvrent deja exhaustivement la normalisation du champ ; la diff sur le loader est de 4 lignes de delegation triviale (`isset` + `is_array` + appel setter), ne necessitant pas de test dedie.
 
 ---
 
