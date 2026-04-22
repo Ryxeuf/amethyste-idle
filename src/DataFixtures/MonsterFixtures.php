@@ -16,6 +16,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
         $monsters = [
             'slime' => [
                 'name' => 'Gelée',
+                'name_translations' => ['en' => 'Slime'],
                 'life' => 12,
                 'hit' => 70,
                 'speed' => 3,
@@ -28,6 +29,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'goblin' => [
                 'name' => 'Gobelin',
+                'name_translations' => ['en' => 'Goblin'],
                 'life' => 18,
                 'hit' => 75,
                 'speed' => 8,
@@ -37,6 +39,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'bat' => [
                 'name' => 'Chauve-souris',
+                'name_translations' => ['en' => 'Bat'],
                 'life' => 15,
                 'hit' => 80,
                 'speed' => 14,
@@ -49,6 +52,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'giant_rat' => [
                 'name' => 'Rat géant',
+                'name_translations' => ['en' => 'Giant Rat'],
                 'life' => 20,
                 'hit' => 85,
                 'speed' => 10,
@@ -62,6 +66,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'zombie' => [
                 'name' => 'Zombie',
+                'name_translations' => ['en' => 'Zombie'],
                 'life' => 25,
                 'hit' => 80,
                 'speed' => 2,
@@ -74,6 +79,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'skeleton' => [
                 'name' => 'Squelette',
+                'name_translations' => ['en' => 'Skeleton'],
                 'life' => 35,
                 'hit' => 80,
                 'speed' => 5,
@@ -87,6 +93,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'spider' => [
                 'name' => 'Araignée',
+                'name_translations' => ['en' => 'Spider'],
                 'life' => 28,
                 'hit' => 85,
                 'speed' => 9,
@@ -101,6 +108,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'venom_snake' => [
                 'name' => 'Serpent venimeux',
+                'name_translations' => ['en' => 'Venomous Snake'],
                 'life' => 25,
                 'hit' => 90,
                 'speed' => 11,
@@ -115,6 +123,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'taiju' => [
                 'name' => 'Taiju',
+                'name_translations' => ['en' => 'Taiju'],
                 'life' => 30,
                 'hit' => 60,
                 'speed' => 12,
@@ -130,6 +139,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'specter' => [
                 'name' => 'Spectre',
+                'name_translations' => ['en' => 'Specter'],
                 'life' => 32,
                 'hit' => 90,
                 'speed' => 8,
@@ -144,6 +154,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'banshee' => [
                 'name' => 'Banshee',
+                'name_translations' => ['en' => 'Banshee'],
                 'life' => 35,
                 'hit' => 90,
                 'speed' => 7,
@@ -158,6 +169,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'ochu' => [
                 'name' => 'Ochu',
+                'name_translations' => ['en' => 'Ochu'],
                 'life' => 45,
                 'hit' => 80,
                 'speed' => 15,
@@ -173,6 +185,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'werewolf' => [
                 'name' => 'Loup-garou',
+                'name_translations' => ['en' => 'Werewolf'],
                 'life' => 55,
                 'hit' => 80,
                 'speed' => 12,
@@ -191,6 +204,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'gargoyle' => [
                 'name' => 'Gargouille',
+                'name_translations' => ['en' => 'Gargoyle'],
                 'life' => 55,
                 'hit' => 80,
                 'speed' => 9,
@@ -205,6 +219,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'troll' => [
                 'name' => 'Troll',
+                'name_translations' => ['en' => 'Troll'],
                 'life' => 80,
                 'hit' => 70,
                 'speed' => 3,
@@ -226,6 +241,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'fire_elemental' => [
                 'name' => 'Élémentaire de feu',
+                'name_translations' => ['en' => 'Fire Elemental'],
                 'life' => 60,
                 'hit' => 85,
                 'speed' => 10,
@@ -295,6 +311,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Monstres tier 1 manquants (tâche 140) ===
             'wolf' => [
                 'name' => 'Loup',
+                'name_translations' => ['en' => 'Wolf'],
                 'life' => 16,
                 'hit' => 78,
                 'speed' => 11,
@@ -308,6 +325,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'scorpion' => [
                 'name' => 'Scorpion',
+                'name_translations' => ['en' => 'Scorpion'],
                 'life' => 22,
                 'hit' => 82,
                 'speed' => 7,
@@ -322,6 +340,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'beetle' => [
                 'name' => 'Scarabée',
+                'name_translations' => ['en' => 'Beetle'],
                 'life' => 20,
                 'hit' => 72,
                 'speed' => 5,
@@ -335,6 +354,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'mushroom_golem' => [
                 'name' => 'Golem champignon',
+                'name_translations' => ['en' => 'Mushroom Golem'],
                 'life' => 30,
                 'hit' => 75,
                 'speed' => 4,
@@ -349,6 +369,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'ghost' => [
                 'name' => 'Fantôme',
+                'name_translations' => ['en' => 'Ghost'],
                 'life' => 18,
                 'hit' => 82,
                 'speed' => 12,
@@ -364,6 +385,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Monstres élémentaires tier 1 (tâche 28) ===
             'salamander' => [
                 'name' => 'Salamandre',
+                'name_translations' => ['en' => 'Salamander'],
                 'life' => 40,
                 'hit' => 85,
                 'speed' => 10,
@@ -379,6 +401,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'undine' => [
                 'name' => 'Ondine',
+                'name_translations' => ['en' => 'Undine'],
                 'life' => 30,
                 'hit' => 80,
                 'speed' => 9,
@@ -430,6 +453,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             ],
             'rusty_automaton' => [
                 'name' => 'Automate rouillé',
+                'name_translations' => ['en' => 'Rusty Automaton'],
                 'life' => 45,
                 'hit' => 80,
                 'speed' => 7,
@@ -1106,6 +1130,11 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // Boss phases
             if (isset($data['bossPhases'])) {
                 $monster->setBossPhases($data['bossPhases']);
+            }
+
+            // Traductions localisees du nom (EN/DE/...) — sous-phase 135 s3e.b
+            if (isset($data['name_translations']) && is_array($data['name_translations'])) {
+                $monster->setNameTranslations($data['name_translations']);
             }
 
             $monster->setCreatedAt(new \DateTime());
