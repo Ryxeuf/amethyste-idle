@@ -96,6 +96,11 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 $item->setBoundToPlayer($data['boundToPlayer']);
             }
 
+            // Traductions localisees du nom (EN/DE/...) — sous-phase 135 s3c
+            if (isset($data['name_translations']) && is_array($data['name_translations'])) {
+                $item->setNameTranslations($data['name_translations']);
+            }
+
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());
 
@@ -512,6 +517,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Équipements
             'short_sword' => [
                 'name' => 'Epée courte',
+                'name_translations' => ['en' => 'Short Sword'],
                 'description' => 'Une épée courte de bonne facture',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -526,6 +532,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'long_sword' => [
                 'name' => 'Epée longue',
+                'name_translations' => ['en' => 'Long Sword'],
                 'description' => 'Une épée longue de bonne facture',
                 'type' => 'gear',
                 'spell' => 'none_attack_2',
@@ -541,6 +548,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'leather_boots' => [
                 'name' => 'Bottes en cuir',
+                'name_translations' => ['en' => 'Leather Boots'],
                 'description' => 'Des bottes en cuir confortables',
                 'type' => 'gear',
                 'slug' => 'leather-boots',
@@ -554,6 +562,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'leather_hat' => [
                 'name' => 'Chapeau de cuir',
+                'name_translations' => ['en' => 'Leather Hat'],
                 'description' => 'Un chapeau de cuir standard de manufacture classique',
                 'type' => 'gear',
                 'slug' => 'leather-hat',
@@ -566,6 +575,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'leather_armor' => [
                 'name' => 'Armure de cuir',
+                'name_translations' => ['en' => 'Leather Armor'],
                 'description' => 'Une armure de cuir de vache simple',
                 'type' => 'gear',
                 'slug' => 'leather-armor',
@@ -580,6 +590,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Objets divers
             'life_potion' => [
                 'name' => 'Potion de soin',
+                'name_translations' => ['en' => 'Healing Potion'],
                 'description' => 'Une bonne potion de soin',
                 'type' => 'stuff',
                 'spell' => 'none_heal_2',
@@ -592,6 +603,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'fishing_rod' => [
                 'name' => 'Canne à pèche',
+                'name_translations' => ['en' => 'Fishing Rod'],
                 'description' => 'Une canne à pèche pour attraper de la friture',
                 'type' => 'stuff',
                 'slug' => 'fishing-rod',
@@ -603,6 +615,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'beer_pint' => [
                 'name' => 'Chope de bière',
+                'name_translations' => ['en' => 'Beer Mug'],
                 'description' => 'Une chope de bière pour boire',
                 'type' => 'stuff',
                 'slug' => 'beer-pint',
@@ -613,6 +626,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'mushroom' => [
                 'name' => 'Champignon',
+                'name_translations' => ['en' => 'Mushroom'],
                 'description' => 'Un champignon, mais est-il comestible ?',
                 'type' => 'stuff',
                 'slug' => 'mushroom',
@@ -623,6 +637,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'pickaxe' => [
                 'name' => 'Pioche',
+                'name_translations' => ['en' => 'Pickaxe'],
                 'description' => 'Permet de casser des cailloux',
                 'type' => 'stuff',
                 'slug' => 'pickaxe',
@@ -634,6 +649,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'wood_log' => [
                 'name' => 'Buche de bois',
+                'name_translations' => ['en' => 'Wood Log'],
                 'description' => 'Une bûche de bois',
                 'type' => 'stuff',
                 'slug' => 'wood-log',
@@ -664,6 +680,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'life_domain_parchment' => [
                 'name' => 'Apprentissage des soins',
+                'name_translations' => ['en' => 'Healing Apprenticeship'],
                 'description' => 'Permet de devenir apprenti soigneur',
                 'type' => 'stuff',
                 'slug' => 'life-domain-parchment',
@@ -675,6 +692,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'miner_domain_parchment' => [
                 'name' => 'Découverte du minage',
+                'name_translations' => ['en' => 'Mining Discovery'],
                 'description' => 'Permet de devenir apprenti mineur',
                 'type' => 'stuff',
                 'slug' => 'miner-domain-parchment',
@@ -686,6 +704,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'ancient_scroll' => [
                 'name' => 'Parchemin ancien',
+                'name_translations' => ['en' => 'Ancient Scroll'],
                 'description' => 'Un parchemin mystérieux couvert de symboles arcanes',
                 'type' => 'stuff',
                 'slug' => 'ancient-scroll',
@@ -698,6 +717,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'healing_potion_small' => [
                 'name' => 'Potion de soin mineure',
+                'name_translations' => ['en' => 'Minor Healing Potion'],
                 'description' => 'Restaure une petite quantité de points de vie',
                 'type' => 'potion',
                 'slug' => 'healing-potion-small',
@@ -709,6 +729,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'healing_potion_medium' => [
                 'name' => 'Potion de soin',
+                'name_translations' => ['en' => 'Healing Potion'],
                 'description' => 'Restaure une quantité modérée de points de vie',
                 'type' => 'stuff',
                 'slug' => 'healing-potion-medium',
@@ -721,6 +742,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'energy_potion_small' => [
                 'name' => "Potion d'énergie mineure",
+                'name_translations' => ['en' => 'Minor Energy Potion'],
                 'description' => "Restaure une petite quantité d'énergie",
                 'type' => 'potion',
                 'slug' => 'energy-potion-small',
@@ -736,6 +758,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Potions
             'healing_potion_major' => [
                 'name' => 'Potion de soin majeure',
+                'name_translations' => ['en' => 'Major Healing Potion'],
                 'description' => 'Restaure une grande quantité de points de vie',
                 'type' => 'stuff',
                 'slug' => 'healing-potion-major',
@@ -749,6 +772,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'antidote' => [
                 'name' => 'Antidote',
+                'name_translations' => ['en' => 'Antidote'],
                 'description' => 'Un remède qui purifie le corps des poisons et soigne légèrement',
                 'type' => 'stuff',
                 'slug' => 'antidote',
@@ -763,6 +787,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nourritures
             'bread' => [
                 'name' => 'Pain',
+                'name_translations' => ['en' => 'Bread'],
                 'description' => 'Un bon morceau de pain frais qui redonne des forces',
                 'type' => 'stuff',
                 'slug' => 'bread',
@@ -775,6 +800,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'grilled_meat' => [
                 'name' => 'Viande grillée',
+                'name_translations' => ['en' => 'Grilled Meat'],
                 'description' => 'Une pièce de viande grillée à point, nourrissante et savoureuse',
                 'type' => 'stuff',
                 'slug' => 'grilled-meat',
@@ -787,6 +813,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'stew' => [
                 'name' => 'Ragoût',
+                'name_translations' => ['en' => 'Stew'],
                 'description' => 'Un copieux ragoût de légumes et de viande, idéal pour se remettre d\'aplomb',
                 'type' => 'stuff',
                 'slug' => 'stew',
@@ -802,6 +829,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Parchemins
             'scroll_teleport' => [
                 'name' => 'Parchemin de téléportation',
+                'name_translations' => ['en' => 'Teleport Scroll'],
                 'description' => 'Un parchemin magique qui ramène instantanément au point de résurrection',
                 'type' => 'stuff',
                 'slug' => 'scroll-teleport',
@@ -813,6 +841,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'scroll_xp_boost' => [
                 'name' => 'Parchemin de savoir',
+                'name_translations' => ['en' => 'Scroll of Knowledge'],
                 'description' => 'Un parchemin ancien qui augmente temporairement l\'expérience gagnée',
                 'type' => 'stuff',
                 'slug' => 'scroll-xp-boost',
@@ -824,6 +853,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'scroll_identification' => [
                 'name' => 'Parchemin d\'identification',
+                'name_translations' => ['en' => 'Identification Scroll'],
                 'description' => 'Révèle les propriétés cachées d\'un objet mystérieux',
                 'type' => 'stuff',
                 'slug' => 'scroll-identification',
@@ -835,6 +865,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'iron_sword' => [
                 'name' => 'Épée en fer',
+                'name_translations' => ['en' => 'Iron Sword'],
                 'description' => 'Une épée en fer bien équilibrée',
                 'type' => 'weapon',
                 'gear_location' => 'hand',
@@ -848,6 +879,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'wooden_shield' => [
                 'name' => 'Bouclier en bois',
+                'name_translations' => ['en' => 'Wooden Shield'],
                 'description' => 'Un bouclier en bois renforcé avec du métal',
                 'type' => 'gear',
                 'gear_location' => 'hand',
@@ -861,6 +893,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'leather_helmet' => [
                 'name' => 'Casque en cuir',
+                'name_translations' => ['en' => 'Leather Helmet'],
                 'description' => 'Un casque en cuir offrant une protection légère',
                 'type' => 'gear',
                 'gear_location' => 'head',
@@ -874,6 +907,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'magic_amulet' => [
                 'name' => 'Amulette magique',
+                'name_translations' => ['en' => 'Magic Amulet'],
                 'description' => 'Une amulette qui amplifie les pouvoirs magiques',
                 'type' => 'gear',
                 'gear_location' => 'neck',
@@ -888,6 +922,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'magic_ring' => [
                 'name' => 'Anneau magique',
+                'name_translations' => ['en' => 'Magic Ring'],
                 'description' => 'Un anneau qui augmente la puissance magique',
                 'type' => 'gear',
                 'gear_location' => 'finger',
@@ -902,6 +937,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'bow' => [
                 'name' => 'Arc',
+                'name_translations' => ['en' => 'Bow'],
                 'description' => 'Un arc en bois permettant des attaques à distance',
                 'type' => 'weapon',
                 'gear_location' => 'hand',
@@ -914,6 +950,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'staff' => [
                 'name' => 'Bâton',
+                'name_translations' => ['en' => 'Staff'],
                 'description' => 'Un bâton en bois qui amplifie la magie',
                 'type' => 'weapon',
                 'gear_location' => 'hand',
@@ -926,6 +963,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'dagger' => [
                 'name' => 'Dague',
+                'name_translations' => ['en' => 'Dagger'],
                 'description' => 'Une dague légère et rapide',
                 'type' => 'weapon',
                 'gear_location' => 'hand',
@@ -938,6 +976,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'herb_mint' => [
                 'name' => 'Menthe sauvage',
+                'name_translations' => ['en' => 'Wild Mint'],
                 'description' => 'Une herbe aromatique aux propriétés curatives',
                 'type' => 'herb',
                 'slug' => 'herb-mint',
@@ -948,6 +987,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'herb_lavender' => [
                 'name' => 'Lavande',
+                'name_translations' => ['en' => 'Lavender'],
                 'description' => 'Une herbe parfumée aux propriétés apaisantes',
                 'type' => 'herb',
                 'slug' => 'herb-lavender',
