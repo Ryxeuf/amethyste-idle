@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.b.b : fixtures EN pour 24 monstres de niveaux 1-3)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.d.quest : infrastructure multilingue pour les noms de quetes)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest : infrastructure multilingue pour les noms de quetes (2026-04-22)
+
+> Etend le pattern des sous-phases 3a (Item), 3e.a (Monster), 3e.c.a (Spell) et 3e.d (Pnj) a `Quest.name`. Meme contrat, meme normalisation, memes fallbacks gracieux. Ferme le sous-jalon 3e.c.d (Quest + Pnj) cote Quest — la moitie Pnj a ete livree en PR dediee sous le code 3e.d. Totalement retrocompatible : aucun template, aucun controller et aucun fixture modifies ; toutes les quetes existantes conservent `name_translations = null` et continuent d'etre rendues via `quest.name`. Prepare le cablage futur dans le journal de quetes (`/game/quests`), les dialogues PNJ qui proposent/acceptent des quetes et les ecrans de completion.
+
+- [x] Migration `migrations/Version20260422QuestNameTranslations.php` : `ALTER TABLE game_quests ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict des migrations 3a / 3e.a / 3e.c.a / 3e.d.
+- [x] `App\Entity\Game\Quest` (+46 lignes, total 343, sous la limite de 400) : nouvelle propriete `?array $nameTranslations` (colonne Doctrine `json`, nullable). Nouvelle methode `getLocalizedName(?string $locale): string` — fallback sur `$this->name` si `$locale` est `null`/vide, si `$this->nameTranslations` est `null`, si la locale n'est pas presente, ou si sa valeur est une chaine blanche ou non-string. Nouvelle methode `getNameTranslations(): array<string, string>` (defaut `[]`). Nouveau setter `setNameTranslations(?array $translations): self` avec normalisation : cles vides ignorees, valeurs non-string ou blanches ignorees, tableau final ramene a `null` si vide (stockage compact en DB). Retourne `$this` (fluent, aligne avec les autres entites de la tache 135).
+- [x] Tests `tests/Unit/Entity/Game/QuestLocalizationTest.php` (nouveau, 7 cas, 88 lignes) : miroir exact de `MonsterLocalizationTest` / `SpellLocalizationTest` / `PnjLocalizationTest`. Couvre fallback sans traductions (null/vide/FR/EN), traduction matchee EN/DE, fallback sur locale absente (es/ja), normalisation cles vides / valeurs blanches / valeurs non-string (entier 42), reset via `null`, compaction vers `null` si seulement entrees invalides, defaut `[]` de `getNameTranslations`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest cochee + detail d'implementation + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.
+
+**Diff** : +26 lignes migration + 46 lignes entite + 88 lignes tests + roadmap = ~181 lignes (budget 300 respecte). Aucun fichier nouveau ou existant ne depasse 400 lignes. Aucun template, controller ou service touche — sous-phase infra-only, parfaitement isolee des PRs ouvertes sur les autres sous-phases 3e.*. La sous-phase suivante cablera `Quest::getLocalizedName` dans le journal de quetes (`templates/game/quest/**`), les dialogues PNJ (offre / acceptation / completion) et eventuellement le HUD de tracking de quetes actives.
 
 ---
 
