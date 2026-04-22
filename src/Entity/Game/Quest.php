@@ -124,7 +124,7 @@ class Quest
     }
 
     /**
-     * @param array<string, string>|null $translations
+     * @param array<string, mixed>|null $translations
      */
     public function setNameTranslations(?array $translations): self
     {
