@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.b.b : fixtures EN pour 24 monstres de niveaux 1-3)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.d : infrastructure multilingue pour les noms de PNJ)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.d : infrastructure multilingue pour les noms de PNJ (2026-04-22)
+
+> Etend le pattern des sous-phases 3a (Item) et 3e.a (Monster) a `Pnj.name`. Meme contrat, meme normalisation, memes fallbacks gracieux. Totalement retrocompatible : aucun template ni controller modifie, les PNJ existants conservent `name_translations = null`. Prepare le cablage futur dans les dialogues PNJ, les templates de boutique, les indicateurs de quete, et les en-tetes d'echange (a suivre dans une sous-phase 3e.d.b dediee).
+
+- [x] `migrations/Version20260422PnjNameTranslations.php` (nouveau, 26 lignes) : `ALTER TABLE pnj ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL` — idempotent, reversible via `DROP COLUMN IF EXISTS`. Miroir strict des migrations `Version20260421ItemNameTranslations` (3a) et `Version20260421MonsterNameTranslations` (3e.a).
+- [x] `src/Entity/App/Pnj.php` (+46 lignes, 367 au total, sous la limite de 400) : nouvelle propriete `?array $nameTranslations` (colonne Doctrine `json`, nullable). `getLocalizedName(?string $locale): string` — fallback gracieux sur `$this->name` si locale nulle/vide, colonne nulle, locale absente ou valeur blanche/non-string. `getNameTranslations(): array` (defaut `[]`). `setNameTranslations(?array $translations): self` — normalisation (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide). Fluent.
+- [x] Tests `tests/Unit/Entity/App/PnjLocalizationTest.php` (nouveau, 7 cas, 89 lignes) — miroir exact de `MonsterLocalizationTest` : fallback sans traductions (null/vide/FR/EN), traduction matchee EN/DE, fallback sur locale absente (es/ja), normalisation cles vides / valeurs blanches / valeurs non-string (entier 42), reset via `null`, compaction vers `null` si seulement entrees invalides, defaut `[]`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.d cochee + detail d'implementation + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.d.
+
+**Diff** : +46 lignes `Pnj.php` + 26 lignes migration + 89 lignes tests + roadmap (~170 lignes). Aucun template ni controller modifie, aucun fichier ne depasse 400 lignes. Les tests `PnjLocalizationTest` (7 cas) couvrent exhaustivement la normalisation et les fallbacks. La sous-phase 3e.d.b (cablage dans les templates de dialogue PNJ et de boutique) sera independante et pourra etre livree en parallele des autres sous-phases 3e.c.* (Spell wiring).
 
 ---
 
