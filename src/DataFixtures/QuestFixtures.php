@@ -16,6 +16,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         $quests = [
             'quest_zombie_1' => [
                 'name' => 'Sus aux zombies',
+                'name_translations' => ['en' => 'Stop the Zombies'],
                 'description' => 'Les zombies deviennent gênants dans la region, pourrais-tu m\'en débarrasser ? Je t\'apprendrai comment miner.',
                 'requirements' => [
                     'monsters' => [
@@ -46,6 +47,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_skeleton_1' => [
                 'name' => 'Sus aux squelettes',
+                'name_translations' => ['en' => 'Stop the Skeletons'],
                 'description' => 'Les squelettes deviennent gênants dans la region, pourrais-tu m\'en débarrasser ?',
                 'requirements' => [
                     'monsters' => [
@@ -69,6 +71,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_taiju_1' => [
                 'name' => 'Le Taiju menaçant',
+                'name_translations' => ['en' => 'The Menacing Taiju'],
                 'description' => 'Un Taiju dangereux a été aperçu dans la forêt. Éliminez-le pour assurer la sécurité des villageois.',
                 'requirements' => [
                     'monsters' => [
@@ -93,6 +96,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_mushroom_1' => [
                 'name' => 'Cueillette de champignons',
+                'name_translations' => ['en' => 'Mushroom Picking'],
                 'description' => 'Récoltez 5 champignons pour l\'apothicaire du village.',
                 'requirements' => [
                     'collect' => [
@@ -109,6 +113,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_goblin_1' => [
                 'name' => 'Menace gobeline',
+                'name_translations' => ['en' => 'Goblin Threat'],
                 'description' => 'Les gobelins pillent les fermes environnantes. Éliminez-en quelques-uns pour protéger les villageois.',
                 'requirements' => [
                     'monsters' => [
@@ -133,6 +138,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_troll_1' => [
                 'name' => 'Le troll du pont',
+                'name_translations' => ['en' => 'The Bridge Troll'],
                 'description' => 'Un troll a élu domicile sous le pont principal et empêche les marchands de passer. Débarrassez-vous de cette menace.',
                 'requirements' => [
                     'monsters' => [
@@ -157,6 +163,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_werewolf_1' => [
                 'name' => 'Hurlements nocturnes',
+                'name_translations' => ['en' => 'Nocturnal Howls'],
                 'description' => 'Des hurlements terrifiants résonnent dans la forêt les nuits de pleine lune. Traquez et éliminez le loup-garou responsable.',
                 'requirements' => [
                     'monsters' => [
@@ -181,6 +188,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_banshee_griffin_1' => [
                 'name' => 'Créatures de la nuit',
+                'name_translations' => ['en' => 'Creatures of the Night'],
                 'description' => 'Des créatures mystérieuses terrorisent les voyageurs. Éliminez une banshee et un griffon pour sécuriser les routes.',
                 'requirements' => [
                     'monsters' => [
@@ -210,6 +218,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_wood_collection' => [
                 'name' => 'Bûcheron en herbe',
+                'name_translations' => ['en' => 'Budding Woodcutter'],
                 'description' => 'Le menuisier du village a besoin de bois pour ses créations. Récoltez des bûches pour l\'aider.',
                 'requirements' => [
                     'collect' => [
@@ -260,6 +269,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quete de livraison ---
             'quest_deliver_mushroom' => [
                 'name' => 'Livraison de champignons',
+                'name_translations' => ['en' => 'Mushroom Delivery'],
                 'description' => 'L\'herboriste a besoin de champignons frais pour ses remèdes. Récoltez-en et apportez-les-lui.',
                 'requirements' => [
                     'deliver' => [
@@ -286,6 +296,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quete d'exploration ---
             'quest_explore_forest' => [
                 'name' => 'Cartographier la forêt',
+                'name_translations' => ['en' => 'Mapping the Forest'],
                 'description' => 'La cartographe du village a besoin que quelqu\'un explore la forêt pour compléter ses cartes. Rendez-vous aux coordonnées indiquées.',
                 'requirements' => [
                     'explore' => [
@@ -304,6 +315,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quete a choix ---
             'quest_choice_alliance' => [
                 'name' => 'Allégeance contestée',
+                'name_translations' => ['en' => 'Contested Allegiance'],
                 'description' => 'Vous avez découvert un convoi abandonné contenant des ressources précieuses. Le garde et le marchand du village vous demandent chacun de leur remettre. À vous de choisir.',
                 'requirements' => [
                     'explore' => [
@@ -344,6 +356,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quetes quotidiennes ---
             'daily_kill_slimes' => [
                 'name' => 'Purge de slimes',
+                'name_translations' => ['en' => 'Slime Purge'],
                 'description' => 'Les slimes prolifèrent ! Éliminez-en quelques-uns pour garder les alentours propres.',
                 'requirements' => [
                     'monsters' => [
@@ -359,6 +372,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'daily_kill_bats' => [
                 'name' => 'Chasse aux chauve-souris',
+                'name_translations' => ['en' => 'Bat Hunt'],
                 'description' => 'Les chauve-souris gênent les mineurs dans les grottes. Chassez-en quelques-unes.',
                 'requirements' => [
                     'monsters' => [
@@ -374,6 +388,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'daily_kill_spiders' => [
                 'name' => 'Toiles indésirables',
+                'name_translations' => ['en' => 'Unwanted Webs'],
                 'description' => 'Les araignées bloquent les sentiers forestiers. Nettoyez le passage.',
                 'requirements' => [
                     'monsters' => [
@@ -389,6 +404,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'daily_collect_herbs' => [
                 'name' => 'Cueillette du jour',
+                'name_translations' => ['en' => 'Daily Harvest'],
                 'description' => 'L\'herboriste a besoin de plantes fraîches pour ses potions quotidiennes.',
                 'requirements' => [
                     'collect' => [
@@ -404,6 +420,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'daily_collect_ore' => [
                 'name' => 'Minerai pour la forge',
+                'name_translations' => ['en' => 'Ore for the Forge'],
                 'description' => 'Le forgeron a toujours besoin de minerai de cuivre. Rapportez-en de la mine.',
                 'requirements' => [
                     'collect' => [
@@ -419,6 +436,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'daily_kill_rats' => [
                 'name' => 'Rats des champs',
+                'name_translations' => ['en' => 'Field Rats'],
                 'description' => 'Les rats géants envahissent les réserves. Éliminez-en avant qu\'ils ne dévorent tout.',
                 'requirements' => [
                     'monsters' => [
@@ -435,6 +453,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Chaine de quetes : La Menace Rampante (3 quetes) ---
             'quest_chain_guard_1' => [
                 'name' => 'La Menace Rampante - Partie 1',
+                'name_translations' => ['en' => 'The Creeping Menace - Part 1'],
                 'description' => 'Le capitaine de la garde a remarqué une activité inhabituelle de gobelins près du village. Éliminez-en quelques-uns pour évaluer la menace.',
                 'requirements' => [
                     'monsters' => [
@@ -453,6 +472,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_chain_guard_2' => [
                 'name' => 'La Menace Rampante - Partie 2',
+                'name_translations' => ['en' => 'The Creeping Menace - Part 2'],
                 'description' => 'Les gobelins étaient des éclaireurs ! Le capitaine vous envoie éliminer les squelettes qu\'ils ont réveillés dans les ruines voisines.',
                 'requirements' => [
                     'monsters' => [
@@ -478,6 +498,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_chain_guard_3' => [
                 'name' => 'La Menace Rampante - Partie 3',
+                'name_translations' => ['en' => 'The Creeping Menace - Part 3'],
                 'description' => 'Le vrai meneur est un troll qui contrôlait les gobelins et les squelettes. Mettez fin à cette menace une bonne fois pour toutes !',
                 'requirements' => [
                     'monsters' => [
@@ -504,6 +525,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Chaîne narrative Acte 1 : L'Éveil (5 quêtes tutoriel) ---
             'quest_acte1_reveil' => [
                 'name' => 'L\'Éveil — Réveil',
+                'name_translations' => ['en' => 'The Awakening — Awakening'],
                 'description' => 'Vous ouvrez les yeux dans un lieu inconnu, sans aucun souvenir. Une femme sage se tient devant vous. Explorez les alentours du village pour retrouver vos esprits.',
                 'requirements' => [
                     'explore' => [
@@ -522,6 +544,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte1_premiers_pas' => [
                 'name' => 'L\'Éveil — Premiers pas',
+                'name_translations' => ['en' => 'The Awakening — First Steps'],
                 'description' => 'Claire vous conseille d\'aller voir Gérard le Forgeron pour vous équiper. Rendez-vous à sa forge et recevez votre première arme.',
                 'requirements' => [
                     'explore' => [
@@ -547,6 +570,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte1_bapteme_du_feu' => [
                 'name' => 'L\'Éveil — Baptême du feu',
+                'name_translations' => ['en' => 'The Awakening — Baptism by Fire'],
                 'description' => 'Gérard vous a remis une épée. Il est temps de prouver votre valeur ! Éliminez deux slimes qui rôdent aux abords du village.',
                 'requirements' => [
                     'monsters' => [
@@ -572,6 +596,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte1_recolte' => [
                 'name' => 'L\'Éveil — Récolte',
+                'name_translations' => ['en' => 'The Awakening — Harvest'],
                 'description' => 'Marie la Herboriste a besoin de champignons pour préparer des remèdes. Récoltez-en dans les environs et rapportez-les-lui.',
                 'requirements' => [
                     'collect' => [
@@ -593,6 +618,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte1_cristal' => [
                 'name' => 'L\'Éveil — Le Cristal d\'Améthyste',
+                'name_translations' => ['en' => 'The Awakening — The Amethyst Crystal'],
                 'description' => 'Claire la Sage vous parle d\'un cristal mystérieux caché dans une clairière au sud. Trouvez-le : il pourrait détenir la clé de vos souvenirs perdus.',
                 'requirements' => [
                     'explore' => [
@@ -1819,6 +1845,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
         foreach ($quests as $key => $data) {
             $quest = new Quest();
             $quest->setName($data['name']);
+            if (isset($data['name_translations']) && is_array($data['name_translations'])) {
+                $quest->setNameTranslations($data['name_translations']);
+            }
             $quest->setDescription($data['description']);
             $quest->setRequirements($data['requirements']);
             $quest->setRewards($data['rewards']);
