@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.d.quest.b : cablage du filter `localized_quest_name` dans les templates)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.d.quest.c : fixtures EN pour 26 quetes de debut de jeu)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.c : fixtures EN pour 26 quetes de debut de jeu (2026-04-22)
+
+> Consomme l'infrastructure des sous-phases 3e.c.d.quest (colonne `name_translations` sur `Quest`) et 3e.c.d.quest.b (filter Twig `localized_quest_name` cable dans le journal de quetes et le dashboard) en peuplant les traductions EN des quetes visibles en debut de jeu. Avant cette sous-phase, meme en locale EN, les deux templates cables retombaient systematiquement sur `Quest::name` (nom FR) car la colonne `name_translations` etait vide pour toutes les quetes. Apres, les 26 quetes de debut de jeu affichent leur nom anglais des que la locale de session est `en`, et restent en francais avec `fr` (ou sur un fallback gracieux pour toute locale sans traduction). Miroir strict de la sous-phase 3e.b.b (fixtures EN monstres).
+
+- [x] `src/DataFixtures/QuestFixtures.php` (+29 lignes, 1907 au total) : le loader accepte desormais la cle optionnelle `name_translations` (array) dans chaque entree du tableau PHP de quetes, qui est relayee a `Quest::setNameTranslations()` juste apres `setName()`. La normalisation (cles vides filtrees, valeurs non-string ignorees, compaction vers `null` si vide) est deja assuree par le setter cote entite — le loader se contente de passer le tableau tel quel (pattern identique a `MonsterFixtures`).
+- [x] Quetes de monstres (8) : `quest_zombie_1 → Stop the Zombies`, `quest_skeleton_1 → Stop the Skeletons`, `quest_taiju_1 → The Menacing Taiju`, `quest_mushroom_1 → Mushroom Picking`, `quest_goblin_1 → Goblin Threat`, `quest_troll_1 → The Bridge Troll`, `quest_werewolf_1 → Nocturnal Howls`, `quest_banshee_griffin_1 → Creatures of the Night`.
+- [x] Quetes utilitaires (4) : `quest_wood_collection → Budding Woodcutter`, `quest_deliver_mushroom → Mushroom Delivery`, `quest_explore_forest → Mapping the Forest`, `quest_choice_alliance → Contested Allegiance`.
+- [x] Quetes quotidiennes (6) : `daily_kill_slimes → Slime Purge`, `daily_kill_bats → Bat Hunt`, `daily_kill_spiders → Unwanted Webs`, `daily_collect_herbs → Daily Harvest`, `daily_collect_ore → Ore for the Forge`, `daily_kill_rats → Field Rats`.
+- [x] Chaine "La Menace Rampante" (3) : `quest_chain_guard_1 → The Creeping Menace - Part 1`, `quest_chain_guard_2 → The Creeping Menace - Part 2`, `quest_chain_guard_3 → The Creeping Menace - Part 3`.
+- [x] Chaine tutoriel Acte 1 (5) : `quest_acte1_reveil → The Awakening — Awakening`, `quest_acte1_premiers_pas → The Awakening — First Steps`, `quest_acte1_bapteme_du_feu → The Awakening — Baptism by Fire`, `quest_acte1_recolte → The Awakening — Harvest`, `quest_acte1_cristal → The Awakening — The Amethyst Crystal`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.c ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.c.
+
+**Diff** : +29 lignes `QuestFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les ~60 autres quetes (dragons, chaines cachees, Acte 2+, quetes d'evenements, faction/reputation, defend/escort/puzzle) conservent leur nom FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures (par boucle thematique / acte). Les tests de l'entite `Quest::setNameTranslations` (7 cas dans `QuestLocalizationTest`) couvrent deja exhaustivement la normalisation du champ ; la diff sur le loader est de 3 lignes de delegation triviale (`isset` + `is_array` + appel setter), ne necessitant pas de test dedie.
 
 ---
 
