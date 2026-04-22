@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.d.quest : infrastructure multilingue pour les noms de quetes)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.d.quest.b : cablage du filter `localized_quest_name` dans les templates)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.b : cablage du filter `localized_quest_name` dans les templates (2026-04-22)
+
+> Consomme l'infrastructure de la sous-phase 3e.c.d.quest (colonne `name_translations` + `Quest::getLocalizedName`) en exposant le nom traduit dans les templates qui rendent une entite `Quest` directement. Miroir strict du pattern etabli par 3b (Item) et 3e.b.a (Monster) : nouveau filter Twig dedie, cablage des templates en conservant le nom base comme fallback, aucun template legacy touche (`templates/old_game/**` et `templates/admin/**` restent hors scope). Zero impact FR (le fallback transparent de `Quest::getLocalizedName` preserve le rendu actuel) ; prepare l'impact EN immediat des qu'une sous-phase de fixtures (3e.c.d.quest.c a venir) peuplera `Quest.name_translations`.
+
+- [x] `src/Twig/QuestLocalizationExtension.php` (nouveau, 46 lignes) : extension Twig qui expose le filter `localized_quest_name`. Applique `Quest::getLocalizedName` avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur `Quest::name` si RequestStack vide, Quest null ou traduction manquante). Nom distinct de `localized_name` (Item) et `localized_monster_name` (Monster) pour eviter la collision Twig entre filters typehintes sur entites differentes. Defense en profondeur identique a `MonsterLocalizationExtension` (renvoie `''` si Quest null).
+- [x] `templates/game/quest/index.html.twig` : 6 occurrences remplacees (4 `{{ quest.name }}` en-tetes de carte pour quetes en cours / quotidiennes actives / disponibles / chaines, 1 `{{ dq.quest.name }}` en-tete pour quotidiennes terminees, 1 `{{ quest.name }}` en-tete pour les quetes completees listees dans l'historique). Substitution mecanique (`quest|localized_quest_name` / `dq.quest|localized_quest_name`), aucun changement de structure, aucun changement de classes CSS, aucune ligne ajoutee ou supprimee (delta net 0 lignes). Non-regression FR garantie par le fallback transparent.
+- [x] `templates/game/index.html.twig` : 1 occurrence remplacee (L143, carte de tracking des quetes actives affichee sur le dashboard `/game`). Substitution identique.
+- [x] Tests `tests/Unit/Twig/QuestLocalizationExtensionTest.php` (nouveau, 5 cas, 74 lignes) : miroir exact de `MonsterLocalizationExtensionTest`. Couvre (1) traduction matchee en locale EN, (2) fallback sur `Quest::name` si la locale courante n'a pas de traduction, (3) fallback sur `Quest::name` si le `RequestStack` est vide (execution hors contexte HTTP), (4) retour de chaine vide pour un Quest null (defense en profondeur), (5) enregistrement correct du filter sous le nom `localized_quest_name`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.b cochee + detail d'implementation + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.b.
+
+**Diff** : +46 lignes extension + 74 lignes tests + 7 lignes modifiees dans 2 templates + roadmap = ~140 lignes (budget 300 respecte). Aucun fichier nouveau ou existant ne depasse 400 lignes (quest/index.html.twig a 923 lignes, mais aucune ligne ajoutee : substitutions pures). Aucune migration, aucun controller, aucun service, aucun fixture modifie — sous-phase template-only, parfaitement isolee des PRs ouvertes sur les autres sous-phases 3e.*. La sous-phase suivante (3e.c.d.quest.c) peuplera `Quest.name_translations` avec les traductions EN des quetes visibles en debut de jeu (premieres chaines narratives + quetes journalieres).
 
 ---
 
