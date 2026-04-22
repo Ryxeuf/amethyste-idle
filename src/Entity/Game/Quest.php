@@ -23,6 +23,12 @@ class Quest
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'name_translations', type: 'json', nullable: true)]
+    private ?array $nameTranslations = null;
+
     #[ORM\Column(name: 'description', type: 'text')]
     private $description;
 
@@ -94,6 +100,43 @@ class Quest
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * Get the name translated for the requested locale, or fall back to the base `name` column.
+     */
+    public function getLocalizedName(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->nameTranslations === null) {
+            return $this->name;
+        }
+        $translation = $this->nameTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->name;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNameTranslations(): array
+    {
+        return $this->nameTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, string>|null $translations
+     */
+    public function setNameTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->nameTranslations = $normalized === [] ? null : $normalized;
+
+        return $this;
     }
 
     /**
