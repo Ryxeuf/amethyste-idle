@@ -1,7 +1,24 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.d.quest.c : fixtures EN pour 26 quetes de debut de jeu)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3c : fixtures EN pour 35 items de debut de jeu)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c : fixtures EN pour 35 items de debut de jeu (2026-04-22)
+
+> Consomme l'infrastructure des sous-phases 3a (colonne `name_translations` sur `Item`) et 3b (filter Twig `localized_name` cable dans les templates shop/inventaire/bestiaire/materia) en peuplant les traductions EN des items visibles en debut de jeu. Avant cette sous-phase, meme en locale EN, les 5 templates cables retombaient systematiquement sur `Item::name` (nom FR) car la colonne `name_translations` etait vide pour tous les items. Apres, les 35 items de debut de jeu affichent leur nom anglais des que la locale de session est `en`, et restent en francais avec `fr` (ou sur un fallback gracieux pour toute locale sans traduction). Miroir strict de la sous-phase 3e.b.b (fixtures EN monstres) et 3e.c.d.quest.c (fixtures EN quetes).
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+40 lignes, 4127 au total) : le loader accepte desormais la cle optionnelle `name_translations` (array) dans chaque entree du tableau PHP d'items, qui est relayee a `Item::setNameTranslations()` juste avant la pose des timestamps. La normalisation (cles vides filtrees, valeurs non-string ignorees, compaction vers `null` si vide) est deja assuree par le setter cote entite — le loader se contente de passer le tableau tel quel (pattern identique a `MonsterFixtures` et `QuestFixtures`).
+- [x] Equipements starter (5) : `short_sword → Short Sword`, `long_sword → Long Sword`, `leather_boots → Leather Boots`, `leather_hat → Leather Hat`, `leather_armor → Leather Armor`.
+- [x] Consommables / potions (9) : `life_potion → Healing Potion`, `healing_potion_small → Minor Healing Potion`, `healing_potion_medium → Healing Potion`, `healing_potion_major → Major Healing Potion`, `energy_potion_small → Minor Energy Potion`, `antidote → Antidote`, `bread → Bread`, `grilled_meat → Grilled Meat`, `stew → Stew`.
+- [x] Parchemins (6) : `scroll_teleport → Teleport Scroll`, `scroll_xp_boost → Scroll of Knowledge`, `scroll_identification → Identification Scroll`, `ancient_scroll → Ancient Scroll`, `life_domain_parchment → Healing Apprenticeship`, `miner_domain_parchment → Mining Discovery`.
+- [x] Outils (2) : `fishing_rod → Fishing Rod`, `pickaxe → Pickaxe`.
+- [x] Equipement tier 1 (8) : `iron_sword → Iron Sword`, `wooden_shield → Wooden Shield`, `leather_helmet → Leather Helmet`, `magic_amulet → Magic Amulet`, `magic_ring → Magic Ring`, `bow → Bow`, `staff → Staff`, `dagger → Dagger`.
+- [x] Divers (5) : `mushroom → Mushroom`, `beer_pint → Beer Mug`, `wood_log → Wood Log`, `herb_mint → Wild Mint`, `herb_lavender → Lavender`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c cochee + detail d'implementation + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3c.
+
+**Diff** : +40 lignes `ItemFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les ~240 autres items (materia tier 1+, equipements tier 2+, gemmes taillees, consommables alchimiste, plantes, fragments, recettes craft) conservent leur nom FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures (par tier / rarete / thematique). Les tests de l'entite `Item::setNameTranslations` (7 cas dans `ItemLocalizationTest`) couvrent deja exhaustivement la normalisation du champ ; la diff sur le loader est de 3 lignes de delegation triviale (`isset` + `is_array` + appel setter), ne necessitant pas de test dedie.
 
 ---
 
