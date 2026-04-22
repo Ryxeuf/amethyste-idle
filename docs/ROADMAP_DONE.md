@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3c : fixtures EN pour 35 items de debut de jeu)
+> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.c.skill : infrastructure multilingue pour les titres de competences)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.skill : infrastructure multilingue pour les titres de competences (2026-04-22)
+
+> Etend le pattern des sous-phases 3a (Item), 3e.a (Monster) et 3e.c.d.quest (Quest) a `Skill.title`. L'entite `Skill` utilise le champ `title` (et non `name`) : la sous-phase adapte le nommage en consequence (`titleTranslations`, `getLocalizedTitle`, `getTitleTranslations`, `setTitleTranslations`). Memes fallbacks gracieux, meme normalisation. Totalement retrocompatible : aucun template ni controller modifie, les skills existants conservent `title_translations = null`. Prepare le cablage dans l'arbre de talent `/game/skills` (a suivre dans une sous-phase dediee).
+
+- [x] `migrations/Version20260422SkillTitleTranslations.php` (nouveau, 26 lignes) : `ALTER TABLE game_skills ADD COLUMN IF NOT EXISTS title_translations JSON DEFAULT NULL` — idempotent, reversible via `DROP COLUMN IF EXISTS`. Miroir strict des migrations precedentes de la sous-phase 3e.*.
+- [x] `src/Entity/Game/Skill.php` (+44 lignes, 397 au total, sous la limite de 400) : nouvelle propriete `?array $titleTranslations` (colonne Doctrine `json`, nullable) ; `getLocalizedTitle(?string $locale): string` (fallback gracieux sur `$this->title` si locale nulle/vide, colonne nulle, locale absente ou valeur blanche/non-string) ; `getTitleTranslations(): array` (defaut `[]`) ; `setTitleTranslations(?array $translations): self` avec normalisation (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide). Fluent.
+- [x] `tests/Unit/Entity/Game/SkillLocalizationTest.php` (nouveau, 7 cas, 89 lignes) — miroir exact de `MonsterLocalizationTest` / `QuestLocalizationTest`, adapte a `title` : fallback sans traductions (null/vide/FR/EN), traduction matchee EN/DE, fallback sur locale absente (es/ja), normalisation cles vides / valeurs blanches / valeurs non-string (entier 42), reset via `null`, compaction vers `null` si seulement entrees invalides, defaut `[]`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.skill ajoutee sous la branche 3e.c + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.skill.
+
+**Diff** : ~160 lignes (migration + entite + test + roadmap), largement sous le budget de 300. Aucun fichier ne depasse 400 lignes (`Skill.php` 353 -> 397). Aucun template, controller ou service applicatif modifie : la sous-phase est purement infrastructurelle.
 
 ---
 
