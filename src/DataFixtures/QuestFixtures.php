@@ -1370,7 +1370,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quêtes de découverte (exploration standard multi-points) ---
             'quest_discovery_cartographer' => [
                 'name' => 'Cartographe des terres oubliées',
+                'name_translations' => ['en' => 'Cartographer of the Forgotten Lands'],
                 'description' => 'La cartographe du village vous demande de relever cinq points de repère dans chaque zone pour compléter sa carte des terres oubliées.',
+                'description_translations' => ['en' => 'The village cartographer asks you to mark five landmarks in each zone to complete her map of the forgotten lands.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '30.30', 'name' => 'Cairn de la Plaine'],
@@ -1388,7 +1390,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_discovery_sacred_sites' => [
                 'name' => 'Pèlerinage des sites sacrés',
+                'name_translations' => ['en' => 'Pilgrimage of the Sacred Sites'],
                 'description' => 'Un érudit vous parle de trois anciens sites sacrés disseminés entre les Collines et la Lande. Retrouvez-les pour percer les mystères du passé.',
+                'description_translations' => ['en' => 'A scholar tells you of three ancient sacred sites scattered between the Hills and the Moor. Find them to unlock the mysteries of the past.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '135.80', 'name' => 'Dolmen des Collines'],
@@ -1405,7 +1409,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quêtes de zone secondaires ---
             'quest_zone_foret_meute' => [
                 'name' => 'La meute affamée',
+                'name_translations' => ['en' => 'The Hungry Pack'],
                 'description' => 'Diane signale que les loups deviennent agressifs et s\'approchent des sentiers. Éliminez la meute et leur chef pour sécuriser la forêt.',
+                'description_translations' => ['en' => 'Diane reports that wolves are growing aggressive and approaching the trails. Eliminate the pack and their leader to secure the forest.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Loup', 'slug' => 'wolf', 'count' => 3],
@@ -1422,7 +1428,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_zone_foret_venin' => [
                 'name' => 'Sentinelle contre le venin',
+                'name_translations' => ['en' => 'Sentinel Against Venom'],
                 'description' => 'Des serpents venimeux et des scorpions infestent les chemins près de l\'entrée de la forêt. Sylvain demande de l\'aide pour les éliminer.',
+                'description_translations' => ['en' => 'Venomous snakes and scorpions infest the paths near the forest entrance. Sylvain asks for help eliminating them.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Serpent venimeux', 'slug' => 'venom_snake', 'count' => 3],
@@ -1439,7 +1447,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_zone_mines_automates' => [
                 'name' => 'Automates déréglés',
+                'name_translations' => ['en' => 'Malfunctioning Automatons'],
                 'description' => 'Les automates des galeries profondes sont devenus incontrôlables et menacent les mineurs. Durgan vous demande d\'en détruire quelques-uns pour rouvrir les passages.',
+                'description_translations' => ['en' => 'The automatons in the deep galleries have become uncontrollable and threaten the miners. Durgan asks you to destroy a few to reopen the passages.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Automate rouillé', 'slug' => 'rusty_automaton', 'count' => 3],
@@ -1456,7 +1466,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_zone_marais_prime' => [
                 'name' => 'Prime sur les morts-vivants',
+                'name_translations' => ['en' => 'Bounty on the Undead'],
                 'description' => 'Bran offre une récompense pour l\'élimination de morts-vivants et de golems champignon qui envahissent les sentiers du marais.',
+                'description_translations' => ['en' => 'Bran offers a reward for eliminating undead and mushroom golems invading the swamp paths.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 4],
@@ -1473,7 +1485,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_zone_marais_appat' => [
                 'name' => 'Appât empoisonné',
+                'name_translations' => ['en' => 'Poisoned Bait'],
                 'description' => 'Oswald prépare un appât spécial pour attirer les gros poissons du marais. Il a besoin de champignons vénéneux que l\'on trouve dans les zones humides.',
+                'description_translations' => ['en' => 'Oswald is preparing special bait to lure the swamp\'s largest fish. He needs poisonous mushrooms found in wetlands.'],
                 'requirements' => [
                     'collect' => [
                         'poisonous-mushroom' => 5,
@@ -1489,7 +1503,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_zone_montagne_aerienne' => [
                 'name' => 'Menace aérienne',
+                'name_translations' => ['en' => 'Aerial Threat'],
                 'description' => 'Kaelen rapporte que les griffons et gargouilles bloquent les sentiers d\'altitude, empêchant toute reconnaissance. Éliminez-les pour rouvrir les voies.',
+                'description_translations' => ['en' => 'Kaelen reports that griffins and gargoyles are blocking the high-altitude trails, preventing reconnaissance. Eliminate them to reopen the routes.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Griffon', 'slug' => 'griffin', 'count' => 3],
@@ -1507,7 +1523,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quetes de faction (reputation) ---
             'quest_faction_mages_intro' => [
                 'name' => 'Échos arcaniques',
+                'name_translations' => ['en' => 'Arcane Echoes'],
                 'description' => 'Antoine le Mage, émissaire du Cercle des Mages, étudie les élémentaires de feu et les feux follets pour ses recherches. Rapportez des preuves de leur élimination pour gagner la confiance du Cercle.',
+                'description_translations' => ['en' => 'Antoine the Mage, emissary of the Circle of Mages, studies fire elementals and will-o\'-the-wisps for his research. Bring proof of their elimination to gain the Circle\'s trust.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Élémentaire de feu', 'slug' => 'fire_elemental', 'count' => 2],
@@ -1527,7 +1545,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_faction_chevaliers_intro' => [
                 'name' => 'Serment du Chevalier',
+                'name_translations' => ['en' => 'The Knight\'s Oath'],
                 'description' => 'Sébastien le Chevalier teste la valeur des aventuriers au nom de l\'Ordre des Chevaliers. Purgez les morts-vivants qui souillent nos terres pour prouver votre honneur.',
+                'description_translations' => ['en' => 'Sebastien the Knight tests adventurers\' worth in the name of the Order of Knights. Purge the undead defiling our lands to prove your honor.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Squelette', 'slug' => 'skeleton', 'count' => 3],
@@ -1547,7 +1567,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_faction_ombres_intro' => [
                 'name' => 'Dans l\'ombre des gobelins',
+                'name_translations' => ['en' => 'In the Shadow of the Goblins'],
                 'description' => 'Aurélie l\'Archère travaille discrètement pour la Confrérie des Ombres. Un camp de gobelins espionne les routes marchandes — éliminez leurs éclaireurs avant qu\'ils ne deviennent une menace.',
+                'description_translations' => ['en' => 'Aurelie the Archer works discreetly for the Brotherhood of Shadows. A goblin camp is spying on the trade routes — eliminate their scouts before they become a threat.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
@@ -1566,7 +1588,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_faction_marchands_intro' => [
                 'name' => 'Routes sûres pour la Guilde',
+                'name_translations' => ['en' => 'Safe Roads for the Guild'],
                 'description' => 'Chloé l\'Exploratrice cartographie les routes marchandes pour la Guilde des Marchands. Les araignées et les rats géants menacent les convois — débarrassez les sentiers pour rassurer les caravanes.',
+                'description_translations' => ['en' => 'Chloe the Explorer maps the trade routes for the Merchants Guild. Spiders and giant rats threaten the convoys — clear the trails to reassure the caravans.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Araignée', 'slug' => 'spider', 'count' => 3],
@@ -1588,7 +1612,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quetes de chasse supplementaires ---
             'quest_hunt_scorpions' => [
                 'name' => 'Fléau des sables',
+                'name_translations' => ['en' => 'Scourge of the Sands'],
                 'description' => 'Les scorpions venimeux prolifèrent aux abords du désert et menacent les caravanes de passage. Chassez-en quelques-uns pour sécuriser la piste.',
+                'description_translations' => ['en' => 'Venomous scorpions are proliferating at the desert\'s edge and threatening passing caravans. Hunt a few to secure the trail.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Scorpion', 'slug' => 'scorpion', 'count' => 4],
@@ -1604,7 +1630,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_hunt_gargoyles' => [
                 'name' => 'Les veilleurs de pierre',
+                'name_translations' => ['en' => 'The Stone Watchers'],
                 'description' => 'D\'anciennes gargouilles se sont réveillées et attaquent les pèlerins dans les ruines. Mettez-les hors d\'état de nuire.',
+                'description_translations' => ['en' => 'Ancient gargoyles have awakened and are attacking pilgrims in the ruins. Put them out of action.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gargouille', 'slug' => 'gargoyle', 'count' => 2],
@@ -1620,7 +1648,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_moral_contrebandier' => [
                 'name' => 'Le contrebandier démasqué',
+                'name_translations' => ['en' => 'The Unmasked Smuggler'],
                 'description' => 'Vous avez surpris un contrebandier qui fournit les Ombres en artéfacts volés dans les caravanes marchandes. Il vous propose une part du butin pour le laisser filer. Dénoncer ou se taire ?',
+                'description_translations' => ['en' => 'You caught a smuggler supplying the Shadows with artifacts stolen from merchant caravans. He offers you a share of the loot to let him go. Denounce him or stay silent?'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 2],
@@ -1660,7 +1690,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_moral_prisonnier' => [
                 'name' => 'Le prisonnier condamné',
+                'name_translations' => ['en' => 'The Condemned Prisoner'],
                 'description' => 'Un déserteur des Chevaliers est enchaîné dans les geôles du village, accusé d\'avoir volé pour nourrir un orphelinat. Les Chevaliers exigent l\'exécution, les Ombres vous offrent une fortune pour l\'évader.',
+                'description_translations' => ['en' => 'A Knight deserter is chained in the village dungeons, accused of stealing to feed an orphanage. The Knights demand execution; the Shadows offer you a fortune to free him.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -1707,7 +1739,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_moral_grimoire' => [
                 'name' => 'Le grimoire interdit',
+                'name_translations' => ['en' => 'The Forbidden Grimoire'],
                 'description' => 'Un vieux grimoire de magie noire a refait surface au fond d\'une grotte. L\'Ordre des Mages le veut pour l\'étudier à l\'abri, la Guilde des Marchands offre une somme pour l\'acquérir au marché noir.',
+                'description_translations' => ['en' => 'An old grimoire of dark magic has resurfaced at the bottom of a cave. The Order of Mages wants it for safe study; the Merchants Guild offers a sum to acquire it on the black market.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Spectre', 'slug' => 'specter', 'count' => 2],
@@ -1748,7 +1782,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_moral_ferme_brulee' => [
                 'name' => 'La ferme incendiée',
+                'name_translations' => ['en' => 'The Burned Farm'],
                 'description' => 'Une ferme isolée a été incendiée par des gobelins. La veuve du fermier implore de l\'aide pour reconstruire, mais le seigneur local refuse de payer et préfère envoyer les Chevaliers punir les coupables.',
+                'description_translations' => ['en' => 'An isolated farm has been burned by goblins. The farmer\'s widow begs for help to rebuild, but the local lord refuses to pay and prefers to send the Knights to punish the culprits.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
@@ -1787,7 +1823,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_moral_relique' => [
                 'name' => 'La relique du temple oublié',
+                'name_translations' => ['en' => 'The Relic of the Forgotten Temple'],
                 'description' => 'Vous avez trouvé une relique sacrée dans un temple oublié. Les Mages souhaitent la percer à jour, les Chevaliers la veulent pour leur chapelle, et un antiquaire des Marchands propose une petite fortune pour l\'acquérir.',
+                'description_translations' => ['en' => 'You found a sacred relic in a forgotten temple. The Mages wish to study it, the Knights want it for their chapel, and a Merchant antiquarian offers a small fortune to acquire it.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -1847,7 +1885,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // ── Defend quests ──
             'quest_defend_forest' => [
                 'name' => 'Défense de la Forêt Sombre',
+                'name_translations' => ['en' => 'Defense of the Dark Forest'],
                 'description' => 'Des trolls envahissent la Forêt Sombre ! Repoussez-les en éliminant ceux qui rôdent dans la zone.',
+                'description_translations' => ['en' => 'Trolls are invading the Dark Forest! Push them back by eliminating those roaming the area.'],
                 'requirements' => [
                     'defend' => [
                         ['monster_slug' => 'troll', 'count' => 3, 'map_id' => 3, 'name' => 'Troll', 'zone_name' => 'Forêt Sombre'],
@@ -1860,7 +1900,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_defend_mines' => [
                 'name' => 'Sauver les Mines Profondes',
+                'name_translations' => ['en' => 'Save the Deep Mines'],
                 'description' => 'Les golems de cristal ont pris le contrôle d\'une galerie. Défendez l\'entrée et éliminez-les avant qu\'ils ne s\'étendent davantage.',
+                'description_translations' => ['en' => 'Crystal golems have taken control of a gallery. Defend the entrance and eliminate them before they spread further.'],
                 'requirements' => [
                     'defend' => [
                         ['monster_slug' => 'crystal_golem', 'count' => 4, 'map_id' => 4, 'name' => 'Golem de cristal', 'zone_name' => 'Mines Profondes'],
@@ -1878,7 +1920,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // ── Escort quests ──
             'quest_escort_merchant' => [
                 'name' => 'Escorter le marchand itinérant',
+                'name_translations' => ['en' => 'Escort the Wandering Merchant'],
                 'description' => 'Un marchand itinérant a besoin d\'être escorté jusqu\'au Village. Accompagnez-le en vous rendant au point de rendez-vous.',
+                'description_translations' => ['en' => 'A wandering merchant needs to be escorted to the Village. Accompany him by reaching the rendezvous point.'],
                 'requirements' => [
                     'escort' => [
                         ['destination_map_id' => 2, 'destination_coordinates' => '10.10', 'name' => 'Amener le marchand au Village'],
@@ -1891,7 +1935,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_escort_refugee' => [
                 'name' => 'Réfugiés du Marais',
+                'name_translations' => ['en' => 'Refugees from the Swamp'],
                 'description' => 'Des villageois se sont perdus dans le Marais. Guidez-les jusqu\'à la sortie en atteignant le point d\'évacuation en Montagne.',
+                'description_translations' => ['en' => 'Villagers are lost in the Swamp. Guide them out by reaching the evacuation point in the Mountains.'],
                 'requirements' => [
                     'escort' => [
                         ['destination_map_id' => 6, 'destination_coordinates' => '5.5', 'name' => 'Guider les réfugiés en Montagne'],
@@ -1909,7 +1955,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // ── Puzzle quests ──
             'quest_puzzle_sphinx' => [
                 'name' => 'L\'Énigme du Sphinx de Pierre',
+                'name_translations' => ['en' => 'The Stone Sphinx\'s Riddle'],
                 'description' => 'Un sphinx de pierre bloque le passage dans les Mines. Il pose une énigme : "Je suis née du feu, façonnée par l\'eau, et je dors dans la terre. Qui suis-je ?" Parlez-lui et donnez la bonne réponse.',
+                'description_translations' => ['en' => 'A stone sphinx blocks the passage in the Mines. It poses a riddle: "I was born of fire, shaped by water, and I sleep in the earth. Who am I?" Speak to it and give the right answer.'],
                 'requirements' => [
                     'puzzle' => [
                         ['pnj_id' => 23, 'answer_key' => 'obsidienne', 'name' => 'Résoudre l\'énigme du Sphinx'],
