@@ -1095,7 +1095,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quêtes avancées : enquête et défi boss ---
             'quest_enquete_herboriste' => [
                 'name' => 'L\'Herboriste disparue',
+                'name_translations' => ['en' => 'The Missing Herbalist'],
                 'description' => 'Marie la Herboriste a disparu. Interrogez Claire la Sage, Antoine le Mage et Élise la Guérisseuse pour retrouver sa trace.',
+                'description_translations' => ['en' => 'Marie the Herbalist has disappeared. Question Claire the Wise, Antoine the Mage and Élise the Healer to pick up her trail.'],
                 'requirements' => [
                     'talk_to' => [
                         ['pnj_id' => 16, 'name' => 'Claire la Sage'],
@@ -1113,7 +1115,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_defi_gardien_foret' => [
                 'name' => 'Défi du Gardien',
+                'name_translations' => ['en' => 'Guardian\'s Challenge'],
                 'description' => 'Prouvez votre valeur en vainquant le Gardien de la Forêt en solo, sans utiliser de soin et en moins de 5 minutes.',
+                'description_translations' => ['en' => 'Prove your worth by defeating the Forest Guardian solo, without healing, in under 5 minutes.'],
                 'requirements' => [
                     'boss_challenge' => [
                         [
@@ -1138,7 +1142,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // === Acte 3 : La Convergence (tache 94) ===
             'quest_acte3_appel' => [
                 'name' => 'La Convergence — L\'Appel des Fragments',
+                'name_translations' => ['en' => 'The Convergence — The Call of the Fragments'],
                 'description' => 'Les quatre fragments resonnent dans votre sac, pulsant a l\'unisson. Claire la Sage pourrait savoir ce que cela signifie.',
+                'description_translations' => ['en' => 'The four fragments resonate in your bag, pulsing in unison. Claire the Wise may know what this means.'],
                 'requirements' => [
                     'talk_to' => [
                         ['pnj_id' => 0, 'name' => 'Claire la Sage'],
@@ -1152,7 +1158,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte3_gardien' => [
                 'name' => 'La Convergence — Le Gardien du Nexus',
+                'name_translations' => ['en' => 'The Convergence — Guardian of the Nexus'],
                 'description' => 'Les fragments vous guident vers le Nexus de la Convergence. Un gardien ancien protege le coeur du cristal d\'Amethyste. Vous devez le vaincre pour decouvrir la verite.',
+                'description_translations' => ['en' => 'The fragments guide you toward the Nexus of Convergence. An ancient guardian protects the heart of the Amethyst Crystal. You must defeat it to uncover the truth.'],
                 'requirements' => [
                     'boss_challenge' => [
                         [
@@ -1175,7 +1183,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte3_epilogue' => [
                 'name' => 'La Convergence — Epilogue',
+                'name_translations' => ['en' => 'The Convergence — Epilogue'],
                 'description' => 'Le Gardien est vaincu. Le cristal d\'Amethyste libere son secret ultime. Rendez-vous au coeur du Nexus pour decouvrir la verite sur votre passe.',
+                'description_translations' => ['en' => 'The Guardian is defeated. The Amethyst Crystal releases its final secret. Head to the heart of the Nexus to uncover the truth about your past.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -1197,7 +1207,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quêtes d'événement ---
             'quest_event_lunar_hunt' => [
                 'name' => 'Chasse sous la Lune',
+                'name_translations' => ['en' => 'Hunt Under the Moon'],
                 'description' => 'Pendant le Festival de la Lune, les creatures nocturnes sont plus agitees. Eliminez des monstres pour gagner une recompense exclusive du festival.',
+                'description_translations' => ['en' => 'During the Moon Festival, nocturnal creatures grow restless. Defeat monsters to earn an exclusive festival reward.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 3],
@@ -1215,7 +1227,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_event_shadow_purge' => [
                 'name' => 'Purge des Ombres',
+                'name_translations' => ['en' => 'Shadow Purge'],
                 'description' => 'La Nuit des Ombres attire des creatures malfaisantes. Repoussez-les et reclamez votre recompense.',
+                'description_translations' => ['en' => 'The Night of Shadows draws evil creatures. Drive them back and claim your reward.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 4],
@@ -1235,7 +1249,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // Plaine de l'Éveil
             'quest_discovery_ancient_stele' => [
                 'name' => 'Stèle oubliée',
+                'name_translations' => ['en' => 'Forgotten Stele'],
                 'description' => 'En traversant les plaines, vous apercevez une stèle gravée de runes anciennes, à demi enfouie dans l\'herbe haute. Approchez-vous pour déchiffrer les inscriptions.',
+                'description_translations' => ['en' => 'While crossing the plains, you spot a stele carved with ancient runes, half-buried in tall grass. Step closer to decipher the inscriptions.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '45.22', 'name' => 'Stèle aux runes anciennes'],
@@ -1247,7 +1263,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_discovery_forgotten_well' => [
                 'name' => 'Le puits des Anciens',
+                'name_translations' => ['en' => 'The Well of the Ancients'],
                 'description' => 'Un puits en ruine, à peine visible sous les herbes, garde encore l\'eau claire d\'une source souterraine oubliée. Examinez-le de plus près.',
+                'description_translations' => ['en' => 'A ruined well, barely visible in the grass, still holds the clear water of a forgotten underground spring. Examine it more closely.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '32.53', 'name' => 'Puits en ruine'],
@@ -1264,7 +1282,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // Forêt des Murmures
             'quest_discovery_fairy_ring' => [
                 'name' => 'Cercle féérique',
+                'name_translations' => ['en' => 'Fairy Ring'],
                 'description' => 'Un bourdonnement musical flotte dans l\'air. Des lucioles dansent en cercle autour d\'un anneau de champignons lumineux. Approchez-vous du centre du cercle.',
+                'description_translations' => ['en' => 'A musical hum drifts through the air. Fireflies dance in a circle around a ring of glowing mushrooms. Step into the centre of the ring.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '88.32', 'name' => 'Centre du cercle féérique'],
@@ -1276,7 +1296,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_discovery_hollow_oak' => [
                 'name' => 'Le chêne millénaire',
+                'name_translations' => ['en' => 'The Ancient Oak'],
                 'description' => 'Un chêne immense et creux se dresse devant vous. Des gravures anciennes ornent l\'intérieur de son tronc. Explorez la cavité pour découvrir ce qu\'elle recèle.',
+                'description_translations' => ['en' => 'A massive hollow oak stands before you. Ancient carvings adorn the inside of its trunk. Explore the cavity to uncover what it hides.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '108.22', 'name' => 'Intérieur du chêne creux'],
@@ -1289,7 +1311,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // Marais Brumeux
             'quest_discovery_sunken_altar' => [
                 'name' => 'Autel englouti',
+                'name_translations' => ['en' => 'Sunken Altar'],
                 'description' => 'Sous les eaux stagnantes, vous distinguez un autel de pierre couvert de mousse et de symboles effacés. Pataugez jusqu\'à lui pour l\'examiner.',
+                'description_translations' => ['en' => 'Beneath the stagnant waters, you make out a stone altar covered in moss and faded symbols. Wade out to it to examine it.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '25.82', 'name' => 'Autel de pierre immergé'],
@@ -1301,7 +1325,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_discovery_phospho_grotto' => [
                 'name' => 'Grotte phosphorescente',
+                'name_translations' => ['en' => 'Phosphorescent Grotto'],
                 'description' => 'Une lueur bleu-vert émane d\'une anfractuosité dans la roche. La grotte est tapissée de mousse luminescente. Explorez-la jusqu\'au fond.',
+                'description_translations' => ['en' => 'A blue-green glow emanates from a crevice in the rock. The grotto is lined with luminescent moss. Explore it all the way to the back.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '48.102', 'name' => 'Fond de la grotte lumineuse'],
@@ -1314,7 +1340,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // Collines Venteuses
             'quest_discovery_wind_shrine' => [
                 'name' => 'Sanctuaire éolien',
+                'name_translations' => ['en' => 'Wind Shrine'],
                 'description' => 'Le vent siffle entre des pierres dressées sur la colline. Un ancien sanctuaire dédié aux esprits du vent. Approchez-vous du menhir central.',
+                'description_translations' => ['en' => 'The wind whistles between standing stones on the hill. An ancient shrine dedicated to the wind spirits. Approach the central menhir.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '145.50', 'name' => 'Menhir central du sanctuaire'],
@@ -1327,7 +1355,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // Lande d'Ombre
             'quest_discovery_shadow_obelisk' => [
                 'name' => 'Obélisque d\'ombre',
+                'name_translations' => ['en' => 'Shadow Obelisk'],
                 'description' => 'Un obélisque noir se dresse dans la lande, pulsant d\'une énergie sombre. Des inscriptions décrivent un ancien rituel de protection. Déchiffrez-les.',
+                'description_translations' => ['en' => 'A black obelisk stands in the moor, pulsing with dark energy. Inscriptions describe an ancient protective ritual. Decipher them.'],
                 'requirements' => [
                     'explore' => [
                         ['map_id' => 1, 'coordinates' => '58.142', 'name' => 'Obélisque aux inscriptions sombres'],

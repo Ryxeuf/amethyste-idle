@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.g : fixtures EN pour 20 quetes supplementaires)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.h : fixtures EN pour 15 quetes supplementaires : Acte 3 La Convergence + dailies + steles de decouverte)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.h : fixtures EN pour 15 quetes supplementaires (2026-04-23)
+
+> Extension directe de la sous-phase 3e.c.d.quest.g (20 quetes Acte 1 secondaires + chaine Acte 2 "Les Fragments"). Cible : l'integralite de la chaine narrative finale Acte 3 "La Convergence" (3 quetes), les 2 quetes enquete / defi boss cleanup Acte 2, les 2 quetes d'evenement (dailies Festival de la Lune + Nuit des Ombres), et les 8 quetes cachees de decouverte (exploration standard : steles, puits, cercle feerique, chene, autel, grotte, sanctuaire, obelisque). Total 15 quetes = 30 lignes ajoutees. Avant cette sous-phase, un joueur en locale EN voyait ces 15 quetes retomber sur leur nom/description FR via le fallback transparent ; apres, la narration finale de l'Acte 3 et tous les points de decouverte de la Plaine de l'Eveil / Foret des Murmures / Marais / Collines / Lande sont disponibles en anglais.
+
+- [x] `src/DataFixtures/QuestFixtures.php` (+30 lignes, 2006 au total, sous la limite de 50 lignes ajoutees car ce fichier depassait deja 400 lignes avant cette tache) : ajout de `name_translations => ['en' => '...']` + `description_translations => ['en' => '...']` sur 15 entrees. Loader inchange (la delegation `Quest::setNameTranslations()` / `Quest::setDescriptionTranslations()` existe deja depuis les sous-phases 3e.c.d.quest.c et 3e.c.d.quest.f).
+- [x] Acte 2 cleanup (2) : `quest_enquete_herboriste=The Missing Herbalist`, `quest_defi_gardien_foret=Guardian's Challenge`.
+- [x] Chaine Acte 3 "La Convergence" (3) : `quest_acte3_appel=The Call of the Fragments`, `quest_acte3_gardien=Guardian of the Nexus`, `quest_acte3_epilogue=Epilogue`.
+- [x] Quetes d'evenement (2) : `quest_event_lunar_hunt=Hunt Under the Moon`, `quest_event_shadow_purge=Shadow Purge`.
+- [x] Quetes cachees de decouverte (8) : `quest_discovery_ancient_stele=Forgotten Stele`, `quest_discovery_forgotten_well=The Well of the Ancients`, `quest_discovery_fairy_ring=Fairy Ring`, `quest_discovery_hollow_oak=The Ancient Oak`, `quest_discovery_sunken_altar=Sunken Altar`, `quest_discovery_phospho_grotto=Phosphorescent Grotto`, `quest_discovery_wind_shrine=Wind Shrine`, `quest_discovery_shadow_obelisk=Shadow Obelisk`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.h ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.h.
+
+**Diff** : +30 lignes `QuestFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les quetes restantes (~25 quetes : cartographe/pelerinage, quetes de guilde, quetes karma/Acte 4 steles cachees, Acte 2 fragments karma) conservent leur contenu FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures. Les tests existants de `Quest::setNameTranslations()` et `Quest::setDescriptionTranslations()` (14 cas) couvrent deja exhaustivement la normalisation des champs. Zero impact FR ; impact EN immediat sur `/game/quests` (onglets actifs / disponibles / completes / historique / dailies) et le tracking du dashboard `/game` pour ces 15 quetes via les filters `localized_quest_name` et `localized_quest_description` cables en 3e.c.d.quest.b/e.
 
 ---
 
