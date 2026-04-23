@@ -1,7 +1,26 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.h : fixtures EN pour 15 quetes supplementaires : Acte 3 La Convergence + dailies + steles de decouverte)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.i : fixtures EN pour 24 quetes supplementaires : decouverte multi-points + zones secondaires + factions + chasse + choix moraux + defense/escorte + sphinx)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.i : fixtures EN pour 24 quetes supplementaires (2026-04-23)
+
+> Extension directe des sous-phases 3e.c.d.quest.g (20 quetes Acte 1 secondaires + chaine Acte 2 "Les Fragments") et 3e.c.d.quest.h (15 quetes Acte 3 + dailies + steles de decouverte). Cible : 24 des 25 quetes restantes pour atteindre une couverture EN quasi-complete (24/25 = 96%) sur les noms et descriptions de quetes. Cible regroupe sept categories thematiques : decouverte multi-points (cartographe + pelerinage), zones secondaires (forets / mines / marais / montagne), faction intro (mages / chevaliers / ombres / marchands), chasse supplementaire (scorpions / gargouilles), choix moraux a consequences de reputation opposees (contrebandier / prisonnier / grimoire / ferme / relique), defense (foret / mines), escorte (marchand / refugies) et puzzle sphinx. La derniere quete `quest_puzzle_ancient_runes` est differee a une sous-phase ulterieure pour respecter la contrainte stricte de 50 lignes ajoutees max sur un fichier > 400 lignes (48 lignes ici).
+
+- [x] `src/DataFixtures/QuestFixtures.php` (+48 lignes, 2054 au total, sous la limite de 50 lignes ajoutees car ce fichier depassait deja 400 lignes avant cette tache) : ajout de `name_translations => ['en' => '...']` + `description_translations => ['en' => '...']` sur 24 entrees. Loader inchange (la delegation `Quest::setNameTranslations()` / `Quest::setDescriptionTranslations()` existe deja depuis les sous-phases 3e.c.d.quest.c et 3e.c.d.quest.f).
+- [x] Quetes de decouverte multi-points (2) : `quest_discovery_cartographer=Cartographer of the Forgotten Lands`, `quest_discovery_sacred_sites=Pilgrimage of the Sacred Sites`.
+- [x] Quetes de zone secondaires (6) : `quest_zone_foret_meute=The Hungry Pack`, `quest_zone_foret_venin=Sentinel Against Venom`, `quest_zone_mines_automates=Malfunctioning Automatons`, `quest_zone_marais_prime=Bounty on the Undead`, `quest_zone_marais_appat=Poisoned Bait`, `quest_zone_montagne_aerienne=Aerial Threat`.
+- [x] Quetes de faction intro (4) : `quest_faction_mages_intro=Arcane Echoes`, `quest_faction_chevaliers_intro=The Knight's Oath`, `quest_faction_ombres_intro=In the Shadow of the Goblins`, `quest_faction_marchands_intro=Safe Roads for the Guild`.
+- [x] Quetes de chasse supplementaires (2) : `quest_hunt_scorpions=Scourge of the Sands`, `quest_hunt_gargoyles=The Stone Watchers`.
+- [x] Quetes a choix moral (5) : `quest_moral_contrebandier=The Unmasked Smuggler`, `quest_moral_prisonnier=The Condemned Prisoner`, `quest_moral_grimoire=The Forbidden Grimoire`, `quest_moral_ferme_brulee=The Burned Farm`, `quest_moral_relique=The Relic of the Forgotten Temple`.
+- [x] Quetes de defense (2) : `quest_defend_forest=Defense of the Dark Forest`, `quest_defend_mines=Save the Deep Mines`.
+- [x] Quetes d'escorte (2) : `quest_escort_merchant=Escort the Wandering Merchant`, `quest_escort_refugee=Refugees from the Swamp`.
+- [x] Quete puzzle (1) : `quest_puzzle_sphinx=The Stone Sphinx's Riddle`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.i ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.i.
+
+**Diff** : +48 lignes `QuestFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Une seule quete restante (`quest_puzzle_ancient_runes`) conserve son contenu FR comme fallback ; sa traduction suivra dans une sous-phase ulterieure 3e.c.d.quest.j (2 lignes, finalisera 100% de la couverture EN sur les noms et descriptions de quetes). Les tests existants de `Quest::setNameTranslations()` et `Quest::setDescriptionTranslations()` (14 cas) couvrent deja exhaustivement la normalisation des champs. Zero impact FR (fallback transparent preserve) ; impact EN immediat sur `/game/quests` (onglets actifs / disponibles / completes / historique / dailies) et le tracking du dashboard `/game` pour ces 24 quetes via les filters `localized_quest_name` et `localized_quest_description` cables en 3e.c.d.quest.b/e.
 
 ---
 
