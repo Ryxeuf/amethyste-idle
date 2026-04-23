@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (133 — Mini-jeux sous-phase 1b : bonus XP pour les captures parfaites de peche)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.g : fixtures EN pour 20 quetes supplementaires)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.g : fixtures EN pour 20 quetes supplementaires (2026-04-23)
+
+> Consomme l'infrastructure des sous-phases 3e.c.d.quest (colonne `name_translations` sur `Quest`), 3e.c.d.quest.d (colonne `description_translations`), 3e.c.d.quest.b et 3e.c.d.quest.e (filters Twig cables dans le journal de quetes et le dashboard) en peuplant les traductions EN d'un second lot de quetes au-dela des 26 quetes de debut de jeu couvertes par 3e.c.d.quest.c et 3e.c.d.quest.f. Cible : les 5 quetes Acte 1 secondaires (dragon + 4 quetes cachees decouvertes en jeu) et l'integralite de la chaine narrative Acte 2 "Les Fragments" (15 quetes sur 4 regions : Forêt, Mines, Marais, Montagne). Avant cette sous-phase, un joueur en locale EN voyait ces 20 quetes retomber sur leur nom/description FR via le fallback transparent ; apres, la narration Acte 2 est entierement disponible en anglais des la prise de contact avec le Cristal d'Amethyste.
+
+- [x] `src/DataFixtures/QuestFixtures.php` (+40 lignes, 1976 au total, sous la limite de 50 lignes ajoutees car ce fichier depassait deja 400 lignes avant cette tache) : ajout de `name_translations => ['en' => '...']` + `description_translations => ['en' => '...']` sur 20 entrees. Loader inchange (la delegation `Quest::setNameTranslations()` / `Quest::setDescriptionTranslations()` existe deja depuis les sous-phases 3e.c.d.quest.c et 3e.c.d.quest.f). Aucune normalisation specifique : les setters de l'entite filtrent deja les cles / valeurs invalides.
+- [x] Acte 1 secondaires (5) : `quest_dragon_1=The Mountain Dragon`, `quest_hidden_secret_clearing=The Clearing's Secret`, `quest_hidden_rare_slime=The Golden Slime`, `quest_hidden_herb_lore=Ancestral Lore`, `quest_hidden_goblin_cache=The Goblin Hideout`.
+- [x] Chaine Acte 2 "Les Fragments" — Forêt (4) : `quest_acte2_foret_murmures=The Whispers Grow Stronger`, `quest_acte2_foret_purification=Purify the Corruption`, `quest_acte2_foret_remede=The Ancestral Remedy`, `quest_acte2_foret_fragment=The Sylvan Shard`.
+- [x] Chaine Acte 2 — Mines (4) : `quest_acte2_mines_tremblements=Underground Tremors`, `quest_acte2_mines_minerai=The Ancient Ore`, `quest_acte2_mines_forge=The Forge Lord`, `quest_acte2_mines_fragment=The Forge Shard`.
+- [x] Chaine Acte 2 — Marais (4) : `quest_acte2_marais_brumes=The Mists Thicken`, `quest_acte2_marais_ingredients=Remedies of the Depths`, `quest_acte2_marais_gardiens=Guardians of the Dead Waters`, `quest_acte2_marais_fragment=The Mist Shard`.
+- [x] Chaine Acte 2 — Montagne (3) : `quest_acte2_montagne_echos=Echoes from the Summit`, `quest_acte2_montagne_gardien=The Peak Guardian`, `quest_acte2_montagne_fragment=The Summit Shard`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.g ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.g.
+
+**Diff** : +40 lignes `QuestFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les quetes restantes (~40 quetes : Acte 3 La Convergence, quetes de guilde, quetes karma, quetes cachees steles/cartographe) conservent leur contenu FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures. Les tests de `Quest::setNameTranslations()` et `Quest::setDescriptionTranslations()` (14 cas dans `QuestLocalizationTest` + `QuestDescriptionLocalizationTest`) couvrent deja exhaustivement la normalisation des champs ; la diff sur le loader etant deja couverte par les sous-phases 3e.c.d.quest.c et 3e.c.d.quest.f, aucun test dedie n'est necessaire. Zero impact FR (fallback transparent preserve) ; impact EN immediat sur `/game/quests` et le tracking du dashboard `/game` pour ces 20 quetes via les filters `localized_quest_name` et `localized_quest_description` cables en 3e.c.d.quest.b/e.
 
 ---
 

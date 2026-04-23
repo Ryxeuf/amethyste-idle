@@ -248,7 +248,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_dragon_1' => [
                 'name' => 'Le dragon de la montagne',
+                'name_translations' => ['en' => 'The Mountain Dragon'],
                 'description' => 'Un dragon terrorise la région depuis sa tanière dans la montagne. Cette quête est extrêmement dangereuse, mais la récompense est à la hauteur du risque.',
+                'description_translations' => ['en' => 'A dragon has been terrorizing the region from its lair in the mountain. This quest is extremely dangerous, but the reward matches the risk.'],
                 'requirements' => [
                     'monsters' => [
                         [
@@ -671,7 +673,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Quetes cachees (decouverte) ---
             'quest_hidden_secret_clearing' => [
                 'name' => 'Le secret de la clairiere',
+                'name_translations' => ['en' => 'The Clearing\'s Secret'],
                 'description' => 'En explorant une clairiere isolee, vous decouvrez des traces anciennes au sol. Quelque chose est enterre ici... Explorez les alentours pour trouver d\'autres indices.',
+                'description_translations' => ['en' => 'While exploring a secluded clearing, you notice ancient marks on the ground. Something is buried here... Explore the surroundings to find more clues.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -694,7 +698,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_hidden_rare_slime' => [
                 'name' => 'La gelee doree',
+                'name_translations' => ['en' => 'The Golden Slime'],
                 'description' => 'En eliminant une gelee, vous remarquez un etrange eclat dore dans ses restes. Les villageois parlent d\'une gelee rare au coeur brillant. Eliminez-en davantage pour la trouver.',
+                'description_translations' => ['en' => 'While defeating a slime, you notice a strange golden glimmer in its remains. Villagers speak of a rare slime with a shining core. Slay more of them to find it.'],
                 'requirements' => [
                     'monsters' => [
                         [
@@ -723,7 +729,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_hidden_herb_lore' => [
                 'name' => 'Savoir ancestral',
+                'name_translations' => ['en' => 'Ancestral Lore'],
                 'description' => 'En recoltant des champignons, vous trouvez un vieux parchemin cachant une recette oubliee. Recoltez d\'autres ingredients pour la reconstituer.',
+                'description_translations' => ['en' => 'While gathering mushrooms, you find an old parchment hiding a forgotten recipe. Gather more ingredients to reconstruct it.'],
                 'requirements' => [
                     'collect' => [
                         'mushroom' => 8,
@@ -744,7 +752,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_hidden_goblin_cache' => [
                 'name' => 'La planque des gobelins',
+                'name_translations' => ['en' => 'The Goblin Hideout'],
                 'description' => 'Sur le cadavre d\'un gobelin, vous trouvez une carte menant a une cache secrete. Eliminez d\'autres gobelins pour reunir les morceaux de la carte.',
+                'description_translations' => ['en' => 'On a goblin\'s corpse, you find a map leading to a hidden cache. Defeat more goblins to gather the pieces of the map.'],
                 'requirements' => [
                     'monsters' => [
                         [
@@ -774,7 +784,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Chaîne narrative Acte 2 : Fragment Forêt (4 quêtes) ---
             'quest_acte2_foret_murmures' => [
                 'name' => 'Les Fragments — Les Murmures s\'intensifient',
+                'name_translations' => ['en' => 'The Fragments — The Whispers Grow Stronger'],
                 'description' => 'Depuis que vous avez touché le Cristal d\'Améthyste, vous percevez des échos étranges venant de la Forêt des murmures. Thadeus l\'Ermite, qui vit au nord de la forêt, pourrait avoir des réponses.',
+                'description_translations' => ['en' => 'Since touching the Amethyst Crystal, you have been sensing strange echoes coming from the Whispering Forest. Thadeus the Hermit, who lives north of the forest, may have answers.'],
                 'requirements' => [
                     'talk_to' => [
                         ['pnj_id' => 0, 'name' => 'Thadeus l\'Ermite'],
@@ -788,7 +800,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_foret_purification' => [
                 'name' => 'Les Fragments — Purifier la Corruption',
+                'name_translations' => ['en' => 'The Fragments — Purify the Corruption'],
                 'description' => 'Thadeus a senti une corruption ancienne se réveiller dans la forêt. Des créatures corrompues rôdent près de l\'Arbre-Mère. Éliminez-les pour affaiblir la corruption.',
+                'description_translations' => ['en' => 'Thadeus has sensed an ancient corruption awakening in the forest. Corrupted creatures prowl near the Mother-Tree. Eliminate them to weaken the corruption.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Ondine', 'slug' => 'forest_undine', 'count' => 2],
@@ -807,7 +821,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_foret_remede' => [
                 'name' => 'Les Fragments — Le Remède Ancestral',
+                'name_translations' => ['en' => 'The Fragments — The Ancestral Remedy'],
                 'description' => 'La corruption a été affaiblie, mais l\'Arbre-Mère reste malade. Thadeus a besoin de sauge et de mandragore pour préparer un remède ancestral. Récoltez-les et apportez-les à Elara l\'Herboriste qui saura les préparer.',
+                'description_translations' => ['en' => 'The corruption has been weakened, but the Mother-Tree remains ill. Thadeus needs sage and mandrake to prepare an ancestral remedy. Gather them and bring them to Elara the Herbalist, who will know how to prepare them.'],
                 'requirements' => [
                     'collect' => [
                         'plant-sage' => 3,
@@ -825,7 +841,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_foret_fragment' => [
                 'name' => 'Les Fragments — Le Fragment Sylvestre',
+                'name_translations' => ['en' => 'The Fragments — The Sylvan Shard'],
                 'description' => 'Le remède a guéri l\'Arbre-Mère. En remerciement, ses racines ont révélé un éclat de cristal vert enfoui depuis des siècles. Rendez-vous au cœur de la forêt pour le récupérer.',
+                'description_translations' => ['en' => 'The remedy has healed the Mother-Tree. In gratitude, its roots have revealed a green crystal shard buried for centuries. Head to the heart of the forest to retrieve it.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -847,7 +865,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Chaîne narrative Acte 2 : Fragment Mines (4 quêtes) ---
             'quest_acte2_mines_tremblements' => [
                 'name' => 'Les Fragments — Tremblements souterrains',
+                'name_translations' => ['en' => 'The Fragments — Underground Tremors'],
                 'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, vous percevez des vibrations sourdes venant des Mines profondes. Grimmur le Contremaître, posté à l\'entrée, pourrait en savoir plus.',
+                'description_translations' => ['en' => 'Since your contact with the Amethyst Crystal, you sense dull vibrations coming from the Deep Mines. Grimmur the Foreman, stationed at the entrance, may know more.'],
                 'requirements' => [
                     'talk_to' => [
                         ['pnj_id' => 0, 'name' => 'Grimmur le Contremaître'],
@@ -861,7 +881,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_mines_minerai' => [
                 'name' => 'Les Fragments — Le Minerai Ancien',
+                'name_translations' => ['en' => 'The Fragments — The Ancient Ore'],
                 'description' => 'Grimmur a senti une énergie étrange émaner des filons profonds. Il vous demande de récolter du minerai de fer et de l\'or enfoui pour analyser la source de ces vibrations.',
+                'description_translations' => ['en' => 'Grimmur has felt a strange energy emanating from the deep veins. He asks you to gather iron ore and buried gold to analyse the source of these vibrations.'],
                 'requirements' => [
                     'collect' => [
                         'ore-iron' => 5,
@@ -879,7 +901,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_mines_forge' => [
                 'name' => 'Les Fragments — Le Seigneur de la Forge',
+                'name_translations' => ['en' => 'The Fragments — The Forge Lord'],
                 'description' => 'L\'énergie provient des profondeurs, là où règne le Seigneur de la Forge. Ce gardien devenu fou protège quelque chose d\'ancien. Vous devez le vaincre pour atteindre la source des vibrations.',
+                'description_translations' => ['en' => 'The energy comes from the depths, where the Forge Lord reigns. This guardian turned mad protects something ancient. You must defeat him to reach the source of the vibrations.'],
                 'requirements' => [
                     'boss_challenge' => [
                         [
@@ -902,7 +926,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_mines_fragment' => [
                 'name' => 'Les Fragments — Le Fragment de la Forge',
+                'name_translations' => ['en' => 'The Fragments — The Forge Shard'],
                 'description' => 'La défaite du Seigneur de la Forge a révélé une fissure dans le mur de sa salle. Un éclat de cristal orangé pulse au fond, irradiant une chaleur ancienne. Récupérez-le.',
+                'description_translations' => ['en' => 'The Forge Lord\'s defeat has revealed a crack in the wall of his chamber. An orange crystal shard pulses deep within, radiating ancient heat. Retrieve it.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -924,7 +950,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Chaîne narrative Acte 2 : Fragment Marais (4 quêtes) ---
             'quest_acte2_marais_brumes' => [
                 'name' => 'Les Fragments — Les Brumes s\'épaississent',
+                'name_translations' => ['en' => 'The Fragments — The Mists Thicken'],
                 'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, une brume surnaturelle semble vous appeler depuis le Marais Brumeux. Morwen la Voyante, qui vit à la lisière du marais, pourrait déchiffrer ces visions.',
+                'description_translations' => ['en' => 'Since your contact with the Amethyst Crystal, a supernatural mist seems to call you from the Misty Swamp. Morwen the Seer, who lives on the edge of the swamp, may decipher these visions.'],
                 'requirements' => [
                     'talk_to' => [
                         ['pnj_id' => 0, 'name' => 'Morwen la Voyante'],
@@ -938,7 +966,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_marais_ingredients' => [
                 'name' => 'Les Fragments — Remèdes des Profondeurs',
+                'name_translations' => ['en' => 'The Fragments — Remedies of the Depths'],
                 'description' => 'Morwen a besoin d\'ingrédients spécifiques du marais pour préparer un onguent qui dissipera les brumes enchantées protégeant le cœur du marais. Récoltez des champignons vénéneux et des racines de marais.',
+                'description_translations' => ['en' => 'Morwen needs specific swamp ingredients to prepare an ointment that will dispel the enchanted mists protecting the heart of the swamp. Gather poisonous mushrooms and swamp roots.'],
                 'requirements' => [
                     'collect' => [
                         'poisonous-mushroom' => 4,
@@ -956,7 +986,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_marais_gardiens' => [
                 'name' => 'Les Fragments — Les Gardiens des Eaux Mortes',
+                'name_translations' => ['en' => 'The Fragments — Guardians of the Dead Waters'],
                 'description' => 'L\'onguent a dissipé une partie de la brume, révélant des créatures anciennes qui protègent le passage vers le cœur du marais. Éliminez-les pour ouvrir la voie.',
+                'description_translations' => ['en' => 'The ointment has dispelled part of the mist, revealing ancient creatures that protect the passage to the heart of the swamp. Eliminate them to open the way.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Banshee', 'slug' => 'banshee', 'count' => 3],
@@ -974,7 +1006,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_marais_fragment' => [
                 'name' => 'Les Fragments — Le Fragment des Brumes',
+                'name_translations' => ['en' => 'The Fragments — The Mist Shard'],
                 'description' => 'Les gardiens vaincus, le chemin vers le cœur du marais est libre. Un éclat de cristal bleu-gris scintille au fond d\'un bassin d\'eau stagnante, enveloppé de vapeur glaciale. Récupérez-le.',
+                'description_translations' => ['en' => 'With the guardians defeated, the path to the heart of the swamp is clear. A blue-grey crystal shard glimmers at the bottom of a stagnant pool, shrouded in icy vapor. Retrieve it.'],
                 'requirements' => [
                     'explore' => [
                         [
@@ -996,7 +1030,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             // --- Chaîne narrative Acte 2 : Fragment Montagne (3 quêtes) ---
             'quest_acte2_montagne_echos' => [
                 'name' => 'Les Fragments — Les Échos du Sommet',
+                'name_translations' => ['en' => 'The Fragments — Echoes from the Summit'],
                 'description' => 'Depuis votre contact avec le Cristal d\'Améthyste, des visions de pics enneigés et de vents hurlants vous hantent. Aldric l\'Ancien, un ermite qui vit sur la Crête de Ventombre, pourrait comprendre ces échos.',
+                'description_translations' => ['en' => 'Since your contact with the Amethyst Crystal, visions of snowy peaks and howling winds haunt you. Aldric the Elder, a hermit who lives on Stormwind Ridge, may understand these echoes.'],
                 'requirements' => [
                     'talk_to' => [
                         ['pnj_id' => 0, 'name' => 'Aldric l\'Ancien'],
@@ -1010,7 +1046,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_montagne_gardien' => [
                 'name' => 'Les Fragments — Le Gardien des Cimes',
+                'name_translations' => ['en' => 'The Fragments — The Peak Guardian'],
                 'description' => 'Aldric vous a révélé qu\'un fragment ancien est prisonnier du sommet, gardé par le Dragon ancestral qui sommeille dans sa tanière depuis des siècles. Il faut le vaincre pour accéder au pic sacré.',
+                'description_translations' => ['en' => 'Aldric has revealed that an ancient fragment is trapped on the summit, guarded by the Ancestral Dragon that has slumbered in its lair for centuries. You must defeat it to reach the sacred peak.'],
                 'requirements' => [
                     'boss_challenge' => [
                         [
@@ -1033,7 +1071,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_acte2_montagne_fragment' => [
                 'name' => 'Les Fragments — Le Fragment du Sommet',
+                'name_translations' => ['en' => 'The Fragments — The Summit Shard'],
                 'description' => 'Le Dragon ancestral est vaincu. Le chemin vers le pic sacré est libre. Un éclat de cristal blanc brille au sommet, battu par les vents éternels. Grimpez et récupérez-le.',
+                'description_translations' => ['en' => 'The Ancestral Dragon is defeated. The path to the sacred peak is clear. A white crystal shard shines at the summit, buffeted by eternal winds. Climb up and retrieve it.'],
                 'requirements' => [
                     'explore' => [
                         [
