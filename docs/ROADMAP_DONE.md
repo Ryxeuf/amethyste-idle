@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-22 (135 — Localisation i18n sous-phase 3e.b.b.suite : fixtures EN pour le reste du bestiaire, niveaux 3+ et boss)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.d : infrastructure multilingue pour les descriptions de quetes)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.d : infrastructure multilingue pour les descriptions de quetes (2026-04-23)
+
+> Etend le pattern des sous-phases 3a (Item `name`), 3e.a (Monster `name`), 3e.c.d.quest (Quest `name`) a `Quest.description`. Meme contrat, meme normalisation, memes fallbacks gracieux. Etape infra-only prealable au cablage futur dans le journal de quetes (`/game/quests`), les dialogues PNJ (offre / acceptation / completion) et l'ecran de tracking des objectifs. Totalement retrocompatible : aucun template, aucun controller et aucun fixture modifies ; toutes les quetes existantes conservent `description_translations = null` et continuent d'etre rendues via `quest.description`. La description etant un champ `text` (long, multiligne, souvent narratif), sa traduction se fera par fixtures / admin dans des sous-phases ulterieures.
+
+- [x] Migration `migrations/Version20260423QuestDescriptionTranslations.php` : `ALTER TABLE game_quests ADD COLUMN IF NOT EXISTS description_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict de `Version20260422QuestNameTranslations`.
+- [x] `App\Entity\Game\Quest` (+45 lignes, total 388, sous la limite de 400) : nouvelle propriete `?array $descriptionTranslations` (colonne Doctrine `json`, nullable). Nouvelle methode `getLocalizedDescription(?string $locale): string` — fallback sur `$this->description` si `$locale` est `null`/vide, si `$this->descriptionTranslations` est `null`, si la locale n'est pas presente, ou si sa valeur est une chaine blanche ou non-string. Nouvelle methode `getDescriptionTranslations(): array<string, string>` (defaut `[]`). Nouveau setter `setDescriptionTranslations(?array $translations): self` avec normalisation : cles vides ignorees, valeurs non-string ou blanches ignorees, tableau final ramene a `null` si vide (stockage compact en DB). Retourne `$this` (fluent, aligne avec les autres methodes de l'entite).
+- [x] Tests `tests/Unit/Entity/Game/QuestDescriptionLocalizationTest.php` (nouveau, 7 cas, 92 lignes) : miroir exact de `QuestLocalizationTest` (qui couvre `name`). Couvre fallback sans traductions (null/vide/FR/EN), traduction matchee EN/DE, fallback sur locale absente (es/ja), normalisation cles vides / valeurs blanches / valeurs non-string (entier 42), reset via `null`, compaction vers `null` si seulement entrees invalides, defaut `[]` de `getDescriptionTranslations`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.d ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.d.
+
+**Diff** : +26 lignes migration + 45 lignes entite + 92 lignes tests + roadmap = ~180 lignes (budget 300 respecte). Aucun fichier nouveau ou existant ne depasse 400 lignes. Aucun template, controller, service ou fixture touche — sous-phase infra-only, parfaitement isolee des PRs ouvertes sur les autres sous-phases 3e.* et sur la sous-phase 3d (Item descriptions, PR #451). Prochaines etapes envisageables : cablage de `getLocalizedDescription` dans les vues qui rendent `{{ quest.description }}` (journal + dashboard + dialogues PNJ) et peuplement des fixtures EN pour les descriptions des quetes starter.
 
 ---
 

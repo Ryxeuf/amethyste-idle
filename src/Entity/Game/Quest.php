@@ -32,6 +32,12 @@ class Quest
     #[ORM\Column(name: 'description', type: 'text')]
     private $description;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'description_translations', type: 'json', nullable: true)]
+    private ?array $descriptionTranslations = null;
+
     #[ORM\Column(name: 'requirements', type: 'json', nullable: true)]
     private $requirements;
 
@@ -155,6 +161,43 @@ class Quest
     public function getDescription(): string
     {
         return $this->description;
+    }
+
+    /**
+     * Get the description translated for the requested locale, or fall back to the base `description` column.
+     */
+    public function getLocalizedDescription(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->descriptionTranslations === null) {
+            return $this->description;
+        }
+        $translation = $this->descriptionTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->description;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getDescriptionTranslations(): array
+    {
+        return $this->descriptionTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setDescriptionTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->descriptionTranslations = $normalized === [] ? null : $normalized;
+
+        return $this;
     }
 
     public function getRequirements(): array
