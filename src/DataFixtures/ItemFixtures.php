@@ -131,6 +131,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias
             'materia_soin' => [
                 'name' => 'Soin',
+                'name_translations' => ['en' => 'Heal'],
                 'type' => 'materia',
                 'slug' => 'm1-life',
                 'element' => Element::Light,
@@ -145,6 +146,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_fire_ball' => [
                 'name' => 'Boule de feu',
+                'name_translations' => ['en' => 'Fireball'],
                 'description' => 'Matéria contenant un sort de boule de feu',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -159,6 +161,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_flame' => [
                 'name' => 'Flamme',
+                'name_translations' => ['en' => 'Flame'],
                 'description' => 'Matéria contenant un sort de flamme',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -173,6 +176,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_flamer' => [
                 'name' => 'Feu',
+                'name_translations' => ['en' => 'Fire'],
                 'description' => 'Matéria contenant un sort de feu',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -187,6 +191,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_flame_rain' => [
                 'name' => 'Pluie de feu',
+                'name_translations' => ['en' => 'Rain of Fire'],
                 'description' => 'Matéria contenant un sort de pluie de feu',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -201,6 +206,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_stone_throw' => [
                 'name' => 'Jet de cailloux',
+                'name_translations' => ['en' => 'Stone Throw'],
                 'description' => 'Matéria contenant un sort de jet de cailloux',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -215,6 +221,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_punishment' => [
                 'name' => 'Châtiment',
+                'name_translations' => ['en' => 'Punishment'],
                 'description' => 'Matéria contenant un sort de châtiment',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -229,6 +236,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_wind_lame' => [
                 'name' => "Lame d'air",
+                'name_translations' => ['en' => 'Wind Blade'],
                 'description' => "Matéria contenant un sort de lame d'air",
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -243,6 +251,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_sharp_blade' => [
                 'name' => 'Lame tranchante',
+                'name_translations' => ['en' => 'Sharp Blade'],
                 'description' => 'Matéria contenant un sort de lame tranchante',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -257,6 +266,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_liana_whip' => [
                 'name' => 'Fouet de liane',
+                'name_translations' => ['en' => 'Vine Whip'],
                 'description' => 'Matéria contenant un sort de fouet de liane',
                 'type' => 'materia',
                 'element' => Element::Beast,
@@ -273,6 +283,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // === Matérias Tier 2 — 1 par élément ===
             'materia_combustion' => [
                 'name' => 'Combustion',
+                'name_translations' => ['en' => 'Combustion'],
                 'description' => 'Matéria contenant un sort de combustion instantanée',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -288,6 +299,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_frost_mist' => [
                 'name' => 'Brume glaciale',
+                'name_translations' => ['en' => 'Frost Mist'],
                 'description' => 'Matéria contenant un sort de brume de givre paralysante',
                 'type' => 'materia',
                 'element' => Element::Water,
@@ -303,6 +315,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_air_chain_lightning' => [
                 'name' => 'Éclair en chaîne',
+                'name_translations' => ['en' => 'Chain Lightning'],
                 'description' => 'Matéria contenant un sort d\'éclairs rebondissants',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -318,6 +331,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_stone_shield' => [
                 'name' => 'Mur de pierre',
+                'name_translations' => ['en' => 'Stone Wall'],
                 'description' => 'Matéria érigeant un mur de pierre protecteur',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -333,6 +347,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_steel_riposte' => [
                 'name' => 'Riposte d\'acier',
+                'name_translations' => ['en' => 'Steel Riposte'],
                 'description' => 'Matéria contenant une contre-attaque métallique',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -348,6 +363,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_savage_bite' => [
                 'name' => 'Morsure sauvage',
+                'name_translations' => ['en' => 'Savage Bite'],
                 'description' => 'Matéria contenant un sort de morsure féroce',
                 'type' => 'materia',
                 'element' => Element::Beast,
@@ -363,6 +379,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_light_blessing' => [
                 'name' => 'Bénédiction',
+                'name_translations' => ['en' => 'Blessing'],
                 'description' => 'Matéria contenant un sort de bénédiction de lumière',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -378,6 +395,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_vital_drain' => [
                 'name' => 'Drain vital',
+                'name_translations' => ['en' => 'Vital Drain'],
                 'description' => 'Matéria contenant un sort d\'absorption de force vitale',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -395,6 +413,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // === Matérias Tier 3 — 1 par élément (Épique) ===
             'materia_solar_burst' => [
                 'name' => 'Explosion solaire',
+                'name_translations' => ['en' => 'Solar Burst'],
                 'description' => 'Matéria épique contenant une explosion de chaleur solaire dévastatrice',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -410,6 +429,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_frost_maelstrom' => [
                 'name' => 'Maelström glacial',
+                'name_translations' => ['en' => 'Frost Maelstrom'],
                 'description' => 'Matéria épique contenant un tourbillon de glace paralysant',
                 'type' => 'materia',
                 'element' => Element::Water,
@@ -425,6 +445,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_thunder_storm' => [
                 'name' => 'Tempête de foudre',
+                'name_translations' => ['en' => 'Thunderstorm'],
                 'description' => 'Matéria épique déchaînant une tempête d\'éclairs sur la zone',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -440,6 +461,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_crystal_quake' => [
                 'name' => 'Séisme cristallin',
+                'name_translations' => ['en' => 'Crystal Quake'],
                 'description' => 'Matéria épique faisant jaillir des cristaux protecteurs et offensifs',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -455,6 +477,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_orichalcum_blade' => [
                 'name' => 'Lame d\'orichalque',
+                'name_translations' => ['en' => 'Orichalcum Blade'],
                 'description' => 'Matéria épique forgeant une lame d\'orichalque dévastatrice',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -470,6 +493,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_primal_awakening' => [
                 'name' => 'Éveil primordial',
+                'name_translations' => ['en' => 'Primal Awakening'],
                 'description' => 'Matéria épique éveillant les forces primordiales de la nature',
                 'type' => 'materia',
                 'element' => Element::Beast,
@@ -485,6 +509,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_divine_grace' => [
                 'name' => 'Grâce divine',
+                'name_translations' => ['en' => 'Divine Grace'],
                 'description' => 'Matéria épique canalisant une guérison profonde et durable',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -500,6 +525,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_covenant' => [
                 'name' => 'Pacte des ombres',
+                'name_translations' => ['en' => 'Shadow Covenant'],
                 'description' => 'Matéria épique scellant un pacte avec les ténèbres pour drainer la vie',
                 'type' => 'materia',
                 'element' => Element::Dark,
