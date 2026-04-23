@@ -20,6 +20,7 @@ final class QuestLocalizationExtension extends AbstractExtension
     {
         return [
             new TwigFilter('localized_quest_name', [$this, 'localizedQuestName']),
+            new TwigFilter('localized_quest_description', [$this, 'localizedQuestDescription']),
         ];
     }
 
@@ -30,6 +31,15 @@ final class QuestLocalizationExtension extends AbstractExtension
         }
 
         return $quest->getLocalizedName($this->currentLocale());
+    }
+
+    public function localizedQuestDescription(?Quest $quest): string
+    {
+        if ($quest === null) {
+            return '';
+        }
+
+        return $quest->getLocalizedDescription($this->currentLocale());
     }
 
     private function currentLocale(): ?string

@@ -69,7 +69,7 @@
                                                 </span>
                                             {% endif %}
                                         </div>
-                                        <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
+                                        <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                         {% if giver %}
                                             <p class="text-gray-500 text-[10px] mt-1">
                                                 Donnee par <span class="text-amber-400/80">{{ giver.name }}</span>
@@ -323,7 +323,7 @@
                                                     </span>
                                                 {% endif %}
                                             </div>
-                                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
+                                            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                         </div>
                                         <div class="flex gap-1.5 flex-shrink-0">
                                             {% if progress >= 100 %}
@@ -439,7 +439,7 @@
                                                         Quotidienne
                                                     </span>
                                                 </div>
-                                                <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
+                                                <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                             </div>
                                             <button onclick="acceptDailyQuest({{ quest.id }})"
                                                     class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-500 active:bg-amber-700 text-white text-xs rounded transition-colors touch-target flex-shrink-0">
@@ -574,7 +574,7 @@
                                                 </span>
                                             {% endif %}
                                         </div>
-                                        <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest.description }}</p>
+                                        <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
                                         {% if giver %}
                                             <p class="text-gray-500 text-[10px] mt-1">
                                                 Donnee par <span class="text-amber-400/80">{{ giver.name }}</span>
@@ -682,7 +682,8 @@
                                 <div class="flex items-center justify-between">
                                     <div class="min-w-0">
                                         <h3 class="text-gray-300 font-medium text-sm truncate">{{ quest|localized_quest_name }}</h3>
-                                        <p class="text-gray-500 text-xs">{{ quest.description|slice(0, 80) }}{% if quest.description|length > 80 %}...{% endif %}</p>
+                                        {% set questDescription = quest|localized_quest_description %}
+                                        <p class="text-gray-500 text-xs">{{ questDescription|slice(0, 80) }}{% if questDescription|length > 80 %}...{% endif %}</p>
                                         {% if pqc.choiceMade %}
                                             {% set choiceLabel = pqc.choiceMade %}
                                             {% for outcome in quest.choiceOutcome ?? [] %}
