@@ -24,6 +24,8 @@ services:
       SYMFONY_VERSION: "${SYMFONY_VERSION:-^7.4}"
       MERCURE_EXTRA_DIRECTIVES: demo
       XDEBUG_MODE: "${XDEBUG_MODE:-off}"
+      APP_ENV: "${APP_ENV:-dev}"
+      APP_DEBUG: "${APP_DEBUG:-1}"
     extra_hosts:
       - host.docker.internal:host-gateway
     tty: true
