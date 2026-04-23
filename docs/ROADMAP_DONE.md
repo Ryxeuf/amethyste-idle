@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3c.b : fixtures EN pour les noms des 26 materia tier 1-3)
+> Derniere mise a jour : 2026-04-23 (133 — Mini-jeux sous-phase 1b : bonus XP pour les captures parfaites de peche)
+
+---
+
+## 133 — Mini-jeux sous-phase 1b : bonus XP pour les captures parfaites de peche (2026-04-23)
+
+> Extension de la sous-phase 1 (zone parfaite 45-55 preserve la durabilite de la canne). Ajoute une seconde recompense economique pour les captures parfaites : **+1 XP supplementaire** au domaine de recolte associe (2 XP au lieu de 1 sur un coup parfait). Cible de la sous-phase : renforcer la courbe de progression des joueurs qui maitrisent le timing du mini-jeu sans introduire de drop bonus ni d'effet de rarete (coherent avec la regle PvE cooperative). Le bonus reste multiplie par `GameEventBonusProvider::getXpMultiplier` comme les autres voies de recolte (butcher / harvest / fish), donc compatible avec les events `xp_bonus` globaux ou par map.
+
+- [x] `src/Event/Map/FishingEvent.php` (+6 lignes) : nouveau parametre constructeur `bool $perfect = false` (optionnel, retrocompatible avec l'existant) et methode `isPerfect(): bool` qui combine defensivement le flag ET `isSuccess()` — un event parfait sans prise (defensif, ne devrait pas survenir) retombe sur `false` et ne grante aucun bonus.
+- [x] `src/GameEngine/Job/FishingManager.php` (+1 / -1) : le `FishingEvent` final dispatche a la capture reussie passe desormais le flag `$perfect` deja calcule localement (`$tension >= PERFECT_MIN && $tension <= PERFECT_MAX`). Aucun changement sur les events d'echec (trop faible / trop fort) : leur flag reste `false` par defaut.
+- [x] `src/GameEngine/Progression/DomainExperienceEvolver.php` (+2 / -1) : `experienceFromFishing` lit `$event->isPerfect()` et injecte `2` au lieu de `1` dans `increaseDomainExperience`. Aucun impact sur les autres handlers (butcher / harvest / item used) qui conservent leur montant `1`.
+- [x] Tests unitaires : nouveau `tests/Unit/Event/Map/FishingEventTest.php` (3 cas : flag+catch, defaut sans flag, flag sans catch) qui isole la logique defensive de l'entite event. `tests/Unit/GameEngine/Job/FishingManagerTest.php` (+8 / -4) : les cas `testCompleteFishingNormalSuccessReducesDurability` et `testCompleteFishingPerfectPreservesDurability` utilisent maintenant `callback` pour asserter que l'event dispatche porte le bon flag `isPerfect()` (propagation bout-en-bout verifiee).
+- [x] Roadmap : `SPRINT_11.md` tache 133 — ajout du nouveau bullet "Peche — bonus XP timing parfait (sous-phase 1b)" coche, avancement en-tete mis a jour. `ROADMAP_TODO_INDEX.md` : avancement Sprint 11 reflete la sous-phase 1b de 133.
+
+**Diff** : ~20 lignes de code applicatif + ~70 lignes de tests + roadmap. Zero migration, zero nouvelle dependance, aucun changement client (le bonus transite par le pipeline XP existant visible dans l'onglet domaines). Retrocompatibilite stricte de `FishingEvent` (nouvelle position en 4e argument optionnelle, les autres dispatchs sans `perfect` preservent exactement l'ancien comportement). Independante de toutes les PR ouvertes 135/130/131/132/AVT.
 
 ---
 
