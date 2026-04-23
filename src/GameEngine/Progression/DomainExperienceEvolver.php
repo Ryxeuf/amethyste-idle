@@ -67,7 +67,8 @@ class DomainExperienceEvolver implements EventSubscriberInterface
         $slug = $event->getObjectLayer()->getSlug();
         if ($domain = $this->playerDomainHelper->getDomainBySkillAction('harvest', ['spot' => $slug])) {
             $map = $event->getPlayer()->getMap();
-            $this->increaseDomainExperience($domain, 1, $map);
+            $amount = $event->isPerfect() ? 2 : 1;
+            $this->increaseDomainExperience($domain, $amount, $map);
         }
     }
 

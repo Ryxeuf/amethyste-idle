@@ -119,7 +119,10 @@ class FishingManagerTest extends TestCase
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
-            ->with($this->isInstanceOf(FishingEvent::class), FishingEvent::NAME);
+            ->with(
+                $this->callback(fn (FishingEvent $event): bool => $event->isSuccess() && !$event->isPerfect()),
+                FishingEvent::NAME
+            );
 
         $result = $this->fishingManager->completeFishing($player, $spot, 35);
 
@@ -146,7 +149,10 @@ class FishingManagerTest extends TestCase
 
         $this->eventDispatcher->expects($this->once())
             ->method('dispatch')
-            ->with($this->isInstanceOf(FishingEvent::class), FishingEvent::NAME);
+            ->with(
+                $this->callback(fn (FishingEvent $event): bool => $event->isSuccess() && $event->isPerfect()),
+                FishingEvent::NAME
+            );
 
         $result = $this->fishingManager->completeFishing($player, $spot, 50);
 

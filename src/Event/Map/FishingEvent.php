@@ -15,6 +15,7 @@ class FishingEvent extends Event
         private readonly Player $player,
         private readonly ObjectLayer $objectLayer,
         private readonly ?PlayerItem $caughtItem = null,
+        private readonly bool $perfect = false,
     ) {
     }
 
@@ -36,5 +37,10 @@ class FishingEvent extends Event
     public function isSuccess(): bool
     {
         return $this->caughtItem !== null;
+    }
+
+    public function isPerfect(): bool
+    {
+        return $this->perfect && $this->isSuccess();
     }
 }

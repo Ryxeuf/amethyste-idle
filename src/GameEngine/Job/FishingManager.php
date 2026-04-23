@@ -153,7 +153,7 @@ class FishingManager
         $this->entityManager->flush();
 
         $this->eventDispatcher->dispatch(
-            new FishingEvent($player, $spot, $caughtItem),
+            new FishingEvent($player, $spot, $caughtItem, $perfect),
             FishingEvent::NAME
         );
 
