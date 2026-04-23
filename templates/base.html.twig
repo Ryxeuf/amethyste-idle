@@ -14,6 +14,9 @@
         {% endblock %}
         {% block javascripts %}{% endblock %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% if app.environment == 'prod' %}
+            <script defer src="https://umami.ryxeuf.fr/script.js" data-website-id="4ca7819d-33bf-4e87-aeb2-b9fe435ec444"></script>
+        {% endif %}
     </head>
     <body class="bg-gray-900 text-white min-h-screen antialiased" data-controller="sound"{% if mercure_url is defined and mercure_url %} data-mercure-url="{{ mercure_url }}"{% endif %}>
     {% block site_navbar %}
