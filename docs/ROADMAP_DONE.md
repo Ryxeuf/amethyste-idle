@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (133 — Mini-jeux sous-phase 1b : bonus XP pour les captures parfaites de peche)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.b.spell.d : infrastructure multilingue pour les descriptions de sorts)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.b.spell.d : infrastructure multilingue pour les descriptions de sorts (2026-04-23)
+
+> Miroir strict de la sous-phase 3e.c.d.quest.d (Quest.description) applique a `Spell.description`. Ajoute la colonne JSON `description_translations` sur `game_spells` et les methodes `getLocalizedDescription(?string $locale): string` + `getDescriptionTranslations(): array` + `setDescriptionTranslations(?array $translations): self` sur l'entite `Spell`, avec les memes fallbacks gracieux (locale nulle/vide, colonne nulle, locale absente, valeur blanche ou non-string) et la meme normalisation (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide). Aucun template, controller ou fixture modifie : totalement retrocompatible, tous les sorts existants conservent `description_translations = null` et le rendu FR actuel reste pixel-parfait. Prepare le cablage dans les tooltips de combat / les panneaux de materia et les fixtures EN des descriptions des sorts starter, qui seront livres en sous-phases dediees. Independante de la sous-phase 3e.c.a (Spell.name, en revue sur PR #455) : les deux colonnes JSON cohabitent sans conflit de migration.
+
+- [x] `migrations/Version20260423SpellDescriptionTranslations.php` (nouveau, 26 lignes) : `ALTER TABLE game_spells ADD COLUMN IF NOT EXISTS description_translations JSON DEFAULT NULL` (idempotent, reversible via `DROP COLUMN IF EXISTS`).
+- [x] `src/Entity/Game/Spell.php` (+43 lignes, 281 -> 324) : propriete `$descriptionTranslations` annotee `ORM\Column(name: 'description_translations', type: 'json', nullable: true)`, methodes `getLocalizedDescription`, `getDescriptionTranslations`, `setDescriptionTranslations` placees juste apres `getDescription` pour preserver la topologie du fichier.
+- [x] `tests/Unit/Entity/Game/SpellDescriptionLocalizationTest.php` (nouveau, 90 lignes, 7 cas) : miroir strict de `QuestDescriptionLocalizationTest` (fallback sans traductions, matching locale, fallback locale manquante, rejet valeurs blanches/cles vides/types invalides, reset via `null`, reset implicite quand toutes les entrees sont invalides, default empty array pour le getter).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.b.spell.d ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour l'avancement 135 avec la sous-phase 3e.c.b.spell.d.
+
+**Diff** : ~70 lignes d'entite + 26 lignes de migration + 90 lignes de tests + roadmap. Zero impact client, zero impact sur les fixtures existantes (l'appel a `Spell::setDescriptionTranslations()` reste optionnel). Retrocompatibilite stricte : les consommateurs de `Spell::getDescription()` ne sont pas touches, le nouveau `getLocalizedDescription(null)` retombe sur `getDescription()`. Independante de PR #455 (3e.c.a Spell name : colonne `name_translations`) : les deux migrations sont additives et non-conflictuelles.
 
 ---
 
