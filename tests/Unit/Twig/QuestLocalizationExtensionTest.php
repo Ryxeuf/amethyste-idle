@@ -52,14 +52,55 @@ class QuestLocalizationExtensionTest extends TestCase
         $this->assertSame('', $extension->localizedQuestName(null));
     }
 
+    public function testDescriptionFilterReturnsTranslationMatchingCurrentLocale(): void
+    {
+        $quest = (new Quest())
+            ->setDescription('Chasse les gobelins de la foret.')
+            ->setDescriptionTranslations(['en' => 'Hunt the goblins in the forest.']);
+
+        $extension = new QuestLocalizationExtension($this->stackWithLocale('en'));
+
+        $this->assertSame('Hunt the goblins in the forest.', $extension->localizedQuestDescription($quest));
+    }
+
+    public function testDescriptionFilterFallsBackToBaseDescriptionWhenTranslationMissing(): void
+    {
+        $quest = (new Quest())
+            ->setDescription('Chasse les gobelins de la foret.')
+            ->setDescriptionTranslations(['de' => 'Jage die Goblins im Wald.']);
+
+        $extension = new QuestLocalizationExtension($this->stackWithLocale('en'));
+
+        $this->assertSame('Chasse les gobelins de la foret.', $extension->localizedQuestDescription($quest));
+    }
+
+    public function testDescriptionFilterFallsBackToBaseDescriptionWhenRequestStackIsEmpty(): void
+    {
+        $quest = (new Quest())
+            ->setDescription('Chasse les gobelins de la foret.')
+            ->setDescriptionTranslations(['en' => 'Hunt the goblins in the forest.']);
+
+        $extension = new QuestLocalizationExtension(new RequestStack());
+
+        $this->assertSame('Chasse les gobelins de la foret.', $extension->localizedQuestDescription($quest));
+    }
+
+    public function testDescriptionFilterReturnsEmptyStringForNullQuest(): void
+    {
+        $extension = new QuestLocalizationExtension($this->stackWithLocale('en'));
+
+        $this->assertSame('', $extension->localizedQuestDescription(null));
+    }
+
     public function testFilterIsRegistered(): void
     {
         $extension = new QuestLocalizationExtension(new RequestStack());
 
         $filters = $extension->getFilters();
 
-        $this->assertCount(1, $filters);
+        $this->assertCount(2, $filters);
         $this->assertSame('localized_quest_name', $filters[0]->getName());
+        $this->assertSame('localized_quest_description', $filters[1]->getName());
     }
 
     private function stackWithLocale(string $locale): RequestStack
