@@ -1,7 +1,21 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.f : fixtures EN pour 26 descriptions de quetes de debut de jeu)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3c.b : fixtures EN pour les noms des 26 materia tier 1-3)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.b : fixtures EN pour les noms des 26 materia tier 1-3 (2026-04-23)
+
+> Consomme l'infrastructure des sous-phases 3a (colonne `name_translations` sur `Item`) et 3b (filter Twig `localized_name` cable dans les selecteurs de materia et l'inventaire) en peuplant les traductions EN des 26 materia existantes. Avant cette sous-phase, meme en locale EN, les templates materia (`inventory/materia/_slot_select*`, `inventory/items_list`) retombaient systematiquement sur `Item::name` (nom FR) car la colonne `name_translations` etait vide pour toutes les materia. Apres, les 26 materia affichent leur nom anglais des que la locale de session est `en`, et restent en francais avec `fr` (ou sur un fallback gracieux pour toute locale sans traduction). Extension directe de la sous-phase 3c (35 items de debut de jeu) au systeme materia, explicitement listee comme "couvert dans une sous-phase ulterieure" dans la description de 3c.
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+26 lignes, 4153 au total) : ajout de la cle `name_translations => ['en' => '...']` juste apres `name` sur les 26 entrees de materia. Aucune modification du loader (la delegation `Item::setNameTranslations()` existe deja depuis la sous-phase 3c). Aucune normalisation specifique : le setter de l'entite filtre deja les cles / valeurs invalides.
+- [x] Tier 1 (10 materia) : `m1-life=Heal`, `m1-fire=Fireball`, `m1-flame=Flame`, `m2-fire=Fire` (slug legacy sur entree bas cout), `m3-fire=Rain of Fire`, `m1-earth=Stone Throw`, `m1-death=Punishment`, `m1-wind=Wind Blade`, `m1-metal=Sharp Blade`, `m1-nature=Vine Whip`.
+- [x] Tier 2 (8 materia, 1 par element) : `m2-combustion=Combustion`, `m2-water=Frost Mist`, `m2-air=Chain Lightning`, `m2-earth=Stone Wall`, `m2-metal=Steel Riposte`, `m2-beast=Savage Bite`, `m2-light=Blessing`, `m2-dark=Vital Drain`.
+- [x] Tier 3 (8 materia epiques, 1 par element) : `m3-fire-solar=Solar Burst`, `m3-water=Frost Maelstrom`, `m3-air=Thunderstorm`, `m3-earth=Crystal Quake`, `m3-metal=Orichalcum Blade`, `m3-beast=Primal Awakening`, `m3-light=Divine Grace`, `m3-dark=Shadow Covenant`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.b ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3c.b.
+
+**Diff** : +26 lignes `ItemFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les items restants (equipements tier 2+, gemmes, recettes craft, fragments Acte 2+) conservent leur nom FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures. Les tests de `Item::setNameTranslations` (7 cas dans `ItemLocalizationTest`) couvrent deja exhaustivement la normalisation du champ ; la diff sur le loader etant deja couverte par la sous-phase 3c, aucun test dedie n'est necessaire. Zero impact FR (fallback transparent preserve) ; impact EN immediat sur l'inventaire materia, le selecteur de slot de materia (socketing) et `/game/shop` si une boutique expose une materia.
 
 ---
 
