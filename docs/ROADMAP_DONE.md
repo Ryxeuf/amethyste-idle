@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.d : infrastructure multilingue pour les descriptions de quetes)
+> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.f : fixtures EN pour 26 descriptions de quetes de debut de jeu)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.f : fixtures EN pour 26 descriptions de quetes de debut de jeu (2026-04-23)
+
+> Consomme l'infrastructure des sous-phases 3e.c.d.quest.d (colonne `description_translations` sur `Quest`) et 3e.c.d.quest.e (filter Twig `localized_quest_description` cable dans le journal de quetes et le dashboard) en peuplant les traductions EN des descriptions des quetes visibles en debut de jeu. Avant cette sous-phase, meme en locale EN, les 2 templates cables retombaient systematiquement sur `Quest::description` (description FR) car la colonne `description_translations` etait vide pour toutes les quetes. Apres, les 26 memes quetes deja traduites en noms par la sous-phase 3e.c.d.quest.c affichent desormais leur description anglaise des que la locale de session est `en`, et restent en francais avec `fr` (ou sur un fallback gracieux pour toute locale sans traduction). Miroir strict de la sous-phase 3e.c.d.quest.c (qui couvrait `name`).
+
+- [x] `src/DataFixtures/QuestFixtures.php` (+29 lignes, 1936 au total, sous la limite de 400 ligne car ce fichier la depassait deja avant cette tache) : le loader accepte desormais la cle optionnelle `description_translations` (array) dans chaque entree du tableau PHP de quetes, qui est relayee a `Quest::setDescriptionTranslations()` juste apres `setDescription()`. La normalisation (cles vides filtrees, valeurs non-string ignorees, compaction vers `null` si vide) est deja assuree par le setter cote entite — le loader se contente de passer le tableau tel quel (pattern identique a la cle `name_translations` ajoutee en sous-phase 3e.c.d.quest.c).
+- [x] Quetes de monstres (8) : `quest_zombie_1`, `quest_skeleton_1`, `quest_taiju_1`, `quest_mushroom_1`, `quest_goblin_1`, `quest_troll_1`, `quest_werewolf_1`, `quest_banshee_griffin_1`.
+- [x] Quetes utilitaires (4) : `quest_wood_collection`, `quest_deliver_mushroom`, `quest_explore_forest`, `quest_choice_alliance`.
+- [x] Quetes quotidiennes (6) : `daily_kill_slimes`, `daily_kill_bats`, `daily_kill_spiders`, `daily_collect_herbs`, `daily_collect_ore`, `daily_kill_rats`.
+- [x] Chaine "La Menace Rampante" (3) : `quest_chain_guard_1..3`.
+- [x] Chaine tutoriel Acte 1 (5) : `quest_acte1_reveil`, `quest_acte1_premiers_pas`, `quest_acte1_bapteme_du_feu`, `quest_acte1_recolte`, `quest_acte1_cristal`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.f ajoutee et cochee + ligne d'avancement mise a jour (inclut aussi 3e.c.d.quest.e). `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.f.
+
+**Diff** : +29 lignes `QuestFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les descriptions des ~60 autres quetes (Acte 2+, chaines cachees, dragons, quetes d'evenements, faction/reputation) conservent leur contenu FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures (par boucle thematique / acte). Les tests de l'entite `Quest::setDescriptionTranslations` (7 cas dans `QuestDescriptionLocalizationTest`) couvrent deja exhaustivement la normalisation du champ ; la diff sur le loader est de 3 lignes de delegation triviale (`isset` + `is_array` + appel setter), ne necessitant pas de test dedie. Zero impact FR (le fallback transparent de `Quest::getLocalizedDescription` preserve le rendu actuel) ; impact EN immediat sur `/game/quests` et `/game` dashboard (via le filter `localized_quest_description` cable en 3e.c.d.quest.e).
 
 ---
 
