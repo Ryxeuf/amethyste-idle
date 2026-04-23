@@ -88,6 +88,7 @@ echo "==> 4/6 Compilation des assets (Tailwind + AssetMapper)..."
 run_php rm -rf /app/public/assets/
 run_php php /app/bin/console tailwind:build --no-interaction
 run_php php /app/bin/console asset-map:compile
+run_php chown -R "$(id -u):$(id -g)" /app/public/assets /app/public/build 2>/dev/null || true
 
 echo ""
 echo "==> 5/6 Vidage du cache (conteneur php)..."
