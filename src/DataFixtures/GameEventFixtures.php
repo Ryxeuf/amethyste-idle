@@ -84,7 +84,9 @@ class GameEventFixtures extends Fixture
         $eventQuests = [
             'quest_festival_hunt' => [
                 'name' => 'Chasse aux Etoiles',
+                'name_translations' => ['en' => 'Star Hunt'],
                 'description' => 'Pendant le Festival de la Lune, les monstres libèrent de l\'énergie stellaire. Eliminez 5 monstres pour collecter cette énergie.',
+                'description_translations' => ['en' => 'During the Festival of the Moon, monsters release stellar energy. Defeat 5 monsters to collect this energy.'],
                 'requirements' => [
                     'monsters' => [
                         ['name' => 'Zombie', 'slug' => 'zombie', 'count' => 3],
@@ -101,7 +103,9 @@ class GameEventFixtures extends Fixture
             ],
             'quest_festival_collect' => [
                 'name' => 'Offrande Stellaire',
+                'name_translations' => ['en' => 'Stellar Offering'],
                 'description' => 'Récoltez des herbes rares pour préparer l\'offrande du Festival. Collectez 3 champignons et 2 herbes.',
+                'description_translations' => ['en' => 'Gather rare herbs to prepare the Festival offering. Collect 3 mushrooms and 2 herbs.'],
                 'requirements' => [
                     'collect' => [
                         ['name' => 'Champignon', 'slug' => 'mushroom', 'count' => 3],
@@ -121,7 +125,13 @@ class GameEventFixtures extends Fixture
         foreach ($eventQuests as $key => $data) {
             $quest = new Quest();
             $quest->setName($data['name']);
+            if (isset($data['name_translations']) && is_array($data['name_translations'])) {
+                $quest->setNameTranslations($data['name_translations']);
+            }
             $quest->setDescription($data['description']);
+            if (isset($data['description_translations']) && is_array($data['description_translations'])) {
+                $quest->setDescriptionTranslations($data['description_translations']);
+            }
             $quest->setRequirements($data['requirements']);
             $quest->setRewards($data['rewards']);
             $quest->setGameEvent($this->getReference('event_festival_lune', GameEvent::class));

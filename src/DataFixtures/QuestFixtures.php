@@ -1970,7 +1970,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_puzzle_ancient_runes' => [
                 'name' => 'Les Runes Anciennes',
+                'name_translations' => ['en' => 'The Ancient Runes'],
                 'description' => 'Claire la Sage a découvert d\'anciennes runes dans un grimoire. Elle vous demande : "Quel est l\'élément qui nourrit la lumière et consume l\'ombre ?" Trouvez la réponse.',
+                'description_translations' => ['en' => 'Claire the Sage has discovered ancient runes in a grimoire. She asks you: "What element nourishes the light and consumes the shadow?" Find the answer.'],
                 'requirements' => [
                     'puzzle' => [
                         ['pnj_id' => 16, 'answer_key' => 'feu', 'name' => 'Déchiffrer les runes anciennes'],

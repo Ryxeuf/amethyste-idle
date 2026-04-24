@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 — Localisation i18n sous-phase 3c.d : fixtures EN pour 27 plantes et herbes)
+> Derniere mise a jour : 2026-04-24 (135 — Localisation i18n sous-phase 3e.c.d.quest.j : fixtures EN pour les dernieres quetes — puzzle runes + event festival de la lune)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.d.quest.j : fixtures EN pour les dernieres quetes (2026-04-24)
+
+> Cloture de la couverture EN sur les fixtures de quetes. Extension directe des sous-phases 3e.c.d.quest.c / 3e.c.d.quest.f / 3e.c.d.quest.g / 3e.c.d.quest.h / 3e.c.d.quest.i. Apres cette sous-phase, **100% des quetes** des fixtures (base + events) affichent un nom et une description EN en locale anglaise, via le meme pattern `name_translations` / `description_translations` + filters Twig `localized_quest_name` / `localized_quest_description` cables en 3e.c.d.quest.b / 3e.c.d.quest.e.
+
+- [x] `src/DataFixtures/QuestFixtures.php` (+2 lignes) : ajout de `name_translations` + `description_translations` sur `quest_puzzle_ancient_runes` (derniere quete non traduite listee en 3e.c.d.quest.i). Traduction : `The Ancient Runes` / `Claire the Sage has discovered ancient runes in a grimoire. She asks you: "What element nourishes the light and consumes the shadow?" Find the answer.`.
+- [x] `src/DataFixtures/GameEventFixtures.php` (+10 lignes) : ajout de `name_translations` + `description_translations` sur les 2 quetes du Festival de la Lune (`quest_festival_hunt=Star Hunt`, `quest_festival_collect=Stellar Offering`) + cablage de la boucle `foreach ($eventQuests as ...)` pour appeler `setNameTranslations` / `setDescriptionTranslations` via le meme pattern que `QuestFixtures` (isset + is_array). Prepare le terrain pour traduire futures quetes d'events sans toucher au loader.
+- [x] Aucune migration : infrastructure posee en 3e.c.d.quest (nom) et 3e.c.d.quest.d (description).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.d.quest.j ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.d.quest.j.
+
+**Diff** : +2 lignes `QuestFixtures.php`, +10 lignes `GameEventFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les tests existants de `Quest::setNameTranslations()` / `setDescriptionTranslations()` (`QuestLocalizationTest` + `QuestDescriptionLocalizationTest`, 14 cas cumules) couvrent deja exhaustivement la normalisation des champs. Zero impact FR (fallback transparent preserve) ; impact EN immediat sur la quete finale du puzzle runes (`/game/quests`, `/game`) et les 2 quetes du festival lors des evenements live.
 
 ---
 
