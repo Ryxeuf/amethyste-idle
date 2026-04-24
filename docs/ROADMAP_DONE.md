@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.domain.b — cablage du filter `localized_domain_title` dans les templates `/game/skills`)
+> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.achievement — infrastructure multilingue des titres et descriptions d'achievements)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.achievement : infrastructure multilingue des achievements (2026-04-24)
+
+> Extension du pattern i18n etabli (Item 3a, Monster 3e.a, Quest 3e.c.d.quest + 3e.c.d.quest.d, Skill title 3e.c.skill — PR #464, Domain title 3e.c.domain) a `Achievement.title` + `Achievement.description` dans une seule passe (comme `Quest` qui a cumule `name` et `description`). L'entite `Achievement` materialise les 127 succes affiches sur `/game/achievements`, groupes par categorie (combat / exploration / quetes / gathering / craft / secrets), avec affichage des titres visibles ET des descriptions pour guider la progression. Memes fallbacks gracieux, meme normalisation que les sous-phases precedentes. Totalement retrocompatible : aucun template ni controller modifie, les achievements existants conservent `title_translations = null` et `description_translations = null`. Prepare le cablage futur dans `templates/game/achievements/index.html.twig` (lignes 69 et 83) + les fixtures EN pour les 127 achievements.
+>
+> Sous-phase completement independante des 7 PR i18n en vol (PR #451 Item.description infra, PR #455 Spell.name infra, PR #458 Pnj.name infra, PR #464 Skill.title infra, PR #472 Spell.description infra, PR #456 quest tracking cable, PR #444 audit translation keys) : aucune ne touche `Achievement.php`, aucune ne modifie la table `game_achievements`, aucune ne touche `templates/game/achievements/**`. Deux colonnes JSON additives, zero risque de conflit.
+
+- [x] `migrations/Version20260424AchievementTranslations.php` (nouveau, 28 lignes) : `ALTER TABLE game_achievements ADD COLUMN IF NOT EXISTS title_translations JSON DEFAULT NULL` + idem pour `description_translations`. Idempotent, reversible via `DROP COLUMN IF EXISTS`. Miroir strict des migrations des sous-phases precedentes (notamment `Version20260423QuestDescriptionTranslations` qui gerait aussi deux colonnes sur la meme table en deux passes).
+- [x] `src/Entity/Game/Achievement.php` (+86 lignes, 158 -> 244, sous la limite de 400) : nouvelles proprietes `?array $titleTranslations` et `?array $descriptionTranslations` (colonnes Doctrine `json`, nullable). `getLocalizedTitle(?string $locale): string` et `getLocalizedDescription(?string $locale): string` avec fallback gracieux sur `$this->title` / `$this->description` si locale nulle/vide, colonne nulle, locale absente ou valeur blanche/non-string. `getTitleTranslations(): array` / `getDescriptionTranslations(): array` (defaut `[]`). `setTitleTranslations(?array $translations): self` et `setDescriptionTranslations(?array $translations): self` avec normalisation (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide). Fluent.
+- [x] `tests/Unit/Entity/Game/AchievementLocalizationTest.php` (nouveau, 14 cas, 169 lignes) : 7 cas pour `title` (fallback sans traductions, traduction matchee EN/DE, fallback sur locale absente, normalisation cles vides / valeurs blanches / valeurs non-string, reset via `null`, compaction vers `null` si seulement entrees invalides, defaut `[]`) + 7 cas miroir pour `description` (memes assertions). Miroir strict de `QuestLocalizationTest` et `QuestDescriptionLocalizationTest` fusionnes dans un seul fichier de test.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.achievement ajoutee sous la branche 3e.c + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.achievement.
+
+**Diff** : +86 lignes `Achievement.php`, +28 lignes migration, +169 lignes test, +roadmap = ~283 lignes totales (<300 budget). Aucun template, controller ou service modifie. Les sous-phases de cablage (filter Twig `localized_achievement_title` + `localized_achievement_description` dans `/game/achievements`) et de fixtures EN (127 achievements) suivront en sous-phases dediees.
 
 ---
 
