@@ -8,8 +8,13 @@
 
 ### 134 — Load testing & scaling (M | ★★)
 > Prerequis : ∅
+> Avancement : sous-phases 1 (infra k6 + scenario `guest-browsing`) et 2a (scenario `metrics-stress`) livrees.
 - [x] Script k6/Locust pour simuler 100+ joueurs simultanes — infrastructure k6 (`scripts/load-test/`) + scenario `guest-browsing` (home, login, register, demo, /health, /metrics). Ramp-up/plateau/ramp-down configurable, thresholds p95<800ms + <1% erreurs, export JSON pour CI. Documentation dans `scripts/load-test/README.md`.
-- [ ] Identification goulots d'etranglement (DB, Mercure, FrankenPHP)
+- [~] Identification goulots d'etranglement (DB, Mercure, FrankenPHP)
+  - [x] **Sous-phase 2a — Scenario `metrics-stress` (DB via Prometheus)** (2026-04-24) : nouveau scenario `scripts/load-test/scenarios/metrics-stress.js` focalise sur l'endpoint `/metrics` (collecte Prometheus qui declenche plusieurs `COUNT()` Doctrine sur `player`, `fight`, `mob` via les collectors de `App\Monitoring\*`). Charge soutenue **sans think-time** (20 VUs par defaut = equivalent plusieurs centaines de VUs realistes). Thresholds dedies plus stricts que le default (p95<500ms, p99<1.5s, http_req_failed<0.5%). Metriques custom (`metrics_collect_latency`, `metrics_payload_fail`) pour decoupler la latence de collecte du reste du run. Documentation dediee dans `scripts/load-test/README.md` (section "Scenario : metrics-stress") avec avertissement "ne pas lancer en production sans coordination" et piste de diagnostic `pg_stat_statements` / pool Doctrine / collectors a cacher. Zero impact applicatif (scenario JS uniquement). Permet de detecter les regressions de requetes Doctrine, la saturation du pool PostgreSQL et l'impact du volume de Fight/Mob sur la latence /metrics. Prepare la suite : scenarios authentifies (map/combat/HdV), Mercure streaming, et plan d'optimisation (connection pooling, cache Redis).
+  - [ ] Scenario authentifie (map, combat, HdV) — necessite gestion session/CSRF
+  - [ ] Scenario Mercure streaming SSE
+  - [ ] Recueil des goulots identifies + plan d'optimisation
 - [ ] Optimisations : connection pooling, cache Redis, horizontal scaling plan
 - [ ] Objectif : 200 joueurs simultanes sans degradation
 

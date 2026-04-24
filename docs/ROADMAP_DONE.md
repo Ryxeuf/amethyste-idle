@@ -1,7 +1,19 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (AVT-30 — Gestion cote client des updates Mercure avatar)
+> Derniere mise a jour : 2026-04-24 (134 sous-phase 2a — scenario k6 `metrics-stress` pour stresser la collecte Prometheus / Doctrine)
+
+---
+
+## 134 — Load testing sous-phase 2a : scenario k6 `metrics-stress` (2026-04-24)
+
+> Jalon 2 de la tache 134 (Sprint 12). Second scenario k6 apres `guest-browsing` (sous-phase 1). Focalise sur l'endpoint Prometheus `/metrics` pour isoler la latence de collecte Doctrine sous charge soutenue, sans think-time. Permet de detecter les regressions de requetes Doctrine (index manquant, N+1, `COUNT(*)` sans `WHERE` sur tables qui grossissent), la saturation du pool PostgreSQL et l'impact du volume de `Fight`/`Mob`/`Player` sur la latence /metrics.
+
+- [x] `scripts/load-test/scenarios/metrics-stress.js` (nouveau, 131 lignes) : chaque VU tape en boucle sur `/metrics` (20 VUs par defaut). Metriques custom `metrics_collect_latency` (Trend) et `metrics_payload_fail` (Rate). Thresholds dedies plus stricts que le default (p95<500ms, p99<1.5s, http_req_failed<0.5%, metrics_payload_fail<1%). Check format Prometheus (`# HELP` present). Options k6 dediees avec `ramping-vus` configurable via env (VUS / DURATION / RAMP_UP / RAMP_DOWN). User-agent specifique `amethyste-idle-k6-metrics-stress/1.0` pour filtrer les logs serveur pendant un run. Export JSON via `K6_SUMMARY_EXPORT` (defaut `scripts/load-test/last-summary-metrics-stress.json`) pour integration CI ulterieure.
+- [x] `scripts/load-test/README.md` (+~50 lignes) : section "Scenario : metrics-stress" documentant usage, cas d'usage (detection regression Doctrine, pool saturation, volume Fight/Mob), commande par defaut + run soutenu 3min staging, avertissement "ne pas lancer en production sans coordination" (zero think-time = charge multipliee), thresholds explicites, piste de diagnostic (`pg_stat_statements`, pool Doctrine, collectors a cacher via Redis ou snapshot asynchrone). Bloc structure + intro mis a jour pour mentionner le scenario.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 2a ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour l'avancement Sprint 12 avec `134 sous-phase 2a`.
+
+**Diff** : +131 lignes scenario, +~50 lignes README + roadmap. Aucun code PHP touche, aucune entite, aucune migration, aucun template. Totalement independant des PR en vol (notamment toutes les sous-phases 135 i18n). Zero risque de conflit.
 
 ---
 
