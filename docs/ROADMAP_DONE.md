@@ -1,7 +1,20 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 — Localisation i18n sous-phase 3e.c.d.quest.j : fixtures EN pour les dernieres quetes — puzzle runes + event festival de la lune)
+> Derniere mise a jour : 2026-04-24 (AVT-30 — Gestion cote client des updates Mercure avatar)
+
+---
+
+## AVT-30 — Gestion cote client des updates Mercure avatar (2026-04-24) ✅
+
+> Boucle temps reel avatar fermee : quand le serveur publie `map/avatar` / `avatar_updated` (cf. AVT-29), les clients PixiJS abonnes invalident leur texture composite et recomposent l'avatar du joueur concerne sans reload. `map_pixi_controller` ajoute le topic a son `EventSource`, dispatche l'event dans `_handleMercureEvent()` et le passe a `_handleAvatarUpdatedEvent()` — une seule methode consolidee qui gere les deux pipelines (self vs autre joueur) via le meme flux : invalidation de l'ancien hash sur la LRU (`AvatarAnimatorFactory.invalidateAvatarHash`), creation d'un nouvel animator via `createFromAvatarPayload`, swap du sprite dans le container cible (`_playerMarker` pour soi, `_entitySprites[key].container` pour les autres), mise a jour de `_animatedEntities` pour le ticker et destruction de l'ancien animator. Pour le joueur local, on preserve `_playerDirection` ; pour les autres, `entry.avatarHash` est mis a jour pour autoriser la prochaine invalidation ciblee.
+>
+> Filtre `mapId` pour ignorer les events d'autres cartes. L'empreinte `avatarHash` est desormais memorisee sur chaque `_entitySprites[key]` (joueurs presents) afin de permettre une invalidation ciblee du cache LRU, evitant la fuite de textures composites obsoletes.
+
+- [x] `assets/controllers/map_pixi_controller.js` : abonnement au topic `map/avatar`, dispatch `avatar_updated`, methode consolidee `_handleAvatarUpdatedEvent()` gerant self + autres joueurs
+- [x] Stockage `avatarHash` dans `_entitySprites[key]` pour permettre l'invalidation ciblee de la LRU
+- [x] Filtre `mapId` et guard `renderMode === 'avatar'` pour ignorer les events non pertinents
+- [x] Tests : `AvatarUpdatedPublisherTest` etendu (verification `mapId` + `avatarUpdatedAt` dans le payload serveur)
 
 ---
 

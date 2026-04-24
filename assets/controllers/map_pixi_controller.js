@@ -781,7 +781,7 @@ export default class extends Controller {
             container.position.set(x * this._tileSize, y * this._tileSize);
             container.zIndex = y * this._tileSize;
             this._entityContainer.addChild(container);
-            this._entitySprites[key] = { container, x, y, type, animator, meta };
+            this._entitySprites[key] = { container, x, y, type, animator, meta, avatarHash: entity.avatarHash ?? null };
             this._animatedEntities.push(animator);
         } else {
             // Fallback: cached colored marker
@@ -795,7 +795,7 @@ export default class extends Controller {
             container.position.set(x * this._tileSize, y * this._tileSize);
             container.zIndex = y * this._tileSize;
             this._entityContainer.addChild(container);
-            this._entitySprites[key] = { container, x, y, type, animator: null, meta };
+            this._entitySprites[key] = { container, x, y, type, animator: null, meta, avatarHash: null };
         }
 
         // World boss aura
@@ -3289,6 +3289,7 @@ export default class extends Controller {
         url.searchParams.append('topic', 'map/respawn');
         url.searchParams.append('topic', 'map/spot');
         url.searchParams.append('topic', 'map/weather');
+        url.searchParams.append('topic', 'map/avatar');
         url.searchParams.append('topic', 'guild/city_control');
 
         this._eventSource = new EventSource(url);
@@ -3333,6 +3334,8 @@ export default class extends Controller {
             if (data.mapId === this.mapIdValue) {
                 this._transitionWeather(data.weather);
             }
+        } else if (topic === 'map/avatar' && type === 'avatar_updated') {
+            this._handleAvatarUpdatedEvent(data);
         } else if (topic === 'guild/city_control' && data.type === 'city_control_change') {
             this._loadEntities();
         }
@@ -3447,6 +3450,45 @@ export default class extends Controller {
             entity.y = finalY;
             this._addToSpatialHash(key, finalX, finalY);
         }
+    }
+
+    _handleAvatarUpdatedEvent(data) {
+        if (!this._avatarFactory) return;
+        if (data.mapId != null && data.mapId !== this.mapIdValue) return;
+        if (data.renderMode !== 'avatar' || !data.avatar) return;
+
+        const newHash = data.avatarHash ?? null;
+        const isSelf = data.playerId === this.playerIdValue;
+        const entry = isSelf ? null : this._entitySprites[`player_${data.playerId}`];
+        const container = isSelf ? this._playerMarker : entry?.container;
+        if (!container) return;
+
+        const oldHash = isSelf ? this._selfAvatarHash : entry.avatarHash;
+        if (oldHash && oldHash !== newHash) this._avatarFactory.invalidateAvatarHash(oldHash);
+
+        const animator = this._avatarFactory.createFromAvatarPayload(newHash, data.avatar);
+        if (!animator) return;
+        animator.setBaseY(this._tileSize);
+        const sprite = animator.sprite;
+        sprite.anchor.set(0.5, 1);
+        if (animator.frameWidth > this._tileSize) sprite.scale.set(this._tileSize / animator.frameWidth);
+        sprite.position.set(this._tileSize / 2, this._tileSize);
+        container.removeChildren();
+        container.addChild(sprite);
+
+        const oldAnimator = isSelf ? this._playerAnimator : entry.animator;
+        if (isSelf) {
+            this._selfAvatarHash = newHash;
+            this._playerAnimator = animator;
+            animator.setDirection(this._playerDirection);
+        } else {
+            entry.avatarHash = newHash;
+            entry.animator = animator;
+            const idx = oldAnimator ? this._animatedEntities.indexOf(oldAnimator) : -1;
+            if (idx !== -1) this._animatedEntities[idx] = animator;
+            else this._animatedEntities.push(animator);
+        }
+        if (oldAnimator) oldAnimator.destroy();
     }
 
     async _animateEntity(key, path, finalX, finalY) {
