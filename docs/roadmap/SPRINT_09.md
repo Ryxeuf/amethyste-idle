@@ -47,12 +47,12 @@
 ### ~~AVT-29 — Publication Mercure `player.avatar.updated` (M | ★★★)~~ ✅
 > Prerequis : ← AVT-28
 - [x] Quand le hash change : publier le nouveau payload avatar — nouveau service `App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher` (topic `map/avatar`, type `avatar_updated`), appele depuis `AvatarHashRecalculator::recalculate()` uniquement quand le hash change effectivement
-- [ ] Le client invalide le cache et recompose la texture — cote serveur pret, integration client couverte par AVT-30
+- [x] Le client invalide le cache et recompose la texture — integration client realisee dans AVT-30
 
-### AVT-30 — Gestion cote client des updates Mercure (M | ★★)
+### ~~AVT-30 — Gestion cote client des updates Mercure (M | ★★)~~ ✅
 > Prerequis : ← AVT-20, AVT-29
-- [ ] Ecouter `player.avatar.updated` dans le controleur map
-- [ ] Invalider le cache + recreer l'animator pour le joueur concerne
+- [x] Ecouter le topic `map/avatar` (type `avatar_updated`) dans `map_pixi_controller` — ajoute aux abonnements `EventSource` dans `_setupMercure()` et dispatch dans `_handleMercureEvent()`
+- [x] Invalider le cache + recreer l'animator pour le joueur concerne — nouvelle methode consolidee `_handleAvatarUpdatedEvent()` qui gere self + autres joueurs : invalidation de l'ancien hash via `AvatarAnimatorFactory.invalidateAvatarHash`, recomposition de la texture et remplacement du sprite dans le container cible. Filtre par `mapId`. `avatarHash` memorise sur chaque `_entitySprites[key]` pour permettre l'invalidation ciblee.
 
 ---
 
