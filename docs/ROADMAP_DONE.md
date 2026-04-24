@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.achievement.b — cablage du filter `localized_achievement_title` + `localized_achievement_description` dans le template achievements)
+> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.achievement.c — fixtures EN pour les 126 achievements)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.achievement.c : fixtures EN pour les 126 achievements (2026-04-24)
+
+> Suite directe des sous-phases 3e.c.achievement (infrastructure entite) et 3e.c.achievement.b (cablage des filters Twig). Livre la derniere etape du pattern i18n pour les succes : les traductions anglaises des titres et descriptions. Atteint **100% de parite FR/EN sur l'integralite des 126 achievements** (comme les sous-phases 3e.c.d.quest.j pour les quetes et 3e.c.domain.c pour les domaines). Memes fallbacks gracieux et meme normalisation que les autres sous-phases i18n.
+>
+> Sous-phase independante des PR i18n en vol : aucune ne touche `AchievementFixtures.php` ni la table `game_achievements`. Pattern additif, zero risque de conflit.
+
+- [x] `src/DataFixtures/AchievementFixtures.php` (+6 lignes loader, 126 lignes de donnees modifiees en place, 216 -> 222 lignes) : le loader accepte desormais les cles optionnelles `title_translations` (array) et `description_translations` (array) dans chaque entree du tableau, passees respectivement a `Achievement::setTitleTranslations()` et `Achievement::setDescriptionTranslations()` (juste apres `setTitle` / `setDescription`). Meme pattern que `QuestFixtures` (sous-phase 3e.c.d.quest.c).
+- [x] Traductions EN pour les 126 achievements, couvrant toutes les categories :
+  - **Combat — kills par monstre (108 achievements, 36 monstres x 3 tiers 10/50/100)** : slime, goblin, zombie, bat, giant_rat, venom_snake, wolf, scorpion, beetle, mushroom_golem, ghost, skeleton, spider, troll, werewolf, dragon, salamander, undine, sylph, clay_golem, rusty_automaton, alpha_wolf, will_o_wisp, creeping_shadow, wyvern, cursed_knight, naga, crystal_golem, corrupted_archdruid, lesser_lich, swamp_hydra, abyssal_blacksmith. Titres conservent l'esprit FR (ex: "Nettoyeur de gelées" -> "Slime Cleaner", "Chasseur de gelées" -> "Slime Hunter", "Exterminateur de gelées" -> "Slime Exterminator").
+  - **Boss de zone (2)** : forest_guardian -> "Guardian Felled" / "Defeat the Forest Guardian", forge_lord -> "Forge Lord Vanquished" / "Defeat the Forge Lord".
+  - **Exploration (3)** : discover-5/10/20 -> "Novice / Confirmed / Expert Explorer".
+  - **Quetes (4)** : quest-5/10/25/50 -> "Beginner / Confirmed / Seasoned Adventurer" / "Legendary Hero".
+  - **Donjons (4)** : dungeon-clear-1/5/10 + dungeon-clear-mythic-1 -> "First Dungeon / Dungeon Explorer / Master of the Depths / Mythic Challenge".
+  - **Recolte (4)** : gather-10/50/200/500 -> "Sunday / Diligent / Master Gatherer" / "Nature Plunderer".
+  - **Craft (4)** : craft-5/25/100/250 -> "Apprentice / Confirmed / Master Artisan" / "Forge Legend".
+  - **Trame narrative (1)** : acte3-convergence -> "The Convergence".
+  - **Secrets (7)** : death x2, flee x2, gather-1000, craft-500, quest-100 -> "First Fall / Regular of the Afterlife / Fleeing is an Art / Professional Coward / The Tireless / Forger of the Gods / The Eternal Adventurer".
+  - **Tutoriel (1)** : tutorial-complete -> "First Steps".
+- [x] Roadmap : Sprint 12 sous-phase 3e.c.achievement.c cochee + ROADMAP_TODO_INDEX mis a jour.
+
+**Diff** : +132/-126 lignes (~258 lignes diff, <300 budget). Aucune migration (infra posee en 3e.c.achievement). Aucun nouveau test : `AchievementLocalizationTest` (7+7 cas) et `AchievementLocalizationExtensionTest` (9 cas) couvrent deja la mecanique. Zero impact FR (le fallback transparent de `Achievement::getLocalizedTitle` / `getLocalizedDescription` preserve le rendu actuel). Impact EN immediat sur `/game/achievements` via les filters `localized_achievement_title` / `localized_achievement_description` cables en 3e.c.achievement.b. Boucle i18n achievements fermee a 100%.
 
 ---
 
