@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-23 (135 — Localisation i18n sous-phase 3e.c.d.quest.i : fixtures EN pour 24 quetes supplementaires : decouverte multi-points + zones secondaires + factions + chasse + choix moraux + defense/escorte + sphinx)
+> Derniere mise a jour : 2026-04-24 (135 — Localisation i18n sous-phase 3c.c : fixtures EN pour 18 materiaux de craft : 3 minerais precieux + 10 lingots / cuir / tissu / base de potion + 5 gemmes taillees)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.c : fixtures EN pour 18 materiaux de craft (2026-04-24)
+
+> Extension directe des sous-phases 3c (35 items de debut de jeu) et 3c.b (26 materia tier 1-3). Cible : les 18 materiaux d'artisanat produits ou recoltes par les metiers (mineur, forgeron, tanneur, tisserand, alchimiste, joaillier), composants des recettes de craft tier 1-3 de la tache 145 Recettes craft manquantes. Avant cette sous-phase, un joueur en locale EN voyait ces 18 materiaux retomber sur leur nom FR via le fallback transparent de `Item::getLocalizedName()` ; apres, la boutique, l'inventaire, le bestiaire (table de loot) et les selecteurs de materia affichent ces materiaux en anglais.
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+18 lignes, 4171 au total, sous la limite de 50 lignes ajoutees car ce fichier depassait deja 400 lignes avant cette tache) : ajout de `name_translations => ['en' => '...']` sur 18 entrees. Loader inchange (la delegation `Item::setNameTranslations()` existe deja depuis la sous-phase 3c).
+- [x] Minerais precieux (3) : `ore-ruby=Ruby`, `ore-diamond=Diamond`, `ore-emerald=Emerald`.
+- [x] Lingots metalliques (7) : `crafted-bronze-ingot=Bronze Ingot`, `crafted-iron-ingot=Iron Ingot`, `crafted-cobalt-ingot=Cobalt Ingot`, `crafted-mithril-ingot=Mithril Ingot`, `crafted-adamantite-ingot=Adamantite Ingot`, `crafted-orichalcum-ingot=Orichalcum Ingot`, `crafted-gold-ingot=Gold Ingot`.
+- [x] Materiaux tannerie / tisserand / alchimie (3) : `crafted-leather-strip=Leather Strip`, `crafted-cloth=Cloth`, `crafted-potion-base=Potion Base`.
+- [x] Gemmes taillees joaillier (5) : `crafted-gem-basic=Cut Gem`, `crafted-gem-fine=Fine Gem`, `crafted-gem-rare=Rare Gem`, `crafted-gem-enchanted=Enchanted Gem`, `crafted-gem-prismatic=Prismatic Gem`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.c ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3c.c.
+
+**Diff** : +18 lignes `ItemFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les items restants (equipements tier 2+, consommables alchimiste avances, herbes / plantes, recettes craft, fragments Acte 2+, items de boss) conservent leur nom FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures. Les tests existants de `Item::setNameTranslations()` (`ItemLocalizationTest`, 7 cas) couvrent deja exhaustivement la normalisation du champ. Zero impact FR (fallback transparent preserve) ; impact EN immediat sur `/game/shop`, `/game/inventory`, `/game/bestiary` (table de loot) et les selecteurs de materia via le filter `localized_name` cable en 3b.
 
 ---
 
