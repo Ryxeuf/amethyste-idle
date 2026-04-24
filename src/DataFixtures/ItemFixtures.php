@@ -1049,6 +1049,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Minerais
             'ore_ruby' => [
                 'name' => 'Ruby',
+                'name_translations' => ['en' => 'Ruby'],
                 'description' => 'Minerai de ruby',
                 'type' => 'ore',
                 'slug' => 'ore-ruby',
@@ -1060,6 +1061,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // ore-iron et ore-gold sont désormais dans fixtures/game/item/ore.yaml
             'ore_diamond' => [
                 'name' => 'Diamant',
+                'name_translations' => ['en' => 'Diamond'],
                 'description' => 'Pierre précieuse d\'une pureté exceptionnelle',
                 'type' => 'ore',
                 'slug' => 'ore-diamond',
@@ -1071,6 +1073,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'ore_emerald' => [
                 'name' => 'Émeraude',
+                'name_translations' => ['en' => 'Emerald'],
                 'description' => 'Pierre précieuse d\'un vert éclatant',
                 'type' => 'ore',
                 'slug' => 'ore-emerald',
@@ -1082,6 +1085,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_bronze_ingot' => [
                 'name' => 'Lingot de bronze',
+                'name_translations' => ['en' => 'Bronze Ingot'],
                 'description' => 'Alliage de cuivre et d\'étain, base de l\'artisanat débutant',
                 'type' => 'crafted',
                 'slug' => 'crafted-bronze-ingot',
@@ -1092,6 +1096,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_iron_ingot' => [
                 'name' => 'Lingot de fer',
+                'name_translations' => ['en' => 'Iron Ingot'],
                 'description' => 'Lingot de fer raffiné prêt à être forgé',
                 'type' => 'crafted',
                 'slug' => 'crafted-iron-ingot',
@@ -1102,6 +1107,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_cobalt_ingot' => [
                 'name' => 'Lingot de cobalt',
+                'name_translations' => ['en' => 'Cobalt Ingot'],
                 'description' => 'Lingot de cobalt d\'un bleu profond, très résistant',
                 'type' => 'crafted',
                 'slug' => 'crafted-cobalt-ingot',
@@ -1113,6 +1119,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_mithril_ingot' => [
                 'name' => 'Lingot de mithril',
+                'name_translations' => ['en' => 'Mithril Ingot'],
                 'description' => 'Lingot de mithril d\'une légèreté extraordinaire',
                 'type' => 'crafted',
                 'slug' => 'crafted-mithril-ingot',
@@ -1124,6 +1131,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_adamantite_ingot' => [
                 'name' => 'Lingot d\'adamantite',
+                'name_translations' => ['en' => 'Adamantite Ingot'],
                 'description' => 'Lingot d\'adamantite d\'une dureté inégalée',
                 'type' => 'crafted',
                 'slug' => 'crafted-adamantite-ingot',
@@ -1135,6 +1143,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_orichalcum_ingot' => [
                 'name' => 'Lingot d\'orichalque',
+                'name_translations' => ['en' => 'Orichalcum Ingot'],
                 'description' => 'Lingot d\'orichalque mythique aux reflets rouge doré',
                 'type' => 'crafted',
                 'slug' => 'crafted-orichalcum-ingot',
@@ -1146,6 +1155,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_gold_ingot' => [
                 'name' => 'Lingot d\'or',
+                'name_translations' => ['en' => 'Gold Ingot'],
                 'description' => 'Lingot d\'or raffiné prêt à être forgé',
                 'type' => 'crafted',
                 'slug' => 'crafted-gold-ingot',
@@ -1156,6 +1166,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_leather_strip' => [
                 'name' => 'Lanière de cuir',
+                'name_translations' => ['en' => 'Leather Strip'],
                 'description' => 'Lanière de cuir tannée et traitée',
                 'type' => 'crafted',
                 'slug' => 'crafted-leather-strip',
@@ -1166,6 +1177,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_cloth' => [
                 'name' => 'Tissu',
+                'name_translations' => ['en' => 'Cloth'],
                 'description' => 'Morceau de tissu de qualité',
                 'type' => 'crafted',
                 'slug' => 'crafted-cloth',
@@ -1176,6 +1188,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_potion_base' => [
                 'name' => 'Base de potion',
+                'name_translations' => ['en' => 'Potion Base'],
                 'description' => 'Solution de base pour la création de potions',
                 'type' => 'crafted',
                 'slug' => 'crafted-potion-base',
@@ -1188,6 +1201,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Gemmes taillées joaillier (intermédiaires craft) ---
             'crafted_gem_basic' => [
                 'name' => 'Gemme taillée',
+                'name_translations' => ['en' => 'Cut Gem'],
                 'description' => 'Une gemme brute polie et taillée, prête à être sertie',
                 'type' => 'crafted',
                 'slug' => 'crafted-gem-basic',
@@ -1198,6 +1212,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_gem_fine' => [
                 'name' => 'Gemme fine',
+                'name_translations' => ['en' => 'Fine Gem'],
                 'description' => 'Une gemme taillée avec précision, d\'une clarté remarquable',
                 'type' => 'crafted',
                 'slug' => 'crafted-gem-fine',
@@ -1209,6 +1224,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_gem_rare' => [
                 'name' => 'Gemme rare',
+                'name_translations' => ['en' => 'Rare Gem'],
                 'description' => 'Une gemme d\'exception aux reflets magiques',
                 'type' => 'crafted',
                 'slug' => 'crafted-gem-rare',
@@ -1220,6 +1236,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_gem_enchanted' => [
                 'name' => 'Gemme enchantée',
+                'name_translations' => ['en' => 'Enchanted Gem'],
                 'description' => 'Une gemme imprégnée d\'énergie magique, elle luit faiblement',
                 'type' => 'crafted',
                 'slug' => 'crafted-gem-enchanted',
@@ -1231,6 +1248,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'crafted_gem_prismatic' => [
                 'name' => 'Gemme prismatique',
+                'name_translations' => ['en' => 'Prismatic Gem'],
                 'description' => 'Une gemme aux reflets arc-en-ciel, concentrant toutes les énergies élémentaires',
                 'type' => 'crafted',
                 'slug' => 'crafted-gem-prismatic',
