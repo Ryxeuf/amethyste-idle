@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (134 sous-phase 2a — scenario k6 `metrics-stress` pour stresser la collecte Prometheus / Doctrine)
+> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.domain — infrastructure multilingue pour les titres d'arbres de talent / domaines)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.domain : infrastructure multilingue des titres de domaines (2026-04-24)
+
+> Extension du pattern i18n etabli (Item 3a, Monster 3e.a, Quest 3e.c.d.quest, Skill title 3e.c.skill — PR #464) a `Domain.title`. L'entite `Domain` materialise les arbres de talent (Guerrier, Mage, Artisan…) affiches dans `/game/skills` et dans les profils de joueur. Memes fallbacks gracieux, meme normalisation que les sous-phases precedentes. Totalement retrocompatible : aucun template ni controller modifie, les domaines existants conservent `title_translations = null`. Prepare le cablage futur dans les templates des arbres de talent.
+>
+> Sous-phase completement independante des 7 PR i18n en vol (PR #451 Item.description infra, PR #455 Spell.name infra, PR #458 Pnj.name infra, PR #464 Skill.title infra, PR #472 Spell.description infra, PR #456 quest tracking cable, PR #444 audit translation keys) : aucune ne touche `Domain.php`, aucune ne modifie la table `game_domains`. Colonne JSON additive, zero risque de conflit.
+
+- [x] `migrations/Version20260424DomainTitleTranslations.php` (nouveau, 26 lignes) : `ALTER TABLE game_domains ADD COLUMN IF NOT EXISTS title_translations JSON DEFAULT NULL`. Idempotent, reversible via `DROP COLUMN IF EXISTS`. Miroir strict des migrations des sous-phases precedentes.
+- [x] `src/Entity/Game/Domain.php` (+45 lignes, 236 -> 278, sous la limite de 400) : nouvelle propriete `?array $titleTranslations` (colonne Doctrine `json`, nullable). `getLocalizedTitle(?string $locale): string` avec fallback gracieux sur `$this->title` si locale nulle/vide, colonne nulle, locale absente ou valeur blanche/non-string. `getTitleTranslations(): array` (defaut `[]`). `setTitleTranslations(?array $translations): self` avec normalisation (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide). Fluent.
+- [x] `tests/Unit/Entity/Game/DomainLocalizationTest.php` (nouveau, 7 cas, 89 lignes) : miroir strict de `QuestLocalizationTest` / `SkillLocalizationTest` adapte a `title` (fallback sans traductions, traduction matchee EN/DE, fallback sur locale absente, normalisation cles vides / valeurs blanches / valeurs non-string, reset via `null`, compaction vers `null` si seulement entrees invalides, defaut `[]`).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.domain ajoutee sous la branche 3e.c + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.domain.
+
+**Diff** : +45 lignes `Domain.php`, +26 lignes migration, +89 lignes test, +roadmap = ~165 lignes totales (<300 budget). Aucun template, controller ou service modifie. Les sous-phases de cablage (filter Twig `localized_domain_title` + templates arbres de talent) et de fixtures EN suivront.
 
 ---
 

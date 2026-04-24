@@ -40,6 +40,12 @@ class Domain
     #[ORM\Column(name: 'title', type: 'string', length: 255)]
     private $title;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'title_translations', type: 'json', nullable: true)]
+    private ?array $titleTranslations = null;
+
     #[ORM\ManyToMany(targetEntity: Skill::class, mappedBy: 'domains')]
     private Collection $skills;
 
@@ -90,6 +96,43 @@ class Domain
     public function getTitle()
     {
         return $this->title;
+    }
+
+    /**
+     * Get the title translated for the requested locale, or fall back to the base `title` column.
+     */
+    public function getLocalizedTitle(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->titleTranslations === null) {
+            return $this->title;
+        }
+        $translation = $this->titleTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->title;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getTitleTranslations(): array
+    {
+        return $this->titleTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setTitleTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->titleTranslations = $normalized === [] ? null : $normalized;
+
+        return $this;
     }
 
     public function addSkill(Skill $skill): self
