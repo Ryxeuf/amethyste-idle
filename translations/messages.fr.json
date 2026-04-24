@@ -481,7 +481,15 @@
       }
     },
     "fishing": {
-      "perfect_zone": "Zone parfaite — aucune usure de la canne"
+      "perfect_zone": "Zone parfaite — aucune usure de la canne",
+      "minigame_aria": "Mini-jeu de pêche",
+      "spot_fallback": "Point de pêche",
+      "instructions": "Cliquez quand la barre est dans la zone verte !",
+      "catch_button": "Ferrer !",
+      "catching_button": "Ferrage...",
+      "fallback_success": "Prise !",
+      "fallback_failure": "Raté !",
+      "connection_error": "Erreur de connexion."
     },
     "bestiary": {
       "title": "Bestiaire",

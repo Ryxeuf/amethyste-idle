@@ -481,7 +481,15 @@
       }
     },
     "fishing": {
-      "perfect_zone": "Perfect zone — no rod wear"
+      "perfect_zone": "Perfect zone — no rod wear",
+      "minigame_aria": "Fishing mini-game",
+      "spot_fallback": "Fishing spot",
+      "instructions": "Click when the bar is in the green zone!",
+      "catch_button": "Cast!",
+      "catching_button": "Reeling...",
+      "fallback_success": "Catch!",
+      "fallback_failure": "Missed!",
+      "connection_error": "Connection error."
     },
     "bestiary": {
       "title": "Bestiary",

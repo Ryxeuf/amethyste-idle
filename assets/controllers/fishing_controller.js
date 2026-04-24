@@ -9,6 +9,9 @@ import { Controller } from '@hotwired/stimulus';
  */
 export default class extends Controller {
     static targets = ['panel', 'bar', 'indicator', 'message', 'spotName', 'catchBtn'];
+    static values = {
+        labels: { type: Object, default: {} },
+    };
 
     connect() {
         this._spot = null;
@@ -17,6 +20,11 @@ export default class extends Controller {
         this._speed = 1.5;
         this._animFrame = null;
         this._active = false;
+    }
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
     }
 
     disconnect() {
@@ -37,11 +45,11 @@ export default class extends Controller {
         const difficulty = items[0]?.difficulty || 50;
         this._speed = 0.8 + (difficulty / 50);
 
-        this.spotNameTarget.textContent = spot.name || 'Point de pêche';
-        this.messageTarget.textContent = 'Cliquez quand la barre est dans la zone verte !';
+        this.spotNameTarget.textContent = spot.name || this._label('spotFallback', 'Point de pêche');
+        this.messageTarget.textContent = this._label('instructions', 'Cliquez quand la barre est dans la zone verte !');
         this.messageTarget.className = 'text-gray-300 text-xs mt-2';
         this.catchBtnTarget.disabled = false;
-        this.catchBtnTarget.textContent = 'Ferrer !';
+        this.catchBtnTarget.textContent = this._label('catchButton', 'Ferrer !');
 
         this.panelTarget.classList.remove('hidden');
         this.panelTarget.style.opacity = '0';
@@ -74,7 +82,7 @@ export default class extends Controller {
 
         this._stopAnimation();
         this.catchBtnTarget.disabled = true;
-        this.catchBtnTarget.textContent = 'Ferrage...';
+        this.catchBtnTarget.textContent = this._label('catchingButton', 'Ferrage...');
 
         const tension = Math.round(this._tension);
 
@@ -87,12 +95,12 @@ export default class extends Controller {
             const result = await resp.json();
 
             if (result.success) {
-                this.messageTarget.textContent = result.message || 'Prise !';
+                this.messageTarget.textContent = result.message || this._label('fallbackSuccess', 'Prise !');
                 this.messageTarget.className = result.perfect
                     ? 'text-yellow-300 text-sm mt-2 font-bold'
                     : 'text-green-400 text-sm mt-2 font-bold';
             } else {
-                this.messageTarget.textContent = result.message || 'Raté !';
+                this.messageTarget.textContent = result.message || this._label('fallbackFailure', 'Raté !');
                 this.messageTarget.className = 'text-red-400 text-sm mt-2';
             }
 
@@ -100,10 +108,10 @@ export default class extends Controller {
             setTimeout(() => this.close(), 2000);
         } catch (err) {
             console.error('[fishing] Error:', err);
-            this.messageTarget.textContent = 'Erreur de connexion.';
+            this.messageTarget.textContent = this._label('connectionError', 'Erreur de connexion.');
             this.messageTarget.className = 'text-red-400 text-sm mt-2';
             this.catchBtnTarget.disabled = false;
-            this.catchBtnTarget.textContent = 'Ferrer !';
+            this.catchBtnTarget.textContent = this._label('catchButton', 'Ferrer !');
         }
     }
 
