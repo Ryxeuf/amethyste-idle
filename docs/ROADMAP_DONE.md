@@ -1,7 +1,24 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.domain — infrastructure multilingue pour les titres d'arbres de talent / domaines)
+> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.domain.b — cablage du filter `localized_domain_title` dans les templates `/game/skills`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.domain.b : cablage du filter `localized_domain_title` (2026-04-24)
+
+> Suite directe de la sous-phase 3e.c.domain (infrastructure entite) : cable le filter Twig dans les templates des arbres de talent (`/game/skills`). L'entite `Domain` n'etant pas passee directement aux templates (les controllers construisent des DTOs `DomainModel` / `PlayerDomain`), le filter accepte a la fois l'entite brute et le DTO via un `public readonly Domain $entity` expose sur `DomainModel`. Aucun duplicat des traductions dans le DTO : le filter delegue toujours a `Domain::getLocalizedTitle`.
+>
+> Sous-phase independante des 7 PR i18n en vol : aucune ne touche les templates `game/skills/**`, ne modifie `DomainModel` ou n'ajoute un filter Twig similaire.
+
+- [x] `src/Twig/DomainLocalizationExtension.php` (nouveau, 48 lignes) : filter `localized_domain_title(Domain|DomainModel|null): string` qui applique `Domain::getLocalizedTitle` avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur `Domain::title` si RequestStack vide, domaine null ou traduction manquante). Nom distinct de `localized_name` (Item), `localized_monster_name` (Monster) et `localized_quest_name` (Quest) pour eviter la collision Twig entre filters typehintes sur entites differentes.
+- [x] `src/Dto/Domain/DomainModel.php` (+3 lignes, 29 -> 32) : nouvelle propriete `public readonly Domain $entity` peuplee dans le constructeur, consommee uniquement par le filter `localized_domain_title` pour acceder aux traductions sans passer par le DTO. Aucun getter ajoute sur `DomainModel` : le filter gere la distinction `Domain` vs `DomainModel`.
+- [x] `templates/game/skills/domain_info.html.twig` (2 occurrences) : block `title` + en-tete `h1` passent de `{{ domain.title }}` a `{{ domain|localized_domain_title }}`.
+- [x] `templates/game/skills/index.html.twig` (4 occurrences) : chip horizontal mobile, sidebar groupee par element, sidebar domaines "Autres", en-tete `h2` du panneau actif passent de `{{ domain.title }}` a `{{ domain|localized_domain_title }}`.
+- [x] `tests/Unit/Twig/DomainLocalizationExtensionTest.php` (nouveau, 6 cas, 93 lignes) : traduction matchee, acceptation d'un `DomainModel`, fallback base title si traduction absente, fallback base title si RequestStack vide, domaine null -> chaine vide, enregistrement du filter. Helper `forceDomainId` via Reflection pour instancier `DomainModel` sans persistance Doctrine.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.domain.b ajoutee sous la branche 3e.c + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` header met a jour la derniere sous-phase livree.
+
+**Diff** : +48 lignes extension, +3 lignes DTO, +6 lignes templates, +93 lignes test, +roadmap = ~170 lignes totales (<300 budget). Les templates `templates/admin/**`, `templates/game/index.html.twig` (dashboard recap) et `templates/game/profile/show.html.twig` (experience par domaine) ne sont pas cables (hors scope sous-phase, seront traites plus tard). Les fixtures EN pour les titres de domaines suivront en sous-phase 3e.c.domain.c.
 
 ---
 
