@@ -51,7 +51,7 @@
 | **Sprint 9** | Avatar: Personnage & Equipement | 6/8 | Moyenne | En cours |
 | **Sprint 10** | Avatar: Polish & Animations | 4/8 | Basse | En cours |
 | **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 5, 131 sous-phases 2a + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.2, 133 sous-phases 1 + 1b) |
-| **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phases 1 + 2a, 135 sous-phases 1 + 2a + 3a + 3b + 3c + 3c.b + 3c.c + 3c.d + 3e.a + 3e.b.a + 3e.b.b + 3e.b.b.suite + 3e.c.d.quest + 3e.c.d.quest.b + 3e.c.d.quest.c + 3e.c.d.quest.d + 3e.c.d.quest.e + 3e.c.d.quest.f + 3e.c.d.quest.g + 3e.c.d.quest.h + 3e.c.d.quest.i + 3e.c.d.quest.j) |
+| **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phases 1 + 2a, 135 sous-phases 1 + 2a + 3a + 3b + 3c + 3c.b + 3c.c + 3c.d + 3c.e + 3e.a + 3e.b.a + 3e.b.b + 3e.b.b.suite + 3e.c.d.quest + 3e.c.d.quest.b + 3e.c.d.quest.c + 3e.c.d.quest.d + 3e.c.d.quest.e + 3e.c.d.quest.f + 3e.c.d.quest.g + 3e.c.d.quest.h + 3e.c.d.quest.i + 3e.c.d.quest.j) |
 
 **Total restant : 44 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
 **Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6) et 8 (10) termines + Sprint 7 (11/12 en cours) + Sprint 9 (6/8 en cours) + Sprint 10 (4/8 en cours) = 51 taches completes / initial 66+

@@ -2477,6 +2477,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             't1_axe' => [
                 'name' => 'Hachette rouillée',
+                'name_translations' => ['en' => 'Rusty Hatchet'],
                 'description' => 'Une hachette lourde rongée par la rouille. Frappe fort malgré son état.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2492,6 +2493,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't1_staff' => [
                 'name' => 'Bâton de novice',
+                'name_translations' => ['en' => 'Novice Staff'],
                 'description' => 'Un bâton en bois noueux qui canalise faiblement la magie ambiante.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2507,6 +2509,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't1_bow' => [
                 'name' => 'Arc court',
+                'name_translations' => ['en' => 'Short Bow'],
                 'description' => 'Un arc court en bois souple. Précis à courte portée.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2522,6 +2525,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't1_dagger' => [
                 'name' => 'Dague ébréchée',
+                'name_translations' => ['en' => 'Chipped Dagger'],
                 'description' => 'Une dague légère au fil irrégulier. Rapide mais fragile.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2537,6 +2541,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't1_lance' => [
                 'name' => 'Pique en bois',
+                'name_translations' => ['en' => 'Wooden Pike'],
                 'description' => 'Une longue pique au fer de lance grossier. Tient l\'ennemi à distance.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2555,6 +2560,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             't2_axe' => [
                 'name' => 'Hache de guerre',
+                'name_translations' => ['en' => 'War Axe'],
                 'description' => 'Une hache de guerre en acier trempé. Sa lourde tête inflige des coups dévastateurs.',
                 'type' => 'gear',
                 'spell' => 'none_attack_2',
@@ -2573,6 +2579,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_staff' => [
                 'name' => 'Bâton de cristal',
+                'name_translations' => ['en' => 'Crystal Staff'],
                 'description' => 'Un bâton orné d\'un cristal luminescent qui amplifie les flux magiques.',
                 'type' => 'gear',
                 'spell' => 'none_attack_2',
@@ -2591,6 +2598,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_bow' => [
                 'name' => 'Arc long composite',
+                'name_translations' => ['en' => 'Composite Longbow'],
                 'description' => 'Un arc composite en bois et corne, d\'une précision remarquable à longue portée.',
                 'type' => 'gear',
                 'spell' => 'none_attack_2',
@@ -2609,6 +2617,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_dagger' => [
                 'name' => 'Dague de mithril',
+                'name_translations' => ['en' => 'Mithril Dagger'],
                 'description' => 'Une dague fine en mithril, presque invisible dans l\'ombre. Frappe les points vitaux.',
                 'type' => 'gear',
                 'spell' => 'none_attack_2',
@@ -2627,6 +2636,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_lance' => [
                 'name' => 'Lance d\'acier',
+                'name_translations' => ['en' => 'Steel Lance'],
                 'description' => 'Une lance en acier poli, parfaitement équilibrée entre portée et puissance.',
                 'type' => 'gear',
                 'spell' => 'none_attack_2',
@@ -2648,6 +2658,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             't3_axe' => [
                 'name' => 'Hache du berserker',
+                'name_translations' => ['en' => 'Berserker Axe'],
                 'description' => 'Une hache colossale imprégnée de rage ancestrale. Chaque coup fait trembler le sol.',
                 'type' => 'gear',
                 'spell' => 'none_attack_3',
@@ -2666,6 +2677,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_staff' => [
                 'name' => 'Bâton de l\'archimage',
+                'name_translations' => ['en' => 'Archmage Staff'],
                 'description' => 'Un bâton ancien gravé de runes arcanes. Le cristal à son sommet pulse d\'énergie pure.',
                 'type' => 'gear',
                 'spell' => 'none_attack_3',
@@ -2684,6 +2696,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_bow' => [
                 'name' => 'Arc du vent hurlant',
+                'name_translations' => ['en' => 'Howling Wind Bow'],
                 'description' => 'Un arc elfique dont les flèches sifflent comme le vent. Touche sa cible à coup sûr.',
                 'type' => 'gear',
                 'spell' => 'none_attack_3',
@@ -2702,6 +2715,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dagger' => [
                 'name' => 'Lame de l\'ombre',
+                'name_translations' => ['en' => 'Shadow Blade'],
                 'description' => 'Une dague forgée dans l\'obscurité absolue. Invisible et mortelle, elle trouve toujours la faille.',
                 'type' => 'gear',
                 'spell' => 'none_attack_3',
@@ -2720,6 +2734,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_lance' => [
                 'name' => 'Lance du chevalier céleste',
+                'name_translations' => ['en' => 'Celestial Knight Lance'],
                 'description' => 'Une lance légendaire au fer étincelant. Ceux qui la brandissent sont craints sur tout le champ de bataille.',
                 'type' => 'gear',
                 'spell' => 'none_attack_3',
