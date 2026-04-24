@@ -1,7 +1,24 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 — Localisation i18n sous-phase 3c.c : fixtures EN pour 18 materiaux de craft : 3 minerais precieux + 10 lingots / cuir / tissu / base de potion + 5 gemmes taillees)
+> Derniere mise a jour : 2026-04-24 (135 — Localisation i18n sous-phase 3c.d : fixtures EN pour 27 plantes et herbes)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.d : fixtures EN pour 27 plantes et herbes (2026-04-24)
+
+> Extension directe des sous-phases 3c (35 items de debut de jeu), 3c.b (26 materia tier 1-3) et 3c.c (18 materiaux de craft). Cible : les 27 plantes et herbes, ingredients alchimiques des recettes de potions. Avant cette sous-phase, un joueur en locale EN voyait ces 27 plantes retomber sur leur nom FR via le fallback transparent de `Item::getLocalizedName()` ; apres, l'inventaire (onglet items), la boutique si exposee et les vues de craft/alchimie affichent ces plantes en anglais.
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+27 lignes, 4198 au total, sous la limite de 50 lignes ajoutees car ce fichier depassait deja 400 lignes avant cette tache) : ajout de `name_translations => ['en' => '...']` sur 27 entrees. Loader inchange (la delegation `Item::setNameTranslations()` existe deja depuis la sous-phase 3c).
+- [x] Plantes communes (6) : `plant-lavender=Lavender`, `plant-mint=Mint`, `plant-sage=Sage`, `plant-thyme=Thyme`, `plant-rosemary=Rosemary`, `plant-chamomile=Chamomile`.
+- [x] Plantes medicinales (6) : `plant-nettle=Nettle`, `plant-dandelion=Dandelion`, `plant-valerian=Valerian`, `plant-aloe-vera=Aloe Vera`, `plant-ginseng=Ginseng`, `plant-echinacea=Echinacea`.
+- [x] Plantes toxiques (3) : `plant-mandrake=Mandrake`, `plant-nightshade=Nightshade`, `plant-wolfsbane=Wolfsbane`.
+- [x] Plantes magiques (8) : `plant-moonflower=Moonflower`, `plant-sunblossom=Sunblossom`, `plant-dragonleaf=Dragonleaf`, `plant-frostcap=Frostcap`, `plant-ghostshroom=Ghostshroom`, `plant-thunderroot=Thunderroot`, `plant-whisperweed=Whisperweed`, `plant-dreamlily=Dreamlily`.
+- [x] Plantes legendaires (2) : `plant-voidfruit=Voidfruit`, `plant-phoenixflower=Phoenix Flower`.
+- [x] Ingredients marais / champignons (2, slugs sans prefixe `plant-`) : `poisonous-mushroom=Poisonous Mushroom`, `swamp-root=Swamp Root`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.d ajoutee et cochee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` : Sprint 12 met a jour l'avancement 135 avec la sous-phase 3c.d.
+
+**Diff** : +27 lignes `ItemFixtures.php` + roadmap. Aucune migration, aucune nouvelle entite, aucun template ni controller touche. Les items restants (equipements tier 2+, consommables alchimiste avances, recettes craft, fragments Acte 2+, items de boss) conservent leur nom FR comme fallback ; leurs traductions suivront dans des sous-phases ulterieures. Les tests existants de `Item::setNameTranslations()` (`ItemLocalizationTest`, 7 cas) couvrent deja exhaustivement la normalisation du champ. Zero impact FR (fallback transparent preserve) ; impact EN immediat sur `/game/inventory` (onglet items), `/game/shop` si une plante est exposee, et les vues de craft/alchimie via le filter `localized_name` cable en 3b.
 
 ---
 

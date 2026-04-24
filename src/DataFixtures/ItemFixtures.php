@@ -1327,6 +1327,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Plantes
             'plant_lavender' => [
                 'name' => 'Lavande',
+                'name_translations' => ['en' => 'Lavender'],
                 'description' => 'Plante aromatique aux propriétés calmantes',
                 'type' => 'plant',
                 'slug' => 'plant-lavender',
@@ -1338,6 +1339,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_mint' => [
                 'name' => 'Menthe',
+                'name_translations' => ['en' => 'Mint'],
                 'description' => 'Plante aromatique rafraîchissante',
                 'type' => 'plant',
                 'slug' => 'plant-mint',
@@ -1349,6 +1351,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_sage' => [
                 'name' => 'Sauge',
+                'name_translations' => ['en' => 'Sage'],
                 'description' => 'Plante médicinale aux propriétés purifiantes',
                 'type' => 'plant',
                 'slug' => 'plant-sage',
@@ -1360,6 +1363,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_thyme' => [
                 'name' => 'Thym',
+                'name_translations' => ['en' => 'Thyme'],
                 'description' => 'Plante aromatique aux propriétés antiseptiques',
                 'type' => 'plant',
                 'slug' => 'plant-thyme',
@@ -1371,6 +1375,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_rosemary' => [
                 'name' => 'Romarin',
+                'name_translations' => ['en' => 'Rosemary'],
                 'description' => 'Plante aromatique stimulante pour la mémoire',
                 'type' => 'plant',
                 'slug' => 'plant-rosemary',
@@ -1382,6 +1387,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_chamomile' => [
                 'name' => 'Camomille',
+                'name_translations' => ['en' => 'Chamomile'],
                 'description' => 'Plante médicinale aux propriétés apaisantes',
                 'type' => 'plant',
                 'slug' => 'plant-chamomile',
@@ -1393,6 +1399,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_nettle' => [
                 'name' => 'Ortie',
+                'name_translations' => ['en' => 'Nettle'],
                 'description' => 'Plante médicinale fortifiante',
                 'type' => 'plant',
                 'slug' => 'plant-nettle',
@@ -1404,6 +1411,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_dandelion' => [
                 'name' => 'Pissenlit',
+                'name_translations' => ['en' => 'Dandelion'],
                 'description' => 'Plante médicinale aux propriétés détoxifiantes',
                 'type' => 'plant',
                 'slug' => 'plant-dandelion',
@@ -1415,6 +1423,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_valerian' => [
                 'name' => 'Valériane',
+                'name_translations' => ['en' => 'Valerian'],
                 'description' => 'Plante médicinale aux propriétés sédatives',
                 'type' => 'plant',
                 'slug' => 'plant-valerian',
@@ -1426,6 +1435,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_mandrake' => [
                 'name' => 'Mandragore',
+                'name_translations' => ['en' => 'Mandrake'],
                 'description' => 'Plante mystique aux puissantes propriétés magiques',
                 'type' => 'plant',
                 'slug' => 'plant-mandrake',
@@ -1438,6 +1448,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_nightshade' => [
                 'name' => 'Belladone',
+                'name_translations' => ['en' => 'Nightshade'],
                 'description' => 'Plante toxique utilisée avec précaution',
                 'type' => 'plant',
                 'slug' => 'plant-nightshade',
@@ -1449,6 +1460,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_wolfsbane' => [
                 'name' => 'Aconit',
+                'name_translations' => ['en' => 'Wolfsbane'],
                 'description' => 'Plante toxique aux propriétés mystiques',
                 'type' => 'plant',
                 'slug' => 'plant-wolfsbane',
@@ -1460,6 +1472,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_aloe_vera' => [
                 'name' => 'Aloe Vera',
+                'name_translations' => ['en' => 'Aloe Vera'],
                 'description' => 'Plante médicinale aux propriétés cicatrisantes',
                 'type' => 'plant',
                 'slug' => 'plant-aloe-vera',
@@ -1471,6 +1484,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_ginseng' => [
                 'name' => 'Ginseng',
+                'name_translations' => ['en' => 'Ginseng'],
                 'description' => 'Plante médicinale énergisante',
                 'type' => 'plant',
                 'slug' => 'plant-ginseng',
@@ -1482,6 +1496,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_echinacea' => [
                 'name' => 'Échinacée',
+                'name_translations' => ['en' => 'Echinacea'],
                 'description' => 'Plante médicinale renforçant les défenses naturelles',
                 'type' => 'plant',
                 'slug' => 'plant-echinacea',
@@ -1494,6 +1509,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Plantes magiques et exotiques
             'plant_moonflower' => [
                 'name' => 'Fleur de Lune',
+                'name_translations' => ['en' => 'Moonflower'],
                 'description' => 'Plante rare qui ne fleurit que sous la pleine lune',
                 'type' => 'plant',
                 'slug' => 'plant-moonflower',
@@ -1506,6 +1522,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_sunblossom' => [
                 'name' => 'Fleur Solaire',
+                'name_translations' => ['en' => 'Sunblossom'],
                 'description' => 'Plante qui absorbe l\'énergie du soleil',
                 'type' => 'plant',
                 'slug' => 'plant-sunblossom',
@@ -1517,6 +1534,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_dragonleaf' => [
                 'name' => 'Feuille de Dragon',
+                'name_translations' => ['en' => 'Dragonleaf'],
                 'description' => 'Plante rare aux propriétés ignifuges',
                 'type' => 'plant',
                 'slug' => 'plant-dragonleaf',
@@ -1529,6 +1547,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_frostcap' => [
                 'name' => 'Chapeau de Givre',
+                'name_translations' => ['en' => 'Frostcap'],
                 'description' => 'Champignon qui pousse dans les régions glaciales',
                 'type' => 'plant',
                 'slug' => 'plant-frostcap',
@@ -1540,6 +1559,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_ghostshroom' => [
                 'name' => 'Champignon Fantôme',
+                'name_translations' => ['en' => 'Ghostshroom'],
                 'description' => 'Champignon translucide qui brille dans l\'obscurité',
                 'type' => 'plant',
                 'slug' => 'plant-ghostshroom',
@@ -1551,6 +1571,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_thunderroot' => [
                 'name' => 'Racine Tonnerre',
+                'name_translations' => ['en' => 'Thunderroot'],
                 'description' => 'Racine qui accumule l\'énergie électrique',
                 'type' => 'plant',
                 'slug' => 'plant-thunderroot',
@@ -1562,6 +1583,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_whisperweed' => [
                 'name' => 'Herbe Murmurante',
+                'name_translations' => ['en' => 'Whisperweed'],
                 'description' => 'Plante qui émet de légers murmures',
                 'type' => 'plant',
                 'slug' => 'plant-whisperweed',
@@ -1573,6 +1595,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_dreamlily' => [
                 'name' => 'Lys des Rêves',
+                'name_translations' => ['en' => 'Dreamlily'],
                 'description' => 'Fleur qui influence les rêves',
                 'type' => 'plant',
                 'slug' => 'plant-dreamlily',
@@ -1585,6 +1608,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_voidfruit' => [
                 'name' => 'Fruit du Néant',
+                'name_translations' => ['en' => 'Voidfruit'],
                 'description' => 'Fruit étrange qui semble absorber la lumière',
                 'type' => 'plant',
                 'slug' => 'plant-voidfruit',
@@ -1597,6 +1621,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_phoenixflower' => [
                 'name' => 'Fleur de Phénix',
+                'name_translations' => ['en' => 'Phoenix Flower'],
                 'description' => 'Fleur rare qui renaît de ses cendres',
                 'type' => 'plant',
                 'slug' => 'plant-phoenixflower',
@@ -1610,6 +1635,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Plantes de marais
             'plant_poisonous_mushroom' => [
                 'name' => 'Champignon Vénéneux',
+                'name_translations' => ['en' => 'Poisonous Mushroom'],
                 'description' => 'Champignon toxique des marais, utilisable en alchimie avancée',
                 'type' => 'plant',
                 'slug' => 'poisonous-mushroom',
@@ -1621,6 +1647,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'plant_swamp_root' => [
                 'name' => 'Racine de Marais',
+                'name_translations' => ['en' => 'Swamp Root'],
                 'description' => 'Racine noueuse gorgée d\'eau stagnante, prisée des herboristes',
                 'type' => 'plant',
                 'slug' => 'swamp-root',
