@@ -11,6 +11,7 @@ class DomainModel
     public string $title;
     public string $slug;
     public ?string $element;
+    public readonly Domain $entity;
 
     /**
      * @var SkillModel[]
@@ -23,6 +24,7 @@ class DomainModel
         $this->title = $domain->getTitle();
         $this->slug = $domain->getSlug();
         $this->element = $domain->getElement();
+        $this->entity = $domain;
         $this->skills = [];
     }
 }

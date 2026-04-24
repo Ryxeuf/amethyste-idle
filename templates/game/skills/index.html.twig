@@ -237,7 +237,7 @@
                                 {% if domain.element and elementConfig[domain.element] is defined %}
                                     <span class="w-2 h-2 rounded-full flex-shrink-0 {{ elementConfig[domain.element].dot }}"></span>
                                 {% endif %}
-                                <span>{{ domain.title }}</span>
+                                <span>{{ domain|localized_domain_title }}</span>
                                 {% if availCount > 0 %}
                                     <span class="bg-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none">{{ availCount }}</span>
                                 {% endif %}
@@ -267,7 +267,7 @@
                                             aria-selected="{{ domain.id == activeDomainId ? 'true' : 'false' }}"
                                             class="skills-domain-btn w-full text-left mb-0.5">
                                         <div class="flex items-center justify-between gap-1">
-                                            <span class="text-sm font-medium text-gray-200 truncate">{{ domain.title }}</span>
+                                            <span class="text-sm font-medium text-gray-200 truncate">{{ domain|localized_domain_title }}</span>
                                             {% if availCount > 0 %}
                                                 <span class="bg-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">{{ availCount }}</span>
                                             {% elseif acquiredCount > 0 %}
@@ -304,7 +304,7 @@
                                         aria-selected="{{ domain.id == activeDomainId ? 'true' : 'false' }}"
                                         class="skills-domain-btn w-full text-left mb-0.5">
                                     <div class="flex items-center justify-between gap-1">
-                                        <span class="text-sm font-medium text-gray-200 truncate">{{ domain.title }}</span>
+                                        <span class="text-sm font-medium text-gray-200 truncate">{{ domain|localized_domain_title }}</span>
                                         {% if availCount > 0 %}
                                             <span class="bg-purple-600 text-white text-xs font-bold px-1.5 py-0.5 rounded-full leading-none flex-shrink-0">{{ availCount }}</span>
                                         {% endif %}
@@ -327,7 +327,7 @@
                         {# En-tête du domaine #}
                         <div class="domain-header-{{ domain.slug }} rounded-xl px-4 py-3 mb-4 flex items-center justify-between flex-wrap gap-2">
                             <div class="flex items-center gap-2.5">
-                                <h2 class="text-base sm:text-lg font-bold text-white">{{ domain.title }}</h2>
+                                <h2 class="text-base sm:text-lg font-bold text-white">{{ domain|localized_domain_title }}</h2>
                                 {% if domain.element and elementConfig[domain.element] is defined %}
                                     <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-black/25 text-white/90">
                                         {{ elementConfig[domain.element].label }}
