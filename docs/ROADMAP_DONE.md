@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.achievement — infrastructure multilingue des titres et descriptions d'achievements)
+> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.achievement.b — cablage du filter `localized_achievement_title` + `localized_achievement_description` dans le template achievements)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.c.achievement.b : cablage des filters `localized_achievement_title` + `localized_achievement_description` (2026-04-24)
+
+> Suite directe de la sous-phase 3e.c.achievement (infrastructure entite) : cable les filters Twig dans le template des succes (`/game/achievements`). Suit exactement le pattern etabli par `localized_quest_name` + `localized_quest_description` (sous-phases 3e.c.d.quest.b et 3e.c.d.quest.e). L'entite `Achievement` est passee directement aux templates (pas de DTO), donc la signature `?Achievement` est suffisante — pas besoin de l'indirection `Domain|DomainModel` utilisee pour les domaines.
+>
+> Sous-phase independante des 8 PR i18n en vol (PR #444 audit, PR #451 Item.description infra, PR #455 Spell.name infra, PR #456 quest tracking cable, PR #458 Pnj.name infra, PR #464 Skill.title infra, PR #472 Spell.description infra, PR #441 hall of fame) : aucune ne touche `templates/game/achievements/**`, `src/Twig/**Achievement**`, ou l'entite `Achievement`. Deux filters additifs, zero risque de conflit.
+
+- [x] `src/Twig/AchievementLocalizationExtension.php` (nouveau, 56 lignes) : extension Twig avec 2 filters `localized_achievement_title(?Achievement): string` et `localized_achievement_description(?Achievement): string` qui appliquent respectivement `Achievement::getLocalizedTitle` et `Achievement::getLocalizedDescription` avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur `Achievement::title` / `Achievement::description` si RequestStack vide, Achievement null ou traduction manquante). Noms distincts de `localized_name` (Item), `localized_monster_name` (Monster), `localized_quest_name` / `localized_quest_description` (Quest) et `localized_domain_title` (Domain) pour eviter la collision Twig entre filters typehintes sur entites differentes.
+- [x] `templates/game/achievements/index.html.twig` (+2 lignes, -2 lignes) : 2 occurrences remplacees — ligne 69 (`{{ achievement.title }}` -> `{{ achievement|localized_achievement_title }}`) dans l'en-tete du succes, ligne 83 (`{{ achievement.description }}` -> `{{ achievement|localized_achievement_description }}`) dans la description. Les 2 occurrences sont deja gardees derriere la branche `isHidden and not isCompleted` donc les succes secrets non decouverts continuent d'afficher `???` et le message fixe FR "Ce succes est secret..." (non traduit intentionnellement, a deporter dans la sous-phase 2b si besoin).
+- [x] `tests/Unit/Twig/AchievementLocalizationExtensionTest.php` (nouveau, 113 lignes, 9 cas) : 4 cas pour `localized_achievement_title` (traduction matchee EN, fallback sur traduction absente, fallback sur RequestStack vide, null Achievement -> chaine vide) + 4 cas miroir pour `localized_achievement_description` + 1 cas pour l'enregistrement des 2 filters. Miroir strict de `QuestLocalizationExtensionTest`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.c.achievement.b ajoutee sous la branche 3e.c + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.c.achievement.b.
+
+**Diff** : +56 lignes extension, +113 lignes test, +2/-2 lignes template, +roadmap = ~180 lignes totales (<300 budget). Aucune migration, aucun nouveau filter sur DTO, aucun changement backend. Une fois les fixtures EN pour les 127 achievements livrees (sous-phase 3e.c.achievement.c), chaque paire `{fr, en}` sera automatiquement affichee dans le template cable sans redeploiement.
 
 ---
 
