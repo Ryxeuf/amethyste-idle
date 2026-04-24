@@ -70,7 +70,6 @@
                             {% else %}
                                 <div class="ml-4 flex items-center space-x-2">
                                     <a href="{{ path('app_login') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{{ 'base.nav.login'|trans }}</a>
-                                    <a href="{{ path('app_register') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md text-sm font-medium">{{ 'base.nav.register'|trans }}</a>
                                 </div>
                             {% endif %}
                         </div>
@@ -114,7 +113,6 @@
                             <a href="{{ path('app_logout') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">{{ 'base.nav.logout'|trans }}</a>
                         {% else %}
                             <a href="{{ path('app_login') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">{{ 'base.nav.login'|trans }}</a>
-                            <a href="{{ path('app_register') }}" class="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700">{{ 'base.nav.register'|trans }}</a>
                         {% endif %}
                     </div>
                 </div>
