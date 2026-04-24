@@ -137,10 +137,20 @@
             </div>
 
             {# Fishing mini-game overlay #}
-            <div {{ stimulus_controller('fishing') }}
+            <div {{ stimulus_controller('fishing', {
+                     labels: {
+                         spotFallback: 'game.fishing.spot_fallback'|trans,
+                         instructions: 'game.fishing.instructions'|trans,
+                         catchButton: 'game.fishing.catch_button'|trans,
+                         catchingButton: 'game.fishing.catching_button'|trans,
+                         fallbackSuccess: 'game.fishing.fallback_success'|trans,
+                         fallbackFailure: 'game.fishing.fallback_failure'|trans,
+                         connectionError: 'game.fishing.connection_error'|trans,
+                     },
+                 }) }}
                  data-action="harvest:startFishing@document->fishing#open map-pixi:playerMoveStart@document->fishing#onPlayerMove"
                  class="absolute inset-0 pointer-events-none flex items-center justify-center p-3 sm:p-4"
-                 aria-label="Mini-jeu de peche">
+                 aria-label="{{ 'game.fishing.minigame_aria'|trans }}">
                 <div data-fishing-target="panel"
                      class="hidden pointer-events-auto w-full max-w-sm bg-gray-900/95 border border-blue-500 rounded-xl shadow-2xl p-4 backdrop-blur-sm">
                     <div class="flex items-center justify-between mb-2">
@@ -164,7 +174,7 @@
                     <button data-fishing-target="catchBtn"
                             data-action="click->fishing#catch"
                             class="w-full px-4 py-3 bg-blue-700 hover:bg-blue-600 active:bg-blue-800 text-white rounded-lg text-sm transition-colors font-bold touch-target">
-                        Ferrer !
+                        {{ 'game.fishing.catch_button'|trans }}
                     </button>
                     <p data-fishing-target="message" class="text-gray-300 text-xs mt-2 text-center"></p>
                 </div>
