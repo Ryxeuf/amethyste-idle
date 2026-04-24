@@ -66,7 +66,7 @@
                                                     <span class="text-amber-500 text-xs font-mono flex-shrink-0">Secret</span>
                                                 {% else %}
                                                     <h3 class="text-white font-semibold text-sm sm:text-base {% if isCompleted %}text-green-300{% endif %}">
-                                                        {{ achievement.title }}
+                                                        {{ achievement|localized_achievement_title }}
                                                     </h3>
                                                     {% if isCompleted %}
                                                         <span class="text-green-500 text-xs font-mono flex-shrink-0">Debloque</span>
@@ -80,7 +80,7 @@
                                                 {% if isHidden and not isCompleted %}
                                                     Ce succes est secret. Continuez a jouer pour le decouvrir...
                                                 {% else %}
-                                                    {{ achievement.description }}
+                                                    {{ achievement|localized_achievement_description }}
                                                 {% endif %}
                                             </p>
                                         </div>
