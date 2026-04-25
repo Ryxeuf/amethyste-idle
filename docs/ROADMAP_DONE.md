@@ -1,7 +1,26 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-25 (134 sous-phase 2b — scenario k6 `mercure-streaming`)
+> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f — infrastructure multilingue pour `Race.name` et `Race.description`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.f : infrastructure multilingue pour `Race` (noms + descriptions) (2026-04-25)
+
+> Suite directe des sous-phases 3a (Item), 3e.a (Monster), 3e.c.d.quest (Quest), 3e.c.domain (Domain) et 3e.c.achievement (Achievement) : applique le meme pattern d'infrastructure i18n a l'entite `Race`. L'entite couvre 4 races (Humain, Elfe, Nain, Orc), exposees dans 3 templates user-facing (`game/character/select.html.twig`, `game/character/create.html.twig`, `game/profile/show.html.twig`). Cette sous-phase ne livre que l'infrastructure (colonnes JSON + methodes d'accesseurs + tests unitaires). Le cablage Twig (filter `localized_race_name`) et les fixtures EN suivront en sous-phases dediees.
+>
+> Sous-phase independante des 13 PR i18n en vol (audit cles, Item.description, Spell.name, Spell.description, Skill.title, Pnj.name, quest tracking de monsters, hall of fame, mounts, events, avatar) : aucune ne touche `Race.php`, `RaceFixtures.php` ni la table `game_races`. Pattern additif, zero risque de conflit.
+
+- [x] `migrations/Version20260425RaceTranslations.php` (nouveau, 28 lignes) : `ALTER TABLE game_races ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL` + meme chose pour `description_translations`. Idempotent (safe rerun), reversible via `DROP COLUMN IF EXISTS`. Suit exactement le pattern de `Version20260424AchievementTranslations`.
+- [x] `src/Entity/Game/Race.php` (+86 lignes, 123 -> 209 lignes) : nouvelles proprietes `$nameTranslations` et `$descriptionTranslations` (colonnes `name_translations` / `description_translations`, type `json`, nullable). 6 methodes ajoutees, miroir strict du pattern Achievement / Domain :
+  - `getLocalizedName(?string $locale): string` : fallback gracieux sur `$this->name` si locale nulle/vide, colonne nulle, locale absente, valeur blanche ou non-string.
+  - `getNameTranslations(): array` : defaut `[]` quand la colonne est nulle.
+  - `setNameTranslations(?array $translations): self` : normalisation (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide).
+  - Trio symetrique pour `description_translations` (`getLocalizedDescription`, `getDescriptionTranslations`, `setDescriptionTranslations`).
+- [x] `tests/Unit/Entity/Game/RaceLocalizationTest.php` (nouveau, 172 lignes, 14 cas) : miroir strict de `AchievementLocalizationTest`. 7 cas pour le couple name (`testGetLocalizedNameFallsBackToBaseNameWhenNoTranslations`, `testGetLocalizedNameReturnsMatchingTranslation`, `testGetLocalizedNameFallsBackWhenLocaleMissing`, `testSetNameTranslationsIgnoresBlankValuesAndInvalidKeys`, `testSetNameTranslationsWithNullResetsStorage`, `testSetNameTranslationsWithOnlyInvalidEntriesResetsToNull`, `testGetNameTranslationsDefaultsToEmptyArray`) + 7 cas miroir pour le couple description.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.f ajoutee sous la branche 3e + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 mis a jour avec la sous-phase 3e.f.
+
+**Diff** : +28 + 86 + 172 = 286 lignes (<300 budget). Aucun template / controller / Twig modifie : les sous-phases de cablage et fixtures EN suivront. Zero impact FR (le fallback transparent de `Race::getLocalizedName` / `getLocalizedDescription` preserve le rendu actuel). Une fois les sous-phases ulterieures livrees, chaque paire `{fr, en}` sera automatiquement affichee dans les ecrans de selection / creation de personnage et le profil public.
 
 ---
 
