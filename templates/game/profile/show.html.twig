@@ -54,7 +54,7 @@
                     </div>
                     <div class="flex items-center gap-3 mt-1 text-sm text-gray-400">
                         {% if targetPlayer.race %}
-                            <span>{{ targetPlayer.race.name }}</span>
+                            <span>{{ targetPlayer.race|localized_race_name }}</span>
                             <span class="text-gray-600">&middot;</span>
                         {% endif %}
                         <span>{{ targetPlayer.classType }}</span>

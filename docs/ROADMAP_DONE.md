@@ -1,7 +1,24 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f — infrastructure multilingue pour `Race.name` et `Race.description`)
+> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f.b — cablage des filters `localized_race_name` + `localized_race_description`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.f.b : cablage des filters `localized_race_name` + `localized_race_description` (2026-04-25)
+
+> Suite directe de la sous-phase 3e.f (infrastructure entite) : cable les filters Twig dans les 3 templates user-facing qui affichent une entite `Race` directement (`templates/game/character/select.html.twig`, `templates/game/character/create.html.twig`, `templates/game/profile/show.html.twig`). Suit exactement le pattern etabli par `localized_achievement_title` + `localized_achievement_description` (sous-phase 3e.c.achievement.b) : 2 filters dans une seule extension, la `Race` est passee directement aux templates (pas de DTO), donc la signature `?Race` suffit — pas besoin de l'indirection `Domain|DomainModel` utilisee pour les domaines.
+>
+> Sous-phase independante des 13 PR ouvertes (avatar AVT-25/AVT-30/AVT-34, monture 130, events 131, hall of fame 132, et 8 PR i18n) : aucune ne touche `templates/game/character/**`, `templates/game/profile/show.html.twig`, `src/Twig/**Race**`, ou l'entite `Race`. Deux filters additifs, zero risque de conflit.
+
+- [x] `src/Twig/RaceLocalizationExtension.php` (nouveau, 56 lignes) : extension Twig avec 2 filters `localized_race_name(?Race): string` et `localized_race_description(?Race): string` qui appliquent respectivement `Race::getLocalizedName` et `Race::getLocalizedDescription` avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur `Race::name` / `Race::description` si RequestStack vide, Race null ou traduction manquante). Noms distincts de `localized_name` (Item), `localized_monster_name` (Monster), `localized_quest_name` / `localized_quest_description` (Quest), `localized_domain_title` (Domain) et `localized_achievement_title` / `localized_achievement_description` (Achievement) pour eviter la collision Twig entre filters typehintes sur entites differentes.
+- [x] `templates/game/character/select.html.twig` (+2/-2 lignes) : 2 occurrences remplacees — `alt` du sprite (`{{ player.race.name }}` -> `{{ player.race|localized_race_name }}`) et libelle de la race sous le nom du personnage (meme remplacement).
+- [x] `templates/game/character/create.html.twig` (+3/-3 lignes) : 3 occurrences remplacees — `alt` du sprite, en-tete `<h3>` du nom de race et description `<p>` (`{{ race.name }}` / `{{ race.description }}` -> filters dedies).
+- [x] `templates/game/profile/show.html.twig` (+1/-1 ligne) : 1 occurrence — libelle de race sur le profil public (`{{ targetPlayer.race.name }}` -> `{{ targetPlayer.race|localized_race_name }}`).
+- [x] `tests/Unit/Twig/RaceLocalizationExtensionTest.php` (nouveau, 116 lignes, 9 cas) : 4 cas pour `localized_race_name` (traduction matchee EN, fallback sur traduction absente, fallback sur RequestStack vide, null Race -> chaine vide) + 4 cas miroir pour `localized_race_description` + 1 cas pour l'enregistrement des 2 filters. Miroir strict de `AchievementLocalizationExtensionTest`.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.f.b ajoutee sous la branche 3e + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.f.b.
+
+**Diff** : +56 lignes extension, +116 lignes test, +6/-6 lignes template, +roadmap = ~190 lignes totales (<300 budget). Aucune migration, aucun changement backend. Une fois les fixtures EN pour les 4 races livrees (sous-phase 3e.f.c, a venir), chaque paire `{fr, en}` sera automatiquement affichee dans les 3 templates cables sans redeploiement.
 
 ---
 
