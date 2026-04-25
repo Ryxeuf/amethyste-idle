@@ -1,7 +1,26 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-24 (135 sous-phase 3e.c.achievement.c — fixtures EN pour les 126 achievements)
+> Derniere mise a jour : 2026-04-25 (134 sous-phase 2b — scenario k6 `mercure-streaming`)
+
+---
+
+## 134 — Load testing & scaling sous-phase 2b : scenario k6 `mercure-streaming` (SSE) (2026-04-25)
+
+> Suite directe des sous-phases 1 (`guest-browsing`) et 2a (`metrics-stress`). Couvre le 3e jalon documente comme "Scenario `mercure-streaming` : SSE `map/move` avec mesure de latence bout en bout" dans la section "Prochaines etapes" du `scripts/load-test/README.md`. Mesure la capacite reelle du hub Mercure integre a FrankenPHP (Caddy) a tenir des abonnes SSE concurrents, puisque chaque client carte (`map_pixi_controller`) maintient une `EventSource` ouverte en permanence et que c'est le canal le plus charge en regime nominal (mouvement, respawn, avatar, events).
+>
+> Sous-phase independante des 13 PR ouvertes (avatar AVT-25/AVT-30/AVT-34, monture 130, events 131, hall of fame 132, et 8 PR i18n) : aucune ne touche `scripts/load-test/**` ni la chaine SSE Mercure. Scenario JS k6 pur, zero impact applicatif.
+
+- [x] `scripts/load-test/scenarios/mercure-streaming.js` (nouveau, 182 lignes) : nouveau scenario k6 qui ouvre un `GET /.well-known/mercure?topic=map/move` avec `Accept: text/event-stream` par VU, conserve la connexion ouverte pendant `SUBSCRIBE_DURATION` secondes (defaut 30s) via `timeout: SUBSCRIBE_DURATION + 2s` (marge de tolerance), puis recommence. Pattern `ramping-vus` (RAMP_UP -> plateau -> RAMP_DOWN) reutilise depuis `metrics-stress.js`. Topic surchargable via `MERCURE_TOPIC=event/announce` (autres topics du jeu : `map/respawn`, `map/avatar`, `fight/{id}/turn`, `guild/influence/{id}`).
+- [x] Metriques custom :
+  - `mercure_subscribe_latency` (Trend, ms) — base sur `timings.waiting` (TTFB SSE) qui represente le delai entre la requete et le premier byte recu (heartbeat ou evenement). Proxy de la latence d'etablissement d'un abonnement Mercure sous charge.
+  - `mercure_hold_duration` (Trend, ms) — duree reelle de maintien de la connexion (mesuree avec `Date.now()`). Detecte les coupures precoces (proxy / load balancer trop strict).
+  - `mercure_subscribe_fail` (Rate, %) — taux d'iterations dont au moins un check applicatif a echoue (status inattendu, content-type non `text/event-stream`, ou hold_duration < SUBSCRIBE_DURATION - 1s).
+- [x] Thresholds dedies : `mercure_subscribe_latency` p95<1s + p99<3s ; `mercure_subscribe_fail` <2% ; `mercure_hold_duration` p95 >= `(SUBSCRIBE_DURATION-1)*1000` ms (echec si la moitie des subscriptions sont coupees avant la duree demandee). Heritage des seuils par defaut (`http_req_duration`, `http_req_failed`, `checks`) via `...DEFAULT_THRESHOLDS`.
+- [x] `scripts/load-test/README.md` (+44 lignes / -8 lignes) : nouvelle section "Scenario : mercure-streaming" avec cas d'usage, exemples d'execution (defaut 50 VUs, run cible 200 VUs / 2 minutes, override de topic), thresholds, pistes de diagnostic (logs Caddy/FrankenPHP, `ulimit -n`, config Mercure `heartbeat`/`dispatch_timeout`, `idle_timeout` Traefik). Note explicite sur la limite : k6 stock ne sait pas decouper un flux SSE evenement par evenement, donc la latence publish->receive bout-en-bout necessitera une variante avec extension `xk6-sse` (jalon ulterieur, ajoute dans "Prochaines etapes"). Variables d'environnement etendues (`SUBSCRIBE_DURATION`, `MERCURE_TOPIC`).
+- [x] Roadmap : Sprint 12 sous-phase 2b cochee (avant 2c "scenario authentifie" et 2d "recueil goulots") + ligne d'avancement mise a jour.
+
+**Diff** : +182 lignes scenario, +~50 lignes README, +1 ligne SPRINT_12 = ~233 lignes totales (<300 budget). Aucune migration, aucun changement PHP/Twig, aucun nouveau test PHPUnit (scenario JS k6 pur, valide par `node --check`). Permet de mesurer la cible Sprint 12 "200 joueurs simultanes sans degradation" sur le canal Mercure (`VUS=200 SUBSCRIBE_DURATION=30 k6 run scripts/load-test/scenarios/mercure-streaming.js`), de detecter precocement les coupures de proxy / load balancer, et de valider la tenue du hub avant les sous-phases d'optimisation (connection pooling Doctrine, cache Redis, horizontal scaling FrankenPHP).
 
 ---
 
