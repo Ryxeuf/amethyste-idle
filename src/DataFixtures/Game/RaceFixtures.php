@@ -15,7 +15,9 @@ class RaceFixtures extends Fixture
         $human = new Race();
         $human->setSlug('human');
         $human->setName('Humain');
+        $human->setNameTranslations(['en' => 'Human']);
         $human->setDescription('Les humains sont la race la plus répandue. Polyvalents et adaptables, ils ne possèdent aucun bonus ni malus particulier.');
+        $human->setDescriptionTranslations(['en' => 'Humans are the most widespread race. Versatile and adaptable, they have no particular bonus or penalty.']);
         $human->setStatModifiers(['life' => 0, 'energy' => 0, 'speed' => 0, 'hit' => 0]);
         $human->setAvailableAtCreation(true);
         $human->setCreatedAt($now);
@@ -26,7 +28,9 @@ class RaceFixtures extends Fixture
         $elf = new Race();
         $elf->setSlug('elf');
         $elf->setName('Elfe');
+        $elf->setNameTranslations(['en' => 'Elf']);
         $elf->setDescription('Les elfes sont agiles et précis. Leur vitesse naturelle et leur adresse en font d\'excellents éclaireurs et archers.');
+        $elf->setDescriptionTranslations(['en' => 'Elves are agile and precise. Their natural speed and dexterity make them excellent scouts and archers.']);
         $elf->setStatModifiers(['life' => 0, 'energy' => 0, 'speed' => 2, 'hit' => 3]);
         $elf->setAvailableAtCreation(true);
         $elf->setCreatedAt($now);
@@ -37,7 +41,9 @@ class RaceFixtures extends Fixture
         $dwarf = new Race();
         $dwarf->setSlug('dwarf');
         $dwarf->setName('Nain');
+        $dwarf->setNameTranslations(['en' => 'Dwarf']);
         $dwarf->setDescription('Les nains sont robustes et endurants. Leur constitution exceptionnelle leur confère une résistance accrue aux coups.');
+        $dwarf->setDescriptionTranslations(['en' => 'Dwarves are sturdy and resilient. Their exceptional constitution grants them increased resistance to blows.']);
         $dwarf->setStatModifiers(['life' => 5, 'energy' => 5, 'speed' => -1, 'hit' => 0]);
         $dwarf->setAvailableAtCreation(true);
         $dwarf->setCreatedAt($now);
@@ -48,7 +54,9 @@ class RaceFixtures extends Fixture
         $orc = new Race();
         $orc->setSlug('orc');
         $orc->setName('Orc');
+        $orc->setNameTranslations(['en' => 'Orc']);
         $orc->setDescription('Les orcs sont des guerriers nés. Leur force brute compense leur manque de finesse, les rendant redoutables au corps à corps.');
+        $orc->setDescriptionTranslations(['en' => 'Orcs are born warriors. Their brute strength compensates for their lack of finesse, making them formidable in melee combat.']);
         $orc->setStatModifiers(['life' => 8, 'energy' => 0, 'speed' => 0, 'hit' => -3]);
         $orc->setAvailableAtCreation(true);
         $orc->setCreatedAt($now);

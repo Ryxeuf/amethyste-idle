@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f.b — cablage des filters `localized_race_name` + `localized_race_description`)
+> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f.c — fixtures EN pour les 4 races)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.f.c : fixtures EN pour les noms et descriptions des 4 races (2026-04-25)
+
+> Suite directe des sous-phases 3e.f (infrastructure entite) et 3e.f.b (cablage des filters Twig) : cable les traductions EN des 4 races standards directement dans `RaceFixtures` via la convention `setNameTranslations(['en' => ...])` + `setDescriptionTranslations(['en' => ...])` deja utilisee pour les autres entites (Item, Monster, Quest, Domain, Achievement). Atteint **100% de parite FR/EN sur les 4 races** : rendu immediat en anglais sur les ecrans de selection, creation de personnage et profil public quand la locale est `en`.
+>
+> Sous-phase independante des 13 PR i18n / avatar / mounts / events en vol : aucune ne touche `RaceFixtures.php`. Pattern additif, zero risque de conflit.
+
+### Changements
+
+- [x] `src/DataFixtures/Game/RaceFixtures.php` (+8 lignes) : ajout de `setNameTranslations(['en' => 'Human|Elf|Dwarf|Orc'])` et `setDescriptionTranslations(['en' => ...])` apres les setters FR existants pour les 4 races (`human`, `elf`, `dwarf`, `orc`). Descriptions EN miroir des FR (constitution / agilite / robustesse / force brute), preservant les nuances de gameplay.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.f.c cochee sous la branche 3e + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 met a jour l'avancement 135 avec la sous-phase 3e.f.c.
+
+**Diff** : +8 lignes fixtures + roadmap = ~30 lignes totales (<<300 budget). Aucune migration (colonnes JSON deja creees en 3e.f), aucun nouveau test (`RaceLocalizationTest` 14 cas + `RaceLocalizationExtensionTest` 9 cas couvrent deja la mecanique). Zero impact FR (fallback transparent preserve).
 
 ---
 
