@@ -53,7 +53,7 @@
 									{% elseif fse.statusEffect.type == 'berserk' %}bg-red-900/70 text-red-300 border-red-700
 									{% else %}bg-purple-900/70 text-purple-300 border-purple-700
 									{% endif %}"
-									title="{{ fse.statusEffect.name }} ({{ fse.remainingTurns }} {{ 'game.fight.turns'|trans|default('tours') }})">
+									title="{{ fse.statusEffect|localized_status_effect_name }} ({{ fse.remainingTurns }} {{ 'game.fight.turns'|trans|default('tours') }})">
 									{% if fse.statusEffect.icon %}{{ fse.statusEffect.icon }}{% else %}{{ fse.remainingTurns }}{% endif %}
 								</span>
 							{% endfor %}
