@@ -9,8 +9,11 @@ infrastructure k6 + scenario `guest-browsing`. Jalon 2 : scenario
 `metrics-stress` pour isoler la latence de collecte Prometheus / Doctrine
 sous charge soutenue. Jalon 3 : scenario `mercure-streaming` pour mesurer
 la capacite du hub Mercure (FrankenPHP/Caddy) a tenir des abonnes SSE
-concurrents sur le topic `map/move`. Les jalons suivants ajouteront le
-scenario authentifie (map, combat, hotel des ventes).
+concurrents sur le topic `map/move`. Jalon 4 : scenario
+`authenticated-gameplay` qui couvre la chaine login (CSRF + session) +
+boucle de chargement de la carte (`/game/map`, `/api/map/cells`,
+`/api/map/entities`) + page d'inventaire — premiere mesure de la tenue
+en charge des routes protegees `^/game` et `^/api/`.
 
 ## Prerequis
 
@@ -41,9 +44,10 @@ scripts/load-test/
 ├── README.md                 # ce fichier
 ├── config.js                 # env vars, thresholds et options partagees
 └── scenarios/
-    ├── guest-browsing.js     # navigation anonyme (home, login, register, /metrics, /health)
-    ├── metrics-stress.js     # stress focalise sur /metrics (collecte Prometheus + Doctrine)
-    └── mercure-streaming.js  # capacite SSE du hub Mercure sur le topic `map/move`
+    ├── guest-browsing.js          # navigation anonyme (home, login, register, /metrics, /health)
+    ├── metrics-stress.js          # stress focalise sur /metrics (collecte Prometheus + Doctrine)
+    ├── mercure-streaming.js       # capacite SSE du hub Mercure sur le topic `map/move`
+    └── authenticated-gameplay.js  # login + boucle map/inventaire (routes protegees /game et /api/map)
 ```
 
 ## Scenario : guest-browsing
@@ -181,6 +185,93 @@ Si un seuil est depasse, investiguer en priorite :
 > evenement publie -> recu, prevoir une variante avec l'extension SSE
 > (xk6-sse) ou un script Node externe declenche par le scenario.
 
+## Scenario : authenticated-gameplay
+
+Simule des joueurs connectes qui parcourent les ecrans principaux apres
+authentification. Chaque VU iteration :
+
+1. `GET /login` → extraction du `_csrf_token` du HTML
+2. `POST /login` (`email`, `password`, `_csrf_token`) → 302 vers `/game`,
+   `/game/character/select` ou `/game/character/create`
+3. `GET /game` (dashboard)
+4. `GET /game/map` (Twig) + `GET /api/map/config` + `GET /api/map/cells` +
+   `GET /api/map/entities` (boucle classique du `map_pixi_controller`)
+5. `GET /game/inventory`
+
+k6 maintient automatiquement un cookie jar par VU : la session Symfony
+reste valide pour toutes les requetes suivantes.
+
+Cas d'usage :
+
+- Mesurer la tenue en charge des routes protegees (`^/game`, `^/api/`)
+- Detecter une regression de session / CSRF / firewall Symfony
+- Evaluer le cout des API map (`/api/map/cells` charge un radius de tuiles,
+  `/api/map/entities` itere sur tous les joueurs/mobs/PNJ visibles)
+
+Prerequis : un (ou plusieurs) compte de test deja provisionne sur la
+cible, avec au moins un personnage cree pour eviter la redirection
+`/game/character/create`. Definir au choix :
+
+```bash
+# Compte unique
+TEST_USER_EMAIL=tester@amethyste.test \
+  TEST_USER_PASSWORD=motdepasse \
+  k6 run scripts/load-test/scenarios/authenticated-gameplay.js
+
+# Pool de comptes (round-robin sur les VUs) — recommande au-dela de 20 VUs
+TEST_CREDENTIALS_FILE=scripts/load-test/credentials.json \
+  k6 run scripts/load-test/scenarios/authenticated-gameplay.js
+```
+
+Format `credentials.json` :
+
+```json
+[
+  {"email": "u1@amethyste.test", "password": "..."},
+  {"email": "u2@amethyste.test", "password": "..."}
+]
+```
+
+> **Pourquoi un pool ?** Sous forte concurrence sur un meme compte, le
+> firewall Symfony serialise les sessions (verrou sur `getSession()`) et
+> les metriques de latence `/api/map/*` deviennent dominees par l'attente
+> de lock. Pour mesurer la capacite reelle, utiliser un pool d'au moins
+> `VUS / 5` comptes distincts.
+
+Run cible Sprint 12 (200 VUs, 5 minutes, pool de 50 comptes) :
+
+```bash
+BASE_URL=https://staging.amethyste.best \
+  VUS=200 DURATION=5m RAMP_UP=1m RAMP_DOWN=30s \
+  TEST_CREDENTIALS_FILE=scripts/load-test/credentials.json \
+  k6 run scripts/load-test/scenarios/authenticated-gameplay.js
+```
+
+Thresholds dedies (plus larges que `guest-browsing` car les routes
+authentifiees declenchent davantage de requetes Doctrine) :
+
+- `http_req_duration` : p95 < 1500ms, p99 < 3s
+- `http_req_failed` : < 2%
+- `auth_login_fail` : < 5% (taux de logins echoues — cible 0% en
+  conditions normales, marge laissee pour les CSRF expirees sous charge)
+- `auth_login_latency` : p95 < 2s (login = GET form + POST submit + 302)
+- `authed_request_fail` : < 2% (toute requete authentifiee qui ne
+  retourne pas 200 + content-type attendu)
+
+Si un seuil est depasse, investiguer en priorite :
+
+1. Le firewall Symfony (`security.yaml`, `LoginFormAuthenticator`) :
+   verifier que la session ne refait pas tout le hashing argon a chaque
+   requete (cas d'un `password_hashers.cost` mal calibre)
+2. Les API `/api/map/*` : un `findByMapWithMonster` non indexe, un
+   `findBy(['map' => $map])` sur Player sans index composite (`map_id`,
+   `coordinates`)
+3. Le pool Doctrine sous une concurrence reelle (200 VUs => 200
+   connexions PostgreSQL si pas de pooler)
+4. Le rendu Twig de `/game/map` (assets, includes, traductions) sous
+   charge — comparer avec `metrics-stress` pour isoler le cout DB du
+   cout rendering
+
 ## Variables d'environnement
 
 | Variable | Defaut | Description |
@@ -190,10 +281,14 @@ Si un seuil est depasse, investiguer en priorite :
 | `DURATION` | `1m` | Duree du plateau |
 | `RAMP_UP` | `30s` | Duree de montee 0 -> VUs |
 | `RAMP_DOWN` | `15s` | Duree de descente VUs -> 0 |
-| `THINK_TIME_MIN` | `1` | Attente min entre requetes (s) — `guest-browsing` |
-| `THINK_TIME_MAX` | `4` | Attente max entre requetes (s) — `guest-browsing` |
+| `THINK_TIME_MIN` | `1` | Attente min entre requetes (s) — `guest-browsing`, `authenticated-gameplay` |
+| `THINK_TIME_MAX` | `4` | Attente max entre requetes (s) — `guest-browsing`, `authenticated-gameplay` |
 | `SUBSCRIBE_DURATION` | `30` | Duree de l'abonnement SSE par VU (s) — `mercure-streaming` |
 | `MERCURE_TOPIC` | `map/move` | Topic SSE cible — `mercure-streaming` |
+| `TEST_USER_EMAIL` | _(aucun)_ | Email du compte unique — `authenticated-gameplay` |
+| `TEST_USER_PASSWORD` | _(aucun)_ | Mot de passe du compte unique — `authenticated-gameplay` |
+| `TEST_CREDENTIALS_FILE` | _(aucun)_ | Fichier JSON `[{email, password}, ...]` — `authenticated-gameplay` |
+| `MAP_RADIUS` | `15` | Radius pour `/api/map/cells` et `/api/map/entities` — `authenticated-gameplay` |
 | `K6_SUMMARY_EXPORT` | `scripts/load-test/last-summary.json` | Chemin du JSON de sortie |
 
 ## Seuils (thresholds)
@@ -225,8 +320,11 @@ metriques a surveiller en priorite :
 
 ## Prochaines etapes (Sprint 12)
 
-- Scenario `authenticated-gameplay` : login + fetch carte + mouvement
-  (necessite un pool de comptes de test et la gestion CSRF / session cookies).
+- Etendre `authenticated-gameplay` avec un POST de mouvement (`/api/map/move`,
+  necessite la gestion du token CSRF de l'API + un parcours coherent pour
+  eviter les rejets `next position invalid`) et un POST combat (entree de
+  fight + un tour). Mesurera le cout d'ecriture cote DB (UPDATE Player.x/y,
+  INSERT FightTurn) et la publication Mercure (`map/move`).
 - Variante `mercure-streaming` avec extension xk6-sse : decouper le flux
   evenement par evenement et mesurer la latence publish -> receive (necessite
   un k6 custom-build ou un harness Node externe).
