@@ -7,28 +7,47 @@ use App\Entity\App\Mob;
 use App\Entity\App\Player;
 use App\Service\Monitoring\MetricsCollector;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 class MetricsController extends AbstractController
 {
+    private const GAUGES_FRESHNESS_KEY = 'metrics_gauges_collected';
+    private const GAUGES_FRESHNESS_TTL_SECONDS = 10;
+
     public function __construct(
         private readonly MetricsCollector $metricsCollector,
         private readonly EntityManagerInterface $em,
+        private readonly CacheItemPoolInterface $cache,
     ) {
     }
 
     #[Route('/metrics', name: 'monitoring_metrics', methods: ['GET'])]
     public function __invoke(): Response
     {
-        $this->collectGameGauges();
+        $this->maybeCollectGameGauges();
 
         $body = $this->metricsCollector->renderPrometheus();
 
         return new Response($body, Response::HTTP_OK, [
             'Content-Type' => 'text/plain; version=0.0.4; charset=utf-8',
         ]);
+    }
+
+    private function maybeCollectGameGauges(): void
+    {
+        $freshness = $this->cache->getItem(self::GAUGES_FRESHNESS_KEY);
+        if ($freshness->isHit()) {
+            return;
+        }
+
+        $this->collectGameGauges();
+
+        $freshness->set(true);
+        $freshness->expiresAfter(self::GAUGES_FRESHNESS_TTL_SECONDS);
+        $this->cache->save($freshness);
     }
 
     private function collectGameGauges(): void
