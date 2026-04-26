@@ -1,7 +1,24 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3d.doc — mise a jour `docs/LOAD_TESTING_BOTTLENECKS.md` avec etat des jalons + section "Resultats observes")
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3d.doc.b — pointeurs CLAUDE.md vers `LOAD_TESTING_BOTTLENECKS.md` + `scripts/load-test/README.md`)
+
+---
+
+## 134 — Load testing & scaling sous-phase 3d.doc.b : pointeurs CLAUDE.md vers les outils de load testing (2026-04-26)
+
+> Suite directe de la sous-phase 3d.doc (mise a jour de `LOAD_TESTING_BOTTLENECKS.md`). Garantit qu'un futur agent (humain ou Claude Code) decouvre l'existence du plan d'optimisation et des scenarios k6 au demarrage de session, sans avoir a fouiller `docs/` ou `scripts/`.
+>
+> Sous-phase **purement editoriale** : 1 fichier modifie (`CLAUDE.md`). Aucun changement applicatif. Aucun nouveau test. Independante des 14 PR ouvertes : aucune ne touche `CLAUDE.md`.
+
+### Changements
+
+- [x] `CLAUDE.md` (+2 lignes section "Documentation approfondie") :
+  - Pointeur vers `docs/LOAD_TESTING_BOTTLENECKS.md` avec resume des 6 jalons (Redis cache, PgBouncer, indexes & cache des collectors `/metrics`, indexes composites map, hardening Mercure, scaling horizontal) et mention que l'etat est mis a jour au fur et a mesure des sous-phases livrees (cf. tache 134 du Sprint 12).
+  - Pointeur vers `scripts/load-test/README.md` avec liste des 4 scenarios k6 (`guest-browsing`, `metrics-stress`, `mercure-streaming`, `authenticated-gameplay`) + variables d'environnement + thresholds + objectif Sprint 12 (200 joueurs simultanes sans degradation).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d.doc.b ajoutee. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +2 lignes CLAUDE.md + ~3 lignes roadmap + entree ROADMAP_DONE = ~30 lignes totales (<<300 budget). Aucun changement applicatif. Permet de decouvrir le plan d'optimisation et les scenarios k6 au boot de session sans navigation supplementaire.
 
 ---
 
