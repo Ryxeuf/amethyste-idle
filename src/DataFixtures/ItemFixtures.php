@@ -2099,6 +2099,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Feu
             'materia_dragon_breath' => [
                 'name' => 'Souffle du dragon',
+                'name_translations' => ['en' => 'Dragon Breath'],
                 'description' => 'Matéria libérant un souffle de feu dévastateur',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -2112,6 +2113,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_volcanic_eruption' => [
                 'name' => 'Éruption volcanique',
+                'name_translations' => ['en' => 'Volcanic Eruption'],
                 'description' => 'Matéria déchaînant la puissance d\'un volcan',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -2125,6 +2127,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_ember_shield' => [
                 'name' => 'Bouclier d\'étincelles',
+                'name_translations' => ['en' => 'Ember Shield'],
                 'description' => 'Matéria créant un bouclier de braises protecteur',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -2140,6 +2143,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Vie
             'materia_vitality_surge' => [
                 'name' => 'Afflux de vitalité',
+                'name_translations' => ['en' => 'Vitality Surge'],
                 'description' => 'Matéria libérant un puissant afflux d\'énergie vitale',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2153,6 +2157,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_life_shield' => [
                 'name' => 'Bouclier de vie',
+                'name_translations' => ['en' => 'Life Shield'],
                 'description' => 'Matéria créant un bouclier protecteur d\'énergie vitale',
                 'type' => 'materia',
                 'element' => Element::Light,
