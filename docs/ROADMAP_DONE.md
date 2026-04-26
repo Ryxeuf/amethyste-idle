@@ -1,7 +1,23 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3d — partial index `idx_fight_in_progress`, complete jalon C indexes pour les collectors `/metrics`)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3e.b.b.fix — fixture EN pour le boss `Racine Ancienne`, atteint 100% de parite FR/EN du bestiaire)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.b.b.fix : fixture EN pour le boss `Racine Ancienne` (2026-04-26)
+
+> Completion d'un gap residuel apres la sous-phase 3e.b.b.suite (qui annoncait 100% de parite FR/EN du bestiaire mais avait en realite omis le boss `ancient_root` du donjon "Racines de la foret" — tache 84). Atteint reellement 100% de parite FR/EN sur l'integralite des noms de monstres affiches dans le bestiaire / combat / profile / depecage.
+>
+> Sous-phase **micro-fixture** : 1 ligne ajoutee a `MonsterFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `MonsterLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes : aucune ne touche cette fixture.
+
+### Changements
+
+- [x] `src/DataFixtures/MonsterFixtures.php` (+1 ligne) : ajout de `'name_translations' => ['en' => 'Ancient Root']` apres `'name' => 'Racine Ancienne'` dans l'entree `'ancient_root'` (boss de donjon, level 10, tier 4). Le loop existant `if (isset($data['name_translations']) ...) { $monster->setNameTranslations(...) }` (ligne 1159-1160) prend automatiquement en charge cette nouvelle traduction sans aucun changement de code.
+- [x] Verification de couverture systematique via `awk '/'\''name'\'' =>/ { name=$0; has_trans=0; next } /name_translations/ { has_trans=1 } /'\''level'\''/ { if (!has_trans) print "MISSING: " name }'` : seul `ancient_root` etait detecte comme manquant cote `MonsterFixtures::$monsters` racine. Les autres entrees `'name' =>` sans `name_translations` (Phase 1/2/3 dans `bossPhases`) sont des elements imbriques qui ne sont PAS exposes comme noms de monstres a l'utilisateur (`isset($data['name_translations'])` ne s'applique qu'au niveau racine du tableau de monstres).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.b.b.fix ajoutee sous `3e.b` (apres 3e.b.b.suite). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +1 ligne fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~30 lignes totales (<<300 budget). Aucune migration, aucun changement de code, aucun nouveau test. Impact EN immediat sur `/game/bestiary` (carte du boss), ecran de combat (entete + danger_alert au passage de seuils), bouton de depecage et `/game/profile` (titres de chasseur "Pourfendeur de Racine Ancienne" → "Slayer of Ancient Root") via le filter `localized_monster_name` cable depuis la sous-phase 3e.b.a.
 
 ---
 
