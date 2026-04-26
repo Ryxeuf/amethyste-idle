@@ -1024,6 +1024,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'magic_crystal' => [
                 'name' => 'Cristal magique',
+                'name_translations' => ['en' => 'Magic Crystal'],
                 'description' => 'Un cristal qui pulse avec une énergie mystérieuse',
                 'type' => 'stuff',
                 'slug' => 'magic-crystal',
@@ -1036,6 +1037,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'herbalist_domain_parchment' => [
                 'name' => "Découverte de l'herborisme",
+                'name_translations' => ['en' => 'Herbalism Discovery'],
                 'description' => 'Permet de devenir apprenti herboriste',
                 'type' => 'stuff',
                 'slug' => 'herbalist-domain-parchment',
@@ -1262,6 +1264,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Consommables alchimiste (recettes craft) ---
             'poison_vial' => [
                 'name' => 'Fiole de poison',
+                'name_translations' => ['en' => 'Poison Vial'],
                 'description' => 'Un poison concentré dans une fiole fragile, inflige des dégâts et empoisonne',
                 'type' => 'stuff',
                 'slug' => 'poison-vial',
@@ -1275,6 +1278,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'elixir_force' => [
                 'name' => 'Élixir de force',
+                'name_translations' => ['en' => 'Strength Elixir'],
                 'description' => 'Un élixir puissant qui décuple temporairement la force de frappe',
                 'type' => 'stuff',
                 'slug' => 'elixir-force',
@@ -1288,6 +1292,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'elixir_defense' => [
                 'name' => 'Élixir de défense',
+                'name_translations' => ['en' => 'Defense Elixir'],
                 'description' => 'Un élixir qui forme un bouclier magique autour du buveur',
                 'type' => 'stuff',
                 'slug' => 'elixir-defense',
@@ -1301,6 +1306,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'onguent_healing' => [
                 'name' => 'Onguent de guérison',
+                'name_translations' => ['en' => 'Healing Salve'],
                 'description' => 'Un baume cicatrisant qui régénère les blessures progressivement',
                 'type' => 'stuff',
                 'slug' => 'onguent-healing',
@@ -1313,6 +1319,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'elixir_vitality' => [
                 'name' => 'Élixir de vitalité',
+                'name_translations' => ['en' => 'Vitality Elixir'],
                 'description' => 'Un puissant élixir qui revigore profondément le corps et restaure la santé',
                 'type' => 'stuff',
                 'slug' => 'elixir-vitality',
@@ -1659,6 +1666,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'food_bread' => [
                 'name' => 'Pain',
+                'name_translations' => ['en' => 'Bread'],
                 'description' => 'Un pain frais et nourrissant',
                 'type' => 'food',
                 'slug' => 'food-bread',
@@ -1670,6 +1678,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'food_cheese' => [
                 'name' => 'Fromage',
+                'name_translations' => ['en' => 'Cheese'],
                 'description' => 'Un morceau de fromage savoureux',
                 'type' => 'food',
                 'slug' => 'food-cheese',
@@ -1681,6 +1690,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'food_apple' => [
                 'name' => 'Pomme',
+                'name_translations' => ['en' => 'Apple'],
                 'description' => 'Une pomme juteuse et sucrée',
                 'type' => 'food',
                 'slug' => 'food-apple',
@@ -1692,6 +1702,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_ancient_key' => [
                 'name' => 'Clé ancienne',
+                'name_translations' => ['en' => 'Ancient Key'],
                 'description' => 'Une clé mystérieuse qui semble très ancienne',
                 'type' => 'quest',
                 'slug' => 'quest-ancient-key',
@@ -1702,6 +1713,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_magic_gem' => [
                 'name' => 'Gemme magique',
+                'name_translations' => ['en' => 'Magic Gem'],
                 'description' => 'Une gemme qui brille d\'une lueur étrange',
                 'type' => 'quest',
                 'slug' => 'quest-magic-gem',
@@ -1714,6 +1726,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Fragments Acte 2
             'quest_item_fragment_foret' => [
                 'name' => 'Fragment Sylvestre',
+                'name_translations' => ['en' => 'Sylvan Fragment'],
                 'description' => 'Un éclat de cristal vert pulsant d\'énergie ancienne. Il vibre au rythme des murmures de la forêt. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-foret',
@@ -1726,6 +1739,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_fragment_mines' => [
                 'name' => 'Fragment de la Forge',
+                'name_translations' => ['en' => 'Forge Fragment'],
                 'description' => 'Un éclat de cristal orangé irradiant une chaleur ancienne. Il pulse au rythme des marteaux fantômes de la forge oubliée. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-mines',
@@ -1738,6 +1752,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_fragment_marais' => [
                 'name' => 'Fragment des Brumes',
+                'name_translations' => ['en' => 'Mist Fragment'],
                 'description' => 'Un éclat de cristal bleu-gris suintant une vapeur glaciale. Il pulse au rythme des courants invisibles du marais. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-marais',
@@ -1751,6 +1766,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'quest_item_fragment_montagne' => [
                 'name' => 'Fragment du Sommet',
+                'name_translations' => ['en' => 'Summit Fragment'],
                 'description' => 'Un éclat de cristal blanc strié de veines argentées, glacé au toucher. Il vibre au rythme des vents qui balaient les cimes. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-montagne',
@@ -1765,6 +1781,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // === Recompenses Acte 3 — La Convergence (tache 94) ===
             'convergence_blade' => [
                 'name' => 'Lame de la Convergence',
+                'name_translations' => ['en' => 'Convergence Blade'],
                 'description' => 'Une epee forgee dans le cristal d\'amethyste purifie. Les quatre fragments fusionnes resonnent dans la lame, lui conferant une puissance qui transcende les elements.',
                 'type' => 'gear',
                 'element' => Element::Light,
@@ -1783,6 +1800,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'convergence_amulet' => [
                 'name' => 'Amulette de la Convergence',
+                'name_translations' => ['en' => 'Convergence Amulet'],
                 'description' => 'Un pendentif taille dans le coeur du cristal d\'amethyste. Il pulse d\'une lumiere douce qui renforce les capacites magiques de son porteur.',
                 'type' => 'gear',
                 'element' => Element::Light,
@@ -1801,6 +1819,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',
+                'name_translations' => ['en' => 'Inferno'],
                 'description' => 'Matéria contenant un sort de brasier dévastateur',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1814,6 +1833,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_fire_wall' => [
                 'name' => 'Mur de feu',
+                'name_translations' => ['en' => 'Fire Wall'],
                 'description' => 'Matéria créant un mur de flammes infranchissable',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1827,6 +1847,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_fire_nova' => [
                 'name' => 'Nova de feu',
+                'name_translations' => ['en' => 'Fire Nova'],
                 'description' => 'Matéria libérant une explosion de feu dans toutes les directions',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1840,6 +1861,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_phoenix_flame' => [
                 'name' => 'Flamme du phénix',
+                'name_translations' => ['en' => 'Phoenix Flame'],
                 'description' => 'Matéria aux flammes régénératrices qui brûlent et soignent',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1853,6 +1875,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_meteor_strike' => [
                 'name' => 'Frappe météorique',
+                'name_translations' => ['en' => 'Meteor Strike'],
                 'description' => 'Matéria invoquant un météore enflammé',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1868,6 +1891,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Vie
             'materia_rejuvenation' => [
                 'name' => 'Régénération',
+                'name_translations' => ['en' => 'Rejuvenation'],
                 'description' => 'Matéria restaurant progressivement la santé',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1881,6 +1905,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_divine_blessing' => [
                 'name' => 'Bénédiction divine',
+                'name_translations' => ['en' => 'Divine Blessing'],
                 'description' => 'Matéria contenant une puissante bénédiction curative',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1894,6 +1919,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_healing_wave' => [
                 'name' => 'Vague de guérison',
+                'name_translations' => ['en' => 'Healing Wave'],
                 'description' => 'Matéria libérant une vague d\'énergie curative',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1907,6 +1933,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_life_transfer' => [
                 'name' => 'Transfert de vie',
+                'name_translations' => ['en' => 'Life Transfer'],
                 'description' => 'Matéria permettant de transférer l\'énergie vitale',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1920,6 +1947,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_holy_light' => [
                 'name' => 'Lumière sacrée',
+                'name_translations' => ['en' => 'Holy Light'],
                 'description' => 'Matéria émettant une lumière divine curative et offensive',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1935,6 +1963,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Mort
             'materia_soul_drain' => [
                 'name' => 'Drain d\'âme',
+                'name_translations' => ['en' => 'Soul Drain'],
                 'description' => 'Matéria aspirant l\'énergie vitale de la cible',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1948,6 +1977,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_death_touch' => [
                 'name' => 'Toucher mortel',
+                'name_translations' => ['en' => 'Death Touch'],
                 'description' => 'Matéria infligeant une douleur intense au contact',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1961,6 +1991,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_bolt' => [
                 'name' => 'Éclair d\'ombre',
+                'name_translations' => ['en' => 'Shadow Bolt'],
                 'description' => 'Matéria projetant un éclair d\'énergie sombre',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1974,6 +2005,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_life_leech' => [
                 'name' => 'Sangsue vitale',
+                'name_translations' => ['en' => 'Life Leech'],
                 'description' => 'Matéria absorbant l\'énergie vitale de la cible',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1987,6 +2019,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_wave' => [
                 'name' => 'Vague d\'ombre',
+                'name_translations' => ['en' => 'Shadow Wave'],
                 'description' => 'Matéria libérant une vague d\'énergie sombre',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2002,6 +2035,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Terre
             'materia_earthquake' => [
                 'name' => 'Tremblement de terre',
+                'name_translations' => ['en' => 'Earthquake'],
                 'description' => 'Matéria provoquant un séisme destructeur',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2015,6 +2049,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_rock_armor' => [
                 'name' => 'Armure de roche',
+                'name_translations' => ['en' => 'Rock Armor'],
                 'description' => 'Matéria créant une armure de pierre protectrice',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2030,6 +2065,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Vent
             'materia_wind_lame' => [
                 'name' => 'Lame d\'air',
+                'name_translations' => ['en' => 'Wind Blade'],
                 'description' => 'Matéria créant une lame d\'air tranchante',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2043,6 +2079,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_gust' => [
                 'name' => 'Bourrasque',
+                'name_translations' => ['en' => 'Gust'],
                 'description' => 'Matéria déclenchant une puissante bourrasque',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2056,6 +2093,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_cyclone' => [
                 'name' => 'Cyclone',
+                'name_translations' => ['en' => 'Cyclone'],
                 'description' => 'Matéria invoquant un cyclone dévastateur',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2071,6 +2109,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Feu
             'materia_dragon_breath' => [
                 'name' => 'Souffle du dragon',
+                'name_translations' => ['en' => 'Dragon Breath'],
                 'description' => 'Matéria libérant un souffle de feu dévastateur',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -2084,6 +2123,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_volcanic_eruption' => [
                 'name' => 'Éruption volcanique',
+                'name_translations' => ['en' => 'Volcanic Eruption'],
                 'description' => 'Matéria déchaînant la puissance d\'un volcan',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -2097,6 +2137,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_ember_shield' => [
                 'name' => 'Bouclier d\'étincelles',
+                'name_translations' => ['en' => 'Ember Shield'],
                 'description' => 'Matéria créant un bouclier de braises protecteur',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -2112,6 +2153,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Vie
             'materia_vitality_surge' => [
                 'name' => 'Afflux de vitalité',
+                'name_translations' => ['en' => 'Vitality Surge'],
                 'description' => 'Matéria libérant un puissant afflux d\'énergie vitale',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2125,6 +2167,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_life_shield' => [
                 'name' => 'Bouclier de vie',
+                'name_translations' => ['en' => 'Life Shield'],
                 'description' => 'Matéria créant un bouclier protecteur d\'énergie vitale',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2138,6 +2181,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_celestial_blessing' => [
                 'name' => 'Bénédiction céleste',
+                'name_translations' => ['en' => 'Celestial Blessing'],
                 'description' => 'Matéria invoquant une bénédiction des cieux',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2151,6 +2195,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_divine_intervention' => [
                 'name' => 'Intervention divine',
+                'name_translations' => ['en' => 'Divine Intervention'],
                 'description' => 'Matéria invoquant une intervention des dieux',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2166,6 +2211,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Mort
             'materia_dark_harvest' => [
                 'name' => 'Moisson sombre',
+                'name_translations' => ['en' => 'Dark Harvest'],
                 'description' => 'Matéria récoltant l\'énergie vitale des ennemis',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2179,6 +2225,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_soul_rip' => [
                 'name' => 'Déchirure d\'âme',
+                'name_translations' => ['en' => 'Soul Rip'],
                 'description' => 'Matéria déchirant l\'âme de la cible',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2192,6 +2239,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_death_nova' => [
                 'name' => 'Nova de mort',
+                'name_translations' => ['en' => 'Death Nova'],
                 'description' => 'Matéria libérant une explosion d\'énergie mortelle',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2205,6 +2253,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_mend' => [
                 'name' => 'Guérison des ombres',
+                'name_translations' => ['en' => 'Shadow Mend'],
                 'description' => 'Matéria utilisant l\'énergie sombre pour soigner',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2220,6 +2269,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Terre
             'materia_boulder_throw' => [
                 'name' => 'Lancer de rocher',
+                'name_translations' => ['en' => 'Boulder Throw'],
                 'description' => 'Matéria projetant un énorme rocher',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2233,6 +2283,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_stone_spikes' => [
                 'name' => 'Pics de pierre',
+                'name_translations' => ['en' => 'Stone Spikes'],
                 'description' => 'Matéria faisant jaillir des pics de pierre du sol',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2246,6 +2297,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_mountain_strength' => [
                 'name' => 'Force de la montagne',
+                'name_translations' => ['en' => 'Mountain Strength'],
                 'description' => 'Matéria conférant la force et la résistance d\'une montagne',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2261,6 +2313,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Vent
             'materia_tornado' => [
                 'name' => 'Tornade',
+                'name_translations' => ['en' => 'Tornado'],
                 'description' => 'Matéria invoquant une tornade dévastatrice',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2274,6 +2327,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_wind_shield' => [
                 'name' => 'Bouclier de vent',
+                'name_translations' => ['en' => 'Wind Shield'],
                 'description' => 'Matéria créant un bouclier d\'air protecteur',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2287,6 +2341,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_air_dash' => [
                 'name' => 'Ruée d\'air',
+                'name_translations' => ['en' => 'Air Dash'],
                 'description' => 'Matéria permettant de se déplacer rapidement sur un coussin d\'air',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2302,6 +2357,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Eau (comblement du déficit)
             'materia_tidal_wave' => [
                 'name' => 'Raz-de-marée',
+                'name_translations' => ['en' => 'Tidal Wave'],
                 'description' => 'Matéria invoquant une vague massive qui submerge les ennemis',
                 'type' => 'materia',
                 'element' => Element::Water,
@@ -2315,6 +2371,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_ice_lance' => [
                 'name' => 'Lance de glace',
+                'name_translations' => ['en' => 'Ice Lance'],
                 'description' => 'Matéria projetant une lance de glace qui transperce l\'ennemi',
                 'type' => 'materia',
                 'element' => Element::Water,
@@ -2329,6 +2386,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Métal (comblement du déficit)
             'materia_iron_fist' => [
                 'name' => 'Charge',
+                'name_translations' => ['en' => 'Iron Fist'],
                 'description' => 'Matéria libérant une charge brutale avec un poing de fer',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -2342,6 +2400,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_metal_storm' => [
                 'name' => 'Tempête métallique',
+                'name_translations' => ['en' => 'Metal Storm'],
                 'description' => 'Matéria déclenchant une pluie de fragments métalliques acérés',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -2356,6 +2415,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Bête (comblement du déficit)
             'materia_thorn_burst' => [
                 'name' => 'Explosion d\'épines',
+                'name_translations' => ['en' => 'Thorn Burst'],
                 'description' => 'Matéria faisant jaillir des épines du sol',
                 'type' => 'materia',
                 'element' => Element::Beast,
@@ -2369,6 +2429,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_leaf_blade' => [
                 'name' => 'Lame feuille',
+                'name_translations' => ['en' => 'Leaf Blade'],
                 'description' => 'Matéria formant une lame tranchante de feuilles acérées',
                 'type' => 'materia',
                 'element' => Element::Beast,
@@ -2384,6 +2445,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'wooden_sword' => [
                 'name' => 'Épée en bois',
+                'name_translations' => ['en' => 'Wooden Sword'],
                 'description' => 'Une épée taillée dans du bois dur. Pas très tranchante, mais ça fait le travail.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2397,6 +2459,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_helmet' => [
                 'name' => 'Casque rouillé',
+                'name_translations' => ['en' => 'Rusty Helmet'],
                 'description' => 'Un vieux casque en fer rongé par la rouille. Mieux que rien.',
                 'type' => 'gear',
                 'slug' => 'starter-helmet',
@@ -2409,6 +2472,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_chest' => [
                 'name' => 'Tunique rembourrée',
+                'name_translations' => ['en' => 'Padded Tunic'],
                 'description' => 'Une tunique en lin rembourrée de paille. Protection minimale mais confortable.',
                 'type' => 'gear',
                 'slug' => 'starter-chest',
@@ -2421,6 +2485,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_legs' => [
                 'name' => 'Jambières en tissu',
+                'name_translations' => ['en' => 'Cloth Leggings'],
                 'description' => 'Des jambières en tissu épais, rapiécées à plusieurs endroits.',
                 'type' => 'gear',
                 'slug' => 'starter-legs',
@@ -2433,6 +2498,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_boots' => [
                 'name' => 'Sandales usées',
+                'name_translations' => ['en' => 'Worn Sandals'],
                 'description' => 'Des sandales de cuir usées par le temps. Au moins, elles tiennent encore.',
                 'type' => 'gear',
                 'slug' => 'starter-boots',
@@ -2445,6 +2511,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_gloves' => [
                 'name' => 'Gants de travail',
+                'name_translations' => ['en' => 'Work Gloves'],
                 'description' => 'Des gants en cuir épais, conçus pour le travail manuel mais utiles au combat.',
                 'type' => 'gear',
                 'slug' => 'starter-gloves',
@@ -2457,6 +2524,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_shield' => [
                 'name' => 'Bouclier en bois',
+                'name_translations' => ['en' => 'Wooden Shield'],
                 'description' => 'Un bouclier rudimentaire en planches de bois clouées ensemble.',
                 'type' => 'gear',
                 'slug' => 'starter-shield',
@@ -2756,6 +2824,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'dragon_fang_blade' => [
                 'name' => 'Lame de croc draconique',
+                'name_translations' => ['en' => 'Dragon Fang Blade'],
                 'description' => 'Une épée forgée à partir d\'un croc du Dragon ancestral. La lame irradie une chaleur intense.',
                 'type' => 'gear',
                 'element' => Element::Fire,
@@ -2772,6 +2841,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'dragon_scale_armor' => [
                 'name' => 'Plastron en écailles de dragon',
+                'name_translations' => ['en' => 'Dragon Scale Armor'],
                 'description' => 'Un plastron taillé dans les écailles du Dragon ancestral. Résiste à la chaleur la plus extrême.',
                 'type' => 'gear',
                 'element' => Element::Fire,
@@ -2786,6 +2856,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'griffin_talon_ring' => [
                 'name' => 'Anneau de serre de griffon',
+                'name_translations' => ['en' => 'Griffin Talon Ring'],
                 'description' => 'Un anneau forgé autour d\'une serre de griffon. Confère une vitesse surnaturelle à son porteur.',
                 'type' => 'gear',
                 'element' => Element::Air,
@@ -2800,6 +2871,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'minotaur_horn_helm' => [
                 'name' => 'Heaume cornu du minotaure',
+                'name_translations' => ['en' => 'Minotaur Horn Helm'],
                 'description' => 'Un heaume massif orné des cornes brisées d\'un minotaure alpha. Inspire la terreur.',
                 'type' => 'gear',
                 'element' => Element::Earth,
@@ -2814,6 +2886,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'golem_heart_shield' => [
                 'name' => 'Bouclier cœur de golem',
+                'name_translations' => ['en' => 'Golem Heart Shield'],
                 'description' => 'Un bouclier taillé dans le noyau cristallin d\'un golem de pierre. Presque indestructible.',
                 'type' => 'gear',
                 'element' => Element::Earth,
@@ -2828,6 +2901,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'troll_king_belt' => [
                 'name' => 'Ceinture du roi troll',
+                'name_translations' => ['en' => 'Troll King Belt'],
                 'description' => 'Une ceinture massive en cuir de troll, renforcée de plaques de métal. Accorde une régénération accrue.',
                 'type' => 'gear',
                 'slug' => 'troll-king-belt',
@@ -2844,6 +2918,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'guardian_bark_armor' => [
                 'name' => 'Cuirasse d\'écorce ancestrale',
+                'name_translations' => ['en' => 'Ancestral Bark Cuirass'],
                 'description' => 'Une cuirasse vivante taillée dans l\'écorce du Gardien de la Forêt. Des runes végétales pulsent à sa surface.',
                 'type' => 'gear',
                 'element' => Element::Beast,
@@ -2859,6 +2934,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'guardian_thorn_staff' => [
                 'name' => 'Bâton d\'épines primordiales',
+                'name_translations' => ['en' => 'Primordial Thorn Staff'],
                 'description' => 'Un bâton noueux arraché au cœur du Gardien. Des épines acérées y poussent encore.',
                 'type' => 'gear',
                 'element' => Element::Earth,
@@ -2875,6 +2951,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'forgelord_obsidian_blade' => [
                 'name' => 'Lame d\'obsidienne du Seigneur',
+                'name_translations' => ['en' => 'Forge Lord\'s Obsidian Blade'],
                 'description' => 'Une épée forgée dans les ténèbres par le Seigneur de la Forge. L\'obsidienne vibre d\'une énergie sombre.',
                 'type' => 'gear',
                 'element' => Element::Metal,
@@ -2891,6 +2968,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'forgelord_dark_plate' => [
                 'name' => 'Plastron de la forge obscure',
+                'name_translations' => ['en' => 'Dark Forge Plate'],
                 'description' => 'Un plastron massif en métal sombre, imprégné de l\'essence des ténèbres de la forge.',
                 'type' => 'gear',
                 'element' => Element::Dark,

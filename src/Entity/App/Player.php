@@ -18,6 +18,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(columns: ['map_id'], name: 'idx_player_map')]
 #[ORM\Index(columns: ['fight_id'], name: 'idx_player_fight')]
 #[ORM\Index(columns: ['user_id'], name: 'idx_player_user')]
+#[ORM\Index(columns: ['updated_at'], name: 'idx_player_updated_at')]
 #[ORM\Entity()]
 class Player implements CharacterInterface
 {

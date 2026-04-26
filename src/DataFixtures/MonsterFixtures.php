@@ -1063,6 +1063,7 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
             // === Boss de donjon : Racines de la foret (tache 84) ===
             'ancient_root' => [
                 'name' => 'Racine Ancienne',
+                'name_translations' => ['en' => 'Ancient Root'],
                 'life' => 350,
                 'hit' => 75,
                 'speed' => 7,

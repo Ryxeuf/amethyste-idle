@@ -1,7 +1,460 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f.c — fixtures EN pour les 4 races)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.r — 4 boss de zone Acte 2 + 3 items magiques, 7 items)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.r : fixtures EN pour 4 boss de zone Acte 2 + 3 items magiques (2026-04-26)
+
+> Suite directe de la sous-phase 3c.q (boss legendaries Acte 1). Couvre les 4 drops uniques des boss de zone Acte 2 (tache 66) + 3 items magiques varies orphelins.
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) :
+  - **Boss de zone Acte 2 (tache 66, Legendary)** :
+    - `guardian_bark_armor` → **Ancestral Bark Cuirass** (cuirasse Forest Guardian, Beast)
+    - `guardian_thorn_staff` → **Primordial Thorn Staff** (baton druid, Earth)
+    - `forgelord_obsidian_blade` → **Forge Lord's Obsidian Blade** (epee Forge Lord, Metal)
+    - `forgelord_dark_plate` → **Dark Forge Plate** (plastron Forge Lord, Dark)
+  - **Items magiques varies orphelins** :
+    - `magic_crystal` → **Magic Crystal** (boost element aleatoire, Epic)
+    - `herbalist_domain_parchment` → **Herbalism Discovery** (apprentissage du domaine herbalist)
+    - `poison_vial` → **Poison Vial** (consommable alchimiste, Uncommon)
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.r ajoutee dans la branche 3 (apres 3c.q). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur la table de loot du bestiaire (drops uniques des boss de zone), l'inventaire post-combat, et les selecteurs d'equipement. 20 items restent sans traduction (equipements craftables iron/copper/gold, accessoires varies, items secondaires) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.q : fixtures EN pour 6 recompenses uniques de boss (Legendary) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.p (starter equipment). Couvre 6 drops legendaires uniques de boss tier 4-5.
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 drops uniques (rarete Legendary, level 25+, 2 slots materia chacun) :
+  - `dragon_fang_blade` → **Dragon Fang Blade** (epee Dragon ancestral, element Fire)
+  - `dragon_scale_armor` → **Dragon Scale Armor** (plastron Dragon, Fire)
+  - `griffin_talon_ring` → **Griffin Talon Ring** (anneau Griffin, Air)
+  - `minotaur_horn_helm` → **Minotaur Horn Helm** (heaume Minotaure alpha, Earth)
+  - `golem_heart_shield` → **Golem Heart Shield** (bouclier Golem de pierre, Earth)
+  - `troll_king_belt` → **Troll King Belt** (ceinture Troll)
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.q ajoutee dans la branche 3 (apres 3c.p). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur la table de loot du bestiaire (les drops uniques sont affiches), l'inventaire post-combat, et les selecteurs d'equipement. 27 items restent sans traduction (boss de zone tier 5+ comme Forest Guardian / Forge Lord, items magiques exotiques, equipements elementaires t1+ par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.p : fixtures EN pour 7 equipements starter (2026-04-26)
+
+> Suite directe de la sous-phase 3c.o (consommables). Couvre le set complet d'equipement de demarrage que tout nouveau personnage acquiert au tutoriel.
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 7 equipements element None (sans prerequis), niveau 1, 1 slot materia chacun :
+  - `wooden_sword` → **Wooden Sword** (arme principale starter)
+  - `starter_helmet` → **Rusty Helmet** (casque)
+  - `starter_chest` → **Padded Tunic** (torse)
+  - `starter_legs` → **Cloth Leggings** (jambes)
+  - `starter_boots` → **Worn Sandals** (pieds)
+  - `starter_gloves` → **Work Gloves** (mains)
+  - `starter_shield` → **Wooden Shield** (bouclier secondaire)
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.p ajoutee dans la branche 3 (apres 3c.o). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur l'ecran de creation de personnage, le premier inventaire post-tutoriel et le paper doll. 33 items restent sans traduction (equipements elementaires t1+, items boss legendaires, divers consommables avances) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.o : fixtures EN pour 7 consommables alchimistes + nourriture (2026-04-26)
+
+> Suite directe de la sous-phase 3c.n (100% materias). Ouvre la categorie consommables avec 4 elixirs alchimistes (`type='stuff'`) et 3 nourritures (`type='food'`).
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 7 consommables :
+  - **Elixirs (alchimiste)** : `elixir_force` → **Strength Elixir** (boost ATK temporaire), `elixir_defense` → **Defense Elixir** (bouclier magique), `onguent_healing` → **Healing Salve** (regen progressive), `elixir_vitality` → **Vitality Elixir** (restauration profonde HP).
+  - **Nourriture (food)** : `food_bread` → **Bread**, `food_cheese` → **Cheese**, `food_apple` → **Apple** (toutes restore_energy).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.o ajoutee dans la branche 3 (apres 3c.n). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (onglet items), shop alchimiste, drops de quetes/monstres, et ecran de combat (utilisation des consommables). 40 items restent sans traduction (equipements elementaires t2/t3 par slot, items boss legendaires, divers consommables avances) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.n : 6 dernieres materias Eau/Metal/Bete — 100% parite FR/EN materias atteinte (2026-04-26)
+
+> Suite directe de la sous-phase 3c.m (Earth/Air). Ferme la chaine de sous-phases d'EN translations pour materias avancees (3c.g/h/i/j/k/l/m/n) en couvrant les 6 dernieres : 2 Eau + 2 Metal + 2 Bete. **Atteint reellement 100% de parite FR/EN sur l'integralite des materias** (verification systematique via `awk` : 0 materia sans `name_translations` cote `ItemFixtures::$items` racine).
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 materias :
+  - **Eau (hydromancer)** : `materia_tidal_wave` → **Tidal Wave** (m3, raz-de-maree massif), `materia_ice_lance` → **Ice Lance** (m2, lance de glace tranchante).
+  - **Metal (soldier/knight)** : `materia_iron_fist` → **Iron Fist** (m2, charge brute soldier), `materia_metal_storm` → **Metal Storm** (m3, pluie de fragments knight).
+  - **Bete (druid/hunter)** : `materia_thorn_burst` → **Thorn Burst** (m2, epines du sol druid), `materia_leaf_blade` → **Leaf Blade** (m3, lame vegetale hunter).
+- [x] Verification de couverture systematique via `awk` sur `ItemFixtures::$items` racine : aucun item-materia ne manque desormais de `name_translations`. Le hot path materia (`/game/inventory` onglet materia, `/game/shop` selecteurs, table de loot, ecrans de combat) est entierement bilingue FR/EN.
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.n ajoutee dans la branche 3 (apres 3c.m) avec mention de l'atteinte des 100%. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` et `/game/shop` pour TOUS les selecteurs de materia, peu importe le domaine du joueur ou le niveau de progression. 47 items restent sans traduction (consommables alchimistes, equipements elementaires t2/t3 par slot) — ces categories restantes sont desormais le seul axe d'i18n items a couvrir.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.m : fixtures EN pour 6 materias avancees Terre/Vent tier 2-4 (2026-04-26)
+
+> Suite directe de la sous-phase 3c.l (Lumiere/Ombre). Etend la couverture EN aux 6 materias avancees Earth (domaine soldier) et Air (domaine druid) tier 2-4.
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 materias :
+  - **Earth (soldier)** : `materia_boulder_throw` → **Boulder Throw** (m3, AOE rocher), `materia_stone_spikes` → **Stone Spikes** (m3, pics du sol), `materia_mountain_strength` → **Mountain Strength** (m3, buff defensif).
+  - **Air (druid)** : `materia_tornado` → **Tornado** (m4, AOE devastatrice), `materia_wind_shield` → **Wind Shield** (m3, bouclier defensif), `materia_air_dash` → **Air Dash** (m2, mobilite).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.m ajoutee dans la branche 3 (apres 3c.l). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees a haut niveau dans soldier/druid), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 53 items restent sans traduction (consommables alchimistes, materia tier 4+ Eau/Bete/Metal, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.l : fixtures EN pour 6 materias avancees Lumiere/Ombre tier 3-4 (2026-04-26)
+
+> Suite directe de la sous-phase 3c.k (Feu+Vie). Etend la couverture EN aux 6 materias avancees Lumiere (domaine healer) et Ombre (domaine necromancer) tier 3-4.
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 materias :
+  - **Lumiere (healer)** : `materia_celestial_blessing` → **Celestial Blessing** (m4), `materia_divine_intervention` → **Divine Intervention** (m4).
+  - **Ombre (necromancer)** : `materia_dark_harvest` → **Dark Harvest** (m4, recolte HP/MP enemis), `materia_soul_rip` → **Soul Rip** (m4), `materia_death_nova` → **Death Nova** (m3, AOE explosive), `materia_shadow_mend` → **Shadow Mend** (m3, soin sombre).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.l ajoutee dans la branche 3 (apres 3c.k). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees a haut niveau dans healer/necromancer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 59 items restent sans traduction (consommables alchimistes, materia tier 4+ Earth/Air/Beast/Metal, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.k : fixtures EN pour 5 materias avancees Feu+Vie tier 3-5 (2026-04-26)
+
+> Suite directe de la sous-phase 3c.j (Terre/Vent). Etend la couverture EN aux 5 materias avancees des domaines pyromancy (offensif Feu tier 3-5) et healer (defensif/buff Vie tier 3).
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias :
+  - **Feu (pyromancy)** : `materia_dragon_breath` → **Dragon Breath** (m4, souffle de feu massif), `materia_volcanic_eruption` → **Volcanic Eruption** (m5, ultime), `materia_ember_shield` → **Ember Shield** (m3, bouclier defensif feu).
+  - **Vie (healer)** : `materia_vitality_surge` → **Vitality Surge** (m3, afflux HP/MP), `materia_life_shield` → **Life Shield** (m3, bouclier sacre).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.k ajoutee dans la branche 3 (apres 3c.j). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees a haut niveau dans pyromancy/healer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 65 items restent sans traduction (consommables alchimistes, materia tier 4+ celestial/dark advanced, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.j : fixtures EN pour les 5 materias Terre/Vent (domaines soldier + druid) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.i (Dark, 5 materias necromancer). Etend la couverture EN aux 5 materias avancees des elements Earth (domaine soldier) et Air (domaine druid).
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias :
+  - **Earth (soldier)** : `materia_earthquake` → **Earthquake** (m2, AOE seisme), `materia_rock_armor` → **Rock Armor** (m2, buff defensif).
+  - **Air (druid)** : `materia_wind_lame` → **Wind Blade** (m1, lame d'air tranchante), `materia_gust` → **Gust** (m2, bourrasque), `materia_cyclone` → **Cyclone** (m3, AOE cyclone devastateur).
+- [x] Note : `materia_wind_lame` est definie deux fois dans `ItemFixtures` (lignes 237 et 2054) — la 1ere etait deja traduite (Wind Blade), la 2eme (qui ecrase effectivement la 1ere via la convention PHP de cle dupliquee) est traduite ici pour preserver la coherence et eviter les regressions si la duplication est nettoyee dans une refacto ulterieure.
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.j ajoutee dans la branche 3 (apres 3c.i). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees apres avoir avance dans les domaines soldier/druid), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 70 items restent sans traduction (consommables alchimistes, materia tier 4+ avancees feu/lumiere/ombre, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.i : fixtures EN pour les 5 materias Ombre/Mort (domaine necromancer) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.h (Lumiere, 5 materias healer). Etend la couverture EN aux 5 materias avancees du domaine `necromancer` (element Dark) : arsenal de necromancie couvrant drain HP/MP, attaque AOE shadow, leech HP. Pendant naturel des soins du domaine healer.
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias element Dark :
+  - `materia_soul_drain` → **Soul Drain** (m2, drain MP).
+  - `materia_death_touch` → **Death Touch** (m2, contact mortel).
+  - `materia_shadow_bolt` → **Shadow Bolt** (m3, projectile sombre).
+  - `materia_life_leech` → **Life Leech** (m2, drain HP avec heal au caster).
+  - `materia_shadow_wave` → **Shadow Wave** (m3, vague AOE sombre).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.i ajoutee dans la branche 3 (apres 3c.h). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees apres avoir avance dans le domaine necromancer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 75 items restent sans traduction (consommables alchimistes, materia tier 3+ pour les autres elements eau/air/terre/metal/bete, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.h : fixtures EN pour les 5 materias Lumiere/Vie (domaine healer) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.g (Feu, 5 materias pyromancy). Etend la couverture EN aux 5 materias avancees du domaine `healer` (element Light) : arsenal de soin couvrant regeneration progressive, benediction massive, vague AOE, transfert HP entre allies, lumiere divine offensive+curative.
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias element Lumiere :
+  - `materia_rejuvenation` → **Rejuvenation** (m2, regeneration progressive HP).
+  - `materia_divine_blessing` → **Divine Blessing** (m3, benediction massive).
+  - `materia_healing_wave` → **Healing Wave** (m2, vague AOE de soin).
+  - `materia_life_transfer` → **Life Transfer** (m2, transfert HP entre allies).
+  - `materia_holy_light` → **Holy Light** (m3, lumiere divine offensive+curative).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.h ajoutee dans la branche 3 (apres 3c.g). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees apres avoir avance dans le domaine healer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 80 items restent sans traduction (consommables alchimistes, materia tier 3+ pour les autres elements eau/air/terre/metal/bete/ombre, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.g : fixtures EN pour les recompenses Acte 3 + materia tier 3-4 element Feu (7 items) (2026-04-26)
+
+> Suite directe des sous-phases 3c (35 items starter), 3c.b/c/d/e/f (materias tier 1-3, materiaux craft, plantes, armes generiques, quest items). Etend la couverture EN aux 2 recompenses ultimes de l'Acte 3 (Amethyste rarity) et aux 5 materias avancees du domaine pyromancy.
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 7 items :
+  - **Recompenses Acte 3 (Amethyste rarity)** : `convergence_blade=Convergence Blade` (epee main_weapon, 3 slots materia, niveau 25, drop unique du Gardien de la Convergence) et `convergence_amulet=Convergence Amulet` (collier, 2 slots materia, niveau 25).
+  - **Materia tier 3-4 element Feu** : `materia_inferno=Inferno`, `materia_fire_wall=Fire Wall`, `materia_fire_nova=Fire Nova`, `materia_phoenix_flame=Phoenix Flame`, `materia_meteor_strike=Meteor Strike` (toutes appartenant au domaine pyromancy, debloquees a haut niveau de progression).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.g ajoutee dans la branche 3 (apres 3c.f). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (table de loot du Gardien de la Convergence + materias debloquees apres avoir avance dans le domaine pyromancy), `/game/shop` si certains de ces items sont vendus, et tout dialogue PNJ qui mentionne ces recompenses. 85 items restent sans traduction (consommables alchimistes avances, materia tier 3+ pour les autres elements eau/air/terre/metal/bete/lumiere/ombre, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.f : fixtures EN pour les 6 quest items (chaine narrative Acte 1-2) (2026-04-26)
+
+> Suite directe des sous-phases 3c (35 items starter), 3c.b (26 materia tier 1-3), 3c.c (18 materiaux craft), 3c.d (27 plantes/herbes) et 3c.e (15 armes generiques) : etend les traductions EN aux 6 items de quete narratifs des Actes 1 et 2. Les fragments de l'Améthyste (4 items) sont la pierre angulaire de la chaine narrative principale "Les Fragments" qui mene au boss de l'Acte 3 (Gardien de la Convergence).
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes : aucune ne touche `ItemFixtures.php`.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` apres `'name' => '...'` dans 6 entrees `quest_item_*` :
+  - `quest_item_ancient_key` : Clé ancienne → **Ancient Key** (item Acte 1, recherche du tutoriel des donjons).
+  - `quest_item_magic_gem` : Gemme magique → **Magic Gem** (item Acte 1, premiere quete d'enchantement).
+  - `quest_item_fragment_foret` : Fragment Sylvestre → **Sylvan Fragment** (1er fragment Acte 2 — donjon de la foret).
+  - `quest_item_fragment_mines` : Fragment de la Forge → **Forge Fragment** (2eme fragment Acte 2 — mines).
+  - `quest_item_fragment_marais` : Fragment des Brumes → **Mist Fragment** (3eme fragment Acte 2 — marais).
+  - `quest_item_fragment_montagne` : Fragment du Sommet → **Summit Fragment** (4eme fragment Acte 2 — montagne).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.f ajoutee dans la branche 3 (apres 3c.e). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur l'inventaire (`/game/inventory`), l'ecran de quetes (`/game/quest`), la table de loot des donjons d'Acte 2 et tout dialogue PNJ qui mentionne ces items via `{{ item|localized_name }}` — particulierement crucial pour les quetes "Les Fragments" (chaine narrative principale de l'Acte 2 menant a l'Acte 3 La Convergence). 92 items restent sans traduction (consommables alchimistes avances, recompenses Acte 3 `convergence_*`, materia tier 4+, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
+
+---
+
+## 134 — Load testing & scaling sous-phase 3e : script `run-all.sh` pour lancer les 4 scenarios k6 sequentiellement (2026-04-26)
+
+> Suite directe des sous-phases 1 + 2a/b/c (scenarios k6) et 2d (plan analytique). Fournit un point d'entree unique pour lancer toute la suite de benchmarks k6 (anonyme + metrics + Mercure + auth) avec un seul appel et un resume agrege. Prepare l'integration CI nightly mentionnee dans la section "Prochaines etapes (Sprint 12)" du `scripts/load-test/README.md`.
+>
+> Sous-phase **outillage** : 1 nouveau script bash + 1 doc mise a jour. Aucun changement applicatif. Aucun nouveau test. Independante des 14 PR ouvertes : aucune ne touche `scripts/load-test/`.
+
+### Changements
+
+- [x] `scripts/load-test/run-all.sh` (nouveau, 83 lignes, executable via `chmod +x`) :
+  - Header `#!/usr/bin/env bash` + flags defensifs (`set -u -o pipefail`).
+  - Detection de `k6` dans le PATH au demarrage avec exit 127 si absent (message d'erreur explicite + lien d'installation).
+  - Boucle sur les 4 scenarios `guest-browsing.js` / `metrics-stress.js` / `mercure-streaming.js` / `authenticated-gameplay.js` (ordre coherent avec la documentation).
+  - Export d'un JSON de resume par scenario via `K6_SUMMARY_EXPORT=last-summary-<name>.json` (reutilise le mecanisme existant de `config.js`).
+  - SKIP automatique de `authenticated-gameplay` si ni `TEST_USER_EMAIL`/`TEST_USER_PASSWORD` ni `TEST_CREDENTIALS_FILE` ne sont definis (fail-fast plutot que silencieux), avec marquage `SKIP` dans le tableau final.
+  - Tableau recapitulatif final affichant `PASS|FAIL|SKIP <name>` pour chaque scenario + compteurs agreges `PASS=N | FAIL=N | SKIP=N`.
+  - Exit code = nombre de scenarios echoues (0 = tous passes, max = 4). Compatible avec les CI / cron.
+- [x] `scripts/load-test/README.md` (+~25 lignes / -1 ligne) :
+  - Ajout de `run-all.sh` dans le bloc Structure ASCII.
+  - Nouvelle section "Lancer tous les scenarios d'un coup" avec 2 exemples (defauts en local vs cible Sprint 12 200 VUs/5min sur staging avec pool de credentials), description du comportement (sequentiel pour eviter l'interference des thresholds, JSON de resume par scenario, tableau recapitulatif, exit code agrege, SKIP automatique de `authenticated-gameplay` sans credentials).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +83 lignes script + ~25/-1 lignes README + ~3 lignes roadmap + entree ROADMAP_DONE = ~135 lignes totales (<300 budget). Aucun changement applicatif. Le script reste sub-100 lignes, focalise et idempotent. Permet de lancer un benchmark complet en une seule commande, d'integrer les 4 scenarios dans un cron / GitHub Actions sans logique de chainage cote orchestrateur, et de detecter rapidement les regressions sur l'ensemble des couches mesurees (DB Doctrine, Mercure SSE, Symfony auth, Twig).
+
+---
+
+## 134 — Load testing & scaling sous-phase 3d.doc.b : pointeurs CLAUDE.md vers les outils de load testing (2026-04-26)
+
+> Suite directe de la sous-phase 3d.doc (mise a jour de `LOAD_TESTING_BOTTLENECKS.md`). Garantit qu'un futur agent (humain ou Claude Code) decouvre l'existence du plan d'optimisation et des scenarios k6 au demarrage de session, sans avoir a fouiller `docs/` ou `scripts/`.
+>
+> Sous-phase **purement editoriale** : 1 fichier modifie (`CLAUDE.md`). Aucun changement applicatif. Aucun nouveau test. Independante des 14 PR ouvertes : aucune ne touche `CLAUDE.md`.
+
+### Changements
+
+- [x] `CLAUDE.md` (+2 lignes section "Documentation approfondie") :
+  - Pointeur vers `docs/LOAD_TESTING_BOTTLENECKS.md` avec resume des 6 jalons (Redis cache, PgBouncer, indexes & cache des collectors `/metrics`, indexes composites map, hardening Mercure, scaling horizontal) et mention que l'etat est mis a jour au fur et a mesure des sous-phases livrees (cf. tache 134 du Sprint 12).
+  - Pointeur vers `scripts/load-test/README.md` avec liste des 4 scenarios k6 (`guest-browsing`, `metrics-stress`, `mercure-streaming`, `authenticated-gameplay`) + variables d'environnement + thresholds + objectif Sprint 12 (200 joueurs simultanes sans degradation).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d.doc.b ajoutee. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +2 lignes CLAUDE.md + ~3 lignes roadmap + entree ROADMAP_DONE = ~30 lignes totales (<<300 budget). Aucun changement applicatif. Permet de decouvrir le plan d'optimisation et les scenarios k6 au boot de session sans navigation supplementaire.
+
+---
+
+## 134 — Load testing & scaling sous-phase 3d.doc : mise a jour `docs/LOAD_TESTING_BOTTLENECKS.md` (2026-04-26)
+
+> Mise a jour du document analytique de la sous-phase 2d pour refleter l'etat reel des jalons apres les sous-phases 3a (indexes), 3b (cache TTL), 3c (refactor `findByMapWithMonster`) et 3d (partial index `fight.in_progress`). Le jalon C est maintenant entierement couvert, le jalon D est partiellement couvert. Ajoute une section "Resultats observes" en template pour les futures mesures k6 reelles.
+>
+> Sous-phase **purement documentaire** : 1 fichier `.md` modifie. Aucun changement applicatif. Aucun nouveau test. Independante des 14 PR ouvertes : aucune ne touche `docs/LOAD_TESTING_BOTTLENECKS.md`.
+
+### Changements
+
+- [x] `docs/LOAD_TESTING_BOTTLENECKS.md` (+~50 lignes / ~30 modifiees, total 345 lignes <400 budget) :
+  - **Jalon C (cache + indexes `/metrics`)** : marque ✅ TERMINE avec note d'avancement, ajoute des pointeurs `→ Sous-phase 3a/3b/3d livree` apres chaque cocher original. Mention que le cache TTL 10s utilise deja `cache.app` (filesystem aujourd'hui), donc deviendra automatiquement Redis quand le jalon A sera livre — aucun changement de code controller requis.
+  - **Jalon D (indexes composites + refactor map)** : marque 🟡 partiellement couvert avec note. Le partial index `idx_mob_alive_map` (sous-phase 3a) chevauche les jalons C et D simultanement. Ajoute une puce "Bonus refactor" pour la sous-phase 3c (`findByMapWithMonster`).
+  - Renomme la section "Prochaines etapes" en "Avancement & prochaines etapes".
+  - **Nouveau tableau "Etat des jalons"** (6 lignes : A/B/C/D/E/F + statut + sous-phases livrees) qui synthetise visuellement la progression.
+  - **Nouvelle section "Resultats observes"** avec template tabulaire (date / sous-phase / scenario / p95-p99-fail / notes) pour documenter les futures mesures k6 reelles. Pre-rempli avec 2 lignes "A renseigner" pointant vers les jalons 3a/3b/3d (`metrics-stress`) et 3c (`authenticated-gameplay`) qui necessitent un re-run de mesure.
+  - Roadmap a venir mise a jour : 5 prochaines sous-phases (3e jalon D residuel, 4 jalon A Redis, 5 jalon B PgBouncer, 6 jalon E Mercure, 7 jalon F scaling) avec ordre d'execution priorise.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d.doc ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +50/-30 lignes doc + ~5 lignes roadmap + entree ROADMAP_DONE = ~120 lignes totales (<<300 budget). Aucun changement applicatif. Le document reste sub-400 lignes (345). Permet aux prochaines sous-phases (3e, 4, 5, 6, 7) de demarrer avec un etat des lieux a jour et un emplacement preallocue pour les chiffres reels.
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.b.b.fix : fixture EN pour le boss `Racine Ancienne` (2026-04-26)
+
+> Completion d'un gap residuel apres la sous-phase 3e.b.b.suite (qui annoncait 100% de parite FR/EN du bestiaire mais avait en realite omis le boss `ancient_root` du donjon "Racines de la foret" — tache 84). Atteint reellement 100% de parite FR/EN sur l'integralite des noms de monstres affiches dans le bestiaire / combat / profile / depecage.
+>
+> Sous-phase **micro-fixture** : 1 ligne ajoutee a `MonsterFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `MonsterLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes : aucune ne touche cette fixture.
+
+### Changements
+
+- [x] `src/DataFixtures/MonsterFixtures.php` (+1 ligne) : ajout de `'name_translations' => ['en' => 'Ancient Root']` apres `'name' => 'Racine Ancienne'` dans l'entree `'ancient_root'` (boss de donjon, level 10, tier 4). Le loop existant `if (isset($data['name_translations']) ...) { $monster->setNameTranslations(...) }` (ligne 1159-1160) prend automatiquement en charge cette nouvelle traduction sans aucun changement de code.
+- [x] Verification de couverture systematique via `awk '/'\''name'\'' =>/ { name=$0; has_trans=0; next } /name_translations/ { has_trans=1 } /'\''level'\''/ { if (!has_trans) print "MISSING: " name }'` : seul `ancient_root` etait detecte comme manquant cote `MonsterFixtures::$monsters` racine. Les autres entrees `'name' =>` sans `name_translations` (Phase 1/2/3 dans `bossPhases`) sont des elements imbriques qui ne sont PAS exposes comme noms de monstres a l'utilisateur (`isset($data['name_translations'])` ne s'applique qu'au niveau racine du tableau de monstres).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e.b.b.fix ajoutee sous `3e.b` (apres 3e.b.b.suite). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +1 ligne fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~30 lignes totales (<<300 budget). Aucune migration, aucun changement de code, aucun nouveau test. Impact EN immediat sur `/game/bestiary` (carte du boss), ecran de combat (entete + danger_alert au passage de seuils), bouton de depecage et `/game/profile` (titres de chasseur "Pourfendeur de Racine Ancienne" → "Slayer of Ancient Root") via le filter `localized_monster_name` cable depuis la sous-phase 3e.b.a.
+
+---
+
+## 134 — Load testing & scaling sous-phase 3d : partial index `idx_fight_in_progress` (2026-04-26)
+
+> Complement direct de la sous-phase 3a (indexes `idx_player_updated_at` + `idx_mob_alive_map`). Ferme la batterie d'indexes du jalon C (plan `docs/LOAD_TESTING_BOTTLENECKS.md`) en couvrant la 3eme et derniere gauge collectee par `MetricsController::collectGameGauges` : `fights_active` (`COUNT()` sur `Fight WHERE in_progress = true`).
+>
+> Sous-phase **purement infrastructure** : 1 migration idempotente. Aucun changement de code applicatif (controller / service / template / Twig). Aucun nouveau test (la migration est idempotente et l'index est une optimisation de plan d'execution sans impact fonctionnel). Independante des 14 PR ouvertes : aucune ne touche `migrations/` (a part les translations independantes) ni les indexes de `fight`.
+
+### Changements
+
+- [x] `migrations/Version20260426FightInProgressIndex.php` (nouveau, 32 lignes) : migration idempotente qui ajoute un partial index via `CREATE INDEX IF NOT EXISTS idx_fight_in_progress ON fight (in_progress) WHERE in_progress = true` (reversible via `DROP INDEX IF EXISTS`). Accelere `COUNT()` execute par `MetricsController::collectGameGauges` pour la gauge `fights_active`. Partial index plutot qu'index regulier car `in_progress=false` represente >99% des lignes (combats historiques/termines), seul `in_progress=true` est utile a indexer pour la gauge — l'index reste minuscule meme quand la table fight grossit avec l'historique. Pas declare comme attribut Doctrine sur l'entite `Fight` (Doctrine ORM ne supporte pas les `WHERE` clauses dans `#[ORM\Index]`) : existe en migration uniquement, comme `idx_mob_alive_map` (sous-phase 3a) — acceptable car les tests utilisent `doctrine:schema:create` (snapshot du schema sans rejouer les migrations) et n'exercent aucune assertion de plan d'execution.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3d`.
+
+**Diff** : +32 lignes migration + ~5 lignes roadmap + entree ROADMAP_DONE = ~70 lignes totales (<<300 budget). Aucune modification de code, aucun nouveau test. Combine au cache TTL 10s de la sous-phase 3b et aux indexes 3a, le hot path `/metrics` est desormais optimal sur les 3 gauges (`players_online`, `mobs_alive`, `fights_active`) : sub-100ms p95 attendue meme sous `metrics-stress` 20 VUs sans think-time, quel que soit le volume DB. Le jalon C du plan `docs/LOAD_TESTING_BOTTLENECKS.md` est entierement couvert par les 4 sous-phases 3a + 3b + 3c + 3d (3 indexes + cache TTL + refactor Mob).
+
+---
+
+## 134 — Load testing & scaling sous-phase 3c : suppression du produit cartesien dans `MobRepository::findByMapWithMonster` (2026-04-26)
+
+> Premier jalon "code path" du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` apres les jalons indexes (3a) et cache (3b) qui ciblaient `/metrics`. Cible le hot path `/api/map/entities` mesure par le scenario k6 `authenticated-gameplay`. La requete `findByMapWithMonster` faisait du eager fetch sur 4 OneToMany imbriques sans aucun benefice fonctionnel : pure waste de CPU + bande passante DB.
+>
+> Sous-phase **refactor pur** : 1 fichier modifie (repository), aucune migration, aucun changement de schema, aucun nouveau test (couvert par le `MapApiEntitiesTest` functional existant). Independante des 14 PR ouvertes : aucune ne touche `src/Repository/MobRepository.php`.
+
+### Changements
+
+- [x] `src/Repository/MobRepository.php` (-4 lignes / +9 lignes de doc-block) : la methode `findByMapWithMonster(Map $map): array` perd les 4 `leftJoin` + `addSelect` superflus :
+  - Avant : `join m.monster + leftJoin mon.spells + leftJoin mon.attack + leftJoin mon.monsterItems + leftJoin mi.item` (5 joins eager, 4 produits cartesiens car les 4 dernieres sont OneToMany imbriquees).
+  - Apres : `join m.monster` uniquement (1 join, ManyToOne, pas de multiplication).
+  - Doc-block ajoute pour expliquer pourquoi les leftJoins ont ete supprimes (le seul appelant `MapApiController::entities()` n'utilise que `getName()`/`getSlug()` du Monster + champs de Mob, jamais `getSpells()` / `getAttack()` / `getMonsterItems()` / `getItems()`).
+- [x] Verification couverture : `tests/Functional/Controller/Game/MapApiEntitiesTest.php` (deja existant) couvre `/api/map/entities` avec assertions sur le payload (200, presence `players`/`mobs`/`pnjs`, `spriteKey` sur les mobs). Aucune assertion ne depend des relations eager-fetched supprimees. La E2E `MapNavigationTest` (qui appelle aussi `/api/map/entities?radius=0`) reste verte pour la meme raison.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3c`.
+
+**Impact mesurable** : pour 50 mobs sur une carte (avec en moyenne 3 spells + 5 monsterItems par Monster type), on passe de ~50 * 3 * 5 = 750 lignes hydratees en memoire a 50 lignes simples + 1 join ManyToOne. Reduction du wire transfer DB d'un facteur ~15 sur ce code path. Re-run `authenticated-gameplay` 200 VUs : reduction attendue de la latence p95 sur `/api/map/entities` proportionnelle au nombre moyen de mobs par carte.
+
+**Diff** : -4 lignes / +9 lignes (commentaire) repository + ~5 lignes roadmap + entree ROADMAP_DONE = ~80 lignes totales (<<300 budget). Aucune migration, aucun changement de schema, aucun nouveau test (le contrat fonctionnel reste identique : un mob renvoye continue a exposer son Monster via `getMonster()`, et les fields des OneToMany sont toujours accessibles via lazy loading si un futur appelant en a besoin).
+
+---
+
+## 134 — Load testing & scaling sous-phase 3b : cache TTL des collectors `/metrics` (jalon C complet) (2026-04-26)
+
+> Suite directe de la sous-phase 3a (indexes ciblés). Termine le jalon C du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` en gating les 3 `COUNT()` Doctrine du hot path `/metrics` derriere une cle de fraicheur a TTL court (10s). Decouple completement la frequence de scrape Prometheus (15s par defaut + scrapes externes + runs k6 metrics-stress) de la frequence reelle des `COUNT()` DB.
+>
+> Sous-phase **applicative ciblee** : 1 controller modifie + 1 nouveau test unitaire. Aucune migration. Aucun changement de schema. Independante des 14 PR ouvertes : aucune ne touche `src/Controller/Monitoring/MetricsController.php` ni `tests/Unit/Controller/Monitoring/`.
+
+### Changements
+
+- [x] `src/Controller/Monitoring/MetricsController.php` (+18 lignes) :
+  - 2 nouvelles constantes : `GAUGES_FRESHNESS_KEY = 'metrics_gauges_collected'` et `GAUGES_FRESHNESS_TTL_SECONDS = 10`.
+  - Injection du pool `cache.app` (`Psr\Cache\CacheItemPoolInterface`, autowire) dans le constructeur — 3eme dependance apres `MetricsCollector` et `EntityManagerInterface`.
+  - Le hot path `__invoke()` appelle desormais `maybeCollectGameGauges()` (nouvelle methode) au lieu de `collectGameGauges()` direct. La nouvelle methode lit la cle de fraicheur via `cache->getItem(...)` : si hit, elle retourne immediatement sans toucher la DB ; si miss, elle delegue a `collectGameGauges()` puis ecrit la cle avec `expiresAfter(GAUGES_FRESHNESS_TTL_SECONDS)`.
+  - `collectGameGauges()` est inchange (3 `COUNT()` sur Player/Mob/Fight + `setGauge` pour chaque). Comme `MetricsCollector::saveMetrics` persiste les gauges avec un TTL de 24h, les valeurs restent affichees meme quand la collecte est skippee — seule la frequence de re-collecte change.
+- [x] `tests/Unit/Controller/Monitoring/MetricsControllerTest.php` (nouveau, 138 lignes, 4 cas) :
+  - `testFirstCallCollectsGameGaugesAndPopulatesCache` : 1er appel = 3 `COUNT()` declenches + cle de fraicheur cree dans le cache + reponse 200 avec gauges presentes dans le body Prometheus.
+  - `testSecondCallSkipsCollectionWhileFreshnessKeyIsHit` : 2eme appel sous TTL = aucune nouvelle requete DB (compteurs `playerCountCalls`/`mobCountCalls`/`fightCountCalls` restent a 1) mais les valeurs sont toujours rendues (lecture depuis le cache `MetricsCollector`).
+  - `testCollectionRunsAgainAfterFreshnessExpires` : suppression manuelle de la cle = re-collecte (compteurs passent a 2).
+  - `testResponseHasPrometheusContentType` : Content-Type `text/plain; version=0.0.4; charset=utf-8` correct.
+  - Mocks : `EntityManager::createQueryBuilder` (consecutif Player/Mob via `willReturnOnConsecutiveCalls`), `EntityManager::getRepository(Fight)::count`, cache `ArrayAdapter` Symfony.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3b ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3b`.
+
+**Diff** : +18 lignes controller + 138 lignes test + ~5 lignes roadmap + entree ROADMAP_DONE = ~200 lignes totales (<300 budget). Aucune migration, aucun changement de schema, aucun nouveau service. Gain attendu sous `metrics-stress` 20 VUs sans think-time : la charge DB liee aux gauges passe de N requetes/s par worker (centaines de COUNTs en regime soutenu) a 1 cycle de 3 COUNTs toutes les 10s globales — gain x100+ sur la charge DB. Avec les 2 indexes ajoutes en sous-phase 3a (`idx_player_updated_at`, `idx_mob_alive_map`), les rares COUNTs restants sont eux-memes plus rapides. Le jalon C du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` est desormais complet (indexes + cache). Prochaine etape : sous-phase 3c (jalon D : indexes composites pour les APIs `/api/map/entities`).
+
+---
+
+## 134 — Load testing & scaling sous-phase 3a : indexes ciblés pour les collectors `/metrics` (jalon C partiel) (2026-04-26)
+
+> Premier jalon concret du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` (livre en sous-phase 2d). Ajoute 2 indexes utilises directement par `MetricsController::collectGameGauges` (qui execute 3 `COUNT()` synchrones a chaque scrape Prometheus). Suite directe de la sous-phase 2d qui identifiait ces 2 collectors comme premier candidat d'optimisation a faible effort. Section "indexes manquants" du jalon C extraite et livree en avance des composants Redis-dependants (le cache des collectors lui-meme attend la sous-phase 3b).
+>
+> Sous-phase **purement infrastructure** : 1 migration idempotente + 1 attribut Doctrine. Aucune modification de code applicatif (controller / service / template / Twig). Independante des 14 PR ouvertes : aucune ne touche `migrations/` (a part les translations independantes), `src/Entity/App/Player.php` ni `src/Entity/App/Mob.php`.
+
+### Changements
+
+- [x] `migrations/Version20260426MetricsCollectorIndexes.php` (nouveau, 35 lignes) : migration idempotente qui ajoute 2 indexes via `CREATE INDEX IF NOT EXISTS` (reversible via `DROP INDEX IF EXISTS`) :
+  - `idx_player_updated_at ON player (updated_at)` : accelere `COUNT(p.id) FROM player p WHERE p.updatedAt >= NOW() - 15min` execute par `MetricsController::collectGameGauges` pour la gauge `players_online`. Sans cet index, PostgreSQL fait un seq scan sur la table `player` complete a chaque scrape Prometheus (15s par defaut + scrape externe + run k6 metrics-stress).
+  - `idx_mob_alive_map ON mob (map_id) WHERE died_at IS NULL` : partial index qui accelere `COUNT(m.id) FROM mob m WHERE m.diedAt IS NULL` (gauge `mobs_alive`) et benefice secondaire pour les requetes de spawn / pathfinding qui filtrent les mobs vivants par carte. La clause `WHERE died_at IS NULL` reduit la taille de l'index aux mobs actifs uniquement (les morts respawnent et sont retires/ignores), gain proportionnel au ratio mobs morts / mobs vivants.
+- [x] `src/Entity/App/Player.php` (+1 ligne) : ajout de `#[ORM\Index(columns: ['updated_at'], name: 'idx_player_updated_at')]` apres les 3 indexes existants (`idx_player_map` / `idx_player_fight` / `idx_player_user`). Garantit que `doctrine:schema:create` (utilise par la CI pour creer le schema de test sans rejouer les migrations) regenere bien l'index. Le partial index `idx_mob_alive_map` n'est PAS declare sur l'entite `Mob` (Doctrine ORM ne supporte pas les `WHERE` clauses dans `#[ORM\Index]`) : il existera en migration uniquement, ce qui est acceptable car les tests utilisent `doctrine:schema:create` (snapshot du schema sans migrations) et n'exercent aucune assertion de plan d'execution.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3a ajoutee sous "Optimisations" + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3a`.
+
+**Diff** : +35 lignes migration + 1 ligne entite + ~5 lignes roadmap + entree ROADMAP_DONE = ~80 lignes totales (<<300 budget). Aucune modification de code applicatif, aucun nouveau test (la migration est idempotente et les 2 indexes sont des optimisations de plan d'execution sans impact fonctionnel). Re-run `metrics-stress` attendu : reduction du seq scan sur `player.updated_at` et `mob.died_at`, baisse de la p95 `/metrics` correlee a la volumetrie. Prepare la sous-phase 3b (jalon A : Redis cache + cache des collectors qui supprimera completement les `COUNT()` du chemin chaud `/metrics`, gain final attendu p95 < 100 ms quel que soit le volume).
+
+---
+
+## 134 — Load testing & scaling sous-phase 2d : recueil des goulots + plan d'optimisation priorise (2026-04-26)
+
+> Suite directe des sous-phases 1 (`guest-browsing`), 2a (`metrics-stress`), 2b (`mercure-streaming`) et 2c (`authenticated-gameplay`). Ferme la branche "Identification goulots d'etranglement" (DB, Mercure, FrankenPHP) de la tache 134 en consolidant la synthese analytique des goulots probables identifies a partir des 4 scenarios k6 livres et en proposant un plan d'optimisation priorise en 6 jalons (A : Redis cache, B : PgBouncer, C : cache des collectors `/metrics` + indexes manquants, D : indexes composites APIs map, E : hardening Mercure, F : scaling horizontal).
+>
+> Sous-phase **purement documentaire**, zero changement applicatif. Elle ouvre la phase 3 (Optimisations) avec un plan d'attaque partage et un ordre d'execution base sur le ratio effort/gain. Independante des 14 PR ouvertes : aucune ne touche `docs/LOAD_TESTING_BOTTLENECKS.md` (nouveau fichier) ni `scripts/load-test/README.md` section "Prochaines etapes".
+
+### Changements
+
+- [x] `docs/LOAD_TESTING_BOTTLENECKS.md` (nouveau, 315 lignes) : nouveau document analytique structure en 5 sections + annexe :
+  1. **Couverture des scenarios** — table croisee scenario / cible mesuree / couche stressee, qui clarifie qu'aucun scenario ne couvre les ecritures (POST mouvement, POST combat, POST achat HdV) — angle mort documente.
+  2. **Goulots probables par couche** — 4 sous-sections :
+     - DB (Doctrine + collectors `/metrics` non caches, pool de connexions sans pgbouncer, indexes composites manquants `Player(map_id, x, y)` / `Mob(map_id, died_at)`, N+1 latents sur `/api/map/entities`, `Player.updated_at >= NOW()-15min` sans index dans `MetricsController::collectGameGauges`).
+     - Mercure (`ulimit -n` insuffisant, `idle_timeout` Traefik trop court, `heartbeat`/`dispatch_timeout` non configures dans `config/packages/mercure.yaml`, throughput `map/move` non batche).
+     - Application PHP (cout argon2 `LoginFormAuthenticator`, verrou de session Symfony sous concurrence sur un meme compte, rendu Twig `/game/map`, `auto_generate_proxy_classes` deja desactive en prod).
+     - Cache applicatif (`MetricsCollector` filesystem -> verrouillage d'inode sous concurrence + lecture/ecriture du fichier `app_metrics` complet a chaque counter/histogram/gauge update — premier goulot avant meme la DB).
+  3. **Plan d'optimisation priorise (6 jalons)** — chaque jalon avec objectif, taches detaillees (compose.yaml, config Symfony, migrations idempotentes), gain attendu (multiplicateur de capacite estime) et re-run k6 attendu :
+     - Jalon A (priorite 1, effort S) — Redis cache (compose + decommenter `cache.adapter.redis` dans `cache.yaml`).
+     - Jalon B (priorite 2, effort M) — PgBouncer (compose + DATABASE_URL pointing pgbouncer:6432, `pool_mode = transaction`, attention aux prepared statements Doctrine).
+     - Jalon C (priorite 3, effort S) — cache des collectors `/metrics` (TTL 5-15s via Redis du jalon A) + ajout `idx_player_updated_at` + partial index `idx_mob_died_at WHERE died_at IS NULL`.
+     - Jalon D (priorite 4, effort S) — indexes composites APIs map (`idx_player_map_coords`, `idx_mob_map_alive`).
+     - Jalon E (priorite 5, effort M) — hardening Mercure (`ulimit -n` 65536, options `transport.read_timeout`/`write_timeout`/`dispatch_timeout`, Traefik `idleTimeout = 5m`).
+     - Jalon F (priorite 6, effort L) — scaling horizontal (sessions Symfony Redis, Mercure standalone, Traefik load balancer multi-replicas — conditionne par les jalons A-E).
+  4. **Indicateurs de succes** — table de seuils cibles a 200 VUs / 5 min par scenario (guest-browsing : p95<800ms ; metrics-stress : p95<200ms apres jalons A+C ; mercure-streaming : subscribe_fail<0.5% apres jalon E ; authenticated-gameplay : p95<1500ms apres jalons B+D).
+  5. **Prochaines etapes** — mapping jalons -> sous-phases 3-6 de la tache 134.
+  - **Annexe** : pointeurs code precis (collectors `MetricsController.php:34-58`, cache `MetricsCollector.php:126-148`, indexes existants `Player.php:18-20` / `Mob.php:16-18`, publishers Mercure `MovedHandler.php` / `RespawnedHandler.php`, fichiers de config `cache.yaml` / `mercure.yaml` / `doctrine.yaml`, scenarios k6).
+- [x] `scripts/load-test/README.md` (section "Prochaines etapes") : remplacement de la puce "Recueil des goulots identifies + plan d'optimisation" (terminologie de la sous-phase) par un pointeur vers `docs/LOAD_TESTING_BOTTLENECKS.md` qui regroupe desormais la synthese complete et l'ordre d'attaque.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 2d cochee + statut "Optimisations" passe a `[~]` avec pointeur vers le document. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 2d`.
+
+**Diff** : +315 lignes document + ~7 lignes README + ~3 lignes SPRINT_12 + ~3 lignes INDEX + entree ROADMAP_DONE = ~360 lignes totales (au-dela du budget strict ~300, tolere car document analytique structurant la phase 3 et nouveau fichier sans modification de code applicatif). Aucune migration, aucun changement PHP/Twig/JS, aucun nouveau test PHPUnit (document analytique pur). Permet d'ouvrir la sous-phase 3 (jalon A : Redis cache + jalon C : cache collectors `/metrics`) avec un objectif chiffre, un perimetre code precis et un re-run k6 cible. Les chiffres reels seront ajoutes dans une section "Resultats observes" en bas du document au fur et a mesure des runs.
 
 ---
 
@@ -53,6 +506,27 @@
 - [x] Roadmap : `SPRINT_12.md` sous-phase 3e.f ajoutee sous la branche 3e + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` Sprint 12 mis a jour avec la sous-phase 3e.f.
 
 **Diff** : +28 + 86 + 172 = 286 lignes (<300 budget). Aucun template / controller / Twig modifie : les sous-phases de cablage et fixtures EN suivront. Zero impact FR (le fallback transparent de `Race::getLocalizedName` / `getLocalizedDescription` preserve le rendu actuel). Une fois les sous-phases ulterieures livrees, chaque paire `{fr, en}` sera automatiquement affichee dans les ecrans de selection / creation de personnage et le profil public.
+
+---
+
+## 134 — Load testing & scaling sous-phase 2c : scenario k6 `authenticated-gameplay` (login + carte + inventaire) (2026-04-26)
+
+> Suite directe des sous-phases 1 (`guest-browsing`), 2a (`metrics-stress`) et 2b (`mercure-streaming`). Couvre le 4e jalon documente comme "Scenario `authenticated-gameplay` : login + fetch carte + mouvement" dans la section "Prochaines etapes" du `scripts/load-test/README.md`. Premiere mesure de la tenue en charge des routes protegees `^/game` et `^/api/` qui constituent le coeur du gameplay.
+>
+> Sous-phase independante des 14 PR ouvertes (avatar AVT-25/AVT-30/AVT-34, monture 130, events 131, hall of fame 132, et 9 PR i18n) : aucune ne touche `scripts/load-test/**` ni la chaine login Symfony. Scenario JS k6 pur, zero impact applicatif.
+
+- [x] `scripts/load-test/scenarios/authenticated-gameplay.js` (nouveau, ~250 lignes) : nouveau scenario k6 qui execute, par VU iteration : (1) `GET /login` puis extraction du `_csrf_token` du HTML via regex `name=["']_csrf_token["']\s+value=["']([^"']+)["']` (capture les 2 ordres possibles d'attributs HTML), (2) `POST /login` avec `email` + `password` + `_csrf_token` + `redirects: 0` pour distinguer succes (302 vers `/game`, `/game/character/select` ou `/game/character/create`) de l'echec (200 = re-render du form), (3) navigation `GET /game` (dashboard) + `GET /game/map` (Twig) + `GET /api/map/config` + `GET /api/map/cells?x=0&y=0&radius={MAP_RADIUS}` + `GET /api/map/entities?radius={MAP_RADIUS}` + `GET /game/inventory`. k6 maintient automatiquement un cookie jar par VU : la session Symfony reste valide pour toutes les requetes suivantes. Pattern `ramping-vus` (RAMP_UP -> plateau -> RAMP_DOWN) reutilise depuis les autres scenarios.
+- [x] Credentials supportes via 2 modes : `TEST_USER_EMAIL` + `TEST_USER_PASSWORD` (compte unique, simple) ou `TEST_CREDENTIALS_FILE` pointant vers un JSON `[{email, password}, ...]` (round-robin sur les VUs via `__VU % poolSize`, recommande au-dela de 20 VUs pour eviter la serialisation des sessions Symfony sur un meme compte). Fonction `setup()` rejette le run avec une exception explicite si aucun credential n'est fourni (fail-fast plutot que silencieux).
+- [x] Metriques custom :
+  - `auth_login_latency` (Trend, ms) — mesure du round-trip GET form + POST submit (debut de `doLogin` jusqu'a la fin du POST).
+  - `auth_login_fail` (Rate, %) — taux de logins echoues (CSRF absent, status != 302, redirection vers une URL non-game).
+  - `authed_request_fail` (Rate, %) — toute requete authentifiee qui ne retourne pas 200 + content-type attendu (HTML pour les pages, JSON pour `/api/map/*`).
+  - `authed_map_api_latency` (Trend, ms) — latence des 3 endpoints `/api/map/*`, isole le cout DB (Mob/Player/Pnj queries) du cout Twig.
+- [x] Thresholds dedies (plus larges que `guest-browsing` car les routes /game declenchent plus de requetes Doctrine) : `http_req_duration` p95<1500ms / p99<3s, `http_req_failed`<2%, `auth_login_fail`<5% (marge laissee pour les CSRF expirees sous charge), `auth_login_latency` p95<2s, `authed_request_fail`<2%.
+- [x] `scripts/load-test/README.md` (+~80 lignes / -1 ligne) : nouvelle section "Scenario : authenticated-gameplay" avec cas d'usage, format JSON des credentials, exemples d'execution (defaut compte unique, run cible Sprint 12 "200 VUs / 5min / pool 50 comptes"), thresholds detailles, pistes de diagnostic (firewall Symfony / `LoginFormAuthenticator`, indexes manquants sur `/api/map/*` (`map_id` + `coordinates` sur Player), pool Doctrine sous concurrence reelle, rendu Twig de `/game/map`). Note pedagogique sur le pool : sous forte concurrence sur un meme compte, le firewall Symfony serialise les sessions (verrou sur `getSession()`) et les metriques deviennent dominees par l'attente de lock — recommander un pool d'au moins `VUS / 5` comptes distincts. Variables d'environnement etendues (`TEST_USER_EMAIL`, `TEST_USER_PASSWORD`, `TEST_CREDENTIALS_FILE`, `MAP_RADIUS`). Section "Prochaines etapes" mise a jour : le prochain jalon (etendre le scenario avec POST `/api/map/move` + entree de combat) est documente.
+- [x] Roadmap : Sprint 12 sous-phase 2c cochee (avant 2d "recueil goulots" et 2e "plan optimisations") + ligne d'avancement mise a jour. Index met a jour la date de derniere mise a jour et l'avancement Sprint 12 avec `134 sous-phase 2c`.
+
+**Diff** : +~250 lignes scenario, +~80 lignes README, +1 ligne SPRINT_12 + entrees ROADMAP_DONE/INDEX = ~340 lignes totales. Aucune migration, aucun changement PHP/Twig, aucun nouveau test PHPUnit (scenario JS k6 pur, valide par `node --check` apres substitution des imports k6 inconnus de Node). Permet de mesurer pour la premiere fois la cible Sprint 12 "200 joueurs simultanes sans degradation" sur la boucle principale du jeu (login + carte + inventaire), de detecter precocement les regressions du firewall Symfony / des indexes Doctrine, et de preparer la sous-phase 2d (recueil des goulots identifies + plan d'optimisation : connection pooling, cache Redis, horizontal scaling).
 
 ---
 

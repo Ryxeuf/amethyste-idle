@@ -23,7 +23,7 @@
                     {% for region in regions %}
                         <a href="{{ path('app_game_guild_influence', {region: region.slug, season: season ? season.slug : ''}) }}"
                            class="px-2.5 py-1 text-xs rounded transition-colors {{ selectedRegion is not null and selectedRegion.slug == region.slug ? 'bg-amber-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
-                            {{ region.name }}
+                            {{ region|localized_region_name }}
                         </a>
                     {% endfor %}
                 </div>
