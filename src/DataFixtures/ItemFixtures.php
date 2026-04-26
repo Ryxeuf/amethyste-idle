@@ -1024,6 +1024,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'magic_crystal' => [
                 'name' => 'Cristal magique',
+                'name_translations' => ['en' => 'Magic Crystal'],
                 'description' => 'Un cristal qui pulse avec une énergie mystérieuse',
                 'type' => 'stuff',
                 'slug' => 'magic-crystal',
@@ -1036,6 +1037,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'herbalist_domain_parchment' => [
                 'name' => "Découverte de l'herborisme",
+                'name_translations' => ['en' => 'Herbalism Discovery'],
                 'description' => 'Permet de devenir apprenti herboriste',
                 'type' => 'stuff',
                 'slug' => 'herbalist-domain-parchment',
@@ -1262,6 +1264,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Consommables alchimiste (recettes craft) ---
             'poison_vial' => [
                 'name' => 'Fiole de poison',
+                'name_translations' => ['en' => 'Poison Vial'],
                 'description' => 'Un poison concentré dans une fiole fragile, inflige des dégâts et empoisonne',
                 'type' => 'stuff',
                 'slug' => 'poison-vial',
@@ -2915,6 +2918,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'guardian_bark_armor' => [
                 'name' => 'Cuirasse d\'écorce ancestrale',
+                'name_translations' => ['en' => 'Ancestral Bark Cuirass'],
                 'description' => 'Une cuirasse vivante taillée dans l\'écorce du Gardien de la Forêt. Des runes végétales pulsent à sa surface.',
                 'type' => 'gear',
                 'element' => Element::Beast,
@@ -2930,6 +2934,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'guardian_thorn_staff' => [
                 'name' => 'Bâton d\'épines primordiales',
+                'name_translations' => ['en' => 'Primordial Thorn Staff'],
                 'description' => 'Un bâton noueux arraché au cœur du Gardien. Des épines acérées y poussent encore.',
                 'type' => 'gear',
                 'element' => Element::Earth,
@@ -2946,6 +2951,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'forgelord_obsidian_blade' => [
                 'name' => 'Lame d\'obsidienne du Seigneur',
+                'name_translations' => ['en' => 'Forge Lord\'s Obsidian Blade'],
                 'description' => 'Une épée forgée dans les ténèbres par le Seigneur de la Forge. L\'obsidienne vibre d\'une énergie sombre.',
                 'type' => 'gear',
                 'element' => Element::Metal,
@@ -2962,6 +2968,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'forgelord_dark_plate' => [
                 'name' => 'Plastron de la forge obscure',
+                'name_translations' => ['en' => 'Dark Forge Plate'],
                 'description' => 'Un plastron massif en métal sombre, imprégné de l\'essence des ténèbres de la forge.',
                 'type' => 'gear',
                 'element' => Element::Dark,
