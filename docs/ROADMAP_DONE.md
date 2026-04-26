@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3a — indexes ciblés pour les collectors `/metrics`, jalon C partiel)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3b — cache TTL des collectors `/metrics`, jalon C complet)
+
+---
+
+## 134 — Load testing & scaling sous-phase 3b : cache TTL des collectors `/metrics` (jalon C complet) (2026-04-26)
+
+> Suite directe de la sous-phase 3a (indexes ciblés). Termine le jalon C du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` en gating les 3 `COUNT()` Doctrine du hot path `/metrics` derriere une cle de fraicheur a TTL court (10s). Decouple completement la frequence de scrape Prometheus (15s par defaut + scrapes externes + runs k6 metrics-stress) de la frequence reelle des `COUNT()` DB.
+>
+> Sous-phase **applicative ciblee** : 1 controller modifie + 1 nouveau test unitaire. Aucune migration. Aucun changement de schema. Independante des 14 PR ouvertes : aucune ne touche `src/Controller/Monitoring/MetricsController.php` ni `tests/Unit/Controller/Monitoring/`.
+
+### Changements
+
+- [x] `src/Controller/Monitoring/MetricsController.php` (+18 lignes) :
+  - 2 nouvelles constantes : `GAUGES_FRESHNESS_KEY = 'metrics_gauges_collected'` et `GAUGES_FRESHNESS_TTL_SECONDS = 10`.
+  - Injection du pool `cache.app` (`Psr\Cache\CacheItemPoolInterface`, autowire) dans le constructeur — 3eme dependance apres `MetricsCollector` et `EntityManagerInterface`.
+  - Le hot path `__invoke()` appelle desormais `maybeCollectGameGauges()` (nouvelle methode) au lieu de `collectGameGauges()` direct. La nouvelle methode lit la cle de fraicheur via `cache->getItem(...)` : si hit, elle retourne immediatement sans toucher la DB ; si miss, elle delegue a `collectGameGauges()` puis ecrit la cle avec `expiresAfter(GAUGES_FRESHNESS_TTL_SECONDS)`.
+  - `collectGameGauges()` est inchange (3 `COUNT()` sur Player/Mob/Fight + `setGauge` pour chaque). Comme `MetricsCollector::saveMetrics` persiste les gauges avec un TTL de 24h, les valeurs restent affichees meme quand la collecte est skippee — seule la frequence de re-collecte change.
+- [x] `tests/Unit/Controller/Monitoring/MetricsControllerTest.php` (nouveau, 138 lignes, 4 cas) :
+  - `testFirstCallCollectsGameGaugesAndPopulatesCache` : 1er appel = 3 `COUNT()` declenches + cle de fraicheur cree dans le cache + reponse 200 avec gauges presentes dans le body Prometheus.
+  - `testSecondCallSkipsCollectionWhileFreshnessKeyIsHit` : 2eme appel sous TTL = aucune nouvelle requete DB (compteurs `playerCountCalls`/`mobCountCalls`/`fightCountCalls` restent a 1) mais les valeurs sont toujours rendues (lecture depuis le cache `MetricsCollector`).
+  - `testCollectionRunsAgainAfterFreshnessExpires` : suppression manuelle de la cle = re-collecte (compteurs passent a 2).
+  - `testResponseHasPrometheusContentType` : Content-Type `text/plain; version=0.0.4; charset=utf-8` correct.
+  - Mocks : `EntityManager::createQueryBuilder` (consecutif Player/Mob via `willReturnOnConsecutiveCalls`), `EntityManager::getRepository(Fight)::count`, cache `ArrayAdapter` Symfony.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3b ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3b`.
+
+**Diff** : +18 lignes controller + 138 lignes test + ~5 lignes roadmap + entree ROADMAP_DONE = ~200 lignes totales (<300 budget). Aucune migration, aucun changement de schema, aucun nouveau service. Gain attendu sous `metrics-stress` 20 VUs sans think-time : la charge DB liee aux gauges passe de N requetes/s par worker (centaines de COUNTs en regime soutenu) a 1 cycle de 3 COUNTs toutes les 10s globales — gain x100+ sur la charge DB. Avec les 2 indexes ajoutes en sous-phase 3a (`idx_player_updated_at`, `idx_mob_alive_map`), les rares COUNTs restants sont eux-memes plus rapides. Le jalon C du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` est desormais complet (indexes + cache). Prochaine etape : sous-phase 3c (jalon D : indexes composites pour les APIs `/api/map/entities`).
 
 ---
 
