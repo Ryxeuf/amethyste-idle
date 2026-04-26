@@ -1,7 +1,39 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-25 (135 sous-phase 3e.f.c — fixtures EN pour les 4 races)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 2d — recueil des goulots + plan d'optimisation priorise)
+
+---
+
+## 134 — Load testing & scaling sous-phase 2d : recueil des goulots + plan d'optimisation priorise (2026-04-26)
+
+> Suite directe des sous-phases 1 (`guest-browsing`), 2a (`metrics-stress`), 2b (`mercure-streaming`) et 2c (`authenticated-gameplay`). Ferme la branche "Identification goulots d'etranglement" (DB, Mercure, FrankenPHP) de la tache 134 en consolidant la synthese analytique des goulots probables identifies a partir des 4 scenarios k6 livres et en proposant un plan d'optimisation priorise en 6 jalons (A : Redis cache, B : PgBouncer, C : cache des collectors `/metrics` + indexes manquants, D : indexes composites APIs map, E : hardening Mercure, F : scaling horizontal).
+>
+> Sous-phase **purement documentaire**, zero changement applicatif. Elle ouvre la phase 3 (Optimisations) avec un plan d'attaque partage et un ordre d'execution base sur le ratio effort/gain. Independante des 14 PR ouvertes : aucune ne touche `docs/LOAD_TESTING_BOTTLENECKS.md` (nouveau fichier) ni `scripts/load-test/README.md` section "Prochaines etapes".
+
+### Changements
+
+- [x] `docs/LOAD_TESTING_BOTTLENECKS.md` (nouveau, 315 lignes) : nouveau document analytique structure en 5 sections + annexe :
+  1. **Couverture des scenarios** — table croisee scenario / cible mesuree / couche stressee, qui clarifie qu'aucun scenario ne couvre les ecritures (POST mouvement, POST combat, POST achat HdV) — angle mort documente.
+  2. **Goulots probables par couche** — 4 sous-sections :
+     - DB (Doctrine + collectors `/metrics` non caches, pool de connexions sans pgbouncer, indexes composites manquants `Player(map_id, x, y)` / `Mob(map_id, died_at)`, N+1 latents sur `/api/map/entities`, `Player.updated_at >= NOW()-15min` sans index dans `MetricsController::collectGameGauges`).
+     - Mercure (`ulimit -n` insuffisant, `idle_timeout` Traefik trop court, `heartbeat`/`dispatch_timeout` non configures dans `config/packages/mercure.yaml`, throughput `map/move` non batche).
+     - Application PHP (cout argon2 `LoginFormAuthenticator`, verrou de session Symfony sous concurrence sur un meme compte, rendu Twig `/game/map`, `auto_generate_proxy_classes` deja desactive en prod).
+     - Cache applicatif (`MetricsCollector` filesystem -> verrouillage d'inode sous concurrence + lecture/ecriture du fichier `app_metrics` complet a chaque counter/histogram/gauge update — premier goulot avant meme la DB).
+  3. **Plan d'optimisation priorise (6 jalons)** — chaque jalon avec objectif, taches detaillees (compose.yaml, config Symfony, migrations idempotentes), gain attendu (multiplicateur de capacite estime) et re-run k6 attendu :
+     - Jalon A (priorite 1, effort S) — Redis cache (compose + decommenter `cache.adapter.redis` dans `cache.yaml`).
+     - Jalon B (priorite 2, effort M) — PgBouncer (compose + DATABASE_URL pointing pgbouncer:6432, `pool_mode = transaction`, attention aux prepared statements Doctrine).
+     - Jalon C (priorite 3, effort S) — cache des collectors `/metrics` (TTL 5-15s via Redis du jalon A) + ajout `idx_player_updated_at` + partial index `idx_mob_died_at WHERE died_at IS NULL`.
+     - Jalon D (priorite 4, effort S) — indexes composites APIs map (`idx_player_map_coords`, `idx_mob_map_alive`).
+     - Jalon E (priorite 5, effort M) — hardening Mercure (`ulimit -n` 65536, options `transport.read_timeout`/`write_timeout`/`dispatch_timeout`, Traefik `idleTimeout = 5m`).
+     - Jalon F (priorite 6, effort L) — scaling horizontal (sessions Symfony Redis, Mercure standalone, Traefik load balancer multi-replicas — conditionne par les jalons A-E).
+  4. **Indicateurs de succes** — table de seuils cibles a 200 VUs / 5 min par scenario (guest-browsing : p95<800ms ; metrics-stress : p95<200ms apres jalons A+C ; mercure-streaming : subscribe_fail<0.5% apres jalon E ; authenticated-gameplay : p95<1500ms apres jalons B+D).
+  5. **Prochaines etapes** — mapping jalons -> sous-phases 3-6 de la tache 134.
+  - **Annexe** : pointeurs code precis (collectors `MetricsController.php:34-58`, cache `MetricsCollector.php:126-148`, indexes existants `Player.php:18-20` / `Mob.php:16-18`, publishers Mercure `MovedHandler.php` / `RespawnedHandler.php`, fichiers de config `cache.yaml` / `mercure.yaml` / `doctrine.yaml`, scenarios k6).
+- [x] `scripts/load-test/README.md` (section "Prochaines etapes") : remplacement de la puce "Recueil des goulots identifies + plan d'optimisation" (terminologie de la sous-phase) par un pointeur vers `docs/LOAD_TESTING_BOTTLENECKS.md` qui regroupe desormais la synthese complete et l'ordre d'attaque.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 2d cochee + statut "Optimisations" passe a `[~]` avec pointeur vers le document. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 2d`.
+
+**Diff** : +315 lignes document + ~7 lignes README + ~3 lignes SPRINT_12 + ~3 lignes INDEX + entree ROADMAP_DONE = ~360 lignes totales (au-dela du budget strict ~300, tolere car document analytique structurant la phase 3 et nouveau fichier sans modification de code applicatif). Aucune migration, aucun changement PHP/Twig/JS, aucun nouveau test PHPUnit (document analytique pur). Permet d'ouvrir la sous-phase 3 (jalon A : Redis cache + jalon C : cache collectors `/metrics`) avec un objectif chiffre, un perimetre code precis et un re-run k6 cible. Les chiffres reels seront ajoutes dans une section "Resultats observes" en bas du document au fur et a mesure des runs.
 
 ---
 

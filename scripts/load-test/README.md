@@ -330,5 +330,8 @@ metriques a surveiller en priorite :
   un k6 custom-build ou un harness Node externe).
 - Integration CI (GitHub Actions) : run nightly contre staging avec seuils
   adaptes, alerte en cas de regression.
-- Recueil des goulots identifies + plan d'optimisation (connection pooling
-  Doctrine, cache Redis, horizontal scaling FrankenPHP).
+- Implementer le plan d'optimisation : voir
+  [`docs/LOAD_TESTING_BOTTLENECKS.md`](../../docs/LOAD_TESTING_BOTTLENECKS.md)
+  pour la synthese des goulots probables et l'ordre recommande des jalons
+  (Redis, PgBouncer, indexes composites, hardening Mercure, scaling
+  horizontal).
