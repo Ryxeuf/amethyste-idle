@@ -1,7 +1,29 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.p — 7 equipements starter, set complet de debut de jeu)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.q — 6 recompenses uniques de boss tier 4-5, rarete Legendary)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.q : fixtures EN pour 6 recompenses uniques de boss (Legendary) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.p (starter equipment). Couvre 6 drops legendaires uniques de boss tier 4-5.
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 drops uniques (rarete Legendary, level 25+, 2 slots materia chacun) :
+  - `dragon_fang_blade` → **Dragon Fang Blade** (epee Dragon ancestral, element Fire)
+  - `dragon_scale_armor` → **Dragon Scale Armor** (plastron Dragon, Fire)
+  - `griffin_talon_ring` → **Griffin Talon Ring** (anneau Griffin, Air)
+  - `minotaur_horn_helm` → **Minotaur Horn Helm** (heaume Minotaure alpha, Earth)
+  - `golem_heart_shield` → **Golem Heart Shield** (bouclier Golem de pierre, Earth)
+  - `troll_king_belt` → **Troll King Belt** (ceinture Troll)
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.q ajoutee dans la branche 3 (apres 3c.p). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur la table de loot du bestiaire (les drops uniques sont affiches), l'inventaire post-combat, et les selecteurs d'equipement. 27 items restent sans traduction (boss de zone tier 5+ comme Forest Guardian / Forge Lord, items magiques exotiques, equipements elementaires t1+ par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
