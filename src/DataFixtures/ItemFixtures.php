@@ -1953,6 +1953,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Mort
             'materia_soul_drain' => [
                 'name' => 'Drain d\'âme',
+                'name_translations' => ['en' => 'Soul Drain'],
                 'description' => 'Matéria aspirant l\'énergie vitale de la cible',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1966,6 +1967,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_death_touch' => [
                 'name' => 'Toucher mortel',
+                'name_translations' => ['en' => 'Death Touch'],
                 'description' => 'Matéria infligeant une douleur intense au contact',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1979,6 +1981,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_bolt' => [
                 'name' => 'Éclair d\'ombre',
+                'name_translations' => ['en' => 'Shadow Bolt'],
                 'description' => 'Matéria projetant un éclair d\'énergie sombre',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -1992,6 +1995,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_life_leech' => [
                 'name' => 'Sangsue vitale',
+                'name_translations' => ['en' => 'Life Leech'],
                 'description' => 'Matéria absorbant l\'énergie vitale de la cible',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2005,6 +2009,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_wave' => [
                 'name' => 'Vague d\'ombre',
+                'name_translations' => ['en' => 'Shadow Wave'],
                 'description' => 'Matéria libérant une vague d\'énergie sombre',
                 'type' => 'materia',
                 'element' => Element::Dark,

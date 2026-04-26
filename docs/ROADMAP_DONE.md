@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.h — fixtures EN pour les 5 materias Lumiere/Vie, domaine healer)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.i — fixtures EN pour les 5 materias Ombre/Mort, domaine necromancer)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.i : fixtures EN pour les 5 materias Ombre/Mort (domaine necromancer) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.h (Lumiere, 5 materias healer). Etend la couverture EN aux 5 materias avancees du domaine `necromancer` (element Dark) : arsenal de necromancie couvrant drain HP/MP, attaque AOE shadow, leech HP. Pendant naturel des soins du domaine healer.
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias element Dark :
+  - `materia_soul_drain` → **Soul Drain** (m2, drain MP).
+  - `materia_death_touch` → **Death Touch** (m2, contact mortel).
+  - `materia_shadow_bolt` → **Shadow Bolt** (m3, projectile sombre).
+  - `materia_life_leech` → **Life Leech** (m2, drain HP avec heal au caster).
+  - `materia_shadow_wave` → **Shadow Wave** (m3, vague AOE sombre).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.i ajoutee dans la branche 3 (apres 3c.h). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees apres avoir avance dans le domaine necromancer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 75 items restent sans traduction (consommables alchimistes, materia tier 3+ pour les autres elements eau/air/terre/metal/bete, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
