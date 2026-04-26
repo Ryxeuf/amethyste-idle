@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3b — cache TTL des collectors `/metrics`, jalon C complet)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3c — suppression du produit cartesien dans `MobRepository::findByMapWithMonster`)
+
+---
+
+## 134 — Load testing & scaling sous-phase 3c : suppression du produit cartesien dans `MobRepository::findByMapWithMonster` (2026-04-26)
+
+> Premier jalon "code path" du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` apres les jalons indexes (3a) et cache (3b) qui ciblaient `/metrics`. Cible le hot path `/api/map/entities` mesure par le scenario k6 `authenticated-gameplay`. La requete `findByMapWithMonster` faisait du eager fetch sur 4 OneToMany imbriques sans aucun benefice fonctionnel : pure waste de CPU + bande passante DB.
+>
+> Sous-phase **refactor pur** : 1 fichier modifie (repository), aucune migration, aucun changement de schema, aucun nouveau test (couvert par le `MapApiEntitiesTest` functional existant). Independante des 14 PR ouvertes : aucune ne touche `src/Repository/MobRepository.php`.
+
+### Changements
+
+- [x] `src/Repository/MobRepository.php` (-4 lignes / +9 lignes de doc-block) : la methode `findByMapWithMonster(Map $map): array` perd les 4 `leftJoin` + `addSelect` superflus :
+  - Avant : `join m.monster + leftJoin mon.spells + leftJoin mon.attack + leftJoin mon.monsterItems + leftJoin mi.item` (5 joins eager, 4 produits cartesiens car les 4 dernieres sont OneToMany imbriquees).
+  - Apres : `join m.monster` uniquement (1 join, ManyToOne, pas de multiplication).
+  - Doc-block ajoute pour expliquer pourquoi les leftJoins ont ete supprimes (le seul appelant `MapApiController::entities()` n'utilise que `getName()`/`getSlug()` du Monster + champs de Mob, jamais `getSpells()` / `getAttack()` / `getMonsterItems()` / `getItems()`).
+- [x] Verification couverture : `tests/Functional/Controller/Game/MapApiEntitiesTest.php` (deja existant) couvre `/api/map/entities` avec assertions sur le payload (200, presence `players`/`mobs`/`pnjs`, `spriteKey` sur les mobs). Aucune assertion ne depend des relations eager-fetched supprimees. La E2E `MapNavigationTest` (qui appelle aussi `/api/map/entities?radius=0`) reste verte pour la meme raison.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3c`.
+
+**Impact mesurable** : pour 50 mobs sur une carte (avec en moyenne 3 spells + 5 monsterItems par Monster type), on passe de ~50 * 3 * 5 = 750 lignes hydratees en memoire a 50 lignes simples + 1 join ManyToOne. Reduction du wire transfer DB d'un facteur ~15 sur ce code path. Re-run `authenticated-gameplay` 200 VUs : reduction attendue de la latence p95 sur `/api/map/entities` proportionnelle au nombre moyen de mobs par carte.
+
+**Diff** : -4 lignes / +9 lignes (commentaire) repository + ~5 lignes roadmap + entree ROADMAP_DONE = ~80 lignes totales (<<300 budget). Aucune migration, aucun changement de schema, aucun nouveau test (le contrat fonctionnel reste identique : un mob renvoye continue a exposer son Monster via `getMonster()`, et les fields des OneToMany sont toujours accessibles via lazy loading si un futur appelant en a besoin).
 
 ---
 
