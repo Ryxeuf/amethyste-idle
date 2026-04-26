@@ -3092,6 +3092,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'gold_ring' => [
                 'name' => 'Anneau d\'or serti',
+                'name_translations' => ['en' => 'Jeweled Gold Ring'],
                 'description' => 'Un anneau d\'or orné d\'une gemme fine, symbole de prospérité',
                 'type' => 'gear',
                 'slug' => 'gold-ring',
@@ -3107,6 +3108,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'gold_amulet' => [
                 'name' => 'Amulette d\'or',
+                'name_translations' => ['en' => 'Gold Amulet'],
                 'description' => 'Une amulette d\'or finement ciselée, rayonnante de noblesse',
                 'type' => 'gear',
                 'slug' => 'gold-amulet',
@@ -3122,6 +3124,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'gold_crown' => [
                 'name' => 'Couronne d\'or',
+                'name_translations' => ['en' => 'Gold Crown'],
                 'description' => 'Une couronne d\'or ornée de gemmes fines, digne d\'un roi',
                 'type' => 'gear',
                 'slug' => 'gold-crown',
@@ -3137,6 +3140,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'mithril_ring_jewel' => [
                 'name' => 'Anneau de mithril serti',
+                'name_translations' => ['en' => 'Jeweled Mithril Ring'],
                 'description' => 'Un anneau de mithril d\'une légèreté surnaturelle, serti d\'une gemme rare',
                 'type' => 'gear',
                 'slug' => 'mithril-ring-jewel',
@@ -3152,6 +3156,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'mithril_amulet' => [
                 'name' => 'Amulette de mithril',
+                'name_translations' => ['en' => 'Mithril Amulet'],
                 'description' => 'Une amulette de mithril aux reflets argentés, vibrant d\'énergie',
                 'type' => 'gear',
                 'slug' => 'mithril-amulet',
@@ -3167,6 +3172,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'legendary_ring' => [
                 'name' => 'Anneau prismatique',
+                'name_translations' => ['en' => 'Prismatic Ring'],
                 'description' => 'Un anneau d\'orichalque serti d\'une gemme prismatique, chef-d\'œuvre de joaillerie',
                 'type' => 'gear',
                 'slug' => 'legendary-ring',
@@ -3182,6 +3188,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'legendary_amulet' => [
                 'name' => 'Amulette prismatique',
+                'name_translations' => ['en' => 'Prismatic Amulet'],
                 'description' => 'Une amulette d\'orichalque abritant une gemme prismatique, irradiant de puissance',
                 'type' => 'gear',
                 'slug' => 'legendary-amulet',
@@ -3202,6 +3209,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Maitre Forgeron — lame de maitre
             'masterwork_blade' => [
                 'name' => 'Lame du maitre forgeron',
+                'name_translations' => ['en' => 'Master Blacksmith\'s Blade'],
                 'description' => 'Lame d\'orichalque trempee dans le sang d\'etoile, signature des plus grands forgerons.',
                 'type' => 'gear',
                 'slug' => 'masterwork-blade',
@@ -3218,6 +3226,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Maitre Tanneur — manteau de maitre
             'masterwork_drakehide_cloak' => [
                 'name' => 'Manteau du maitre tanneur',
+                'name_translations' => ['en' => 'Master Leatherworker\'s Cloak'],
                 'description' => 'Cape ouvragee dans la peau d\'un drake ancestral, souple comme la soie et solide comme l\'acier.',
                 'type' => 'gear',
                 'slug' => 'masterwork-drakehide-cloak',
@@ -3235,6 +3244,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Maitre Alchimiste — elixir supreme
             'masterwork_grand_elixir' => [
                 'name' => 'Grand elixir du maitre alchimiste',
+                'name_translations' => ['en' => 'Master Alchemist\'s Grand Elixir'],
                 'description' => 'Distillation parfaite de mandragore, ginseng et essence prismatique. Restaure pleinement le porteur.',
                 'type' => 'stuff',
                 'slug' => 'masterwork-grand-elixir',
@@ -3250,6 +3260,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Maitre Joaillier — anneau de maitre
             'masterwork_starforged_ring' => [
                 'name' => 'Anneau du maitre joaillier',
+                'name_translations' => ['en' => 'Master Jeweler\'s Ring'],
                 'description' => 'Anneau d\'orichalque serti d\'une gemme prismatique parfaitement taillee, pulsant d\'energie pure.',
                 'type' => 'gear',
                 'slug' => 'masterwork-starforged-ring',

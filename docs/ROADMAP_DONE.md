@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3e.h — i18n complete des 4 factions du jeu : infra + cablage + fixtures EN)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.t — fixtures EN pour 7 bijoux haut tier + 4 masterwork artisanaux = 11 items)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.t : fixtures EN pour 7 bijoux haut tier + 4 masterwork artisanaux (2026-04-26)
+
+> Suite directe de la sous-phase 3c.s. Ajoute les traductions EN aux 7 bijoux haut tier (gold/mithril/prismatic) et aux 4 chefs-d'oeuvre exclusifs aux maitres artisans (task 122 — forgeron, tanneur, alchimiste, joaillier).
+>
+> Independante des 13 PR i18n / avatar / mounts / events en vol : aucune ne touche `ItemFixtures.php`. Aucune migration, aucun nouveau test (l'infra `name_translations` est en place depuis 3a, la mecanique est couverte par `ItemLocalizationTest`).
+
+### Changements
+
+- [x] **Fixtures `ItemFixtures`** : ajout de `'name_translations' => ['en' => ...]` sur 11 items (+11 lignes, fichier reste sous le seuil de 50 lignes ajoutees a un fichier > 400 lignes).
+  - Bijoux haut tier (7) : `gold_ring=Jeweled Gold Ring`, `gold_amulet=Gold Amulet`, `gold_crown=Gold Crown`, `mithril_ring_jewel=Jeweled Mithril Ring`, `mithril_amulet=Mithril Amulet`, `legendary_ring=Prismatic Ring`, `legendary_amulet=Prismatic Amulet`.
+  - Chefs-d'oeuvre exclusifs maitres artisans (4) : `masterwork_blade=Master Blacksmith's Blade`, `masterwork_drakehide_cloak=Master Leatherworker's Cloak`, `masterwork_grand_elixir=Master Alchemist's Grand Elixir`, `masterwork_starforged_ring=Master Jeweler's Ring`.
+- [x] **Roadmap** : `SPRINT_12.md` sous-phase 3c.t cochee + detail, `ROADMAP_TODO_INDEX.md` date de derniere mise a jour synchronisee.
+
+### Impact
+
+- **FR** : zero impact, fallback transparent preserve le rendu actuel sur `/game/inventory`, `/game/shop` et l'ecran de craft.
+- **EN** : impact immediat via le filter `localized_name` cable en 3b. Les recompenses de progression intermediaire du joaillier (level 6-18) et les chefs-d'oeuvre legendaires des 4 metiers d'artisan s'affichent en anglais quand la locale du compte est `en` (via `/game/settings`).
+- **Couverture** : 221/279 items dans `ItemFixtures` traduits (~79%, +11 vs 3c.s). Items restants : equipements elementaires t2/t3 par slot (~56), drops de boss zone Acte 2 (peaux/lames/boucliers ancestraux), cosmetiques cape/couronne lunaire (2).
 
 ---
 
