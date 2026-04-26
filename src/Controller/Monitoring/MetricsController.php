@@ -50,7 +50,7 @@ class MetricsController extends AbstractController
         $this->cache->save($freshness);
     }
 
-    private function collectGameGauges(): void
+    protected function collectGameGauges(): void
     {
         $connectedThreshold = new \DateTimeImmutable('-15 minutes');
 
