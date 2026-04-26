@@ -176,6 +176,8 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)
 - [ASSETS.md](ASSETS.md) — Guide des assets graphiques (format sprites, tilesets, ajout de nouveaux sprites)
 - [docs/CICD.md](docs/CICD.md) — Documentation CI/CD (pipelines, secrets, rollback)
+- [docs/LOAD_TESTING_BOTTLENECKS.md](docs/LOAD_TESTING_BOTTLENECKS.md) — Synthese des goulots probables identifies par les scenarios k6 (`scripts/load-test/`) + plan d'optimisation priorise en 6 jalons (Redis cache, PgBouncer, indexes & cache des collectors `/metrics`, indexes composites map, hardening Mercure, scaling horizontal). Etat des jalons mis a jour au fur et a mesure des sous-phases livrees (cf. tache 134 du Sprint 12).
+- [scripts/load-test/README.md](scripts/load-test/README.md) — Scenarios k6 (guest-browsing, metrics-stress, mercure-streaming, authenticated-gameplay) + variables d'environnement + thresholds + cas d'usage. Objectif Sprint 12 : 200 joueurs simultanes sans degradation.
 
 ## Routes principales
 
