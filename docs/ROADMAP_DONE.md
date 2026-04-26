@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3d.doc.b — pointeurs CLAUDE.md vers `LOAD_TESTING_BOTTLENECKS.md` + `scripts/load-test/README.md`)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3e — script `run-all.sh` pour lancer les 4 scenarios k6 sequentiellement)
+
+---
+
+## 134 — Load testing & scaling sous-phase 3e : script `run-all.sh` pour lancer les 4 scenarios k6 sequentiellement (2026-04-26)
+
+> Suite directe des sous-phases 1 + 2a/b/c (scenarios k6) et 2d (plan analytique). Fournit un point d'entree unique pour lancer toute la suite de benchmarks k6 (anonyme + metrics + Mercure + auth) avec un seul appel et un resume agrege. Prepare l'integration CI nightly mentionnee dans la section "Prochaines etapes (Sprint 12)" du `scripts/load-test/README.md`.
+>
+> Sous-phase **outillage** : 1 nouveau script bash + 1 doc mise a jour. Aucun changement applicatif. Aucun nouveau test. Independante des 14 PR ouvertes : aucune ne touche `scripts/load-test/`.
+
+### Changements
+
+- [x] `scripts/load-test/run-all.sh` (nouveau, 83 lignes, executable via `chmod +x`) :
+  - Header `#!/usr/bin/env bash` + flags defensifs (`set -u -o pipefail`).
+  - Detection de `k6` dans le PATH au demarrage avec exit 127 si absent (message d'erreur explicite + lien d'installation).
+  - Boucle sur les 4 scenarios `guest-browsing.js` / `metrics-stress.js` / `mercure-streaming.js` / `authenticated-gameplay.js` (ordre coherent avec la documentation).
+  - Export d'un JSON de resume par scenario via `K6_SUMMARY_EXPORT=last-summary-<name>.json` (reutilise le mecanisme existant de `config.js`).
+  - SKIP automatique de `authenticated-gameplay` si ni `TEST_USER_EMAIL`/`TEST_USER_PASSWORD` ni `TEST_CREDENTIALS_FILE` ne sont definis (fail-fast plutot que silencieux), avec marquage `SKIP` dans le tableau final.
+  - Tableau recapitulatif final affichant `PASS|FAIL|SKIP <name>` pour chaque scenario + compteurs agreges `PASS=N | FAIL=N | SKIP=N`.
+  - Exit code = nombre de scenarios echoues (0 = tous passes, max = 4). Compatible avec les CI / cron.
+- [x] `scripts/load-test/README.md` (+~25 lignes / -1 ligne) :
+  - Ajout de `run-all.sh` dans le bloc Structure ASCII.
+  - Nouvelle section "Lancer tous les scenarios d'un coup" avec 2 exemples (defauts en local vs cible Sprint 12 200 VUs/5min sur staging avec pool de credentials), description du comportement (sequentiel pour eviter l'interference des thresholds, JSON de resume par scenario, tableau recapitulatif, exit code agrege, SKIP automatique de `authenticated-gameplay` sans credentials).
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3e ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +83 lignes script + ~25/-1 lignes README + ~3 lignes roadmap + entree ROADMAP_DONE = ~135 lignes totales (<300 budget). Aucun changement applicatif. Le script reste sub-100 lignes, focalise et idempotent. Permet de lancer un benchmark complet en une seule commande, d'integrer les 4 scenarios dans un cron / GitHub Actions sans logique de chainage cote orchestrateur, et de detecter rapidement les regressions sur l'ensemble des couches mesurees (DB Doctrine, Mercure SSE, Symfony auth, Twig).
 
 ---
 

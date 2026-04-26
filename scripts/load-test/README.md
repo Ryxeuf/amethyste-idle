@@ -43,12 +43,33 @@ docker run --rm -i -v "$PWD:/src" -w /src grafana/k6 run scripts/load-test/scena
 scripts/load-test/
 ├── README.md                 # ce fichier
 ├── config.js                 # env vars, thresholds et options partagees
+├── run-all.sh                # lance les 4 scenarios sequentiellement, agrege les resultats
 └── scenarios/
     ├── guest-browsing.js          # navigation anonyme (home, login, register, /metrics, /health)
     ├── metrics-stress.js          # stress focalise sur /metrics (collecte Prometheus + Doctrine)
     ├── mercure-streaming.js       # capacite SSE du hub Mercure sur le topic `map/move`
     └── authenticated-gameplay.js  # login + boucle map/inventaire (routes protegees /game et /api/map)
 ```
+
+## Lancer tous les scenarios d'un coup
+
+```bash
+# Defauts (BASE_URL=http://localhost, VUS=50, sans authenticated-gameplay)
+./scripts/load-test/run-all.sh
+
+# Cible Sprint 12 (200 VUs / 5min sur staging avec un pool de credentials)
+BASE_URL=https://staging.amethyste.best \
+  VUS=200 DURATION=5m RAMP_UP=1m RAMP_DOWN=30s \
+  TEST_CREDENTIALS_FILE=scripts/load-test/credentials.json \
+  ./scripts/load-test/run-all.sh
+```
+
+`run-all.sh` execute les 4 scenarios sequentiellement (pour eviter
+l'interference des thresholds), exporte un JSON de resume par scenario
+(`last-summary-<name>.json`), affiche un resume final (PASS/FAIL/SKIP par
+scenario) et exit avec un code != 0 egal au nombre de scenarios echoues.
+`authenticated-gameplay` est SKIPPE automatiquement si ni `TEST_USER_EMAIL`
+ni `TEST_CREDENTIALS_FILE` ne sont definis (fail-fast plutot que silencieux).
 
 ## Scenario : guest-browsing
 
