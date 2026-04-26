@@ -1771,6 +1771,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // === Recompenses Acte 3 — La Convergence (tache 94) ===
             'convergence_blade' => [
                 'name' => 'Lame de la Convergence',
+                'name_translations' => ['en' => 'Convergence Blade'],
                 'description' => 'Une epee forgee dans le cristal d\'amethyste purifie. Les quatre fragments fusionnes resonnent dans la lame, lui conferant une puissance qui transcende les elements.',
                 'type' => 'gear',
                 'element' => Element::Light,
@@ -1789,6 +1790,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'convergence_amulet' => [
                 'name' => 'Amulette de la Convergence',
+                'name_translations' => ['en' => 'Convergence Amulet'],
                 'description' => 'Un pendentif taille dans le coeur du cristal d\'amethyste. Il pulse d\'une lumiere douce qui renforce les capacites magiques de son porteur.',
                 'type' => 'gear',
                 'element' => Element::Light,
@@ -1807,6 +1809,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Feu
             'materia_inferno' => [
                 'name' => 'Inferno',
+                'name_translations' => ['en' => 'Inferno'],
                 'description' => 'Matéria contenant un sort de brasier dévastateur',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1820,6 +1823,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_fire_wall' => [
                 'name' => 'Mur de feu',
+                'name_translations' => ['en' => 'Fire Wall'],
                 'description' => 'Matéria créant un mur de flammes infranchissable',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1833,6 +1837,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_fire_nova' => [
                 'name' => 'Nova de feu',
+                'name_translations' => ['en' => 'Fire Nova'],
                 'description' => 'Matéria libérant une explosion de feu dans toutes les directions',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1846,6 +1851,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_phoenix_flame' => [
                 'name' => 'Flamme du phénix',
+                'name_translations' => ['en' => 'Phoenix Flame'],
                 'description' => 'Matéria aux flammes régénératrices qui brûlent et soignent',
                 'type' => 'materia',
                 'element' => Element::Fire,
@@ -1859,6 +1865,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_meteor_strike' => [
                 'name' => 'Frappe météorique',
+                'name_translations' => ['en' => 'Meteor Strike'],
                 'description' => 'Matéria invoquant un météore enflammé',
                 'type' => 'materia',
                 'element' => Element::Fire,
