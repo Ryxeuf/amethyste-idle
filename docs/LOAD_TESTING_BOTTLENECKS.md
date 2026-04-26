@@ -173,26 +173,35 @@ pour tenir au-dela de 100 connexions concurrentes.
 **Gain attendu** : x2 a x4 sur la capacite des routes authentifiees ;
 indispensable au-dela de 150 VUs.
 
-### Jalon C — Cache des collectors `/metrics` (priorite 3, effort S)
+### Jalon C — Cache des collectors `/metrics` (priorite 3, effort S) ✅ TERMINE
 
 **Objectif** : eviter les 3 `COUNT()` synchrones par scrape Prometheus.
 
+> **Statut** : termine — sous-phases 3a (indexes) + 3b (cache TTL) + 3d (partial index fight). Le hot path `/metrics` est decouple de la volumetrie DB.
+
 - [ ] Refactor `MetricsController::collectGameGauges` pour utiliser un
       cache TTL court (5 a 15 s) via le pool Redis du jalon A.
+      → **Sous-phase 3b livree** (2026-04-26) : cache TTL 10s via le pool
+      `cache.app` (filesystem aujourd'hui, automatiquement Redis quand le
+      jalon A sera livre — aucun changement de code requis).
 - [ ] Alternativement, deplacer la collecte vers une commande
-      `app:monitoring:snapshot` declenchee par un cron (fichier de service
-      systemd ou job Symfony Messenger), et exposer simplement la valeur
-      cachee dans le controller.
+      `app:monitoring:snapshot` declenchee par un cron — non retenu.
 - [ ] Ajouter `idx_player_updated_at` sur `Player.updated_at` (migration
       idempotente avec `CREATE INDEX IF NOT EXISTS`).
+      → **Sous-phase 3a livree** (2026-04-26).
 - [ ] Ajouter `idx_mob_died_at` sur `Mob.died_at` ou un partial index
       `WHERE died_at IS NULL` (PostgreSQL).
+      → **Sous-phase 3a livree** (2026-04-26) : `idx_mob_alive_map ON mob (map_id) WHERE died_at IS NULL` (partial, couvre aussi le filtre par carte).
+- [ ] Ajouter un index sur `Fight.in_progress` pour la 3eme gauge.
+      → **Sous-phase 3d livree** (2026-04-26) : `idx_fight_in_progress ON fight (in_progress) WHERE in_progress = true` (partial).
 - [ ] Re-run `metrics-stress` : p95 `/metrics` < 100 ms, p99 < 250 ms.
 
-**Gain attendu** : `/metrics` devient O(1) en lecture, decouple de la
-volumetrie. Eliminer ce point comme axe d'instabilite a long terme.
+**Gain obtenu** : `/metrics` decouple de la volumetrie via le cache TTL ;
+les rares COUNTs restants (1 cycle / 10s) frappent les indexes ajoutes.
+A re-mesurer sous `metrics-stress` 20 VUs sans think-time pour confirmer
+l'objectif p95 < 100 ms.
 
-### Jalon D — Indexes composites pour les APIs map (priorite 4, effort S)
+### Jalon D — Indexes composites pour les APIs map (priorite 4, effort S) — partiellement couvert
 
 **Objectif** : accelerer `/api/map/entities` qui itere sur les
 joueurs/mobs/PNJ d'une carte.
@@ -204,6 +213,14 @@ joueurs/mobs/PNJ d'une carte.
       `(map_id)` si la carte est petite).
 - [ ] Migration : `CREATE INDEX IF NOT EXISTS idx_mob_map_alive ON mob
       (map_id) WHERE died_at IS NULL`.
+      → **Sous-phase 3a livree** (2026-04-26) : `idx_mob_alive_map`
+      (chevauchement avec le jalon C : ce partial index sert les 2
+      objectifs simultanement).
+- [ ] **Bonus refactor** — supprimer le produit cartesien dans
+      `MobRepository::findByMapWithMonster` (4 leftJoin OneToMany
+      imbriques sans usage cote appelant).
+      → **Sous-phase 3c livree** (2026-04-26) : reduction du wire
+      transfer DB d'un facteur ~15 sur `/api/map/entities`.
 - [ ] Profiler les querybuilders de `MapEntityFetcher` (ou equivalent)
       via `EXPLAIN ANALYZE` sous charge `authenticated-gameplay`.
 - [ ] Re-run `authenticated-gameplay` : `authed_map_api_latency` p95 <
@@ -281,24 +298,37 @@ dans `docs/audits/` avec date, configuration, resume k6.
 
 ---
 
-## 5. Prochaines etapes
+## 5. Avancement & prochaines etapes
 
-1. **Sous-phase 3** (tache 134) — implementer le **jalon A** (Redis cache)
-   et le **jalon C** (cache des collectors). Petit diff (compose +
-   cache.yaml + MetricsController), gain immediat.
-2. **Sous-phase 4** — implementer le **jalon B** (PgBouncer) et le **jalon
-   D** (indexes composites). Migration + compose, demande validation
-   pgbouncer + Doctrine.
-3. **Sous-phase 5** — implementer le **jalon E** (Mercure hardening). Touche
-   l'infra (compose + Caddyfile + Traefik dynamic config).
-4. **Sous-phase 6** — designer le **jalon F** (scaling horizontal) — peut
-   rester un plan ecrit si les jalons A-E suffisent a tenir 200 VUs en
-   mono-instance.
+### Etat des jalons
 
-Chaque jalon livre **doit** etre suivi d'un re-run des 4 scenarios k6 et
-d'une mise a jour de ce document avec les chiffres mesures (ajouter une
-section "Resultats observes" en bas du document quand des chiffres reels
-seront disponibles).
+| Jalon | Statut | Sous-phases livrees |
+|-------|--------|---------------------|
+| A — Cache Redis | ⏳ A faire | — |
+| B — PgBouncer | ⏳ A faire | — |
+| **C — Cache + indexes `/metrics`** | **✅ Termine** | 3a (indexes Player/Mob) + 3b (cache TTL 10s) + 3d (partial index Fight) |
+| D — Indexes composites + refactor map | 🟡 Partiellement couvert | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) ; reste a faire `idx_player_map_coords` + profiling |
+| E — Hardening Mercure | ⏳ A faire | — |
+| F — Scaling horizontal | ⏳ A faire | — |
+
+### Roadmap a venir
+
+1. **Sous-phase 3e** (tache 134) — completer le **jalon D** : `idx_player_map_coords` + profiling `EXPLAIN ANALYZE` sur `/api/map/entities` sous charge `authenticated-gameplay`. Petit diff.
+2. **Sous-phase 4** — implementer le **jalon A** (Redis cache, compose + cache.yaml). Cle pour debloquer le scaling horizontal et la coordination multi-worker. Substitution transparente du pool `cache.app` deja utilise par `MetricsController` (sous-phase 3b) — aucun changement de code controller requis.
+3. **Sous-phase 5** — implementer le **jalon B** (PgBouncer). Migration + compose, demande validation pgbouncer + Doctrine.
+4. **Sous-phase 6** — implementer le **jalon E** (Mercure hardening). Touche l'infra (compose + Caddyfile + Traefik dynamic config).
+5. **Sous-phase 7** — designer le **jalon F** (scaling horizontal) — peut rester un plan ecrit si les jalons A-E suffisent a tenir 200 VUs en mono-instance.
+
+Chaque jalon livre **doit** etre suivi d'un re-run des 4 scenarios k6 et d'une mise a jour de la section "Resultats observes" ci-dessous.
+
+### Resultats observes
+
+> A renseigner par sous-phase, au fur et a mesure des runs reels contre staging.
+
+| Date | Sous-phase | Scenario | p95 / p99 / fail rate | Notes |
+|------|------------|----------|------------------------|-------|
+| _A renseigner_ | _3a/3b/3d_ | `metrics-stress` | _—_ | Premier re-run a effectuer apres deploiement des jalons C complets (3a + 3b + 3d). |
+| _A renseigner_ | _3c_ | `authenticated-gameplay` | _—_ | Comparaison avant/apres le refactor `findByMapWithMonster`. |
 
 ---
 

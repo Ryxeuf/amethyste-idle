@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3e.b.b.fix — fixture EN pour le boss `Racine Ancienne`, atteint 100% de parite FR/EN du bestiaire)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3d.doc — mise a jour `docs/LOAD_TESTING_BOTTLENECKS.md` avec etat des jalons + section "Resultats observes")
+
+---
+
+## 134 — Load testing & scaling sous-phase 3d.doc : mise a jour `docs/LOAD_TESTING_BOTTLENECKS.md` (2026-04-26)
+
+> Mise a jour du document analytique de la sous-phase 2d pour refleter l'etat reel des jalons apres les sous-phases 3a (indexes), 3b (cache TTL), 3c (refactor `findByMapWithMonster`) et 3d (partial index `fight.in_progress`). Le jalon C est maintenant entierement couvert, le jalon D est partiellement couvert. Ajoute une section "Resultats observes" en template pour les futures mesures k6 reelles.
+>
+> Sous-phase **purement documentaire** : 1 fichier `.md` modifie. Aucun changement applicatif. Aucun nouveau test. Independante des 14 PR ouvertes : aucune ne touche `docs/LOAD_TESTING_BOTTLENECKS.md`.
+
+### Changements
+
+- [x] `docs/LOAD_TESTING_BOTTLENECKS.md` (+~50 lignes / ~30 modifiees, total 345 lignes <400 budget) :
+  - **Jalon C (cache + indexes `/metrics`)** : marque ✅ TERMINE avec note d'avancement, ajoute des pointeurs `→ Sous-phase 3a/3b/3d livree` apres chaque cocher original. Mention que le cache TTL 10s utilise deja `cache.app` (filesystem aujourd'hui), donc deviendra automatiquement Redis quand le jalon A sera livre — aucun changement de code controller requis.
+  - **Jalon D (indexes composites + refactor map)** : marque 🟡 partiellement couvert avec note. Le partial index `idx_mob_alive_map` (sous-phase 3a) chevauche les jalons C et D simultanement. Ajoute une puce "Bonus refactor" pour la sous-phase 3c (`findByMapWithMonster`).
+  - Renomme la section "Prochaines etapes" en "Avancement & prochaines etapes".
+  - **Nouveau tableau "Etat des jalons"** (6 lignes : A/B/C/D/E/F + statut + sous-phases livrees) qui synthetise visuellement la progression.
+  - **Nouvelle section "Resultats observes"** avec template tabulaire (date / sous-phase / scenario / p95-p99-fail / notes) pour documenter les futures mesures k6 reelles. Pre-rempli avec 2 lignes "A renseigner" pointant vers les jalons 3a/3b/3d (`metrics-stress`) et 3c (`authenticated-gameplay`) qui necessitent un re-run de mesure.
+  - Roadmap a venir mise a jour : 5 prochaines sous-phases (3e jalon D residuel, 4 jalon A Redis, 5 jalon B PgBouncer, 6 jalon E Mercure, 7 jalon F scaling) avec ordre d'execution priorise.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d.doc ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +50/-30 lignes doc + ~5 lignes roadmap + entree ROADMAP_DONE = ~120 lignes totales (<<300 budget). Aucun changement applicatif. Le document reste sub-400 lignes (345). Permet aux prochaines sous-phases (3e, 4, 5, 6, 7) de demarrer avec un etat des lieux a jour et un emplacement preallocue pour les chiffres reels.
 
 ---
 
