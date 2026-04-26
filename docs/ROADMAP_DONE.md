@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.f — fixtures EN pour les 6 quest items de la chaine narrative Acte 1-2)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.g — fixtures EN pour les recompenses Acte 3 + materia tier 3-4 element Feu, 7 items)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.g : fixtures EN pour les recompenses Acte 3 + materia tier 3-4 element Feu (7 items) (2026-04-26)
+
+> Suite directe des sous-phases 3c (35 items starter), 3c.b/c/d/e/f (materias tier 1-3, materiaux craft, plantes, armes generiques, quest items). Etend la couverture EN aux 2 recompenses ultimes de l'Acte 3 (Amethyste rarity) et aux 5 materias avancees du domaine pyromancy.
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 7 items :
+  - **Recompenses Acte 3 (Amethyste rarity)** : `convergence_blade=Convergence Blade` (epee main_weapon, 3 slots materia, niveau 25, drop unique du Gardien de la Convergence) et `convergence_amulet=Convergence Amulet` (collier, 2 slots materia, niveau 25).
+  - **Materia tier 3-4 element Feu** : `materia_inferno=Inferno`, `materia_fire_wall=Fire Wall`, `materia_fire_nova=Fire Nova`, `materia_phoenix_flame=Phoenix Flame`, `materia_meteor_strike=Meteor Strike` (toutes appartenant au domaine pyromancy, debloquees a haut niveau de progression).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.g ajoutee dans la branche 3 (apres 3c.f). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (table de loot du Gardien de la Convergence + materias debloquees apres avoir avance dans le domaine pyromancy), `/game/shop` si certains de ces items sont vendus, et tout dialogue PNJ qui mentionne ces recompenses. 85 items restent sans traduction (consommables alchimistes avances, materia tier 3+ pour les autres elements eau/air/terre/metal/bete/lumiere/ombre, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
