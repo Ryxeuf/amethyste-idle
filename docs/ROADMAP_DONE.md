@@ -1,7 +1,29 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3e — script `run-all.sh` pour lancer les 4 scenarios k6 sequentiellement)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.f — fixtures EN pour les 6 quest items de la chaine narrative Acte 1-2)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.f : fixtures EN pour les 6 quest items (chaine narrative Acte 1-2) (2026-04-26)
+
+> Suite directe des sous-phases 3c (35 items starter), 3c.b (26 materia tier 1-3), 3c.c (18 materiaux craft), 3c.d (27 plantes/herbes) et 3c.e (15 armes generiques) : etend les traductions EN aux 6 items de quete narratifs des Actes 1 et 2. Les fragments de l'Améthyste (4 items) sont la pierre angulaire de la chaine narrative principale "Les Fragments" qui mene au boss de l'Acte 3 (Gardien de la Convergence).
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes : aucune ne touche `ItemFixtures.php`.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` apres `'name' => '...'` dans 6 entrees `quest_item_*` :
+  - `quest_item_ancient_key` : Clé ancienne → **Ancient Key** (item Acte 1, recherche du tutoriel des donjons).
+  - `quest_item_magic_gem` : Gemme magique → **Magic Gem** (item Acte 1, premiere quete d'enchantement).
+  - `quest_item_fragment_foret` : Fragment Sylvestre → **Sylvan Fragment** (1er fragment Acte 2 — donjon de la foret).
+  - `quest_item_fragment_mines` : Fragment de la Forge → **Forge Fragment** (2eme fragment Acte 2 — mines).
+  - `quest_item_fragment_marais` : Fragment des Brumes → **Mist Fragment** (3eme fragment Acte 2 — marais).
+  - `quest_item_fragment_montagne` : Fragment du Sommet → **Summit Fragment** (4eme fragment Acte 2 — montagne).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.f ajoutee dans la branche 3 (apres 3c.e). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur l'inventaire (`/game/inventory`), l'ecran de quetes (`/game/quest`), la table de loot des donjons d'Acte 2 et tout dialogue PNJ qui mentionne ces items via `{{ item|localized_name }}` — particulierement crucial pour les quetes "Les Fragments" (chaine narrative principale de l'Acte 2 menant a l'Acte 3 La Convergence). 92 items restent sans traduction (consommables alchimistes avances, recompenses Acte 3 `convergence_*`, materia tier 4+, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
