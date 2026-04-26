@@ -1,7 +1,35 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.r — 4 boss de zone Acte 2 + 3 items magiques, 7 items)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.s — 9 items iron tier + leather skins, 9 items)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.s : fixtures EN pour 9 items iron tier + leather skins (2026-04-26)
+
+> Suite directe de la sous-phase 3c.r (boss zone Acte 2). Couvre 7 items du palier fer/cuivre (armes, bouclier, casque, anneaux, amulette, bracelet) + 2 peaux de cuir brutes utilisees en tannerie.
+>
+> Sous-phase **micro-fixture** : 9 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 13 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+9 lignes) :
+  - **Materiaux tannerie** :
+    - `leather_skin_1` → **Leather Hide**
+    - `leather_skin_2` → **Leather Hide**
+  - **Equipement craft fer/cuivre (palier intermediaire)** :
+    - `iron_dagger` → **Iron Dagger** (arme craft soldier)
+    - `iron_shield` → **Iron Shield** (bouclier craft)
+    - `iron_helmet` → **Iron Helmet** (casque craft, level 8 Uncommon)
+    - `copper_ring` → **Copper Ring** (anneau bas niveau)
+  - **Bijoux joaillier base** :
+    - `iron_ring` → **Iron Ring**
+    - `iron_amulet` → **Iron Amulet**
+    - `iron_bracelet` → **Iron Bracelet**
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.s ajoutee dans la branche 3 (apres 3c.r). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +9 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (onglet equipement et items), `/game/shop` (forgerons et joailliers) et l'ecran de craft via le filter `localized_name`. Items restants sans traduction : equipements elementaires t2/t3 par slot (~64), bijoux gold/mithril/legendary (8), masterwork (4), cosmetiques (2) — couverts dans les sous-phases ulterieures.
 
 ---
 

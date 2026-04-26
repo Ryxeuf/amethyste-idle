@@ -686,6 +686,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'leather_skin_1' => [
                 'name' => 'Peau de cuir',
+                'name_translations' => ['en' => 'Leather Hide'],
                 'description' => 'Une peau de cuir brute',
                 'type' => 'stuff',
                 'slug' => 'leather-skin-1',
@@ -696,6 +697,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'leather_skin_2' => [
                 'name' => 'Peau de cuir',
+                'name_translations' => ['en' => 'Leather Hide'],
                 'description' => 'Une peau de cuir brute',
                 'type' => 'stuff',
                 'slug' => 'leather-skin-2',
@@ -2986,6 +2988,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Items craftables (tâche 26) ---
             'iron_dagger' => [
                 'name' => 'Dague en fer',
+                'name_translations' => ['en' => 'Iron Dagger'],
                 'description' => 'Une dague en fer légère et tranchante, idéale pour les coups rapides',
                 'type' => 'gear',
                 'slug' => 'iron-dagger',
@@ -3000,6 +3003,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'iron_shield' => [
                 'name' => 'Bouclier en fer',
+                'name_translations' => ['en' => 'Iron Shield'],
                 'description' => 'Un bouclier solide en fer forgé, offrant une bonne protection',
                 'type' => 'gear',
                 'slug' => 'iron-shield',
@@ -3012,6 +3016,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'iron_helmet' => [
                 'name' => 'Casque en fer',
+                'name_translations' => ['en' => 'Iron Helmet'],
                 'description' => 'Un casque en fer robuste qui protège bien la tête',
                 'type' => 'gear',
                 'slug' => 'iron-helmet',
@@ -3027,6 +3032,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'copper_ring' => [
                 'name' => 'Anneau de cuivre',
+                'name_translations' => ['en' => 'Copper Ring'],
                 'description' => 'Un anneau simple en cuivre poli',
                 'type' => 'gear',
                 'slug' => 'copper-ring',
@@ -3041,6 +3047,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // === Bijoux joaillier (résultats craft) ===
             'iron_ring' => [
                 'name' => 'Anneau de fer',
+                'name_translations' => ['en' => 'Iron Ring'],
                 'description' => 'Un anneau de fer solide, sobre mais efficace',
                 'type' => 'gear',
                 'slug' => 'iron-ring',
@@ -3055,6 +3062,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'iron_amulet' => [
                 'name' => 'Amulette de fer',
+                'name_translations' => ['en' => 'Iron Amulet'],
                 'description' => 'Une amulette de fer aux motifs simples, protectrice des voyageurs',
                 'type' => 'gear',
                 'slug' => 'iron-amulet',
@@ -3069,6 +3077,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'iron_bracelet' => [
                 'name' => 'Bracelet de fer',
+                'name_translations' => ['en' => 'Iron Bracelet'],
                 'description' => 'Un bracelet de fer massif porté au poignet comme signe de force',
                 'type' => 'gear',
                 'slug' => 'iron-bracelet',
