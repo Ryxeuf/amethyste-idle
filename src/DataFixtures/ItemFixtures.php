@@ -2171,6 +2171,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_celestial_blessing' => [
                 'name' => 'Bénédiction céleste',
+                'name_translations' => ['en' => 'Celestial Blessing'],
                 'description' => 'Matéria invoquant une bénédiction des cieux',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2184,6 +2185,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_divine_intervention' => [
                 'name' => 'Intervention divine',
+                'name_translations' => ['en' => 'Divine Intervention'],
                 'description' => 'Matéria invoquant une intervention des dieux',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -2199,6 +2201,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Mort
             'materia_dark_harvest' => [
                 'name' => 'Moisson sombre',
+                'name_translations' => ['en' => 'Dark Harvest'],
                 'description' => 'Matéria récoltant l\'énergie vitale des ennemis',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2212,6 +2215,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_soul_rip' => [
                 'name' => 'Déchirure d\'âme',
+                'name_translations' => ['en' => 'Soul Rip'],
                 'description' => 'Matéria déchirant l\'âme de la cible',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2225,6 +2229,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_death_nova' => [
                 'name' => 'Nova de mort',
+                'name_translations' => ['en' => 'Death Nova'],
                 'description' => 'Matéria libérant une explosion d\'énergie mortelle',
                 'type' => 'materia',
                 'element' => Element::Dark,
@@ -2238,6 +2243,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_shadow_mend' => [
                 'name' => 'Guérison des ombres',
+                'name_translations' => ['en' => 'Shadow Mend'],
                 'description' => 'Matéria utilisant l\'énergie sombre pour soigner',
                 'type' => 'materia',
                 'element' => Element::Dark,

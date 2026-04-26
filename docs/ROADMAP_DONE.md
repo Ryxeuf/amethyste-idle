@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.k — fixtures EN pour 5 materias avancees Feu+Vie tier 3-5)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.l — fixtures EN pour 6 materias avancees Lumiere/Ombre tier 3-4)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.l : fixtures EN pour 6 materias avancees Lumiere/Ombre tier 3-4 (2026-04-26)
+
+> Suite directe de la sous-phase 3c.k (Feu+Vie). Etend la couverture EN aux 6 materias avancees Lumiere (domaine healer) et Ombre (domaine necromancer) tier 3-4.
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 materias :
+  - **Lumiere (healer)** : `materia_celestial_blessing` → **Celestial Blessing** (m4), `materia_divine_intervention` → **Divine Intervention** (m4).
+  - **Ombre (necromancer)** : `materia_dark_harvest` → **Dark Harvest** (m4, recolte HP/MP enemis), `materia_soul_rip` → **Soul Rip** (m4), `materia_death_nova` → **Death Nova** (m3, AOE explosive), `materia_shadow_mend` → **Shadow Mend** (m3, soin sombre).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.l ajoutee dans la branche 3 (apres 3c.k). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees a haut niveau dans healer/necromancer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 59 items restent sans traduction (consommables alchimistes, materia tier 4+ Earth/Air/Beast/Metal, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
