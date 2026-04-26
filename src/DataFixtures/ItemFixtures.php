@@ -2025,6 +2025,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Terre
             'materia_earthquake' => [
                 'name' => 'Tremblement de terre',
+                'name_translations' => ['en' => 'Earthquake'],
                 'description' => 'Matéria provoquant un séisme destructeur',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2038,6 +2039,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_rock_armor' => [
                 'name' => 'Armure de roche',
+                'name_translations' => ['en' => 'Rock Armor'],
                 'description' => 'Matéria créant une armure de pierre protectrice',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2053,6 +2055,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Vent
             'materia_wind_lame' => [
                 'name' => 'Lame d\'air',
+                'name_translations' => ['en' => 'Wind Blade'],
                 'description' => 'Matéria créant une lame d\'air tranchante',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2066,6 +2069,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_gust' => [
                 'name' => 'Bourrasque',
+                'name_translations' => ['en' => 'Gust'],
                 'description' => 'Matéria déclenchant une puissante bourrasque',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2079,6 +2083,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_cyclone' => [
                 'name' => 'Cyclone',
+                'name_translations' => ['en' => 'Cyclone'],
                 'description' => 'Matéria invoquant un cyclone dévastateur',
                 'type' => 'materia',
                 'element' => Element::Air,
