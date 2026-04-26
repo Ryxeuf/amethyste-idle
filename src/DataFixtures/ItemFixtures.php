@@ -2821,6 +2821,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'dragon_fang_blade' => [
                 'name' => 'Lame de croc draconique',
+                'name_translations' => ['en' => 'Dragon Fang Blade'],
                 'description' => 'Une épée forgée à partir d\'un croc du Dragon ancestral. La lame irradie une chaleur intense.',
                 'type' => 'gear',
                 'element' => Element::Fire,
@@ -2837,6 +2838,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'dragon_scale_armor' => [
                 'name' => 'Plastron en écailles de dragon',
+                'name_translations' => ['en' => 'Dragon Scale Armor'],
                 'description' => 'Un plastron taillé dans les écailles du Dragon ancestral. Résiste à la chaleur la plus extrême.',
                 'type' => 'gear',
                 'element' => Element::Fire,
@@ -2851,6 +2853,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'griffin_talon_ring' => [
                 'name' => 'Anneau de serre de griffon',
+                'name_translations' => ['en' => 'Griffin Talon Ring'],
                 'description' => 'Un anneau forgé autour d\'une serre de griffon. Confère une vitesse surnaturelle à son porteur.',
                 'type' => 'gear',
                 'element' => Element::Air,
@@ -2865,6 +2868,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'minotaur_horn_helm' => [
                 'name' => 'Heaume cornu du minotaure',
+                'name_translations' => ['en' => 'Minotaur Horn Helm'],
                 'description' => 'Un heaume massif orné des cornes brisées d\'un minotaure alpha. Inspire la terreur.',
                 'type' => 'gear',
                 'element' => Element::Earth,
@@ -2879,6 +2883,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'golem_heart_shield' => [
                 'name' => 'Bouclier cœur de golem',
+                'name_translations' => ['en' => 'Golem Heart Shield'],
                 'description' => 'Un bouclier taillé dans le noyau cristallin d\'un golem de pierre. Presque indestructible.',
                 'type' => 'gear',
                 'element' => Element::Earth,
@@ -2893,6 +2898,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'troll_king_belt' => [
                 'name' => 'Ceinture du roi troll',
+                'name_translations' => ['en' => 'Troll King Belt'],
                 'description' => 'Une ceinture massive en cuir de troll, renforcée de plaques de métal. Accorde une régénération accrue.',
                 'type' => 'gear',
                 'slug' => 'troll-king-belt',
