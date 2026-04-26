@@ -1692,6 +1692,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_ancient_key' => [
                 'name' => 'Clé ancienne',
+                'name_translations' => ['en' => 'Ancient Key'],
                 'description' => 'Une clé mystérieuse qui semble très ancienne',
                 'type' => 'quest',
                 'slug' => 'quest-ancient-key',
@@ -1702,6 +1703,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_magic_gem' => [
                 'name' => 'Gemme magique',
+                'name_translations' => ['en' => 'Magic Gem'],
                 'description' => 'Une gemme qui brille d\'une lueur étrange',
                 'type' => 'quest',
                 'slug' => 'quest-magic-gem',
@@ -1714,6 +1716,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Fragments Acte 2
             'quest_item_fragment_foret' => [
                 'name' => 'Fragment Sylvestre',
+                'name_translations' => ['en' => 'Sylvan Fragment'],
                 'description' => 'Un éclat de cristal vert pulsant d\'énergie ancienne. Il vibre au rythme des murmures de la forêt. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-foret',
@@ -1726,6 +1729,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_fragment_mines' => [
                 'name' => 'Fragment de la Forge',
+                'name_translations' => ['en' => 'Forge Fragment'],
                 'description' => 'Un éclat de cristal orangé irradiant une chaleur ancienne. Il pulse au rythme des marteaux fantômes de la forge oubliée. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-mines',
@@ -1738,6 +1742,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'quest_item_fragment_marais' => [
                 'name' => 'Fragment des Brumes',
+                'name_translations' => ['en' => 'Mist Fragment'],
                 'description' => 'Un éclat de cristal bleu-gris suintant une vapeur glaciale. Il pulse au rythme des courants invisibles du marais. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-marais',
@@ -1751,6 +1756,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'quest_item_fragment_montagne' => [
                 'name' => 'Fragment du Sommet',
+                'name_translations' => ['en' => 'Summit Fragment'],
                 'description' => 'Un éclat de cristal blanc strié de veines argentées, glacé au toucher. Il vibre au rythme des vents qui balaient les cimes. L\'un des quatre fragments nécessaires pour percer le mystère de l\'Améthyste.',
                 'type' => 'quest',
                 'slug' => 'quest-fragment-montagne',
