@@ -2259,6 +2259,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Terre
             'materia_boulder_throw' => [
                 'name' => 'Lancer de rocher',
+                'name_translations' => ['en' => 'Boulder Throw'],
                 'description' => 'Matéria projetant un énorme rocher',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2272,6 +2273,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_stone_spikes' => [
                 'name' => 'Pics de pierre',
+                'name_translations' => ['en' => 'Stone Spikes'],
                 'description' => 'Matéria faisant jaillir des pics de pierre du sol',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2285,6 +2287,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_mountain_strength' => [
                 'name' => 'Force de la montagne',
+                'name_translations' => ['en' => 'Mountain Strength'],
                 'description' => 'Matéria conférant la force et la résistance d\'une montagne',
                 'type' => 'materia',
                 'element' => Element::Earth,
@@ -2300,6 +2303,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Vent
             'materia_tornado' => [
                 'name' => 'Tornade',
+                'name_translations' => ['en' => 'Tornado'],
                 'description' => 'Matéria invoquant une tornade dévastatrice',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2313,6 +2317,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_wind_shield' => [
                 'name' => 'Bouclier de vent',
+                'name_translations' => ['en' => 'Wind Shield'],
                 'description' => 'Matéria créant un bouclier d\'air protecteur',
                 'type' => 'materia',
                 'element' => Element::Air,
@@ -2326,6 +2331,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_air_dash' => [
                 'name' => 'Ruée d\'air',
+                'name_translations' => ['en' => 'Air Dash'],
                 'description' => 'Matéria permettant de se déplacer rapidement sur un coussin d\'air',
                 'type' => 'materia',
                 'element' => Element::Air,
