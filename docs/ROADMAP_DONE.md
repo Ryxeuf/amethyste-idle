@@ -1,7 +1,22 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 3c — suppression du produit cartesien dans `MobRepository::findByMapWithMonster`)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3d — partial index `idx_fight_in_progress`, complete jalon C indexes pour les collectors `/metrics`)
+
+---
+
+## 134 — Load testing & scaling sous-phase 3d : partial index `idx_fight_in_progress` (2026-04-26)
+
+> Complement direct de la sous-phase 3a (indexes `idx_player_updated_at` + `idx_mob_alive_map`). Ferme la batterie d'indexes du jalon C (plan `docs/LOAD_TESTING_BOTTLENECKS.md`) en couvrant la 3eme et derniere gauge collectee par `MetricsController::collectGameGauges` : `fights_active` (`COUNT()` sur `Fight WHERE in_progress = true`).
+>
+> Sous-phase **purement infrastructure** : 1 migration idempotente. Aucun changement de code applicatif (controller / service / template / Twig). Aucun nouveau test (la migration est idempotente et l'index est une optimisation de plan d'execution sans impact fonctionnel). Independante des 14 PR ouvertes : aucune ne touche `migrations/` (a part les translations independantes) ni les indexes de `fight`.
+
+### Changements
+
+- [x] `migrations/Version20260426FightInProgressIndex.php` (nouveau, 32 lignes) : migration idempotente qui ajoute un partial index via `CREATE INDEX IF NOT EXISTS idx_fight_in_progress ON fight (in_progress) WHERE in_progress = true` (reversible via `DROP INDEX IF EXISTS`). Accelere `COUNT()` execute par `MetricsController::collectGameGauges` pour la gauge `fights_active`. Partial index plutot qu'index regulier car `in_progress=false` represente >99% des lignes (combats historiques/termines), seul `in_progress=true` est utile a indexer pour la gauge — l'index reste minuscule meme quand la table fight grossit avec l'historique. Pas declare comme attribut Doctrine sur l'entite `Fight` (Doctrine ORM ne supporte pas les `WHERE` clauses dans `#[ORM\Index]`) : existe en migration uniquement, comme `idx_mob_alive_map` (sous-phase 3a) — acceptable car les tests utilisent `doctrine:schema:create` (snapshot du schema sans rejouer les migrations) et n'exercent aucune assertion de plan d'execution.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3d ajoutee + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3d`.
+
+**Diff** : +32 lignes migration + ~5 lignes roadmap + entree ROADMAP_DONE = ~70 lignes totales (<<300 budget). Aucune modification de code, aucun nouveau test. Combine au cache TTL 10s de la sous-phase 3b et aux indexes 3a, le hot path `/metrics` est desormais optimal sur les 3 gauges (`players_online`, `mobs_alive`, `fights_active`) : sub-100ms p95 attendue meme sous `metrics-stress` 20 VUs sans think-time, quel que soit le volume DB. Le jalon C du plan `docs/LOAD_TESTING_BOTTLENECKS.md` est entierement couvert par les 4 sous-phases 3a + 3b + 3c + 3d (3 indexes + cache TTL + refactor Mob).
 
 ---
 
