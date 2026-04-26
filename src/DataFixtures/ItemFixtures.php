@@ -1881,6 +1881,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Nouvelles Matérias - Vie
             'materia_rejuvenation' => [
                 'name' => 'Régénération',
+                'name_translations' => ['en' => 'Rejuvenation'],
                 'description' => 'Matéria restaurant progressivement la santé',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1894,6 +1895,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_divine_blessing' => [
                 'name' => 'Bénédiction divine',
+                'name_translations' => ['en' => 'Divine Blessing'],
                 'description' => 'Matéria contenant une puissante bénédiction curative',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1907,6 +1909,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_healing_wave' => [
                 'name' => 'Vague de guérison',
+                'name_translations' => ['en' => 'Healing Wave'],
                 'description' => 'Matéria libérant une vague d\'énergie curative',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1920,6 +1923,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_life_transfer' => [
                 'name' => 'Transfert de vie',
+                'name_translations' => ['en' => 'Life Transfer'],
                 'description' => 'Matéria permettant de transférer l\'énergie vitale',
                 'type' => 'materia',
                 'element' => Element::Light,
@@ -1933,6 +1937,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_holy_light' => [
                 'name' => 'Lumière sacrée',
+                'name_translations' => ['en' => 'Holy Light'],
                 'description' => 'Matéria émettant une lumière divine curative et offensive',
                 'type' => 'materia',
                 'element' => Element::Light,

@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.g — fixtures EN pour les recompenses Acte 3 + materia tier 3-4 element Feu, 7 items)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.h — fixtures EN pour les 5 materias Lumiere/Vie, domaine healer)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.h : fixtures EN pour les 5 materias Lumiere/Vie (domaine healer) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.g (Feu, 5 materias pyromancy). Etend la couverture EN aux 5 materias avancees du domaine `healer` (element Light) : arsenal de soin couvrant regeneration progressive, benediction massive, vague AOE, transfert HP entre allies, lumiere divine offensive+curative.
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test (mecanique deja couverte par `ItemLocalizationTest`). Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias element Lumiere :
+  - `materia_rejuvenation` → **Rejuvenation** (m2, regeneration progressive HP).
+  - `materia_divine_blessing` → **Divine Blessing** (m3, benediction massive).
+  - `materia_healing_wave` → **Healing Wave** (m2, vague AOE de soin).
+  - `materia_life_transfer` → **Life Transfer** (m2, transfert HP entre allies).
+  - `materia_holy_light` → **Holy Light** (m3, lumiere divine offensive+curative).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.h ajoutee dans la branche 3 (apres 3c.g). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees apres avoir avance dans le domaine healer), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 80 items restent sans traduction (consommables alchimistes, materia tier 3+ pour les autres elements eau/air/terre/metal/bete/ombre, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
