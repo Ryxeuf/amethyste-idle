@@ -1,7 +1,30 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.o — 7 consommables alchimistes + nourriture, ouvre la categorie consommables EN)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.p — 7 equipements starter, set complet de debut de jeu)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.p : fixtures EN pour 7 equipements starter (2026-04-26)
+
+> Suite directe de la sous-phase 3c.o (consommables). Couvre le set complet d'equipement de demarrage que tout nouveau personnage acquiert au tutoriel.
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 7 equipements element None (sans prerequis), niveau 1, 1 slot materia chacun :
+  - `wooden_sword` → **Wooden Sword** (arme principale starter)
+  - `starter_helmet` → **Rusty Helmet** (casque)
+  - `starter_chest` → **Padded Tunic** (torse)
+  - `starter_legs` → **Cloth Leggings** (jambes)
+  - `starter_boots` → **Worn Sandals** (pieds)
+  - `starter_gloves` → **Work Gloves** (mains)
+  - `starter_shield` → **Wooden Shield** (bouclier secondaire)
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.p ajoutee dans la branche 3 (apres 3c.o). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur l'ecran de creation de personnage, le premier inventaire post-tutoriel et le paper doll. 33 items restent sans traduction (equipements elementaires t1+, items boss legendaires, divers consommables avances) — couverts dans les sous-phases ulterieures.
 
 ---
 

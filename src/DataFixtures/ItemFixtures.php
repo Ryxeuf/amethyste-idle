@@ -2442,6 +2442,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
 
             'wooden_sword' => [
                 'name' => 'Épée en bois',
+                'name_translations' => ['en' => 'Wooden Sword'],
                 'description' => 'Une épée taillée dans du bois dur. Pas très tranchante, mais ça fait le travail.',
                 'type' => 'gear',
                 'spell' => 'none_attack_1',
@@ -2455,6 +2456,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_helmet' => [
                 'name' => 'Casque rouillé',
+                'name_translations' => ['en' => 'Rusty Helmet'],
                 'description' => 'Un vieux casque en fer rongé par la rouille. Mieux que rien.',
                 'type' => 'gear',
                 'slug' => 'starter-helmet',
@@ -2467,6 +2469,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_chest' => [
                 'name' => 'Tunique rembourrée',
+                'name_translations' => ['en' => 'Padded Tunic'],
                 'description' => 'Une tunique en lin rembourrée de paille. Protection minimale mais confortable.',
                 'type' => 'gear',
                 'slug' => 'starter-chest',
@@ -2479,6 +2482,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_legs' => [
                 'name' => 'Jambières en tissu',
+                'name_translations' => ['en' => 'Cloth Leggings'],
                 'description' => 'Des jambières en tissu épais, rapiécées à plusieurs endroits.',
                 'type' => 'gear',
                 'slug' => 'starter-legs',
@@ -2491,6 +2495,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_boots' => [
                 'name' => 'Sandales usées',
+                'name_translations' => ['en' => 'Worn Sandals'],
                 'description' => 'Des sandales de cuir usées par le temps. Au moins, elles tiennent encore.',
                 'type' => 'gear',
                 'slug' => 'starter-boots',
@@ -2503,6 +2508,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_gloves' => [
                 'name' => 'Gants de travail',
+                'name_translations' => ['en' => 'Work Gloves'],
                 'description' => 'Des gants en cuir épais, conçus pour le travail manuel mais utiles au combat.',
                 'type' => 'gear',
                 'slug' => 'starter-gloves',
@@ -2515,6 +2521,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'starter_shield' => [
                 'name' => 'Bouclier en bois',
+                'name_translations' => ['en' => 'Wooden Shield'],
                 'description' => 'Un bouclier rudimentaire en planches de bois clouées ensemble.',
                 'type' => 'gear',
                 'slug' => 'starter-shield',
