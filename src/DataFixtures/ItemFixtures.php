@@ -1275,6 +1275,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'elixir_force' => [
                 'name' => 'Élixir de force',
+                'name_translations' => ['en' => 'Strength Elixir'],
                 'description' => 'Un élixir puissant qui décuple temporairement la force de frappe',
                 'type' => 'stuff',
                 'slug' => 'elixir-force',
@@ -1288,6 +1289,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'elixir_defense' => [
                 'name' => 'Élixir de défense',
+                'name_translations' => ['en' => 'Defense Elixir'],
                 'description' => 'Un élixir qui forme un bouclier magique autour du buveur',
                 'type' => 'stuff',
                 'slug' => 'elixir-defense',
@@ -1301,6 +1303,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'onguent_healing' => [
                 'name' => 'Onguent de guérison',
+                'name_translations' => ['en' => 'Healing Salve'],
                 'description' => 'Un baume cicatrisant qui régénère les blessures progressivement',
                 'type' => 'stuff',
                 'slug' => 'onguent-healing',
@@ -1313,6 +1316,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'elixir_vitality' => [
                 'name' => 'Élixir de vitalité',
+                'name_translations' => ['en' => 'Vitality Elixir'],
                 'description' => 'Un puissant élixir qui revigore profondément le corps et restaure la santé',
                 'type' => 'stuff',
                 'slug' => 'elixir-vitality',
@@ -1659,6 +1663,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'food_bread' => [
                 'name' => 'Pain',
+                'name_translations' => ['en' => 'Bread'],
                 'description' => 'Un pain frais et nourrissant',
                 'type' => 'food',
                 'slug' => 'food-bread',
@@ -1670,6 +1675,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'food_cheese' => [
                 'name' => 'Fromage',
+                'name_translations' => ['en' => 'Cheese'],
                 'description' => 'Un morceau de fromage savoureux',
                 'type' => 'food',
                 'slug' => 'food-cheese',
@@ -1681,6 +1687,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'food_apple' => [
                 'name' => 'Pomme',
+                'name_translations' => ['en' => 'Apple'],
                 'description' => 'Une pomme juteuse et sucrée',
                 'type' => 'food',
                 'slug' => 'food-apple',

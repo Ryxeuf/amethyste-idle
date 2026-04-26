@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.n — 6 dernieres materias Eau/Metal/Bete, atteint 100% parite FR/EN materias)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.o — 7 consommables alchimistes + nourriture, ouvre la categorie consommables EN)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.o : fixtures EN pour 7 consommables alchimistes + nourriture (2026-04-26)
+
+> Suite directe de la sous-phase 3c.n (100% materias). Ouvre la categorie consommables avec 4 elixirs alchimistes (`type='stuff'`) et 3 nourritures (`type='food'`).
+>
+> Sous-phase **micro-fixture** : 7 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+7 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 7 consommables :
+  - **Elixirs (alchimiste)** : `elixir_force` → **Strength Elixir** (boost ATK temporaire), `elixir_defense` → **Defense Elixir** (bouclier magique), `onguent_healing` → **Healing Salve** (regen progressive), `elixir_vitality` → **Vitality Elixir** (restauration profonde HP).
+  - **Nourriture (food)** : `food_bread` → **Bread**, `food_cheese` → **Cheese**, `food_apple` → **Apple** (toutes restore_energy).
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.o ajoutee dans la branche 3 (apres 3c.n). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +7 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (onglet items), shop alchimiste, drops de quetes/monstres, et ecran de combat (utilisation des consommables). 40 items restent sans traduction (equipements elementaires t2/t3 par slot, items boss legendaires, divers consommables avances) — couverts dans les sous-phases ulterieures.
 
 ---
 
