@@ -1,7 +1,27 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.m — fixtures EN pour 6 materias avancees Terre/Vent tier 2-4)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.n — 6 dernieres materias Eau/Metal/Bete, atteint 100% parite FR/EN materias)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.n : 6 dernieres materias Eau/Metal/Bete — 100% parite FR/EN materias atteinte (2026-04-26)
+
+> Suite directe de la sous-phase 3c.m (Earth/Air). Ferme la chaine de sous-phases d'EN translations pour materias avancees (3c.g/h/i/j/k/l/m/n) en couvrant les 6 dernieres : 2 Eau + 2 Metal + 2 Bete. **Atteint reellement 100% de parite FR/EN sur l'integralite des materias** (verification systematique via `awk` : 0 materia sans `name_translations` cote `ItemFixtures::$items` racine).
+>
+> Sous-phase **micro-fixture** : 6 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+6 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 6 materias :
+  - **Eau (hydromancer)** : `materia_tidal_wave` → **Tidal Wave** (m3, raz-de-maree massif), `materia_ice_lance` → **Ice Lance** (m2, lance de glace tranchante).
+  - **Metal (soldier/knight)** : `materia_iron_fist` → **Iron Fist** (m2, charge brute soldier), `materia_metal_storm` → **Metal Storm** (m3, pluie de fragments knight).
+  - **Bete (druid/hunter)** : `materia_thorn_burst` → **Thorn Burst** (m2, epines du sol druid), `materia_leaf_blade` → **Leaf Blade** (m3, lame vegetale hunter).
+- [x] Verification de couverture systematique via `awk` sur `ItemFixtures::$items` racine : aucun item-materia ne manque desormais de `name_translations`. Le hot path materia (`/game/inventory` onglet materia, `/game/shop` selecteurs, table de loot, ecrans de combat) est entierement bilingue FR/EN.
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.n ajoutee dans la branche 3 (apres 3c.m) avec mention de l'atteinte des 100%. `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +6 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` et `/game/shop` pour TOUS les selecteurs de materia, peu importe le domaine du joueur ou le niveau de progression. 47 items restent sans traduction (consommables alchimistes, equipements elementaires t2/t3 par slot) — ces categories restantes sont desormais le seul axe d'i18n items a couvrir.
 
 ---
 

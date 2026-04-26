@@ -2347,6 +2347,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Eau (comblement du déficit)
             'materia_tidal_wave' => [
                 'name' => 'Raz-de-marée',
+                'name_translations' => ['en' => 'Tidal Wave'],
                 'description' => 'Matéria invoquant une vague massive qui submerge les ennemis',
                 'type' => 'materia',
                 'element' => Element::Water,
@@ -2360,6 +2361,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_ice_lance' => [
                 'name' => 'Lance de glace',
+                'name_translations' => ['en' => 'Ice Lance'],
                 'description' => 'Matéria projetant une lance de glace qui transperce l\'ennemi',
                 'type' => 'materia',
                 'element' => Element::Water,
@@ -2374,6 +2376,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Métal (comblement du déficit)
             'materia_iron_fist' => [
                 'name' => 'Charge',
+                'name_translations' => ['en' => 'Iron Fist'],
                 'description' => 'Matéria libérant une charge brutale avec un poing de fer',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -2387,6 +2390,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_metal_storm' => [
                 'name' => 'Tempête métallique',
+                'name_translations' => ['en' => 'Metal Storm'],
                 'description' => 'Matéria déclenchant une pluie de fragments métalliques acérés',
                 'type' => 'materia',
                 'element' => Element::Metal,
@@ -2401,6 +2405,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Matérias avancées - Bête (comblement du déficit)
             'materia_thorn_burst' => [
                 'name' => 'Explosion d\'épines',
+                'name_translations' => ['en' => 'Thorn Burst'],
                 'description' => 'Matéria faisant jaillir des épines du sol',
                 'type' => 'materia',
                 'element' => Element::Beast,
@@ -2414,6 +2419,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             'materia_leaf_blade' => [
                 'name' => 'Lame feuille',
+                'name_translations' => ['en' => 'Leaf Blade'],
                 'description' => 'Matéria formant une lame tranchante de feuilles acérées',
                 'type' => 'materia',
                 'element' => Element::Beast,
