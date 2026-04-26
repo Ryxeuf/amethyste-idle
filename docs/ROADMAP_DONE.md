@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.s — 9 items iron tier + leather skins, 9 items)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3e.h — i18n complete des 4 factions du jeu : infra + cablage + fixtures EN)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.h : infrastructure + cablage + fixtures EN pour les 4 factions (2026-04-26)
+
+> Etend l'i18n a l'entite `Faction`. Sous-phase **complete bout-en-bout** (infra + cablage Twig + fixtures EN) en miroir strict des sous-phases 3e.f (Race) et 3e.g (Region). Atteint 100% de parite FR/EN sur les 4 factions du jeu (Marchands / Chevaliers / Mages / Ombres).
+>
+> Independante des 13 PR i18n / avatar / mounts / events en vol : aucune ne touche `Faction.php` ni la table `game_factions`.
+
+### Changements
+
+- [x] **Migration** `Version20260426FactionTranslations` : `ADD COLUMN IF NOT EXISTS name_translations JSON` + `ADD COLUMN IF NOT EXISTS description_translations JSON` sur `game_factions`. Idempotente.
+- [x] **Entite `Faction`** : 2 nouvelles colonnes JSON nullables, `getLocalizedName(?string)` / `getLocalizedDescription(?string)` avec fallback gracieux, getters/setters avec normalisation (cles vides filtrees, valeurs non-string ignorees, blancs filtres, compaction `null`).
+- [x] **Filter Twig** `App\Twig\FactionLocalizationExtension` : 2 filters `localized_faction_name` + `localized_faction_description`, locale via `RequestStack`, fallback transparent.
+- [x] **Template** `templates/game/factions/index.html.twig` : `faction.name` -> `faction|localized_faction_name`, `faction.description` -> `faction|localized_faction_description` (2 lignes modifiees).
+- [x] **Fixtures EN** `FactionFixtures` : `marchands=Merchants Guild`, `chevaliers=Order of Knights`, `mages=Circle of Mages`, `ombres=Brotherhood of Shadows` cote nom + descriptions complementaires.
+- [x] **Tests** `FactionLocalizationTest` (15 cas : 7 name + 7 description + 1 default empty array) + `FactionLocalizationExtensionTest` (9 cas : 4 par filter + enregistrement).
+- [x] **Roadmap** : `SPRINT_12.md` sous-phase 3e.h ajoutee, `ROADMAP_TODO_INDEX.md` date mise a jour.
+
+### Impact
+
+- **FR** : zero impact, fallback transparent preserve le rendu actuel sur `/game/factions`
+- **EN** : impact immediat sur `/game/factions` via les 2 filters cables — les 4 noms et descriptions s'affichent en anglais quand la locale du compte est `en` (via `/game/settings`)
+- **Couverture** : 4/4 factions (100%)
 
 ---
 
