@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (134 sous-phase 2d — recueil des goulots + plan d'optimisation priorise)
+> Derniere mise a jour : 2026-04-26 (134 sous-phase 3a — indexes ciblés pour les collectors `/metrics`, jalon C partiel)
+
+---
+
+## 134 — Load testing & scaling sous-phase 3a : indexes ciblés pour les collectors `/metrics` (jalon C partiel) (2026-04-26)
+
+> Premier jalon concret du plan d'optimisation `docs/LOAD_TESTING_BOTTLENECKS.md` (livre en sous-phase 2d). Ajoute 2 indexes utilises directement par `MetricsController::collectGameGauges` (qui execute 3 `COUNT()` synchrones a chaque scrape Prometheus). Suite directe de la sous-phase 2d qui identifiait ces 2 collectors comme premier candidat d'optimisation a faible effort. Section "indexes manquants" du jalon C extraite et livree en avance des composants Redis-dependants (le cache des collectors lui-meme attend la sous-phase 3b).
+>
+> Sous-phase **purement infrastructure** : 1 migration idempotente + 1 attribut Doctrine. Aucune modification de code applicatif (controller / service / template / Twig). Independante des 14 PR ouvertes : aucune ne touche `migrations/` (a part les translations independantes), `src/Entity/App/Player.php` ni `src/Entity/App/Mob.php`.
+
+### Changements
+
+- [x] `migrations/Version20260426MetricsCollectorIndexes.php` (nouveau, 35 lignes) : migration idempotente qui ajoute 2 indexes via `CREATE INDEX IF NOT EXISTS` (reversible via `DROP INDEX IF EXISTS`) :
+  - `idx_player_updated_at ON player (updated_at)` : accelere `COUNT(p.id) FROM player p WHERE p.updatedAt >= NOW() - 15min` execute par `MetricsController::collectGameGauges` pour la gauge `players_online`. Sans cet index, PostgreSQL fait un seq scan sur la table `player` complete a chaque scrape Prometheus (15s par defaut + scrape externe + run k6 metrics-stress).
+  - `idx_mob_alive_map ON mob (map_id) WHERE died_at IS NULL` : partial index qui accelere `COUNT(m.id) FROM mob m WHERE m.diedAt IS NULL` (gauge `mobs_alive`) et benefice secondaire pour les requetes de spawn / pathfinding qui filtrent les mobs vivants par carte. La clause `WHERE died_at IS NULL` reduit la taille de l'index aux mobs actifs uniquement (les morts respawnent et sont retires/ignores), gain proportionnel au ratio mobs morts / mobs vivants.
+- [x] `src/Entity/App/Player.php` (+1 ligne) : ajout de `#[ORM\Index(columns: ['updated_at'], name: 'idx_player_updated_at')]` apres les 3 indexes existants (`idx_player_map` / `idx_player_fight` / `idx_player_user`). Garantit que `doctrine:schema:create` (utilise par la CI pour creer le schema de test sans rejouer les migrations) regenere bien l'index. Le partial index `idx_mob_alive_map` n'est PAS declare sur l'entite `Mob` (Doctrine ORM ne supporte pas les `WHERE` clauses dans `#[ORM\Index]`) : il existera en migration uniquement, ce qui est acceptable car les tests utilisent `doctrine:schema:create` (snapshot du schema sans migrations) et n'exercent aucune assertion de plan d'execution.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3a ajoutee sous "Optimisations" + ligne d'avancement mise a jour. `ROADMAP_TODO_INDEX.md` met a jour la date et l'avancement Sprint 12 avec `134 sous-phase 3a`.
+
+**Diff** : +35 lignes migration + 1 ligne entite + ~5 lignes roadmap + entree ROADMAP_DONE = ~80 lignes totales (<<300 budget). Aucune modification de code applicatif, aucun nouveau test (la migration est idempotente et les 2 indexes sont des optimisations de plan d'execution sans impact fonctionnel). Re-run `metrics-stress` attendu : reduction du seq scan sur `player.updated_at` et `mob.died_at`, baisse de la p95 `/metrics` correlee a la volumetrie. Prepare la sous-phase 3b (jalon A : Redis cache + cache des collectors qui supprimera completement les `COUNT()` du chemin chaud `/metrics`, gain final attendu p95 < 100 ms quel que soit le volume).
 
 ---
 
