@@ -17,6 +17,9 @@ class StatusEffectFixtures extends Fixture
             $effect = new StatusEffect();
             $effect->setSlug($data['slug']);
             $effect->setName($data['name']);
+            if (isset($data['name_translations']) && \is_array($data['name_translations'])) {
+                $effect->setNameTranslations($data['name_translations']);
+            }
             $effect->setType($data['type']);
             $effect->setDuration($data['duration']);
             $effect->setChance($data['chance'] ?? 100);
@@ -55,6 +58,7 @@ class StatusEffectFixtures extends Fixture
             'status_poison' => [
                 'slug' => 'poison',
                 'name' => 'Poison',
+                'name_translations' => ['en' => 'Poison'],
                 'type' => StatusEffect::TYPE_POISON,
                 'category' => StatusEffect::CATEGORY_DOT,
                 'duration' => 3,
@@ -66,6 +70,7 @@ class StatusEffectFixtures extends Fixture
             'status_poison_strong' => [
                 'slug' => 'poison-strong',
                 'name' => 'Poison virulent',
+                'name_translations' => ['en' => 'Virulent Poison'],
                 'type' => StatusEffect::TYPE_POISON,
                 'category' => StatusEffect::CATEGORY_DOT,
                 'duration' => 4,
@@ -79,6 +84,7 @@ class StatusEffectFixtures extends Fixture
             'status_burn' => [
                 'slug' => 'burn',
                 'name' => 'Brulure',
+                'name_translations' => ['en' => 'Burn'],
                 'type' => StatusEffect::TYPE_BURN,
                 'category' => StatusEffect::CATEGORY_DOT,
                 'duration' => 3,
@@ -93,6 +99,7 @@ class StatusEffectFixtures extends Fixture
             'status_poison_slow' => [
                 'slug' => 'poison-slow',
                 'name' => 'Poison insidieux',
+                'name_translations' => ['en' => 'Insidious Poison'],
                 'type' => StatusEffect::TYPE_POISON,
                 'category' => StatusEffect::CATEGORY_DOT,
                 'duration' => 6,
@@ -109,6 +116,7 @@ class StatusEffectFixtures extends Fixture
             'status_paralysis' => [
                 'slug' => 'paralysis',
                 'name' => 'Paralysie',
+                'name_translations' => ['en' => 'Paralysis'],
                 'type' => StatusEffect::TYPE_PARALYSIS,
                 'category' => StatusEffect::CATEGORY_DEBUFF,
                 'duration' => 2,
@@ -121,6 +129,7 @@ class StatusEffectFixtures extends Fixture
             'status_freeze' => [
                 'slug' => 'freeze',
                 'name' => 'Gel',
+                'name_translations' => ['en' => 'Freeze'],
                 'type' => StatusEffect::TYPE_FREEZE,
                 'category' => StatusEffect::CATEGORY_DEBUFF,
                 'duration' => 2,
@@ -134,6 +143,7 @@ class StatusEffectFixtures extends Fixture
             'status_silence' => [
                 'slug' => 'silence',
                 'name' => 'Silence',
+                'name_translations' => ['en' => 'Silence'],
                 'type' => StatusEffect::TYPE_SILENCE,
                 'category' => StatusEffect::CATEGORY_DEBUFF,
                 'duration' => 3,
@@ -148,6 +158,7 @@ class StatusEffectFixtures extends Fixture
             'status_regeneration' => [
                 'slug' => 'regeneration',
                 'name' => 'Regeneration',
+                'name_translations' => ['en' => 'Regeneration'],
                 'type' => StatusEffect::TYPE_REGENERATION,
                 'category' => StatusEffect::CATEGORY_HOT,
                 'duration' => 3,
@@ -159,6 +170,7 @@ class StatusEffectFixtures extends Fixture
             'status_regeneration_strong' => [
                 'slug' => 'regeneration-strong',
                 'name' => 'Regeneration puissante',
+                'name_translations' => ['en' => 'Greater Regeneration'],
                 'type' => StatusEffect::TYPE_REGENERATION,
                 'category' => StatusEffect::CATEGORY_HOT,
                 'duration' => 4,
@@ -174,6 +186,7 @@ class StatusEffectFixtures extends Fixture
             'status_shield' => [
                 'slug' => 'shield',
                 'name' => 'Bouclier',
+                'name_translations' => ['en' => 'Shield'],
                 'type' => StatusEffect::TYPE_SHIELD,
                 'category' => StatusEffect::CATEGORY_BUFF,
                 'duration' => 3,
@@ -185,6 +198,7 @@ class StatusEffectFixtures extends Fixture
             'status_shield_strong' => [
                 'slug' => 'shield-strong',
                 'name' => 'Bouclier magique',
+                'name_translations' => ['en' => 'Arcane Shield'],
                 'type' => StatusEffect::TYPE_SHIELD,
                 'category' => StatusEffect::CATEGORY_BUFF,
                 'duration' => 4,
@@ -198,6 +212,7 @@ class StatusEffectFixtures extends Fixture
             'status_berserk' => [
                 'slug' => 'berserk',
                 'name' => 'Berserk',
+                'name_translations' => ['en' => 'Berserk'],
                 'type' => StatusEffect::TYPE_BERSERK,
                 'category' => StatusEffect::CATEGORY_BUFF,
                 'duration' => 3,
@@ -213,6 +228,7 @@ class StatusEffectFixtures extends Fixture
             'status_food_buff' => [
                 'slug' => 'food-buff',
                 'name' => 'Repas nourrissant',
+                'name_translations' => ['en' => 'Hearty Meal'],
                 'type' => StatusEffect::TYPE_REGENERATION,
                 'category' => StatusEffect::CATEGORY_BUFF,
                 'duration' => 3,
@@ -227,6 +243,7 @@ class StatusEffectFixtures extends Fixture
             'status_elixir_strength' => [
                 'slug' => 'elixir-strength',
                 'name' => 'Elixir de force',
+                'name_translations' => ['en' => 'Strength Elixir'],
                 'type' => StatusEffect::TYPE_BERSERK,
                 'category' => StatusEffect::CATEGORY_BUFF,
                 'duration' => 5,
@@ -241,6 +258,7 @@ class StatusEffectFixtures extends Fixture
             'status_natural_regen' => [
                 'slug' => 'natural-regen',
                 'name' => 'Regeneration naturelle',
+                'name_translations' => ['en' => 'Natural Regeneration'],
                 'type' => StatusEffect::TYPE_REGENERATION,
                 'category' => StatusEffect::CATEGORY_HOT,
                 'duration' => 6,

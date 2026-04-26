@@ -60,6 +60,12 @@ class StatusEffect
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private string $name;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'name_translations', type: 'json', nullable: true)]
+    private ?array $nameTranslations = null;
+
     #[ORM\Column(name: 'type', type: 'string', length: 50)]
     private string $type;
 
@@ -121,6 +127,40 @@ class StatusEffect
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function getLocalizedName(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->nameTranslations === null) {
+            return $this->name;
+        }
+        $translation = $this->nameTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->name;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNameTranslations(): array
+    {
+        return $this->nameTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setNameTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->nameTranslations = $normalized === [] ? null : $normalized;
+
+        return $this;
     }
 
     public function getType(): string
