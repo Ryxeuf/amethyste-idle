@@ -1,7 +1,26 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.i — fixtures EN pour les 5 materias Ombre/Mort, domaine necromancer)
+> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.j — fixtures EN pour les 5 materias Terre/Vent, domaines soldier + druid)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.j : fixtures EN pour les 5 materias Terre/Vent (domaines soldier + druid) (2026-04-26)
+
+> Suite directe de la sous-phase 3c.i (Dark, 5 materias necromancer). Etend la couverture EN aux 5 materias avancees des elements Earth (domaine soldier) et Air (domaine druid).
+>
+> Sous-phase **micro-fixture** : 5 lignes ajoutees a `ItemFixtures.php`. Aucune migration. Aucun nouveau test. Aucun changement de code. Independante des 14 PR ouvertes.
+
+### Changements
+
+- [x] `src/DataFixtures/ItemFixtures.php` (+5 lignes) : ajout de `'name_translations' => ['en' => '...']` pour 5 materias :
+  - **Earth (soldier)** : `materia_earthquake` → **Earthquake** (m2, AOE seisme), `materia_rock_armor` → **Rock Armor** (m2, buff defensif).
+  - **Air (druid)** : `materia_wind_lame` → **Wind Blade** (m1, lame d'air tranchante), `materia_gust` → **Gust** (m2, bourrasque), `materia_cyclone` → **Cyclone** (m3, AOE cyclone devastateur).
+- [x] Note : `materia_wind_lame` est definie deux fois dans `ItemFixtures` (lignes 237 et 2054) — la 1ere etait deja traduite (Wind Blade), la 2eme (qui ecrase effectivement la 1ere via la convention PHP de cle dupliquee) est traduite ici pour preserver la coherence et eviter les regressions si la duplication est nettoyee dans une refacto ulterieure.
+- [x] Le loop existant `if (isset($data['name_translations']) ...) { $item->setNameTranslations(...) }` dans `ItemFixtures::load()` prend automatiquement en charge ces nouvelles traductions sans aucun changement de code.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 3c.j ajoutee dans la branche 3 (apres 3c.i). `ROADMAP_TODO_INDEX.md` met a jour la date.
+
+**Diff** : +5 lignes fixture + ~3 lignes roadmap + entree ROADMAP_DONE = ~50 lignes totales (<<300 budget). Aucune migration, aucun nouveau test. Impact EN immediat sur `/game/inventory` (materias debloquees apres avoir avance dans les domaines soldier/druid), `/game/shop` si certaines de ces materias sont vendues, et tout usage en combat. 70 items restent sans traduction (consommables alchimistes, materia tier 4+ avancees feu/lumiere/ombre, equipements elementaires t2/t3 par slot) — couverts dans les sous-phases ulterieures.
 
 ---
 
