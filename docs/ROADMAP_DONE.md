@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.e — fixtures EN pour les 20 dernieres recettes : joaillerie 16 + masterworks 4 — 100% des recettes traduites)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.k — i18n complet des 10 sets d'equipement : infra + cablage Twig + fixtures EN — 100% de parite FR/EN sur les sets)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.k : i18n complet des 10 sets d'equipement (infra + cablage Twig + fixtures EN — 100% de parite FR/EN) (2026-04-27)
+
+> Sous-phase 3e.k en miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction) et 3e.i (Dungeon) : infra + cablage + fixtures EN bout-en-bout pour atteindre 100% de parite FR/EN sur les 10 sets d'equipement du jeu.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `EquipmentSet.php`, le YAML des sets ni les templates inventaire equipement. Zero risque de collision sur main.
+
+### Changements
+
+- **`migrations/Version20260427EquipmentSetTranslations.php`** (nouveau, 28 lignes, idempotente) : ajoute 2 colonnes JSON `name_translations` + `description_translations` sur `game_equipment_sets` via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/Game/EquipmentSet.php`** (+86 lignes) : ajout des proprietes `nameTranslations` + `descriptionTranslations` (JSON nullable), des getters `getLocalizedName(?string $locale): string` / `getLocalizedDescription(?string $locale): string` avec fallback gracieux sur `$this->name` / `$this->description` si locale nulle/vide, colonne nulle, locale absente ou valeur blanche/non-string. Setters `setNameTranslations` / `setDescriptionTranslations` avec normalisation : cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null` si aucune entree valide.
+- **`src/Twig/EquipmentSetLocalizationExtension.php`** (nouveau, 56 lignes) : 2 filters Twig `localized_equipment_set_name` + `localized_equipment_set_description` qui appellent `RequestStack::getCurrentRequest()->getLocale()` puis delegue a l'entite. Fallback transparent sur RequestStack vide / EquipmentSet null.
+- **`src/DataFixtures/Game/EquipmentSetFixtures.php`** (+7 lignes) : lecture des cles optionnelles `name_translations` + `description_translations` du YAML et propagation vers `EquipmentSet::setNameTranslations` / `setDescriptionTranslations`.
+- **`fixtures/game/equipment_set.yaml`** (+40 lignes) : traductions EN pour les 10 sets standards : `Set du Gardien=Guardian Set`, `Set de l'Ombre=Shadow Set`, `Set du Veilleur=Watcher Set`, `Set du Traqueur=Tracker Set`, `Set du Forgefer=Ironforge Set`, `Set de Mithril=Mithril Set`, `Set d'Acier Runique=Runic Steel Set`, `Set du Predateur Sauvage=Savage Predator Set`, `Set de l'Aurore Sacree=Sacred Dawn Set`, `Set des Abysses Eternelles=Eternal Abyss Set` cote nom + descriptions complementaires (gardiens du royaume / forge dans les tenebres / veilleurs de nuit / cuir renforce / fer du royaume / mithril rare / runes ancestrales / instinct primal / pretres de l'aube / profondeurs du neant).
+- **`templates/game/inventory/equipment/_modify.html.twig`** : 1 occurrence (`gi.equipmentSet.name` -> `gi.equipmentSet|localized_equipment_set_name`).
+- **`templates/game/inventory/equipment/_list.html.twig`** : 4 occurrences (section "Sets d'equipement actifs" + listing inventaire 1 + 2 paper dolls macro `gear_slot`).
+- **Tests** : `EquipmentSetLocalizationTest` (170 lignes, 15 cas : 7 pour `name`, 7 pour `description` + 1 cas additionnel `getDescriptionTranslationsDefaultsToEmptyArray`) + `EquipmentSetLocalizationExtensionTest` (116 lignes, 9 cas).
+
+### Impact
+
+- Zero impact FR : `EquipmentSet::getLocalizedName` / `getLocalizedDescription` retombent sur `name` / `description` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat sur `/game/inventory/equipment` (modify, list, paper dolls) : les 10 sets d'equipement s'affichent en anglais quand l'utilisateur passe sa locale a EN via `/game/settings`.
+- Atteint **100% de parite FR/EN sur les 10 sets d'equipement du jeu** en une seule sous-phase (infra + cablage + fixtures), pattern eprouve par 3e.f Race / 3e.g Region / 3e.h Faction / 3e.i Dungeon.
 
 ---
 
