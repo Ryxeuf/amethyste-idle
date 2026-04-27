@@ -17,7 +17,9 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $dungeon = new Dungeon();
         $dungeon->setSlug('racines-de-la-foret');
         $dungeon->setName('Racines de la foret');
+        $dungeon->setNameTranslations(['en' => 'Roots of the Forest']);
         $dungeon->setDescription('Un reseau de galeries souterraines envahi par des racines corrompues. Les creatures qui y rodent sont devenues hostiles, et une menace plus ancienne sommeille dans les profondeurs.');
+        $dungeon->setDescriptionTranslations(['en' => 'A network of underground tunnels overrun by corrupted roots. The creatures that prowl within have grown hostile, and an older threat slumbers in the depths.']);
         $dungeon->setMap($map);
         $dungeon->setMinLevel(5);
         $dungeon->setMaxPlayers(1);
@@ -34,7 +36,9 @@ class DungeonFixtures extends Fixture implements DependentFixtureInterface
         $convergence = new Dungeon();
         $convergence->setSlug('nexus-de-la-convergence');
         $convergence->setName('Le Nexus de la Convergence');
+        $convergence->setNameTranslations(['en' => 'The Nexus of Convergence']);
         $convergence->setDescription('Le coeur du cristal d\'Amethyste bat au plus profond de ce sanctuaire oublie. Les quatre fragments resonent, attirant leur porteur vers une verite ancienne. Seuls ceux qui ont rassemble les fragments peuvent penetrer ces lieux et affronter le Gardien de la Convergence.');
+        $convergence->setDescriptionTranslations(['en' => 'The heart of the Amethyst crystal beats deep within this forgotten sanctuary. The four fragments resonate, drawing their bearer toward an ancient truth. Only those who have gathered all fragments may enter these halls and face the Guardian of Convergence.']);
         $convergence->setMap($mapConvergence);
         $convergence->setMinLevel(25);
         $convergence->setMaxPlayers(1);

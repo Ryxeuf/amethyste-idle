@@ -1,7 +1,33 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3c.u — fixtures EN pour les 28 equipements elementaires tier 2)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.i — i18n complet pour les 2 donjons du jeu)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.i : i18n complet (infra + cablage + fixtures EN) pour les 2 donjons (2026-04-27)
+
+> Etend le pattern eprouve par 3e.f Race / 3e.g Region / 3e.h Faction a l'entite `Dungeon`. Une seule sous-phase couvre l'integralite du tunnel : infrastructure (colonnes JSON + accesseurs `getLocalizedName` / `getLocalizedDescription`), cablage (filters Twig dedies appliques dans les 2 templates `/game/dungeon/list` et `/game/dungeon/show`) et fixtures EN sur les 2 donjons existants.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `Dungeon.php` ni la table `game_dungeons`. Zero risque de collision sur main.
+
+### Changements
+
+- **Migration `Version20260427DungeonTranslations`** : `ALTER TABLE game_dungeons ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL` + `description_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict de `Version20260426FactionTranslations` (3e.h).
+- **Entite `Dungeon`** : nouvelles proprietes `?array $nameTranslations` et `?array $descriptionTranslations`, accesseurs `getLocalizedName(?string $locale): string` et `getLocalizedDescription(?string $locale): string` avec fallback gracieux (locale nulle/vide / colonne nulle / locale absente / valeur blanche), `getNameTranslations` + `setNameTranslations` + `getDescriptionTranslations` + `setDescriptionTranslations` avec normalisation (cles vides filtrees, valeurs non-string ignorees, valeurs blanches filtrees, compaction vers `null` si aucune entree valide). Total 246 lignes (sous le seuil 400).
+- **Extension Twig `App\Twig\DungeonLocalizationExtension`** : 2 filters (`localized_dungeon_name`, `localized_dungeon_description`) qui delegue a l'entite avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur RequestStack vide / Dungeon null / traduction manquante). Pattern strict de `RaceLocalizationExtension`.
+- **Templates cables** :
+  - `templates/game/dungeon/show.html.twig` : 4 occurrences (`{% block title %}`, en-tete h2 + description, banniere "Vous etes deja dans le donjon X").
+  - `templates/game/dungeon/list.html.twig` : 3 occurrences (banniere "Donjon en cours", carte de donjon h3 + description, ligne d'historique).
+- **Fixtures `DungeonFixtures`** : ajout de `setNameTranslations(['en' => ...])` + `setDescriptionTranslations(['en' => ...])` apres les setters FR sur les 2 donjons : `Racines de la foret` -> `Roots of the Forest`, `Le Nexus de la Convergence` -> `The Nexus of Convergence`. Descriptions EN complementaires (galleries souterraines corrompues / sanctuaire du cristal d'Amethyste).
+- **Tests** : `DungeonLocalizationTest` (15 cas : 7 `name` + 7 `description` + `getDescriptionTranslationsDefaultsToEmptyArray`) + `DungeonLocalizationExtensionTest` (9 cas : 4 `name` + 4 `description` + enregistrement des 2 filters). Pattern strict de `RaceLocalizationTest` / `RaceLocalizationExtensionTest`.
+
+### Impact
+
+- Atteint **100% de parite FR/EN sur les 2 donjons du jeu**.
+- Zero impact FR (le fallback transparent preserve le rendu actuel).
+- Impact EN immediat sur `/game/dungeon/list` et `/game/dungeon/show` : titres + descriptions traduits en anglais quand la locale du compte est `en`.
+- Aucun controller, aucun service modifie : la sous-phase est purement additive.
 
 ---
 
