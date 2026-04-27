@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.l — infrastructure + cablage Twig + fixtures EN pour les noms et descriptions de montures — 100% des 4 montures traduites)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.m — infrastructure + cablage Twig + fixtures EN pour les noms et descriptions des enchantements — 100% des 4 enchantements traduits)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.m : infrastructure + cablage Twig + fixtures EN pour les noms et descriptions des enchantements (2026-04-27)
+
+> Etend l'infrastructure multilingue a l'entite `EnchantmentDefinition`, en miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction), 3e.i (Dungeon), 3e.j (Recipe) et 3e.l (Mount). Atteint **100% de parite FR/EN sur les 4 enchantements du jeu** en une seule sous-phase (infra + cablage Twig + fixtures + tests).
+>
+> Independante des 15 PR ouvertes : aucune ne touche `EnchantmentDefinition.php`, `EnchantmentLocalizationExtension`, le template `_enchantment.html.twig` ni la table `game_enchantment_definitions`. Zero risque de collision sur main.
+
+### Changements
+
+- **`migrations/Version20260427EnchantmentTranslations.php`** (nouveau, 28 lignes) : ajoute 2 colonnes JSON `name_translations` + `description_translations` sur `game_enchantment_definitions`. Idempotente via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/Game/EnchantmentDefinition.php`** (+72 lignes, total 236, sous la limite de 400) : `getLocalizedName(?string $locale): string` + `getLocalizedDescription(?string $locale): ?string` (signature avec retour nullable car `description` est lui-meme nullable, comme `Recipe` en 3e.j) avec fallback gracieux. Setters normalises (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null`).
+- **`src/Twig/EnchantmentLocalizationExtension.php`** (nouveau, 56 lignes) : 2 filters Twig `localized_enchantment_name` + `localized_enchantment_description`. Locale via `RequestStack`, fallback transparent (RequestStack vide / definition null / description null retournent `''` pour la description, garantissant la compatibilite avec `{{ ... }}`).
+- **`src/DataFixtures/Game/EnchantmentDefinitionFixtures.php`** (+10 lignes) : le loader propage les cles optionnelles `name_translations` et `description_translations` du tableau de fixtures via `setNameTranslations` / `setDescriptionTranslations`. Les 4 enchantements existants recoivent leur traduction EN : `Tranchant de feu=Flame Edge`, `Protection de glace=Ice Ward`, `Robustesse tellurique=Telluric Fortitude`, `Precision lumineuse=Radiant Precision` cote nom + descriptions complementaires (searing flame / protective veil of frost / strength of the earth / guides each strike with light).
+- **`templates/game/crafting/_enchantment.html.twig`** (3 modifications) : remplacement de `enchantment.definition.name` / `definition.name` par le filter `|localized_enchantment_name` aux 3 emplacements (enchantements actifs en haut, options du `<select>` du formulaire, bloc details ingredients).
+- **Tests** : `tests/Unit/Entity/Game/EnchantmentLocalizationTest.php` (155 lignes, 13 cas : 6 pour `name`, 7 pour `description` couvrant explicitement le retour `null` quand description et translations sont nulles) + `tests/Unit/Twig/EnchantmentLocalizationExtensionTest.php` (97 lignes, 7 cas).
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.m ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `EnchantmentDefinition::getLocalizedName` / `getLocalizedDescription` retombent sur `name` / `description` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat sur `templates/game/crafting/_enchantment.html.twig` (page `/game/crafting`, onglet enchantements) : les 4 enchantements s'affichent en anglais via le filter `localized_enchantment_name` quand l'utilisateur passe sa locale a EN via `/game/settings`.
+- Atteint **100% de parite FR/EN sur les 4 enchantements du jeu** en une seule sous-phase.
 
 ---
 

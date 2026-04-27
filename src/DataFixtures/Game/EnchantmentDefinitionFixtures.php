@@ -17,7 +17,9 @@ class EnchantmentDefinitionFixtures extends Fixture
             $definition = new EnchantmentDefinition();
             $definition->setSlug($data['slug']);
             $definition->setName($data['name']);
+            $definition->setNameTranslations($data['name_translations'] ?? null);
             $definition->setDescription($data['description'] ?? null);
+            $definition->setDescriptionTranslations($data['description_translations'] ?? null);
             $definition->setElement($data['element'] ?? Element::None);
             $definition->setStatBonuses($data['statBonuses']);
             $definition->setDuration($data['duration']);
@@ -41,7 +43,9 @@ class EnchantmentDefinitionFixtures extends Fixture
             'enchant_fire_blade' => [
                 'slug' => 'fire-blade',
                 'name' => 'Tranchant de feu',
+                'name_translations' => ['en' => 'Flame Edge'],
                 'description' => 'Imprègne l\'arme d\'une flamme ardente, augmentant les dégâts infligés.',
+                'description_translations' => ['en' => 'Imbues the weapon with searing flame, increasing damage dealt.'],
                 'element' => Element::Fire,
                 'statBonuses' => ['damage' => 5],
                 'duration' => 3600, // 1h
@@ -56,7 +60,9 @@ class EnchantmentDefinitionFixtures extends Fixture
             'enchant_ice_protection' => [
                 'slug' => 'ice-protection',
                 'name' => 'Protection de glace',
+                'name_translations' => ['en' => 'Ice Ward'],
                 'description' => 'Enveloppe l\'armure d\'un voile de givre protecteur.',
+                'description_translations' => ['en' => 'Wraps the armor in a protective veil of frost.'],
                 'element' => Element::Water,
                 'statBonuses' => ['defense' => 3],
                 'duration' => 1800, // 30min
@@ -71,7 +77,9 @@ class EnchantmentDefinitionFixtures extends Fixture
             'enchant_earth_fortitude' => [
                 'slug' => 'earth-fortitude',
                 'name' => 'Robustesse tellurique',
+                'name_translations' => ['en' => 'Telluric Fortitude'],
                 'description' => 'Canalise la force de la terre pour augmenter les points de vie.',
+                'description_translations' => ['en' => 'Channels the strength of the earth to increase maximum life.'],
                 'element' => Element::Earth,
                 'statBonuses' => ['max_life' => 10],
                 'duration' => 3600, // 1h
@@ -86,7 +94,9 @@ class EnchantmentDefinitionFixtures extends Fixture
             'enchant_light_precision' => [
                 'slug' => 'light-precision',
                 'name' => 'Precision lumineuse',
+                'name_translations' => ['en' => 'Radiant Precision'],
                 'description' => 'Guide les coups avec la lumière, augmentant la précision.',
+                'description_translations' => ['en' => 'Guides each strike with light, increasing accuracy.'],
                 'element' => Element::Light,
                 'statBonuses' => ['hit' => 8],
                 'duration' => 2700, // 45min
