@@ -20,6 +20,12 @@ class Recipe
     #[ORM\Column(length: 100)]
     private string $name;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'name_translations', type: 'json', nullable: true)]
+    private ?array $nameTranslations = null;
+
     #[ORM\Column(length: 100, unique: true)]
     private string $slug;
 
@@ -52,6 +58,12 @@ class Recipe
     private ?string $description = null;
 
     /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'description_translations', type: 'json', nullable: true)]
+    private ?array $descriptionTranslations = null;
+
+    /**
      * Specialisation requise pour fabriquer la recette (exclusive aux maitres artisans).
      * Si null, la recette est accessible sans specialisation.
      */
@@ -76,6 +88,43 @@ class Recipe
     public function setName(string $name): self
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get the name translated for the requested locale, or fall back to the base `name` column.
+     */
+    public function getLocalizedName(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->nameTranslations === null) {
+            return $this->name;
+        }
+        $translation = $this->nameTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->name;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNameTranslations(): array
+    {
+        return $this->nameTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setNameTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->nameTranslations = $normalized === [] ? null : $normalized;
 
         return $this;
     }
@@ -196,6 +245,44 @@ class Recipe
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get the description translated for the requested locale, or fall back to the base `description` column.
+     * Returns null when the recipe has no description set.
+     */
+    public function getLocalizedDescription(?string $locale): ?string
+    {
+        if ($locale === null || $locale === '' || $this->descriptionTranslations === null) {
+            return $this->description;
+        }
+        $translation = $this->descriptionTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->description;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getDescriptionTranslations(): array
+    {
+        return $this->descriptionTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setDescriptionTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->descriptionTranslations = $normalized === [] ? null : $normalized;
 
         return $this;
     }
