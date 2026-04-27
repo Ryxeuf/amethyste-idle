@@ -1,7 +1,34 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3c.u — fixtures EN pour les 28 equipements elementaires tier 2)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3c.v — fixtures EN pour les 28 equipements elementaires tier 3 + 2 cosmetiques, 100% items traduits)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.v : fixtures EN pour les 28 equipements elementaires tier 3 + 2 cosmetiques (2026-04-27)
+
+> Suite directe de la sous-phase 3c.u qui ferme la boucle i18n des items dans `ItemFixtures`. Couvre l'integralite du palier d'equipement tier 3 elementaire (level 15, rarete Epic, +15% degats elementaires) : 4 elements (Metal / Beast / Light / Dark) x 7 slots (sword / shield / helmet / chest / legs / boots / gloves) = 28 items, plus les 2 derniers cosmetiques d'evenement non traduits (couronne lunaire du Festival de la Lune, cape des ombres de la Nuit des Ombres).
+>
+> Independante des 13 PR i18n / avatar / mounts / events en vol : aucune ne touche `ItemFixtures.php`. Aucune migration, aucun nouveau test (l'infra `name_translations` est en place depuis 3a, le cablage Twig depuis 3b, la mecanique est couverte par `ItemLocalizationTest`).
+
+### Changements
+
+- [x] **Fixtures `ItemFixtures`** : ajout de `'name_translations' => ['en' => ...]` sur 30 items (+30 lignes, fichier passe a 4369 lignes, reste sous le seuil de 50 lignes ajoutees a un fichier > 400 lignes).
+  - Epees t3 (4) : `t3-metal-sword=Runic Steel Blade`, `t3-beast-sword=Savage Fang Blade`, `t3-light-sword=Dawn Blade`, `t3-dark-sword=Twilight Blade`.
+  - Boucliers t3 (4) : `t3-metal-shield=Runic Steel Aegis`, `t3-beast-shield=Primal Scale Shield`, `t3-light-shield=Aurora Shield`, `t3-dark-shield=Abyssal Shield`.
+  - Casques t3 (4) : `t3-metal-helmet=Runic Steel Helm`, `t3-beast-helmet=Crown of Fangs`, `t3-light-helmet=Dawn Diadem`, `t3-dark-helmet=Eternal Shadow Hood`.
+  - Plastrons t3 (4) : `t3-metal-chest=Runic Steel Cuirass`, `t3-beast-chest=Beast Hide Plate`, `t3-light-chest=Aurora Plate`, `t3-dark-chest=Abyssal Plate`.
+  - Jambieres t3 (4) : `t3-metal-legs=Runic Steel Greaves`, `t3-beast-legs=Wyrm Hide Leggings`, `t3-light-legs=Dawn Greaves`, `t3-dark-legs=Shadow Greaves`.
+  - Bottes t3 (4) : `t3-metal-boots=Runic Steel Boots`, `t3-beast-boots=Savage Claw Boots`, `t3-light-boots=Sandals of Light`, `t3-dark-boots=Nightwalker Boots`.
+  - Gantelets t3 (4) : `t3-metal-gloves=Runic Steel Gauntlets`, `t3-beast-gloves=Predator Claws`, `t3-light-gloves=Blessed Gauntlets`, `t3-dark-gloves=Void Gauntlets`.
+  - Cosmetiques d'evenement (2) : `cosmetic-lunar-crown=Lunar Crown`, `cosmetic-shadow-cloak=Shadow Cloak`.
+- [x] **Roadmap** : `SPRINT_12.md` sous-phase 3c.v ajoutee + detail, `ROADMAP_TODO_INDEX.md` date de derniere mise a jour synchronisee + 3c.v listee dans la ligne Sprint 12.
+
+### Impact
+
+- **FR** : zero impact, fallback transparent preserve le rendu actuel sur `/game/inventory` (paper doll + onglets equipement / items), `/game/shop` (forgerons), l'ecran de craft, et les drops de boss / events.
+- **EN** : impact immediat via le filter `localized_name` cable en 3b. L'integralite du set d'equipement elementaire tier 3 (28 pieces) + les 2 cosmetiques d'evenement s'affichent en anglais quand la locale du compte est `en` (via `/game/settings`).
+- **Couverture** : **279/279 items dans `ItemFixtures` traduits = 100%** (+30 vs 3c.u). Ferme definitivement la boucle i18n des noms d'items. Les sous-phases ulterieures de 135 se concentreront sur les descriptions d'items (3d) et les autres entites (Spell, Pnj, Skill).
 
 ---
 
