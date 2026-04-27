@@ -113,7 +113,7 @@
             {% for slug, data in activeSets %}
                 <div class="bg-gray-900/40 rounded-lg p-2.5 border border-gray-700/20">
                     <div class="flex items-center justify-between mb-1.5">
-                        <span class="text-xs sm:text-sm font-medium text-yellow-400">{{ data.set.name }}</span>
+                        <span class="text-xs sm:text-sm font-medium text-yellow-400">{{ data.set|localized_equipment_set_name }}</span>
                         <span class="text-[10px] text-gray-500">{{ data.equippedCount }}/{{ data.totalPieces }} pièces</span>
                     </div>
                     <div class="space-y-0.5">
@@ -303,7 +303,7 @@
                                     </span>
                                 {% endif %}
                                 {% if gi.equipmentSet is not null %}
-                                    <span class="text-[10px] text-yellow-500/70">{{ gi.equipmentSet.name }}</span>
+                                    <span class="text-[10px] text-yellow-500/70">{{ gi.equipmentSet|localized_equipment_set_name }}</span>
                                 {% endif %}
                             </div>
                         </div>
@@ -347,7 +347,7 @@
                         <span class="equip-slot-stat">+{{ gi.protection }} DEF</span>
                     {% endif %}
                     {% if gi.equipmentSet is not null %}
-                        <span class="text-[9px] text-yellow-500/80 font-medium">{{ gi.equipmentSet.name }}</span>
+                        <span class="text-[9px] text-yellow-500/80 font-medium">{{ gi.equipmentSet|localized_equipment_set_name }}</span>
                     {% endif %}
                 </div>
             </a>
@@ -375,7 +375,7 @@
                     <span class="equip-slot-stat">+{{ gi.protection }} DEF</span>
                 {% endif %}
                 {% if gi.equipmentSet is not null %}
-                    <span class="text-[9px] text-yellow-500/80 font-medium">{{ gi.equipmentSet.name }}</span>
+                    <span class="text-[9px] text-yellow-500/80 font-medium">{{ gi.equipmentSet|localized_equipment_set_name }}</span>
                 {% endif %}
             </div>
         </a>

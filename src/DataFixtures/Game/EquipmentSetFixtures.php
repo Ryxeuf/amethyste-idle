@@ -31,6 +31,13 @@ class EquipmentSetFixtures extends Fixture implements DependentFixtureInterface
             $set->setName((string) $data['name']);
             $set->setDescription((string) $data['description']);
 
+            if (isset($data['name_translations']) && \is_array($data['name_translations'])) {
+                $set->setNameTranslations($data['name_translations']);
+            }
+            if (isset($data['description_translations']) && \is_array($data['description_translations'])) {
+                $set->setDescriptionTranslations($data['description_translations']);
+            }
+
             // Create bonuses
             if (isset($data['bonuses']) && \is_array($data['bonuses'])) {
                 foreach ($data['bonuses'] as $bonusData) {

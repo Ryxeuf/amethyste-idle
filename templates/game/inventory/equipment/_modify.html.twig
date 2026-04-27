@@ -44,7 +44,7 @@
                         </p>
                     {% endif %}
                     {% if gi.equipmentSet is not null %}
-                        <p class="text-[10px] text-yellow-500/85 font-medium mt-1.5">{{ gi.equipmentSet.name }}</p>
+                        <p class="text-[10px] text-yellow-500/85 font-medium mt-1.5">{{ gi.equipmentSet|localized_equipment_set_name }}</p>
                     {% endif %}
                 </div>
             </div>

@@ -7,6 +7,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'guardian'
     name: "Set du Gardien"
     description: "L'équipement traditionnel des gardiens du royaume. Porter plusieurs pièces renforce la résistance du porteur."
+    name_translations:
+      en: "Guardian Set"
+    description_translations:
+      en: "The traditional gear of the kingdom's guardians. Wearing several pieces toughens the bearer's resistance."
     bonuses:
       - { required_pieces: 2, bonus_type: 'protection', bonus_value: 3 }
       - { required_pieces: 3, bonus_type: 'life', bonus_value: 15 }
@@ -24,6 +28,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'shadow'
     name: "Set de l'Ombre"
     description: "Forgé dans les ténèbres, cet équipement amplifie la puissance destructrice de son porteur."
+    name_translations:
+      en: "Shadow Set"
+    description_translations:
+      en: "Forged in the darkness, this gear amplifies the bearer's destructive might."
     bonuses:
       - { required_pieces: 2, bonus_type: 'damage', bonus_value: 5 }
       - { required_pieces: 3, bonus_type: 'critical', bonus_value: 8 }
@@ -37,6 +45,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'watcher'
     name: "Set du Veilleur"
     description: "L'équipement des veilleurs de nuit, conçu pour la polyvalence et l'endurance au combat."
+    name_translations:
+      en: "Watcher Set"
+    description_translations:
+      en: "The gear of night watchers, designed for versatility and combat endurance."
     bonuses:
       - { required_pieces: 2, bonus_type: 'hit', bonus_value: 4 }
       - { required_pieces: 3, bonus_type: 'heal', bonus_value: 10 }
@@ -50,6 +62,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'tracker'
     name: "Set du Traqueur"
     description: "Taillé dans le cuir renforcé des bêtes les plus coriaces. Porter plusieurs pièces affûte les réflexes du porteur."
+    name_translations:
+      en: "Tracker Set"
+    description_translations:
+      en: "Cut from the hardened leather of the toughest beasts. Wearing several pieces sharpens the bearer's reflexes."
     bonuses:
       - { required_pieces: 2, bonus_type: 'hit', bonus_value: 5 }
       - { required_pieces: 4, bonus_type: 'critical', bonus_value: 8 }
@@ -67,6 +83,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'ironforge'
     name: "Set du Forgefer"
     description: "L'armure standard des chevaliers, forgée dans le meilleur fer du royaume. Porter plusieurs pièces renforce la défense."
+    name_translations:
+      en: "Ironforge Set"
+    description_translations:
+      en: "The standard armor of knights, forged from the kingdom's finest iron. Wearing several pieces reinforces defense."
     bonuses:
       - { required_pieces: 2, bonus_type: 'protection', bonus_value: 4 }
       - { required_pieces: 4, bonus_type: 'life', bonus_value: 20 }
@@ -85,6 +105,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'mithril'
     name: "Set de Mithril"
     description: "Forgé dans le mithril, un métal aussi rare que légendaire. La protection ultime pour les aventuriers d'élite."
+    name_translations:
+      en: "Mithril Set"
+    description_translations:
+      en: "Forged from mithril, a metal as rare as it is legendary. The ultimate protection for elite adventurers."
     bonuses:
       - { required_pieces: 2, bonus_type: 'protection', bonus_value: 8 }
       - { required_pieces: 4, bonus_type: 'life', bonus_value: 30 }
@@ -103,6 +127,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'runic-steel'
     name: "Set d'Acier Runique"
     description: "Forgé dans un alliage oublié, cet équipement renforce à la fois l'attaque et la défense de son porteur grâce à des runes métalliques ancestrales."
+    name_translations:
+      en: "Runic Steel Set"
+    description_translations:
+      en: "Forged from a forgotten alloy, this gear strengthens both the attack and defense of its bearer thanks to ancient metallic runes."
     bonuses:
       - { required_pieces: 2, bonus_type: 'protection', bonus_value: 5 }
       - { required_pieces: 4, bonus_type: 'damage', bonus_value: 8 }
@@ -121,6 +149,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'savage-predator'
     name: "Set du Prédateur Sauvage"
     description: "Taillé dans les dépouilles des bêtes les plus féroces, cet équipement déchaîne l'instinct primal de son porteur."
+    name_translations:
+      en: "Savage Predator Set"
+    description_translations:
+      en: "Cut from the hides of the fiercest beasts, this gear unleashes the bearer's primal instinct."
     bonuses:
       - { required_pieces: 2, bonus_type: 'damage', bonus_value: 6 }
       - { required_pieces: 4, bonus_type: 'critical', bonus_value: 12 }
@@ -139,6 +171,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'sacred-dawn'
     name: "Set de l'Aurore Sacrée"
     description: "Béni par les prêtres de l'aube, cet équipement amplifie les soins et la précision de son porteur."
+    name_translations:
+      en: "Sacred Dawn Set"
+    description_translations:
+      en: "Blessed by the priests of dawn, this gear amplifies the bearer's healing and precision."
     bonuses:
       - { required_pieces: 2, bonus_type: 'heal', bonus_value: 12 }
       - { required_pieces: 4, bonus_type: 'hit', bonus_value: 10 }
@@ -157,6 +193,10 @@ App\Entity\Game\EquipmentSet:
     slug: 'eternal-abyss'
     name: "Set des Abysses Éternelles"
     description: "Forgé dans les profondeurs du néant, cet équipement sombre amplifie la puissance destructrice et draine la vie des ennemis."
+    name_translations:
+      en: "Eternal Abyss Set"
+    description_translations:
+      en: "Forged in the depths of the void, this dark gear amplifies destructive might and drains the life of enemies."
     bonuses:
       - { required_pieces: 2, bonus_type: 'damage', bonus_value: 8 }
       - { required_pieces: 4, bonus_type: 'heal', bonus_value: 8 }
