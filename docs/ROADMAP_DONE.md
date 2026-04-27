@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.e — fixtures EN pour les 20 dernieres recettes : joaillerie 16 + masterworks 4 — 100% des recettes traduites)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.l — infrastructure + cablage Twig + fixtures EN pour les noms et descriptions de montures — 100% des 4 montures traduites)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.l : infrastructure + cablage Twig + fixtures EN pour les noms et descriptions de montures (2026-04-27)
+
+> Etend l'infrastructure multilingue a l'entite `Mount`, en miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction), 3e.i (Dungeon) et 3e.k (EquipmentSet). Atteint **100% de parite FR/EN sur les 4 montures du jeu** en une seule sous-phase (infra + cablage Twig + fixtures).
+>
+> Independante des 15 PR ouvertes : aucune ne touche `Mount.php` ni la table `game_mounts`. PR #428 (s2a — fondation ownership) ajoute `PlayerMount` et `MountAcquisitionService` mais ne modifie pas `Mount`. Zero risque de collision sur main.
+
+### Changements
+
+- **`migrations/Version20260427MountTranslations.php`** (nouveau, 28 lignes) : ajoute 2 colonnes JSON `name_translations` + `description_translations` sur `game_mounts`. Idempotente via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/Game/Mount.php`** (+86 lignes, total 286, sous la limite de 400) : `getLocalizedName(?string $locale): string` + `getLocalizedDescription(?string $locale): string` avec fallback gracieux. Setters normalises (cles vides filtrees, valeurs non-string ignorees via `is_string`, valeurs blanches filtrees via `trim`, compaction vers `null`).
+- **`src/Twig/MountLocalizationExtension.php`** (nouveau, 56 lignes) : 2 filters Twig `localized_mount_name` + `localized_mount_description`. Locale via `RequestStack`, fallback transparent (RequestStack vide / Mount null).
+- **`src/DataFixtures/Game/MountFixtures.php`** (+8 lignes) : traductions EN sur les 4 montures standards via `setNameTranslations(['en' => ...])` + `setDescriptionTranslations(['en' => ...])` apres les setters FR : `Cheval brun=Brown Horse`, `Loup sauvage=Dire Wolf`, `Chocobo jaune=Yellow Chocobo`, `Sanglier colossal=Colossal Boar` cote nom + descriptions complementaires.
+- **Tests** : `tests/Unit/Entity/Game/MountLocalizationTest.php` (172 lignes, 15 cas : 7 pour `name`, 7 pour `description` + 1 cas additionnel `getDescriptionTranslationsDefaultsToEmptyArray`) + `tests/Unit/Twig/MountLocalizationExtensionTest.php` (116 lignes, 9 cas).
+- **Aucun template cable** : aucune vue n'expose actuellement `Mount` (la sous-phase 130 s2a en cours via PR #428 introduit `PlayerMount` mais pas d'UI). Les filters seront prets quand les sous-phases 130 s3 (vitesse +50%) et 130 s4 (animation sprite) introduiront les ecrans de selection / preview de monture.
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.l ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `Mount::getLocalizedName` / `getLocalizedDescription` retombent sur `name` / `description` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat des qu'un template integrera l'affichage des montures (sous-phases 130 s3 / s4 a venir) : les 4 montures s'afficheront en anglais via les filters `localized_mount_name` / `localized_mount_description` quand l'utilisateur passe sa locale a EN via `/game/settings`.
+- Atteint **100% de parite FR/EN sur les 4 montures du jeu** en une seule sous-phase.
 
 ---
 
