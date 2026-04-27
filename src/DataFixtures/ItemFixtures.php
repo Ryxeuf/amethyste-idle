@@ -3282,6 +3282,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Épées (main_weapon) ---
             't2_fire_sword' => [
                 'name' => 'Épée ardente',
+                'name_translations' => ['en' => 'Blazing Sword'],
                 'description' => 'Une lame forgée dans les braises d\'un volcan. Irradie une chaleur intense.',
                 'type' => 'gear',
                 'slug' => 't2-fire-sword',
@@ -3301,6 +3302,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_sword' => [
                 'name' => 'Épée de givre',
+                'name_translations' => ['en' => 'Frost Sword'],
                 'description' => 'Une lame recouverte d\'une fine couche de glace éternelle.',
                 'type' => 'gear',
                 'slug' => 't2-water-sword',
@@ -3320,6 +3322,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_sword' => [
                 'name' => 'Épée tellurique',
+                'name_translations' => ['en' => 'Telluric Sword'],
                 'description' => 'Une lame taillée dans la roche profonde, lourde et implacable.',
                 'type' => 'gear',
                 'slug' => 't2-earth-sword',
@@ -3339,6 +3342,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_sword' => [
                 'name' => 'Épée du vent',
+                'name_translations' => ['en' => 'Wind Sword'],
                 'description' => 'Une lame si légère qu\'elle semble vibrer avec le vent.',
                 'type' => 'gear',
                 'slug' => 't2-air-sword',
@@ -3360,6 +3364,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Boucliers (side_weapon) ---
             't2_fire_shield' => [
                 'name' => 'Bouclier ardent',
+                'name_translations' => ['en' => 'Blazing Shield'],
                 'description' => 'Un bouclier orné de flammes gravées qui irradient de chaleur.',
                 'type' => 'gear',
                 'slug' => 't2-fire-shield',
@@ -3376,6 +3381,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_shield' => [
                 'name' => 'Bouclier de givre',
+                'name_translations' => ['en' => 'Frost Shield'],
                 'description' => 'Un bouclier recouvert de cristaux de glace inaltérables.',
                 'type' => 'gear',
                 'slug' => 't2-water-shield',
@@ -3392,6 +3398,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_shield' => [
                 'name' => 'Bouclier de pierre',
+                'name_translations' => ['en' => 'Stone Shield'],
                 'description' => 'Un bouclier massif taillé dans un bloc de granit enchanté.',
                 'type' => 'gear',
                 'slug' => 't2-earth-shield',
@@ -3408,6 +3415,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_shield' => [
                 'name' => 'Bouclier du vent',
+                'name_translations' => ['en' => 'Wind Shield'],
                 'description' => 'Un bouclier léger qui dévie les coups grâce aux courants d\'air.',
                 'type' => 'gear',
                 'slug' => 't2-air-shield',
@@ -3426,6 +3434,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Casques (head) ---
             't2_fire_helmet' => [
                 'name' => 'Casque ardent',
+                'name_translations' => ['en' => 'Blazing Helm'],
                 'description' => 'Un casque en acier chauffé à blanc par les flammes intérieures.',
                 'type' => 'gear',
                 'slug' => 't2-fire-helmet',
@@ -3442,6 +3451,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_helmet' => [
                 'name' => 'Casque de givre',
+                'name_translations' => ['en' => 'Frost Helm'],
                 'description' => 'Un casque parcouru de veines de glace qui ne fondent jamais.',
                 'type' => 'gear',
                 'slug' => 't2-water-helmet',
@@ -3458,6 +3468,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_helmet' => [
                 'name' => 'Casque de pierre',
+                'name_translations' => ['en' => 'Stone Helm'],
                 'description' => 'Un casque taillé dans une roche volcanique résistante.',
                 'type' => 'gear',
                 'slug' => 't2-earth-helmet',
@@ -3474,6 +3485,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_helmet' => [
                 'name' => 'Casque du vent',
+                'name_translations' => ['en' => 'Wind Helm'],
                 'description' => 'Un casque aérodynamique qui siffle doucement dans la brise.',
                 'type' => 'gear',
                 'slug' => 't2-air-helmet',
@@ -3492,6 +3504,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Plastrons (chest) ---
             't2_fire_chest' => [
                 'name' => 'Plastron ardent',
+                'name_translations' => ['en' => 'Blazing Cuirass'],
                 'description' => 'Une armure de plaques renforcée par des runes de feu.',
                 'type' => 'gear',
                 'slug' => 't2-fire-chest',
@@ -3508,6 +3521,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_chest' => [
                 'name' => 'Plastron de givre',
+                'name_translations' => ['en' => 'Frost Cuirass'],
                 'description' => 'Une armure imprégnée d\'eau glaciale qui protège du froid.',
                 'type' => 'gear',
                 'slug' => 't2-water-chest',
@@ -3524,6 +3538,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_chest' => [
                 'name' => 'Plastron de pierre',
+                'name_translations' => ['en' => 'Stone Cuirass'],
                 'description' => 'Une cuirasse façonnée dans la terre enchantée, solide comme le roc.',
                 'type' => 'gear',
                 'slug' => 't2-earth-chest',
@@ -3540,6 +3555,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_chest' => [
                 'name' => 'Plastron du vent',
+                'name_translations' => ['en' => 'Wind Cuirass'],
                 'description' => 'Une armure tissée de fils d\'air qui allège son porteur.',
                 'type' => 'gear',
                 'slug' => 't2-air-chest',
@@ -3558,6 +3574,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Jambières (leg) ---
             't2_fire_legs' => [
                 'name' => 'Jambières ardentes',
+                'name_translations' => ['en' => 'Blazing Greaves'],
                 'description' => 'Des jambières renforcées par des plaques chauffées au rouge.',
                 'type' => 'gear',
                 'slug' => 't2-fire-legs',
@@ -3574,6 +3591,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_legs' => [
                 'name' => 'Jambières de givre',
+                'name_translations' => ['en' => 'Frost Greaves'],
                 'description' => 'Des jambières parcourues de cristaux de glace protecteurs.',
                 'type' => 'gear',
                 'slug' => 't2-water-legs',
@@ -3590,6 +3608,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_legs' => [
                 'name' => 'Jambières de pierre',
+                'name_translations' => ['en' => 'Stone Greaves'],
                 'description' => 'Des jambières massives taillées dans la roche enchantée.',
                 'type' => 'gear',
                 'slug' => 't2-earth-legs',
@@ -3606,6 +3625,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_legs' => [
                 'name' => 'Jambières du vent',
+                'name_translations' => ['en' => 'Wind Greaves'],
                 'description' => 'Des jambières légères qui permettent de se déplacer comme le vent.',
                 'type' => 'gear',
                 'slug' => 't2-air-legs',
@@ -3624,6 +3644,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Bottes (foot) ---
             't2_fire_boots' => [
                 'name' => 'Bottes ardentes',
+                'name_translations' => ['en' => 'Blazing Boots'],
                 'description' => 'Des bottes dont les semelles laissent des traces de braise.',
                 'type' => 'gear',
                 'slug' => 't2-fire-boots',
@@ -3640,6 +3661,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_boots' => [
                 'name' => 'Bottes de givre',
+                'name_translations' => ['en' => 'Frost Boots'],
                 'description' => 'Des bottes qui gèlent le sol sous chaque pas.',
                 'type' => 'gear',
                 'slug' => 't2-water-boots',
@@ -3656,6 +3678,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_boots' => [
                 'name' => 'Bottes de pierre',
+                'name_translations' => ['en' => 'Stone Boots'],
                 'description' => 'Des bottes lourdes qui ancrent solidement leur porteur au sol.',
                 'type' => 'gear',
                 'slug' => 't2-earth-boots',
@@ -3672,6 +3695,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_boots' => [
                 'name' => 'Bottes du vent',
+                'name_translations' => ['en' => 'Wind Boots'],
                 'description' => 'Des bottes si légères qu\'elles semblent flotter au-dessus du sol.',
                 'type' => 'gear',
                 'slug' => 't2-air-boots',
@@ -3690,6 +3714,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Gantelets (hand) ---
             't2_fire_gloves' => [
                 'name' => 'Gantelets ardents',
+                'name_translations' => ['en' => 'Blazing Gauntlets'],
                 'description' => 'Des gantelets dont les jointures rougeoient comme des braises.',
                 'type' => 'gear',
                 'slug' => 't2-fire-gloves',
@@ -3706,6 +3731,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_water_gloves' => [
                 'name' => 'Gantelets de givre',
+                'name_translations' => ['en' => 'Frost Gauntlets'],
                 'description' => 'Des gantelets recouverts de givre permanent qui engourdit les adversaires.',
                 'type' => 'gear',
                 'slug' => 't2-water-gloves',
@@ -3722,6 +3748,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_earth_gloves' => [
                 'name' => 'Gantelets de pierre',
+                'name_translations' => ['en' => 'Stone Gauntlets'],
                 'description' => 'Des gantelets massifs en roche enchantée, durs comme le diamant.',
                 'type' => 'gear',
                 'slug' => 't2-earth-gloves',
@@ -3738,6 +3765,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't2_air_gloves' => [
                 'name' => 'Gantelets du vent',
+                'name_translations' => ['en' => 'Wind Gauntlets'],
                 'description' => 'Des gantelets traversés par des courants d\'air qui accélèrent les frappes.',
                 'type' => 'gear',
                 'slug' => 't2-air-gloves',
