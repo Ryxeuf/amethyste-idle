@@ -591,6 +591,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 4,
                 'xp_reward' => 12,
                 'description' => 'Prépare une potion de soin à partir de plantes médicinales.',
+                'name_translations' => ['en' => 'Minor Healing Potion'],
             ],
             'recipe_antidote' => [
                 'name' => 'Antidote',
@@ -605,6 +606,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 6,
                 'xp_reward' => 18,
                 'description' => 'Prépare un antidote purifiant contre les poisons.',
+                'name_translations' => ['en' => 'Antidote'],
             ],
 
             // --- Alchimie supplémentaire (alchimiste) ---
@@ -621,6 +623,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 3,
                 'xp_reward' => 8,
                 'description' => 'Prépare une base de potion à partir de plantes fraîches.',
+                'name_translations' => ['en' => 'Potion Base'],
             ],
             'recipe_onguent_healing' => [
                 'name' => 'Onguent de guérison',
@@ -635,6 +638,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 15,
                 'description' => 'Un baume cicatrisant qui régénère les blessures.',
+                'name_translations' => ['en' => 'Healing Salve'],
             ],
             'recipe_healing_medium' => [
                 'name' => 'Potion de soin',
@@ -650,6 +654,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 6,
                 'xp_reward' => 18,
                 'description' => 'Prépare une potion de soin modérée à partir d\'une base et de plantes.',
+                'name_translations' => ['en' => 'Healing Potion'],
             ],
             'recipe_energy_potion' => [
                 'name' => 'Potion d\'énergie',
@@ -664,6 +669,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 15,
                 'description' => 'Prépare une potion d\'énergie revigorante au ginseng.',
+                'name_translations' => ['en' => 'Minor Energy Potion'],
             ],
             'recipe_poison_vial' => [
                 'name' => 'Fiole de poison',
@@ -678,6 +684,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 7,
                 'xp_reward' => 22,
                 'description' => 'Concentre des toxines végétales dans une fiole fragile.',
+                'name_translations' => ['en' => 'Poison Vial'],
             ],
             'recipe_elixir_force' => [
                 'name' => 'Élixir de force',
@@ -693,6 +700,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Infuse la puissance de la mandragore dans un élixir de rage.',
+                'name_translations' => ['en' => 'Strength Elixir'],
             ],
             'recipe_elixir_defense' => [
                 'name' => 'Élixir de défense',
@@ -708,6 +716,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Mélange des plantes fortifiantes pour créer un bouclier alchimique.',
+                'name_translations' => ['en' => 'Defense Elixir'],
             ],
             'recipe_healing_major' => [
                 'name' => 'Potion de soin majeure',
@@ -723,6 +732,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 35,
                 'description' => 'Prépare une puissante potion de soin à base de mandragore.',
+                'name_translations' => ['en' => 'Major Healing Potion'],
             ],
             'recipe_elixir_vitality' => [
                 'name' => 'Élixir de vitalité',
@@ -738,6 +748,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 40,
                 'description' => 'Un élixir de mandragore et ginseng d\'une puissance exceptionnelle.',
+                'name_translations' => ['en' => 'Vitality Elixir'],
             ],
             // --- Joaillerie (joaillier) ---
             'recipe_copper_ring' => [

@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.c — fixtures EN pour les noms de 15 recettes tanneur)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.d — fixtures EN pour les noms de 11 recettes alchimiste)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.j.d : fixtures EN pour les noms de recettes (section alchimie) (2026-04-27)
+
+> Suite directe des sous-phases 3e.j.b (forgeron) et 3e.j.c (tannerie). Le loader `RecipeFixtures::load` est deja cable pour lire `name_translations` depuis 3e.j.b ; cette sous-phase ajoute uniquement les traductions EN sur les 11 recettes standard du metier `alchimiste` (le 12e — `Grand elixir du maitre alchimiste` — est un masterwork couvert en sous-phase ulterieure dediee). 20 recettes restantes (joaillerie 18, 3 masterworks restants) suivront en sous-phases dediees.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `RecipeFixtures.php`. Zero risque de collision sur main.
+
+### Changements
+
+- **`src/DataFixtures/RecipeFixtures.php`** : ajout de `'name_translations' => ['en' => '...']` sur 11 recettes alchimiste : potions de soin (3) `Minor Healing Potion`, `Healing Potion`, `Major Healing Potion`, antidote (1) `Antidote`, alchimie de base (3) `Potion Base`, `Healing Salve`, `Minor Energy Potion`, concentre toxique (1) `Poison Vial`, elixirs (3) `Strength Elixir`, `Defense Elixir`, `Vitality Elixir`. Total : +11 lignes, passant de 1057 a 1068 lignes (dans la limite de 50 lignes ajoutees a un fichier > 400 lignes, regle 0.1 du briefing).
+- **Aucune migration** : la colonne JSON `name_translations` sur `game_recipes` est en place depuis 3e.j.
+- **Aucun nouveau test** : `RecipeLocalizationTest` (16 cas) et `RecipeLocalizationExtensionTest` (9 cas) couvrent deja la mecanique.
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.j.d ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `Recipe::getLocalizedName` retombe sur `name` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat sur `templates/game/crafting/_recipe_card.html.twig` + `_recipe_card_locked.html.twig` : les 11 recettes alchimiste s'affichent en anglais quand l'utilisateur passe sa locale a EN via `/game/settings`.
+- 20 recettes restantes (joaillerie 18, masterworks 3) conservent leur nom FR comme fallback transparent jusqu'aux sous-phases ulterieures.
 
 ---
 
