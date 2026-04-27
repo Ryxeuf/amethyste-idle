@@ -17,9 +17,9 @@
 
     {# En-tete #}
     <div class="mb-3 pr-20">
-        <h3 class="text-lg font-semibold text-gray-400">{{ recipe.name }}</h3>
+        <h3 class="text-lg font-semibold text-gray-400">{{ recipe|localized_recipe_name }}</h3>
         {% if recipe.description %}
-            <p class="text-sm text-gray-500 mt-1">{{ recipe.description }}</p>
+            <p class="text-sm text-gray-500 mt-1">{{ recipe|localized_recipe_description }}</p>
         {% endif %}
     </div>
 

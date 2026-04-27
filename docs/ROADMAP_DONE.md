@@ -1,7 +1,36 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.i — i18n complet pour les 2 donjons du jeu)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j — infrastructure + cablage Twig pour les noms et descriptions de recettes)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.j : infrastructure + cablage Twig pour les recettes (2026-04-27)
+
+> Etend le pattern eprouve par 3e.f Race / 3e.g Region / 3e.h Faction / 3e.i Dungeon a l'entite `Recipe` (utilisee par les 65 recettes de craft). Cette sous-phase couvre uniquement l'**infrastructure** (colonnes JSON + accesseurs) et le **cablage Twig** (2 templates de crafting). Les fixtures EN seront livrees en sous-phase 3e.j.b dediee : `RecipeFixtures.php` fait deja 1019 lignes et 65 entrees a traduire depasserait la limite de 50 lignes ajoutees a un fichier > 400 lignes (regle 0.1 du briefing).
+>
+> Specificite : `Recipe::description` est nullable (contrairement aux autres entites du pattern), donc `getLocalizedDescription` retourne `?string`. Le filter Twig retourne `''` quand la description est null pour rester compatible avec l'affichage `{{ ... }}`.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `Recipe.php` ni la table `game_recipes`. Zero risque de collision sur main.
+
+### Changements
+
+- **Migration `Version20260427RecipeTranslations`** : `ALTER TABLE game_recipes ADD COLUMN IF NOT EXISTS name_translations JSON DEFAULT NULL` + `description_translations JSON DEFAULT NULL`. Idempotente, reversible via `DROP COLUMN IF EXISTS`. Miroir strict de `Version20260427DungeonTranslations` (3e.i).
+- **Entite `Recipe`** : nouvelles proprietes `?array $nameTranslations` et `?array $descriptionTranslations`, accesseur `getLocalizedName(?string $locale): string` (fallback gracieux : locale nulle/vide / colonne nulle / locale absente / valeur blanche), accesseur `getLocalizedDescription(?string $locale): ?string` qui retourne `null` quand description ET translations sont nulles, `getNameTranslations` + `setNameTranslations` + `getDescriptionTranslations` + `setDescriptionTranslations` avec normalisation (cles vides filtrees, valeurs non-string ignorees, valeurs blanches filtrees, compaction vers `null`). Fichier passe de 222 a 309 lignes (sous le seuil 400).
+- **Extension Twig `App\Twig\RecipeLocalizationExtension`** : 2 filters (`localized_recipe_name`, `localized_recipe_description`) qui delegue a l'entite avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur RequestStack vide / Recipe null / traduction manquante). Le filter description coerce explicitement `null` -> `''` pour preserver l'affichage Twig. Pattern strict de `DungeonLocalizationExtension`.
+- **Templates cables** :
+  - `templates/game/crafting/_recipe_card.html.twig` : 2 occurrences (`{{ recipe.name }}` -> `{{ recipe|localized_recipe_name }}`, `{{ recipe.description }}` -> `{{ recipe|localized_recipe_description }}`). Le `{% if recipe.description %}` reste inchange (test sur la propriete brute pour decider de l'affichage du `<p>`).
+  - `templates/game/crafting/_recipe_card_locked.html.twig` : 2 occurrences identiques (carte d'une recette verrouillee, meme structure).
+- **Tests** :
+  - `RecipeLocalizationTest` (16 cas : 7 pour `name`, 8 pour `description` + 1 cas additionnel `getDescriptionTranslationsDefaultsToEmptyArray`. Le 8e cas description couvre le retour `null` quand description et translations sont nulles, specificite de `Recipe`).
+  - `RecipeLocalizationExtensionTest` (9 cas : 4 pour `localized_recipe_name`, 4 pour `localized_recipe_description` dont 1 cas dedie `description=null` qui retourne `''`, 1 pour l'enregistrement des 2 filters).
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.j ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `Recipe::getLocalizedName` / `getLocalizedDescription` retombent sur `name` / `description` quand aucune traduction n'est presente, et toutes les fixtures actuelles ne renseignent pas encore les colonnes `*_translations`.
+- Une fois la sous-phase 3e.j.b livree, chaque paire `{fr, en}` de recette sera automatiquement affichee dans `_recipe_card.html.twig` + `_recipe_card_locked.html.twig` sans redeploiement (filter resolu a la volee via `RequestStack`).
+- Prepare l'extension i18n a `EquipmentSet`, `EnchantmentDefinition` et `Mount` (pattern unifie).
 
 ---
 
