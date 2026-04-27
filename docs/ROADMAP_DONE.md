@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j — infrastructure + cablage Twig pour les noms et descriptions de recettes)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.b — fixtures EN pour les noms de 19 recettes forgeron)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.j.b : fixtures EN pour les noms de recettes (section forgeron) (2026-04-27)
+
+> Suite directe de la sous-phase 3e.j (infrastructure livree le meme jour). Cable les premieres 19 traductions EN dans `RecipeFixtures` apres avoir etendu le loader pour lire la cle optionnelle `name_translations` du tableau de fixtures. Couvre integralement le metier `forgeron` (4 Forge T1 + 5 Lingots + 4 Forge T2 fer + 6 Forge T3 mithril). 46 recettes restantes (tannerie, alchimie, joaillerie, masterworks) seront livrees en sous-phases dediees pour rester sous le budget de modifications par sous-phase.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `RecipeFixtures.php`. Zero risque de collision sur main.
+
+### Changements
+
+- **`src/DataFixtures/RecipeFixtures.php`** : extension du loader `load()` (4 lignes) pour appeler `Recipe::setNameTranslations` quand le tableau de fixtures contient une cle `name_translations` valide (pattern strict de `MonsterFixtures::load`, `ItemFixtures::load`, `QuestFixtures::load`). Ajout de `'name_translations' => ['en' => '...']` sur 19 recettes du metier forgeron : `Iron Dagger`, `Short Sword`, `Iron Shield`, `Iron Helmet`, `Bronze Ingot`, `Cobalt Ingot`, `Mithril Ingot`, `Adamantite Ingot`, `Orichalcum Ingot`, `Iron Chestplate`, `Iron Greaves`, `Iron Boots`, `Iron Gauntlets`, `Mithril Helm`, `Mithril Cuirass`, `Mithril Greaves`, `Mithril Sabatons`, `Mithril Gauntlets`, `Mithril Pauldrons`. Total : +23 lignes (loader + 19 fixtures), passant de 1019 a 1042 lignes (dans la limite de 50 lignes ajoutees a un fichier > 400 lignes, regle 0.1 du briefing).
+- **Aucune migration** : la colonne JSON `name_translations` sur `game_recipes` est deja en place depuis 3e.j.
+- **Aucun nouveau test** : `RecipeLocalizationTest` (16 cas, sous-phase 3e.j) couvre deja la mecanique d'`Recipe::setNameTranslations` / `getLocalizedName` ; `RecipeLocalizationExtensionTest` (9 cas, sous-phase 3e.j) couvre deja le filter Twig.
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.j.b ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `Recipe::getLocalizedName` retombe sur `name` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat sur `templates/game/crafting/_recipe_card.html.twig` + `_recipe_card_locked.html.twig` (les 2 templates cables en 3e.j) : les 19 recettes du forgeron s'affichent en anglais quand l'utilisateur passe sa locale a EN via `/game/settings`.
+- 46 recettes restantes (tannerie 11, alchimie 10, joaillerie 18, masterworks 3+) conservent leur nom FR comme fallback transparent jusqu'aux sous-phases ulterieures (3e.j.c tannerie, 3e.j.d alchimie, 3e.j.e joaillerie, 3e.j.f masterworks).
 
 ---
 

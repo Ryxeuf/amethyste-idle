@@ -39,6 +39,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 $recipe->setRequiredSpecialization($data['required_specialization']);
             }
 
+            if (isset($data['name_translations']) && is_array($data['name_translations'])) {
+                $recipe->setNameTranslations($data['name_translations']);
+            }
+
             $manager->persist($recipe);
             $this->addReference($key, $recipe);
         }
@@ -62,6 +66,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 15,
                 'description' => 'Forge une dague en fer tranchante.',
+                'name_translations' => ['en' => 'Iron Dagger'],
             ],
             'recipe_short_sword' => [
                 'name' => 'Epée courte',
@@ -76,6 +81,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 20,
                 'description' => 'Forge une épée courte équilibrée.',
+                'name_translations' => ['en' => 'Short Sword'],
             ],
             'recipe_iron_shield' => [
                 'name' => 'Bouclier en fer',
@@ -90,6 +96,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 25,
                 'description' => 'Forge un bouclier en fer solide.',
+                'name_translations' => ['en' => 'Iron Shield'],
             ],
             'recipe_iron_helmet' => [
                 'name' => 'Casque en fer',
@@ -103,6 +110,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 20,
                 'description' => 'Forge un casque en fer protecteur.',
+                'name_translations' => ['en' => 'Iron Helmet'],
             ],
 
             // --- Lingots de forge ---
@@ -119,6 +127,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 10,
                 'description' => 'Allie cuivre et étain pour forger un lingot de bronze.',
+                'name_translations' => ['en' => 'Bronze Ingot'],
             ],
             'recipe_cobalt_ingot' => [
                 'name' => 'Lingot de cobalt',
@@ -132,6 +141,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 30,
                 'description' => 'Fond le cobalt en un lingot d\'un bleu profond.',
+                'name_translations' => ['en' => 'Cobalt Ingot'],
             ],
             'recipe_mithril_ingot' => [
                 'name' => 'Lingot de mithril',
@@ -146,6 +156,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 50,
                 'description' => 'Forger le mithril requiert un savoir-faire exceptionnel.',
+                'name_translations' => ['en' => 'Mithril Ingot'],
             ],
             'recipe_adamantite_ingot' => [
                 'name' => 'Lingot d\'adamantite',
@@ -160,6 +171,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 20,
                 'xp_reward' => 80,
                 'description' => 'Fond l\'adamantite avec du sombracier pour un alliage indestructible.',
+                'name_translations' => ['en' => 'Adamantite Ingot'],
             ],
             'recipe_orichalcum_ingot' => [
                 'name' => 'Lingot d\'orichalque',
@@ -174,6 +186,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 25,
                 'xp_reward' => 120,
                 'description' => 'Le métal mythique des anciens, forgé avec l\'astrétal des étoiles.',
+                'name_translations' => ['en' => 'Orichalcum Ingot'],
             ],
 
             // --- Forge T2 : Armures en fer ---
@@ -190,6 +203,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 35,
                 'description' => 'Forge un plastron en fer massif, protection standard des soldats aguerris.',
+                'name_translations' => ['en' => 'Iron Chestplate'],
             ],
             'recipe_iron_greaves' => [
                 'name' => 'Jambières en fer',
@@ -204,6 +218,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 30,
                 'description' => 'Forge des jambières en fer articulées pour protéger cuisses et genoux.',
+                'name_translations' => ['en' => 'Iron Greaves'],
             ],
             'recipe_iron_boots' => [
                 'name' => 'Bottes en fer',
@@ -218,6 +233,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Forge des bottes renforcées de plaques de fer.',
+                'name_translations' => ['en' => 'Iron Boots'],
             ],
             'recipe_iron_gauntlets' => [
                 'name' => 'Gantelets en fer',
@@ -232,6 +248,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Forge des gantelets en fer aux jointures renforcées.',
+                'name_translations' => ['en' => 'Iron Gauntlets'],
             ],
 
             // --- Forge T3 : Armures en mithril ---
@@ -248,6 +265,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 60,
                 'description' => 'Forge un heaume de mithril aux reflets argentés, léger et résistant.',
+                'name_translations' => ['en' => 'Mithril Helm'],
             ],
             'recipe_mithril_cuirass' => [
                 'name' => 'Cuirasse de mithril',
@@ -262,6 +280,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 20,
                 'xp_reward' => 80,
                 'description' => 'Forge une cuirasse de mithril étincelante, presque aussi légère que le cuir.',
+                'name_translations' => ['en' => 'Mithril Cuirass'],
             ],
             'recipe_mithril_greaves' => [
                 'name' => 'Grèves de mithril',
@@ -276,6 +295,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 60,
                 'description' => 'Forge des grèves de mithril ouvragées, offrant mobilité et protection.',
+                'name_translations' => ['en' => 'Mithril Greaves'],
             ],
             'recipe_mithril_sabatons' => [
                 'name' => 'Solerets de mithril',
@@ -290,6 +310,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 55,
                 'description' => 'Forge des solerets de mithril silencieux malgré leur solidité.',
+                'name_translations' => ['en' => 'Mithril Sabatons'],
             ],
             'recipe_mithril_gauntlets' => [
                 'name' => 'Gantelets de mithril',
@@ -304,6 +325,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 55,
                 'description' => 'Forge des gantelets de mithril aux articulations souples.',
+                'name_translations' => ['en' => 'Mithril Gauntlets'],
             ],
             'recipe_mithril_pauldrons' => [
                 'name' => 'Épaulières de mithril',
@@ -318,6 +340,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 65,
                 'description' => 'Forge des épaulières de mithril ornées de motifs elfiques.',
+                'name_translations' => ['en' => 'Mithril Pauldrons'],
             ],
 
             // --- Tannerie (tanneur) ---
