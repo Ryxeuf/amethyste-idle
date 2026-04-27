@@ -763,6 +763,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 6,
                 'xp_reward' => 15,
                 'description' => 'Façonne un anneau de cuivre simple mais élégant.',
+                'name_translations' => ['en' => 'Copper Ring'],
             ],
 
             // --- Joaillerie T1 : bases (niveau 1-2) ---
@@ -779,6 +780,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 12,
                 'description' => 'Taille et polit une gemme brute pour la rendre utilisable en joaillerie.',
+                'name_translations' => ['en' => 'Cut Gem'],
             ],
             'recipe_iron_ring' => [
                 'name' => 'Anneau de fer',
@@ -792,6 +794,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 6,
                 'xp_reward' => 15,
                 'description' => 'Façonne un anneau de fer sobre et résistant.',
+                'name_translations' => ['en' => 'Iron Ring'],
             ],
             'recipe_iron_amulet' => [
                 'name' => 'Amulette de fer',
@@ -806,6 +809,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 20,
                 'description' => 'Sertit une gemme taillée dans un médaillon de fer.',
+                'name_translations' => ['en' => 'Iron Amulet'],
             ],
             'recipe_iron_bracelet' => [
                 'name' => 'Bracelet de fer',
@@ -820,6 +824,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 7,
                 'xp_reward' => 18,
                 'description' => 'Forge un bracelet de fer massif avec rivets de cuivre.',
+                'name_translations' => ['en' => 'Iron Bracelet'],
             ],
 
             // --- Joaillerie T2 : or et gemmes fines (niveau 3-4) ---
@@ -836,6 +841,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Affine une gemme basique avec des outils d\'argent pour révéler sa clarté.',
+                'name_translations' => ['en' => 'Fine Gem'],
             ],
             'recipe_gold_ring' => [
                 'name' => 'Anneau d\'or serti',
@@ -850,6 +856,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 30,
                 'description' => 'Façonne un anneau d\'or et y sertit une gemme fine.',
+                'name_translations' => ['en' => 'Jeweled Gold Ring'],
             ],
             'recipe_gold_amulet' => [
                 'name' => 'Amulette d\'or',
@@ -864,6 +871,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 35,
                 'description' => 'Cisèle une amulette d\'or ornée d\'une gemme fine éclatante.',
+                'name_translations' => ['en' => 'Gold Amulet'],
             ],
             'recipe_gold_crown' => [
                 'name' => 'Couronne d\'or',
@@ -878,6 +886,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 45,
                 'description' => 'Forge une couronne d\'or majestueuse ornée de gemmes fines.',
+                'name_translations' => ['en' => 'Gold Crown'],
             ],
 
             // --- Joaillerie T3 : mithril et gemmes rares (niveau 5-6) ---
@@ -894,6 +903,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 40,
                 'description' => 'Taille une gemme rare aux propriétés magiques avec des outils de mithril.',
+                'name_translations' => ['en' => 'Rare Gem'],
             ],
             'recipe_enchant_gem' => [
                 'name' => 'Enchantement de gemme',
@@ -908,6 +918,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 50,
                 'description' => 'Imprègne une gemme rare d\'énergie magique via un rituel de platine.',
+                'name_translations' => ['en' => 'Enchanted Gem'],
             ],
             'recipe_mithril_ring' => [
                 'name' => 'Anneau de mithril serti',
@@ -922,6 +933,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 60,
                 'description' => 'Façonne un anneau de mithril d\'exception et y sertit une gemme rare.',
+                'name_translations' => ['en' => 'Jeweled Mithril Ring'],
             ],
             'recipe_mithril_amulet' => [
                 'name' => 'Amulette de mithril',
@@ -936,6 +948,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 60,
                 'description' => 'Cisèle une amulette de mithril vibrant d\'énergie arcanique.',
+                'name_translations' => ['en' => 'Mithril Amulet'],
             ],
 
             // --- Joaillerie T4 : gemmes prismatiques (niveau 7-8) ---
@@ -952,6 +965,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 20,
                 'xp_reward' => 80,
                 'description' => 'Fusionne des gemmes enchantées avec de l\'astrétal pour créer un prisme multi-élémentaire.',
+                'name_translations' => ['en' => 'Prismatic Gem'],
             ],
 
             // --- Joaillerie T5 : bijoux légendaires (niveau 9-10) ---
@@ -968,6 +982,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 25,
                 'xp_reward' => 120,
                 'description' => 'Chef-d\'œuvre ultime : un anneau d\'orichalque abritant une gemme prismatique.',
+                'name_translations' => ['en' => 'Prismatic Ring'],
             ],
             'recipe_legendary_amulet' => [
                 'name' => 'Amulette prismatique',
@@ -982,6 +997,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 25,
                 'xp_reward' => 120,
                 'description' => 'Chef-d\'œuvre ultime : une amulette d\'orichalque irradiant de puissance prismatique.',
+                'name_translations' => ['en' => 'Prismatic Amulet'],
             ],
 
             // === Recettes exclusives aux maitres artisans (task 122 sous-phase 2) ===
@@ -1002,6 +1018,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 30,
                 'xp_reward' => 200,
                 'description' => 'Reservee aux Maitres Forgerons. Forge la lame ultime, signature des grands artisans.',
+                'name_translations' => ['en' => 'Master Blacksmith\'s Blade'],
             ],
 
             'recipe_masterwork_drakehide_cloak' => [
@@ -1019,6 +1036,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 30,
                 'xp_reward' => 200,
                 'description' => 'Reservee aux Maitres Tanneurs. Coud un manteau ouvrage dans la peau d\'un drake ancestral.',
+                'name_translations' => ['en' => 'Master Leatherworker\'s Cloak'],
             ],
 
             'recipe_masterwork_grand_elixir' => [
@@ -1037,6 +1055,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 25,
                 'xp_reward' => 180,
                 'description' => 'Reservee aux Maitres Alchimistes. Distille un elixir parfait infuse d\'energie prismatique.',
+                'name_translations' => ['en' => 'Master Alchemist\'s Grand Elixir'],
             ],
 
             'recipe_masterwork_starforged_ring' => [
@@ -1054,6 +1073,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 30,
                 'xp_reward' => 200,
                 'description' => 'Reservee aux Maitres Joailliers. Cisele un anneau pulsant d\'energie pure.',
+                'name_translations' => ['en' => 'Master Jeweler\'s Ring'],
             ],
         ];
     }

@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.d — fixtures EN pour les noms de 11 recettes alchimiste)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.e — fixtures EN pour les 20 dernieres recettes : joaillerie 16 + masterworks 4 — 100% des recettes traduites)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.j.e : fixtures EN pour les 20 dernieres recettes (joaillerie + masterworks) — 100% des recettes traduites (2026-04-27)
+
+> Cloture la couverture EN sur les fixtures de recettes apres 3e.j.b (forgeron 19), 3e.j.c (tannerie 15) et 3e.j.d (alchimie 11). Couvre les 16 dernieres recettes du metier `joaillier` + les 4 chefs-d'oeuvre exclusifs aux maitres artisans (task 122). Atteint **65/65 recettes traduites = 100% de parite FR/EN sur l'integralite du systeme de craft**.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `RecipeFixtures.php`. Zero risque de collision sur main.
+
+### Changements
+
+- **`src/DataFixtures/RecipeFixtures.php`** : ajout de `'name_translations' => ['en' => '...']` sur 20 recettes. Joaillerie T0 (1) `Copper Ring`. Joaillerie T1 (4) `Cut Gem`, `Iron Ring`, `Iron Amulet`, `Iron Bracelet`. Joaillerie T2 (4) `Fine Gem`, `Jeweled Gold Ring`, `Gold Amulet`, `Gold Crown`. Joaillerie T3 (4) `Rare Gem`, `Enchanted Gem`, `Jeweled Mithril Ring`, `Mithril Amulet`. Joaillerie T4 (1) `Prismatic Gem`. Joaillerie T5 legendaires (2) `Prismatic Ring`, `Prismatic Amulet`. Masterworks (4, 1 par metier) `Master Blacksmith's Blade`, `Master Leatherworker's Cloak`, `Master Alchemist's Grand Elixir`, `Master Jeweler's Ring`. Total : +20 lignes, passant de 1068 a 1088 lignes (dans la limite de 50 lignes ajoutees a un fichier > 400 lignes, regle 0.1 du briefing). Les noms EN reprennent strictement ceux des items produits (3c.s/t/u) pour assurer la coherence entre la carte de craft et l'item recu en inventaire.
+- **Aucune migration** : la colonne JSON `name_translations` sur `game_recipes` est en place depuis 3e.j.
+- **Aucun nouveau test** : `RecipeLocalizationTest` (16 cas) et `RecipeLocalizationExtensionTest` (9 cas) couvrent deja la mecanique.
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.j.e ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `Recipe::getLocalizedName` retombe sur `name` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat sur `templates/game/crafting/_recipe_card.html.twig` + `_recipe_card_locked.html.twig` : **toutes les 65 recettes du jeu** s'affichent en anglais quand l'utilisateur passe sa locale a EN via `/game/settings` (forgeron 19 + tannerie 15 + alchimie 11 + joaillerie 16 + masterworks 4).
+- Cloture la boucle i18n recettes : aucune recette ne reste sans traduction.
 
 ---
 
