@@ -1,7 +1,28 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.b — fixtures EN pour les noms de 19 recettes forgeron)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.j.c — fixtures EN pour les noms de 15 recettes tanneur)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.j.c : fixtures EN pour les noms de recettes (section tannerie) (2026-04-27)
+
+> Suite directe de la sous-phase 3e.j.b qui couvrait le metier forgeron. Le loader `RecipeFixtures::load` est deja cable pour lire `name_translations` depuis 3e.j.b ; cette sous-phase ajoute uniquement les traductions EN sur les 15 recettes du metier `tanneur`. 31 recettes restantes (alchimie, joaillerie, masterworks) suivront en sous-phases dediees.
+>
+> Independante des 14 PR ouvertes (i18n / avatar / mounts / events) : aucune ne touche `RecipeFixtures.php`. Zero risque de collision sur main.
+
+### Changements
+
+- **`src/DataFixtures/RecipeFixtures.php`** : ajout de `'name_translations' => ['en' => '...']` sur 15 recettes du metier tanneur : tannerie starter (3) `Leather Boots / Leather Hat / Leather Armor`, tannerie T1 accessoires (5) `Leather Strip / Leather Gloves / Leather Belt / Leather Pauldrons / Leather Greaves`, tannerie T2 cuir renforce (6) `Hardened Leather Vest / Hardened Leather Boots / Hardened Leather Gloves / Hardened Leather Belt / Hardened Leather Pauldrons / Hardened Leather Greaves`, tannerie T3 cuir exotique (1) `Exotic Leather Vest`. Total : +15 lignes, passant de 1042 a 1057 lignes (dans la limite de 50 lignes ajoutees a un fichier > 400 lignes, regle 0.1 du briefing).
+- **Aucune migration** : la colonne JSON `name_translations` sur `game_recipes` est en place depuis 3e.j.
+- **Aucun nouveau test** : `RecipeLocalizationTest` (16 cas) et `RecipeLocalizationExtensionTest` (9 cas) couvrent deja la mecanique.
+- **Roadmap** : `SPRINT_12.md` sous-phase 3e.j.c ajoutee, `ROADMAP_TODO_INDEX.md` date + ligne Sprint 12 mises a jour.
+
+### Impact
+
+- Zero impact FR : `Recipe::getLocalizedName` retombe sur `name` quand la locale est `fr` ou que la traduction est absente.
+- Impact EN immediat sur `templates/game/crafting/_recipe_card.html.twig` + `_recipe_card_locked.html.twig` : les 15 recettes du tanneur s'affichent en anglais quand l'utilisateur passe sa locale a EN via `/game/settings`.
+- 31 recettes restantes (alchimie 10, joaillerie 18, masterworks 3) conservent leur nom FR comme fallback transparent jusqu'aux sous-phases ulterieures.
 
 ---
 
