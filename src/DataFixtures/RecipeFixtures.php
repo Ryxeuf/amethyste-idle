@@ -356,6 +356,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 15,
                 'description' => 'Confectionne des bottes en cuir confortables.',
+                'name_translations' => ['en' => 'Leather Boots'],
             ],
             'recipe_leather_hat' => [
                 'name' => 'Chapeau de cuir',
@@ -369,6 +370,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 15,
                 'description' => 'Confectionne un chapeau de cuir protecteur.',
+                'name_translations' => ['en' => 'Leather Hat'],
             ],
             'recipe_leather_armor' => [
                 'name' => 'Armure de cuir',
@@ -383,6 +385,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 25,
                 'description' => 'Confectionne une armure de cuir résistante.',
+                'name_translations' => ['en' => 'Leather Armor'],
             ],
 
             // --- Tannerie T1 : accessoires cuir basiques ---
@@ -399,6 +402,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 3,
                 'xp_reward' => 8,
                 'description' => 'Découpe et tanne le cuir brut en lanières utilisables.',
+                'name_translations' => ['en' => 'Leather Strip'],
             ],
             'recipe_leather_gloves' => [
                 'name' => 'Gants de cuir',
@@ -412,6 +416,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 5,
                 'xp_reward' => 15,
                 'description' => 'Confectionne des gants de cuir souples et résistants.',
+                'name_translations' => ['en' => 'Leather Gloves'],
             ],
             'recipe_leather_belt' => [
                 'name' => 'Ceinture de cuir',
@@ -425,6 +430,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 4,
                 'xp_reward' => 12,
                 'description' => 'Confectionne une ceinture de cuir avec boucle en bronze.',
+                'name_translations' => ['en' => 'Leather Belt'],
             ],
             'recipe_leather_shoulders' => [
                 'name' => 'Épaulières de cuir',
@@ -438,6 +444,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 7,
                 'xp_reward' => 20,
                 'description' => 'Confectionne des épaulières de cuir renforcées de rivets.',
+                'name_translations' => ['en' => 'Leather Pauldrons'],
             ],
             'recipe_leather_pants' => [
                 'name' => 'Jambières de cuir',
@@ -452,6 +459,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 22,
                 'description' => 'Confectionne des jambières de cuir offrant souplesse et protection.',
+                'name_translations' => ['en' => 'Leather Greaves'],
             ],
 
             // --- Tannerie T2 : cuir renforcé ---
@@ -469,6 +477,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 35,
                 'description' => 'Confectionne un plastron en cuir bouilli renforcé d\'os de monstre.',
+                'name_translations' => ['en' => 'Hardened Leather Vest'],
             ],
             'recipe_hardened_boots' => [
                 'name' => 'Bottes de cuir renforcé',
@@ -484,6 +493,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 30,
                 'description' => 'Confectionne des bottes en cuir épais avec semelles renforcées.',
+                'name_translations' => ['en' => 'Hardened Leather Boots'],
             ],
             'recipe_hardened_gloves' => [
                 'name' => 'Gants de cuir renforcé',
@@ -499,6 +509,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 10,
                 'xp_reward' => 30,
                 'description' => 'Confectionne des gants de cuir renforcés avec des crocs de bête.',
+                'name_translations' => ['en' => 'Hardened Leather Gloves'],
             ],
             'recipe_hardened_belt' => [
                 'name' => 'Ceinture de cuir renforcé',
@@ -513,6 +524,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 8,
                 'xp_reward' => 25,
                 'description' => 'Confectionne une ceinture de cuir tanné épaisse et robuste.',
+                'name_translations' => ['en' => 'Hardened Leather Belt'],
             ],
             'recipe_hardened_shoulders' => [
                 'name' => 'Épaulières de cuir renforcé',
@@ -528,6 +540,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 35,
                 'description' => 'Confectionne des épaulières en cuir bouilli ornées de plaques d\'os.',
+                'name_translations' => ['en' => 'Hardened Leather Pauldrons'],
             ],
             'recipe_hardened_pants' => [
                 'name' => 'Jambières de cuir renforcé',
@@ -543,6 +556,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 12,
                 'xp_reward' => 35,
                 'description' => 'Confectionne des jambières de cuir renforcé aux genoux protégés.',
+                'name_translations' => ['en' => 'Hardened Leather Greaves'],
             ],
 
             // --- Tannerie T3 : cuir exotique ---
@@ -560,6 +574,7 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'crafting_time' => 15,
                 'xp_reward' => 50,
                 'description' => 'Confectionne un plastron en fourrure de loup-garou d\'une résistance surnaturelle.',
+                'name_translations' => ['en' => 'Exotic Leather Vest'],
             ],
 
             // --- Alchimie (alchimiste) ---
