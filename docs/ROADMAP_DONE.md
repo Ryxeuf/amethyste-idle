@@ -1,7 +1,33 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-26 (135 sous-phase 3c.t — fixtures EN pour 7 bijoux haut tier + 4 masterwork artisanaux = 11 items)
+> Derniere mise a jour : 2026-04-27 (135 sous-phase 3c.u — fixtures EN pour les 28 equipements elementaires tier 2)
+
+---
+
+## 135 — Localisation i18n sous-phase 3c.u : fixtures EN pour les 28 equipements elementaires tier 2 (2026-04-27)
+
+> Suite directe de la sous-phase 3c.t. Couvre l'integralite du palier d'equipement tier 2 elementaire (level 5, rarete Uncommon, +10% degats elementaires) : 4 elements (Fire / Water / Earth / Air) x 7 slots (sword / shield / helmet / chest / legs / boots / gloves) = 28 items.
+>
+> Independante des 13 PR i18n / avatar / mounts / events en vol : aucune ne touche `ItemFixtures.php`. Aucune migration, aucun nouveau test (l'infra `name_translations` est en place depuis 3a, le cablage Twig depuis 3b, la mecanique est couverte par `ItemLocalizationTest`).
+
+### Changements
+
+- [x] **Fixtures `ItemFixtures`** : ajout de `'name_translations' => ['en' => ...]` sur 28 items (+28 lignes, fichier passe a 4339 lignes, reste sous le seuil de 50 lignes ajoutees a un fichier > 400 lignes).
+  - Epees (4) : `t2-fire-sword=Blazing Sword`, `t2-water-sword=Frost Sword`, `t2-earth-sword=Telluric Sword`, `t2-air-sword=Wind Sword`.
+  - Boucliers (4) : `t2-fire-shield=Blazing Shield`, `t2-water-shield=Frost Shield`, `t2-earth-shield=Stone Shield`, `t2-air-shield=Wind Shield`.
+  - Casques (4) : `t2-fire-helmet=Blazing Helm`, `t2-water-helmet=Frost Helm`, `t2-earth-helmet=Stone Helm`, `t2-air-helmet=Wind Helm`.
+  - Plastrons (4) : `t2-fire-chest=Blazing Cuirass`, `t2-water-chest=Frost Cuirass`, `t2-earth-chest=Stone Cuirass`, `t2-air-chest=Wind Cuirass`.
+  - Jambieres (4) : `t2-fire-legs=Blazing Greaves`, `t2-water-legs=Frost Greaves`, `t2-earth-legs=Stone Greaves`, `t2-air-legs=Wind Greaves`.
+  - Bottes (4) : `t2-fire-boots=Blazing Boots`, `t2-water-boots=Frost Boots`, `t2-earth-boots=Stone Boots`, `t2-air-boots=Wind Boots`.
+  - Gantelets (4) : `t2-fire-gloves=Blazing Gauntlets`, `t2-water-gloves=Frost Gauntlets`, `t2-earth-gloves=Stone Gauntlets`, `t2-air-gloves=Wind Gauntlets`.
+- [x] **Roadmap** : `SPRINT_12.md` sous-phase 3c.u ajoutee + detail, `ROADMAP_TODO_INDEX.md` date de derniere mise a jour synchronisee.
+
+### Impact
+
+- **FR** : zero impact, fallback transparent preserve le rendu actuel sur `/game/inventory` (paper doll + onglets equipement / items), `/game/shop` (forgerons) et l'ecran de craft.
+- **EN** : impact immediat via le filter `localized_name` cable en 3b. L'integralite du set d'equipement elementaire tier 2 (28 pieces) s'affiche en anglais quand la locale du compte est `en` (via `/game/settings`).
+- **Couverture** : 249/279 items dans `ItemFixtures` traduits (~89%, +28 vs 3c.t). Items restants : equipements elementaires t3 (Metal/Bete/Lumiere/Ombre x 7 slots = 28), 2 cosmetiques (cape lunaire, couronne lunaire). Le palier t3 sera couvert dans la prochaine sous-phase, completant ainsi 100% de la parite FR/EN sur l'equipement elementaire tier 2-3.
 
 ---
 
