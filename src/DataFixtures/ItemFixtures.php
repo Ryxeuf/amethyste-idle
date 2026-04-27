@@ -3788,6 +3788,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Épées (main_weapon) ---
             't3_metal_sword' => [
                 'name' => 'Lame d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Blade'],
                 'description' => 'Une lame forgée dans un alliage inconnu, parcourue de runes métalliques luisantes.',
                 'type' => 'gear',
                 'slug' => 't3-metal-sword',
@@ -3807,6 +3808,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_sword' => [
                 'name' => 'Croc-lame sauvage',
+                'name_translations' => ['en' => 'Savage Fang Blade'],
                 'description' => 'Une épée taillée dans un croc de bête ancestrale, vibrante d\'énergie primitive.',
                 'type' => 'gear',
                 'slug' => 't3-beast-sword',
@@ -3826,6 +3828,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_sword' => [
                 'name' => 'Lame de l\'aube',
+                'name_translations' => ['en' => 'Dawn Blade'],
                 'description' => 'Une épée radieuse qui brille d\'une lumière dorée, purificatrice des ténèbres.',
                 'type' => 'gear',
                 'slug' => 't3-light-sword',
@@ -3845,6 +3848,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_sword' => [
                 'name' => 'Lame du crépuscule',
+                'name_translations' => ['en' => 'Twilight Blade'],
                 'description' => 'Une épée noire qui absorbe la lumière autour d\'elle, glaciale au toucher.',
                 'type' => 'gear',
                 'slug' => 't3-dark-sword',
@@ -3866,6 +3870,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Boucliers (side_weapon) ---
             't3_metal_shield' => [
                 'name' => 'Égide d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Aegis'],
                 'description' => 'Un bouclier massif en alliage enchanté, impénétrable aux armes ordinaires.',
                 'type' => 'gear',
                 'slug' => 't3-metal-shield',
@@ -3882,6 +3887,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_shield' => [
                 'name' => 'Bouclier d\'écailles primitives',
+                'name_translations' => ['en' => 'Primal Scale Shield'],
                 'description' => 'Un bouclier recouvert d\'écailles de bête titanesque, dur comme le diamant.',
                 'type' => 'gear',
                 'slug' => 't3-beast-shield',
@@ -3898,6 +3904,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_shield' => [
                 'name' => 'Bouclier de l\'aurore',
+                'name_translations' => ['en' => 'Aurora Shield'],
                 'description' => 'Un bouclier sacré qui irradie une lumière protectrice aveuglante.',
                 'type' => 'gear',
                 'slug' => 't3-light-shield',
@@ -3914,6 +3921,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_shield' => [
                 'name' => 'Bouclier des abysses',
+                'name_translations' => ['en' => 'Abyssal Shield'],
                 'description' => 'Un bouclier sombre qui engloutit les attaques dans le néant.',
                 'type' => 'gear',
                 'slug' => 't3-dark-shield',
@@ -3932,6 +3940,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Casques (head) ---
             't3_metal_helmet' => [
                 'name' => 'Heaume d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Helm'],
                 'description' => 'Un heaume lourd gravé de runes protectrices en métal enchanté.',
                 'type' => 'gear',
                 'slug' => 't3-metal-helmet',
@@ -3948,6 +3957,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_helmet' => [
                 'name' => 'Couronne de crocs',
+                'name_translations' => ['en' => 'Crown of Fangs'],
                 'description' => 'Un casque orné de crocs et de griffes, symbole de la domination bestiale.',
                 'type' => 'gear',
                 'slug' => 't3-beast-helmet',
@@ -3964,6 +3974,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_helmet' => [
                 'name' => 'Diadème de l\'aube',
+                'name_translations' => ['en' => 'Dawn Diadem'],
                 'description' => 'Un diadème sacré qui baigne son porteur dans une aura de lumière protectrice.',
                 'type' => 'gear',
                 'slug' => 't3-light-helmet',
@@ -3980,6 +3991,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_helmet' => [
                 'name' => 'Capuche de l\'ombre éternelle',
+                'name_translations' => ['en' => 'Eternal Shadow Hood'],
                 'description' => 'Une coiffe tissée de ténèbres qui dissimule le visage de son porteur.',
                 'type' => 'gear',
                 'slug' => 't3-dark-helmet',
@@ -3998,6 +4010,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Plastrons (chest) ---
             't3_metal_chest' => [
                 'name' => 'Cuirasse d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Cuirass'],
                 'description' => 'Une cuirasse en alliage enchanté, gravée de runes de protection ancestrales.',
                 'type' => 'gear',
                 'slug' => 't3-metal-chest',
@@ -4014,6 +4027,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_chest' => [
                 'name' => 'Plastron de cuir bestial',
+                'name_translations' => ['en' => 'Beast Hide Plate'],
                 'description' => 'Un plastron taillé dans le cuir d\'une bête légendaire, souple et résistant.',
                 'type' => 'gear',
                 'slug' => 't3-beast-chest',
@@ -4030,6 +4044,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_chest' => [
                 'name' => 'Plastron de l\'aurore',
+                'name_translations' => ['en' => 'Aurora Plate'],
                 'description' => 'Une armure dorée qui pulse d\'énergie lumineuse, repoussant les forces obscures.',
                 'type' => 'gear',
                 'slug' => 't3-light-chest',
@@ -4046,6 +4061,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_chest' => [
                 'name' => 'Plastron des abysses',
+                'name_translations' => ['en' => 'Abyssal Plate'],
                 'description' => 'Une armure noire qui semble absorber toute lumière, glaciale et menaçante.',
                 'type' => 'gear',
                 'slug' => 't3-dark-chest',
@@ -4064,6 +4080,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Jambières (leg) ---
             't3_metal_legs' => [
                 'name' => 'Grèves d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Greaves'],
                 'description' => 'Des jambières en métal enchanté, articulées avec une précision magique.',
                 'type' => 'gear',
                 'slug' => 't3-metal-legs',
@@ -4080,6 +4097,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_legs' => [
                 'name' => 'Jambières de peau de wyrm',
+                'name_translations' => ['en' => 'Wyrm Hide Leggings'],
                 'description' => 'Des jambières en cuir de wyrm, souples et quasi indestructibles.',
                 'type' => 'gear',
                 'slug' => 't3-beast-legs',
@@ -4096,6 +4114,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_legs' => [
                 'name' => 'Grèves de l\'aube',
+                'name_translations' => ['en' => 'Dawn Greaves'],
                 'description' => 'Des jambières dorées qui accélèrent les mouvements de leur porteur.',
                 'type' => 'gear',
                 'slug' => 't3-light-legs',
@@ -4112,6 +4131,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_legs' => [
                 'name' => 'Grèves de l\'ombre',
+                'name_translations' => ['en' => 'Shadow Greaves'],
                 'description' => 'Des jambières ténébreuses qui étouffent le bruit des pas de leur porteur.',
                 'type' => 'gear',
                 'slug' => 't3-dark-legs',
@@ -4130,6 +4150,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Bottes (foot) ---
             't3_metal_boots' => [
                 'name' => 'Bottes d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Boots'],
                 'description' => 'Des bottes en alliage enchanté, lourdes mais étonnamment agiles.',
                 'type' => 'gear',
                 'slug' => 't3-metal-boots',
@@ -4146,6 +4167,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_boots' => [
                 'name' => 'Bottes de griffes sauvages',
+                'name_translations' => ['en' => 'Savage Claw Boots'],
                 'description' => 'Des bottes en cuir bestial ornées de griffes, offrant une adhérence parfaite.',
                 'type' => 'gear',
                 'slug' => 't3-beast-boots',
@@ -4162,6 +4184,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_boots' => [
                 'name' => 'Sandales de lumière',
+                'name_translations' => ['en' => 'Sandals of Light'],
                 'description' => 'Des bottes sacrées qui laissent des traces lumineuses à chaque pas.',
                 'type' => 'gear',
                 'slug' => 't3-light-boots',
@@ -4178,6 +4201,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_boots' => [
                 'name' => 'Bottes du marcheur nocturne',
+                'name_translations' => ['en' => 'Nightwalker Boots'],
                 'description' => 'Des bottes sombres qui permettent de se fondre dans les ombres.',
                 'type' => 'gear',
                 'slug' => 't3-dark-boots',
@@ -4196,6 +4220,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // --- Gantelets (hand) ---
             't3_metal_gloves' => [
                 'name' => 'Gantelets d\'acier runique',
+                'name_translations' => ['en' => 'Runic Steel Gauntlets'],
                 'description' => 'Des gantelets en alliage enchanté, chaque jointure renforcée par des runes.',
                 'type' => 'gear',
                 'slug' => 't3-metal-gloves',
@@ -4212,6 +4237,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_beast_gloves' => [
                 'name' => 'Griffes du prédateur',
+                'name_translations' => ['en' => 'Predator Claws'],
                 'description' => 'Des gantelets en cuir de bête ornés de griffes acérées, mortels au corps à corps.',
                 'type' => 'gear',
                 'slug' => 't3-beast-gloves',
@@ -4228,6 +4254,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_light_gloves' => [
                 'name' => 'Gants de la bénédiction',
+                'name_translations' => ['en' => 'Blessed Gauntlets'],
                 'description' => 'Des gants sacrés imprégnés de lumière curative et protectrice.',
                 'type' => 'gear',
                 'slug' => 't3-light-gloves',
@@ -4244,6 +4271,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             ],
             't3_dark_gloves' => [
                 'name' => 'Gantelets du néant',
+                'name_translations' => ['en' => 'Void Gauntlets'],
                 'description' => 'Des gantelets noirs qui drainent l\'énergie vitale de tout ce qu\'ils touchent.',
                 'type' => 'gear',
                 'slug' => 't3-dark-gloves',
@@ -4262,6 +4290,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Cosmétiques d'événement — Festival de la Lune
             'cosmetic_lunar_crown' => [
                 'name' => 'Couronne lunaire',
+                'name_translations' => ['en' => 'Lunar Crown'],
                 'description' => 'Une couronne argentee qui brille sous la lumiere de la lune. Recompense exclusive du Festival de la Lune.',
                 'type' => 'gear',
                 'slug' => 'cosmetic-lunar-crown',
@@ -4280,6 +4309,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
             // Cosmétiques d'événement — La Nuit des Ombres
             'cosmetic_shadow_cloak' => [
                 'name' => 'Cape des ombres',
+                'name_translations' => ['en' => 'Shadow Cloak'],
                 'description' => 'Une cape tissee dans l\'obscurite elle-meme. Recompense exclusive de la Nuit des Ombres.',
                 'type' => 'gear',
                 'slug' => 'cosmetic-shadow-cloak',
