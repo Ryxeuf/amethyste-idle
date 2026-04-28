@@ -3,7 +3,39 @@
 {% block title %}{{ 'game.inventory.title'|trans }}{% endblock %}
 
 {% block game_content %}
-<div class="game-page" data-controller="inventory">
+<div class="game-page" {{ stimulus_controller('inventory', {
+    labels: {
+        level: 'game.inventory.compare.level'|trans,
+        materia_slots: 'game.inventory.compare.materia_slots'|trans,
+        loses: 'game.inventory.compare.loses'|trans,
+        identical_stats: 'game.inventory.compare.identical_stats'|trans,
+        empty_slot: 'game.inventory.compare.empty_slot'|trans,
+        'rarity.amethyst': 'game.inventory.rarity.amethyst'|trans,
+        'rarity.legendary': 'game.inventory.rarity.legendary'|trans,
+        'rarity.epic': 'game.inventory.rarity.epic'|trans,
+        'rarity.rare': 'game.inventory.rarity.rare'|trans,
+        'rarity.uncommon': 'game.inventory.rarity.uncommon'|trans,
+        'rarity.common': 'game.inventory.rarity.common'|trans,
+        'slot.head': 'game.inventory.slot.head'|trans,
+        'slot.neck': 'game.inventory.slot.neck'|trans,
+        'slot.chest': 'game.inventory.slot.chest'|trans,
+        'slot.shoulder': 'game.inventory.slot.shoulder'|trans,
+        'slot.hand': 'game.inventory.slot.hand'|trans,
+        'slot.main_weapon': 'game.inventory.slot.main_weapon'|trans,
+        'slot.side_weapon': 'game.inventory.slot.side_weapon'|trans,
+        'slot.belt': 'game.inventory.slot.belt'|trans,
+        'slot.leg': 'game.inventory.slot.leg'|trans,
+        'slot.foot': 'game.inventory.slot.foot'|trans,
+        'slot.ring_1': 'game.inventory.slot.ring_1'|trans,
+        'slot.ring_2': 'game.inventory.slot.ring_2'|trans,
+        'element.fire': 'game.inventory.element.fire'|trans,
+        'element.water': 'game.inventory.element.water'|trans,
+        'element.earth': 'game.inventory.element.earth'|trans,
+        'element.air': 'game.inventory.element.air'|trans,
+        'element.light': 'game.inventory.element.light'|trans,
+        'element.dark': 'game.inventory.element.dark'|trans,
+    },
+}) }}>
     {# ===== HEADER ===== #}
     <div class="mb-3 sm:mb-4">
         <div class="flex items-center justify-between">
