@@ -1,6 +1,6 @@
 {% extends 'game/game.html.twig' %}
 
-{% block title %}Messagerie{% endblock %}
+{% block title %}{{ 'game.messages.inbox.title'|trans }}{% endblock %}
 
 {% block game_content %}
 <div class="game-page">
@@ -15,11 +15,11 @@
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <h2 class="text-base sm:text-lg font-semibold text-white">Messagerie</h2>
+                <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.messages.inbox.title'|trans }}</h2>
                 <div class="flex gap-1">
                     <a href="{{ path('app_game_messages_inbox', {tab: 'inbox'}) }}"
                        class="px-3 py-1 text-xs rounded transition-colors {{ tab == 'inbox' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
-                        Reception
+                        {{ 'game.messages.inbox.tab_inbox'|trans }}
                         {% set unread = message_unread_count() %}
                         {% if unread > 0 %}
                             <span class="ml-1 bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">{{ unread > 99 ? '99+' : unread }}</span>
@@ -27,18 +27,18 @@
                     </a>
                     <a href="{{ path('app_game_messages_inbox', {tab: 'sent'}) }}"
                        class="px-3 py-1 text-xs rounded transition-colors {{ tab == 'sent' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600' }}">
-                        Envoyes
+                        {{ 'game.messages.inbox.tab_sent'|trans }}
                     </a>
                 </div>
             </div>
             <a href="{{ path('app_game_messages_compose') }}"
                class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
-                Nouveau message
+                {{ 'game.messages.compose.title'|trans }}
             </a>
         </div>
         <div class="game-card-body">
             {% if messages is empty %}
-                <p class="text-gray-400 text-sm text-center py-8">Aucun message.</p>
+                <p class="text-gray-400 text-sm text-center py-8">{{ 'game.messages.inbox.empty'|trans }}</p>
             {% else %}
                 <div class="space-y-1">
                     {% for msg in messages %}
