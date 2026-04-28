@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (130 sous-phase 6 — catalogue UI public des montures via `/game/mounts`)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.h.b — i18n complet des 12 recompenses de faction)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.h.b : recompenses de faction (2026-04-28)
+
+> i18n complet (infra + cablage + fixtures EN) pour les libelles et descriptions des 12 recompenses de faction. Pattern miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction), 3e.i (Dungeon), 3e.j (Recipe), 3e.l (Mount), 3e.m (Enchantment).
+>
+> Atteint **100% de parite FR/EN sur les 12 recompenses de faction du jeu** (3 par faction x 4 factions). Independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `FactionReward.php`, `FactionRewardFixtures.php`, ni la table `game_faction_rewards`.
+
+### Changements
+
+- **`migrations/Version20260428FactionRewardTranslations.php`** (nouveau, 28 lignes) : ajoute 2 colonnes JSON `label_translations` + `description_translations` sur `game_faction_rewards`. Idempotente via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/Game/FactionReward.php`** (+85 lignes, total 201) : `getLocalizedLabel(?string $locale): string` + `getLocalizedDescription(?string $locale): ?string` (signature avec retour nullable car `description` est lui-meme nullable, comme Recipe en 3e.j et EnchantmentDefinition en 3e.m). Setters normalises (cles vides filtrees, valeurs non-string ignorees, valeurs blanches filtrees, compaction vers `null`).
+- **`src/Twig/FactionRewardLocalizationExtension.php`** (nouveau, 56 lignes) : 2 filters Twig `localized_faction_reward_label` + `localized_faction_reward_description`. Le filter description retourne explicitement `''` quand la description est null (compatibilite Twig avec `{{ ... }}`).
+- **`templates/game/factions/index.html.twig`** (1 ligne modifiee) : `reward.label` -> `reward|localized_faction_reward_label` et `reward.description` -> `reward|localized_faction_reward_description` dans le tooltip.
+- **`src/DataFixtures/Game/FactionRewardFixtures.php`** (+2 lignes loop + 12 inline modifications) : nouvelles cles `label_en` et `description_en` propagees a `setLabelTranslations` / `setDescriptionTranslations` apres les setters FR. 12 traductions EN : Marchands (Merchant Discount / Honorary Discount / Privileged Pricing), Chevaliers (Knight's Blessing / Shield of the Order / Champion of the Order), Mages (Arcane Lore / Magical Resonance / Honorary Archmage), Ombres (Thief's Instinct / Shadow Step / Master Assassin).
+- **`tests/Unit/Entity/Game/FactionRewardLocalizationTest.php`** (nouveau, 180 lignes, 15 cas) : 7 cas `label` (fallback no-translation, match locale, fallback locale missing, ignore blank/invalid, reset null, reset only-invalid, default empty array) + 8 cas `description` (les 7 + cas additionnel `getLocalizedDescriptionReturnsNullWhenDescriptionIsNullAndNoTranslations`).
+- **`tests/Unit/Twig/FactionRewardLocalizationExtensionTest.php`** (nouveau, 125 lignes, 10 cas) : 4 cas `label` + 5 cas `description` (les 4 + filter null description) + 1 cas filtres registres.
 
 ---
 

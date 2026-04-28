@@ -33,8 +33,20 @@ class FactionReward
     #[ORM\Column(name: 'label', type: 'string', length: 255)]
     private string $label;
 
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'label_translations', type: 'json', nullable: true)]
+    private ?array $labelTranslations = null;
+
     #[ORM\Column(name: 'description', type: 'text', nullable: true)]
     private ?string $description = null;
+
+    /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'description_translations', type: 'json', nullable: true)]
+    private ?array $descriptionTranslations = null;
 
     public function getId(): int
     {
@@ -101,6 +113,43 @@ class FactionReward
         return $this;
     }
 
+    /**
+     * Get the label translated for the requested locale, or fall back to the base `label` column.
+     */
+    public function getLocalizedLabel(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->labelTranslations === null) {
+            return $this->label;
+        }
+        $translation = $this->labelTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->label;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getLabelTranslations(): array
+    {
+        return $this->labelTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setLabelTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->labelTranslations = $normalized === [] ? null : $normalized;
+
+        return $this;
+    }
+
     public function getDescription(): ?string
     {
         return $this->description;
@@ -109,6 +158,43 @@ class FactionReward
     public function setDescription(?string $description): self
     {
         $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get the description translated for the requested locale, or fall back to the base `description` column.
+     */
+    public function getLocalizedDescription(?string $locale): ?string
+    {
+        if ($locale === null || $locale === '' || $this->descriptionTranslations === null) {
+            return $this->description;
+        }
+        $translation = $this->descriptionTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->description;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getDescriptionTranslations(): array
+    {
+        return $this->descriptionTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setDescriptionTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->descriptionTranslations = $normalized === [] ? null : $normalized;
 
         return $this;
     }

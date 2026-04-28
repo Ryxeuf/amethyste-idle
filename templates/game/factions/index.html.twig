@@ -72,7 +72,7 @@
                                             <div class="flex items-center gap-2 text-xs {{ unlocked ? 'text-gray-200' : 'text-gray-500' }}">
                                                 <span class="flex-shrink-0 w-4 text-center">{{ unlocked ? '&#10003;' : '&#128274;' }}</span>
                                                 <span class="flex-shrink-0 px-1.5 py-0.5 rounded text-[10px] {{ rewardTier.cssClass }} bg-gray-800/50">{{ rewardTier.label }}</span>
-                                                <span class="truncate" title="{{ reward.description }}">{{ reward.label }}</span>
+                                                <span class="truncate" title="{{ reward|localized_faction_reward_description }}">{{ reward|localized_faction_reward_label }}</span>
                                             </div>
                                         {% endfor %}
                                     </div>
