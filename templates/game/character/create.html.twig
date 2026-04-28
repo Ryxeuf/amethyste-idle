@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un personnage{% endblock %}
+{% block title %}{{ 'game.character.create.title'|trans }}{% endblock %}
 
 {% macro avatar_choice_group(field, label, required) %}
     <div>
@@ -36,7 +36,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-sm text-gray-500 italic">Aucun choix disponible.</p>
+            <p class="text-sm text-gray-500 italic">{{ 'game.character.create.no_choice_available'|trans }}</p>
         {% endif %}
         {% if field.vars.errors|length > 0 %}
             <p class="mt-2 text-sm text-red-400">{{ field.vars.errors[0].message }}</p>
@@ -54,8 +54,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>
                 </div>
-                <h1 class="text-2xl font-bold text-white">Créer un personnage</h1>
-                <p class="text-gray-400 text-sm mt-1">Choisissez un nom et une race pour commencer l'aventure</p>
+                <h1 class="text-2xl font-bold text-white">{{ 'game.character.create.title'|trans }}</h1>
+                <p class="text-gray-400 text-sm mt-1">{{ 'game.character.create.subtitle'|trans }}</p>
             </div>
 
             <div class="px-8 pb-8">
@@ -77,8 +77,8 @@
                                     width="64" height="64"
                                     class="w-32 h-32 block"
                                     style="image-rendering: pixelated;"
-                                    aria-label="Apercu de l'apparence selectionnee"></canvas>
-                            <p class="mt-1 text-center text-[11px] text-gray-500 uppercase tracking-wider">Apercu</p>
+                                    aria-label="{{ 'game.character.create.preview_aria'|trans }}"></canvas>
+                            <p class="mt-1 text-center text-[11px] text-gray-500 uppercase tracking-wider">{{ 'game.character.create.preview'|trans }}</p>
                         </div>
                     </div>
 
@@ -86,14 +86,14 @@
                     {# Nom du personnage #}
                     <div>
                         <label for="{{ form.name.vars.id }}" class="block text-sm font-medium text-gray-300 mb-1.5">
-                            Nom du personnage
+                            {{ 'game.character.create.name_label'|trans }}
                         </label>
                         <input type="text"
                                id="{{ form.name.vars.id }}"
                                name="{{ form.name.vars.full_name }}"
                                value="{{ form.name.vars.value }}"
                                class="w-full px-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                               placeholder="Ex: Aldric, Elara, Thorin..."
+                               placeholder="{{ 'game.character.create.name_placeholder'|trans }}"
                                maxlength="16"
                                minlength="3"
                                autocomplete="off"
@@ -105,14 +105,14 @@
 
                     {# Apparence #}
                     <div class="space-y-5 pt-2">
-                        <h2 class="text-lg font-semibold text-gray-200">Apparence</h2>
+                        <h2 class="text-lg font-semibold text-gray-200">{{ 'game.character.create.appearance'|trans }}</h2>
 
-                        {{ _self.avatar_choice_group(form.body, 'Corps', true) }}
-                        {{ _self.avatar_choice_group(form.hair, 'Coiffure', false) }}
+                        {{ _self.avatar_choice_group(form.body, 'game.character.create.body'|trans, true) }}
+                        {{ _self.avatar_choice_group(form.hair, 'game.character.create.hair'|trans, false) }}
 
                         {# Couleur de cheveux #}
                         <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">Couleur de cheveux</label>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">{{ 'game.character.create.hair_color'|trans }}</label>
                             <div class="flex flex-wrap gap-2">
                                 {% for child in form.hairColor %}
                                     <label for="{{ child.vars.id }}" class="relative cursor-pointer">
@@ -134,12 +134,12 @@
                             {% endif %}
                         </div>
 
-                        {{ _self.avatar_choice_group(form.outfit, 'Tenue de depart', false) }}
+                        {{ _self.avatar_choice_group(form.outfit, 'game.character.create.outfit'|trans, false) }}
                     </div>
 
                     {# Choix de la race #}
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-3">Choisissez une race</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-3">{{ 'game.character.create.choose_race'|trans }}</label>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {% for child in form.race %}
                                 {% set race = child.vars.data %}
@@ -178,7 +178,12 @@
                                                 {# Stat modifiers #}
                                                 {% set modifiers = race.statModifiers %}
                                                 <div class="flex flex-wrap gap-1.5 mt-2">
-                                                    {% set stat_labels = { 'life': 'Vie', 'energy': 'Energie', 'speed': 'Vitesse', 'hit': 'Precision' } %}
+                                                    {% set stat_labels = {
+                                                        'life': 'game.character.create.stat.life'|trans,
+                                                        'energy': 'game.character.create.stat.energy'|trans,
+                                                        'speed': 'game.character.create.stat.speed'|trans,
+                                                        'hit': 'game.character.create.stat.hit'|trans,
+                                                    } %}
                                                     {% for stat, value in modifiers %}
                                                         {% if value != 0 %}
                                                             <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium
@@ -193,7 +198,7 @@
                                                     {% endfor %}
                                                     {% if not has_modifiers %}
                                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-700 text-gray-400">
-                                                            Equilibre
+                                                            {{ 'game.character.create.balanced'|trans }}
                                                         </span>
                                                     {% endif %}
                                                 </div>
@@ -210,7 +215,7 @@
 
                     <button type="submit"
                             class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 active:bg-purple-800 text-white font-semibold rounded-lg shadow-lg shadow-purple-900/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-800">
-                        Commencer l'aventure
+                        {{ 'game.character.create.submit'|trans }}
                     </button>
 
                 {{ form_end(form) }}
