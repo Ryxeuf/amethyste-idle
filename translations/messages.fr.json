@@ -713,6 +713,34 @@
           "hit": "Precision"
         }
       }
+    },
+    "messages": {
+      "back": "Retour",
+      "compose": {
+        "title": "Nouveau message",
+        "recipient": "Destinataire",
+        "recipient_placeholder": "Nom du joueur",
+        "subject": "Sujet",
+        "subject_placeholder": "Sujet du message",
+        "body": "Message",
+        "body_placeholder": "Votre message...",
+        "send": "Envoyer"
+      },
+      "inbox": {
+        "title": "Messagerie",
+        "tab_inbox": "Reception",
+        "tab_sent": "Envoyes",
+        "empty": "Aucun message."
+      },
+      "read": {
+        "reply": "Repondre",
+        "block": "Bloquer",
+        "unblock": "Debloquer",
+        "delete": "Supprimer",
+        "delete_confirm": "Supprimer ce message ?",
+        "from": "De :",
+        "to": "A :"
+      }
     }
   },
   "common": {

@@ -713,6 +713,34 @@
           "hit": "Hit"
         }
       }
+    },
+    "messages": {
+      "back": "Back",
+      "compose": {
+        "title": "New message",
+        "recipient": "Recipient",
+        "recipient_placeholder": "Player name",
+        "subject": "Subject",
+        "subject_placeholder": "Message subject",
+        "body": "Message",
+        "body_placeholder": "Your message...",
+        "send": "Send"
+      },
+      "inbox": {
+        "title": "Messages",
+        "tab_inbox": "Inbox",
+        "tab_sent": "Sent",
+        "empty": "No messages."
+      },
+      "read": {
+        "reply": "Reply",
+        "block": "Block",
+        "unblock": "Unblock",
+        "delete": "Delete",
+        "delete_confirm": "Delete this message?",
+        "from": "From:",
+        "to": "To:"
+      }
     }
   },
   "common": {

@@ -6,12 +6,12 @@
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
-            <a href="{{ path('app_game_messages_inbox') }}" class="text-gray-400 hover:text-white text-sm transition-colors">&larr; Retour</a>
+            <a href="{{ path('app_game_messages_inbox') }}" class="text-gray-400 hover:text-white text-sm transition-colors">&larr; {{ 'game.messages.back'|trans }}</a>
             <div class="flex gap-2">
                 {% if message.receiver.id == player.id %}
                     <a href="{{ path('app_game_messages_compose', {to: message.sender.id, subject: 'Re: ' ~ message.subject}) }}"
                        class="px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
-                        Repondre
+                        {{ 'game.messages.read.reply'|trans }}
                     </a>
                     {% set other = message.sender %}
                 {% else %}
@@ -20,14 +20,14 @@
                 <form action="{{ path('app_game_messages_block', {id: other.id}) }}" method="post" class="inline">
                     <input type="hidden" name="_token" value="{{ csrf_token('message_block_' ~ other.id) }}">
                     <button type="submit" class="px-3 py-1 bg-gray-600 hover:bg-gray-500 text-white text-xs rounded transition-colors">
-                        {{ player.isPlayerBlocked(other.id) ? 'Debloquer' : 'Bloquer' }}
+                        {{ player.isPlayerBlocked(other.id) ? 'game.messages.read.unblock'|trans : 'game.messages.read.block'|trans }}
                     </button>
                 </form>
                 <form action="{{ path('app_game_messages_delete', {id: message.id}) }}" method="post" class="inline">
                     <input type="hidden" name="_token" value="{{ csrf_token('message_delete_' ~ message.id) }}">
                     <button type="submit" class="px-3 py-1 bg-red-600/80 hover:bg-red-500 text-white text-xs rounded transition-colors"
-                            onclick="return confirm('Supprimer ce message ?')">
-                        Supprimer
+                            onclick="return confirm('{{ 'game.messages.read.delete_confirm'|trans|e('js') }}')">
+                        {{ 'game.messages.read.delete'|trans }}
                     </button>
                 </form>
             </div>
@@ -36,8 +36,8 @@
             <div class="mb-4 pb-4 border-b border-gray-700">
                 <h2 class="text-white font-semibold text-base mb-2">{{ message.subject }}</h2>
                 <div class="flex items-center gap-4 text-xs text-gray-400">
-                    <span>De : <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="text-purple-400 hover:text-purple-300">{{ message.sender.name }}</a></span>
-                    <span>A : <a href="{{ path('app_game_player_profile', {id: message.receiver.id}) }}" class="text-purple-400 hover:text-purple-300">{{ message.receiver.name }}</a></span>
+                    <span>{{ 'game.messages.read.from'|trans }} <a href="{{ path('app_game_player_profile', {id: message.sender.id}) }}" class="text-purple-400 hover:text-purple-300">{{ message.sender.name }}</a></span>
+                    <span>{{ 'game.messages.read.to'|trans }} <a href="{{ path('app_game_player_profile', {id: message.receiver.id}) }}" class="text-purple-400 hover:text-purple-300">{{ message.receiver.name }}</a></span>
                     <span>{{ message.createdAt|date('d/m/Y H:i') }}</span>
                 </div>
             </div>
