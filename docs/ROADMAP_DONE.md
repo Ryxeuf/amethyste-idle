@@ -1,7 +1,30 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.p — i18n complet des 4 defis hebdomadaires de guilde)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.v — i18n complet du centre de notifications : page `/game/notifications` + fragment AJAX + dropdown trigger)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.v : centre de notifications (2026-04-28)
+
+> 5eme livraison de la serie 3e dediee aux pages Twig statiques (apres 3e.r `/game/support`, 3e.s `/character/{select,limit_reached}`, 3e.t `/character/create`, 3e.u `/game/messages`). Couvre l'integralite du centre de notifications : page complete `/game/notifications` + fragment AJAX `_panel.html.twig` charge dans le dropdown Mercure-aware + 3 chaines residuelles dans le dropdown trigger de `game.html.twig`.
+>
+> Independante des 16 PR i18n / avatar / mounts / events en vol : aucune ne touche les 2 templates `notifications/*` ni le bloc dropdown `game.html.twig:118-154`, zero risque de conflit.
+
+### Changements
+
+- **`templates/game/notifications/index.html.twig`** (5 chaines remplacees) : `Notifications` (block title + h2, re-utilise meme cle `title`), `unread_count` avec parametres `%count%` + `%plural%` (pluralisation FR identique au pattern existant `game.character.limit_reached.body`), `Tout marquer comme lu` (bouton long), `Aucune notification pour le moment.` (etat vide).
+- **`templates/game/notifications/_panel.html.twig`** (2 chaines remplacees) : `Aucune notification` (etat vide du fragment AJAX, plus court que `empty` de la page complete) et `Voir toutes les notifications` (lien footer).
+- **`templates/game/game.html.twig`** (3 chaines residuelles dans le dropdown notifications) : attribut `title` du bouton trigger (cloche), titre `Notifications` du panel cote serveur (avant chargement AJAX) reutilisant la meme cle `title`, bouton court `Tout marquer lu` (`mark_all_read_short`) — la version raccourcie est conservee distincte du bouton long de la page car le panel fait 80px de large.
+- **`translations/messages.fr.json`** + **`translations/messages.en.json`** (+12 lignes chacun) : nouveau namespace `game.notifications` avec 7 cles uniques (`title`, `unread_count`, `mark_all_read`, `mark_all_read_short`, `empty`, `panel.title_attr`, `panel.empty`, `panel.view_all`). Pour EN, `unread_count` est `%count% unread` (le suffixe `%plural%` reste vide car `unread` est invariant). Parite maintenue : 572 cles FR = 572 cles EN.
+- **`docs/roadmap/SPRINT_12.md`** + **`docs/roadmap/ROADMAP_TODO_INDEX.md`** : ajout de l'entree 3e.v et mise a jour de la ligne "Avancement" + "Derniere mise a jour".
+
+### Impact
+
+- Diff total : ~80 lignes (10 modifications de template + 24 lignes de translations + ~50 lignes de documentation), bien sous le budget 300.
+- Aucune migration, aucun changement backend (`NotificationController` est purement de presentation — la logique controleur n'expose aucun texte FR).
+- Aucun nouveau test : les routes `app_game_notifications` et `app_game_notifications_panel` ne sont actuellement couvertes par aucun test fonctionnel, et la livraison ne change pas la logique metier (juste le rendu i18n des templates).
+- Impact immediat : basculer la locale en EN via `/game/settings` affiche `Notifications`, `5 unread`, `Mark all as read`, `No notifications yet.` sur la page complete et `No notifications`, `View all notifications`, `Mark all read` sur le dropdown au lieu des strings FR.
 
 ---
 

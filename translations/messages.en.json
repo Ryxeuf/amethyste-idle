@@ -643,6 +643,18 @@
         "connection_error": "Connection error."
       }
     },
+    "notifications": {
+      "title": "Notifications",
+      "unread_count": "%count% unread",
+      "mark_all_read": "Mark all as read",
+      "mark_all_read_short": "Mark all read",
+      "empty": "No notifications yet.",
+      "panel": {
+        "title_attr": "Notifications",
+        "empty": "No notifications",
+        "view_all": "View all notifications"
+      }
+    },
     "quickbar": {
       "aria_label": "Quick action bar",
       "item_unavailable": "Item unavailable",
