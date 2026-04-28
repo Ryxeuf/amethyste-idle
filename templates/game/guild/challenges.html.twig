@@ -31,8 +31,8 @@
                             <div class="flex items-start justify-between mb-2">
                                 <div>
                                     <span class="text-purple-400 text-xs font-medium uppercase">{{ challenge.activityType.label }}</span>
-                                    <h3 class="text-white text-sm font-medium mt-0.5">{{ challenge.title }}</h3>
-                                    <p class="text-gray-400 text-xs mt-0.5">{{ challenge.description }}</p>
+                                    <h3 class="text-white text-sm font-medium mt-0.5">{{ challenge|localized_challenge_title }}</h3>
+                                    <p class="text-gray-400 text-xs mt-0.5">{{ challenge|localized_challenge_description }}</p>
                                 </div>
                                 <div class="text-right flex-shrink-0 ml-2">
                                     <div class="text-amber-400 text-xs">+{{ challenge.bonusPoints }} pts influence</div>
@@ -76,7 +76,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <span class="text-purple-400/70 text-[10px] font-medium uppercase">{{ challenge.activityType.label }}</span>
-                                    <span class="text-gray-300 text-xs ml-1">{{ challenge.title }}</span>
+                                    <span class="text-gray-300 text-xs ml-1">{{ challenge|localized_challenge_title }}</span>
                                 </div>
                                 <div class="text-right flex-shrink-0 ml-2">
                                     {% if entry.completed %}

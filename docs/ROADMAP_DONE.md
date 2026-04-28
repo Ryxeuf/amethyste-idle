@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.o — i18n complet des 4 festivals)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.p — i18n complet des 4 defis hebdomadaires de guilde)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.p : defis hebdomadaires de guilde (2026-04-28)
+
+> i18n complet (infra + cablage Twig + fixtures EN) pour les titres et descriptions des 4 defis hebdomadaires de guilde. Pattern miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction), 3e.i (Dungeon), 3e.j (Recipe), 3e.l (Mount), 3e.m (Enchantment), 3e.n (Map), 3e.o (Festival).
+>
+> Atteint **100% de parite FR/EN sur les 4 defis hebdomadaires** (Chasseur infatigable / Forge ardente / Moisson abondante / Heros du peuple). Independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `WeeklyChallenge.php`, `WeeklyChallengeFixtures.php`, ni la table `weekly_challenge`.
+
+### Changements
+
+- **`migrations/Version20260428WeeklyChallengeTranslations.php`** (nouveau, 28 lignes) : ajoute 2 colonnes JSON `title_translations` + `description_translations` sur `weekly_challenge`. Idempotente via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/App/WeeklyChallenge.php`** (+86 lignes, total 269, sous la limite 400) : `getLocalizedTitle(?string $locale): string` + `getLocalizedDescription(?string $locale): string` (les deux retournent `string` non-nullable car les colonnes de base le sont, comme Faction en 3e.h ou Region en 3e.g). Setters normalises (cles vides filtrees, valeurs non-string ignorees, valeurs blanches filtrees, compaction vers `null` si aucune entree valide).
+- **`src/Twig/WeeklyChallengeLocalizationExtension.php`** (nouveau, 56 lignes) : 2 filters Twig `localized_challenge_title` + `localized_challenge_description` qui appliquent `WeeklyChallenge::getLocalizedTitle/Description` avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur `title`/`description` si RequestStack vide, challenge null ou traduction manquante). Noms distincts de `localized_quest_*` / `localized_faction_*` pour eviter la collision Twig entre filters typehintes sur entites differentes.
+- **`templates/game/guild/challenges.html.twig`** (3 occurrences cablees) : remplace `challenge.title` / `challenge.description` par les filters `localized_challenge_title` / `localized_challenge_description` dans la liste des defis actifs (lignes 34/35) et `challenge.title` dans la liste des defis termines (ligne 79).
+- **`src/DataFixtures/WeeklyChallengeFixtures.php`** (+8 lignes) : `setTitleTranslations(['en' => ...])` + `setDescriptionTranslations(['en' => ...])` pour les 4 defis : Chasseur infatigable=Tireless Hunter / Forge ardente=Burning Forge / Moisson abondante=Bountiful Harvest / Heros du peuple=Heroes of the People + descriptions complementaires (Defeat 50 monsters / Craft 20 items / Gather 100 resources / Complete 10 quests).
+- **`tests/Unit/Entity/App/WeeklyChallengeLocalizationTest.php`** (nouveau, 172 lignes, 14 cas) : 7 cas `title` (fallback no-translation, match locale EN/DE, fallback locale missing, ignore blank/invalid, reset null, reset only-invalid, default empty array) + 7 cas `description` (meme couverture).
+
+### Impact
+
+- Diff total : ~300 lignes (~290 ajouts + 3 modifications de template), dans le budget de 300 lignes.
+- Zero impact FR (le fallback transparent de `WeeklyChallenge::getLocalizedTitle/Description` preserve le rendu actuel).
+- Impact EN immediat sur la page `/game/guild/challenges` : quand l'utilisateur passe sa locale a EN via `/game/settings`, les titres et descriptions des 4 defis hebdomadaires sont traduits.
+- Atteint **100% de parite FR/EN sur les 4 defis hebdomadaires de guilde** en une seule sous-phase (infra + cablage + fixtures + tests), pattern eprouve par 3e.f / 3e.g / 3e.h / 3e.i / 3e.j / 3e.l / 3e.m / 3e.n / 3e.o.
 
 ---
 

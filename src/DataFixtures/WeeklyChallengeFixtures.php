@@ -22,7 +22,9 @@ class WeeklyChallengeFixtures extends Fixture implements DependentFixtureInterfa
         $challenge1 = new WeeklyChallenge();
         $challenge1->setSeason($season);
         $challenge1->setTitle('Chasseur infatigable');
+        $challenge1->setTitleTranslations(['en' => 'Tireless Hunter']);
         $challenge1->setDescription('Eliminez 50 monstres en equipe pour prouver la valeur de votre guilde.');
+        $challenge1->setDescriptionTranslations(['en' => 'Defeat 50 monsters as a team to prove your guild\'s mettle.']);
         $challenge1->setActivityType(InfluenceActivityType::MobKill);
         $challenge1->setCriteria(['target' => 50]);
         $challenge1->setBonusPoints(100);
@@ -38,7 +40,9 @@ class WeeklyChallengeFixtures extends Fixture implements DependentFixtureInterfa
         $challenge2 = new WeeklyChallenge();
         $challenge2->setSeason($season);
         $challenge2->setTitle('Forge ardente');
+        $challenge2->setTitleTranslations(['en' => 'Burning Forge']);
         $challenge2->setDescription('Fabriquez 20 objets pour renforcer l\'arsenal de votre guilde.');
+        $challenge2->setDescriptionTranslations(['en' => 'Craft 20 items to strengthen your guild\'s arsenal.']);
         $challenge2->setActivityType(InfluenceActivityType::Craft);
         $challenge2->setCriteria(['target' => 20]);
         $challenge2->setBonusPoints(80);
@@ -54,7 +58,9 @@ class WeeklyChallengeFixtures extends Fixture implements DependentFixtureInterfa
         $challenge3 = new WeeklyChallenge();
         $challenge3->setSeason($season);
         $challenge3->setTitle('Moisson abondante');
+        $challenge3->setTitleTranslations(['en' => 'Bountiful Harvest']);
         $challenge3->setDescription('Recoltez 100 ressources dans les champs et forets environnants.');
+        $challenge3->setDescriptionTranslations(['en' => 'Gather 100 resources from the surrounding fields and forests.']);
         $challenge3->setActivityType(InfluenceActivityType::Harvest);
         $challenge3->setCriteria(['target' => 100]);
         $challenge3->setBonusPoints(60);
@@ -73,7 +79,9 @@ class WeeklyChallengeFixtures extends Fixture implements DependentFixtureInterfa
         $challenge4 = new WeeklyChallenge();
         $challenge4->setSeason($season);
         $challenge4->setTitle('Heros du peuple');
+        $challenge4->setTitleTranslations(['en' => 'Heroes of the People']);
         $challenge4->setDescription('Completez 10 quetes pour faire rayonner le nom de votre guilde.');
+        $challenge4->setDescriptionTranslations(['en' => 'Complete 10 quests to spread your guild\'s renown far and wide.']);
         $challenge4->setActivityType(InfluenceActivityType::Quest);
         $challenge4->setCriteria(['target' => 10]);
         $challenge4->setBonusPoints(120);
