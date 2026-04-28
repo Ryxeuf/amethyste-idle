@@ -12,7 +12,7 @@ class PlayerJournalEntryLocalizationTest extends TestCase
         foreach (PlayerJournalEntry::TYPES as $type) {
             $this->assertArrayHasKey($type, PlayerJournalEntry::TYPE_LABELS);
             $this->assertSame(
-                'game.journal.type.'.$type,
+                'game.journal.type.' . $type,
                 PlayerJournalEntry::TYPE_LABELS[$type],
                 'Each type label should be the translation key game.journal.type.<type>',
             );
@@ -37,15 +37,15 @@ class PlayerJournalEntryLocalizationTest extends TestCase
 
     public function testTranslationKeysExistInFrenchAndEnglishCatalogs(): void
     {
-        $fr = json_decode((string) file_get_contents(__DIR__.'/../../../../translations/messages.fr.json'), true);
-        $en = json_decode((string) file_get_contents(__DIR__.'/../../../../translations/messages.en.json'), true);
+        $fr = json_decode((string) file_get_contents(__DIR__ . '/../../../../translations/messages.fr.json'), true);
+        $en = json_decode((string) file_get_contents(__DIR__ . '/../../../../translations/messages.en.json'), true);
 
         $this->assertIsArray($fr);
         $this->assertIsArray($en);
 
         foreach (PlayerJournalEntry::TYPES as $type) {
-            $this->assertArrayHasKey($type, $fr['game']['journal']['type'] ?? [], 'FR catalog should expose game.journal.type.'.$type);
-            $this->assertArrayHasKey($type, $en['game']['journal']['type'] ?? [], 'EN catalog should expose game.journal.type.'.$type);
+            $this->assertArrayHasKey($type, $fr['game']['journal']['type'] ?? [], 'FR catalog should expose game.journal.type.' . $type);
+            $this->assertArrayHasKey($type, $en['game']['journal']['type'] ?? [], 'EN catalog should expose game.journal.type.' . $type);
             $this->assertNotSame('', trim((string) $fr['game']['journal']['type'][$type]));
             $this->assertNotSame('', trim((string) $en['game']['journal']['type'][$type]));
         }
@@ -53,8 +53,8 @@ class PlayerJournalEntryLocalizationTest extends TestCase
 
     public function testJournalUiKeysExistInBothCatalogs(): void
     {
-        $fr = json_decode((string) file_get_contents(__DIR__.'/../../../../translations/messages.fr.json'), true);
-        $en = json_decode((string) file_get_contents(__DIR__.'/../../../../translations/messages.en.json'), true);
+        $fr = json_decode((string) file_get_contents(__DIR__ . '/../../../../translations/messages.fr.json'), true);
+        $en = json_decode((string) file_get_contents(__DIR__ . '/../../../../translations/messages.en.json'), true);
 
         $required = [
             ['title'],
@@ -68,8 +68,8 @@ class PlayerJournalEntryLocalizationTest extends TestCase
         ];
 
         foreach ($required as $path) {
-            $this->assertNotEmpty($this->lookup($fr, ['game', 'journal', ...$path]), 'FR missing key: '.implode('.', $path));
-            $this->assertNotEmpty($this->lookup($en, ['game', 'journal', ...$path]), 'EN missing key: '.implode('.', $path));
+            $this->assertNotEmpty($this->lookup($fr, ['game', 'journal', ...$path]), 'FR missing key: ' . implode('.', $path));
+            $this->assertNotEmpty($this->lookup($en, ['game', 'journal', ...$path]), 'EN missing key: ' . implode('.', $path));
         }
     }
 
