@@ -569,6 +569,36 @@
         "purchase": "Merchant purchase",
         "achievement": "Achievement"
       }
+    },
+    "harvest": {
+      "panel_aria": "Harvesting panel",
+      "spot_fallback": "Harvest spot",
+      "load_error": "Unable to load details.",
+      "connection_error": "Connection error.",
+      "harvesting": "Harvesting…",
+      "cannot_harvest": "Cannot harvest here.",
+      "empty_result": "No resource gathered.",
+      "success": "Harvest successful!",
+      "tool_broken": "Your tool is broken!",
+      "skill_required": "Skill required",
+      "skill_missing": "You don't have the skill to harvest this spot.",
+      "skill_insufficient": "Insufficient skill to harvest this spot.",
+      "ready": "Ready!",
+      "respawn": "Respawn",
+      "tool_required": {
+        "pickaxe": "Pickaxe required",
+        "sickle": "Sickle required",
+        "fishing_rod": "Fishing rod required",
+        "skinning_knife": "Skinning knife required",
+        "default": "Tool required"
+      },
+      "action": {
+        "pickaxe": "Mine",
+        "sickle": "Harvest",
+        "fishing_rod": "Fish",
+        "skinning_knife": "Skin",
+        "default": "Harvest"
+      }
     }
   },
   "common": {
