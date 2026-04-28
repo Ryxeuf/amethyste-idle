@@ -634,6 +634,14 @@
         "skinning_knife": "Skin",
         "default": "Harvest"
       }
+    },
+    "crafting": {
+      "queue": {
+        "craft_button": "Craft",
+        "crafting_progress": "Crafting...",
+        "crafted_done": "crafted!",
+        "connection_error": "Connection error."
+      }
     }
   },
   "common": {

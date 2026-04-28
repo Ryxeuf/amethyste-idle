@@ -634,6 +634,14 @@
         "skinning_knife": "Dépecer",
         "default": "Récolter"
       }
+    },
+    "crafting": {
+      "queue": {
+        "craft_button": "Fabriquer",
+        "crafting_progress": "Fabrication...",
+        "crafted_done": "fabriques !",
+        "connection_error": "Erreur de connexion."
+      }
     }
   },
   "common": {
