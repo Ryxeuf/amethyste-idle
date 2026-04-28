@@ -5,10 +5,16 @@ export default class extends Controller {
     static values = {
         slug: String,
         max: Number,
+        labels: { type: Object, default: {} },
     };
 
     connect() {
         this._crafting = false;
+    }
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
     }
 
     increment() {
@@ -41,7 +47,7 @@ export default class extends Controller {
         this.quantityInputTarget.value = quantity;
 
         this.buttonTarget.disabled = true;
-        this.buttonTextTarget.textContent = `Fabrication... (0/${quantity})`;
+        this.buttonTextTarget.textContent = `${this._label('crafting_progress', 'Fabrication...')} (0/${quantity})`;
 
         try {
             const resp = await fetch(`/api/craft/batch/${this.slugValue}`, {
@@ -53,12 +59,12 @@ export default class extends Controller {
             const data = await resp.json();
 
             if (data.success) {
-                this.buttonTextTarget.textContent = `${data.crafted}/${quantity} fabriques !`;
+                this.buttonTextTarget.textContent = `${data.crafted}/${quantity} ${this._label('crafted_done', 'fabriques !')}`;
                 if (window.Toast) {
                     window.Toast.show('success', data.message);
                 }
             } else {
-                this.buttonTextTarget.textContent = 'Fabriquer';
+                this.buttonTextTarget.textContent = this._label('craft_button', 'Fabriquer');
                 if (window.Toast) {
                     window.Toast.show('warning', data.message);
                 }
@@ -69,9 +75,9 @@ export default class extends Controller {
                 window.location.reload();
             }, 1200);
         } catch {
-            this.buttonTextTarget.textContent = 'Fabriquer';
+            this.buttonTextTarget.textContent = this._label('craft_button', 'Fabriquer');
             if (window.Toast) {
-                window.Toast.show('error', 'Erreur de connexion.');
+                window.Toast.show('error', this._label('connection_error', 'Erreur de connexion.'));
             }
             this.buttonTarget.disabled = false;
             this._crafting = false;

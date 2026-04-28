@@ -96,9 +96,16 @@
 
     {# Bouton de fabrication avec quantite #}
     {% set maxCraftQty = maxCraft|default(0) %}
-    <div data-controller="craft-queue"
-         data-craft-queue-slug-value="{{ recipe.slug }}"
-         data-craft-queue-max-value="{{ maxCraftQty }}">
+    <div {{ stimulus_controller('craft-queue', {
+            slug: recipe.slug,
+            max: maxCraftQty,
+            labels: {
+                craft_button: 'game.crafting.queue.craft_button'|trans,
+                crafting_progress: 'game.crafting.queue.crafting_progress'|trans,
+                crafted_done: 'game.crafting.queue.crafted_done'|trans,
+                connection_error: 'game.crafting.queue.connection_error'|trans,
+            },
+        }) }}>
         {% if canCraftRecipe and maxCraftQty > 1 %}
             <div class="flex items-center gap-1.5 mb-2">
                 <button type="button" data-action="craft-queue#decrement"
