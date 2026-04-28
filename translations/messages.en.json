@@ -195,7 +195,19 @@
         "earth": "Earth",
         "air": "Air",
         "light": "Light",
-        "dark": "Dark"
+        "dark": "Dark",
+        "metal": "Metal",
+        "beast": "Beast",
+        "none": "—"
+      },
+      "materia_slot": {
+        "empty_slot": "Empty slot",
+        "element_required": "Required element: ",
+        "level_short": "Lv. ",
+        "max_level": "MAX",
+        "spell_label": "Spell:",
+        "bonus_xp": "+25% XP — Elemental bonus",
+        "bonus_synergy": "+15% Damage — Linked synergy"
       }
     },
     "map": {

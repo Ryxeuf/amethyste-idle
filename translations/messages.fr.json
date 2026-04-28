@@ -195,7 +195,19 @@
         "earth": "Terre",
         "air": "Air",
         "light": "Lumière",
-        "dark": "Ténèbres"
+        "dark": "Ténèbres",
+        "metal": "Métal",
+        "beast": "Bête",
+        "none": "—"
+      },
+      "materia_slot": {
+        "empty_slot": "Slot vide",
+        "element_required": "Élément requis : ",
+        "level_short": "Niv. ",
+        "max_level": "MAX",
+        "spell_label": "Sort :",
+        "bonus_xp": "+25% XP — Bonus élémentaire",
+        "bonus_synergy": "+15% Dégâts — Synergie liée"
       }
     },
     "map": {
