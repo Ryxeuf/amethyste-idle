@@ -74,7 +74,7 @@
                                             <p class="text-gray-500 text-[10px] mt-1">
                                                 Donnee par <span class="text-amber-400/80">{{ giver.name }}</span>
                                                 {% if giver.map %}
-                                                    — <a href="{{ path('app_game_map') }}" class="text-purple-400/80 hover:text-purple-300 underline">{{ giver.map.name ?? 'Carte' }}</a>
+                                                    — <a href="{{ path('app_game_map') }}" class="text-purple-400/80 hover:text-purple-300 underline">{{ giver.map ? giver.map|localized_map_name : 'Carte' }}</a>
                                                 {% endif %}
                                             </p>
                                         {% endif %}
@@ -579,7 +579,7 @@
                                             <p class="text-gray-500 text-[10px] mt-1">
                                                 Donnee par <span class="text-amber-400/80">{{ giver.name }}</span>
                                                 {% if giver.map %}
-                                                    — <a href="{{ path('app_game_map') }}" class="text-purple-400/80 hover:text-purple-300 underline">{{ giver.map.name ?? 'Carte' }}</a>
+                                                    — <a href="{{ path('app_game_map') }}" class="text-purple-400/80 hover:text-purple-300 underline">{{ giver.map ? giver.map|localized_map_name : 'Carte' }}</a>
                                                 {% endif %}
                                             </p>
                                         {% endif %}

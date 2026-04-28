@@ -25,7 +25,7 @@
         </button>
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="map"
                 class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
-            Carte{% if player.map %} ({{ player.map.name }}){% endif %}
+            Carte{% if player.map %} ({{ player.map|localized_map_name }}){% endif %}
         </button>
         {% if guild %}
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="guild"

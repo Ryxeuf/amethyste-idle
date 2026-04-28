@@ -37,6 +37,12 @@ class Map
     private string $name;
 
     /**
+     * @var array<string, string>|null
+     */
+    #[ORM\Column(name: 'name_translations', type: 'json', nullable: true)]
+    private ?array $nameTranslations = null;
+
+    /**
      * Coordonnées de la carte au sein du monde.
      */
     #[ORM\Column(name: 'coordinates', type: 'string', nullable: true)]
@@ -117,6 +123,43 @@ class Map
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * Get the name translated for the requested locale, or fall back to the base `name` column.
+     */
+    public function getLocalizedName(?string $locale): string
+    {
+        if ($locale === null || $locale === '' || $this->nameTranslations === null) {
+            return $this->name;
+        }
+        $translation = $this->nameTranslations[$locale] ?? null;
+
+        return \is_string($translation) && trim($translation) !== '' ? $translation : $this->name;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function getNameTranslations(): array
+    {
+        return $this->nameTranslations ?? [];
+    }
+
+    /**
+     * @param array<string, mixed>|null $translations
+     */
+    public function setNameTranslations(?array $translations): self
+    {
+        $normalized = [];
+        foreach ($translations ?? [] as $locale => $value) {
+            if ($locale !== '' && \is_string($value) && trim($value) !== '') {
+                $normalized[$locale] = $value;
+            }
+        }
+        $this->nameTranslations = $normalized === [] ? null : $normalized;
+
+        return $this;
     }
 
     public function getCoordinates(): ?string
