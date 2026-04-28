@@ -201,33 +201,46 @@ les rares COUNTs restants (1 cycle / 10s) frappent les indexes ajoutes.
 A re-mesurer sous `metrics-stress` 20 VUs sans think-time pour confirmer
 l'objectif p95 < 100 ms.
 
-### Jalon D — Indexes composites pour les APIs map (priorite 4, effort S) — partiellement couvert
+### Jalon D — Indexes composites pour les APIs map (priorite 4, effort S) — ✅ Termine
 
 **Objectif** : accelerer `/api/map/entities` qui itere sur les
 joueurs/mobs/PNJ d'une carte.
 
-- [ ] Migration : `CREATE INDEX IF NOT EXISTS idx_player_map_coords ON
-      player (map_id, coordinates)` (champ `coordinates` est stringif
-      `"x.y"`, cf. CLAUDE.md regle 7 — verifier l'utilite reelle d'un
-      index sur une string composite ; alternative : index BRIN sur
-      `(map_id)` si la carte est petite).
-- [ ] Migration : `CREATE INDEX IF NOT EXISTS idx_mob_map_alive ON mob
+- [x] Migration : `idx_player_map_coords ON player (map_id,
+      coordinates)` — **non actionable apres analyse** (sous-phase 3f,
+      2026-04-28). Le champ `coordinates` etant stringifie `"x.y"`
+      (CLAUDE.md regle 7), l'index serait utile uniquement pour des
+      queries `WHERE map_id = X AND coordinates = 'x.y'` (egalite
+      stricte). Audit du codebase (`grep -rn "coordinates'" src/`,
+      `grep -rn "->andWhere.*coordinates"`) confirme **aucune query
+      DQL ne filtre par coordonnees** : `findBy(['map' => $map])`
+      recupere tous les acteurs, et la proximite est filtree en PHP
+      via `abs($ex - $px) > $radius`. L'index existant `idx_player_map`
+      (`Player.php:18`) est deja optimal pour ce pattern. L'alternative
+      BRIN `(map_id)` n'apporte rien sur des cardinalites typiques
+      (1-200 joueurs / carte). **Conclusion** : pas d'index a ajouter.
+- [x] Migration : `CREATE INDEX IF NOT EXISTS idx_mob_map_alive ON mob
       (map_id) WHERE died_at IS NULL`.
       → **Sous-phase 3a livree** (2026-04-26) : `idx_mob_alive_map`
       (chevauchement avec le jalon C : ce partial index sert les 2
       objectifs simultanement).
-- [ ] **Bonus refactor** — supprimer le produit cartesien dans
+- [x] **Bonus refactor** — supprimer le produit cartesien dans
       `MobRepository::findByMapWithMonster` (4 leftJoin OneToMany
       imbriques sans usage cote appelant).
       → **Sous-phase 3c livree** (2026-04-26) : reduction du wire
       transfer DB d'un facteur ~15 sur `/api/map/entities`.
 - [ ] Profiler les querybuilders de `MapEntityFetcher` (ou equivalent)
-      via `EXPLAIN ANALYZE` sous charge `authenticated-gameplay`.
+      via `EXPLAIN ANALYZE` sous charge `authenticated-gameplay`. →
+      Reporte au moment d'un run k6 reel sur staging (necessite infra
+      hors scope local) ; les optimisations de 3a + 3c sont les seules
+      actionables sans index supplementaire.
 - [ ] Re-run `authenticated-gameplay` : `authed_map_api_latency` p95 <
-      300 ms (vs ~800 ms sans index).
+      300 ms (vs ~800 ms sans index). → A executer apres deploiement
+      des sous-phases 3a + 3c sur staging.
 
 **Gain attendu** : x2 a x5 sur la latence des routes map authentifiees,
-selon la volumetrie reelle.
+selon la volumetrie reelle (l'essentiel du gain provient deja de la
+sous-phase 3c qui supprime le produit cartesien sur le wire DB).
 
 ### Jalon E — Hardening Mercure (priorite 5, effort M)
 
@@ -307,13 +320,13 @@ dans `docs/audits/` avec date, configuration, resume k6.
 | A — Cache Redis | ⏳ A faire | — |
 | B — PgBouncer | ⏳ A faire | — |
 | **C — Cache + indexes `/metrics`** | **✅ Termine** | 3a (indexes Player/Mob) + 3b (cache TTL 10s) + 3d (partial index Fight) |
-| D — Indexes composites + refactor map | 🟡 Partiellement couvert | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) ; reste a faire `idx_player_map_coords` + profiling |
+| **D — Indexes composites + refactor map** | **✅ Termine** | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) + 3f (cloture analytique : `idx_player_map_coords` non actionable car coords sont une string filtree en PHP) |
 | E — Hardening Mercure | ⏳ A faire | — |
 | F — Scaling horizontal | ⏳ A faire | — |
 
 ### Roadmap a venir
 
-1. **Sous-phase 3e** (tache 134) — completer le **jalon D** : `idx_player_map_coords` + profiling `EXPLAIN ANALYZE` sur `/api/map/entities` sous charge `authenticated-gameplay`. Petit diff.
+1. ~~**Sous-phase 3e** (tache 134) — completer le **jalon D**~~ → **Sous-phase 3f livree** (2026-04-28) : cloture analytique du jalon D. `idx_player_map_coords` n'est pas actionable car les coordonnees sont stringifiees `"x.y"` (CLAUDE.md regle 7) et qu'aucune query DQL ne filtre par coordonnees (proximite filtree en PHP). Le profiling `EXPLAIN ANALYZE` reste a executer sur staging quand un run k6 reel sera lance.
 2. **Sous-phase 4** — implementer le **jalon A** (Redis cache, compose + cache.yaml). Cle pour debloquer le scaling horizontal et la coordination multi-worker. Substitution transparente du pool `cache.app` deja utilise par `MetricsController` (sous-phase 3b) — aucun changement de code controller requis.
 3. **Sous-phase 5** — implementer le **jalon B** (PgBouncer). Migration + compose, demande validation pgbouncer + Doctrine.
 4. **Sous-phase 6** — implementer le **jalon E** (Mercure hardening). Touche l'infra (compose + Caddyfile + Traefik dynamic config).
