@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.h.b — i18n complet des 12 recompenses de faction)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.n — i18n complet des 8 cartes du jeu)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.n : noms de cartes (2026-04-28)
+
+> i18n complet (infra + cablage + fixtures EN) pour les noms des 8 cartes du jeu. Pattern miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction), 3e.i (Dungeon), 3e.l (Mount), 3e.m (Enchantment).
+>
+> Atteint **100% de parite FR/EN sur les 8 cartes du jeu** (carte de test + village hub + 5 cartes overworld + 2 donjons). Independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `Map.php`, `MapFixtures.php`, ni la table `map`.
+
+### Changements
+
+- **`migrations/Version20260428MapNameTranslations.php`** (nouveau, 26 lignes) : ajoute la colonne JSON `name_translations` sur `map`. Idempotente via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/App/Map.php`** (+44 lignes, total 264, sous la limite 400) : nouvelle propriete `?array $nameTranslations` + `getLocalizedName(?string $locale): string` (fallback gracieux sur `$this->name` si locale nulle/vide, colonne nulle, locale absente ou valeur blanche/non-string), `getNameTranslations(): array` (defaut `[]`) + `setNameTranslations(?array $translations): self` (normalisation cles vides / valeurs non-string / valeurs blanches, compaction vers `null` si aucune entree valide).
+- **`src/Twig/MapLocalizationExtension.php`** (nouveau, 47 lignes) : filter Twig `localized_map_name` qui applique `Map::getLocalizedName` avec la locale courante recuperee depuis `RequestStack` (fallback transparent sur `Map::name` si RequestStack vide, Map null ou traduction manquante). Nom distinct de `localized_name` / `localized_monster_name` / `localized_quest_name` / `localized_region_name` pour eviter la collision Twig entre filters typehintes sur entites differentes.
+- **Templates cables** (4 fichiers, 5 occurrences) : `templates/game/index.html.twig` (dashboard hint + statistique current_map), `templates/game/quest/index.html.twig` (2 occurrences : carte du donneur de quete dans le journal et l'historique), `templates/game/chat/index.html.twig` (onglet chat carte), `templates/game/character/select.html.twig` (libelle de carte sous le personnage). Aucun template `templates/admin/**` cable (hors scope jeu).
+- **`src/DataFixtures/MapFixtures.php`** (+8 lignes) : `setNameTranslations(['en' => ...])` apres `setName` pour les 8 cartes : Carte de test=Test Map, Village de Lumiere=Village of Light, Foret des murmures=Whispering Forest, Mines profondes=Deep Mines, Marais Brumeux=Misty Swamp, Crete de Ventombre=Shadowind Ridge, Racines de la foret (donjon)=Roots of the Forest (dungeon), Nexus de la Convergence (donjon)=Nexus of Convergence (dungeon).
+- **`tests/Unit/Entity/App/MapLocalizationTest.php`** (nouveau, 88 lignes, 7 cas) : fallback sans traductions (null/vide/FR/EN), match locale EN/DE, fallback locale absente, normalisation cles/valeurs invalides, reset via null, compaction vers null si seulement entrees invalides, defaut `[]`.
+- **`tests/Unit/Twig/MapLocalizationExtensionTest.php`** (nouveau, 73 lignes, 5 cas) : match locale, fallback locale missing, fallback RequestStack vide, retour empty pour Map null, registration du filter.
 
 ---
 

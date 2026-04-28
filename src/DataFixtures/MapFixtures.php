@@ -17,6 +17,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // (ex. tag_1_20250306151305 copié depuis la carte monde équivalente).
         $map = new Map();
         $map->setName('Carte de test');
+        $map->setNameTranslations(['en' => 'Test Map']);
         $map->setWorld($this->getReference('world_1', World::class));
         $map->setAreaWidth(60);
         $map->setAreaHeight(60);
@@ -29,6 +30,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Village central — hub principal entre les zones (zone safe, aucun monstre)
         $village = new Map();
         $village->setName('Village de Lumière');
+        $village->setNameTranslations(['en' => 'Village of Light']);
         $village->setWorld($this->getReference('world_1', World::class));
         $village->setAreaWidth(40);
         $village->setAreaHeight(40);
@@ -41,6 +43,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Forêt des murmures — zone lvl 5-15, arbres, clairières, rivière
         $forest = new Map();
         $forest->setName('Forêt des murmures');
+        $forest->setNameTranslations(['en' => 'Whispering Forest']);
         $forest->setWorld($this->getReference('world_1', World::class));
         $forest->setAreaWidth(60);
         $forest->setAreaHeight(60);
@@ -53,6 +56,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Mines profondes — zone lvl 10-25, tunnels, salles, filons, boss
         $mines = new Map();
         $mines->setName('Mines profondes');
+        $mines->setNameTranslations(['en' => 'Deep Mines']);
         $mines->setWorld($this->getReference('world_1', World::class));
         $mines->setAreaWidth(60);
         $mines->setAreaHeight(30);
@@ -65,6 +69,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Marais Brumeux — zone lvl 8-18, brume, eaux stagnantes, créatures corrompues
         $swamp = new Map();
         $swamp->setName('Marais Brumeux');
+        $swamp->setNameTranslations(['en' => 'Misty Swamp']);
         $swamp->setWorld($this->getReference('world_1', World::class));
         $swamp->setAreaWidth(50);
         $swamp->setAreaHeight(50);
@@ -77,6 +82,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Crête de Ventombre — zone montagneuse lvl 15-25, pics, grottes, vents violents
         $mountain = new Map();
         $mountain->setName('Crête de Ventombre');
+        $mountain->setNameTranslations(['en' => 'Shadowind Ridge']);
         $mountain->setWorld($this->getReference('world_1', World::class));
         $mountain->setAreaWidth(50);
         $mountain->setAreaHeight(50);
@@ -89,6 +95,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Donjon : Racines de la foret — carte instanciee pour le donjon
         $dungeonRoots = new Map();
         $dungeonRoots->setName('Racines de la foret (donjon)');
+        $dungeonRoots->setNameTranslations(['en' => 'Roots of the Forest (dungeon)']);
         $dungeonRoots->setWorld($this->getReference('world_1', World::class));
         $dungeonRoots->setAreaWidth(20);
         $dungeonRoots->setAreaHeight(20);
@@ -101,6 +108,7 @@ class MapFixtures extends Fixture implements DependentFixtureInterface
         // Donjon : Le Nexus de la Convergence — donjon final Acte 3 (tache 94)
         $dungeonConvergence = new Map();
         $dungeonConvergence->setName('Nexus de la Convergence (donjon)');
+        $dungeonConvergence->setNameTranslations(['en' => 'Nexus of Convergence (dungeon)']);
         $dungeonConvergence->setWorld($this->getReference('world_1', World::class));
         $dungeonConvergence->setAreaWidth(30);
         $dungeonConvergence->setAreaHeight(30);

@@ -66,7 +66,7 @@
                         </svg>
                     </div>
                     <span class="dashboard-action-label">{{ 'game.home.actions.explore'|trans }}</span>
-                    <span class="dashboard-action-hint">{{ player.map ? player.map.name : '???' }}</span>
+                    <span class="dashboard-action-hint">{{ player.map ? player.map|localized_map_name : '???' }}</span>
                 </a>
 
                 <a href="{{ path('app_game_inventory_index') }}" class="dashboard-action-card dashboard-action-inventory">
@@ -237,7 +237,7 @@
                 <div class="game-card-body py-3">
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                         <div class="text-center">
-                            <div class="text-lg sm:text-xl font-bold text-purple-400 truncate">{{ player.map ? player.map.name : '—' }}</div>
+                            <div class="text-lg sm:text-xl font-bold text-purple-400 truncate">{{ player.map ? player.map|localized_map_name : '—' }}</div>
                             <div class="text-[10px] sm:text-xs text-gray-400 mt-0.5">{{ 'game.home.world.current_map'|trans }}</div>
                         </div>
                         <div class="text-center">
