@@ -1,6 +1,6 @@
 {% extends 'game/game.html.twig' %}
 
-{% block title %}Chat - Amethyste{% endblock %}
+{% block title %}{{ 'game.chat.page_title'|trans }}{% endblock %}
 
 {% block game_content %}
 {% set mercure_public_url = app.request.schemeAndHttpHost ~ '/.well-known/mercure' %}
@@ -21,21 +21,21 @@
     <div class="flex border-b border-gray-700 mb-2 flex-shrink-0">
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="global"
                 class="chat-tab-active px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
-            General
+            {{ 'game.chat.tabs.general'|trans }}
         </button>
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="map"
                 class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
-            Carte{% if player.map %} ({{ player.map|localized_map_name }}){% endif %}
+            {{ 'game.chat.tabs.map'|trans }}{% if player.map %} ({{ player.map|localized_map_name }}){% endif %}
         </button>
         {% if guild %}
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="guild"
                 class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
-            Guilde <span style="color: {{ guild.color }}">[{{ guild.tag }}]</span>
+            {{ 'game.chat.tabs.guild'|trans }} <span style="color: {{ guild.color }}">[{{ guild.tag }}]</span>
         </button>
         {% endif %}
         <button data-chat-target="tab" data-action="chat#switchTab" data-channel="private"
                 class="chat-tab-inactive px-4 py-2 text-sm font-medium rounded-t-lg transition-colors">
-            Messages prives
+            {{ 'game.chat.tabs.private'|trans }}
         </button>
     </div>
 
@@ -96,7 +96,7 @@
                 <input type="text"
                        data-chat-target="playerSearch"
                        data-action="input->chat#searchPlayers"
-                       placeholder="Rechercher un joueur..."
+                       placeholder="{{ 'game.chat.search_placeholder'|trans }}"
                        class="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
                 <div data-chat-target="playerResults" class="absolute z-10 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-40 overflow-y-auto"></div>
             </div>
@@ -104,7 +104,7 @@
         </div>
 
         <div data-chat-target="privateMessages" class="chat-messages flex-1 overflow-y-auto bg-gray-800/50 rounded-lg p-2 space-y-0.5 text-sm scrollbar-thin">
-            <div class="text-center text-gray-500 text-sm py-8">Selectionnez un joueur pour commencer une conversation</div>
+            <div class="text-center text-gray-500 text-sm py-8">{{ 'game.chat.private_empty'|trans }}</div>
         </div>
     </div>
 
@@ -112,12 +112,12 @@
     <form data-action="submit->chat#send" class="flex gap-2 mt-2 flex-shrink-0">
         <input type="text"
                data-chat-target="input"
-               placeholder="Ecrire un message..."
+               placeholder="{{ 'game.chat.input_placeholder'|trans }}"
                maxlength="500"
                autocomplete="off"
                class="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-purple-500">
         <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-            Envoyer
+            {{ 'game.chat.send'|trans }}
         </button>
     </form>
 </div>

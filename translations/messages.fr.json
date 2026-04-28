@@ -714,6 +714,19 @@
         }
       }
     },
+    "chat": {
+      "page_title": "Chat - Amethyste",
+      "tabs": {
+        "general": "General",
+        "map": "Carte",
+        "guild": "Guilde",
+        "private": "Messages prives"
+      },
+      "search_placeholder": "Rechercher un joueur...",
+      "private_empty": "Selectionnez un joueur pour commencer une conversation",
+      "input_placeholder": "Ecrire un message...",
+      "send": "Envoyer"
+    },
     "journal": {
       "title": "Journal de bord",
       "entries_count": "%count% entree%plural%",
