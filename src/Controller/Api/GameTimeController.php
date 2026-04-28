@@ -9,6 +9,7 @@ use App\GameEngine\World\GameTimeService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/api/game')]
@@ -21,11 +22,12 @@ class GameTimeController extends AbstractController
     }
 
     #[Route('/time', name: 'api_game_time', methods: ['GET'])]
-    public function __invoke(): JsonResponse
+    public function __invoke(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $snapshot = $this->gameTimeService->getSnapshot();
+        $locale = $request->getLocale();
 
         $festivals = $this->em->getRepository(Festival::class)->findBy(['active' => true]);
         $activeFestivals = [];
@@ -33,8 +35,8 @@ class GameTimeController extends AbstractController
             if ($festival->isCurrentlyRunning($snapshot['season'], $snapshot['day'])) {
                 $activeFestivals[] = [
                     'slug' => $festival->getSlug(),
-                    'name' => $festival->getName(),
-                    'description' => $festival->getDescription(),
+                    'name' => $festival->getLocalizedName($locale),
+                    'description' => $festival->getLocalizedDescription($locale),
                     'season' => $festival->getSeason(),
                     'rewards' => $festival->getRewards(),
                 ];

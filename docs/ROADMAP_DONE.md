@@ -1,7 +1,30 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.n — i18n complet des 8 cartes du jeu)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.o — i18n complet des 4 festivals)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.o : festivals (2026-04-28)
+
+> i18n complet (infra + cablage API + fixtures EN) pour les noms et descriptions des 4 festivals saisonniers du jeu. Pattern miroir strict des sous-phases 3e.f (Race), 3e.g (Region), 3e.h (Faction), 3e.i (Dungeon), 3e.j (Recipe), 3e.l (Mount), 3e.m (Enchantment), 3e.n (Map).
+>
+> Atteint **100% de parite FR/EN sur les 4 festivals saisonniers** (printemps, ete, automne, hiver). Independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `Festival.php`, `FestivalFixtures.php`, ni la table `festival`.
+
+### Changements
+
+- **`migrations/Version20260428FestivalTranslations.php`** (nouveau, 28 lignes) : ajoute 2 colonnes JSON `name_translations` + `description_translations` sur `festival`. Idempotente via `ADD COLUMN IF NOT EXISTS` (down via `DROP COLUMN IF EXISTS`).
+- **`src/Entity/App/Festival.php`** (+76 lignes, total 243, sous la limite 400) : `getLocalizedName(?string $locale): string` + `getLocalizedDescription(?string $locale): ?string` (signature avec retour nullable car `description` est lui-meme nullable, comme Recipe en 3e.j, FactionReward en 3e.h.b et EnchantmentDefinition en 3e.m). Setters normalises (cles vides filtrees, valeurs non-string ignorees, valeurs blanches filtrees, compaction vers `null`).
+- **`src/Controller/Api/GameTimeController.php`** (+2 lignes) : injection de `Symfony\Component\HttpFoundation\Request` dans `__invoke()`, lecture de `$request->getLocale()`, appels `getLocalizedName($locale)` + `getLocalizedDescription($locale)` pour chaque festival actif. Aucun template Twig cable : Festival est expose uniquement via l'API `/api/game/time` consommee par le HUD PixiJS (`map_pixi_controller.js` ligne 1781), donc la traduction se fait cote serveur avant serialisation JSON.
+- **`src/DataFixtures/FestivalFixtures.php`** (+14 lignes) : lit les cles optionnelles `name_translations` + `description_translations` du tableau de fixtures, propagees a `setNameTranslations` / `setDescriptionTranslations` apres les setters FR. 4 traductions EN : `Fete du Renouveau=Renewal Festival`, `Solstice de Flamme=Flame Solstice`, `Moisson des Ames=Soul Harvest`, `Nuit Eternelle=Eternal Night` cote nom + descriptions complementaires (spring awakens nature / sun stands at zenith / veils between worlds grow thin / biting cold blankets the world).
+- **`tests/Unit/Entity/App/FestivalLocalizationTest.php`** (nouveau, 182 lignes, 16 cas) : 7 cas `name` (fallback no-translation, match locale EN/DE, fallback locale missing, ignore blank/invalid, reset null, reset only-invalid, default empty array) + 9 cas `description` (les 7 + cas additionnels `getLocalizedDescriptionReturnsNullWhenDescriptionAndTranslationsAreNull` et `getDescriptionTranslationsDefaultsToEmptyArray`).
+
+### Impact
+
+- Diff total : ~290 lignes (~290 ajouts + 4 modifications), dans le budget de 300 lignes.
+- Zero impact FR (le fallback transparent de `Festival::getLocalizedName` / `getLocalizedDescription` preserve le rendu actuel).
+- Impact EN immediat sur le HUD PixiJS du jeu : quand l'utilisateur passe sa locale a EN via `/game/settings`, l'API `/api/game/time` retourne directement les noms et descriptions traduits, et le HUD affiche `✦ Renewal Festival` au lieu de `✦ Fete du Renouveau`.
+- Atteint **100% de parite FR/EN sur les 4 festivals saisonniers** en une seule sous-phase (infra + cablage + fixtures + tests), pattern eprouve par 3e.f / 3e.g / 3e.h / 3e.i / 3e.j / 3e.l / 3e.m / 3e.n.
 
 ---
 
