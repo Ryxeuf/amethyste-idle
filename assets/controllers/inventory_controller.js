@@ -20,6 +20,14 @@ import { Controller } from '@hotwired/stimulus';
  */
 export default class extends Controller {
     static targets = ['item', 'tooltip', 'sheet', 'sheetBackdrop', 'tab', 'tabsNav', 'tabsWrapper'];
+    static values = {
+        labels: { type: Object, default: {} },
+    };
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
+    }
 
     connect() {
         this._createTooltip();
@@ -212,7 +220,7 @@ export default class extends Controller {
         const statsEl = t.querySelector('.inv-tooltip-stats');
         const stats = [];
         if (data.protection && data.protection !== '0') stats.push('+' + data.protection + ' DEF');
-        if (data.level) stats.push('Niveau ' + data.level);
+        if (data.level) stats.push(this._label('level', 'Niveau ') + data.level);
         if (data.element && data.element !== 'none') stats.push(this._elementLabel(data.element));
         if (stats.length) {
             statsEl.innerHTML = stats.map(s => '<span>' + s + '</span>').join('');
@@ -363,7 +371,7 @@ export default class extends Controller {
             const oldMat = parseInt(data.eqMateriaTotal) || 0;
             const deltaMat = newMat - oldMat;
             if (deltaMat !== 0) {
-                lines.push(this._deltaLine('Slots materia', deltaMat));
+                lines.push(this._deltaLine(this._label('materia_slots', 'Slots materia'), deltaMat));
             }
 
             // Element change
@@ -373,7 +381,7 @@ export default class extends Controller {
                 if (newElem && !oldElem) {
                     lines.push('<div class="inv-compare-line inv-compare-up">' + this._elementLabel(newElem) + '</div>');
                 } else if (!newElem && oldElem) {
-                    lines.push('<div class="inv-compare-line inv-compare-down">Perd ' + this._elementLabel(oldElem) + '</div>');
+                    lines.push('<div class="inv-compare-line inv-compare-down">' + this._label('loses', 'Perd ') + this._elementLabel(oldElem) + '</div>');
                 } else if (newElem && oldElem) {
                     lines.push('<div class="inv-compare-line inv-compare-neutral">' + this._elementLabel(oldElem) + ' \u2192 ' + this._elementLabel(newElem) + '</div>');
                 }
@@ -381,11 +389,11 @@ export default class extends Controller {
 
             if (lines.length === 1) {
                 // Only the title, no actual deltas — items are equivalent
-                lines.push('<div class="inv-compare-line inv-compare-neutral">Statistiques identiques</div>');
+                lines.push('<div class="inv-compare-line inv-compare-neutral">' + this._label('identical_stats', 'Statistiques identiques') + '</div>');
             }
         } else {
             // Empty slot
-            lines.push('<div class="inv-compare-title">Slot vide</div>');
+            lines.push('<div class="inv-compare-title">' + this._label('empty_slot', 'Slot vide') + '</div>');
             const prot = parseInt(data.protection) || 0;
             if (prot > 0) {
                 lines.push(this._deltaLine('DEF', prot));
@@ -435,22 +443,22 @@ export default class extends Controller {
     }
 
     _rarityLabel(r) {
-        const map = { amethyst: 'Améthyste', legendary: 'Légendaire', epic: 'Épique', rare: 'Rare', uncommon: 'Peu commun', common: 'Commun' };
-        return map[r] || r;
+        const fallbacks = { amethyst: 'Améthyste', legendary: 'Légendaire', epic: 'Épique', rare: 'Rare', uncommon: 'Peu commun', common: 'Commun' };
+        return this._label('rarity.' + r, fallbacks[r] || r);
     }
 
     _slotLabel(s) {
-        const map = {
+        const fallbacks = {
             head: 'Tête', neck: 'Cou', chest: 'Torse', shoulder: 'Épaules',
             hand: 'Mains', main_weapon: 'Arme principale', side_weapon: 'Arme secondaire',
             belt: 'Ceinture', leg: 'Jambes', foot: 'Pieds',
             ring_1: 'Anneau 1', ring_2: 'Anneau 2',
         };
-        return map[s] || s;
+        return this._label('slot.' + s, fallbacks[s] || s);
     }
 
     _elementLabel(e) {
-        const map = { fire: 'Feu', water: 'Eau', earth: 'Terre', air: 'Air', light: 'Lumière', dark: 'Ténèbres' };
-        return map[e] || e;
+        const fallbacks = { fire: 'Feu', water: 'Eau', earth: 'Terre', air: 'Air', light: 'Lumière', dark: 'Ténèbres' };
+        return this._label('element.' + e, fallbacks[e] || e);
     }
 }

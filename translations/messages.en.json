@@ -173,7 +173,30 @@
         "placeholder": "Item name",
         "slot": "Slot"
       },
-      "empty": "No items found"
+      "empty": "No items found",
+      "compare": {
+        "level": "Level ",
+        "materia_slots": "Materia slots",
+        "loses": "Loses ",
+        "identical_stats": "Identical stats",
+        "empty_slot": "Empty slot"
+      },
+      "rarity": {
+        "amethyst": "Amethyst",
+        "legendary": "Legendary",
+        "epic": "Epic",
+        "rare": "Rare",
+        "uncommon": "Uncommon",
+        "common": "Common"
+      },
+      "element": {
+        "fire": "Fire",
+        "water": "Water",
+        "earth": "Earth",
+        "air": "Air",
+        "light": "Light",
+        "dark": "Dark"
+      }
     },
     "map": {
       "title": "World Map",

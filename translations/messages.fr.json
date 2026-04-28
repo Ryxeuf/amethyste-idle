@@ -173,7 +173,30 @@
         "placeholder": "Nom de l'objet",
         "slot": "Emplacement"
       },
-      "empty": "Aucun élément trouvé"
+      "empty": "Aucun élément trouvé",
+      "compare": {
+        "level": "Niveau ",
+        "materia_slots": "Slots materia",
+        "loses": "Perd ",
+        "identical_stats": "Statistiques identiques",
+        "empty_slot": "Slot vide"
+      },
+      "rarity": {
+        "amethyst": "Améthyste",
+        "legendary": "Légendaire",
+        "epic": "Épique",
+        "rare": "Rare",
+        "uncommon": "Peu commun",
+        "common": "Commun"
+      },
+      "element": {
+        "fire": "Feu",
+        "water": "Eau",
+        "earth": "Terre",
+        "air": "Air",
+        "light": "Lumière",
+        "dark": "Ténèbres"
+      }
     },
     "map": {
       "title": "Carte du Monde",
