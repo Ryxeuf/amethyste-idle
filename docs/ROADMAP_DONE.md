@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-27 (135 sous-phase 3e.m — infrastructure + cablage Twig + fixtures EN pour les noms et descriptions des enchantements — 100% des 4 enchantements traduits)
+> Derniere mise a jour : 2026-04-28 (130 sous-phase 6 — catalogue UI public des montures via `/game/mounts`)
+
+---
+
+## 130 — Montures sous-phase 6 : catalogue UI public via `/game/mounts` (2026-04-28)
+
+> Premiere vue exposant le catalogue de montures aux joueurs. Reutilise l'infrastructure i18n `MountLocalizationExtension` livree en sous-phase 3e.l (filters `localized_mount_name` / `localized_mount_description`).
+>
+> Independante des sous-phases 2-4 (ownership, vitesse, animation) et de la PR #428 (`PlayerMount` + `MountAcquisitionService`) : la page lit uniquement le catalogue global `game_mounts` sans interaction avec l'ownership joueur.
+
+### Changements
+
+- **`src/Controller/Game/MountController.php`** (nouveau, 37 lignes) : route `GET /game/mounts` (`app_game_mounts`). Injection `EntityManagerInterface`, lecture du repository `Mount` avec `findBy(['enabled' => true], ['requiredLevel' => 'ASC', 'gilCost' => 'ASC'])`. Le controller expose un mapping `obtentionLabels` qui mappe les 4 valeurs de l'enum `Mount::OBTENTION_*` vers leur cle de traduction (`game.mount.obtention.{quest,drop,purchase,achievement}`).
+- **`templates/game/mount/index.html.twig`** (nouveau, 60 lignes) : grille responsive 1/2/3 colonnes affichant pour chaque monture le nom / description localises, un SVG generique (les icones reelles seront cablees dans une sous-phase ulterieure quand les assets seront fournis dans `assets/styles/images/mount/icons/`), et 4 badges metadata (speedBonus, requiredLevel, type d'obtention, gilCost si applicable).
+- **`templates/game/game.html.twig`** (3 modifications, +13 lignes) : lien ajoute dans le dropdown desktop "Personnage" (entre Succes et Journal) et dans le drawer mobile (apres Succes), `app_game_mounts` ajoute aux deux listes de routes actives (`character_routes` desktop + drawer toggle mobile).
+- **`translations/messages.fr.json` + `messages.en.json`** (+13 cles chaque, parite stricte) : nouveau bloc `game.mount.{title,subtitle,empty,speed_bonus,required_level,level_short,gil_cost,gil}` + sous-bloc `game.mount.obtention.{quest,drop,purchase,achievement}` + cle `game.nav.mounts`.
+- **`tests/Functional/Controller/Game/MountControllerTest.php`** (nouveau, 122 lignes, 3 cas) : (1) rendu du catalogue avec montures triees + verification que le mapping `obtentionLabels` couvre tous les types via assertions cle par cle, (2) catalogue vide rendu gracieusement, (3) couverture exhaustive de `Mount::getObtentionTypes()` (garantit la non-regression si un nouveau type d'obtention est ajoute a l'enum).
+
+### Impact
+
+- Diff total : ~274 lignes (47 modifs + 227 ajouts), dans le budget de 300 lignes.
+- Aucun nouveau fichier > 400 lignes ; les fichiers existants modifies (`game.html.twig`, `messages.{fr,en}.json`) recoivent < 50 lignes ajoutees.
+- Aucune migration, aucune fixture modifiee : les 4 montures existantes (cheval brun, loup sauvage, chocobo jaune, sanglier colossal) sont immediatement visibles.
+- En FR : affichage des noms / descriptions originaux. En EN : affichage automatique des traductions livrees en sous-phase 3e.l.
+- Prepare le terrain pour les sous-phases 2-4 (ownership / vitesse / animation) qui pourront ajouter un bouton "Equiper" / "Acheter" sur chaque carte une fois la PR #428 mergee.
 
 ---
 
