@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\FishingEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\HarvestItemGenerator;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -26,6 +27,7 @@ class FishingManager
         private readonly InventoryHelper $inventoryHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GearHelper $gearHelper,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -136,11 +138,13 @@ class FishingManager
         // Succès (30-70) — zone parfaite (45-55) preserve la durabilite de la canne
         $perfect = $tension >= self::PERFECT_MIN && $tension <= self::PERFECT_MAX;
 
-        $items = $this->harvestItemGenerator->generateHarvestItems($spot);
+        // Le multiplicateur d'event `gathering_bonus` scale la quantite de poissons obtenus.
+        $multiplier = $this->gameEventBonusProvider->getGatheringMultiplier($player->getMap());
+        $items = $this->harvestItemGenerator->generateHarvestItems($spot, $multiplier);
         $caughtItem = $items[0] ?? null;
 
-        if ($caughtItem !== null) {
-            $this->inventoryHelper->addItem($caughtItem, false);
+        foreach ($items as $item) {
+            $this->inventoryHelper->addItem($item, false);
         }
 
         if (!$perfect) {
