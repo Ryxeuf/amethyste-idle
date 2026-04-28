@@ -714,6 +714,29 @@
         }
       }
     },
+    "journal": {
+      "title": "Journal de bord",
+      "entries_count": "%count% entree%plural%",
+      "filter_all": "Tout",
+      "type": {
+        "combat_victory": "Victoire",
+        "combat_defeat": "Defaite",
+        "quest_completed": "Quete",
+        "craft": "Artisanat",
+        "gathering": "Recolte",
+        "dungeon": "Donjon",
+        "domain_level": "Progression"
+      },
+      "empty": {
+        "heading": "Aucune entree dans le journal.",
+        "hint": "Vos exploits apparaitront ici au fil de vos aventures."
+      },
+      "pagination": {
+        "previous": "Precedent",
+        "next": "Suivant",
+        "page": "Page %page%/%max%"
+      }
+    },
     "messages": {
       "back": "Retour",
       "compose": {

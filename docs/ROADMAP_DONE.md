@@ -1,7 +1,30 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.p — i18n complet des 4 defis hebdomadaires de guilde)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.v — i18n complet du journal de bord `/game/journal`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.v : journal de bord (2026-04-28)
+
+> i18n complet de la page `/game/journal` (template `templates/game/journal/index.html.twig`, 130 lignes) qui affiche les exploits du joueur (combats, quetes, craft, recolte, donjon, progression de domaine) avec filtre par type + pagination. Cette sous-phase poursuit la serie 3e dediee aux pages Twig statiques (3e.r `/game/support`, 3e.s `/character/{select,limit_reached}`, 3e.t `/character/create`, 3e.u `/game/messages`).
+>
+> Particularite : la constante `PlayerJournalEntry::TYPE_LABELS` cesse d'exposer les libelles FR hardcodes (`'Victoire'`, `'Defaite'`, ...) et stocke desormais les **cles de traduction canoniques** (`'game.journal.type.combat_victory'`, ...). Le template applique `|trans` sur la valeur recuperee via `entry.typeLabel` ou `typeLabels[typeKey]`. Aucune signature publique n'est cassee : `getTypeLabel(): string` reste typee `string`, son comportement (retourne le libelle/cle pour le type courant, fallback sur la valeur brute du `type` si non recense) est conserve par les tests.
+
+### Changements
+
+- **`translations/messages.fr.json`** (+22 lignes) : nouveau namespace `game.journal.{title,entries_count,filter_all,empty.{heading,hint},pagination.{previous,next,page},type.{combat_victory,combat_defeat,quest_completed,craft,gathering,dungeon,domain_level}}` (15 cles). 2 cles avec parametres dynamiques : `entries_count` (`%count%` + `%plural%`, reuse du pattern `game.character.limit_reached.body` de la sous-phase 3e.s) et `pagination.page` (`%page%` + `%max%`).
+- **`translations/messages.en.json`** (+22 lignes) : meme structure, traductions EN. Parite maintenue : 599 cles FR = 599 cles EN.
+- **`src/Entity/App/PlayerJournalEntry.php`** (~7 lignes modifiees, 137 au total) : `TYPE_LABELS` passe de libelles FR hardcodes a cles de traduction `game.journal.type.<type>`. Aucun changement de signature publique, le test `PlayerJournalEntryLocalizationTest` valide que la convention reste tenue.
+- **`templates/game/journal/index.html.twig`** (~9 emplacements modifies, 130 lignes au total) : `block title` + h2 utilisent `'game.journal.title'|trans` ; compteur `entries_count` ; filtre "Tout" ; libelles de filtre + badge d'entree applique `|trans` sur les cles ; etat vide ; pagination "Precedent"/"Suivant"/"Page X/Y".
+- **`tests/Unit/Entity/App/PlayerJournalEntryLocalizationTest.php`** (nouveau, ~85 lignes, 5 cas) : `testTypeLabelsAreTranslationKeysForEveryType` (parite TYPES <-> TYPE_LABELS), `testGetTypeLabelReturnsTranslationKeyForKnownType`, `testGetTypeLabelFallsBackToRawTypeWhenUnknown`, `testTranslationKeysExistInFrenchAndEnglishCatalogs` (les 7 cles `type.*` existent et sont non-vides dans les 2 catalogues), `testJournalUiKeysExistInBothCatalogs` (les 8 cles UI existent dans les 2 catalogues).
+
+### Impact
+
+- Diff total : ~140 lignes ajoutees + ~9 modifications, sous le budget de 300 lignes.
+- Zero impact FR (les nouvelles cles FR reproduisent strictement les libelles FR existants).
+- Impact EN immediat sur `/game/journal` : `Logbook` (titre), `All` / `Victory` / `Defeat` / `Quest` / `Craft` / `Gathering` / `Dungeon` / `Progression` (filtres et badges), `No entries in your logbook yet.` / `Your exploits will appear here as you adventure.` (etat vide), `Previous` / `Next` / `Page X/Y` (pagination).
+- Sous-phase independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `templates/game/journal/*.html.twig` ni `src/Entity/App/PlayerJournalEntry.php`, zero risque de conflit.
 
 ---
 
