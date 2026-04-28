@@ -5,6 +5,14 @@ const SLOT_COUNT = 6;
 
 export default class extends Controller {
     static targets = ['slot', 'picker', 'pickerList'];
+    static values = {
+        labels: { type: Object, default: {} },
+    };
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
+    }
 
     connect() {
         this._slots = this._loadSlots();
@@ -86,7 +94,7 @@ export default class extends Controller {
 
         const item = this._items.find(i => i.slug === slot.slug);
         if (!item || !item.usable || item.quantity <= 0) {
-            this._showToast('Objet indisponible');
+            this._showToast(this._label('item_unavailable', 'Objet indisponible'));
             return;
         }
 
@@ -114,10 +122,10 @@ export default class extends Controller {
                 }
                 this._render();
             } else {
-                this._showToast(data.message || 'Erreur');
+                this._showToast(data.message || this._label('error', 'Erreur'));
             }
         } catch {
-            this._showToast('Erreur réseau');
+            this._showToast(this._label('network_error', 'Erreur réseau'));
         }
 
         setTimeout(() => {

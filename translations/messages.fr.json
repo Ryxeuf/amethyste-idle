@@ -642,6 +642,12 @@
         "crafted_done": "fabriques !",
         "connection_error": "Erreur de connexion."
       }
+    },
+    "quickbar": {
+      "aria_label": "Barre d'action rapide",
+      "item_unavailable": "Objet indisponible",
+      "error": "Erreur",
+      "network_error": "Erreur réseau"
     }
   },
   "common": {
