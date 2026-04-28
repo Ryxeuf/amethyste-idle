@@ -777,6 +777,45 @@
         "from": "From:",
         "to": "To:"
       }
+    },
+    "party": {
+      "page_title": "Party",
+      "heading": "Party",
+      "invitations_heading": "Party invitations",
+      "invitation": {
+        "party_label": "%name%'s party",
+        "invited_by": "Invited by %name%",
+        "accept": "Accept",
+        "decline": "Decline"
+      },
+      "leader_label": "Leader:",
+      "members_label": "Members:",
+      "invite_heading": "Invite a player",
+      "invite_placeholder": "Player name",
+      "invite": "Invite",
+      "members_heading": "Members",
+      "leader_badge": "Leader",
+      "transfer_title": "Transfer leadership",
+      "transfer_button": "Leader",
+      "kick": "Kick",
+      "disband": "Disband",
+      "leave": "Leave",
+      "create": "Create a party",
+      "empty": {
+        "heading": "You are not in any party.",
+        "hint": "Create a party to play with other players."
+      },
+      "js": {
+        "error": "Error",
+        "connection_error": "Connection error",
+        "leave_confirm": "Leave the party?",
+        "disband_confirm": "Disband the party?",
+        "kick_confirm": "Kick %name%?",
+        "transfer_confirm": "Transfer leadership to %name%?",
+        "invite_empty": "Enter a player name.",
+        "invite_not_found": "Player not found.",
+        "search_error": "Search error."
+      }
     }
   },
   "common": {
