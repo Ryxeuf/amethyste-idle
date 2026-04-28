@@ -689,6 +689,29 @@
         "title_short": "Limite atteinte",
         "body": "Vous avez atteint la limite de %count% personnage%plural% par compte.",
         "back": "Retour au jeu"
+      },
+      "create": {
+        "title": "Créer un personnage",
+        "subtitle": "Choisissez un nom et une race pour commencer l'aventure",
+        "no_choice_available": "Aucun choix disponible.",
+        "preview_aria": "Apercu de l'apparence selectionnee",
+        "preview": "Apercu",
+        "name_label": "Nom du personnage",
+        "name_placeholder": "Ex: Aldric, Elara, Thorin...",
+        "appearance": "Apparence",
+        "body": "Corps",
+        "hair": "Coiffure",
+        "hair_color": "Couleur de cheveux",
+        "outfit": "Tenue de depart",
+        "choose_race": "Choisissez une race",
+        "balanced": "Equilibre",
+        "submit": "Commencer l'aventure",
+        "stat": {
+          "life": "Vie",
+          "energy": "Energie",
+          "speed": "Vitesse",
+          "hit": "Precision"
+        }
       }
     }
   },

@@ -689,6 +689,29 @@
         "title_short": "Limit reached",
         "body": "You have reached the limit of %count% character%plural% per account.",
         "back": "Back to the game"
+      },
+      "create": {
+        "title": "Create a character",
+        "subtitle": "Choose a name and a race to begin the adventure",
+        "no_choice_available": "No choice available.",
+        "preview_aria": "Preview of the selected appearance",
+        "preview": "Preview",
+        "name_label": "Character name",
+        "name_placeholder": "Ex: Aldric, Elara, Thorin...",
+        "appearance": "Appearance",
+        "body": "Body",
+        "hair": "Hair",
+        "hair_color": "Hair color",
+        "outfit": "Starting outfit",
+        "choose_race": "Choose a race",
+        "balanced": "Balanced",
+        "submit": "Begin the adventure",
+        "stat": {
+          "life": "Life",
+          "energy": "Energy",
+          "speed": "Speed",
+          "hit": "Hit"
+        }
       }
     }
   },
