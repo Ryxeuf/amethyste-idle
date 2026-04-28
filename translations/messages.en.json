@@ -642,6 +642,12 @@
         "crafted_done": "crafted!",
         "connection_error": "Connection error."
       }
+    },
+    "quickbar": {
+      "aria_label": "Quick action bar",
+      "item_unavailable": "Item unavailable",
+      "error": "Error",
+      "network_error": "Network error"
     }
   },
   "common": {

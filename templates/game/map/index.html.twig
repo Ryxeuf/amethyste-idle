@@ -260,9 +260,15 @@
             </div>
 
             {# Quick action bar #}
-            <div {{ stimulus_controller('quickbar') }}
+            <div {{ stimulus_controller('quickbar', {
+                     labels: {
+                         item_unavailable: 'game.quickbar.item_unavailable'|trans,
+                         error: 'game.quickbar.error'|trans,
+                         network_error: 'game.quickbar.network_error'|trans,
+                     },
+                 }) }}
                  class="absolute bottom-0 left-0 right-0 pointer-events-auto flex justify-center p-1 sm:p-2"
-                 aria-label="Barre d'action rapide">
+                 aria-label="{{ 'game.quickbar.aria_label'|trans }}">
                 <div class="flex gap-1 sm:gap-1.5 bg-gray-900/90 backdrop-blur-sm rounded-lg px-2 py-1.5 border border-gray-700/50">
                     {% for i in 0..5 %}
                         <button data-quickbar-target="slot"
