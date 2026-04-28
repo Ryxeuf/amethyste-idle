@@ -678,6 +678,18 @@
       "perennity_desc": "Keep the game online and free",
       "transparency": "Amethyste is an independent project. Thank you for your support!",
       "back_to_game": "← Back to the game"
+    },
+    "character": {
+      "select": {
+        "title": "Choose a character",
+        "subtitle": "Select the character you wish to play"
+      },
+      "limit_reached": {
+        "title_full": "Character limit reached",
+        "title_short": "Limit reached",
+        "body": "You have reached the limit of %count% character%plural% per account.",
+        "back": "Back to the game"
+      }
     }
   },
   "common": {

@@ -678,6 +678,18 @@
       "perennity_desc": "Garder le jeu en ligne et gratuit",
       "transparency": "Amethyste est un projet independant. Merci pour votre soutien !",
       "back_to_game": "← Retour au jeu"
+    },
+    "character": {
+      "select": {
+        "title": "Choisir un personnage",
+        "subtitle": "Sélectionnez le personnage avec lequel vous souhaitez jouer"
+      },
+      "limit_reached": {
+        "title_full": "Limite de personnages atteinte",
+        "title_short": "Limite atteinte",
+        "body": "Vous avez atteint la limite de %count% personnage%plural% par compte.",
+        "back": "Retour au jeu"
+      }
     }
   },
   "common": {
