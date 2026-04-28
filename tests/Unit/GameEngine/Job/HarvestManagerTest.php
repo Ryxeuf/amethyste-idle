@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\SpotHarvestEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\HarvestItemGenerator;
 use App\GameEngine\Job\HarvestManager;
 use App\GameEngine\Player\PlayerActionHelper;
@@ -26,6 +27,7 @@ class HarvestManagerTest extends TestCase
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private GearHelper&MockObject $gearHelper;
     private PlayerActionHelper&MockObject $playerActionHelper;
+    private GameEventBonusProvider&MockObject $gameEventBonusProvider;
     private HarvestManager $harvestManager;
 
     protected function setUp(): void
@@ -36,6 +38,8 @@ class HarvestManagerTest extends TestCase
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->gearHelper = $this->createMock(GearHelper::class);
         $this->playerActionHelper = $this->createMock(PlayerActionHelper::class);
+        $this->gameEventBonusProvider = $this->createMock(GameEventBonusProvider::class);
+        $this->gameEventBonusProvider->method('getGatheringMultiplier')->willReturn(1.0);
 
         $this->harvestManager = new HarvestManager(
             $this->harvestItemGenerator,
@@ -44,6 +48,7 @@ class HarvestManagerTest extends TestCase
             $this->eventDispatcher,
             $this->gearHelper,
             $this->playerActionHelper,
+            $this->gameEventBonusProvider,
         );
     }
 
@@ -278,5 +283,42 @@ class HarvestManagerTest extends TestCase
         $result = $this->harvestManager->harvestResources($objectLayer, $player);
 
         $this->assertTrue($result['toolBroken']);
+    }
+
+    public function testHarvestResourcesPropagatesGatheringMultiplier(): void
+    {
+        $player = $this->createMock(Player::class);
+        $player->method('getMap')->willReturn(null);
+
+        $objectLayer = $this->createMock(ObjectLayer::class);
+        $objectLayer->method('getId')->willReturn(1);
+        $objectLayer->method('getRequiredToolType')->willReturn(null);
+
+        $objectLayerRepo = $this->createMock(EntityRepository::class);
+        $objectLayerRepo->method('find')->willReturn($objectLayer);
+        $this->entityManager->method('getRepository')->willReturn($objectLayerRepo);
+
+        $bonusProvider = $this->createMock(GameEventBonusProvider::class);
+        $bonusProvider->expects($this->once())
+            ->method('getGatheringMultiplier')
+            ->with(null)
+            ->willReturn(1.5);
+
+        $manager = new HarvestManager(
+            $this->harvestItemGenerator,
+            $this->entityManager,
+            $this->inventoryHelper,
+            $this->eventDispatcher,
+            $this->gearHelper,
+            $this->playerActionHelper,
+            $bonusProvider,
+        );
+
+        $this->harvestItemGenerator->expects($this->once())
+            ->method('generateHarvestItems')
+            ->with($objectLayer, 1.5)
+            ->willReturn([]);
+
+        $manager->harvestResources($objectLayer, $player);
     }
 }

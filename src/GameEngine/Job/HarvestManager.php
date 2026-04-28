@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\SpotHarvestEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\HarvestItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
@@ -24,6 +25,7 @@ class HarvestManager
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GearHelper $gearHelper,
         private readonly PlayerActionHelper $playerActionHelper,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -98,7 +100,8 @@ class HarvestManager
     public function harvestResources(ObjectLayer $objectLayer, ?Player $player = null, bool $flush = true): array
     {
         $objectLayer = $this->entityManager->getRepository(ObjectLayer::class)->find($objectLayer->getId());
-        $items = $this->harvestItemGenerator->generateHarvestItems($objectLayer);
+        $multiplier = $this->gameEventBonusProvider->getGatheringMultiplier($player?->getMap());
+        $items = $this->harvestItemGenerator->generateHarvestItems($objectLayer, $multiplier);
         $objectLayer->setUsedAt(new \DateTime());
 
         // Vérifier et réduire la durabilité de l'outil si nécessaire

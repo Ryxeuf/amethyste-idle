@@ -17,11 +17,14 @@ class HarvestItemGenerator
     }
 
     /**
+     * @param float $quantityMultiplier multiplicateur applique au count tire (>=1.0).
+     *                                  Utilise par les events `gathering_bonus` actifs.
+     *
      * @return PlayerItem[]
      *
      * @throws EntityNotFoundException
      */
-    public function generateHarvestItems(ObjectLayer $objectLayer): array
+    public function generateHarvestItems(ObjectLayer $objectLayer, float $quantityMultiplier = 1.0): array
     {
         if (null === $objectLayer->getItems()) {
             return [];
@@ -33,6 +36,10 @@ class HarvestItemGenerator
                 $count = random_int($itemData['min'] ?? 1, $itemData['max'] ?? 1);
             } catch (\Exception) {
                 $count = 1;
+            }
+
+            if ($quantityMultiplier !== 1.0) {
+                $count = max(1, (int) round($count * $quantityMultiplier));
             }
 
             for ($i = 0; $i < $count; ++$i) {

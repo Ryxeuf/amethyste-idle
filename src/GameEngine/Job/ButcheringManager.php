@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\ButcheringEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
@@ -21,6 +22,7 @@ class ButcheringManager
         private readonly InventoryHelper $inventoryHelper,
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly GearHelper $gearHelper,
+        private readonly GameEventBonusProvider $gameEventBonusProvider,
     ) {
     }
 
@@ -82,6 +84,10 @@ class ButcheringManager
         $baseDropCount = 1;
         $bonusChance = min(80, $toolTier * 15); // 15-60% de chance de drop bonus
 
+        // Le multiplicateur d'event `gathering_bonus` duplique chaque drop reussi.
+        $multiplier = $this->gameEventBonusProvider->getGatheringMultiplier($player->getMap());
+        $copies = max(1, (int) round($multiplier));
+
         foreach ($monsterItems as $monsterItem) {
             $dropChance = (int) ($monsterItem->getProbability() * 100);
             $roll = random_int(1, 100);
@@ -90,14 +96,16 @@ class ButcheringManager
             $adjustedChance = min(100, $dropChance + ($toolTier * 5));
 
             if ($roll <= $adjustedChance) {
-                try {
-                    $playerItem = $this->playerItemGenerator->generateFromItemId(
-                        $monsterItem->getItem()->getId()
-                    );
-                    $this->inventoryHelper->addItem($playerItem, false);
-                    $harvestedItems[] = $playerItem;
-                } catch (\Exception) {
-                    // Item non trouvé, on continue
+                for ($i = 0; $i < $copies; ++$i) {
+                    try {
+                        $playerItem = $this->playerItemGenerator->generateFromItemId(
+                            $monsterItem->getItem()->getId()
+                        );
+                        $this->inventoryHelper->addItem($playerItem, false);
+                        $harvestedItems[] = $playerItem;
+                    } catch (\Exception) {
+                        // Item non trouvé, on continue
+                    }
                 }
             }
         }

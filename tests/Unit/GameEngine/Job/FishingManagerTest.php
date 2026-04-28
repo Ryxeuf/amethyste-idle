@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Event\Map\FishingEvent;
+use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\HarvestItemGenerator;
 use App\GameEngine\Job\FishingManager;
 use App\Helper\GearHelper;
@@ -23,6 +24,7 @@ class FishingManagerTest extends TestCase
     private InventoryHelper&MockObject $inventoryHelper;
     private EventDispatcherInterface&MockObject $eventDispatcher;
     private GearHelper&MockObject $gearHelper;
+    private GameEventBonusProvider&MockObject $gameEventBonusProvider;
     private FishingManager $fishingManager;
 
     protected function setUp(): void
@@ -32,6 +34,8 @@ class FishingManagerTest extends TestCase
         $this->inventoryHelper = $this->createMock(InventoryHelper::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
         $this->gearHelper = $this->createMock(GearHelper::class);
+        $this->gameEventBonusProvider = $this->createMock(GameEventBonusProvider::class);
+        $this->gameEventBonusProvider->method('getGatheringMultiplier')->willReturn(1.0);
 
         $this->fishingManager = new FishingManager(
             $this->entityManager,
@@ -39,6 +43,7 @@ class FishingManagerTest extends TestCase
             $this->inventoryHelper,
             $this->eventDispatcher,
             $this->gearHelper,
+            $this->gameEventBonusProvider,
         );
     }
 
@@ -160,6 +165,39 @@ class FishingManagerTest extends TestCase
         $this->assertTrue($result['perfect']);
         $this->assertSame(['name' => 'Saumon', 'slug' => 'salmon'], $result['item']);
         $this->assertStringStartsWith('Parfait !', $result['message']);
+    }
+
+    public function testCompleteFishingAppliesGatheringBonusMultiplier(): void
+    {
+        $player = $this->createMock(Player::class);
+        $spot = $this->createMock(ObjectLayer::class);
+        $rod = $this->createMock(PlayerItem::class);
+        $catch1 = $this->buildCaughtItem('Truite', 'trout');
+        $catch2 = $this->buildCaughtItem('Truite', 'trout');
+
+        $this->gearHelper->method('getEquippedToolByType')->willReturn($rod);
+        $bonusProvider = $this->createMock(GameEventBonusProvider::class);
+        $bonusProvider->method('getGatheringMultiplier')->willReturn(2.0);
+
+        $manager = new FishingManager(
+            $this->entityManager,
+            $this->harvestItemGenerator,
+            $this->inventoryHelper,
+            $this->eventDispatcher,
+            $this->gearHelper,
+            $bonusProvider,
+        );
+
+        $this->harvestItemGenerator->expects($this->once())
+            ->method('generateHarvestItems')
+            ->with($spot, 2.0)
+            ->willReturn([$catch1, $catch2]);
+
+        $this->inventoryHelper->expects($this->exactly(2))->method('addItem');
+
+        $result = $manager->completeFishing($player, $spot, 35);
+
+        $this->assertTrue($result['success']);
     }
 
     public function testCompleteFishingPerfectBoundariesAreInclusive(): void
