@@ -777,6 +777,45 @@
         "from": "De :",
         "to": "A :"
       }
+    },
+    "party": {
+      "page_title": "Groupe",
+      "heading": "Groupe",
+      "invitations_heading": "Invitations de groupe",
+      "invitation": {
+        "party_label": "Groupe de %name%",
+        "invited_by": "Invite par %name%",
+        "accept": "Accepter",
+        "decline": "Decliner"
+      },
+      "leader_label": "Chef :",
+      "members_label": "Membres :",
+      "invite_heading": "Inviter un joueur",
+      "invite_placeholder": "Nom du joueur",
+      "invite": "Inviter",
+      "members_heading": "Membres",
+      "leader_badge": "Chef",
+      "transfer_title": "Transferer le leadership",
+      "transfer_button": "Chef",
+      "kick": "Expulser",
+      "disband": "Dissoudre",
+      "leave": "Quitter",
+      "create": "Creer un groupe",
+      "empty": {
+        "heading": "Vous n'etes dans aucun groupe.",
+        "hint": "Creez un groupe pour jouer avec d'autres joueurs."
+      },
+      "js": {
+        "error": "Erreur",
+        "connection_error": "Erreur de connexion",
+        "leave_confirm": "Quitter le groupe ?",
+        "disband_confirm": "Dissoudre le groupe ?",
+        "kick_confirm": "Expulser %name% ?",
+        "transfer_confirm": "Transferer le leadership a %name% ?",
+        "invite_empty": "Entrez un nom de joueur.",
+        "invite_not_found": "Joueur introuvable.",
+        "search_error": "Erreur de recherche."
+      }
     }
   },
   "common": {

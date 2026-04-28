@@ -1,7 +1,27 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.w — i18n complet du panneau de chat `/game/chat`)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.x — i18n complet de la page de groupe `/game/party`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.x : page de groupe (2026-04-28)
+
+> i18n complet de la page `/game/party` (template `templates/game/party/index.html.twig`, 203 lignes), ecran de gestion du groupe d'aventure (party). 7eme livraison de la serie 3e dediee aux pages Twig statiques (apres 3e.r `/game/support`, 3e.s `/character/{select,limit_reached}`, 3e.t `/character/create`, 3e.u `/game/messages`, 3e.v `/game/journal`, 3e.w `/game/chat`). Particularite : le template inclut un bloc `<script>` inline qui contient 9 chaines FR utilisees dans `confirm()` et `showPartyMessage()` ; toutes sont desormais injectees via une constante JS `PARTY_LABELS` initialisee depuis `'game.party.js.*'|trans|json_encode|raw`, ce qui evite l'echappement manuel et supporte les caracteres speciaux. Les 2 strings parametrees (`kick_confirm`, `transfer_confirm` avec `%name%`) sont resolues cote JS via `String.replace('%name%', name)`.
+
+### Changements
+
+- **`translations/messages.fr.json`** (+39 lignes) : nouveau namespace `game.party.*` (31 cles) couvrant : `page_title`, `heading`, `invitations_heading`, `invitation.{party_label,invited_by,accept,decline}`, `leader_label`, `members_label`, `invite_heading`, `invite_placeholder`, `invite`, `members_heading`, `leader_badge`, `transfer_title`, `transfer_button`, `kick`, `disband`, `leave`, `create`, `empty.{heading,hint}`, `js.{error,connection_error,leave_confirm,disband_confirm,kick_confirm,transfer_confirm,invite_empty,invite_not_found,search_error}`.
+- **`translations/messages.en.json`** (+39 lignes) : meme structure, traductions EN.
+- **`templates/game/party/index.html.twig`** (203 → 215 lignes) : 22 emplacements HTML modifies (block title, headings, buttons, placeholders, badges, empty state) + injection de la constante JS `PARTY_LABELS` (9 chaines `js.*`) en debut de bloc `<script>`. Les 9 strings JS (confirms et messages d'erreur) consomment desormais `PARTY_LABELS.X` au lieu de literaux FR ; `kickMember`/`transferLeader` utilisent `String.replace('%name%', name)` pour parametrer le nom du joueur.
+
+### Impact
+
+- Diff total : ~80 lignes nettes (39 FR + 39 EN + ~12 lignes nettes dans le template), sous le budget de 300 lignes.
+- Parite FR/EN maintenue : 639 cles FR = 639 cles EN (608 -> 639, +31 cles).
+- Zero impact FR (les nouvelles cles FR reproduisent strictement les libelles existants).
+- Impact EN immediat sur `/game/party` : `Party` (titre + headings), `Party invitations`, `Accept/Decline`, `Leader:/Members:`, `Invite a player`, `Player name` (placeholder), `Invite`, `Leader` (badge), `Transfer leadership`, `Kick`, `Disband`, `Leave`, `Create a party`, `You are not in any party.`, `Create a party to play with other players.`, `Leave the party?`, `Disband the party?`, `Kick %name%?`, `Transfer leadership to %name%?`, `Enter a player name.`, `Player not found.`, `Search error.` au lieu des strings FR.
+- Sous-phase independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `templates/game/party/index.html.twig`.
 
 ---
 
