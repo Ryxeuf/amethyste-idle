@@ -648,6 +648,15 @@
       "item_unavailable": "Item unavailable",
       "error": "Error",
       "network_error": "Network error"
+    },
+    "influence_notification": {
+      "influence_word": "influence",
+      "overtook_in": "overtook you in",
+      "challenge_completed": "Challenge completed",
+      "points_influence": "influence pts",
+      "no_guild": "No guild",
+      "takes_control_of": "takes control of",
+      "season": "Season"
     }
   },
   "common": {
