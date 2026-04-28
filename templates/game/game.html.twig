@@ -488,9 +488,19 @@
 
     {# ===== INFLUENCE NOTIFICATIONS (Mercure) ===== #}
     {% if app.user and app.user.player %}
-        <div data-controller="influence-notification"
-             data-influence-notification-mercure-url-value="{{ (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure') }}"
-             data-influence-notification-guild-id-value="{{ player_guild_id(app.user.player) ?? 0 }}">
+        <div {{ stimulus_controller('influence-notification', {
+                mercureUrl: (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure'),
+                guildId: player_guild_id(app.user.player) ?? 0,
+                labels: {
+                    influence_word: 'game.influence_notification.influence_word'|trans,
+                    overtook_in: 'game.influence_notification.overtook_in'|trans,
+                    challenge_completed: 'game.influence_notification.challenge_completed'|trans,
+                    points_influence: 'game.influence_notification.points_influence'|trans,
+                    no_guild: 'game.influence_notification.no_guild'|trans,
+                    takes_control_of: 'game.influence_notification.takes_control_of'|trans,
+                    season: 'game.influence_notification.season'|trans,
+                },
+            }) }}>
         </div>
     {% endif %}
 

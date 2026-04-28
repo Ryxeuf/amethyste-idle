@@ -648,6 +648,15 @@
       "item_unavailable": "Objet indisponible",
       "error": "Erreur",
       "network_error": "Erreur réseau"
+    },
+    "influence_notification": {
+      "influence_word": "influence",
+      "overtook_in": "vous a depasse en",
+      "challenge_completed": "Defi complete",
+      "points_influence": "pts influence",
+      "no_guild": "Aucune guilde",
+      "takes_control_of": "prend le controle de",
+      "season": "Saison"
     }
   },
   "common": {

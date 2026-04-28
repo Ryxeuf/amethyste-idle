@@ -9,7 +9,13 @@ export default class extends Controller {
     static values = {
         mercureUrl: String,
         guildId: { type: Number, default: 0 },
+        labels: { type: Object, default: {} },
     };
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
+    }
 
     connect() {
         this._connectMercure();
@@ -66,21 +72,25 @@ export default class extends Controller {
     _onInfluenceAwarded(data) {
         if (!window.Toast) return;
 
-        const msg = `\u2B50 +${data.pointsEarned} influence (${data.activityLabel}) \u2014 ${data.regionName}`;
+        const influenceWord = this._label('influence_word', 'influence');
+        const msg = `\u2B50 +${data.pointsEarned} ${influenceWord} (${data.activityLabel}) \u2014 ${data.regionName}`;
         window.Toast.show('info', msg, 5000);
     }
 
     _onInfluenceOvertake(data) {
         if (!window.Toast) return;
 
-        const msg = `\u26A0\uFE0F ${data.overtakenByGuild} [${data.overtakenByTag}] vous a depasse en ${data.regionName} !`;
+        const verb = this._label('overtook_in', 'vous a depasse en');
+        const msg = `\u26A0\uFE0F ${data.overtakenByGuild} [${data.overtakenByTag}] ${verb} ${data.regionName} !`;
         window.Toast.show('warning', msg, 8000);
     }
 
     _onChallengeCompleted(data) {
         if (!window.Toast) return;
 
-        const msg = `Defi complete : "${data.challengeTitle}" (+${data.bonusPoints} pts influence)`;
+        const label = this._label('challenge_completed', 'Defi complete');
+        const ptsLabel = this._label('points_influence', 'pts influence');
+        const msg = `${label} : "${data.challengeTitle}" (+${data.bonusPoints} ${ptsLabel})`;
         window.Toast.show('success', msg, 8000);
     }
 
@@ -89,9 +99,13 @@ export default class extends Controller {
 
         if (!data.changes || data.changes.length === 0) return;
 
+        const noGuild = this._label('no_guild', 'Aucune guilde');
+        const verb = this._label('takes_control_of', 'prend le controle de');
+        const seasonLabel = this._label('season', 'Saison');
+
         for (const change of data.changes) {
-            const guild = change.guild || 'Aucune guilde';
-            const msg = `\uD83C\uDFF0 ${guild} prend le controle de ${change.region} (Saison ${data.seasonNumber})`;
+            const guild = change.guild || noGuild;
+            const msg = `\uD83C\uDFF0 ${guild} ${verb} ${change.region} (${seasonLabel} ${data.seasonNumber})`;
             window.Toast.show('success', msg, 10000);
         }
     }
