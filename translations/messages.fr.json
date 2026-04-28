@@ -657,6 +657,27 @@
       "no_guild": "Aucune guilde",
       "takes_control_of": "prend le controle de",
       "season": "Saison"
+    },
+    "support": {
+      "page_title": "Soutenir le projet",
+      "heading": "Soutenir Amethyste",
+      "subtitle": "Aidez-nous a faire vivre le projet",
+      "description_html": "Amethyste est un jeu <strong class=\"text-purple-400\">100% gratuit</strong> et sans pay-to-win. Pas de publicite, pas de loot boxes, pas d'avantage payant en combat. Si le projet vous plait, vous pouvez nous soutenir pour financer les serveurs et le developpement de nouvelles fonctionnalites.",
+      "no_advantage_html": "Votre soutien ne donne <strong class=\"text-gray-300\">aucun avantage en jeu</strong>. C'est un don, pas un achat.",
+      "section_donate": "Faire un don",
+      "kofi_subtitle": "Don ponctuel ou recurrent",
+      "github_subtitle": "Sponsoring mensuel",
+      "section_community": "Rejoindre la communaute",
+      "discord_subtitle": "Discuter, s'entraider, suivre l'actualite",
+      "section_what_for": "A quoi servent les dons ?",
+      "servers": "Serveurs",
+      "servers_desc": "Hebergement et infrastructure",
+      "content": "Contenu",
+      "content_desc": "Nouvelles zones, quetes, monstres",
+      "perennity": "Perennite",
+      "perennity_desc": "Garder le jeu en ligne et gratuit",
+      "transparency": "Amethyste est un projet independant. Merci pour votre soutien !",
+      "back_to_game": "← Retour au jeu"
     }
   },
   "common": {

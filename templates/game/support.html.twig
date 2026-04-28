@@ -1,6 +1,6 @@
 {% extends 'game/game.html.twig' %}
 
-{% block title %}Soutenir le projet{% endblock %}
+{% block title %}{{ 'game.support.page_title'|trans }}{% endblock %}
 
 {% block game_content %}
 <div class="game-page">
@@ -9,21 +9,18 @@
         {# Header #}
         <div class="game-card">
             <div class="game-card-header">
-                <h1 class="text-base sm:text-xl font-bold text-white">Soutenir Amethyste</h1>
-                <p class="text-purple-200/70 text-xs sm:text-sm mt-0.5">Aidez-nous a faire vivre le projet</p>
+                <h1 class="text-base sm:text-xl font-bold text-white">{{ 'game.support.heading'|trans }}</h1>
+                <p class="text-purple-200/70 text-xs sm:text-sm mt-0.5">{{ 'game.support.subtitle'|trans }}</p>
             </div>
             <div class="p-4 sm:p-6 space-y-4">
                 <p class="text-gray-300 text-sm leading-relaxed">
-                    Amethyste est un jeu <strong class="text-purple-400">100% gratuit</strong> et sans pay-to-win.
-                    Pas de publicite, pas de loot boxes, pas d'avantage payant en combat.
-                    Si le projet vous plait, vous pouvez nous soutenir pour financer les serveurs
-                    et le developpement de nouvelles fonctionnalites.
+                    {{ 'game.support.description_html'|trans|raw }}
                 </p>
                 <div class="flex items-center gap-2 text-xs text-gray-500 bg-gray-800/50 rounded-lg px-3 py-2 border border-gray-700/50">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span>Votre soutien ne donne <strong class="text-gray-300">aucun avantage en jeu</strong>. C'est un don, pas un achat.</span>
+                    <span>{{ 'game.support.no_advantage_html'|trans|raw }}</span>
                 </div>
             </div>
         </div>
@@ -31,7 +28,7 @@
         {# Donation options #}
         <div class="game-card">
             <div class="p-4 sm:p-6">
-                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">Faire un don</h2>
+                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">{{ 'game.support.section_donate'|trans }}</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {# Ko-fi #}
                     <a href="https://ko-fi.com/amethyste" target="_blank" rel="noopener noreferrer"
@@ -41,7 +38,7 @@
                         </div>
                         <div class="min-w-0">
                             <span class="text-sm font-medium text-white group-hover:text-amber-400 transition-colors">Ko-fi</span>
-                            <p class="text-xs text-gray-400">Don ponctuel ou recurrent</p>
+                            <p class="text-xs text-gray-400">{{ 'game.support.kofi_subtitle'|trans }}</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 group-hover:text-gray-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -58,7 +55,7 @@
                         </div>
                         <div class="min-w-0">
                             <span class="text-sm font-medium text-white group-hover:text-pink-400 transition-colors">GitHub Sponsors</span>
-                            <p class="text-xs text-gray-400">Sponsoring mensuel</p>
+                            <p class="text-xs text-gray-400">{{ 'game.support.github_subtitle'|trans }}</p>
                         </div>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 group-hover:text-gray-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -71,7 +68,7 @@
         {# Community #}
         <div class="game-card">
             <div class="p-4 sm:p-6">
-                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">Rejoindre la communaute</h2>
+                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">{{ 'game.support.section_community'|trans }}</h2>
                 <a href="https://discord.gg/pe8Pw5Wsg" target="_blank" rel="noopener noreferrer"
                    class="flex items-center gap-3 p-4 rounded-xl border border-gray-700/50 bg-gray-800/50 hover:bg-gray-700/50 hover:border-indigo-500/30 transition-all group">
                     <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center">
@@ -81,7 +78,7 @@
                     </div>
                     <div class="min-w-0">
                         <span class="text-sm font-medium text-white group-hover:text-indigo-400 transition-colors">Discord</span>
-                        <p class="text-xs text-gray-400">Discuter, s'entraider, suivre l'actualite</p>
+                        <p class="text-xs text-gray-400">{{ 'game.support.discord_subtitle'|trans }}</p>
                     </div>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600 group-hover:text-gray-400 ml-auto flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -93,22 +90,22 @@
         {# What your donation pays for #}
         <div class="game-card">
             <div class="p-4 sm:p-6">
-                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">A quoi servent les dons ?</h2>
+                <h2 class="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-4">{{ 'game.support.section_what_for'|trans }}</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div class="text-center p-3 rounded-lg bg-gray-800/30">
                         <div class="text-2xl mb-1">🖥️</div>
-                        <span class="text-xs font-medium text-gray-300">Serveurs</span>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Hebergement et infrastructure</p>
+                        <span class="text-xs font-medium text-gray-300">{{ 'game.support.servers'|trans }}</span>
+                        <p class="text-[10px] text-gray-500 mt-0.5">{{ 'game.support.servers_desc'|trans }}</p>
                     </div>
                     <div class="text-center p-3 rounded-lg bg-gray-800/30">
                         <div class="text-2xl mb-1">🎨</div>
-                        <span class="text-xs font-medium text-gray-300">Contenu</span>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Nouvelles zones, quetes, monstres</p>
+                        <span class="text-xs font-medium text-gray-300">{{ 'game.support.content'|trans }}</span>
+                        <p class="text-[10px] text-gray-500 mt-0.5">{{ 'game.support.content_desc'|trans }}</p>
                     </div>
                     <div class="text-center p-3 rounded-lg bg-gray-800/30">
                         <div class="text-2xl mb-1">🛡️</div>
-                        <span class="text-xs font-medium text-gray-300">Perennite</span>
-                        <p class="text-[10px] text-gray-500 mt-0.5">Garder le jeu en ligne et gratuit</p>
+                        <span class="text-xs font-medium text-gray-300">{{ 'game.support.perennity'|trans }}</span>
+                        <p class="text-[10px] text-gray-500 mt-0.5">{{ 'game.support.perennity_desc'|trans }}</p>
                     </div>
                 </div>
             </div>
@@ -116,9 +113,9 @@
 
         {# Transparency #}
         <div class="text-center text-xs text-gray-500 pb-4">
-            <p>Amethyste est un projet independant. Merci pour votre soutien !</p>
+            <p>{{ 'game.support.transparency'|trans }}</p>
             <p class="mt-1">
-                <a href="{{ path('app_game') }}" class="text-purple-400 hover:text-purple-300 transition-colors">← Retour au jeu</a>
+                <a href="{{ path('app_game') }}" class="text-purple-400 hover:text-purple-300 transition-colors">{{ 'game.support.back_to_game'|trans }}</a>
             </p>
         </div>
     </div>
