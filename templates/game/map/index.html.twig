@@ -23,10 +23,36 @@
             </div>
 
             {# Harvest overlay #}
-            <div {{ stimulus_controller('harvest') }}
+            <div {{ stimulus_controller('harvest', {
+                     labels: {
+                         spotFallback: 'game.harvest.spot_fallback'|trans,
+                         loadError: 'game.harvest.load_error'|trans,
+                         connectionError: 'game.harvest.connection_error'|trans,
+                         harvesting: 'game.harvest.harvesting'|trans,
+                         cannotHarvest: 'game.harvest.cannot_harvest'|trans,
+                         emptyResult: 'game.harvest.empty_result'|trans,
+                         harvestDefault: 'game.harvest.action.default'|trans,
+                         harvestSuccess: 'game.harvest.success'|trans,
+                         toolBroken: 'game.harvest.tool_broken'|trans,
+                         skillRequired: 'game.harvest.skill_required'|trans,
+                         skillMissing: 'game.harvest.skill_missing'|trans,
+                         skillInsufficient: 'game.harvest.skill_insufficient'|trans,
+                         ready: 'game.harvest.ready'|trans,
+                         respawn: 'game.harvest.respawn'|trans,
+                         'toolRequired.pickaxe': 'game.harvest.tool_required.pickaxe'|trans,
+                         'toolRequired.sickle': 'game.harvest.tool_required.sickle'|trans,
+                         'toolRequired.fishing_rod': 'game.harvest.tool_required.fishing_rod'|trans,
+                         'toolRequired.skinning_knife': 'game.harvest.tool_required.skinning_knife'|trans,
+                         'toolRequired.default': 'game.harvest.tool_required.default'|trans,
+                         'action.pickaxe': 'game.harvest.action.pickaxe'|trans,
+                         'action.sickle': 'game.harvest.action.sickle'|trans,
+                         'action.fishing_rod': 'game.harvest.action.fishing_rod'|trans,
+                         'action.skinning_knife': 'game.harvest.action.skinning_knife'|trans,
+                     },
+                 }) }}
                  data-action="map-pixi:harvestSpot@document->harvest#open map-pixi:playerMoveStart@document->harvest#onPlayerMove"
                  class="absolute inset-0 pointer-events-none flex items-start justify-center p-2 sm:p-4"
-                 aria-label="Panneau de recolte">
+                 aria-label="{{ 'game.harvest.panel_aria'|trans }}">
                 <div data-harvest-target="panel"
                      class="hidden pointer-events-auto w-full max-w-sm bg-gray-900/95 border border-amber-500/60 rounded-2xl shadow-2xl backdrop-blur-sm mt-2 overflow-hidden">
 

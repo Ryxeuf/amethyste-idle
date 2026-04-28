@@ -18,6 +18,9 @@ export default class extends Controller {
         'resultSection', 'message', 'resultList',
         'xpGain', 'xpGainText',
     ];
+    static values = {
+        labels: { type: Object, default: {} },
+    };
 
     connect() {
         this._currentSpot = null;
@@ -25,6 +28,11 @@ export default class extends Controller {
         this._cooldownTimer = null;
         this._boundKeyHandler = this._handleKeydown.bind(this);
         console.warn('[harvest] Controller connected ✓');
+    }
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
     }
 
     disconnect() {
@@ -42,7 +50,7 @@ export default class extends Controller {
         this._resetPanel();
 
         // Show panel with loading state
-        this.spotNameTarget.textContent = spot.name || 'Spot de récolte';
+        this.spotNameTarget.textContent = spot.name || this._label('spotFallback', 'Spot de récolte');
         this.spotIconTarget.textContent = this._spotEmoji(spot.toolType);
         this.panelTarget.classList.remove('hidden');
         this.loadingTarget.classList.remove('hidden');
@@ -73,13 +81,13 @@ export default class extends Controller {
             console.debug('[harvest] spotInfo response:', data);
 
             if (!resp.ok) {
-                this._showError(data.error || 'Impossible de charger les détails.');
+                this._showError(data.error || this._label('loadError', 'Impossible de charger les détails.'));
                 return;
             }
 
             this._populatePanel(data, spot);
         } catch {
-            this._showError('Erreur de connexion.');
+            this._showError(this._label('connectionError', 'Erreur de connexion.'));
         }
     }
 
@@ -117,7 +125,7 @@ export default class extends Controller {
 
         this._harvesting = true;
         this.harvestBtnTarget.disabled = true;
-        this.harvestBtnTextTarget.textContent = 'Récolte en cours…';
+        this.harvestBtnTextTarget.textContent = this._label('harvesting', 'Récolte en cours…');
 
         // Clear previous results
         this._hideResults();
@@ -145,19 +153,20 @@ export default class extends Controller {
 
             if (!resp.ok) {
                 console.debug('[harvest] harvest POST failed:', result);
-                this._showResultMessage(result.error || 'Impossible de récolter ici.', 'error');
+                const errorText = result.error || this._label('cannotHarvest', 'Impossible de récolter ici.');
+                this._showResultMessage(errorText, 'error');
                 // Show toast for harvest error
                 if (window.Toast) {
-                    window.Toast.show('error', result.error || 'Impossible de récolter ici.', 6000);
+                    window.Toast.show('error', errorText, 6000);
                 }
             } else if (result.success) {
                 this._showHarvestResults(result);
                 this.dispatch('harvestSuccess', { detail: { items: result.items || [], spotId } });
             } else {
-                this._showResultMessage('Aucune ressource obtenue.', 'empty');
+                this._showResultMessage(this._label('emptyResult', 'Aucune ressource obtenue.'), 'empty');
             }
         } catch {
-            this._showResultMessage('Erreur de connexion.', 'error');
+            this._showResultMessage(this._label('connectionError', 'Erreur de connexion.'), 'error');
         } finally {
             this._harvesting = false;
             this.harvestBtnTarget.disabled = false;
@@ -180,7 +189,7 @@ export default class extends Controller {
         this.itemListTarget.innerHTML = '';
         this.progressBarTarget.style.transform = 'scaleX(0)';
         this.harvestBtnTarget.disabled = false;
-        this.harvestBtnTextTarget.textContent = 'Récolter';
+        this.harvestBtnTextTarget.textContent = this._label('harvestDefault', 'Récolter');
     }
 
     _populatePanel(data, spot) {
@@ -281,7 +290,7 @@ export default class extends Controller {
         this.resultSectionTarget.classList.remove('hidden');
 
         // Message
-        this._showResultMessage('Récolte réussie !', 'success');
+        this._showResultMessage(this._label('harvestSuccess', 'Récolte réussie !'), 'success');
 
         // Items with staggered animation
         this.resultListTarget.innerHTML = '';
@@ -313,7 +322,8 @@ export default class extends Controller {
         if (result.toolBroken) {
             const warn = document.createElement('div');
             warn.className = 'flex items-center gap-1 text-red-400 text-xs font-bold mt-1 animate-pulse';
-            warn.innerHTML = '<span>🔨</span><span>Votre outil est brisé !</span>';
+            const brokenLabel = this._label('toolBroken', 'Votre outil est brisé !');
+            warn.innerHTML = `<span>🔨</span><span>${brokenLabel}</span>`;
             this.resultListTarget.appendChild(warn);
         }
 
@@ -364,11 +374,11 @@ export default class extends Controller {
         this.loadingTarget.classList.add('hidden');
         this.contentTarget.classList.remove('hidden');
         this.harvestBtnTarget.disabled = true;
-        this.harvestBtnTextTarget.textContent = 'Compétence requise';
-        this._showResultMessage('Vous n\'avez pas la compétence pour récolter ce spot.', 'error');
+        this.harvestBtnTextTarget.textContent = this._label('skillRequired', 'Compétence requise');
+        this._showResultMessage(this._label('skillMissing', 'Vous n\'avez pas la compétence pour récolter ce spot.'), 'error');
         console.debug('[harvest] canHarvest=false — skill missing for this spot');
         if (window.Toast) {
-            window.Toast.show('warning', 'Compétence insuffisante pour récolter ce spot.', 6000);
+            window.Toast.show('warning', this._label('skillInsufficient', 'Compétence insuffisante pour récolter ce spot.'), 6000);
         }
     }
 
@@ -395,7 +405,7 @@ export default class extends Controller {
                 this.harvestBtnTarget.disabled = false;
                 this.harvestBtnTextTarget.textContent = this._harvestLabel(this._currentSpot?.toolType);
                 this.cooldownBarTarget.style.width = '100%';
-                this.cooldownTextTarget.textContent = 'Prêt !';
+                this.cooldownTextTarget.textContent = this._label('ready', 'Prêt !');
                 this.cooldownSectionTarget.classList.add('hidden');
                 this._hideResults();
                 return;
@@ -403,7 +413,7 @@ export default class extends Controller {
             const pct = ((total - remaining) / total) * 100;
             this.cooldownBarTarget.style.width = `${pct}%`;
             this.cooldownTextTarget.textContent = `${remaining}s`;
-            this.harvestBtnTextTarget.textContent = `Respawn ${remaining}s`;
+            this.harvestBtnTextTarget.textContent = `${this._label('respawn', 'Respawn')} ${remaining}s`;
             remaining--;
             this._cooldownTimer = setTimeout(update, 1000);
         };
@@ -439,11 +449,23 @@ export default class extends Controller {
     }
 
     _toolLabel(toolType) {
-        return { pickaxe: 'Pioche requise', sickle: 'Faucille requise', fishing_rod: 'Canne à pêche requise', skinning_knife: 'Couteau de dépeçage requis' }[toolType] || 'Outil requis';
+        const map = {
+            pickaxe: this._label('toolRequired.pickaxe', 'Pioche requise'),
+            sickle: this._label('toolRequired.sickle', 'Faucille requise'),
+            fishing_rod: this._label('toolRequired.fishing_rod', 'Canne à pêche requise'),
+            skinning_knife: this._label('toolRequired.skinning_knife', 'Couteau de dépeçage requis'),
+        };
+        return map[toolType] || this._label('toolRequired.default', 'Outil requis');
     }
 
     _harvestLabel(toolType) {
-        return { pickaxe: 'Miner', sickle: 'Récolter', fishing_rod: 'Pêcher', skinning_knife: 'Dépecer' }[toolType] || 'Récolter';
+        const map = {
+            pickaxe: this._label('action.pickaxe', 'Miner'),
+            sickle: this._label('action.sickle', 'Récolter'),
+            fishing_rod: this._label('action.fishing_rod', 'Pêcher'),
+            skinning_knife: this._label('action.skinning_knife', 'Dépecer'),
+        };
+        return map[toolType] || this._label('action.default', 'Récolter');
     }
 
     _itemEmoji(slug) {

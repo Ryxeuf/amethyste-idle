@@ -569,6 +569,36 @@
         "purchase": "Achat marchand",
         "achievement": "Succes"
       }
+    },
+    "harvest": {
+      "panel_aria": "Panneau de recolte",
+      "spot_fallback": "Spot de récolte",
+      "load_error": "Impossible de charger les détails.",
+      "connection_error": "Erreur de connexion.",
+      "harvesting": "Récolte en cours…",
+      "cannot_harvest": "Impossible de récolter ici.",
+      "empty_result": "Aucune ressource obtenue.",
+      "success": "Récolte réussie !",
+      "tool_broken": "Votre outil est brisé !",
+      "skill_required": "Compétence requise",
+      "skill_missing": "Vous n'avez pas la compétence pour récolter ce spot.",
+      "skill_insufficient": "Compétence insuffisante pour récolter ce spot.",
+      "ready": "Prêt !",
+      "respawn": "Respawn",
+      "tool_required": {
+        "pickaxe": "Pioche requise",
+        "sickle": "Faucille requise",
+        "fishing_rod": "Canne à pêche requise",
+        "skinning_knife": "Couteau de dépeçage requis",
+        "default": "Outil requis"
+      },
+      "action": {
+        "pickaxe": "Miner",
+        "sickle": "Récolter",
+        "fishing_rod": "Pêcher",
+        "skinning_knife": "Dépecer",
+        "default": "Récolter"
+      }
     }
   },
   "common": {
