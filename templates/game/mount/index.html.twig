@@ -1,0 +1,62 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.mount.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.mount.title'|trans }}</h2>
+            <p class="text-gray-400 text-xs mt-0.5">{{ 'game.mount.subtitle'|trans }}</p>
+        </div>
+
+        <div class="game-card-body">
+            {% if mounts is empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 text-sm">{{ 'game.mount.empty'|trans }}</p>
+                </div>
+            {% else %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {% for mount in mounts %}
+                        <article class="bg-gray-800/60 border border-gray-700 rounded-lg p-3 flex gap-3"
+                                 aria-label="{{ mount|localized_mount_name }}">
+                            <div class="flex-shrink-0 w-12 h-12 bg-gray-900/60 rounded-md overflow-hidden flex items-center justify-center"
+                                 aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-sm font-semibold text-white truncate">{{ mount|localized_mount_name }}</h3>
+                                <p class="text-[11px] text-gray-400 mt-0.5 line-clamp-2">{{ mount|localized_mount_description }}</p>
+                                <div class="flex flex-wrap gap-1.5 mt-2 text-[10px]">
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-purple-900/40 border border-purple-700/50 text-purple-200 px-2 py-0.5"
+                                          title="{{ 'game.mount.speed_bonus'|trans }}">
+                                        +{{ mount.speedBonus }}%
+                                    </span>
+                                    <span class="inline-flex items-center gap-1 rounded-full bg-gray-700/60 border border-gray-600 text-gray-200 px-2 py-0.5"
+                                          title="{{ 'game.mount.required_level'|trans }}">
+                                        {{ 'game.mount.level_short'|trans({'%level%': mount.requiredLevel}) }}
+                                    </span>
+                                    {% set obtentionKey = obtentionLabels[mount.obtentionType] ?? null %}
+                                    {% if obtentionKey %}
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-amber-900/30 border border-amber-700/40 text-amber-200 px-2 py-0.5">
+                                            {{ obtentionKey|trans }}
+                                        </span>
+                                    {% endif %}
+                                    {% if mount.gilCost is not null %}
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-200 px-2 py-0.5"
+                                              title="{{ 'game.mount.gil_cost'|trans }}">
+                                            {{ mount.gilCost }} {{ 'game.mount.gil'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

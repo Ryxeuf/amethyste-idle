@@ -54,6 +54,7 @@
     "nav": {
       "dashboard": "Dashboard",
       "inventory": "Inventory",
+      "mounts": "Mounts",
       "quests": "Quests",
       "map": "Map",
       "shop": "Shop",
@@ -552,6 +553,22 @@
       "type_resource": "Resource",
       "type_stuff": "Material",
       "type_food": "Food"
+    },
+    "mount": {
+      "title": "Mount catalog",
+      "subtitle": "Discover the mounts of the world and how to obtain them.",
+      "empty": "No mounts available at the moment.",
+      "speed_bonus": "Speed bonus",
+      "required_level": "Required level",
+      "level_short": "Lv %level%",
+      "gil_cost": "Gil cost",
+      "gil": "gils",
+      "obtention": {
+        "quest": "Quest reward",
+        "drop": "Rare drop",
+        "purchase": "Merchant purchase",
+        "achievement": "Achievement"
+      }
     }
   },
   "common": {

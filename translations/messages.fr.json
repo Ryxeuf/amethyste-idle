@@ -54,6 +54,7 @@
     "nav": {
       "dashboard": "Tableau de bord",
       "inventory": "Inventaire",
+      "mounts": "Montures",
       "quests": "Quêtes",
       "map": "Carte",
       "shop": "Boutique",
@@ -552,6 +553,22 @@
       "type_resource": "Ressource",
       "type_stuff": "Matériau",
       "type_food": "Nourriture"
+    },
+    "mount": {
+      "title": "Catalogue des montures",
+      "subtitle": "Decouvrez les montures du monde et leurs conditions d'obtention.",
+      "empty": "Aucune monture disponible pour le moment.",
+      "speed_bonus": "Bonus de vitesse",
+      "required_level": "Niveau requis",
+      "level_short": "Niv. %level%",
+      "gil_cost": "Cout en gils",
+      "gil": "gils",
+      "obtention": {
+        "quest": "Recompense de quete",
+        "drop": "Drop rare",
+        "purchase": "Achat marchand",
+        "achievement": "Succes"
+      }
     }
   },
   "common": {
