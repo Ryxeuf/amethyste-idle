@@ -1,7 +1,29 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.v — i18n complet du journal de bord `/game/journal`)
+> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.w — i18n complet du panneau de chat `/game/chat`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.w : panneau de chat (2026-04-28)
+
+> i18n complet du panneau de chat `/game/chat` (template `templates/game/chat/index.html.twig`, 133 lignes), discussion temps-reel multi-canaux (general / map / guild / private) base sur Mercure SSE. 6eme livraison de la serie 3e dediee aux pages Twig statiques (apres 3e.r `/game/support`, 3e.s `/character/{select,limit_reached}`, 3e.t `/character/create`, 3e.u `/game/messages`, 3e.v `/game/journal`).
+>
+> Limite : ne couvre pas les strings du controleur Stimulus `chat_controller.js` (notamment `Erreur lors de l'envoi.` et `[message supprime]`) qui seront prises en charge dans une sous-phase ulterieure dediee aux notifications client (pattern 2d-2i).
+
+### Changements
+
+- **`translations/messages.fr.json`** (+13 lignes) : nouveau namespace `game.chat.{page_title,tabs.{general,map,guild,private},search_placeholder,private_empty,input_placeholder,send}` (9 cles).
+- **`translations/messages.en.json`** (+13 lignes) : meme structure, traductions EN. `Chat - Amethyst` (sans le `e` final) pour le `page_title`.
+- **`templates/game/chat/index.html.twig`** (~9 emplacements modifies, 133 lignes au total) : `block title`, les 4 onglets `general/map/guild/private`, les 2 placeholders d'input (`search_placeholder` + `input_placeholder`), le bouton submit `send` et l'etat vide des messages prives. Le suffixe `(nom de la carte)` ajoute a l'onglet `map` continue d'utiliser le filter `|localized_map_name` (deja livre par 3e.n).
+
+### Impact
+
+- Diff total : ~50 lignes ajoutees + ~9 modifications, sous le budget de 300 lignes.
+- Parite FR/EN maintenue : 608 cles FR = 608 cles EN.
+- Zero impact FR (les nouvelles cles FR reproduisent strictement les libelles existants).
+- Impact EN immediat sur `/game/chat` : `General` / `Map` / `Guild` / `Private messages` (onglets), `Search for a player...` / `Type a message...` (placeholders), `Send` (bouton) et `Select a player to start a conversation` (etat vide) au lieu des strings FR.
+- Sous-phase independante des 15 PR i18n / avatar / mounts / events en vol : aucune ne touche `templates/game/chat/index.html.twig`.
 
 ---
 

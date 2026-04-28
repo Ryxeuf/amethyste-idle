@@ -714,6 +714,19 @@
         }
       }
     },
+    "chat": {
+      "page_title": "Chat - Amethyst",
+      "tabs": {
+        "general": "General",
+        "map": "Map",
+        "guild": "Guild",
+        "private": "Private messages"
+      },
+      "search_placeholder": "Search for a player...",
+      "private_empty": "Select a player to start a conversation",
+      "input_placeholder": "Type a message...",
+      "send": "Send"
+    },
     "journal": {
       "title": "Logbook",
       "entries_count": "%count% entr%plural%",
