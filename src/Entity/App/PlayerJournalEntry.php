@@ -33,13 +33,13 @@ class PlayerJournalEntry
     ];
 
     public const TYPE_LABELS = [
-        self::TYPE_COMBAT_VICTORY => 'Victoire',
-        self::TYPE_COMBAT_DEFEAT => 'Defaite',
-        self::TYPE_QUEST_COMPLETED => 'Quete',
-        self::TYPE_CRAFT => 'Artisanat',
-        self::TYPE_GATHERING => 'Recolte',
-        self::TYPE_DUNGEON => 'Donjon',
-        self::TYPE_DOMAIN_LEVEL => 'Progression',
+        self::TYPE_COMBAT_VICTORY => 'game.journal.type.combat_victory',
+        self::TYPE_COMBAT_DEFEAT => 'game.journal.type.combat_defeat',
+        self::TYPE_QUEST_COMPLETED => 'game.journal.type.quest_completed',
+        self::TYPE_CRAFT => 'game.journal.type.craft',
+        self::TYPE_GATHERING => 'game.journal.type.gathering',
+        self::TYPE_DUNGEON => 'game.journal.type.dungeon',
+        self::TYPE_DOMAIN_LEVEL => 'game.journal.type.domain_level',
     ];
 
     public const TYPE_ICONS = [

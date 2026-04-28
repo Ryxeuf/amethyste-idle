@@ -714,6 +714,29 @@
         }
       }
     },
+    "journal": {
+      "title": "Logbook",
+      "entries_count": "%count% entr%plural%",
+      "filter_all": "All",
+      "type": {
+        "combat_victory": "Victory",
+        "combat_defeat": "Defeat",
+        "quest_completed": "Quest",
+        "craft": "Craft",
+        "gathering": "Gathering",
+        "dungeon": "Dungeon",
+        "domain_level": "Progression"
+      },
+      "empty": {
+        "heading": "No entries in your logbook yet.",
+        "hint": "Your exploits will appear here as you adventure."
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page %page%/%max%"
+      }
+    },
     "messages": {
       "back": "Back",
       "compose": {
