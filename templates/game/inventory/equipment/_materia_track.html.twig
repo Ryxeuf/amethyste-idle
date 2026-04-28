@@ -2,7 +2,26 @@
 {% set ctx = materiaTrackContext|default('modify') %}
 {% set emptyMateriaSlots = playerItem.slots|filter(s => s.itemSet is null) %}
 <div class="materia-slots-track ff7-materia-track">
-    <div class="materia-slots-bar" data-controller="materia-slot">
+    <div class="materia-slots-bar" {{ stimulus_controller('materia-slot', {
+        labels: {
+            empty_slot: 'game.inventory.materia_slot.empty_slot'|trans,
+            element_required: 'game.inventory.materia_slot.element_required'|trans,
+            level_short: 'game.inventory.materia_slot.level_short'|trans,
+            max_level: 'game.inventory.materia_slot.max_level'|trans,
+            spell_label: 'game.inventory.materia_slot.spell_label'|trans,
+            bonus_xp: 'game.inventory.materia_slot.bonus_xp'|trans,
+            bonus_synergy: 'game.inventory.materia_slot.bonus_synergy'|trans,
+            'element.fire': 'game.inventory.element.fire'|trans,
+            'element.water': 'game.inventory.element.water'|trans,
+            'element.earth': 'game.inventory.element.earth'|trans,
+            'element.air': 'game.inventory.element.air'|trans,
+            'element.light': 'game.inventory.element.light'|trans,
+            'element.dark': 'game.inventory.element.dark'|trans,
+            'element.metal': 'game.inventory.element.metal'|trans,
+            'element.beast': 'game.inventory.element.beast'|trans,
+            'element.none': 'game.inventory.element.none'|trans,
+        },
+    }) }}>
         {% if emptyMateriaSlots is not empty %}
             {% set firstEmptySlot = emptyMateriaSlots|first %}
             {% if ctx == 'list' %}

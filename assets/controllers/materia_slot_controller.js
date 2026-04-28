@@ -8,6 +8,14 @@ import { Controller } from '@hotwired/stimulus';
  */
 export default class extends Controller {
     static targets = ['orb'];
+    static values = {
+        labels: { type: Object, default: {} },
+    };
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
+    }
 
     connect() {
         this._isMobile = window.matchMedia('(hover: none)').matches;
@@ -185,7 +193,7 @@ export default class extends Controller {
 
         // Name
         panel.querySelector('.materia-slot-tooltip__name').textContent =
-            isFilled ? d.materiaName : 'Slot vide';
+            isFilled ? d.materiaName : this._label('empty_slot', 'Slot vide');
 
         // Element
         const elemEl = panel.querySelector('.materia-slot-tooltip__element');
@@ -197,7 +205,7 @@ export default class extends Controller {
         } else {
             const slotElem = d.slotElement;
             if (slotElem && slotElem !== 'none') {
-                elemEl.textContent = 'Élément requis : ' + d.slotElementLabel;
+                elemEl.textContent = this._label('element_required', 'Élément requis : ') + d.slotElementLabel;
                 elemEl.className = 'materia-slot-tooltip__element ' + this._elementTextColor(slotElem);
                 elemEl.style.display = '';
             } else {
@@ -212,9 +220,9 @@ export default class extends Controller {
 
         if (isFilled) {
             const lvl = d.materiaLevel;
-            levelEl.textContent = 'Niv. ' + lvl + '/5';
+            levelEl.textContent = this._label('level_short', 'Niv. ') + lvl + '/5';
             if (parseInt(lvl) >= 5) {
-                xpEl.textContent = 'MAX';
+                xpEl.textContent = this._label('max_level', 'MAX');
                 xpBar.style.width = '100%';
             } else {
                 xpEl.textContent = d.materiaXp + '/' + d.materiaXpNext + ' XP';
@@ -232,7 +240,7 @@ export default class extends Controller {
         // Spell
         const spellEl = panel.querySelector('.materia-slot-tooltip__spell');
         if (isFilled && d.materiaSpell) {
-            spellEl.innerHTML = '<span class="text-gray-500">Sort :</span> ' + this._esc(d.materiaSpell);
+            spellEl.innerHTML = '<span class="text-gray-500">' + this._label('spell_label', 'Sort :') + '</span> ' + this._esc(d.materiaSpell);
             if (d.materiaSpellDesc) {
                 spellEl.innerHTML += '<br><span class="text-[10px] text-gray-600">' + this._esc(d.materiaSpellDesc) + '</span>';
             }
@@ -246,10 +254,10 @@ export default class extends Controller {
         bonusesEl.innerHTML = '';
         if (isFilled) {
             if (d.materiaMatch === '1') {
-                bonusesEl.innerHTML += '<div class="materia-slot-tooltip__bonus materia-slot-tooltip__bonus--match">+25% XP — Bonus élémentaire</div>';
+                bonusesEl.innerHTML += '<div class="materia-slot-tooltip__bonus materia-slot-tooltip__bonus--match">' + this._label('bonus_xp', '+25% XP — Bonus élémentaire') + '</div>';
             }
             if (d.materiaSynergy === '1') {
-                bonusesEl.innerHTML += '<div class="materia-slot-tooltip__bonus materia-slot-tooltip__bonus--synergy">+15% Dégâts — Synergie liée</div>';
+                bonusesEl.innerHTML += '<div class="materia-slot-tooltip__bonus materia-slot-tooltip__bonus--synergy">' + this._label('bonus_synergy', '+15% Dégâts — Synergie liée') + '</div>';
             }
         }
 
@@ -262,8 +270,8 @@ export default class extends Controller {
     // ---- Helpers ----
 
     _elementLabel(e) {
-        const map = { fire: 'Feu', water: 'Eau', earth: 'Terre', air: 'Air', light: 'Lumière', dark: 'Ténèbres', metal: 'Métal', beast: 'Bête', none: '—' };
-        return map[e] || e;
+        const fallbacks = { fire: 'Feu', water: 'Eau', earth: 'Terre', air: 'Air', light: 'Lumière', dark: 'Ténèbres', metal: 'Métal', beast: 'Bête', none: '—' };
+        return this._label('element.' + e, fallbacks[e] || e);
     }
 
     _elementTextColor(e) {
