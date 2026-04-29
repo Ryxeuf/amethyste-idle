@@ -65,6 +65,7 @@
       "factions": "Factions",
       "friends": "Amis",
       "rankings": "Classement",
+      "services": "Services",
       "menu": {
         "adventure": "Aventure",
         "character": "Personnage",
@@ -815,6 +816,30 @@
         "invite_empty": "Entrez un nom de joueur.",
         "invite_not_found": "Joueur introuvable.",
         "search_error": "Erreur de recherche."
+      }
+    },
+    "services": {
+      "page_title": "Services",
+      "heading": "Services",
+      "balance_intro": "Depensez vos Gils pour des services utiles. Solde actuel :",
+      "currency": "Gils",
+      "travel": {
+        "heading": "Transport rapide (%cost% Gils)",
+        "empty": "Aucune destination disponible.",
+        "cost_short": "%cost% G"
+      },
+      "repair": {
+        "heading": "Reparation d'equipement",
+        "empty": "Aucun equipement a reparer.",
+        "durability_label": "Durabilite : %current%/%max%",
+        "button": "Reparer (%cost% G)"
+      },
+      "rename": {
+        "heading": "Renommer un objet (%cost% Gils)",
+        "id_placeholder": "ID objet",
+        "name_placeholder": "Nouveau nom",
+        "button": "Renommer",
+        "help": "Consultez votre inventaire pour trouver l'ID de l'objet a renommer."
       }
     }
   },

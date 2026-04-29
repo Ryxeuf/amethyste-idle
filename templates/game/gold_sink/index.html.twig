@@ -1,20 +1,20 @@
 {% extends 'game/game.html.twig' %}
 
-{% block title %}Services{% endblock %}
+{% block title %}{{ 'game.services.page_title'|trans }}{% endblock %}
 
 {% block game_content %}
 <div class="max-w-4xl mx-auto space-y-6 p-4">
     <h1 class="text-xl font-bold text-purple-300 flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-        Services
+        {{ 'game.services.heading'|trans }}
     </h1>
-    <p class="text-sm text-gray-400">Depensez vos Gils pour des services utiles. Solde actuel : <span class="text-yellow-400 font-semibold" id="gils-display">{{ player.gils }}</span> Gils</p>
+    <p class="text-sm text-gray-400">{{ 'game.services.balance_intro'|trans }} <span class="text-yellow-400 font-semibold" id="gils-display">{{ player.gils }}</span> {{ 'game.services.currency'|trans }}</p>
 
     {# ── Transport rapide ─────────────────────── #}
     <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/30">
-        <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide mb-3">Transport rapide ({{ travelCost }} Gils)</h2>
+        <h2 class="text-sm font-semibold text-blue-400 uppercase tracking-wide mb-3">{{ 'game.services.travel.heading'|trans({'%cost%': travelCost}) }}</h2>
         {% if destinations is empty %}
-            <p class="text-xs text-gray-500">Aucune destination disponible.</p>
+            <p class="text-xs text-gray-500">{{ 'game.services.travel.empty'|trans }}</p>
         {% else %}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {% for region in destinations %}
@@ -27,7 +27,7 @@
                             <div class="text-sm text-white font-medium truncate">{{ region|localized_region_name }}</div>
                             <div class="text-xs text-gray-500">{{ region.capitalMap.name }}</div>
                         </div>
-                        <span class="text-xs text-yellow-400 font-medium">{{ travelCost }} G</span>
+                        <span class="text-xs text-yellow-400 font-medium">{{ 'game.services.travel.cost_short'|trans({'%cost%': travelCost}) }}</span>
                     </button>
                 {% endfor %}
             </div>
@@ -36,9 +36,9 @@
 
     {# ── Reparation ───────────────────────────── #}
     <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/30">
-        <h2 class="text-sm font-semibold text-orange-400 uppercase tracking-wide mb-3">Reparation d'equipement</h2>
+        <h2 class="text-sm font-semibold text-orange-400 uppercase tracking-wide mb-3">{{ 'game.services.repair.heading'|trans }}</h2>
         {% if repairableItems is empty %}
-            <p class="text-xs text-gray-500">Aucun equipement a reparer.</p>
+            <p class="text-xs text-gray-500">{{ 'game.services.repair.empty'|trans }}</p>
         {% else %}
             <div class="space-y-2">
                 {% for entry in repairableItems %}
@@ -48,7 +48,7 @@
                         <div class="flex-1 min-w-0">
                             <div class="text-sm text-white font-medium truncate">{{ pi.displayName }}</div>
                             <div class="text-xs text-gray-500">
-                                Durabilite : {{ pi.currentDurability }}/{{ pi.genericItem.durability }}
+                                {{ 'game.services.repair.durability_label'|trans({'%current%': pi.currentDurability, '%max%': pi.genericItem.durability}) }}
                             </div>
                             <div class="w-full bg-gray-600 rounded-full h-1.5 mt-1">
                                 <div class="bg-orange-500 h-1.5 rounded-full" style="width: {{ (pi.currentDurability / pi.genericItem.durability * 100)|round }}%"></div>
@@ -56,7 +56,7 @@
                         </div>
                         <button class="gold-sink-action shrink-0 px-3 py-1.5 text-xs font-medium bg-orange-600/80 hover:bg-orange-500 text-white rounded-lg transition-colors"
                                 data-action="repair" data-item-id="{{ pi.id }}">
-                            Reparer ({{ cost }} G)
+                            {{ 'game.services.repair.button'|trans({'%cost%': cost}) }}
                         </button>
                     </div>
                 {% endfor %}
@@ -66,16 +66,16 @@
 
     {# ── Renommage ────────────────────────────── #}
     <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/30">
-        <h2 class="text-sm font-semibold text-green-400 uppercase tracking-wide mb-3">Renommer un objet ({{ renameCost }} Gils)</h2>
+        <h2 class="text-sm font-semibold text-green-400 uppercase tracking-wide mb-3">{{ 'game.services.rename.heading'|trans({'%cost%': renameCost}) }}</h2>
         <div class="flex gap-2">
-            <input type="number" id="rename-item-id" placeholder="ID objet" class="bg-gray-700 text-white text-sm rounded-lg px-3 py-2 w-24 border border-gray-600 focus:border-purple-500 focus:outline-none">
-            <input type="text" id="rename-input" placeholder="Nouveau nom" maxlength="50" class="bg-gray-700 text-white text-sm rounded-lg px-3 py-2 flex-1 border border-gray-600 focus:border-purple-500 focus:outline-none">
+            <input type="number" id="rename-item-id" placeholder="{{ 'game.services.rename.id_placeholder'|trans }}" class="bg-gray-700 text-white text-sm rounded-lg px-3 py-2 w-24 border border-gray-600 focus:border-purple-500 focus:outline-none">
+            <input type="text" id="rename-input" placeholder="{{ 'game.services.rename.name_placeholder'|trans }}" maxlength="50" class="bg-gray-700 text-white text-sm rounded-lg px-3 py-2 flex-1 border border-gray-600 focus:border-purple-500 focus:outline-none">
             <button class="gold-sink-action shrink-0 px-4 py-2 text-xs font-medium bg-green-600/80 hover:bg-green-500 text-white rounded-lg transition-colors"
                     data-action="rename">
-                Renommer
+                {{ 'game.services.rename.button'|trans }}
             </button>
         </div>
-        <p class="text-xs text-gray-500 mt-2">Consultez votre inventaire pour trouver l'ID de l'objet a renommer.</p>
+        <p class="text-xs text-gray-500 mt-2">{{ 'game.services.rename.help'|trans }}</p>
     </div>
 </div>
 
