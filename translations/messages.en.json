@@ -65,6 +65,7 @@
       "factions": "Factions",
       "friends": "Friends",
       "rankings": "Rankings",
+      "services": "Services",
       "menu": {
         "adventure": "Adventure",
         "character": "Character",
@@ -815,6 +816,30 @@
         "invite_empty": "Enter a player name.",
         "invite_not_found": "Player not found.",
         "search_error": "Search error."
+      }
+    },
+    "services": {
+      "page_title": "Services",
+      "heading": "Services",
+      "balance_intro": "Spend your Gils on useful services. Current balance:",
+      "currency": "Gils",
+      "travel": {
+        "heading": "Fast Travel (%cost% Gils)",
+        "empty": "No destinations available.",
+        "cost_short": "%cost% G"
+      },
+      "repair": {
+        "heading": "Equipment Repair",
+        "empty": "No equipment to repair.",
+        "durability_label": "Durability: %current%/%max%",
+        "button": "Repair (%cost% G)"
+      },
+      "rename": {
+        "heading": "Rename an Item (%cost% Gils)",
+        "id_placeholder": "Item ID",
+        "name_placeholder": "New name",
+        "button": "Rename",
+        "help": "Check your inventory to find the ID of the item to rename."
       }
     }
   },
