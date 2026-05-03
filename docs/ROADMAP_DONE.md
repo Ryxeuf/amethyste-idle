@@ -3965,10 +3965,20 @@ Les libelles de difficulte (`Normal`/`Heroique`/`Mythique`) etaient retournes pa
 - [x] Migration `Version20260419MountCatalog` : `CREATE TABLE IF NOT EXISTS game_mounts` + index unique slug + index enabled (idempotent pour environnement deja provisionne)
 - [x] `MountFixtures` : 4 montures de base — Cheval brun (achat, 2500 gils, lvl 5, +50%), Loup sauvage (quete, lvl 15, +60%), Chocobo jaune (quete, lvl 30, +75%), Sanglier colossal (drop rare, lvl 20, +40%)
 - [x] Tests unitaires `MountTest` : 11 cas couvrant defaults, contraintes (speedBonus >= 0, obtentionType whitelist, gilCost >= 0 ou null, requiredLevel >= 1), setters fluents, toggle `enabled`
-- [ ] Obtention via quete, drop rare, ou achat — catalogue pret (champ `obtentionType`), reste a brancher aux systemes de quetes / loot / boutique
-- [ ] Vitesse de deplacement +50% quand monte — sous-phase 2
-- [ ] Animation sprite monte sur la carte — sous-phase 3
-- [ ] Teleportation rapide entre villes decouvertes — sous-phase 4
+- [ ] Obtention via quete, drop rare, ou achat — **sous-phase 2a livree** (fondation ownership, voir entree dediee ci-dessous) ; reste a brancher aux systemes quete / loot / boutique (sous-phase 2b)
+- [ ] Vitesse de deplacement +50% quand monte — sous-phase 3
+- [ ] Animation sprite monte sur la carte — sous-phase 4
+- [ ] Teleportation rapide entre villes decouvertes — sous-phase 5
+
+### 130 — Montures & deplacement rapide (partiel, sous-phase 2a) — Fondation ownership + service d'acquisition (2026-04-20) 🔧
+
+> Deuxieme jalon : pose la fondation d'ownership pour le systeme de montures (relation `Player` <-> `Mount`) et centralise l'acquisition via un service commun `MountAcquisitionService`. Sous-phase non invasive : aucune integration UI, aucun branchement gameplay existant. Prepare le terrain pour la sous-phase 2b qui branchera l'acquisition aux systemes quete / loot / boutique.
+- [x] Entite `App\Entity\App\PlayerMount` (table `player_mount`) : ManyToOne vers `Player` et `Mount` (FK CASCADE), UNIQUE (player_id, mount_id), champ `source` string whitelist (`quest`/`drop`/`purchase`/`achievement`/`admin`), `acquired_at` `datetime_immutable`. Constructeur valide la source.
+- [x] Repository `App\Repository\PlayerMountRepository` : `findByPlayer(Player)`, `findOneByPlayerAndMount(Player, Mount)`, `playerOwnsMount(Player, Mount)` (fetch-join sur la monture pour eviter le N+1 en listing)
+- [x] Service `App\GameEngine\Mount\MountAcquisitionService::grantMount(Player, Mount, string $source, bool $flush = true)` : point d'entree unique pour toutes les sources d'acquisition. Rejette via `\DomainException` si monture desactivee ; rejette via `MountAlreadyOwnedException` si deja possedee. `flush` optionnel pour composer avec une transaction parent.
+- [x] Exception `App\GameEngine\Mount\MountAlreadyOwnedException` : contient Player + Mount pour logs contextuels
+- [x] Migration `Version20260420PlayerMount` : `CREATE TABLE IF NOT EXISTS player_mount` + index unique + index player + FK CASCADE vers `player` et `game_mounts` (idempotent via `DO $$ BEGIN IF NOT EXISTS...`)
+- [x] Tests unitaires `PlayerMountTest` (4 cas : construction, rejet source inconnue, liste sources, acceptation toutes sources valides) et `MountAcquisitionServiceTest` (4 cas : grant nominal, flush optionnel, rejet si deja possedee, rejet si monture desactivee)
 
 ### 132 — Classement saisonnier global (partiel, sous-phase 1) — Page `/game/rankings` + top killers (2026-04-20) 🔧
 

@@ -25,9 +25,9 @@
 
 ### 130 — Montures & deplacement rapide (M | ★★)
 > Prerequis : ∅
-> Avancement : sous-phases 1 (catalogue de montures), 5 (fast travel verrouille par decouverte) et 6 (catalogue UI public) livrees. Sous-phases 2-4 (ownership, vitesse, animations) restent a faire.
+> Avancement : sous-phases 1 (catalogue de montures), 2a (fondation ownership PlayerMount + MountAcquisitionService), 5 (fast travel verrouille par decouverte) et 6 (catalogue UI public) livrees. Sous-phases 2b (branchement quete/loot/boutique), 3 (vitesse) et 4 (animations) restent a faire.
 - [x] Entite `Mount` : slug, name, speedBonus, sprite — entite `App\Entity\Game\Mount` (table `game_mounts`) avec slug unique, description, sprite sheet + icone, speedBonus (defaut 50), obtentionType enum (`quest`/`drop`/`purchase`/`achievement`), gilCost, requiredLevel, flag enabled + timestamps. Migration `Version20260419MountCatalog`. Fixtures de base (4 montures : cheval brun, loup sauvage, chocobo jaune, sanglier colossal) couvrant les 3 types d'obtention principaux. Tests unitaires validant les contraintes (speedBonus >= 0, obtentionType whitelist, gilCost >= 0 ou null, requiredLevel >= 1).
-- [ ] Obtention via quete, drop rare, ou achat — catalogue pret (champ `obtentionType`), reste a brancher aux systemes de quetes / loot / boutique
+- [ ] Obtention via quete, drop rare, ou achat — **Sous-phase 2a livree (2026-04-20)** : fondation ownership. Entite `App\Entity\App\PlayerMount` (table `player_mount`, UNIQUE player_id+mount_id, FK CASCADE vers `player` et `game_mounts`) avec champ `source` enum (quest/drop/purchase/achievement/admin) et `acquired_at`. Repository `PlayerMountRepository` (`findByPlayer`, `findOneByPlayerAndMount`, `playerOwnsMount`). Service `App\GameEngine\Mount\MountAcquisitionService::grantMount` commun a toutes les sources d'acquisition (rejette si monture desactivee ou deja possedee via `MountAlreadyOwnedException`). Migration `Version20260420PlayerMount`. Tests unitaires (`PlayerMountTest`, `MountAcquisitionServiceTest`). Reste a brancher aux systemes quete / loot / boutique (sous-phase 2b).
 - [ ] Vitesse de deplacement +50% quand monte
 - [ ] Animation sprite monte sur la carte
 - [x] Teleportation rapide entre villes decouvertes (cout en gils)
