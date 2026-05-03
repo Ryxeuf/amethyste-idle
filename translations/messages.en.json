@@ -515,6 +515,16 @@
           "adventurer": "Adventurer's crest (banner)",
           "scholar": "Scholar's crest (star of knowledge)"
         }
+      },
+      "history": {
+        "title": "Hall of Fame",
+        "subtitle": "Champions of past seasons",
+        "link": "View Hall of Fame",
+        "back_to_current": "← Current rankings",
+        "season_number": "Season #%number%",
+        "no_data": "No champion recorded.",
+        "empty": "No archived season yet. Podiums will appear here at the end of each season.",
+        "note": "Top 3 per category, locked at the end of each season."
       }
     },
     "fishing": {
