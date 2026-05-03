@@ -1,7 +1,29 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-03 (135 sous-phase 3e.aa — i18n complet de la page Succes `/game/achievements`)
+> Derniere mise a jour : 2026-05-03 (130 sous-phase 6b — badge "Possédée" sur le catalogue de montures `/game/mounts`)
+
+---
+
+## 130 — Montures sous-phase 6b : badge "Possédée" sur le catalogue (2026-05-03)
+
+> Premier rendu visible de la fondation ownership livree en sous-phase 2a (PR #428). Le catalogue public `/game/mounts` distingue desormais clairement les montures deja acquises par le joueur des montures encore a obtenir, sans introduire d'action gameplay supplementaire (ni achat, ni equipement, ni vitesse). Prepare l'UX des sous-phases 2b (acquisition reelle) et 3 (vitesse +50%) en exposant deja la donnee `ownedMountIds` au template.
+
+### Changements
+
+- **`src/Repository/PlayerMountRepository.php`** (+18 lignes) : nouvelle methode `findOwnedMountIds(Player): list<int>` basee sur `IDENTITY(pm.mount)` pour recuperer la liste des IDs sans charger les entites `Mount` completes (evite le `JOIN FETCH` de `findByPlayer`).
+- **`src/Controller/Game/MountController.php`** (+10 / -2 lignes) : injection de `PlayerHelper` + `PlayerMountRepository`. La cle `ownedMountIds` est passee au template (vide si aucun joueur actif, sinon resultat de `findOwnedMountIds`).
+- **`templates/game/mount/index.html.twig`** (+9 / -1 lignes) : `{% set isOwned = mount.id in (ownedMountIds ?? []) %}` controle (1) la couleur de bordure de la carte (`border-emerald-700/60` si possedee), (2) un badge emeraude "Possédée" affiche en haut a droite a cote du nom de la monture.
+- **`translations/messages.{fr,en}.json`** (+1 cle chacun) : `game.mount.owned` ("Possédée" / "Owned").
+- **`tests/Functional/Controller/Game/MountControllerTest.php`** (+50 / -1 lignes) : 2 nouveaux cas (`testIndexExposesOwnedMountIdsForCurrentPlayer` qui asserte la propagation des IDs au template, `testIndexSkipsRepositoryLookupWhenNoPlayer` qui garantit qu'aucun appel au repository n'est emis sans joueur actif). Les 3 cas existants sont adaptes au nouveau constructeur (mocks `PlayerHelper` + `PlayerMountRepository`).
+
+### Impact
+
+- Diff total : ~88 lignes (sous le budget de 300).
+- Aucune migration, aucun changement backend hors controller (la fondation ownership existe depuis la sous-phase 2a).
+- Parite FR/EN maintenue (+1 cle).
+- Sous-phase independante des sous-phases 2b (branchement quete/loot/boutique), 3 (vitesse +50%) et 4 (animations) qui restent a faire ; n'introduit aucun nouveau concept gameplay (pas de bouton "monter", pas de transaction).
+- Independante des 16 PR en vol : aucune ne touche `MountController`, `PlayerMountRepository`, `mount/index.html.twig`, ni les cles `game.mount.*`.
 
 ---
 

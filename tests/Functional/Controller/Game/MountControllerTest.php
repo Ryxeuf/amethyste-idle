@@ -3,7 +3,10 @@
 namespace App\Tests\Functional\Controller\Game;
 
 use App\Controller\Game\MountController;
+use App\Entity\App\Player;
 use App\Entity\Game\Mount;
+use App\Helper\PlayerHelper;
+use App\Repository\PlayerMountRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,6 +20,8 @@ class MountControllerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
     private EntityRepository&MockObject $repository;
+    private PlayerHelper&MockObject $playerHelper;
+    private PlayerMountRepository&MockObject $playerMountRepository;
     private MountController $controller;
 
     /** @var array<string, mixed>|null */
@@ -28,7 +33,14 @@ class MountControllerTest extends TestCase
         $this->repository = $this->createMock(EntityRepository::class);
         $this->entityManager->method('getRepository')->with(Mount::class)->willReturn($this->repository);
 
-        $this->controller = new MountController($this->entityManager);
+        $this->playerHelper = $this->createMock(PlayerHelper::class);
+        $this->playerMountRepository = $this->createMock(PlayerMountRepository::class);
+
+        $this->controller = new MountController(
+            $this->entityManager,
+            $this->playerHelper,
+            $this->playerMountRepository,
+        );
         $this->controller->setContainer($this->createContainer());
     }
 
@@ -42,11 +54,14 @@ class MountControllerTest extends TestCase
             ->with(['enabled' => true], ['requiredLevel' => 'ASC', 'gilCost' => 'ASC'])
             ->willReturn([$horse, $wolf]);
 
+        $this->playerHelper->method('getPlayer')->willReturn(null);
+
         $response = $this->controller->index();
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertNotNull($this->capturedTemplateParams);
         $this->assertSame([$horse, $wolf], $this->capturedTemplateParams['mounts']);
+        $this->assertSame([], $this->capturedTemplateParams['ownedMountIds']);
         $labels = $this->capturedTemplateParams['obtentionLabels'];
         $this->assertSame('game.mount.obtention.quest', $labels[Mount::OBTENTION_QUEST]);
         $this->assertSame('game.mount.obtention.drop', $labels[Mount::OBTENTION_DROP]);
@@ -60,15 +75,19 @@ class MountControllerTest extends TestCase
             ->method('findBy')
             ->willReturn([]);
 
+        $this->playerHelper->method('getPlayer')->willReturn(null);
+
         $response = $this->controller->index();
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([], $this->capturedTemplateParams['mounts']);
+        $this->assertSame([], $this->capturedTemplateParams['ownedMountIds']);
     }
 
     public function testObtentionLabelsCoverAllEnumValues(): void
     {
         $this->repository->method('findBy')->willReturn([]);
+        $this->playerHelper->method('getPlayer')->willReturn(null);
 
         $this->controller->index();
 
@@ -76,6 +95,38 @@ class MountControllerTest extends TestCase
         foreach (Mount::getObtentionTypes() as $type) {
             $this->assertArrayHasKey($type, $labels, sprintf('Missing label for obtention type %s', $type));
         }
+    }
+
+    public function testIndexExposesOwnedMountIdsForCurrentPlayer(): void
+    {
+        $horse = $this->buildMount('horse_brown', 'Cheval brun', Mount::OBTENTION_PURCHASE, 1, 5000);
+        $wolf = $this->buildMount('wolf_dire', 'Loup sauvage', Mount::OBTENTION_QUEST, 10, null);
+
+        $this->repository->method('findBy')->willReturn([$horse, $wolf]);
+
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->playerMountRepository->expects($this->once())
+            ->method('findOwnedMountIds')
+            ->with($player)
+            ->willReturn([42, 99]);
+
+        $this->controller->index();
+
+        $this->assertSame([42, 99], $this->capturedTemplateParams['ownedMountIds']);
+    }
+
+    public function testIndexSkipsRepositoryLookupWhenNoPlayer(): void
+    {
+        $this->repository->method('findBy')->willReturn([]);
+        $this->playerHelper->method('getPlayer')->willReturn(null);
+
+        $this->playerMountRepository->expects($this->never())->method('findOwnedMountIds');
+
+        $this->controller->index();
+
+        $this->assertSame([], $this->capturedTemplateParams['ownedMountIds']);
     }
 
     private function buildMount(string $slug, string $name, string $obtention, int $level, ?int $gilCost): Mount

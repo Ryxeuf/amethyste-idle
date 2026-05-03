@@ -45,4 +45,26 @@ class PlayerMountRepository extends ServiceEntityRepository
     {
         return null !== $this->findOneByPlayerAndMount($player, $mount);
     }
+
+    /**
+     * @return list<int>
+     */
+    public function findOwnedMountIds(Player $player): array
+    {
+        $rows = $this->createQueryBuilder('pm')
+            ->select('IDENTITY(pm.mount) AS mountId')
+            ->andWhere('pm.player = :player')
+            ->setParameter('player', $player)
+            ->getQuery()
+            ->getArrayResult();
+
+        $ids = [];
+        foreach ($rows as $row) {
+            if (isset($row['mountId'])) {
+                $ids[] = (int) $row['mountId'];
+            }
+        }
+
+        return $ids;
+    }
 }

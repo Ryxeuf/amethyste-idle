@@ -615,6 +615,7 @@
       "level_short": "Lv %level%",
       "gil_cost": "Gil cost",
       "gil": "gils",
+      "owned": "Owned",
       "obtention": {
         "quest": "Quest reward",
         "drop": "Rare drop",
