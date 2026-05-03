@@ -1,23 +1,23 @@
 {% extends 'game/game.html.twig' %}
 
-{% block title %}Succes{% endblock %}
+{% block title %}{{ 'game.achievement.page_title'|trans }}{% endblock %}
 
 {% block game_content %}
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
-            <h2 class="text-base sm:text-lg font-semibold text-white">Succes</h2>
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.achievement.heading'|trans }}</h2>
             <span class="text-sm text-gray-400">{{ completedCount }}/{{ totalAchievements }}</span>
         </div>
 
         <div class="game-card-body">
             {% set category_labels = {
-                'combat': 'Combat',
-                'exploration': 'Exploration',
-                'quests': 'Quetes',
-                'gathering': 'Recolte',
-                'craft': 'Artisanat',
-                'secrets': 'Secrets'
+                'combat': 'game.achievement.category.combat'|trans,
+                'exploration': 'game.achievement.category.exploration'|trans,
+                'quests': 'game.achievement.category.quests'|trans,
+                'gathering': 'game.achievement.category.gathering'|trans,
+                'craft': 'game.achievement.category.craft'|trans,
+                'secrets': 'game.achievement.category.secrets'|trans
             } %}
 
             {% set category_keys = categories|keys %}
@@ -39,7 +39,7 @@
                 <div id="panel-{{ key }}" class="{% if not loop.first %}hidden{% endif %}">
                     {% if achievementList is empty %}
                         <div class="text-center py-8">
-                            <p class="text-gray-500 text-sm">Aucun succes dans cette categorie.</p>
+                            <p class="text-gray-500 text-sm">{{ 'game.achievement.empty'|trans }}</p>
                         </div>
                     {% else %}
                         <div class="space-y-2 sm:space-y-3">
@@ -62,23 +62,23 @@
                                         <div class="min-w-0">
                                             <div class="flex items-center gap-2">
                                                 {% if isHidden and not isCompleted %}
-                                                    <h3 class="text-amber-300 font-semibold text-sm sm:text-base">???</h3>
-                                                    <span class="text-amber-500 text-xs font-mono flex-shrink-0">Secret</span>
+                                                    <h3 class="text-amber-300 font-semibold text-sm sm:text-base">{{ 'game.achievement.hidden_title'|trans }}</h3>
+                                                    <span class="text-amber-500 text-xs font-mono flex-shrink-0">{{ 'game.achievement.badge.secret'|trans }}</span>
                                                 {% else %}
                                                     <h3 class="text-white font-semibold text-sm sm:text-base {% if isCompleted %}text-green-300{% endif %}">
                                                         {{ achievement|localized_achievement_title }}
                                                     </h3>
                                                     {% if isCompleted %}
-                                                        <span class="text-green-500 text-xs font-mono flex-shrink-0">Debloque</span>
+                                                        <span class="text-green-500 text-xs font-mono flex-shrink-0">{{ 'game.achievement.badge.unlocked'|trans }}</span>
                                                         {% if isHidden %}
-                                                            <span class="text-amber-500 text-xs font-mono flex-shrink-0">Secret</span>
+                                                            <span class="text-amber-500 text-xs font-mono flex-shrink-0">{{ 'game.achievement.badge.secret'|trans }}</span>
                                                         {% endif %}
                                                     {% endif %}
                                                 {% endif %}
                                             </div>
                                             <p class="text-gray-400 text-xs sm:text-sm mt-0.5">
                                                 {% if isHidden and not isCompleted %}
-                                                    Ce succes est secret. Continuez a jouer pour le decouvrir...
+                                                    {{ 'game.achievement.hidden_description'|trans }}
                                                 {% else %}
                                                     {{ achievement|localized_achievement_description }}
                                                 {% endif %}
@@ -90,9 +90,9 @@
                                     {% if not isCompleted %}
                                         <div class="mt-2">
                                             <div class="flex justify-between text-[10px] sm:text-xs text-gray-400 mb-1">
-                                                <span>Progression</span>
+                                                <span>{{ 'game.achievement.progress_label'|trans }}</span>
                                                 {% if isHidden %}
-                                                    <span>???</span>
+                                                    <span>{{ 'game.achievement.hidden_title'|trans }}</span>
                                                 {% else %}
                                                     <span>{{ progress }}/{{ target }}</span>
                                                 {% endif %}
@@ -108,13 +108,13 @@
                                     {% set reward = achievement.reward %}
                                     {% if reward is not empty and (not isHidden or isCompleted) %}
                                         <div class="mt-2 pt-2 border-t border-gray-600">
-                                            <span class="text-[10px] text-gray-500">Recompense :</span>
+                                            <span class="text-[10px] text-gray-500">{{ 'game.achievement.reward.heading'|trans }}</span>
                                             <div class="flex gap-3 mt-0.5">
                                                 {% if reward.gils is defined %}
-                                                    <span class="text-yellow-400 text-xs">{{ reward.gils }} Gils</span>
+                                                    <span class="text-yellow-400 text-xs">{{ 'game.achievement.reward.gils'|trans({'%amount%': reward.gils}) }}</span>
                                                 {% endif %}
                                                 {% if reward.title is defined %}
-                                                    <span class="text-purple-400 text-xs">Titre : {{ reward.title }}</span>
+                                                    <span class="text-purple-400 text-xs">{{ 'game.achievement.reward.title_label'|trans({'%title%': reward.title}) }}</span>
                                                 {% endif %}
                                             </div>
                                         </div>

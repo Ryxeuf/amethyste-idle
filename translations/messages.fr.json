@@ -853,6 +853,31 @@
         "unavailable": "Indisponible"
       }
     },
+    "achievement": {
+      "page_title": "Succes",
+      "heading": "Succes",
+      "empty": "Aucun succes dans cette categorie.",
+      "hidden_title": "???",
+      "hidden_description": "Ce succes est secret. Continuez a jouer pour le decouvrir...",
+      "badge": {
+        "secret": "Secret",
+        "unlocked": "Debloque"
+      },
+      "progress_label": "Progression",
+      "category": {
+        "combat": "Combat",
+        "exploration": "Exploration",
+        "quests": "Quetes",
+        "gathering": "Recolte",
+        "craft": "Artisanat",
+        "secrets": "Secrets"
+      },
+      "reward": {
+        "heading": "Recompense :",
+        "title_label": "Titre : %title%",
+        "gils": "%amount% Gils"
+      }
+    },
     "services": {
       "page_title": "Services",
       "heading": "Services",
