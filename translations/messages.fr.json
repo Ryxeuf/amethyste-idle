@@ -515,6 +515,16 @@
           "adventurer": "Embleme de l'aventurier (étendard)",
           "scholar": "Embleme du savant (étoile du savoir)"
         }
+      },
+      "history": {
+        "title": "Hall of Fame",
+        "subtitle": "Champions des saisons archivées",
+        "link": "Voir le Hall of Fame",
+        "back_to_current": "← Classement en cours",
+        "season_number": "Saison #%number%",
+        "no_data": "Aucun champion enregistré.",
+        "empty": "Aucune saison archivée pour l'instant. Les podiums apparaîtront ici à la fin de chaque saison.",
+        "note": "Top 3 par catégorie, fige à la fin de chaque saison."
       }
     },
     "fishing": {

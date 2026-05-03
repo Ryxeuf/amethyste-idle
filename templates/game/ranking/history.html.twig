@@ -1,0 +1,78 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.ranking.history.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.ranking.history.title'|trans }}</h2>
+                <p class="text-gray-400 text-xs mt-0.5">{{ 'game.ranking.history.subtitle'|trans }}</p>
+            </div>
+            <a href="{{ path('app_game_rankings') }}"
+               class="text-xs text-purple-300 hover:text-purple-200 underline">
+                {{ 'game.ranking.history.back_to_current'|trans }}
+            </a>
+        </div>
+
+        <div class="game-card-body">
+            {% if podiums is empty %}
+                <div class="text-center py-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 4l3 12 4-8 3 6m-9-4l-2 4-3-6" />
+                    </svg>
+                    <p class="text-gray-500 text-sm">{{ 'game.ranking.history.empty'|trans }}</p>
+                </div>
+            {% else %}
+                <div class="space-y-6">
+                    {% for entry in podiums %}
+                        <section class="rounded-lg border border-gray-700 bg-gray-800/40">
+                            <header class="px-4 py-2 border-b border-gray-700 flex items-baseline justify-between">
+                                <h3 class="text-sm font-semibold text-white">
+                                    {{ entry.season.name }}
+                                </h3>
+                                <span class="text-[11px] text-gray-400 font-mono">
+                                    {{ 'game.ranking.history.season_number'|trans({'%number%': entry.season.seasonNumber}) }}
+                                </span>
+                            </header>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 p-3">
+                                {% for tabKey in ['kills', 'quests', 'xp'] %}
+                                    {% set podium = entry.tabs[tabKey] %}
+                                    <div class="rounded border border-gray-700/60 bg-gray-900/40 p-3">
+                                        <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-300 mb-2">
+                                            {{ ('game.ranking.tab.' ~ tabKey)|trans }}
+                                        </h4>
+                                        {% if podium is empty %}
+                                            <p class="text-[11px] text-gray-500 italic">{{ 'game.ranking.history.no_data'|trans }}</p>
+                                        {% else %}
+                                            <ol class="space-y-1.5">
+                                                {% for snap in podium %}
+                                                    {% set rankColor = snap.rank == 1 ? 'text-yellow-300'
+                                                        : (snap.rank == 2 ? 'text-gray-200'
+                                                        : 'text-orange-300') %}
+                                                    <li class="flex items-center justify-between gap-2 text-xs">
+                                                        <span class="flex items-center gap-1.5 {{ rankColor }} font-mono">
+                                                            <span aria-hidden="true">&#9733;</span>
+                                                            <span>{{ snap.rank }}</span>
+                                                        </span>
+                                                        <span class="flex-1 text-gray-100 truncate">{{ snap.playerName }}</span>
+                                                        <span class="text-purple-300 font-mono text-[11px]">{{ snap.totalValue }}</span>
+                                                    </li>
+                                                {% endfor %}
+                                            </ol>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endfor %}
+                </div>
+                <p class="text-gray-500 text-[10px] mt-4 text-center">
+                    {{ 'game.ranking.history.note'|trans }}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -40,4 +40,36 @@ class PlayerSeasonRankingSnapshotRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @return InfluenceSeason[] saisons distinctes ayant au moins un snapshot, triees par seasonNumber DESC
+     */
+    public function findArchivedSeasons(int $limit = 10): array
+    {
+        return $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('season')
+            ->from(InfluenceSeason::class, 'season')
+            ->where('EXISTS (SELECT 1 FROM ' . PlayerSeasonRankingSnapshot::class . ' snap WHERE snap.season = season)')
+            ->orderBy('season.seasonNumber', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return PlayerSeasonRankingSnapshot[] top-N (default 3) pour (saison, onglet), trie par rang ASC
+     */
+    public function findPodiumBySeasonAndTab(InfluenceSeason $season, RankingTab $tab, int $limit = 3): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.season = :season')
+            ->andWhere('s.tab = :tab')
+            ->setParameter('season', $season)
+            ->setParameter('tab', $tab->value)
+            ->orderBy('s.rank', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }
