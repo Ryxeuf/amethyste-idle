@@ -615,6 +615,7 @@
       "level_short": "Niv. %level%",
       "gil_cost": "Cout en gils",
       "gil": "gils",
+      "owned": "Possédée",
       "obtention": {
         "quest": "Recompense de quete",
         "drop": "Drop rare",

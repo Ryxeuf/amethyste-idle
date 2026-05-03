@@ -3,6 +3,8 @@
 namespace App\Controller\Game;
 
 use App\Entity\Game\Mount;
+use App\Helper\PlayerHelper;
+use App\Repository\PlayerMountRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +14,8 @@ class MountController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerHelper $playerHelper,
+        private readonly PlayerMountRepository $playerMountRepository,
     ) {
     }
 
@@ -24,8 +28,14 @@ class MountController extends AbstractController
             ->getRepository(Mount::class)
             ->findBy(['enabled' => true], ['requiredLevel' => 'ASC', 'gilCost' => 'ASC']);
 
+        $player = $this->playerHelper->getPlayer();
+        $ownedMountIds = null !== $player
+            ? $this->playerMountRepository->findOwnedMountIds($player)
+            : [];
+
         return $this->render('game/mount/index.html.twig', [
             'mounts' => $mounts,
+            'ownedMountIds' => $ownedMountIds,
             'obtentionLabels' => [
                 Mount::OBTENTION_QUEST => 'game.mount.obtention.quest',
                 Mount::OBTENTION_DROP => 'game.mount.obtention.drop',

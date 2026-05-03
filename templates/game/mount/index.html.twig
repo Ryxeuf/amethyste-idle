@@ -18,7 +18,8 @@
             {% else %}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {% for mount in mounts %}
-                        <article class="bg-gray-800/60 border border-gray-700 rounded-lg p-3 flex gap-3"
+                        {% set isOwned = mount.id in (ownedMountIds ?? []) %}
+                        <article class="bg-gray-800/60 border {{ isOwned ? 'border-emerald-700/60' : 'border-gray-700' }} rounded-lg p-3 flex gap-3"
                                  aria-label="{{ mount|localized_mount_name }}">
                             <div class="flex-shrink-0 w-12 h-12 bg-gray-900/60 rounded-md overflow-hidden flex items-center justify-center"
                                  aria-hidden="true">
@@ -27,7 +28,15 @@
                                 </svg>
                             </div>
                             <div class="flex-1 min-w-0">
-                                <h3 class="text-sm font-semibold text-white truncate">{{ mount|localized_mount_name }}</h3>
+                                <div class="flex items-center justify-between gap-2">
+                                    <h3 class="text-sm font-semibold text-white truncate">{{ mount|localized_mount_name }}</h3>
+                                    {% if isOwned %}
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-900/40 border border-emerald-700/50 text-emerald-200 px-2 py-0.5 text-[10px] font-medium flex-shrink-0"
+                                              title="{{ 'game.mount.owned'|trans }}">
+                                            {{ 'game.mount.owned'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </div>
                                 <p class="text-[11px] text-gray-400 mt-0.5 line-clamp-2">{{ mount|localized_mount_description }}</p>
                                 <div class="flex flex-wrap gap-1.5 mt-2 text-[10px]">
                                     <span class="inline-flex items-center gap-1 rounded-full bg-purple-900/40 border border-purple-700/50 text-purple-200 px-2 py-0.5"
