@@ -259,6 +259,11 @@
       "start_quest": "Commencer la quête",
       "fast_travel": "Voyage rapide",
       "exploration_message": "Vous commencez à explorer cette région...",
+      "aria_label": "Carte du monde interactive",
+      "dialog_aria": "Dialogue PNJ",
+      "close_dialog": "Fermer le dialogue",
+      "dialog_choices": "Choix de dialogue",
+      "dialog_next": "Continuer",
       "regions": {
         "forest": "Forêt Mystique",
         "mountains": "Montagnes Brumeuses",
@@ -467,6 +472,7 @@
       "energy": "Énergie",
       "level_short": "Nv.",
       "turn": "Tour",
+      "turns": "tours",
       "actions": "Actions",
       "log": {
         "title": "Journal de combat",

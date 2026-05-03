@@ -1522,6 +1522,21 @@ Les libelles de difficulte (`Normal`/`Heroique`/`Mythique`) etaient retournes pa
 
 ---
 
+## 135 — Localisation i18n sous-phase 2b : audit des cles utilisees mais absentes (2026-04-21)
+
+> Complete la sous-phase 2a (parite FR/EN) en auditant dans l'autre sens : cles referencees dans le code mais absentes des fichiers de traduction. Avant cette sous-phase, la page `/game/map` et l'ecran de combat utilisaient 6 cles (`game.map.aria_label`, `game.map.dialog_aria`, `game.map.close_dialog`, `game.map.dialog_choices`, `game.map.dialog_next`, `game.fight.turns`) qui s'appuyaient sur `|default(...)` a chaque appel — le rendu FR restait correct mais aucun texte EN ne pouvait etre fourni. Apres, les 6 cles sont definies dans les deux locales et un script re-executable permet de reproduire l'audit.
+
+- [x] Nouveau script `scripts/audit-translations.php` (CLI, PHP 8.4 strict) : scanne `templates/` et `src/`, extrait via regex les cles utilisees via `|trans` (Twig) et `->trans(` (PHP), flatten `messages.fr.json` + `messages.en.json`, compare. Trois signaux : cles manquantes (code → fichiers), parite FR/EN (doit rester 0 ecart depuis 2a), compteurs de definition/usage. Flag `--active-only` pour ignorer `templates/old_game/`. Exit code 1 si manques ou parite rompue, 0 sinon — utilisable en pre-commit ou CI.
+- [x] Audit initial : 82 cles manquantes dont 76 dans `templates/old_game/` (dossier legacy non reference depuis `src/` ni `config/`, aucune route l'utilise) et 6 dans les templates actifs.
+- [x] Ajout dans `translations/messages.fr.json` : `game.map.aria_label` = "Carte du monde interactive", `game.map.dialog_aria` = "Dialogue PNJ", `game.map.close_dialog` = "Fermer le dialogue", `game.map.dialog_choices` = "Choix de dialogue", `game.map.dialog_next` = "Continuer", `game.fight.turns` = "tours". Valeurs alignees avec les `|default(...)` deja presents cote Twig pour preserver le rendu FR au pixel pres.
+- [x] Ajout symetrique dans `translations/messages.en.json` : "Interactive world map", "NPC dialog", "Close dialog", "Dialog choices", "Continue", "turns".
+- [x] Verification : parite FR/EN maintenue (712 cles cote FR = 712 cles cote EN apres rebase sur main). `php scripts/audit-translations.php --active-only` sort 0 cle manquante en local.
+- [x] Roadmap : `SPRINT_12.md` sous-phase 2b cochee avec detail d'implementation ; avancement Sprint 12 mis a jour (135 sous-phases 1 + 2a + 2b livrees).
+
+**Diff** : ~140 lignes dont ~100 pour le script PHP (1 seul fichier nouveau), ~12 pour les 6 cles JSON en FR+EN, ~15 pour la roadmap. Aucun test PHPUnit ajoute : le script est un utilitaire CLI deterministe, sa correction se verifie par l'absence de cles manquantes en mode `--active-only`. Aucun impact runtime (les `|default(...)` existants couvraient deja le FR).
+
+---
+
 ## 135 — Localisation i18n sous-phase 2a : parite de cles FR/EN sur l'UI (2026-04-21)
 
 > Complete la premiere passe de traduction anglaise de l'UI en comblant les cles presentes en FR mais manquantes en EN. Avant cette sous-phase, la page `/game/bestiary` et deux liens de navigation principaux (`Bestiaire`, `Artisanat`) affichaient leur identifiant de cle brute en anglais (`game.bestiary.title`, `game.nav.bestiary`, `game.nav.craft`, etc.) a cause du fallback Symfony. Apres, parite stricte entre les deux fichiers : 432 cles de chaque cote.
