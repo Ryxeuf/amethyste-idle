@@ -818,6 +818,41 @@
         "search_error": "Search error."
       }
     },
+    "dungeon": {
+      "page_title": "Dungeons",
+      "heading": "Dungeons",
+      "subtitle": "Explore instanced dungeons to obtain rare loot",
+      "empty": "No dungeons available at the moment",
+      "active_run": {
+        "heading": "Dungeon in progress",
+        "return_button": "Return to dungeon",
+        "warning": "You are already in the dungeon %name%. Finish it before starting another."
+      },
+      "level_required_short": "Lvl. %level%+",
+      "max_players_label": "%count% players",
+      "history_heading": "Recent history",
+      "back_link": "Back",
+      "info": {
+        "min_level": "Required level",
+        "max_players": "Max players"
+      },
+      "requirements": {
+        "xp_insufficient": "Insufficient experience. You must reach %xp% XP in at least one combat domain.",
+        "missing_items_heading": "Missing required items:"
+      },
+      "loot_preview_heading": "Possible loot",
+      "difficulty": {
+        "heading": "Choose a difficulty",
+        "normal": "Normal",
+        "heroic": "Heroic",
+        "mythic": "Mythic",
+        "stat_multiplier": "Mob stats x%mult%",
+        "cooldown": "Cooldown %hours%h",
+        "cooldown_badge": "Cooldown",
+        "enter": "Enter",
+        "unavailable": "Unavailable"
+      }
+    },
     "services": {
       "page_title": "Services",
       "heading": "Services",

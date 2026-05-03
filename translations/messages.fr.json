@@ -818,6 +818,41 @@
         "search_error": "Erreur de recherche."
       }
     },
+    "dungeon": {
+      "page_title": "Donjons",
+      "heading": "Donjons",
+      "subtitle": "Explorez des donjons instancies pour obtenir du loot rare",
+      "empty": "Aucun donjon disponible pour le moment",
+      "active_run": {
+        "heading": "Donjon en cours",
+        "return_button": "Retourner au donjon",
+        "warning": "Vous etes deja dans le donjon %name%. Terminez-le avant d'en commencer un autre."
+      },
+      "level_required_short": "Niv. %level%+",
+      "max_players_label": "%count% joueurs",
+      "history_heading": "Historique recent",
+      "back_link": "Retour",
+      "info": {
+        "min_level": "Niveau requis",
+        "max_players": "Joueurs max"
+      },
+      "requirements": {
+        "xp_insufficient": "Experience insuffisante. Vous devez atteindre %xp% XP dans au moins un domaine de combat.",
+        "missing_items_heading": "Objets requis manquants :"
+      },
+      "loot_preview_heading": "Loot possible",
+      "difficulty": {
+        "heading": "Choisir une difficulte",
+        "normal": "Normal",
+        "heroic": "Heroique",
+        "mythic": "Mythique",
+        "stat_multiplier": "Stats mobs x%mult%",
+        "cooldown": "Cooldown %hours%h",
+        "cooldown_badge": "Cooldown",
+        "enter": "Entrer",
+        "unavailable": "Indisponible"
+      }
+    },
     "services": {
       "page_title": "Services",
       "heading": "Services",
