@@ -853,6 +853,31 @@
         "unavailable": "Unavailable"
       }
     },
+    "achievement": {
+      "page_title": "Achievements",
+      "heading": "Achievements",
+      "empty": "No achievements in this category.",
+      "hidden_title": "???",
+      "hidden_description": "This achievement is secret. Keep playing to discover it...",
+      "badge": {
+        "secret": "Secret",
+        "unlocked": "Unlocked"
+      },
+      "progress_label": "Progress",
+      "category": {
+        "combat": "Combat",
+        "exploration": "Exploration",
+        "quests": "Quests",
+        "gathering": "Gathering",
+        "craft": "Crafting",
+        "secrets": "Secrets"
+      },
+      "reward": {
+        "heading": "Reward:",
+        "title_label": "Title: %title%",
+        "gils": "%amount% Gils"
+      }
+    },
     "services": {
       "page_title": "Services",
       "heading": "Services",

@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-03 (135 sous-phase 3e.z — i18n complet des pages Donjons `/game/dungeon/list` + `/game/dungeon/show`)
+> Derniere mise a jour : 2026-05-03 (135 sous-phase 3e.aa — i18n complet de la page Succes `/game/achievements`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.aa : page Succes (2026-05-03)
+
+> i18n complet de la page `/game/achievements` (template `templates/game/achievements/index.html.twig`, 149 lignes), page des succes du joueur avec onglets de categorie (combat, exploration, quetes, recolte, craft, secrets), barres de progression, badges Secret/Debloque, et recompenses (gils, titres). 10eme livraison de la serie 3e dediee aux pages Twig statiques (apres 3e.r `/game/support`, 3e.s `/character/{select,limit_reached}`, 3e.t `/character/create`, 3e.u `/game/messages`, 3e.v `/game/journal`, 3e.w `/game/chat`, 3e.x `/game/party`, 3e.y `/game/services`, 3e.z `/game/dungeon`). Etend la couverture amorcee precedemment par l'i18n des titres et descriptions des entites Achievement via les filters `|localized_achievement_title`/`|localized_achievement_description`.
+
+### Changements
+
+- **`translations/messages.fr.json`** (+25 lignes) : nouveau namespace `game.achievement.*` (17 cles) couvrant : `page_title`, `heading`, `empty`, `hidden_title`, `hidden_description`, `badge.{secret,unlocked}`, `progress_label`, `category.{combat,exploration,quests,gathering,craft,secrets}`, `reward.{heading,title_label,gils}`.
+- **`translations/messages.en.json`** (+25 lignes) : meme structure, traductions EN.
+- **`templates/game/achievements/index.html.twig`** (~10 emplacements) : block title, heading, mapping `category_labels` (refactore pour appeler `|trans` sur chaque valeur), etat vide, titre + badge Secret du succes cache, badges Debloque/Secret, description du succes cache, label Progression, fallback `???` quand le succes cache a une progression, heading Recompense, recompenses gils + titre (parametrees avec `%amount%`/`%title%`).
+
+### Particularite
+
+Le bloc Twig `{% set category_labels = {...} %}` qui mappait FR-only les keys de categorie aux labels (`'combat': 'Combat', 'exploration': 'Exploration', ...`) utilise desormais le filter `|trans` directement dans la valeur de chaque entree (`'combat': 'game.achievement.category.combat'|trans, ...`), preservant la syntaxe `category_labels[key]|default(key|capitalize)` du template (fallback capitalize si la cle manque). Les badges `Secret`/`Debloque` ont chacun leur cle dediee pour eviter la collision de namespace avec les categories. Les 2 chaines de recompense parametrees (`reward.title_label` avec `%title%` et `reward.gils` avec `%amount%`) utilisent le pattern Symfony `|trans({'%X%': ...})` standard.
+
+### Impact
+
+- Diff total : ~75 lignes ajoutees + ~20 modifications, sous le budget de 300 lignes.
+- Parite FR/EN maintenue : 698 cles FR = 698 cles EN (681 -> 698, +17 cles).
+- Zero impact FR (les nouvelles cles FR reproduisent strictement les libelles existants).
+- Impact EN immediat sur `/game/achievements` : `Achievements` (titre + heading), `Combat/Exploration/Quests/Gathering/Crafting/Secrets` (onglets), `No achievements in this category.`, `???` (titre cache), `This achievement is secret. Keep playing to discover it...`, `Secret/Unlocked` (badges), `Progress`, `Reward:`, `Title: <name>`, `<n> Gils` au lieu des strings FR.
+- Sous-phase independante des 16 PR i18n / avatar / mounts / events en vol : aucune n'ajoute de chaine FR sur `templates/game/achievements/*.twig`.
 
 ---
 
