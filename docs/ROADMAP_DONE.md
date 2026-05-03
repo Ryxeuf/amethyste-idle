@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-04-28 (135 sous-phase 3e.x — i18n complet de la page de groupe `/game/party`)
+> Derniere mise a jour : 2026-05-03 (135 sous-phase 3e.z — i18n complet des pages Donjons `/game/dungeon/list` + `/game/dungeon/show`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.z : pages Donjons (2026-05-03)
+
+> i18n complet des 2 pages Donjons (`templates/game/dungeon/list.html.twig`, 93 lignes ; `templates/game/dungeon/show.html.twig`, 114 lignes). 9eme livraison de la serie 3e dediee aux pages Twig statiques (apres 3e.r `/game/support`, 3e.s `/character/{select,limit_reached}`, 3e.t `/character/create`, 3e.u `/game/messages`, 3e.v `/game/journal`, 3e.w `/game/chat`, 3e.x `/game/party`, 3e.y `/game/services`). Etend la couverture amorcee par 3e.i (qui avait livre l'i18n des **noms et descriptions** des entites Dungeon via les filters `|localized_dungeon_name`/`|localized_dungeon_description` + les fixtures EN des 2 donjons existants) en couvrant l'integralite des chaines UI hardcodees encore en FR.
+
+### Changements
+
+- **`translations/messages.fr.json`** (+34 lignes) : nouveau namespace `game.dungeon.*` (25 cles) couvrant : `page_title`, `heading`, `subtitle`, `empty`, `active_run.{heading,return_button,warning}`, `level_required_short`, `max_players_label`, `history_heading`, `back_link`, `info.{min_level,max_players}`, `requirements.{xp_insufficient,missing_items_heading}`, `loot_preview_heading`, `difficulty.{heading,normal,heroic,mythic,stat_multiplier,cooldown,cooldown_badge,enter,unavailable}`.
+- **`translations/messages.en.json`** (+34 lignes) : meme structure, traductions EN.
+- **`templates/game/dungeon/list.html.twig`** (~10 emplacements modifies) : `block title`, banner "Donjon en cours" + bouton retour, headings et subtitle de la liste, etat vide, badges niveau/joueurs (parametres dynamiques `%level%`/`%count%`), heading historique recent, label de difficulte sur les runs historiques (cle dynamique `'game.dungeon.difficulty.' ~ run.difficulty.value`).
+- **`templates/game/dungeon/show.html.twig`** (~12 emplacements modifies) : lien retour, infos niveau/joueurs max, message d'XP insuffisante (`%xp%`), heading objets manquants, warning donjon en cours (`%name%`), heading loot preview, heading "Choisir une difficulte", labels de difficulte (cle dynamique `('game.dungeon.difficulty.' ~ diff.value)|trans`), texte stats x mult / cooldown h, badges Cooldown/Indisponible, bouton Entrer.
+
+### Particularite
+
+Les libelles de difficulte (`Normal`/`Heroique`/`Mythique`) etaient retournes par `DungeonDifficulty::label()` cote PHP et appeles via `{{ diff.label }}` dans les templates. Plutot que d'introduire une dependance translator dans l'enum (anti-pattern), les templates construisent dynamiquement la cle de traduction via `('game.dungeon.difficulty.' ~ diff.value)|trans` (ou `diff.value` retourne `'normal'`/`'heroic'`/`'mythic'`). Cela laisse `DungeonDifficulty::label()` intact pour les eventuels appels backend (logs, fixtures, JsonResponse) et concentre la traduction au niveau du rendu.
+
+### Impact
+
+- Diff total : ~90 lignes ajoutees + ~22 modifications, sous le budget de 300 lignes.
+- Parite FR/EN maintenue : 706 cles FR = 706 cles EN (681 -> 706, +25 cles).
+- Zero impact FR (les nouvelles cles FR reproduisent strictement les libelles existants).
+- Impact EN immediat sur `/game/dungeon/list` et `/game/dungeon/show` : `Dungeons` (titre + nav), `Dungeon in progress` / `Return to dungeon`, `Explore instanced dungeons to obtain rare loot`, `No dungeons available at the moment`, `Lvl. X+` / `X players`, `Recent history`, `Required level/Max players`, `Insufficient experience...`, `Missing required items:`, `Possible loot`, `Choose a difficulty` / `Normal/Heroic/Mythic`, `Mob stats xN` / `Cooldown Nh`, `Cooldown` (badge), `Enter` / `Unavailable` au lieu des strings FR.
+- Sous-phase independante des 16 PR i18n / avatar / mounts / events en vol : les branches qui touchent `templates/game/dungeon/*.twig` sont des branches anciennes pre-merge de PR #523 (qui avait introduit les filters `|localized_dungeon_*`) et n'ajoutent pas de chaine FR — leurs conflits seront resolus en faveur de la version main au moment de leur rebase.
 
 ---
 
