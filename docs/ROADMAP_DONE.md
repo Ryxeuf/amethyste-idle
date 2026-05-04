@@ -1,7 +1,37 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-03 (130 sous-phase 6b — badge "Possédée" sur le catalogue de montures `/game/mounts`)
+> Derniere mise a jour : 2026-05-04 (135 sous-phase 3e.w.b — i18n du controller Stimulus chat `chat_controller.js`)
+
+---
+
+## 135 — Localisation i18n sous-phase 3e.w.b : controller Stimulus chat (2026-05-04)
+
+> 7eme livraison de la serie d'i18n des controllers Stimulus client (apres 2d harvest, 2e inventory, 2f materia_slot, 2g craft_queue, 2h quickbar, 2i influence_notification). Complement direct de la sous-phase 3e.w (qui avait livre l'i18n du template `chat/index.html.twig`) en couvrant les 4 dernieres chaines FR hardcodees dans `assets/controllers/chat_controller.js`.
+
+### Changements
+
+- **`assets/controllers/chat_controller.js`** (+13 / -4 lignes) : ajout du value `labels: { type: Object, default: {} }`, helper `_label(key, fallback)` qui retombe sur le fallback FR si la valeur est absente. 4 substitutions : (1) `Erreur lors de l'envoi.` -> `_label('send_error', ...)` quand le POST `/api/chat/send` echoue, (2) `[message supprime]` -> `_label('deleted_message', ...)` dans `_handleDeleteMessage()`, (3) `[MP -> %name%]` / `[MP de %name%]` -> `_label('private_outgoing', ...)` / `_label('private_incoming', ...)` dans `_appendMessage()` pour les prefixes des messages prives (resolution `%name%` cote JS via `template.replace`).
+- **`templates/game/chat/index.html.twig`** (+7 / -1 lignes) : nouvel attribut `data-chat-labels-value="{...|json_encode|e('html_attr')}"` ajoute sur l'element racine (le controller `chat` utilise `data-controller="chat"` standalone, ajout d'un attribut supplementaire plutot que migration vers `stimulus_controller(...)` pour minimiser le diff).
+- **`translations/messages.fr.json`** (+7 lignes) : 4 cles `game.chat.js.{send_error,deleted_message,private_outgoing,private_incoming}`.
+- **`translations/messages.en.json`** (+7 lignes) : memes cles, traductions EN (`Failed to send message.`, `[deleted message]`, `[PM -> %name%]`, `[PM from %name%]`).
+
+### Pattern
+
+Strictement aligne sur les 6 controllers precedents (harvest, inventory, materia_slot, craft_queue, quickbar, influence_notification) :
+- `static values = { labels: { type: Object, default: {} } }`
+- Helper defensif `_label(key, fallback)` qui retombe sur le fallback FR si la valeur est absente (retrocompatibilite forte si le template n'est pas mis a jour ou si la cle manque).
+- Labels passes via attribut HTML `data-chat-labels-value="{...|json_encode|e('html_attr')}"`.
+- 2 chaines parametrees (`private_outgoing` / `private_incoming` avec `%name%`) resolues cote JS via `template.replace('%name%', target)` ou `target` est l'echappement HTML du nom du joueur (preserve le comportement defensif existant).
+
+### Impact
+
+- Diff total : ~34 lignes (sous le budget de 300).
+- Aucune migration, aucun changement backend (`ChatController` cote PHP n'expose aucune chaine FR template — toutes les chaines de l'UI dynamique cote client etaient dans `chat_controller.js`).
+- Pas de nouveau test (pure substitution de literals JS, helper defensif testable seulement via E2E).
+- Parite FR/EN maintenue : 717 cles FR = 717 cles EN.
+- Impact EN immediat : basculer la locale en EN via `/game/settings` affiche `Failed to send message.` / `[deleted message]` / `[PM -> Bob]` / `[PM from Bob]` au lieu des strings FR sur les actions de chat.
+- Sous-phase independante des 11 PR i18n / avatar / mounts / events en vol : aucune ne touche `chat_controller.js` ni `chat/index.html.twig`.
 
 ---
 

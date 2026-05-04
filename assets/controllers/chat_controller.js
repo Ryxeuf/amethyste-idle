@@ -17,7 +17,13 @@ export default class extends Controller {
         conversationsUrl: String,
         searchUrl: String,
         profileUrl: String,
+        labels: { type: Object, default: {} },
     };
+
+    _label(key, fallback) {
+        const value = this.labelsValue?.[key];
+        return typeof value === 'string' && value.length > 0 ? value : fallback;
+    }
 
     connect() {
         this._activeChannel = 'global';
@@ -84,7 +90,7 @@ export default class extends Controller {
             const data = await response.json();
 
             if (!response.ok) {
-                this._appendSystemMessage(data.error || 'Erreur lors de l\'envoi.');
+                this._appendSystemMessage(data.error || this._label('send_error', 'Erreur lors de l\'envoi.'));
             } else if (data.system && data.systemMessage) {
                 this._appendSystemMessage(data.systemMessage);
             }
@@ -245,7 +251,7 @@ export default class extends Controller {
             el.querySelector('.chat-content')?.replaceWith(
                 Object.assign(document.createElement('span'), {
                     className: 'chat-content text-gray-500 italic',
-                    textContent: '[message supprime]',
+                    textContent: this._label('deleted_message', '[message supprime]'),
                 })
             );
         }
@@ -290,8 +296,11 @@ export default class extends Controller {
         name.className = `font-semibold text-sm mr-1 hover:underline ${isSelf ? 'text-purple-400' : 'text-blue-400'}`;
 
         if (data.channel === 'private') {
-            const prefix = isSelf ? `[MP -> ${this._escapeHtml(data.recipient?.name || '?')}]` : `[MP de ${this._escapeHtml(data.sender.name)}]`;
-            name.textContent = prefix;
+            const target = this._escapeHtml(isSelf ? (data.recipient?.name || '?') : data.sender.name);
+            const template = isSelf
+                ? this._label('private_outgoing', '[MP -> %name%]')
+                : this._label('private_incoming', '[MP de %name%]');
+            name.textContent = template.replace('%name%', target);
             name.className = 'font-semibold text-sm mr-1 hover:underline text-pink-400';
         } else if (data.channel === 'guild') {
             name.textContent = `${this._escapeHtml(data.sender.name)}:`;

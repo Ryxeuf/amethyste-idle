@@ -743,7 +743,13 @@
       "search_placeholder": "Rechercher un joueur...",
       "private_empty": "Selectionnez un joueur pour commencer une conversation",
       "input_placeholder": "Ecrire un message...",
-      "send": "Envoyer"
+      "send": "Envoyer",
+      "js": {
+        "send_error": "Erreur lors de l'envoi.",
+        "deleted_message": "[message supprime]",
+        "private_outgoing": "[MP -> %name%]",
+        "private_incoming": "[MP de %name%]"
+      }
     },
     "journal": {
       "title": "Journal de bord",
