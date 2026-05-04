@@ -1,7 +1,53 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 2b.shop.b — endpoint achat + bouton UI "Acheter")
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 2b.quest — recompense de quete via `MountQuestRewardGranter`)
+
+---
+
+## 130 — Montures sous-phase 2b.quest : recompense de quete (Sprint 11, 2026-05-04)
+
+> Branche le canal d'acquisition "quete" pour les montures. Suite directe de 2b.shop.b. Permet d'attribuer une monture en recompense d'une quete principale ou quotidienne via une simple cle `mounts` dans `Quest::rewards` JSON. Reste a brancher 2b.loot (drop rare) et 4 (animation sprite).
+
+### Changements
+
+- **`src/GameEngine/Mount/MountQuestRewardGranter.php`** (nouveau, 46 lignes) : service avec `grantBySlug(Player $player, string $slug, bool $flush = true): ?Mount`. Resout la monture par slug via `EntityManager::getRepository(Mount::class)->findOneBy(['slug' => $slug])`. Delegue a `MountAcquisitionService::grantMount(..., PlayerMount::SOURCE_QUEST, $flush)`. **Idempotent** : retourne `null` si le slug est inconnu OU si la monture est deja possedee (`MountAlreadyOwnedException` est silencieusement avalee). Une `\DomainException` est relayee si la monture est desactivee (cas exceptionnel, signale au caller).
+- **`src/Controller/Game/QuestController.php`** (+18 / 0 lignes, total 510) : injection de `MountQuestRewardGranter`. Nouveau bloc dans `applyRewards()` qui lit la cle `mounts` (liste de strings) du tableau de rewards. Pour chaque slug valide, appelle `grantBySlug($player, $slug, false)` (le `false` differe le flush au flush global de `complete()` / `dailyComplete()` pour atomicite). Ajoute `+Monture : <name>` au tableau de messages si l'octroi reussit.
+- **`tests/Unit/GameEngine/Mount/MountQuestRewardGranterTest.php`** (nouveau, 116 lignes) : 5 cas couvrant delegation avec `SOURCE_QUEST`, slug inconnu (no-op), deja possedee (swallow + null), mount disabled (relay `\DomainException`), forwarding du flag `flush`.
+
+### Pattern
+
+- **Mirroir de MountPurchaseService** : meme architecture (wrapper specialise par canal d'acquisition autour de `MountAcquisitionService`). Permet d'avoir un service par canal (`SOURCE_QUEST` / `SOURCE_PURCHASE` / `SOURCE_DROP`) avec une logique propre a chaque canal sans pourrir le service de base.
+- **Idempotence par design** : un slug inconnu ou une monture deja possedee ne casse pas la quete. Un joueur qui re-complete une chaine de quete ou qui obtient deux fois la meme recompense (par ex. via une quete repetable) ne verra pas d'erreur — la monture est juste ignoree silencieusement avec un message reward absent. Coherent avec la regle PvE cooperative : la recompense est binaire (debloque la fonctionnalite), pas quantitative.
+- **Flush differe** : le service accepte `$flush = false` pour permettre au controller d'enchainer plusieurs operations (gils + items + mounts + remove playerQuest + persist completedQuest) en un seul flush atomique. Coherent avec `MountPurchaseService::purchase` et `MountAcquisitionService::grantMount` qui exposent le meme parametre.
+
+### Format des rewards
+
+```php
+// Quest::rewards JSON
+'rewards' => [
+    'gold' => 500,
+    'xp' => 1000,
+    'items' => [...],
+    'mounts' => ['horse_brown', 'chocobo_yellow'], // <- nouveau
+],
+```
+
+Les choix de quete (`choiceOutcome[].bonusRewards`) supportent automatiquement le meme format puisqu'ils passent par la meme methode `applyRewards()`.
+
+### Impact
+
+- Diff total : ~180 lignes (sous le budget de 300).
+- 1 fichier modifie (`QuestController.php`, +18 lignes, total 510 — la regle "modifications < 50 lignes pour un fichier deja > 400 lignes" est respectee).
+- 2 fichiers nouveaux (service 46 lignes + test 116 lignes — sous le seuil de 400).
+- Aucune migration, aucun changement de schema, aucune fixture modifiee (les fixtures de quete existantes restent valides ; les futures quetes "monture" ajouteront simplement la cle `mounts` au JSON).
+- Aucun changement de template / frontend (le message de recompense est purement serveur, propage via le tableau JSON `messages` deja consomme par le frontend).
+- Le canal `SOURCE_QUEST` etait deja dans la whitelist `PlayerMount::getSources()` depuis la sous-phase 2a — aucun ajustement requis cote entite.
+
+### Suite
+
+- **Sous-phase 2b.loot** : integration avec `LootGenerator` / table de drops monstres pour permettre le drop rare de mounts (`SOURCE_DROP`). Pattern identique : nouveau `MountLootRewardGranter` qui delegue a `MountAcquisitionService` avec `SOURCE_DROP`.
+- **Sous-phase 4** : animation sprite monte sur la carte (visualisation cote PixiJS).
 
 ---
 

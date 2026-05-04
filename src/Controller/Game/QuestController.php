@@ -8,6 +8,7 @@ use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Event\Game\QuestCompletedEvent;
+use App\GameEngine\Mount\MountQuestRewardGranter;
 use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\PlayerQuestUpdater;
@@ -37,6 +38,7 @@ class QuestController extends AbstractController
         private readonly QuestGiverResolver $questGiverResolver,
         private readonly DailyQuestService $dailyQuestService,
         private readonly QuestMonsterBySlugResolver $questMonsterBySlugResolver,
+        private readonly MountQuestRewardGranter $mountQuestRewardGranter,
     ) {
     }
 
@@ -488,6 +490,21 @@ class QuestController extends AbstractController
             $messages[] = $count > 1
                 ? sprintf('+%d %s', $count, $itemName)
                 : sprintf('+%s', $itemName);
+        }
+
+        // Apply mount rewards (list of mount slugs). Idempotent: a slug already
+        // owned by the player is silently skipped, an unknown slug is ignored.
+        $mountSlugs = $rewards['mounts'] ?? [];
+        if (\is_array($mountSlugs)) {
+            foreach ($mountSlugs as $slug) {
+                if (!\is_string($slug) || $slug === '') {
+                    continue;
+                }
+                $mount = $this->mountQuestRewardGranter->grantBySlug($player, $slug, false);
+                if ($mount !== null) {
+                    $messages[] = sprintf('+Monture : %s', $mount->getName());
+                }
+            }
         }
     }
 }
