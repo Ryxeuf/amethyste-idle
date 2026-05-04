@@ -617,6 +617,9 @@
       "gil_cost": "Cout en gils",
       "gil": "gils",
       "owned": "Possédée",
+      "active": "Active",
+      "mount_button": "Monter",
+      "unmount_button": "Descendre",
       "obtention": {
         "quest": "Recompense de quete",
         "drop": "Drop rare",

@@ -1,7 +1,41 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.a — endpoints HTTP mount/unmount)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.b — boutons UI Monter/Descendre)
+
+---
+
+## 130 — Montures sous-phase 3c.b : boutons UI Monter/Descendre (Sprint 11, 2026-05-04)
+
+> Suite directe de la sous-phase 3c.a (PR #565). Expose les endpoints HTTP au joueur via des boutons UI sur la page `/game/mounts`.
+
+### Changements
+
+- **`templates/game/mount/index.html.twig`** (+33 / -2 lignes, total 106) :
+  - Banniere de flash success/error en haut du `game-card-body` (consomme `app.flashes(['success', 'error'])` et applique `|trans` aux cles flash backend).
+  - Calcul de `isActive` par carte (`activeMountId == mount.id`).
+  - Bordure violette pour la monture active (au lieu de la bordure emeraude "owned").
+  - Nouveau badge "Active" (violet) qui remplace le badge "Possédée" (emeraude) pour la monture courante.
+  - Boutons "Monter / Descendre" rendus uniquement pour les montures possedees, avec form POST + CSRF token (`mount_{id}` / `unmount`) + bouton submit.
+- **`translations/messages.{fr,en}.json`** (+3 cles chacun) : `game.mount.{active,mount_button,unmount_button}`. Parite maintenue **737 cles FR = 737 cles EN**.
+
+### Pattern
+
+- **CSRF par bouton** : chaque form genere son token via `csrf_token('mount_' ~ mount.id)` ou `csrf_token('unmount')`, valides par les endpoints livres en 3c.a.
+- **Flash messages traduits** : les cles flash retournees par le controller (`game.mount.flash.mounted`, etc.) sont passees a `|trans` dans le template — pattern aligne sur les autres pages du jeu.
+- **Etat visuel a 3 niveaux** : non possedée (bordure grise) -> possedée mais non active (bordure emeraude + badge Possédée) -> active (bordure violette + badge Active). UX claire et progressive.
+
+### Impact
+
+- Diff total : ~50 lignes (sous le budget de 300).
+- Aucun fichier modifie ne depasse 400 lignes (template : 106).
+- Aucun changement backend, aucun nouveau test (le rendu Twig est testable visuellement). Les guards des endpoints sont deja couverts par les tests fonctionnels de 3c.a.
+- Independante des 12 PR ouvertes : aucune ne touche `templates/game/mount/index.html.twig`.
+
+### Suite
+
+- **Sous-phase 3c.c** : application du bonus de vitesse `+Mount::speedBonus%` dans `PlayerMoveProcessor` ou via une methode `Player::getEffectiveSpeed()`. La feature gameplay sera complete a ce moment-la.
+- **Sous-phase 4** : animation sprite monte (visualisation cote PixiJS).
 
 ---
 

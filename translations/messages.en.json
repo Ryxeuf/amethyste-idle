@@ -617,6 +617,9 @@
       "gil_cost": "Gil cost",
       "gil": "gils",
       "owned": "Owned",
+      "active": "Active",
+      "mount_button": "Mount",
+      "unmount_button": "Dismount",
       "obtention": {
         "quest": "Quest reward",
         "drop": "Rare drop",
