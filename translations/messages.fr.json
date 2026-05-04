@@ -639,6 +639,10 @@
         "insufficient_gils": "Vous n'avez pas assez de gils pour acheter cette monture.",
         "not_purchasable": "Cette monture n'est pas en vente.",
         "already_owned": "Vous possedez deja cette monture."
+      },
+      "filter": {
+        "aria": "Filtrer les montures par type d'obtention",
+        "all": "Toutes"
       }
     },
     "harvest": {

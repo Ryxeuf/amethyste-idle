@@ -639,6 +639,10 @@
         "insufficient_gils": "You do not have enough gils to buy this mount.",
         "not_purchasable": "This mount is not for sale.",
         "already_owned": "You already own this mount."
+      },
+      "filter": {
+        "aria": "Filter mounts by obtention type",
+        "all": "All"
       }
     },
     "harvest": {

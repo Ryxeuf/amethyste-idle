@@ -19,6 +19,21 @@
                 {% endfor %}
             {% endfor %}
 
+            <div class="flex flex-wrap gap-2 mb-3" role="group" aria-label="{{ 'game.mount.filter.aria'|trans }}">
+                <a href="{{ path('app_game_mounts') }}"
+                   class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border {% if selectedFilter == '' %}bg-purple-900/40 border-purple-600 text-purple-100{% else %}bg-gray-800/60 border-gray-700 text-gray-300 hover:text-white{% endif %}">
+                    {{ 'game.mount.filter.all'|trans }}
+                </a>
+                {% for type in availableFilters %}
+                    {% set typeLabel = obtentionLabels[type] ?? null %}
+                    {% if typeLabel %}
+                        <a href="{{ path('app_game_mounts', {type: type}) }}"
+                           class="inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border {% if selectedFilter == type %}bg-purple-900/40 border-purple-600 text-purple-100{% else %}bg-gray-800/60 border-gray-700 text-gray-300 hover:text-white{% endif %}">
+                            {{ typeLabel|trans }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
             {% if mounts is empty %}
                 <div class="text-center py-8">
                     <p class="text-gray-500 text-sm">{{ 'game.mount.empty'|trans }}</p>
