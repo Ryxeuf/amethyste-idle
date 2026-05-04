@@ -34,8 +34,8 @@ class MountController extends AbstractController
         $this->denyAccessUnlessGranted('ROLE_USER');
 
         $allowedTypes = Mount::getObtentionTypes();
-        $rawFilter = $request->query->get('type', '');
-        $selectedFilter = \is_string($rawFilter) && \in_array($rawFilter, $allowedTypes, true) ? $rawFilter : '';
+        $rawFilter = (string) $request->query->get('type', '');
+        $selectedFilter = \in_array($rawFilter, $allowedTypes, true) ? $rawFilter : '';
 
         $criteria = ['enabled' => true];
         if ('' !== $selectedFilter) {

@@ -147,7 +147,7 @@ class MountControllerTest extends TestCase
         $this->mountActivationService->expects($this->never())->method('mount');
         $this->repository->expects($this->never())->method('find');
 
-        $response = $this->controller->mount(42, new \Symfony\Component\HttpFoundation\Request());
+        $response = $this->controller->mount(42, new Request());
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame('/game/mounts', $response->headers->get('Location'));
@@ -159,7 +159,7 @@ class MountControllerTest extends TestCase
 
         $this->mountActivationService->expects($this->never())->method('unmount');
 
-        $response = $this->controller->unmount(new \Symfony\Component\HttpFoundation\Request());
+        $response = $this->controller->unmount(new Request());
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame('/game/mounts', $response->headers->get('Location'));
@@ -172,7 +172,7 @@ class MountControllerTest extends TestCase
         $this->mountPurchaseService->expects($this->never())->method('purchase');
         $this->repository->expects($this->never())->method('find');
 
-        $response = $this->controller->purchase(42, new \Symfony\Component\HttpFoundation\Request());
+        $response = $this->controller->purchase(42, new Request());
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame('/game/mounts', $response->headers->get('Location'));
