@@ -1,7 +1,26 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (AVT-35 sous-phase 1 — Menu self-service /game/character/customize)
+> Derniere mise a jour : 2026-05-04 (AVT-35 sous-phase 2 — integration nav desktop + mobile)
+
+---
+
+## AVT-35 — Personnalisation post-creation, sous-phase 2 (Sprint 10, 2026-05-04)
+
+> Suite directe de la sous-phase 1 (PR #561, livree le meme jour). Ferme le loop UX en rendant le menu de customization decouvrable via la navigation principale.
+
+### Changements
+
+- **`templates/game/game.html.twig`** (+8 / -1 lignes) : (1) ajout de `app_character_customize` a la liste `character_routes` qui pilote le surlignage du dropdown desktop "Personnage". (2) nouveau lien "Apparence" insere apres "Journal" dans le dropdown desktop, avec un icone crayon (`stroke d="M11 5H6..."`). (3) nouveau lien dans le drawer mobile insere apres "Montures" avec le meme icone. (4) `app_character_customize` ajoute a la whitelist de surlignage du bouton "Plus" qui ouvre le drawer mobile.
+- **`translations/messages.{fr,en}.json`** (+1 cle chacun) : `game.nav.customize_appearance` -> `Apparence` / `Appearance`. Parite maintenue 728 cles FR = 728 cles EN.
+- **`docs/roadmap/SPRINT_10.md`** : sous-phase 2 cochee + detail.
+- **`docs/roadmap/ROADMAP_TODO_INDEX.md`** : ligne d'avancement Sprint 10 etendue.
+
+### Impact
+
+- Diff total : ~25 lignes hors roadmap (sous le budget de 300).
+- Aucune migration, aucun changement backend, aucun nouveau test (modifications purement Twig + JSON, pas de code PHP).
+- Independante des 12 PR ouvertes : aucune ne touche `templates/game/game.html.twig` dropdowns Character ni drawer mobile.
 
 ---
 
