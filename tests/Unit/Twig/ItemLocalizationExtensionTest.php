@@ -54,9 +54,9 @@ class ItemLocalizationExtensionTest extends TestCase
 
     public function testDescriptionFilterReturnsTranslationMatchingCurrentLocale(): void
     {
-        $item = (new Item())
-            ->setDescription('Epee forgee en acier trempe.')
-            ->setDescriptionTranslations(['en' => 'A sword forged from tempered steel.']);
+        $item = new Item();
+        $item->setDescription('Epee forgee en acier trempe.');
+        $item->setDescriptionTranslations(['en' => 'A sword forged from tempered steel.']);
 
         $extension = new ItemLocalizationExtension($this->stackWithLocale('en'));
 
@@ -65,9 +65,9 @@ class ItemLocalizationExtensionTest extends TestCase
 
     public function testDescriptionFilterFallsBackToBaseDescriptionWhenTranslationMissing(): void
     {
-        $item = (new Item())
-            ->setDescription('Epee forgee en acier trempe.')
-            ->setDescriptionTranslations(['de' => 'Ein aus Stahl geschmiedetes Schwert.']);
+        $item = new Item();
+        $item->setDescription('Epee forgee en acier trempe.');
+        $item->setDescriptionTranslations(['de' => 'Ein aus Stahl geschmiedetes Schwert.']);
 
         $extension = new ItemLocalizationExtension($this->stackWithLocale('en'));
 
