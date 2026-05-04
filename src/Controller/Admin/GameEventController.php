@@ -215,6 +215,42 @@ class GameEventController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}/launch-now', name: 'launch_now', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function launchNow(Request $request, GameEvent $event): Response
+    {
+        if (!$this->isCsrfTokenValid('launch_now' . $event->getId(), $request->request->get('_token'))) {
+            return $this->redirectToRoute('admin_event_index');
+        }
+
+        if (!in_array($event->getStatus(), [GameEvent::STATUS_SCHEDULED, GameEvent::STATUS_COMPLETED, GameEvent::STATUS_CANCELLED], true)) {
+            $this->addFlash('error', 'Cet evenement est deja actif.');
+
+            return $this->redirectToRoute('admin_event_index');
+        }
+
+        $duration = $event->getEndsAt()->getTimestamp() - $event->getStartsAt()->getTimestamp();
+        if ($duration <= 0) {
+            $duration = 3600;
+        }
+
+        $now = new \DateTime();
+        $event->setStartsAt($now);
+        $event->setEndsAt((clone $now)->modify('+' . $duration . ' seconds'));
+        $event->setStatus(GameEvent::STATUS_ACTIVE);
+        $event->setUpdatedAt($now);
+        $this->em->flush();
+
+        $this->eventDispatcher->dispatch(
+            new GameEventActivatedEvent($event),
+            GameEventActivatedEvent::NAME,
+        );
+
+        $this->adminLogger->log('launch_now', 'GameEvent', $event->getId(), $event->getName());
+        $this->addFlash('success', 'Evenement "' . $event->getName() . '" lance immediatement.');
+
+        return $this->redirectToRoute('admin_event_index');
+    }
+
     #[Route('/{id}/toggle', name: 'toggle', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function toggle(Request $request, GameEvent $event): Response
     {
