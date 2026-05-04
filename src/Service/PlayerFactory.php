@@ -37,7 +37,7 @@ class PlayerFactory
         $player->setName($name);
         $player->setRace($race);
         $player->setClassType('player');
-        $player->setAvatarAppearance($this->normalizeAppearance($appearance));
+        $player->setAvatarAppearance($this->normalizeAppearance($appearance, $race));
 
         $modifiers = $race->getStatModifiers();
         $lifeMod = (int) ($modifiers['life'] ?? 0);
@@ -78,9 +78,9 @@ class PlayerFactory
      *
      * @return array<string, string>
      */
-    private function normalizeAppearance(?array $appearance): array
+    private function normalizeAppearance(?array $appearance, Race $race): array
     {
-        $body = isset($appearance['body']) && $appearance['body'] !== '' ? $appearance['body'] : self::DEFAULT_BODY;
+        $body = isset($appearance['body']) && $appearance['body'] !== '' ? $appearance['body'] : $this->resolveBodyForRace($race);
 
         $normalized = ['body' => $body];
 
@@ -93,6 +93,16 @@ class PlayerFactory
         }
 
         return $normalized;
+    }
+
+    private function resolveBodyForRace(Race $race): string
+    {
+        $sheet = $race->getSpriteSheet();
+        if (\is_string($sheet) && trim($sheet) !== '') {
+            return $sheet;
+        }
+
+        return self::DEFAULT_BODY;
     }
 
     private function createInventories(Player $player): void

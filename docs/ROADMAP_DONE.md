@@ -1,7 +1,40 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (AVT-25 — Persistance de l'apparence du joueur a la creation)
+> Derniere mise a jour : 2026-05-04 (AVT-26 — Race liee au body de base, Sprint 9 termine 8/8)
+
+---
+
+## AVT-26 — Lier Race au body de base (Sprint 9, 2026-05-04)
+
+> Ferme le Sprint 9 (8/8 taches) en exploitant la colonne `Race.spriteSheet` deja presente sur l'entite mais jamais peuplee. Le body de base d'un nouveau personnage est desormais derive de la race choisie au formulaire de creation, avec fallback gracieux si la race n'a pas de spriteSheet.
+
+### Changements
+
+- **`src/Service/PlayerFactory.php`** (+12 / -1 lignes) : nouvelle methode privee `resolveBodyForRace(Race): string` qui lit `Race::getSpriteSheet()` (filtre les chaines blanches via `trim`). `normalizeAppearance` accepte la race en argument et l'utilise comme fallback si l'utilisateur n'a pas selectionne explicitement de body. Constante `DEFAULT_BODY = 'human_m_light'` conservee comme fallback final pour les races sans spriteSheet.
+- **`src/DataFixtures/Game/RaceFixtures.php`** (+4 lignes) : appel `setSpriteSheet()` sur les 4 races existantes, mappant chacune sur l'un des 4 body sheets disponibles dans `assets/styles/images/avatar/body/` :
+  - `human` -> `human_v00`
+  - `elf` -> `human_v01`
+  - `dwarf` -> `human_v02`
+  - `orc` -> `human_v03`
+- **`tests/Unit/Service/PlayerFactoryTest.php`** (+47 lignes, +3 cas) :
+  - `testCreatePlayerUsesRaceSpriteSheetAsDefaultBody` : sans choix utilisateur, le body est derive de `race.spriteSheet`.
+  - `testCreatePlayerExplicitBodyOverridesRaceSpriteSheet` : un body explicite garde la priorite sur la race.
+  - `testCreatePlayerFallsBackToDefaultWhenRaceSpriteSheetIsBlank` : `' '` (chaine blanche) declenche le fallback final `human_m_light`.
+
+### Pattern
+
+- Priorite : body explicite (formulaire) > spriteSheet de la race > constante `DEFAULT_BODY`. Permet de garder le formulaire AVT-23 fonctionnel pour les joueurs qui veulent choisir, tout en fournissant un defaut visuel coherent par race pour ceux qui acceptent les valeurs par defaut.
+- `Race.spriteSheet` reste optionnelle : aucune migration requise (la colonne existe deja avec `nullable=true`), aucune contrainte de validation ajoutee. Une race sans spriteSheet retombe simplement sur `human_m_light`.
+- Aucun impact stat : les modificateurs `life/energy/speed/hit` des 4 races restent inchanges. Conformement a la regle CLAUDE.md n°6 (pas de niveau global), cette tache ne change pas l'equilibrage gameplay.
+
+### Impact
+
+- Diff total : ~64 lignes (sous le budget de 300).
+- Aucune migration : la colonne `Race.sprite_sheet` existait deja sur le schema.
+- 3 tests unitaires ajoutes (total `PlayerFactoryTest` : 7 cas).
+- Sprint 9 termine 8/8 — debloque le focus sur le Sprint 10 (Avatar Polish, 4/8 en cours).
+- Note : la valeur du fallback final (`human_m_light`) ne correspond a aucun fichier present dans `assets/styles/images/avatar/body/` (seuls `human_v00`..`human_v03` existent). Le fallback est conserve pour preserver le comportement existant et la continuite avec AVT-25 ; un cleanup futur pourra l'aligner sur `human_v00` une fois confirme qu'aucun consommateur ne reference cette valeur.
 
 ---
 

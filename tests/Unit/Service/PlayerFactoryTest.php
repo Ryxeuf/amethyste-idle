@@ -69,6 +69,57 @@ class PlayerFactoryTest extends TestCase
         $this->assertSame(['body' => 'human_m_light'], $player->getAvatarAppearance());
     }
 
+    public function testCreatePlayerUsesRaceSpriteSheetAsDefaultBody(): void
+    {
+        $this->recalculator->expects($this->once())->method('recalculate');
+
+        $race = $this->makeRace();
+        $race->setSpriteSheet('human_v02');
+
+        $player = $this->factory->createPlayer(
+            new User(),
+            'Brenor',
+            $race,
+            null,
+        );
+
+        $this->assertSame(['body' => 'human_v02'], $player->getAvatarAppearance());
+    }
+
+    public function testCreatePlayerExplicitBodyOverridesRaceSpriteSheet(): void
+    {
+        $this->recalculator->expects($this->once())->method('recalculate');
+
+        $race = $this->makeRace();
+        $race->setSpriteSheet('human_v03');
+
+        $player = $this->factory->createPlayer(
+            new User(),
+            'Galadriel',
+            $race,
+            ['body' => 'human_v01'],
+        );
+
+        $this->assertSame(['body' => 'human_v01'], $player->getAvatarAppearance());
+    }
+
+    public function testCreatePlayerFallsBackToDefaultWhenRaceSpriteSheetIsBlank(): void
+    {
+        $this->recalculator->expects($this->once())->method('recalculate');
+
+        $race = $this->makeRace();
+        $race->setSpriteSheet('   ');
+
+        $player = $this->factory->createPlayer(
+            new User(),
+            'Aragorn',
+            $race,
+            null,
+        );
+
+        $this->assertSame(['body' => 'human_m_light'], $player->getAvatarAppearance());
+    }
+
     public function testCreatePlayerIgnoresEmptyOptionalFields(): void
     {
         $this->recalculator->expects($this->once())->method('recalculate');

@@ -25,10 +25,10 @@
 > Prerequis : ← AVT-23
 - [x] `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash` — la fabrique normalise les choix body/hair/hairColor du formulaire, seed `Player::avatarAppearance`, puis delegue le calcul du hash + la publication Mercure a `AvatarHashRecalculator::recalculate()` apres flush. Defaut `human_m_light` si aucune selection.
 
-### AVT-26 — Lier Race au body de base (S | ★★)
+### ~~AVT-26 — Lier Race au body de base (S | ★★)~~ ✅
 > Prerequis : ← AVT-25
-- [ ] Exploiter `Race.spriteSheet` pour determiner le body de base
-- [ ] Race affecte les stats (inchange), body affecte le visuel
+- [x] Exploiter `Race.spriteSheet` pour determiner le body de base — `PlayerFactory::resolveBodyForRace` lit `Race::getSpriteSheet()` ; le body explicite du formulaire reste prioritaire (override), puis fallback sur la spriteSheet de la race, puis fallback final sur la constante `DEFAULT_BODY = 'human_m_light'` si la race n'a pas de spriteSheet (ou si la valeur est blanche).
+- [x] Race affecte les stats (inchange), body affecte le visuel — fixtures `RaceFixtures` etendues : human -> `human_v00`, elf -> `human_v01`, dwarf -> `human_v02`, orc -> `human_v03` (les 4 sheets du dossier `assets/styles/images/avatar/body/`). Aucune modification des modificateurs de stats existants.
 
 ---
 
