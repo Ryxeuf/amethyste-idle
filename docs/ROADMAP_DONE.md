@@ -1,7 +1,36 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (135 sous-phase 3e.w.b — i18n du controller Stimulus chat `chat_controller.js`)
+> Derniere mise a jour : 2026-05-04 (135 sous-phase 2h.b — i18n des chaines residuelles de la barre d'action rapide quickbar)
+
+---
+
+## 135 — Localisation i18n sous-phase 2h.b : chaines residuelles quickbar (2026-05-04)
+
+> Suite directe de la sous-phase 2h (qui avait pose l'infra `labels` + 4 cles `game.quickbar.{aria_label,item_unavailable,error,network_error}`) en couvrant les 3 dernieres chaines FR hardcodees laissees par cette livraison initiale dans `quickbar_controller.js` et le bloc quickbar de `templates/game/map/index.html.twig`.
+
+### Changements
+
+- **`templates/game/map/index.html.twig`** (+4 / -2 lignes) : 3 substitutions dans le bloc `stimulus_controller('quickbar', ...)` — (1) attribut `title="Slot N — Clic: utiliser, Clic droit: retirer"` du bouton de chaque slot remplace par `title="{{ 'game.quickbar.slot_title'|trans({'%num%': i + 1}) }}"`, (2) header du picker modal `<span>Assigner un objet</span>` remplace par `'game.quickbar.assign_item'|trans`, (3) ajout de la cle `empty_picker: 'game.quickbar.empty_picker'|trans` a l'objet `labels` deja passe au controller Stimulus.
+- **`assets/controllers/quickbar_controller.js`** (+4 / -1 lignes) : refactor de la ligne 161 qui utilisait `list.innerHTML = '<p ...>Aucun consommable disponible</p>'` (string FR hardcodee + risque XSS si la cle de traduction venait a contenir du HTML) en `createElement('p')` + `textContent = this._label('empty_picker', 'Aucun consommable disponible')`. Pattern strictement aligne sur les 7 controllers precedents (helper `_label(key, fallback)` deja en place depuis 2h).
+- **`translations/messages.fr.json`** (+3 lignes) : 3 cles ajoutees au namespace `game.quickbar` — `slot_title` (`"Slot %num% — Clic: utiliser, Clic droit: retirer"`), `assign_item` (`"Assigner un objet"`), `empty_picker` (`"Aucun consommable disponible"`).
+- **`translations/messages.en.json`** (+3 lignes) : memes cles, traductions EN — `"Slot %num% — Click: use, Right click: remove"` / `"Assign an item"` / `"No consumables available"`.
+
+### Pattern
+
+Strictement aligne sur les 7 controllers precedents (2d harvest, 2e inventory, 2f materia_slot, 2g craft_queue, 2h quickbar, 2i influence_notification, 3e.w.b chat) :
+- Helper defensif `_label(key, fallback)` deja en place depuis la sous-phase 2h, reutilise tel quel pour `empty_picker`.
+- Refactor `innerHTML` -> `createElement` + `textContent` pour eliminer le risque XSS lors de l'injection d'une chaine localisee (precaution defensive standard).
+- 1 chaine parametree (`slot_title` avec `%num%`) resolue cote serveur via `|trans({'%num%': i + 1})` Symfony standard (le bouton est rendu cote serveur dans la boucle `{% for i in 0..5 %}`).
+
+### Impact
+
+- Diff total : ~14 lignes hors roadmap (sous le budget de 300).
+- Aucune migration, aucun changement backend.
+- Pas de nouveau test (pure substitution de literals + extraction d'attribut `title`, helper defensif testable seulement via E2E).
+- Parite FR/EN maintenue : 720 cles FR = 720 cles EN.
+- Impact EN immediat : basculer la locale en EN via `/game/settings` affiche `Slot 1 — Click: use, Right click: remove` (tooltip slot), `Assign an item` (header modal) et `No consumables available` (etat vide picker) au lieu des strings FR sur la barre d'action rapide.
+- Sous-phase independante des 11 PR i18n / avatar / mounts / events en vol : aucune ne touche `quickbar_controller.js` ni le bloc quickbar de `templates/game/map/index.html.twig`.
 
 ---
 
