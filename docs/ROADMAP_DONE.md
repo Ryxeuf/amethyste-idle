@@ -1,7 +1,42 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 3b — MountActivationService)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.a — endpoints HTTP mount/unmount)
+
+---
+
+## 130 — Montures sous-phase 3c.a : endpoints HTTP mount/unmount (Sprint 11, 2026-05-04)
+
+> Suite directe de la sous-phase 3b (PR #564). Expose le `MountActivationService` au navigateur via 2 endpoints HTTP avec CSRF + flash, sans encore livrer les boutons UI (deferre a 3c.b) ni le bonus de vitesse (deferre a 3c.c).
+
+### Changements
+
+- **`src/Controller/Game/MountController.php`** (+62 / -1 lignes, total 110) : injection de `MountActivationService`. Nouvelles routes :
+  - `POST /game/mounts/{id}/mount` (`app_game_mounts_mount`) : valide CSRF token `mount_{id}`, charge la monture par id, appelle `mountActivationService->mount(player, mount)`, gere `MountNotOwnedException` / `\DomainException` (mount disabled) / mount inconnue en flash, redirige vers `/game/mounts`.
+  - `POST /game/mounts/unmount` (`app_game_mounts_unmount`) : valide CSRF token `unmount`, appelle `unmount(player)`, flash success.
+  - L'action `index()` expose desormais `activeMountId` au template (consomme par 3c.b pour les boutons UI).
+- **`tests/Functional/Controller/Game/MountControllerTest.php`** (+27 / -2 lignes) : nouveau mock `MountActivationService` dans le constructeur. 2 nouveaux cas (`testMountRedirectsWhenNoActivePlayer`, `testUnmountRedirectsWhenNoActivePlayer`) qui valident le guard "pas de joueur courant -> 302 sans appel au service ni au repo". Cas existant `testIndexExposesOwnedMountIdsForCurrentPlayer` etend l'assertion sur `activeMountId`.
+- **`translations/messages.{fr,en}.json`** (+8 cles chacun) : nouveau namespace `game.mount.flash.{mounted,unmounted,not_owned,disabled,unknown,csrf_invalid}`. Parite maintenue 734 cles FR = 734 cles EN.
+
+### Pattern
+
+- **CSRF token unique par action** : `mount_{id}` pour le mount (l'id fait partie du nom pour eviter les replays inter-mounts), `unmount` pour le unmount global. Conforme a la convention Symfony (un token par operation).
+- **Pattern PRG (POST-Redirect-GET)** : toutes les actions redirigent vers `/game/mounts` apres POST + flash. Empeche les re-submissions sur F5.
+- **Defense en profondeur** : guard joueur null, guard mount inconnue, guard CSRF, guard MountNotOwned, guard mount disabled. 5 chemins d'erreur, tous avec flash dedie pour l'UX.
+
+### Impact
+
+- Diff total : ~125 lignes (sous le budget de 300).
+- Aucun fichier modifie ne depasse 400 lignes (MountController : 110, test : 198).
+- Aucune migration : tout repose sur les sous-phases 3a + 3b (PRs #563 + #564 mergees).
+- Aucun impact gameplay observable : la sous-phase 3c.b livrera les boutons UI pour exercer ces endpoints, et 3c.c appliquera le bonus de vitesse.
+- Independante des 12 PR ouvertes : aucune ne touche `MountController.php`.
+
+### Suite
+
+- **Sous-phase 3c.b** : boutons "Monter / Descendre" sur la page `/game/mounts` (utilisant `activeMountId` deja expose par cette sous-phase) avec forme POST + CSRF token + bouton de validation.
+- **Sous-phase 3c.c** : application du bonus de vitesse `+Mount::speedBonus%` dans `PlayerMoveProcessor` ou via une methode `Player::getEffectiveSpeed()`.
+- **Sous-phase 4** : animation sprite monte (visualisation cote PixiJS).
 
 ---
 
