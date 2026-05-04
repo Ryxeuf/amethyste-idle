@@ -70,23 +70,35 @@
                 {{ _self.gear_slot('leg', equipped.leg, 'Jambes') }}
             </div>
 
-            {# Center: silhouette (hidden on mobile via CSS) #}
+            {# Center: paper doll (hidden on mobile via CSS) #}
             <div class="equip-center">
-                <div class="equip-silhouette">
-                    <svg viewBox="0 0 120 200" class="w-full h-full text-purple-500/20" fill="currentColor">
-                        <circle cx="60" cy="28" r="18"/>
-                        <rect x="54" y="46" width="12" height="8" rx="2"/>
-                        <path d="M25 58 C25 54, 35 50, 60 50 C85 50, 95 54, 95 58 L95 105 C95 108, 92 110, 88 110 L32 110 C28 110, 25 108, 25 105 Z"/>
-                        <rect x="28" y="108" width="64" height="8" rx="2" class="text-purple-600/15"/>
-                        <path d="M30 116 L32 160 C32 163, 35 165, 38 165 L52 165 C55 165, 56 163, 55 160 L52 116 Z"/>
-                        <path d="M68 116 L65 160 C64 163, 65 165, 68 165 L82 165 C85 165, 88 163, 88 160 L90 116 Z"/>
-                        <path d="M30 163 L22 173 C20 176, 22 180, 26 180 L52 180 C56 180, 58 176, 56 173 L52 163 Z"/>
-                        <path d="M68 163 L64 173 C62 176, 64 180, 68 180 L94 180 C98 180, 100 176, 98 173 L90 163 Z"/>
-                        <path d="M25 58 L12 85 C10 90, 12 95, 16 95 L22 95 L28 70 Z" class="text-purple-500/15"/>
-                        <path d="M95 58 L108 85 C110 90, 108 95, 104 95 L98 95 L92 70 Z" class="text-purple-500/15"/>
-                        <circle cx="14" cy="98" r="7" class="text-purple-500/15"/>
-                        <circle cx="106" cy="98" r="7" class="text-purple-500/15"/>
-                    </svg>
+                <div class="equip-silhouette"
+                     {% if avatarPayload is defined and avatarPayload is not null %}
+                        data-controller="paper-doll"
+                        data-paper-doll-payload-value="{{ avatarPayload|json_encode|e('html_attr') }}"
+                     {% endif %}>
+                    {% if avatarPayload is defined and avatarPayload is not null %}
+                        <canvas data-paper-doll-target="canvas"
+                                width="64" height="64"
+                                class="w-full h-full block"
+                                style="image-rendering: pixelated;"
+                                aria-label="{{ 'game.inventory.paper_doll_label'|trans({}, 'messages')|default('Apercu du personnage equipe') }}"></canvas>
+                    {% else %}
+                        <svg viewBox="0 0 120 200" class="w-full h-full text-purple-500/20" fill="currentColor">
+                            <circle cx="60" cy="28" r="18"/>
+                            <rect x="54" y="46" width="12" height="8" rx="2"/>
+                            <path d="M25 58 C25 54, 35 50, 60 50 C85 50, 95 54, 95 58 L95 105 C95 108, 92 110, 88 110 L32 110 C28 110, 25 108, 25 105 Z"/>
+                            <rect x="28" y="108" width="64" height="8" rx="2" class="text-purple-600/15"/>
+                            <path d="M30 116 L32 160 C32 163, 35 165, 38 165 L52 165 C55 165, 56 163, 55 160 L52 116 Z"/>
+                            <path d="M68 116 L65 160 C64 163, 65 165, 68 165 L82 165 C85 165, 88 163, 88 160 L90 116 Z"/>
+                            <path d="M30 163 L22 173 C20 176, 22 180, 26 180 L52 180 C56 180, 58 176, 56 173 L52 163 Z"/>
+                            <path d="M68 163 L64 173 C62 176, 64 180, 68 180 L94 180 C98 180, 100 176, 98 173 L90 163 Z"/>
+                            <path d="M25 58 L12 85 C10 90, 12 95, 16 95 L22 95 L28 70 Z" class="text-purple-500/15"/>
+                            <path d="M95 58 L108 85 C110 90, 108 95, 104 95 L98 95 L92 70 Z" class="text-purple-500/15"/>
+                            <circle cx="14" cy="98" r="7" class="text-purple-500/15"/>
+                            <circle cx="106" cy="98" r="7" class="text-purple-500/15"/>
+                        </svg>
+                    {% endif %}
                 </div>
             </div>
 

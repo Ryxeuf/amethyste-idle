@@ -9,6 +9,7 @@ use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
 use App\Helper\GearHelper;
 use App\Helper\PlayerHelper;
 use App\Helper\PlayerItemHelper;
+use App\Service\Avatar\PlayerAvatarPayloadBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,6 +24,7 @@ class EquipmentController extends AbstractController
         private readonly PlayerEffectiveStatsCalculator $playerEffectiveStatsCalculator,
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly PlayerItemHelper $playerItemHelper,
+        private readonly PlayerAvatarPayloadBuilder $avatarPayloadBuilder,
     ) {
     }
 
@@ -89,6 +91,7 @@ class EquipmentController extends AbstractController
             'activeSets' => $activeSets,
             'setBonuses' => $setBonuses,
             'toolSlots' => $toolSlots,
+            'avatarPayload' => $this->avatarPayloadBuilder->build($player),
         ]);
     }
 }
