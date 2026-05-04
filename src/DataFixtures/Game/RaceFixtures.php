@@ -18,6 +18,7 @@ class RaceFixtures extends Fixture
         $human->setNameTranslations(['en' => 'Human']);
         $human->setDescription('Les humains sont la race la plus répandue. Polyvalents et adaptables, ils ne possèdent aucun bonus ni malus particulier.');
         $human->setDescriptionTranslations(['en' => 'Humans are the most widespread race. Versatile and adaptable, they have no particular bonus or penalty.']);
+        $human->setSpriteSheet('human_v00');
         $human->setStatModifiers(['life' => 0, 'energy' => 0, 'speed' => 0, 'hit' => 0]);
         $human->setAvailableAtCreation(true);
         $human->setCreatedAt($now);
@@ -31,6 +32,7 @@ class RaceFixtures extends Fixture
         $elf->setNameTranslations(['en' => 'Elf']);
         $elf->setDescription('Les elfes sont agiles et précis. Leur vitesse naturelle et leur adresse en font d\'excellents éclaireurs et archers.');
         $elf->setDescriptionTranslations(['en' => 'Elves are agile and precise. Their natural speed and dexterity make them excellent scouts and archers.']);
+        $elf->setSpriteSheet('human_v01');
         $elf->setStatModifiers(['life' => 0, 'energy' => 0, 'speed' => 2, 'hit' => 3]);
         $elf->setAvailableAtCreation(true);
         $elf->setCreatedAt($now);
@@ -44,6 +46,7 @@ class RaceFixtures extends Fixture
         $dwarf->setNameTranslations(['en' => 'Dwarf']);
         $dwarf->setDescription('Les nains sont robustes et endurants. Leur constitution exceptionnelle leur confère une résistance accrue aux coups.');
         $dwarf->setDescriptionTranslations(['en' => 'Dwarves are sturdy and resilient. Their exceptional constitution grants them increased resistance to blows.']);
+        $dwarf->setSpriteSheet('human_v02');
         $dwarf->setStatModifiers(['life' => 5, 'energy' => 5, 'speed' => -1, 'hit' => 0]);
         $dwarf->setAvailableAtCreation(true);
         $dwarf->setCreatedAt($now);
@@ -57,6 +60,7 @@ class RaceFixtures extends Fixture
         $orc->setNameTranslations(['en' => 'Orc']);
         $orc->setDescription('Les orcs sont des guerriers nés. Leur force brute compense leur manque de finesse, les rendant redoutables au corps à corps.');
         $orc->setDescriptionTranslations(['en' => 'Orcs are born warriors. Their brute strength compensates for their lack of finesse, making them formidable in melee combat.']);
+        $orc->setSpriteSheet('human_v03');
         $orc->setStatModifiers(['life' => 8, 'energy' => 0, 'speed' => 0, 'hit' => -3]);
         $orc->setAvailableAtCreation(true);
         $orc->setCreatedAt($now);
