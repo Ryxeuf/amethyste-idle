@@ -3,7 +3,6 @@
 namespace App\Tests\Functional\Controller\Game;
 
 use App\Controller\Game\CharacterController;
-use App\Entity\App\Player;
 use App\Helper\PlayerHelper;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\ForbiddenNameChecker;
