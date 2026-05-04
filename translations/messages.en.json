@@ -665,7 +665,10 @@
       "aria_label": "Quick action bar",
       "item_unavailable": "Item unavailable",
       "error": "Error",
-      "network_error": "Network error"
+      "network_error": "Network error",
+      "slot_title": "Slot %num% — Click: use, Right click: remove",
+      "assign_item": "Assign an item",
+      "empty_picker": "No consumables available"
     },
     "influence_notification": {
       "influence_word": "influence",

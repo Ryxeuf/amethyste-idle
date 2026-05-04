@@ -665,7 +665,10 @@
       "aria_label": "Barre d'action rapide",
       "item_unavailable": "Objet indisponible",
       "error": "Erreur",
-      "network_error": "Erreur réseau"
+      "network_error": "Erreur réseau",
+      "slot_title": "Slot %num% — Clic: utiliser, Clic droit: retirer",
+      "assign_item": "Assigner un objet",
+      "empty_picker": "Aucun consommable disponible"
     },
     "influence_notification": {
       "influence_word": "influence",

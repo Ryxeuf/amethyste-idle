@@ -158,7 +158,10 @@ export default class extends Controller {
         const usableItems = this._items.filter(i => i.usable && i.quantity > 0);
 
         if (usableItems.length === 0) {
-            list.innerHTML = '<p class="text-gray-500 text-xs text-center py-3">Aucun consommable disponible</p>';
+            const empty = document.createElement('p');
+            empty.className = 'text-gray-500 text-xs text-center py-3';
+            empty.textContent = this._label('empty_picker', 'Aucun consommable disponible');
+            list.appendChild(empty);
             return;
         }
 
