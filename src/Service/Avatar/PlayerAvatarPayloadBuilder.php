@@ -7,7 +7,7 @@ namespace App\Service\Avatar;
 use App\Entity\App\Player;
 use App\Helper\GearHelper;
 
-final class PlayerAvatarPayloadBuilder
+class PlayerAvatarPayloadBuilder
 {
     private const AVATAR_BASE_PATH = '/assets/styles/images/avatar';
 
