@@ -94,7 +94,8 @@ class EquipmentControllerTest extends TestCase
         $response = ($this->controller)();
 
         $this->assertSame(200, $response->getStatusCode());
-        $this->assertNull($this->capturedTemplateParams['avatarPayload'] ?? 'missing');
+        $this->assertArrayHasKey('avatarPayload', $this->capturedTemplateParams);
+        $this->assertNull($this->capturedTemplateParams['avatarPayload']);
     }
 
     private function setupCommonExpectations(Player $player): void
