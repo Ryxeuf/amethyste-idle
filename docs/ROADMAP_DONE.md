@@ -1,7 +1,50 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.d — badge monture active sur le profil public)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 2b.shop.a — MountPurchaseService)
+
+---
+
+## 130 — Montures sous-phase 2b.shop.a : MountPurchaseService (Sprint 11, 2026-05-04)
+
+> Premiere couche de la sous-phase 2b ("Obtention via quete, drop rare, ou achat"). Pose le service d'achat marchand qui valide gilCost / gils du joueur et delegue la creation a `MountAcquisitionService` avec `SOURCE_PURCHASE`. Le branchement HTTP + UI bouton sera livre en sous-phase 2b.shop.b.
+
+### Changements
+
+- **`src/GameEngine/Mount/MountPurchaseService.php`** (nouveau, 51 lignes) : service avec une methode publique `purchase(Player $player, Mount $mount, bool $flush = true): PlayerMount` qui :
+  1. Valide `Mount::getGilCost()` non-null et > 0 (sinon `MountNotPurchasableException`)
+  2. Valide `Player::getGils() >= cost` (sinon `InsufficientGilsException`, gils inchanges)
+  3. Deduit `cost` du compte gils du joueur
+  4. Delegue la creation `PlayerMount` a `MountAcquisitionService::grantMount(player, mount, SOURCE_PURCHASE, flush)` (qui rejette si deja possedee ou desactivee, atomicite garantie par le flush partage)
+- **`src/GameEngine/Mount/MountNotPurchasableException.php`** (nouveau, 14 lignes) : exception levee quand `gilCost === null` ou `gilCost === 0` — empeche d'utiliser cette voie pour des montures de quete / drop / achievement.
+- **`src/GameEngine/Mount/InsufficientGilsException.php`** (nouveau, 15 lignes) : stocke `Player` + `requiredGils` en proprietes readonly publiques pour le diagnostic cote controller.
+- **`tests/Unit/GameEngine/Mount/MountPurchaseServiceTest.php`** (nouveau, 140 lignes, 6 cas) :
+  - `testPurchaseDeductsGilsAndGrantsMount` : nominal, gils 10000 -> 5000, grant appele.
+  - `testPurchaseSkipsFlushWhenRequested` : `flush: false` propage le parametre a `grantMount`.
+  - `testPurchaseThrowsWhenMountHasNoGilCost` : `gilCost === null` -> exception, pas de grant.
+  - `testPurchaseThrowsWhenGilCostIsZero` : `gilCost === 0` -> exception (les montures gratuites ne sont pas purchasable).
+  - `testPurchaseThrowsWhenInsufficientGils` : gils insuffisants -> exception, gils inchanges.
+  - `testPurchaseRelaysAlreadyOwnedException` : `MountAlreadyOwnedException` du service sous-jacent est relayee tel quel (mais les gils ont ete deduits avant — comportement defensif a re-evaluer avec un savepoint si besoin).
+
+### Pattern
+
+- **Composition plutot qu'heritage** : `MountPurchaseService` injecte `MountAcquisitionService` au lieu de l'etendre. Permet de reutiliser la logique d'invariant "deja possedee" sans duplication.
+- **Ordre des validations** : gilCost d'abord (cas le plus rapide a refuser), gils ensuite, ownership/enabled en dernier (plus couteux car requete repository).
+- **Atomicite** : la deduction des gils + la creation du `PlayerMount` partagent le meme flush via le parametre `$flush` propage. Si une seule des deux operations echoue, Doctrine annule l'autre dans la transaction implicite.
+
+### Impact
+
+- Diff total : ~225 lignes (sous le budget de 300).
+- Aucun fichier nouveau ne depasse 400 lignes (Service : 51, exceptions 14+15, test : 140).
+- Aucune migration : tout repose sur `Player::gils` (deja en place), `Mount::gilCost` (deja en place depuis sous-phase 1) et `MountAcquisitionService` (deja en place depuis 2a).
+- Aucun impact gameplay observable : la sous-phase 2b.shop.b livrera le controller HTTP + le bouton "Acheter" sur la page `/game/mounts` pour exercer ce service.
+- Independante des 12 PR ouvertes : aucune ne touche `src/GameEngine/Mount/`.
+
+### Suite
+
+- **Sous-phase 2b.shop.b** : endpoint `POST /game/mounts/{id}/purchase` dans `MountController` + bouton "Acheter (X gils)" sur les cartes de montures non possedees avec `gilCost > 0` + traductions FR/EN flash messages.
+- **Sous-phase 2b.quest** : integration avec `QuestRewardHandler` pour permettre l'octroi de mounts en recompense de quete (`SOURCE_QUEST`).
+- **Sous-phase 2b.loot** : integration avec `LootGenerator` pour permettre le drop rare de mounts (`SOURCE_DROP`).
 
 ---
 
