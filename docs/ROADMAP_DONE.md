@@ -1,7 +1,25 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (AVT-26 — Race liee au body de base, Sprint 9 termine 8/8)
+> Derniere mise a jour : 2026-05-04 (AVT-35 sous-phase 1 — Menu self-service /game/character/customize)
+
+---
+
+## AVT-35 — Personnalisation post-creation, sous-phase 1 (Sprint 10, 2026-05-04)
+
+> Premier livrable de AVT-35 : un joueur existant peut modifier son apparence (body, hair, hairColor) via un menu self-service `/game/character/customize`. Sous-phase 2 ajoutera l'integration nav et le live preview canvas.
+
+### Changements
+
+- **`src/Form/CharacterCustomizeType.php`** (nouveau, 102 lignes) : mirroir reduit de `CharacterCreateType` (body / hair / hairColor uniquement). Reutilise les choix `AvatarCatalogProvider::getCreationChoices()` et la palette `CharacterCreateType::HAIR_COLORS` avec memes contraintes `Choice`.
+- **`src/Controller/Game/CharacterController.php`** (+47 / -1 lignes) : injection de `AvatarHashRecalculator`. Nouvelle route `GET/POST /game/character/customize`. Recupere le joueur courant via `PlayerHelper::getPlayer()` (redirection vers `app_game` si null). Pre-remplit avec `Player::avatarAppearance`. Apres POST valide : met a jour `avatarAppearance`, flush, `AvatarHashRecalculator::recalculate()` (publie sur Mercure si le hash change). PRG + flash success.
+- **`templates/game/character/customize.html.twig`** (nouveau, 48 lignes) : reuse du macro `avatar_choice_group` importe depuis `create.html.twig` + pastilles colorees pour `hairColor`. Pas de live preview canvas (deferre).
+- **`translations/messages.{fr,en}.json`** (+8 cles chacun) : namespace `game.character.customize.*`. Parite 727=727.
+- **`tests/Functional/Controller/Game/CharacterControllerCustomizeTest.php`** (nouveau, 77 lignes, 1 cas) : `testCustomizeRedirectsWhenNoActivePlayer` valide que sans joueur courant, le controller retourne 302 sans flush ni recalcul.
+
+### Impact
+
+- Diff total ~330 lignes. Aucun fichier > 400. Aucune migration. Pipeline avatar deja en place depuis AVT-28/29.
 
 ---
 

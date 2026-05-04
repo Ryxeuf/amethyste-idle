@@ -733,6 +733,15 @@
           "speed": "Speed",
           "hit": "Hit"
         }
+      },
+      "customize": {
+        "title": "Customize appearance",
+        "subtitle": "Edit the appearance of %name%",
+        "no_choice_available": "No choice available.",
+        "body": "Body",
+        "hair": "Hair",
+        "hair_color": "Hair color",
+        "submit": "Save"
       }
     },
     "chat": {

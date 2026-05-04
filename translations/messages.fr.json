@@ -733,6 +733,15 @@
           "speed": "Vitesse",
           "hit": "Precision"
         }
+      },
+      "customize": {
+        "title": "Personnaliser l'apparence",
+        "subtitle": "Modifier l'apparence de %name%",
+        "no_choice_available": "Aucun choix disponible.",
+        "body": "Corps",
+        "hair": "Coiffure",
+        "hair_color": "Couleur de cheveux",
+        "submit": "Enregistrer"
       }
     },
     "chat": {
