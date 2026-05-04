@@ -826,6 +826,10 @@
         "to": "To:"
       }
     },
+    "profile": {
+      "active_mount_label": "Mount: %name%",
+      "active_mount_tooltip": "Active mount (+%bonus%%% movement speed)"
+    },
     "party": {
       "page_title": "Party",
       "heading": "Party",
