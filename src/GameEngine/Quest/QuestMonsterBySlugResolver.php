@@ -58,7 +58,7 @@ final class QuestMonsterBySlugResolver
         }
 
         $monsters = $this->entityManager->getRepository(Monster::class)
-            ->findBy(['slug' => array_values($slugs)]);
+            ->findBy(['slug' => array_keys($slugs)]);
 
         $map = [];
         foreach ($monsters as $monster) {
