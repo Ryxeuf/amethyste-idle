@@ -622,6 +622,14 @@
         "drop": "Drop rare",
         "purchase": "Achat marchand",
         "achievement": "Succes"
+      },
+      "flash": {
+        "mounted": "Vous etes monte sur la monture.",
+        "unmounted": "Vous etes descendu de votre monture.",
+        "not_owned": "Vous ne possedez pas cette monture.",
+        "disabled": "Cette monture est indisponible.",
+        "unknown": "Monture introuvable.",
+        "csrf_invalid": "Action invalide. Veuillez reessayer."
       }
     },
     "harvest": {

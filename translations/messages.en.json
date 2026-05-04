@@ -622,6 +622,14 @@
         "drop": "Rare drop",
         "purchase": "Merchant purchase",
         "achievement": "Achievement"
+      },
+      "flash": {
+        "mounted": "You have mounted your steed.",
+        "unmounted": "You have dismounted.",
+        "not_owned": "You do not own this mount.",
+        "disabled": "This mount is unavailable.",
+        "unknown": "Mount not found.",
+        "csrf_invalid": "Invalid action. Please try again."
       }
     },
     "harvest": {

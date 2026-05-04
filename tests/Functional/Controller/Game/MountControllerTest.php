@@ -5,6 +5,7 @@ namespace App\Tests\Functional\Controller\Game;
 use App\Controller\Game\MountController;
 use App\Entity\App\Player;
 use App\Entity\Game\Mount;
+use App\GameEngine\Mount\MountActivationService;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerMountRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,6 +23,7 @@ class MountControllerTest extends TestCase
     private EntityRepository&MockObject $repository;
     private PlayerHelper&MockObject $playerHelper;
     private PlayerMountRepository&MockObject $playerMountRepository;
+    private MountActivationService&MockObject $mountActivationService;
     private MountController $controller;
 
     /** @var array<string, mixed>|null */
@@ -35,11 +37,13 @@ class MountControllerTest extends TestCase
 
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->playerMountRepository = $this->createMock(PlayerMountRepository::class);
+        $this->mountActivationService = $this->createMock(MountActivationService::class);
 
         $this->controller = new MountController(
             $this->entityManager,
             $this->playerHelper,
             $this->playerMountRepository,
+            $this->mountActivationService,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -105,6 +109,7 @@ class MountControllerTest extends TestCase
         $this->repository->method('findBy')->willReturn([$horse, $wolf]);
 
         $player = $this->createMock(Player::class);
+        $player->method('getActiveMount')->willReturn(null);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $this->playerMountRepository->expects($this->once())
@@ -115,6 +120,7 @@ class MountControllerTest extends TestCase
         $this->controller->index();
 
         $this->assertSame([42, 99], $this->capturedTemplateParams['ownedMountIds']);
+        $this->assertNull($this->capturedTemplateParams['activeMountId']);
     }
 
     public function testIndexSkipsRepositoryLookupWhenNoPlayer(): void
@@ -127,6 +133,31 @@ class MountControllerTest extends TestCase
         $this->controller->index();
 
         $this->assertSame([], $this->capturedTemplateParams['ownedMountIds']);
+    }
+
+    public function testMountRedirectsWhenNoActivePlayer(): void
+    {
+        $this->playerHelper->expects($this->once())->method('getPlayer')->willReturn(null);
+
+        $this->mountActivationService->expects($this->never())->method('mount');
+        $this->repository->expects($this->never())->method('find');
+
+        $response = $this->controller->mount(42, new \Symfony\Component\HttpFoundation\Request());
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('/game/mounts', $response->headers->get('Location'));
+    }
+
+    public function testUnmountRedirectsWhenNoActivePlayer(): void
+    {
+        $this->playerHelper->expects($this->once())->method('getPlayer')->willReturn(null);
+
+        $this->mountActivationService->expects($this->never())->method('unmount');
+
+        $response = $this->controller->unmount(new \Symfony\Component\HttpFoundation\Request());
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('/game/mounts', $response->headers->get('Location'));
     }
 
     private function buildMount(string $slug, string $name, string $obtention, int $level, ?int $gilCost): Mount
