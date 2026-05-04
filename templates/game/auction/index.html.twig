@@ -96,7 +96,7 @@
                                             </span>
                                         {% endif %}
                                     </div>
-                                    <p class="text-gray-500 text-xs mt-0.5 truncate">{{ item.description }}</p>
+                                    <p class="text-gray-500 text-xs mt-0.5 truncate">{{ item|localized_description }}</p>
                                     <div class="flex items-center gap-3 mt-1.5 text-xs text-gray-400">
                                         <span>Vendeur : <span class="text-gray-300">{{ listing.seller.name }}</span></span>
                                         <span>Expire : <span class="text-gray-300">{{ listing.expiresAt|date('d/m H\\hi') }}</span></span>

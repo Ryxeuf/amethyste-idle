@@ -35,7 +35,7 @@ class ItemsController extends AbstractController
                         'name' => $genericItem->getLocalizedName($locale),
                         'type' => 'Consommable',
                         'quantity' => 0,
-                        'description' => $genericItem->getDescription(),
+                        'description' => $genericItem->getLocalizedDescription($locale),
                         'usable' => $this->itemHelper->isUsable($genericItem),
                         'bound' => $item->isBound(),
                     ];

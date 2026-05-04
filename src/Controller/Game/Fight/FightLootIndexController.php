@@ -43,6 +43,7 @@ class FightLootIndexController extends AbstractController
         $isWorldBoss = $fight->isWorldBossFight();
         $isCoop = $fight->isCoopFight();
         $contributions = $isWorldBoss ? $fight->getRankedContributors() : [];
+        $locale = $request->getLocale();
 
         /** @var Mob $mob */
         foreach ($fight->getMobs() as $mob) {
@@ -54,8 +55,8 @@ class FightLootIndexController extends AbstractController
 
                 $items[] = [
                     'id' => $item->getId(),
-                    'name' => $item->getGenericItem()->getName(),
-                    'description' => $item->getGenericItem()->getDescription(),
+                    'name' => $item->getGenericItem()->getLocalizedName($locale),
+                    'description' => $item->getGenericItem()->getLocalizedDescription($locale),
                     'value' => $item->getGenericItem()->getValue(),
                     'rarity' => $item->getGenericItem()->getRarity(),
                 ];

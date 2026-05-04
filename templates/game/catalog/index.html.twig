@@ -59,7 +59,7 @@
                                             </span>
                                         {% endif %}
                                     </div>
-                                    <p class="text-gray-400 text-xs mt-0.5">{{ item.description }}</p>
+                                    <p class="text-gray-400 text-xs mt-0.5">{{ item|localized_description }}</p>
                                 </div>
                                 <div class="flex items-center gap-1.5 flex-shrink-0">
                                     <span class="text-emerald-400 text-xs font-mono">{{ 'game.catalog.collected'|trans({'%count%': entry.collectCount}) }}</span>
