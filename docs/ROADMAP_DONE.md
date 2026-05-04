@@ -1,7 +1,48 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 3a — fondation monture active sur Player)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 3b — MountActivationService)
+
+---
+
+## 130 — Montures sous-phase 3b : MountActivationService (Sprint 11, 2026-05-04)
+
+> Suite directe de la sous-phase 3a (PR #563). Pose la couche service pour activer / desactiver une monture, sans encore exposer d'API ni d'UI (deferre a la sous-phase 3c).
+
+### Changements
+
+- **`src/GameEngine/Mount/MountActivationService.php`** (nouveau, 64 lignes) : service avec deux methodes publiques :
+  - `mount(Player $player, Mount $mount, bool $flush = true): void` — valide via `Mount::isEnabled()` (sinon `\DomainException`) et `PlayerMountRepository::playerOwnsMount()` (sinon `MountNotOwnedException`). Apres validation, appelle `Player::setActiveMount($mount)` puis flush. Replace automatiquement la monture active precedente (invariant "un seul activeMount a la fois").
+  - `unmount(Player $player, bool $flush = true): void` — idempotent : no-op si le joueur n'a pas de monture active. Sinon `setActiveMount(null)` puis flush.
+- **`src/GameEngine/Mount/MountNotOwnedException.php`** (nouveau, 16 lignes) : exception miroir de `MountAlreadyOwnedException`. Stocke `Player` + `Mount` en proprietes readonly publiques pour le diagnostic cote controller.
+- **`tests/Unit/GameEngine/Mount/MountActivationServiceTest.php`** (nouveau, 149 lignes, 8 cas) :
+  - `testMountSetsActiveMountWhenPlayerOwnsIt` : nominal mount avec ownership confirme.
+  - `testMountSkipsFlushWhenRequested` : `flush: false` n'appelle pas `flush`.
+  - `testMountThrowsWhenPlayerDoesNotOwnIt` : `MountNotOwnedException` si pas owned, aucun flush.
+  - `testMountThrowsWhenMountDisabled` : `\DomainException` si disabled, aucun lookup ownership ni flush.
+  - `testMountReplacesPreviousActiveMount` : passer d'une monture A a une monture B remplace activeMount.
+  - `testUnmountClearsActiveMount` : unmount nominal apres mount.
+  - `testUnmountIsNoopWhenNoActiveMount` : aucun flush si activeMount deja null.
+  - `testUnmountSkipsFlushWhenRequested` : `flush: false` desactive le flush.
+
+### Pattern
+
+- **Mirroir strict de `MountAcquisitionService`** : meme constructeur (`EntityManagerInterface` + `PlayerMountRepository`), meme parametre optionnel `bool $flush = true`, memes types d'exceptions (DomainException pour mount disabled, exception dediee pour ownership).
+- **Invariant "un seul activeMount a la fois"** : pas besoin de unset explicite avant un nouveau mount, le setter sur Player ecrase la valeur. Simplifie le code et evite les conditions de course.
+- **Idempotence du unmount** : un unmount sur un joueur sans monture est un no-op silencieux. Permet d'utiliser le service depuis des hooks (logout, deces, ...) sans verifier l'etat prealable.
+
+### Impact
+
+- Diff total : ~250 lignes (sous le budget de 300).
+- Aucun fichier nouveau ne depasse 400 lignes (Service : 64, Exception : 16, Test : 149).
+- Aucune migration : tout repose sur la fondation 3a (PR #563 mergee).
+- Aucun impact gameplay : la monture active n'est ni utilisee par le combat, ni par le mouvement, ni par la presentation. La sous-phase 3c livrera l'API HTTP et l'application du speed bonus dans `PlayerMoveProcessor` ou via `getEffectiveSpeed()`.
+- Independante des 12 PR ouvertes : aucune ne touche `src/GameEngine/Mount/`.
+
+### Suite
+
+- **Sous-phase 3c** : endpoint `POST /game/mounts/{id}/mount` + `POST /game/mounts/unmount` dans `MountController`, boutons "Monter / Descendre" sur la page `/game/mounts` (active state mis en avant), application du bonus de vitesse `+Mount::speedBonus%` dans `PlayerMoveProcessor` ou via une methode `Player::getEffectiveSpeed()`.
+- **Sous-phase 4** : animation sprite monte (visualisation cote PixiJS).
 
 ---
 
