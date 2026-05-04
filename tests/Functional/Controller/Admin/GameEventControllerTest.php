@@ -36,8 +36,7 @@ class GameEventControllerTest extends TestCase
         $this->csrfManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->requestStack = new RequestStack();
-        $session = new Session(new MockArraySessionStorage());
-        $session->setFlashBag(new FlashBag());
+        $session = new Session(new MockArraySessionStorage(), null, new FlashBag());
 
         $this->controller = new GameEventController($this->em, $this->adminLogger, $this->eventDispatcher);
 
@@ -45,7 +44,7 @@ class GameEventControllerTest extends TestCase
         $container->method('has')->willReturnCallback(
             fn (string $id): bool => in_array($id, ['security.csrf.token_manager', 'router', 'request_stack'], true)
         );
-        $container->method('get')->willReturnCallback(function (string $id) use ($session) {
+        $container->method('get')->willReturnCallback(function (string $id) {
             if ($id === 'security.csrf.token_manager') {
                 return $this->csrfManager;
             }
