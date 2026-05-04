@@ -5,7 +5,6 @@ namespace App\GameEngine\Mount;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerMount;
 use App\Entity\Game\Mount;
-use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Wraps MountAcquisitionService for the "shop purchase" channel:
@@ -15,7 +14,6 @@ use Doctrine\ORM\EntityManagerInterface;
 class MountPurchaseService
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
         private readonly MountAcquisitionService $mountAcquisitionService,
     ) {
     }

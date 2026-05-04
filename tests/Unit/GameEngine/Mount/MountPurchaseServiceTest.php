@@ -10,7 +10,6 @@ use App\GameEngine\Mount\MountAcquisitionService;
 use App\GameEngine\Mount\MountAlreadyOwnedException;
 use App\GameEngine\Mount\MountNotPurchasableException;
 use App\GameEngine\Mount\MountPurchaseService;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class MountPurchaseServiceTest extends TestCase
@@ -23,7 +22,6 @@ class MountPurchaseServiceTest extends TestCase
         $mount = (new Mount())->setSlug('horse_brown')->setName('Cheval')->setDescription('...');
         $mount->setGilCost(5000);
 
-        $em = $this->createMock(EntityManagerInterface::class);
         $acquisition = $this->createMock(MountAcquisitionService::class);
 
         $playerMount = new PlayerMount($player, $mount, PlayerMount::SOURCE_PURCHASE);
@@ -32,7 +30,7 @@ class MountPurchaseServiceTest extends TestCase
             ->with($player, $mount, PlayerMount::SOURCE_PURCHASE, true)
             ->willReturn($playerMount);
 
-        $service = new MountPurchaseService($em, $acquisition);
+        $service = new MountPurchaseService($acquisition);
         $result = $service->purchase($player, $mount);
 
         $this->assertSame($playerMount, $result);
@@ -47,7 +45,6 @@ class MountPurchaseServiceTest extends TestCase
         $mount = (new Mount())->setSlug('chocobo')->setName('Chocobo')->setDescription('...');
         $mount->setGilCost(2500);
 
-        $em = $this->createMock(EntityManagerInterface::class);
         $acquisition = $this->createMock(MountAcquisitionService::class);
 
         $playerMount = new PlayerMount($player, $mount, PlayerMount::SOURCE_PURCHASE);
@@ -56,7 +53,7 @@ class MountPurchaseServiceTest extends TestCase
             ->with($player, $mount, PlayerMount::SOURCE_PURCHASE, false)
             ->willReturn($playerMount);
 
-        $service = new MountPurchaseService($em, $acquisition);
+        $service = new MountPurchaseService($acquisition);
         $service->purchase($player, $mount, flush: false);
 
         $this->assertSame(5500, $player->getGils());
@@ -70,11 +67,10 @@ class MountPurchaseServiceTest extends TestCase
         $mount = (new Mount())->setSlug('quest_mount')->setName('Quest mount')->setDescription('...');
         $mount->setGilCost(null);
 
-        $em = $this->createMock(EntityManagerInterface::class);
         $acquisition = $this->createMock(MountAcquisitionService::class);
         $acquisition->expects($this->never())->method('grantMount');
 
-        $service = new MountPurchaseService($em, $acquisition);
+        $service = new MountPurchaseService($acquisition);
 
         $this->expectException(MountNotPurchasableException::class);
         $service->purchase($player, $mount);
@@ -88,11 +84,10 @@ class MountPurchaseServiceTest extends TestCase
         $mount = (new Mount())->setSlug('free_mount')->setName('Free')->setDescription('...');
         $mount->setGilCost(0);
 
-        $em = $this->createMock(EntityManagerInterface::class);
         $acquisition = $this->createMock(MountAcquisitionService::class);
         $acquisition->expects($this->never())->method('grantMount');
 
-        $service = new MountPurchaseService($em, $acquisition);
+        $service = new MountPurchaseService($acquisition);
 
         $this->expectException(MountNotPurchasableException::class);
         $service->purchase($player, $mount);
@@ -106,11 +101,10 @@ class MountPurchaseServiceTest extends TestCase
         $mount = (new Mount())->setSlug('expensive')->setName('Expensive')->setDescription('...');
         $mount->setGilCost(5000);
 
-        $em = $this->createMock(EntityManagerInterface::class);
         $acquisition = $this->createMock(MountAcquisitionService::class);
         $acquisition->expects($this->never())->method('grantMount');
 
-        $service = new MountPurchaseService($em, $acquisition);
+        $service = new MountPurchaseService($acquisition);
 
         $this->expectException(InsufficientGilsException::class);
         $service->purchase($player, $mount);
@@ -127,12 +121,11 @@ class MountPurchaseServiceTest extends TestCase
         $mount = (new Mount())->setSlug('horse')->setName('Cheval')->setDescription('...');
         $mount->setGilCost(5000);
 
-        $em = $this->createMock(EntityManagerInterface::class);
         $acquisition = $this->createMock(MountAcquisitionService::class);
         $acquisition->method('grantMount')
             ->willThrowException(new MountAlreadyOwnedException($player, $mount));
 
-        $service = new MountPurchaseService($em, $acquisition);
+        $service = new MountPurchaseService($acquisition);
 
         $this->expectException(MountAlreadyOwnedException::class);
         $service->purchase($player, $mount);
