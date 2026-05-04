@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (135 sous-phase 2h.b — i18n des chaines residuelles de la barre d'action rapide quickbar)
+> Derniere mise a jour : 2026-05-04 (AVT-25 — Persistance de l'apparence du joueur a la creation)
+
+---
+
+## AVT-25 — Persister l'apparence a la creation (Sprint 9, 2026-05-04)
+
+> Ferme la boucle entre le formulaire de creation (AVT-23) et le pipeline avatar (AVT-13..AVT-15). Un personnage nouvellement cree apparait avec un avatar coherent sur la carte des sa premiere spawn. Debloque AVT-26 (lier Race au body de base).
+
+### Changements
+
+- **`src/Service/PlayerFactory.php`** (+33 / -2 lignes) : injection de `AvatarHashRecalculator`. Nouveau parametre optionnel `?array $appearance` sur `createPlayer()`. Methode privee `normalizeAppearance()` : defaut `human_m_light` pour body, ignore les chaines vides et les valeurs nulles pour hair / hairColor. Seed `Player::avatarAppearance` avant `persist` + `flush`. Appel `AvatarHashRecalculator::recalculate()` apres flush (calcul du hash + publication Mercure `map/avatar`).
+- **`src/Controller/Game/CharacterController.php`** (+15 / -2 lignes) : extraction de `body` / `hair` / `hairColor` depuis le formulaire AVT-23. Nouveau helper prive `stringOrNull()` (normalisation string vide / non-string -> null). Passage du tableau d'apparence a `PlayerFactory::createPlayer()`.
+- **`tests/Unit/Service/PlayerFactoryTest.php`** (+112 lignes, nouveau) : 4 cas unitaires — tableau complet preserve tel quel, defaut `human_m_light` quand `null`, filtrage des `hair: ''` et `hairColor: null`, `AvatarHashRecalculator::recalculate` appele exactement 1x.
+
+### Pattern
+
+- Defaut conservateur (`human_m_light`) si l'utilisateur ne fournit pas de body — couvre le cas legacy ou la migration AVT-23 n'aurait pas ete deployee.
+- Normalisation centralisee dans `PlayerFactory::normalizeAppearance()` plutot que dans le controller : permet la reuse depuis d'autres points d'entree (futurs editeurs admin, fixtures).
+- Chainage `flush()` -> `recalculate()` : le hash depend de l'inventaire materia (charge en BDD), donc le calcul ne peut tourner qu'apres persistence.
+
+### Impact
+
+- Diff total : ~163 lignes (sous le budget de 300).
+- Aucune migration : `Player::avatarAppearance` existe deja depuis AVT-13.
+- 4 tests unitaires ajoutes (Mock `EntityManagerInterface` + `AvatarHashRecalculator`).
+- Debloque AVT-26 (lier Race au body de base) qui dependait de AVT-25.
 
 ---
 
