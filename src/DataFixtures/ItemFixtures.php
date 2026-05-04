@@ -101,6 +101,11 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 $item->setNameTranslations($data['name_translations']);
             }
 
+            // Traductions localisees de la description (EN/DE/...) — sous-phase 135 s3d
+            if (isset($data['description_translations']) && is_array($data['description_translations'])) {
+                $item->setDescriptionTranslations($data['description_translations']);
+            }
+
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());
 
@@ -136,6 +141,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'm1-life',
                 'element' => Element::Light,
                 'description' => 'Matéria contenant un sort de soin',
+                'description_translations' => ['en' => 'Materia containing a healing spell'],
                 'spell' => 'life_heal',
                 'domain' => 'healer',
                 'price' => 100,
@@ -148,6 +154,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Boule de feu',
                 'name_translations' => ['en' => 'Fireball'],
                 'description' => 'Matéria contenant un sort de boule de feu',
+                'description_translations' => ['en' => 'Materia containing a fireball spell'],
                 'type' => 'materia',
                 'element' => Element::Fire,
                 'spell' => 'fire_ball',
@@ -208,6 +215,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Jet de cailloux',
                 'name_translations' => ['en' => 'Stone Throw'],
                 'description' => 'Matéria contenant un sort de jet de cailloux',
+                'description_translations' => ['en' => 'Materia containing a stone throw spell'],
                 'type' => 'materia',
                 'element' => Element::Earth,
                 'spell' => 'stone_throw',
@@ -618,6 +626,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Potion de soin',
                 'name_translations' => ['en' => 'Healing Potion'],
                 'description' => 'Une bonne potion de soin',
+                'description_translations' => ['en' => 'A solid healing potion'],
                 'type' => 'stuff',
                 'spell' => 'none_heal_2',
                 'slug' => 'life-potion',
@@ -631,6 +640,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Canne à pèche',
                 'name_translations' => ['en' => 'Fishing Rod'],
                 'description' => 'Une canne à pèche pour attraper de la friture',
+                'description_translations' => ['en' => 'A fishing rod to catch small fish'],
                 'type' => 'stuff',
                 'slug' => 'fishing-rod',
                 'domain' => 'fisherman',
@@ -665,6 +675,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Pioche',
                 'name_translations' => ['en' => 'Pickaxe'],
                 'description' => 'Permet de casser des cailloux',
+                'description_translations' => ['en' => 'Used to break stones'],
                 'type' => 'stuff',
                 'slug' => 'pickaxe',
                 'domain' => 'miner',
@@ -677,6 +688,7 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'name' => 'Buche de bois',
                 'name_translations' => ['en' => 'Wood Log'],
                 'description' => 'Une bûche de bois',
+                'description_translations' => ['en' => 'A wooden log'],
                 'type' => 'stuff',
                 'slug' => 'wood-log',
                 'price' => 8,

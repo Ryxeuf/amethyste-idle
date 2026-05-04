@@ -40,7 +40,7 @@ class MateriaController extends AbstractController
                         'level' => $genericItem->getLevel() ?? 1,
                         'element' => $genericItem->getElement()->value,
                         'rarity' => $genericItem->getRarity(),
-                        'description' => $genericItem->getDescription(),
+                        'description' => $genericItem->getLocalizedDescription($locale),
                         'effects' => $genericItem->getEffect() ?? '',
                         'quantity' => 0,
                     ];

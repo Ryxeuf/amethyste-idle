@@ -1,7 +1,38 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 2b.quest — recompense de quete via `MountQuestRewardGranter`)
+> Derniere mise a jour : 2026-05-04 (135 sous-phase 3d — cablage `localized_description` sur templates de production + reader fixtures + 7 traductions EN de demo)
+
+---
+
+## 135 — Localisation i18n sous-phase 3d : cablage `Item.description` (Sprint 12, 2026-05-04)
+
+> Ferme le gap de cablage de l'infrastructure `description_translations` deja livree (migration `Version20260421ItemDescriptionTranslations`, getter/setter sur `Item`, filter Twig `localized_description`, tests entite + Twig). La sous-phase 3d active concretement la traduction anglaise des descriptions d'objets dans les ecrans de jeu, en suivant exactement le pattern de la sous-phase 3c pour les noms.
+
+### Changements
+
+- **`src/DataFixtures/ItemFixtures.php`** (+12 / 0 lignes) : (a) reader `description_translations` ajoute dans la boucle de creation (alignement strict sur le pattern `name_translations` existant) — strophe de 4 lignes appelant `$item->setDescriptionTranslations($data['description_translations'])` ; (b) 7 items de demo EN traduits via la cle `'description_translations' => ['en' => '...']` : `materia_soin=Materia containing a healing spell`, `materia_fire_ball=Materia containing a fireball spell`, `materia_stone_throw=Materia containing a stone throw spell`, `life_potion=A solid healing potion`, `fishing_rod=A fishing rod to catch small fish`, `pickaxe=Used to break stones`, `wood_log=A wooden log`.
+- **`templates/game/auction/index.html.twig`** (+1 / -1 ligne) : `{{ item.description }}` -> `{{ item|localized_description }}` (item est l'entite `Item` retournee par `listing.playerItem.genericItem`).
+- **`templates/game/catalog/index.html.twig`** (+1 / -1 ligne) : meme substitution sur l'ecran bestiaire ressources.
+- **`templates/game/shop/index.html.twig`** (+2 / -1 lignes) : `{% set itemDescription = item|localized_description %}` puis `{{ itemDescription|slice(0, 60) }}{% if itemDescription|length > 60 %}...{% endif %}`. Le `set` evite de rappeler le filter deux fois (slice + length).
+- **`src/Controller/Game/Fight/FightLootIndexController.php`** (+3 / -2 lignes) : `getDescription()` -> `getLocalizedDescription($locale)` ET `getName()` -> `getLocalizedName($locale)` dans le tableau `$items[]` (le template `loot.html.twig` lit ces cles via `{{ item.description }}` / `{{ item.name }}` car `item` y est un tableau associatif). Le locale est lu via `$request->getLocale()`.
+- **`src/Controller/Game/Inventory/ItemsController.php`** (+1 / -1 ligne) : `getDescription()` -> `getLocalizedDescription($locale)` dans la cle `description` du `$grouped[$slug]`.
+- **`src/Controller/Game/Inventory/MateriaController.php`** (+1 / -1 ligne) : meme substitution dans la cle `description` du `$grouped[$key]`.
+
+### Pattern
+
+- **Deux strategies, une infrastructure** : (1) quand le template itere directement sur des entites `Item`, on utilise le filter Twig `{{ item|localized_description }}` ; (2) quand le controller aplatit l'item en tableau associatif (HdV grouping, materia grouping, loot list), on appelle `getLocalizedDescription($locale)` cote PHP. Le filter Twig a ete prefere quand possible pour maintenir le decouplage controller / locale.
+- **Pas de migration, pas de nouveau test** : la mecanique est entierement couverte par `ItemLocalizationTest` (10 cas dont 7 sur description, 2026-04-21) et `ItemLocalizationExtensionTest` (3 cas description, 2026-04-21). Cette sous-phase est purement integrative.
+- **Demo EN volontairement reduite a 7 items** : starter content (potion de soin, canne, pioche, buche) + materia debut de jeu (soin, boule de feu, jet de cailloux). La sous-phase 2c (traduction EN massive du contenu) reprendra le meme pattern pour les centaines d'items restants, en suivant le decoupage par batch deja eprouve sur `name_translations` (3c.b/c/d/e/f/g/h/i/j/k).
+
+### Impact
+
+- Diff total : ~28 lignes ajoutees / 7 supprimees (largement sous le budget 300).
+- 7 fichiers touches : 4 templates ou 4 templates + 3 controllers (suivant comptage), tous sous 400 lignes.
+- 0 nouvelle migration, 0 nouveau test (reuse couverture existante).
+- Locale FR par defaut : les 7 descriptions FR existantes sont preservees comme fallback transparent. Tous les autres items conservent leur description FR (le getter `getLocalizedDescription` retombe sur `description` quand la cle locale est absente).
+- Locale EN active : sur les 7 items de demo, la description bascule en anglais sur `/game/inventory` (items + materia), `/game/shop`, `/game/catalog`, `/game/auction` et `/game/fight/loot`. Les autres items affichent toujours la description FR (a traduire en sous-phase 2c).
+- Couvre la sous-phase 3d listee dans `SPRINT_12.md` : "extension a `Item.description` (meme pattern, colonne `description_translations`)".
 
 ---
 

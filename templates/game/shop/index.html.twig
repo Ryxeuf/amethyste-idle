@@ -65,7 +65,8 @@
                                     {% if item.rarity and item.rarity != 'common' %}
                                         <span class="text-[9px] ml-1 inv-tooltip-rarity inv-tooltip-rarity--{{ item.rarity }}">{{ item.rarity|capitalize }}</span>
                                     {% endif %}
-                                    <p class="text-gray-400 text-xs truncate">{{ item.description|slice(0, 60) }}{% if item.description|length > 60 %}...{% endif %}</p>
+                                    {% set itemDescription = item|localized_description %}
+                                    <p class="text-gray-400 text-xs truncate">{{ itemDescription|slice(0, 60) }}{% if itemDescription|length > 60 %}...{% endif %}</p>
                                 </div>
                                 <div class="flex items-center gap-3 ml-3">
                                     {% if itemStock is not null %}
