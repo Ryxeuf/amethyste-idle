@@ -56,11 +56,11 @@ class EquipmentSetLocalizationExtensionTest extends TestCase
     {
         $set = new EquipmentSet();
         $set->setDescription("L'equipement traditionnel des gardiens.");
-        $set->setDescriptionTranslations(['en' => "The traditional equipment of guardians."]);
+        $set->setDescriptionTranslations(['en' => 'The traditional equipment of guardians.']);
 
         $extension = new EquipmentSetLocalizationExtension($this->stackWithLocale('en'));
 
-        $this->assertSame("The traditional equipment of guardians.", $extension->localizedEquipmentSetDescription($set));
+        $this->assertSame('The traditional equipment of guardians.', $extension->localizedEquipmentSetDescription($set));
     }
 
     public function testDescriptionFilterFallsBackToBaseDescriptionWhenTranslationMissing(): void
@@ -78,7 +78,7 @@ class EquipmentSetLocalizationExtensionTest extends TestCase
     {
         $set = new EquipmentSet();
         $set->setDescription("L'equipement traditionnel des gardiens.");
-        $set->setDescriptionTranslations(['en' => "The traditional equipment of guardians."]);
+        $set->setDescriptionTranslations(['en' => 'The traditional equipment of guardians.']);
 
         $extension = new EquipmentSetLocalizationExtension(new RequestStack());
 
