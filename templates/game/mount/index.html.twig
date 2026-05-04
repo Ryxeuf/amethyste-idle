@@ -11,6 +11,14 @@
         </div>
 
         <div class="game-card-body">
+            {% for label, messages in app.flashes(['success', 'error']) %}
+                {% for message in messages %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm {{ label == 'success' ? 'bg-emerald-900/40 border border-emerald-700/50 text-emerald-200' : 'bg-red-900/40 border border-red-700/50 text-red-200' }}">
+                        {{ message|trans }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
             {% if mounts is empty %}
                 <div class="text-center py-8">
                     <p class="text-gray-500 text-sm">{{ 'game.mount.empty'|trans }}</p>
@@ -19,7 +27,8 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {% for mount in mounts %}
                         {% set isOwned = mount.id in (ownedMountIds ?? []) %}
-                        <article class="bg-gray-800/60 border {{ isOwned ? 'border-emerald-700/60' : 'border-gray-700' }} rounded-lg p-3 flex gap-3"
+                        {% set isActive = (activeMountId ?? null) == mount.id %}
+                        <article class="bg-gray-800/60 border {{ isActive ? 'border-purple-500' : (isOwned ? 'border-emerald-700/60' : 'border-gray-700') }} rounded-lg p-3 flex gap-3"
                                  aria-label="{{ mount|localized_mount_name }}">
                             <div class="flex-shrink-0 w-12 h-12 bg-gray-900/60 rounded-md overflow-hidden flex items-center justify-center"
                                  aria-hidden="true">
@@ -30,7 +39,12 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between gap-2">
                                     <h3 class="text-sm font-semibold text-white truncate">{{ mount|localized_mount_name }}</h3>
-                                    {% if isOwned %}
+                                    {% if isActive %}
+                                        <span class="inline-flex items-center gap-1 rounded-full bg-purple-900/50 border border-purple-500 text-purple-100 px-2 py-0.5 text-[10px] font-semibold flex-shrink-0"
+                                              title="{{ 'game.mount.active'|trans }}">
+                                            {{ 'game.mount.active'|trans }}
+                                        </span>
+                                    {% elseif isOwned %}
                                         <span class="inline-flex items-center gap-1 rounded-full bg-emerald-900/40 border border-emerald-700/50 text-emerald-200 px-2 py-0.5 text-[10px] font-medium flex-shrink-0"
                                               title="{{ 'game.mount.owned'|trans }}">
                                             {{ 'game.mount.owned'|trans }}
@@ -60,6 +74,27 @@
                                         </span>
                                     {% endif %}
                                 </div>
+                                {% if isOwned %}
+                                    <div class="mt-2">
+                                        {% if isActive %}
+                                            <form method="post" action="{{ path('app_game_mounts_unmount') }}" class="inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('unmount') }}">
+                                                <button type="submit"
+                                                        class="text-[11px] px-2.5 py-1 rounded-md bg-gray-700 hover:bg-gray-600 active:bg-gray-800 text-white transition-colors">
+                                                    {{ 'game.mount.unmount_button'|trans }}
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{{ path('app_game_mounts_mount', {id: mount.id}) }}" class="inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('mount_' ~ mount.id) }}">
+                                                <button type="submit"
+                                                        class="text-[11px] px-2.5 py-1 rounded-md bg-purple-700 hover:bg-purple-600 active:bg-purple-800 text-white transition-colors">
+                                                    {{ 'game.mount.mount_button'|trans }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
                             </div>
                         </article>
                     {% endfor %}
