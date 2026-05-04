@@ -5,7 +5,9 @@ namespace App\Controller\Game;
 use App\Entity\App\Player;
 use App\Entity\User;
 use App\Form\CharacterCreateType;
+use App\Form\CharacterCustomizeType;
 use App\Helper\PlayerHelper;
+use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\ForbiddenNameChecker;
 use App\Service\PlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,6 +27,7 @@ class CharacterController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
         private readonly ForbiddenNameChecker $forbiddenNameChecker,
+        private readonly AvatarHashRecalculator $avatarHashRecalculator,
         #[Autowire('%app.max_players_per_user%')] private readonly int $maxPlayersPerUser,
     ) {
     }
@@ -113,6 +116,51 @@ class CharacterController extends AbstractController
 
         return $this->render('game/character/select.html.twig', [
             'players' => $players,
+        ]);
+    }
+
+    #[Route('/customize', name: 'app_character_customize')]
+    public function customize(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (!$player instanceof Player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $existing = $player->getAvatarAppearance() ?? [];
+        $form = $this->createForm(CharacterCustomizeType::class, [
+            'body' => $existing['body'] ?? null,
+            'hair' => $existing['hair'] ?? null,
+            'hairColor' => $existing['hairColor'] ?? null,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $appearance = ['body' => (string) $form->get('body')->getData()];
+
+            $hair = $this->stringOrNull($form->get('hair')->getData());
+            if ($hair !== null) {
+                $appearance['hair'] = $hair;
+            }
+
+            $hairColor = $this->stringOrNull($form->get('hairColor')->getData());
+            if ($hairColor !== null) {
+                $appearance['hairColor'] = $hairColor;
+            }
+
+            $player->setAvatarAppearance($appearance);
+            $this->entityManager->flush();
+
+            $this->avatarHashRecalculator->recalculate($player);
+
+            $this->addFlash('success', 'Apparence mise a jour.');
+
+            return $this->redirectToRoute('app_character_customize');
+        }
+
+        return $this->render('game/character/customize.html.twig', [
+            'form' => $form->createView(),
+            'player' => $player,
         ]);
     }
 
