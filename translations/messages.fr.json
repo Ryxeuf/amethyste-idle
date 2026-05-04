@@ -620,6 +620,8 @@
       "active": "Active",
       "mount_button": "Monter",
       "unmount_button": "Descendre",
+      "purchase_button": "Acheter (%cost% gils)",
+      "cannot_afford": "Gils insuffisants",
       "obtention": {
         "quest": "Recompense de quete",
         "drop": "Drop rare",
@@ -632,7 +634,11 @@
         "not_owned": "Vous ne possedez pas cette monture.",
         "disabled": "Cette monture est indisponible.",
         "unknown": "Monture introuvable.",
-        "csrf_invalid": "Action invalide. Veuillez reessayer."
+        "csrf_invalid": "Action invalide. Veuillez reessayer.",
+        "purchased": "Monture achetee avec succes !",
+        "insufficient_gils": "Vous n'avez pas assez de gils pour acheter cette monture.",
+        "not_purchasable": "Cette monture n'est pas en vente.",
+        "already_owned": "Vous possedez deja cette monture."
       }
     },
     "harvest": {
