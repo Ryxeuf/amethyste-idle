@@ -1,7 +1,37 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.b — boutons UI Monter/Descendre)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.c — Player::getEffectiveSpeed() applique le bonus de monture)
+
+---
+
+## 130 — Montures sous-phase 3c.c : Player::getEffectiveSpeed() (Sprint 11, 2026-05-04)
+
+> Ferme la sous-phase 3 ("Vitesse de deplacement +50% quand monte"). Suite directe de 3c.b (PR #566). Applique enfin le bonus de vitesse de la monture active au mouvement du joueur sur la carte. Le combat reste insensible aux mounts (turn order base sur `getSpeed()` brut, comme avant).
+
+### Changements
+
+- **`src/Entity/App/Player.php`** (+18 / 0 lignes, total 687) : nouvelle methode publique `getEffectiveSpeed(): int` qui retourne `$this->speed` si pas de monture active, sinon `$this->speed + max(0, (int) ($this->speed * $activeMount->getSpeedBonus() / 100))`. Le `max(0, ...)` est defensif (ne pas retomber sous le speed de base si une monture avait un bonus negatif). Le cast `int` tronque les fractions (ex. 10 * 33 / 100 = 3.3 -> 3).
+- **`src/Controller/Game/Map/IndexController.php`** (1 ligne modifiee) : remplace `$player->getSpeed()` par `$player->getEffectiveSpeed()` dans le calcul de `$stepDelay`. Pour un joueur a speed=10 monte sur une monture +50% (default), `stepDelay` passe de 120ms a 80ms (~33% plus rapide en duree par step = +50% en steps/seconde, conforme a la specification de la tache).
+- **`tests/Unit/Entity/App/PlayerActiveMountTest.php`** (+50 lignes, +4 cas, total 8) : `testGetEffectiveSpeedReturnsBaseSpeedWhenUnmounted`, `testGetEffectiveSpeedAddsMountSpeedBonus` (speed=10 + bonus=50% -> 15), `testGetEffectiveSpeedHandlesZeroBonus` (bonus=0 -> speed inchange), `testGetEffectiveSpeedTruncatesFractionalBonus` (speed=10 + bonus=33% -> 13 via int cast).
+
+### Pattern
+
+- **Separation movement / combat** : `getEffectiveSpeed()` n'est consomme que par le mouvement de la carte. Les 4 consommateurs combat (`FightTurnResolver`, `FightFleeController`, `FightTimelineHelper`, `PlayerEffectiveStatsCalculator`) continuent d'utiliser `getSpeed()` brut. Cela respecte la convention que les mounts sont une mecanique de monde, pas de combat — un joueur typiquement descend de sa monture pour combattre.
+- **Defense en profondeur** : `max(0, $bonus)` evite qu'un Mount avec un bonus negatif (cas edge si quelqu'un veut creer un "mount handicap") ne reduise la speed sous le base. Ne change rien pour les bonus positifs.
+- **Aucune migration, aucun endpoint** : pure derivation depuis `Player::activeMount` (deja en place depuis 3a) et `Mount::speedBonus` (deja en place depuis sous-phase 1).
+
+### Impact
+
+- Diff total : ~75 lignes (sous le budget de 300).
+- Aucun fichier modifie ne depasse 400 lignes (Player.php deja > 400 recoit un ajout < 50 lignes).
+- Effet gameplay observable immediatement : un joueur qui monte sur sa monture via la sous-phase 3c.b voit son personnage se deplacer ~50% plus vite sur la carte.
+- La sous-phase 3 ("Vitesse de deplacement +50% quand monte") est entierement livree avec 3a + 3b + 3c.a + 3c.b + 3c.c.
+
+### Suite
+
+- **Sous-phase 4** : animation sprite monte (visualisation cote PixiJS — afficher le joueur sur sa monture plutot qu'a pied).
+- **Sous-phase 2b** : branchement aux systemes quete / loot / boutique pour permettre l'acquisition reelle des montures via des channels de jeu plutot que via fixtures.
 
 ---
 

@@ -48,7 +48,7 @@ class IndexController extends AbstractController
 
         $baseDelay = 120;
         $defaultSpeed = 10;
-        $stepDelay = max(40, (int) round($baseDelay * $defaultSpeed / max(1, $player->getSpeed())));
+        $stepDelay = max(40, (int) round($baseDelay * $defaultSpeed / max(1, $player->getEffectiveSpeed())));
 
         return $this->render('game/map/index.html.twig', [
             'mapId' => $player->getMap()->getId(),
