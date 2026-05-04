@@ -216,6 +216,22 @@ class Player implements CharacterInterface
         $this->speed = $speed;
     }
 
+    /**
+     * Speed including the active mount's bonus (if any). Used for overworld
+     * movement; combat uses the raw `getSpeed()` so that mounts do not affect
+     * turn order.
+     */
+    public function getEffectiveSpeed(): int
+    {
+        if ($this->activeMount === null) {
+            return $this->speed;
+        }
+
+        $bonus = (int) ($this->speed * $this->activeMount->getSpeedBonus() / 100);
+
+        return $this->speed + max(0, $bonus);
+    }
+
     public function getId(): int
     {
         return $this->id;
