@@ -1,7 +1,40 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 2b.shop.a — MountPurchaseService)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 2b.shop.b — endpoint achat + bouton UI "Acheter")
+
+---
+
+## 130 — Montures sous-phase 2b.shop.b : endpoint achat + bouton UI (Sprint 11, 2026-05-04)
+
+> Ferme le canal d'acquisition "shop" pour les montures. Suite directe de 2b.shop.a (PR #570). Expose `MountPurchaseService` au navigateur via un endpoint HTTP avec CSRF + flash, et ajoute le bouton "Acheter (X gils)" sur le catalogue.
+
+### Changements
+
+- **`src/Controller/Game/MountController.php`** (+45 / 0 lignes, total 155) : injection de `MountPurchaseService`. Nouvelle route `POST /game/mounts/{id}/purchase` (`app_game_mounts_purchase`) avec CSRF token `purchase_{id}`. Gere les 4 exceptions du pipeline (InsufficientGils, NotPurchasable, AlreadyOwned, DomainException pour mount disabled) en flash dedies. Le rendu `index` expose desormais `playerGils` au template (defaut 0 si pas de joueur courant).
+- **`templates/game/mount/index.html.twig`** (+13 / 0 lignes) : nouvelle branche du conditional buttons : si pas owned ET `gilCost > 0`, affiche un bouton "Acheter" jaune (cliquable si `playerGils >= gilCost`, sinon disabled + tooltip "Gils insuffisants"). Le bouton n'apparait pas pour les montures de quete / drop / achievement (gilCost null) ni pour les montures gratuites (gilCost 0).
+- **`translations/messages.{fr,en}.json`** (+6 cles chacun) : `purchase_button` (parametre `%cost%`), `cannot_afford`, et 4 cles flash sous `game.mount.flash.{purchased,insufficient_gils,not_purchasable,already_owned}`. Parite maintenue 745 cles FR = 745 cles EN.
+- **`tests/Functional/Controller/Game/MountControllerTest.php`** (+15 / -2 lignes) : nouveau mock `MountPurchaseService`, nouveau cas `testPurchaseRedirectsWhenNoActivePlayer` (guard "pas de joueur courant -> 302 sans appel au service ni au repo").
+
+### Pattern
+
+- **Re-use du pattern controller** : meme structure que `mount()` / `unmount()` (CSRF unique par action, redirection PRG, flash messages traduits cote template). Permet de garder le code coherent et previsible.
+- **UI degradee gracieuse** : le bouton est disabled cote serveur (rendu) ET cote HTML (`disabled aria-disabled`). Le serveur revalidera de toute facon via `MountPurchaseService::purchase`. Le tooltip donne un feedback immediat.
+- **Conditionnement par gilCost** : les montures avec `gilCost === null` (quete/drop/achievement) n'affichent pas le bouton — le canal d'acquisition est explicit. Les montures avec `gilCost === 0` non plus (les gratuites doivent passer par un autre canal, evite l'abuse "achat 0 gils => spam").
+
+### Impact
+
+- Diff total : ~110 lignes (sous le budget de 300).
+- Aucun fichier modifie ne depasse 400 lignes (MountController : 155, template : 119).
+- Aucune migration : tout repose sur la fondation 2a + 2b.shop.a (PRs #428 + #570 mergees).
+- Effet gameplay observable immediatement : un joueur avec assez de gils peut acheter via `/game/mounts` les 2 montures du catalogue avec gilCost (cheval brun 5000g, sanglier colossal Y g).
+- Independante des 12 PR ouvertes : aucune ne touche `MountController.php` ni la template `mount/index.html.twig`.
+
+### Suite
+
+- **Sous-phase 2b.quest** : integration avec `QuestRewardHandler` pour permettre l'octroi de mounts en recompense de quete (`SOURCE_QUEST`).
+- **Sous-phase 2b.loot** : integration avec `LootGenerator` pour permettre le drop rare de mounts (`SOURCE_DROP`).
+- **Sous-phase 4** : animation sprite monte (visualisation cote PixiJS).
 
 ---
 

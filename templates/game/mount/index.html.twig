@@ -94,6 +94,18 @@
                                             </form>
                                         {% endif %}
                                     </div>
+                                {% elseif mount.gilCost is not null and mount.gilCost > 0 %}
+                                    {% set canAfford = (playerGils ?? 0) >= mount.gilCost %}
+                                    <div class="mt-2">
+                                        <form method="post" action="{{ path('app_game_mounts_purchase', {id: mount.id}) }}" class="inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('purchase_' ~ mount.id) }}">
+                                            <button type="submit"
+                                                    {% if not canAfford %}disabled aria-disabled="true" title="{{ 'game.mount.cannot_afford'|trans }}"{% endif %}
+                                                    class="text-[11px] px-2.5 py-1 rounded-md transition-colors {{ canAfford ? 'bg-yellow-700 hover:bg-yellow-600 active:bg-yellow-800 text-white cursor-pointer' : 'bg-gray-800 text-gray-500 cursor-not-allowed' }}">
+                                                {{ 'game.mount.purchase_button'|trans({'%cost%': mount.gilCost}) }}
+                                            </button>
+                                        </form>
+                                    </div>
                                 {% endif %}
                             </div>
                         </article>

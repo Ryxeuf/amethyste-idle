@@ -620,6 +620,8 @@
       "active": "Active",
       "mount_button": "Mount",
       "unmount_button": "Dismount",
+      "purchase_button": "Buy (%cost% gils)",
+      "cannot_afford": "Not enough gils",
       "obtention": {
         "quest": "Quest reward",
         "drop": "Rare drop",
@@ -632,7 +634,11 @@
         "not_owned": "You do not own this mount.",
         "disabled": "This mount is unavailable.",
         "unknown": "Mount not found.",
-        "csrf_invalid": "Invalid action. Please try again."
+        "csrf_invalid": "Invalid action. Please try again.",
+        "purchased": "Mount purchased successfully!",
+        "insufficient_gils": "You do not have enough gils to buy this mount.",
+        "not_purchasable": "This mount is not for sale.",
+        "already_owned": "You already own this mount."
       }
     },
     "harvest": {

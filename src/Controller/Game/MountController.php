@@ -3,8 +3,12 @@
 namespace App\Controller\Game;
 
 use App\Entity\Game\Mount;
+use App\GameEngine\Mount\InsufficientGilsException;
 use App\GameEngine\Mount\MountActivationService;
+use App\GameEngine\Mount\MountAlreadyOwnedException;
 use App\GameEngine\Mount\MountNotOwnedException;
+use App\GameEngine\Mount\MountNotPurchasableException;
+use App\GameEngine\Mount\MountPurchaseService;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerMountRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,6 +24,7 @@ class MountController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerMountRepository $playerMountRepository,
         private readonly MountActivationService $mountActivationService,
+        private readonly MountPurchaseService $mountPurchaseService,
     ) {
     }
 
@@ -42,6 +47,7 @@ class MountController extends AbstractController
             'mounts' => $mounts,
             'ownedMountIds' => $ownedMountIds,
             'activeMountId' => null !== $activeMount ? $activeMount->getId() : null,
+            'playerGils' => null !== $player ? $player->getGils() : 0,
             'obtentionLabels' => [
                 Mount::OBTENTION_QUEST => 'game.mount.obtention.quest',
                 Mount::OBTENTION_DROP => 'game.mount.obtention.drop',
@@ -104,6 +110,45 @@ class MountController extends AbstractController
 
         $this->mountActivationService->unmount($player);
         $this->addFlash('success', 'game.mount.flash.unmounted');
+
+        return $this->redirectToRoute('app_game_mounts');
+    }
+
+    #[Route('/game/mounts/{id}/purchase', name: 'app_game_mounts_purchase', methods: ['POST'])]
+    public function purchase(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game_mounts');
+        }
+
+        if (!$this->isCsrfTokenValid('purchase_' . $id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.mount.flash.csrf_invalid');
+
+            return $this->redirectToRoute('app_game_mounts');
+        }
+
+        $mount = $this->entityManager->getRepository(Mount::class)->find($id);
+        if (!$mount instanceof Mount) {
+            $this->addFlash('error', 'game.mount.flash.unknown');
+
+            return $this->redirectToRoute('app_game_mounts');
+        }
+
+        try {
+            $this->mountPurchaseService->purchase($player, $mount);
+            $this->addFlash('success', 'game.mount.flash.purchased');
+        } catch (InsufficientGilsException) {
+            $this->addFlash('error', 'game.mount.flash.insufficient_gils');
+        } catch (MountNotPurchasableException) {
+            $this->addFlash('error', 'game.mount.flash.not_purchasable');
+        } catch (MountAlreadyOwnedException) {
+            $this->addFlash('error', 'game.mount.flash.already_owned');
+        } catch (\DomainException) {
+            $this->addFlash('error', 'game.mount.flash.disabled');
+        }
 
         return $this->redirectToRoute('app_game_mounts');
     }

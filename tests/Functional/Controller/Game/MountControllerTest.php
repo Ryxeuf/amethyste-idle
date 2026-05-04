@@ -6,6 +6,7 @@ use App\Controller\Game\MountController;
 use App\Entity\App\Player;
 use App\Entity\Game\Mount;
 use App\GameEngine\Mount\MountActivationService;
+use App\GameEngine\Mount\MountPurchaseService;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerMountRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,6 +25,7 @@ class MountControllerTest extends TestCase
     private PlayerHelper&MockObject $playerHelper;
     private PlayerMountRepository&MockObject $playerMountRepository;
     private MountActivationService&MockObject $mountActivationService;
+    private MountPurchaseService&MockObject $mountPurchaseService;
     private MountController $controller;
 
     /** @var array<string, mixed>|null */
@@ -38,12 +40,14 @@ class MountControllerTest extends TestCase
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->playerMountRepository = $this->createMock(PlayerMountRepository::class);
         $this->mountActivationService = $this->createMock(MountActivationService::class);
+        $this->mountPurchaseService = $this->createMock(MountPurchaseService::class);
 
         $this->controller = new MountController(
             $this->entityManager,
             $this->playerHelper,
             $this->playerMountRepository,
             $this->mountActivationService,
+            $this->mountPurchaseService,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -155,6 +159,19 @@ class MountControllerTest extends TestCase
         $this->mountActivationService->expects($this->never())->method('unmount');
 
         $response = $this->controller->unmount(new \Symfony\Component\HttpFoundation\Request());
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame('/game/mounts', $response->headers->get('Location'));
+    }
+
+    public function testPurchaseRedirectsWhenNoActivePlayer(): void
+    {
+        $this->playerHelper->expects($this->once())->method('getPlayer')->willReturn(null);
+
+        $this->mountPurchaseService->expects($this->never())->method('purchase');
+        $this->repository->expects($this->never())->method('find');
+
+        $response = $this->controller->purchase(42, new \Symfony\Component\HttpFoundation\Request());
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame('/game/mounts', $response->headers->get('Location'));
