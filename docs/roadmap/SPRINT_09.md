@@ -21,9 +21,9 @@
 - [ ] Mini canvas PixiJS composant les layers en temps reel au changement — non retenu
 - [x] Ou fallback : images statiques pre-generees — canvas 64x64 compose la frame stand-down (col 0, row 0) de chaque sheet Mana Seed ; tint du cheveux applique via pipeline multiply + destination-in (pas de dependance PixiJS)
 
-### AVT-25 — Persister l'apparence a la creation (S | ★★)
+### ~~AVT-25 — Persister l'apparence a la creation (S | ★★)~~ ✅
 > Prerequis : ← AVT-23
-- [ ] `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash`
+- [x] `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash` — la fabrique normalise les choix body/hair/hairColor du formulaire, seed `Player::avatarAppearance`, puis delegue le calcul du hash + la publication Mercure a `AvatarHashRecalculator::recalculate()` apres flush. Defaut `human_m_light` si aucune selection.
 
 ### AVT-26 — Lier Race au body de base (S | ★★)
 > Prerequis : ← AVT-25

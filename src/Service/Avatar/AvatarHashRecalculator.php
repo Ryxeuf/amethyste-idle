@@ -8,7 +8,7 @@ use App\Entity\App\Player;
 use App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class AvatarHashRecalculator
+class AvatarHashRecalculator
 {
     public function __construct(
         private readonly PlayerAvatarPayloadBuilder $payloadBuilder,
