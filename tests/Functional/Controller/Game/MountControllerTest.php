@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment as TwigEnvironment;
@@ -64,7 +65,7 @@ class MountControllerTest extends TestCase
 
         $this->playerHelper->method('getPlayer')->willReturn(null);
 
-        $response = $this->controller->index();
+        $response = $this->controller->index(new Request());
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertNotNull($this->capturedTemplateParams);
@@ -85,7 +86,7 @@ class MountControllerTest extends TestCase
 
         $this->playerHelper->method('getPlayer')->willReturn(null);
 
-        $response = $this->controller->index();
+        $response = $this->controller->index(new Request());
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame([], $this->capturedTemplateParams['mounts']);
@@ -97,7 +98,7 @@ class MountControllerTest extends TestCase
         $this->repository->method('findBy')->willReturn([]);
         $this->playerHelper->method('getPlayer')->willReturn(null);
 
-        $this->controller->index();
+        $this->controller->index(new Request());
 
         $labels = $this->capturedTemplateParams['obtentionLabels'];
         foreach (Mount::getObtentionTypes() as $type) {
@@ -121,7 +122,7 @@ class MountControllerTest extends TestCase
             ->with($player)
             ->willReturn([42, 99]);
 
-        $this->controller->index();
+        $this->controller->index(new Request());
 
         $this->assertSame([42, 99], $this->capturedTemplateParams['ownedMountIds']);
         $this->assertNull($this->capturedTemplateParams['activeMountId']);
@@ -134,7 +135,7 @@ class MountControllerTest extends TestCase
 
         $this->playerMountRepository->expects($this->never())->method('findOwnedMountIds');
 
-        $this->controller->index();
+        $this->controller->index(new Request());
 
         $this->assertSame([], $this->capturedTemplateParams['ownedMountIds']);
     }
@@ -175,6 +176,50 @@ class MountControllerTest extends TestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame('/game/mounts', $response->headers->get('Location'));
+    }
+
+    public function testIndexDefaultsSelectedFilterToAllAndExposesAvailableFilters(): void
+    {
+        $this->repository->method('findBy')->willReturn([]);
+        $this->playerHelper->method('getPlayer')->willReturn(null);
+
+        $this->controller->index(new Request());
+
+        $this->assertSame('', $this->capturedTemplateParams['selectedFilter']);
+        $this->assertSame(Mount::getObtentionTypes(), $this->capturedTemplateParams['availableFilters']);
+    }
+
+    public function testIndexAppliesObtentionTypeFilterWhenValid(): void
+    {
+        $this->repository->expects($this->once())
+            ->method('findBy')
+            ->with(
+                ['enabled' => true, 'obtentionType' => Mount::OBTENTION_QUEST],
+                ['requiredLevel' => 'ASC', 'gilCost' => 'ASC'],
+            )
+            ->willReturn([]);
+
+        $this->playerHelper->method('getPlayer')->willReturn(null);
+
+        $request = new Request(['type' => Mount::OBTENTION_QUEST]);
+        $this->controller->index($request);
+
+        $this->assertSame(Mount::OBTENTION_QUEST, $this->capturedTemplateParams['selectedFilter']);
+    }
+
+    public function testIndexIgnoresUnknownFilterValueAndFallsBackToAll(): void
+    {
+        $this->repository->expects($this->once())
+            ->method('findBy')
+            ->with(['enabled' => true], ['requiredLevel' => 'ASC', 'gilCost' => 'ASC'])
+            ->willReturn([]);
+
+        $this->playerHelper->method('getPlayer')->willReturn(null);
+
+        $request = new Request(['type' => 'not_a_real_type']);
+        $this->controller->index($request);
+
+        $this->assertSame('', $this->capturedTemplateParams['selectedFilter']);
     }
 
     private function buildMount(string $slug, string $name, string $obtention, int $level, ?int $gilCost): Mount

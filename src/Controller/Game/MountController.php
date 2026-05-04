@@ -29,13 +29,22 @@ class MountController extends AbstractController
     }
 
     #[Route('/game/mounts', name: 'app_game_mounts', methods: ['GET'])]
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
+        $allowedTypes = Mount::getObtentionTypes();
+        $rawFilter = $request->query->get('type', '');
+        $selectedFilter = \is_string($rawFilter) && \in_array($rawFilter, $allowedTypes, true) ? $rawFilter : '';
+
+        $criteria = ['enabled' => true];
+        if ('' !== $selectedFilter) {
+            $criteria['obtentionType'] = $selectedFilter;
+        }
+
         $mounts = $this->entityManager
             ->getRepository(Mount::class)
-            ->findBy(['enabled' => true], ['requiredLevel' => 'ASC', 'gilCost' => 'ASC']);
+            ->findBy($criteria, ['requiredLevel' => 'ASC', 'gilCost' => 'ASC']);
 
         $player = $this->playerHelper->getPlayer();
         $ownedMountIds = null !== $player
@@ -48,6 +57,8 @@ class MountController extends AbstractController
             'ownedMountIds' => $ownedMountIds,
             'activeMountId' => null !== $activeMount ? $activeMount->getId() : null,
             'playerGils' => null !== $player ? $player->getGils() : 0,
+            'selectedFilter' => $selectedFilter,
+            'availableFilters' => $allowedTypes,
             'obtentionLabels' => [
                 Mount::OBTENTION_QUEST => 'game.mount.obtention.quest',
                 Mount::OBTENTION_DROP => 'game.mount.obtention.drop',
