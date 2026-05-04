@@ -30,10 +30,11 @@
 
 ### AVT-35 — Ecran de personnalisation post-creation (M | ★★)
 > Prerequis : ← AVT-25 ✅ (mergee)
-> Avancement : sous-phase 1 (menu self-service `/game/character/customize`) livree.
+> Avancement : sous-phases 1 (menu self-service) et 2 (integration nav desktop + mobile) livrees.
 - [~] Modifier apparence apres creation (coiffeur PNJ ou menu)
   - [x] **Sous-phase 1 — Menu self-service** (2026-05-04) : nouvelle route `GET/POST /game/character/customize` (`app_character_customize`) dans `CharacterController::customize`. Form `CharacterCustomizeType` (mirroir reduit de `CharacterCreateType` : body / hair / hairColor uniquement, sans nom, race ni outfit). Template `templates/game/character/customize.html.twig` reutilise le macro `avatar_choice_group` du formulaire de creation et rajoute des pastilles de couleur de cheveux. Le POST normalise via le helper `stringOrNull`, met a jour `Player::avatarAppearance`, flush, puis appelle `AvatarHashRecalculator::recalculate()` (qui publie sur Mercure si le hash change). Redirection vers la meme page avec flash success en cas de succes. Pre-rempli avec l'apparence courante. 8 cles FR/EN ajoutees sous `game.character.customize.*`. Parite maintenue 727=727. Test `CharacterControllerCustomizeTest::testCustomizeRedirectsWhenNoActivePlayer` (cas: pas de joueur courant -> redirection 302 sans flush ni recalcul).
-- [ ] Sous-phase 2 — Lien dans la nav du dropdown Personnage / coiffeur PNJ dedie (live preview canvas, NPC interaction)
+  - [x] **Sous-phase 2 — Integration nav** (2026-05-04) : lien "Apparence" ajoute dans le dropdown "Personnage" desktop (apres "Journal") et dans le drawer mobile (apres "Montures"). Route `app_character_customize` ajoutee a `character_routes` et a la liste de surlignage du bouton "Plus" mobile pour activer le highlight visuel. Nouvelle cle `game.nav.customize_appearance` FR/EN, parite 728=728.
+- [ ] Sous-phase 3 — Coiffeur PNJ dedie (live preview canvas, NPC interaction) — non commencee
 - [x] Recalcul du hash + persistence — couvert par sous-phase 1 via `AvatarHashRecalculator::recalculate()`
 
 ### ~~AVT-36 — Lazy loading intelligent (M | ★★)~~ ✅
