@@ -1,7 +1,43 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (AVT-35 sous-phase 2 — integration nav desktop + mobile)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 3a — fondation monture active sur Player)
+
+---
+
+## 130 — Montures sous-phase 3a : fondation monture active sur Player (Sprint 11, 2026-05-04)
+
+> Premier livrable de la sous-phase 3 (vitesse +50% quand monte). Pose la fondation entite necessaire pour que les sous-phases 3b (service d'activation + API mount/unmount) et 3c (bonus de vitesse cote `PlayerMoveProcessor`) puissent etre livrees independamment, sans toucher d'autre code.
+
+### Changements
+
+- **`migrations/Version20260504PlayerActiveMount.php`** (nouveau, ~36 lignes) : migration idempotente qui ajoute la colonne `active_mount_id` (INT nullable) sur la table `player`, la contrainte FK `fk_player_active_mount` vers `game_mounts(id)` avec `ON DELETE SET NULL` (cree via bloc `DO $$ ... END $$` pour rester idempotente — la syntaxe `ADD CONSTRAINT IF NOT EXISTS` n'existe pas en PostgreSQL, cf. CLAUDE.md "Pieges courants"), et l'index `idx_player_active_mount` sur la colonne. Down idempotent (DROP INDEX IF EXISTS + DROP CONSTRAINT IF EXISTS + DROP COLUMN IF EXISTS).
+- **`src/Entity/App/Player.php`** (+17 lignes, total 669) : import `App\Entity\Game\Mount`. Nouvelle propriete `?Mount $activeMount = null` declaree en `ManyToOne` avec `JoinColumn(name: 'active_mount_id', nullable: true, onDelete: 'SET NULL')`, alignee sur la migration. Getter `getActiveMount(): ?Mount` et setter `setActiveMount(?Mount $activeMount): self` (fluent). Place juste apres les accesseurs de `Race`. Player.php etait deja > 400 lignes avant cette sous-phase ; l'ajout reste bien sous le cap de 50 lignes.
+- **`tests/Unit/Entity/App/PlayerActiveMountTest.php`** (nouveau, 56 lignes, 4 cas) :
+  - `testPlayerActiveMountIsNullByDefault` : un nouveau Player a `null` comme monture active.
+  - `testPlayerCanSetActiveMount` : `setActiveMount` puis `getActiveMount` retourne bien la monture.
+  - `testPlayerCanClearActiveMount` : `setActiveMount(null)` reset la valeur.
+  - `testSetActiveMountIsFluent` : le setter retourne `$this` (signature fluent attendue par le pattern projet).
+
+### Pattern
+
+- **Sous-phase strictement structurelle** : aucun service, aucun controller, aucune route, aucune UI. Les comportements (mount/unmount, bonus de vitesse, animation) seront livres en sous-phases 3b/3c/4 distinctes.
+- **Idempotence migration** : pattern `ADD COLUMN IF NOT EXISTS` + bloc `DO $$ BEGIN IF NOT EXISTS ... END $$` pour la contrainte FK + `CREATE INDEX IF NOT EXISTS`, conforme a la regle CLAUDE.md sur les migrations PostgreSQL.
+- **`ON DELETE SET NULL`** : si une monture est supprimee du catalogue, le joueur perd simplement sa monture active (devient `null`) sans casser la coherence. Plus sur que `ON DELETE CASCADE` (qui supprimerait le joueur).
+
+### Impact
+
+- Diff total : ~115 lignes (sous le budget de 300).
+- Aucun fichier nouveau ne depasse 400 lignes ; Player.php deja > 400 conserve un ajout < 50 lignes.
+- Migration idempotente, safe rerun.
+- Aucun impact runtime tant que les sous-phases 3b/3c ne sont pas livrees (la colonne reste `NULL` par defaut sur tous les joueurs existants).
+- Independante des 12 PR ouvertes : aucune ne touche `Player.php`, l'entite `Mount` ou la table `player`.
+
+### Suite
+
+- **Sous-phase 3b** : nouveau service `MountActivationService` (mount / unmount + invariant : un seul activeMount possedé via `PlayerMountRepository::playerOwnsMount`). Endpoint `POST /game/mounts/{id}/mount` + `POST /game/mounts/unmount`. Boutons "Monter / Descendre" sur la page `/game/mounts`.
+- **Sous-phase 3c** : application du bonus de vitesse `+Mount::speedBonus%` dans `PlayerMoveProcessor` (ou via une methode `Player::getEffectiveSpeed()`). Mise a jour de la doc gameplay.
+- **Sous-phase 4** : animation sprite monte (visualisation cote PixiJS).
 
 ---
 

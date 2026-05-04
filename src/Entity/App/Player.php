@@ -5,6 +5,7 @@ namespace App\Entity\App;
 use App\Entity\App\Traits\CharacterStatsTrait;
 use App\Entity\App\Traits\CoordinatesTrait;
 use App\Entity\CharacterInterface;
+use App\Entity\Game\Mount;
 use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
@@ -79,6 +80,10 @@ class Player implements CharacterInterface
     #[ORM\ManyToOne(targetEntity: Race::class)]
     #[ORM\JoinColumn(name: 'race_id', referencedColumnName: 'id', nullable: true)]
     private ?Race $race = null;
+
+    #[ORM\ManyToOne(targetEntity: Mount::class)]
+    #[ORM\JoinColumn(name: 'active_mount_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Mount $activeMount = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'players')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
@@ -540,6 +545,18 @@ class Player implements CharacterInterface
     public function setRace(?Race $race): self
     {
         $this->race = $race;
+
+        return $this;
+    }
+
+    public function getActiveMount(): ?Mount
+    {
+        return $this->activeMount;
+    }
+
+    public function setActiveMount(?Mount $activeMount): self
+    {
+        $this->activeMount = $activeMount;
 
         return $this;
     }
