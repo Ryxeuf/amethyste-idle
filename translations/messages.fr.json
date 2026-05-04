@@ -826,6 +826,10 @@
         "to": "A :"
       }
     },
+    "profile": {
+      "active_mount_label": "Monture : %name%",
+      "active_mount_tooltip": "Monture active (+%bonus%%% de vitesse de deplacement)"
+    },
     "party": {
       "page_title": "Groupe",
       "heading": "Groupe",

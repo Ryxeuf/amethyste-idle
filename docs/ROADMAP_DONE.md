@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.c — Player::getEffectiveSpeed() applique le bonus de monture)
+> Derniere mise a jour : 2026-05-04 (130 sous-phase 3c.d — badge monture active sur le profil public)
+
+---
+
+## 130 — Montures sous-phase 3c.d : badge monture active sur le profil public (Sprint 11, 2026-05-04)
+
+> Polish UX de la sous-phase 3 (Mount speed +50%, fully delivered in PRs #563-#567). Affiche un badge violet "Monture : <nom> (+X% vitesse)" sur la page de profil public d'un joueur quand celui-ci est monte. Premier visuel cross-page de la feature mount/unmount.
+
+### Changements
+
+- **`templates/game/profile/show.html.twig`** (+10 / 0 lignes, total 370) : badge insere sous la ligne `Race · ClassType` quand `targetPlayer.activeMount` est non null. Reuse de l'icone "checkmark" deja utilise dans le drop-down nav. Tooltip `game.profile.active_mount_tooltip` qui affiche le `speedBonus` formate. Le nom de la monture est resolu via le filter `|localized_mount_name` (deja livre par 3e.l).
+- **`translations/messages.{fr,en}.json`** (+4 cles chacun) : nouveau namespace `game.profile.{active_mount_label,active_mount_tooltip}` parametres avec `%name%` et `%bonus%`. Parite maintenue 739 cles FR = 739 cles EN.
+
+### Pattern
+
+- **Pas de modification du controller** : `targetPlayer` est deja expose au template, `getActiveMount()` est consume directement en Twig. Approach minimal.
+- **Defense en profondeur** : le `{% if targetPlayer.activeMount %}` court-circuite proprement quand l'utilisateur n'a pas de monture, preservant le rendu original. Aucune regression sur les tests existants (le mock Player retourne null par defaut pour les methodes non stubees).
+- **Reuse i18n** : reutilise `localized_mount_name` deja en place depuis 3e.l. Aucune modification de l'infrastructure de traduction des montures.
+
+### Impact
+
+- Diff total : ~25 lignes hors roadmap (sous le budget de 300).
+- Aucun fichier nouveau, aucune migration, aucun test ajoute (les tests existants `PlayerProfileControllerTest` continuent de passer car le mock par defaut retourne null pour `getActiveMount`).
+- Visibilite cross-page : le statut "monte" est desormais visible non seulement sur `/game/mounts` (UI principale) mais aussi sur le profil public d'un joueur qu'on visite via le chat ou le classement.
+- Independante des 12 PR ouvertes : aucune ne touche `templates/game/profile/show.html.twig` ou le bloc `game.profile.*` (qui n'existait pas).
 
 ---
 
