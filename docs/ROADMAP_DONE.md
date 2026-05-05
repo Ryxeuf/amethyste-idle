@@ -4702,3 +4702,22 @@ Les libelles de difficulte (`Normal`/`Heroique`/`Mythique`) etaient retournes pa
 - [x] Spec layout reecrite : stand/push/pull/jump rows 0-3, walk/run rows 4-7, directions down/up/left/right
 - [x] `SpriteAnimator` : `AVATAR_ANIMATIONS` restructure avec `cols[]`, `AVATAR_DIRECTION_ROW` ajoute, breathing reactive pour avatar
 - [x] Sprint 7 cloture : tous les jalons AVT-01 a AVT-12 completes
+
+### 135 — Localisation i18n (partiel, sous-phase 3e.b.c) — Cablage du tracking de quetes pour les noms de monstres (2026-05-04) 🔧
+
+> Ferme la derniere surface UI qui affichait des noms de monstres non localises dans le journal de quetes. Nouveau service `App\GameEngine\Quest\QuestMonsterBySlugResolver` qui agrege les slugs referencees dans `tracking.monsters` (PlayerQuest + PlayerDailyQuest) et `requirements.monsters` (Quest + Quest quotidiennes disponibles), charge les `Monster` en une seule requete, et renvoie un map `slug -> Monster`. `QuestController::index` injecte le resolver et passe le map au template sous la cle `monstersBySlug`. Les 4 emplacements du journal de quetes consomment le map via `localized_monster_name` avec fallback gracieux sur le nom fige dans le tracking JSON.
+
+- [x] `App\GameEngine\Quest\QuestMonsterBySlugResolver` agrege tracking + requirements
+- [x] `QuestController::index` passe `monstersBySlug` au template
+- [x] Template `templates/game/quest/index.html.twig` cable sur les 4 sections (active, daily active, available, daily available)
+- [x] Tests `QuestMonsterBySlugResolverTest` (5 cas)
+
+### 135 — Localisation i18n (partiel, sous-phase 3e.cc) — i18n de la page "Mes ventes" de l'hotel des ventes (2026-05-05) 🔧
+
+> 11eme livraison de la serie 3e dediee aux pages Twig statiques. Couvre `templates/game/auction/my_listings.html.twig` (147 lignes), la page de gestion des annonces du joueur sur l'hotel des ventes avec onglets Actives/Historique, stats (revenus totaux, solde) et formulaire d'annulation avec confirm. Premier ajout au namespace `game.auction.*` (initialement vide).
+
+- [x] 18 cles ajoutees sous `game.auction.my_listings.*` en FR et EN
+- [x] Template cable via `|trans` (heading, tabs, stats, empty states, confirm dialog)
+- [x] Chaine pluralisee `active_count` avec parametres `%count%` + `%plural%`
+- [x] Echappement JS de la confirm dialog via `|e('js')`
+- [x] Parite cles maintenue : 773 FR = 773 EN

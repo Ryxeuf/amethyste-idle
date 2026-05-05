@@ -974,6 +974,34 @@
         "button": "Renommer",
         "help": "Consultez votre inventaire pour trouver l'ID de l'objet a renommer."
       }
+    },
+    "auction": {
+      "my_listings": {
+        "page_title": "Mes ventes",
+        "heading": "Mes ventes",
+        "active_count": "%count% annonce%plural% active%plural%",
+        "back_to_auction": "Retour HdV",
+        "sell_button": "Vendre",
+        "stats": {
+          "total_revenue": "Revenus totaux :",
+          "balance": "Solde :",
+          "gils_suffix": "Gils"
+        },
+        "tab_active": "Actives",
+        "tab_history": "Historique",
+        "active": {
+          "empty_heading": "Aucune annonce active.",
+          "empty_hint": "Mettez un objet en vente depuis votre inventaire.",
+          "price_label": "Prix :",
+          "expires_label": "Expire :",
+          "cancel_button": "Annuler",
+          "cancel_confirm": "Annuler cette annonce ? L'objet sera retourne dans votre inventaire."
+        },
+        "history": {
+          "empty": "Aucun historique de vente."
+        },
+        "gils_short": "G"
+      }
     }
   },
   "common": {

@@ -974,6 +974,34 @@
         "button": "Rename",
         "help": "Check your inventory to find the ID of the item to rename."
       }
+    },
+    "auction": {
+      "my_listings": {
+        "page_title": "My listings",
+        "heading": "My listings",
+        "active_count": "%count% active listing%plural%",
+        "back_to_auction": "Back to AH",
+        "sell_button": "Sell",
+        "stats": {
+          "total_revenue": "Total revenue:",
+          "balance": "Balance:",
+          "gils_suffix": "Gils"
+        },
+        "tab_active": "Active",
+        "tab_history": "History",
+        "active": {
+          "empty_heading": "No active listings.",
+          "empty_hint": "List an item for sale from your inventory.",
+          "price_label": "Price:",
+          "expires_label": "Expires:",
+          "cancel_button": "Cancel",
+          "cancel_confirm": "Cancel this listing? The item will be returned to your inventory."
+        },
+        "history": {
+          "empty": "No sale history."
+        },
+        "gils_short": "G"
+      }
     }
   },
   "common": {
