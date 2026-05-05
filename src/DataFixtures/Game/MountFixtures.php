@@ -2,12 +2,20 @@
 
 namespace App\DataFixtures\Game;
 
+use App\DataFixtures\MonsterFixtures;
+use App\Entity\Game\Monster;
 use App\Entity\Game\Mount;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class MountFixtures extends Fixture
+class MountFixtures extends Fixture implements DependentFixtureInterface
 {
+    public function getDependencies(): array
+    {
+        return [MonsterFixtures::class];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $now = new \DateTime();
@@ -79,6 +87,8 @@ class MountFixtures extends Fixture
         $direboar->setGilCost(null);
         $direboar->setRequiredLevel(20);
         $direboar->setEnabled(true);
+        $direboar->setDropMonster($this->getReference('forge_lord', Monster::class));
+        $direboar->setDropProbability(3);
         $direboar->setCreatedAt($now);
         $direboar->setUpdatedAt($now);
         $manager->persist($direboar);

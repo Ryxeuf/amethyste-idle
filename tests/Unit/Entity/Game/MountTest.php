@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Entity\Game;
 
+use App\Entity\Game\Monster;
 use App\Entity\Game\Mount;
 use PHPUnit\Framework\TestCase;
 
@@ -25,6 +26,29 @@ class MountTest extends TestCase
         $this->assertSame(1, $mount->getRequiredLevel());
         $this->assertTrue($mount->isEnabled());
         $this->assertSame('Cheval brun', (string) $mount);
+        $this->assertNull($mount->getDropMonster());
+        $this->assertSame(0, $mount->getDropProbability());
+    }
+
+    public function testSetDropMonsterAndProbability(): void
+    {
+        $monster = (new Monster())->setName('Forge Lord');
+        $mount = (new Mount())->setDropMonster($monster)->setDropProbability(5);
+
+        $this->assertSame($monster, $mount->getDropMonster());
+        $this->assertSame(5, $mount->getDropProbability());
+    }
+
+    public function testSetDropProbabilityRejectsNegative(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Mount())->setDropProbability(-1);
+    }
+
+    public function testSetDropProbabilityRejectsAboveHundred(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        (new Mount())->setDropProbability(101);
     }
 
     public function testSetObtentionTypeRejectsUnknownType(): void
