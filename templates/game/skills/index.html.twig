@@ -44,42 +44,42 @@
              class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70"
              data-action="click->skills#closeRespecOnBackdrop">
             <div class="bg-gray-800 border border-gray-600 rounded-xl p-6 max-w-sm mx-4 shadow-2xl">
-                <h3 class="text-lg font-bold text-white mb-3">Redistribuer les compétences</h3>
+                <h3 class="text-lg font-bold text-white mb-3">{{ "game.skills.respec.title"|trans }}</h3>
                 <p class="text-gray-300 text-sm mb-3">
-                    Toutes vos compétences seront réinitialisées et les points d'expérience restitués dans chaque domaine.
+                    {{ "game.skills.respec.description"|trans }}
                 </p>
                 <div class="bg-gray-900 rounded-lg p-3 mb-4 text-sm space-y-1.5">
                     <div class="flex justify-between text-gray-400">
-                        <span>Compétences à redistribuer</span>
+                        <span>{{ "game.skills.respec.count_label"|trans }}</span>
                         <span class="text-white font-bold">{{ skillCount }}</span>
                     </div>
                     <div class="flex justify-between text-gray-400">
-                        <span>Coût</span>
-                        <span class="text-amber-400 font-bold">{{ respecCost }} gils</span>
+                        <span>{{ "game.skills.respec.cost_label"|trans }}</span>
+                        <span class="text-amber-400 font-bold">{{ "game.skills.respec.gils_amount"|trans({'%count%': respecCost}) }}</span>
                     </div>
                     <div class="flex justify-between text-gray-400">
-                        <span>Vos gils</span>
-                        <span class="{{ canRespec ? 'text-green-400' : 'text-red-400' }} font-bold">{{ playerGils }} gils</span>
+                        <span>{{ "game.skills.respec.your_gils_label"|trans }}</span>
+                        <span class="{{ canRespec ? 'text-green-400' : 'text-red-400' }} font-bold">{{ "game.skills.respec.gils_amount"|trans({'%count%': playerGils}) }}</span>
                     </div>
                 </div>
                 <div class="flex gap-3">
                     <button type="button"
                             data-action="click->skills#closeRespec"
                             class="flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors">
-                        Annuler
+                        {{ "common.cancel"|trans }}
                     </button>
                     {% if canRespec %}
                         <form action="{{ path('app_game_skill_respec') }}" method="post" class="flex-1">
                             <input type="hidden" name="_token" value="{{ csrf_token('respec') }}">
                             <button type="submit"
                                     class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors">
-                                Confirmer
+                                {{ "common.confirm"|trans }}
                             </button>
                         </form>
                     {% else %}
                         <button type="button" disabled
                                 class="flex-1 bg-gray-600 text-gray-400 font-bold py-2 px-4 rounded-lg text-sm cursor-not-allowed">
-                            Fonds insuffisants
+                            {{ "game.skills.respec.insufficient_funds"|trans }}
                         </button>
                     {% endif %}
                 </div>
@@ -100,7 +100,7 @@
                 <button type="button"
                         data-action="click->skills#openRespec"
                         class="{{ canRespec ? 'bg-amber-600 hover:bg-amber-700' : 'bg-gray-600 cursor-not-allowed' }} text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors flex-shrink-0 ml-4">
-                    Redistribuer
+                    {{ "game.skills.respec.trigger_button"|trans }}
                 </button>
             {% endif %}
         </div>
@@ -293,7 +293,7 @@
                     {% if ungrouped|length > 0 %}
                         <div>
                             <div class="flex items-center gap-1.5 px-2 pb-1 mb-0.5">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-600">Autres</span>
+                                <span class="text-xs font-semibold uppercase tracking-wider text-gray-600">{{ "game.skills.sidebar.others_group"|trans }}</span>
                             </div>
                             {% for domain in ungrouped %}
                                 {% set availCount = domain.skills|filter(s => s.canBeAcquired and not s.acquired)|length %}
