@@ -2,10 +2,11 @@
 
 namespace App\Entity\Game;
 
+use App\Repository\MountRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: MountRepository::class)]
 #[ORM\Table(name: 'game_mounts')]
 class Mount
 {
@@ -62,6 +63,13 @@ class Mount
 
     #[ORM\Column(name: 'enabled', type: 'boolean', options: ['default' => true])]
     private bool $enabled = true;
+
+    #[ORM\ManyToOne(targetEntity: Monster::class)]
+    #[ORM\JoinColumn(name: 'drop_monster_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Monster $dropMonster = null;
+
+    #[ORM\Column(name: 'drop_probability', type: 'integer', options: ['default' => 0])]
+    private int $dropProbability = 0;
 
     public function __toString(): string
     {
@@ -267,6 +275,34 @@ class Mount
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getDropMonster(): ?Monster
+    {
+        return $this->dropMonster;
+    }
+
+    public function setDropMonster(?Monster $dropMonster): self
+    {
+        $this->dropMonster = $dropMonster;
+
+        return $this;
+    }
+
+    public function getDropProbability(): int
+    {
+        return $this->dropProbability;
+    }
+
+    public function setDropProbability(int $dropProbability): self
+    {
+        if ($dropProbability < 0 || $dropProbability > 100) {
+            throw new \InvalidArgumentException(sprintf('Probabilite de drop "%d" invalide (attendu : 0-100).', $dropProbability));
+        }
+
+        $this->dropProbability = $dropProbability;
 
         return $this;
     }

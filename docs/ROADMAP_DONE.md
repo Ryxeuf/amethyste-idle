@@ -1,7 +1,33 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-04 (135 sous-phase 3d — cablage `localized_description` sur templates de production + reader fixtures + 7 traductions EN de demo)
+> Derniere mise a jour : 2026-05-05 (130 sous-phase 2b.loot — `MountDropResolver` debloque le drop rare de montures sur la mort d'un monstre cible, sanglier colossal cable sur le Seigneur de la Forge a 3%).
+
+---
+
+## 130 — Montures sous-phase 2b.loot : drop rare via `MountDropResolver` (Sprint 11, 2026-05-05)
+
+> Ferme la troisieme et derniere voie d'obtention de montures (apres `quest` et `purchase`). Reutilise integralement l'infrastructure existante (`MobDeadEvent`, `MountAcquisitionService::grantMount(SOURCE_DROP)`, `PlayerMount`) et n'ajoute que la liaison Mount->Monster + le resolver d'event.
+
+### Changements
+
+- **`src/Entity/Game/Mount.php`** (+38 lignes) : 2 nouvelles colonnes — `dropMonster` (ManyToOne vers `Monster`, nullable, `ON DELETE SET NULL`) et `dropProbability` (int 0-100, defaut 0, validation par setter qui rejette les valeurs hors bornes). Repository class change a `MountRepository` pour exposer la query DQL.
+- **`migrations/Version20260505MountMonsterDrop.php`** (40 lignes, idempotente) : `ADD COLUMN IF NOT EXISTS` pour les 2 colonnes, contrainte FK via bloc `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint ...) THEN ...` (pattern PostgreSQL conforme CLAUDE.md), index `idx_mount_drop_monster`. `down()` symetrique avec `IF EXISTS`.
+- **`src/Repository/MountRepository.php`** (36 lignes, nouveau) : `ServiceEntityRepository<Mount>` avec une seule methode `findEnabledByDropMonster(Monster): list<Mount>` (filtre `enabled = true AND dropProbability > 0` cote DQL pour eviter le bruit en PHP).
+- **`src/GameEngine/Mount/MountDropResolver.php`** (82 lignes, nouveau) : `EventSubscriberInterface` souscrit a `MobDeadEvent::NAME`. Pipeline : (1) ignore les mobs invoques (`isSummoned()`), (2) charge les mounts candidats via `MountRepository`, (3) court-circuite si vide, (4) tire un beneficiaire (joueur non-mort du fight, choisi au hasard) — `null` si aucun joueur eligible, (5) pour chaque mount roule `random_int(1, 100) <= probability`, (6) appelle `MountAcquisitionService::grantMount(player, mount, PlayerMount::SOURCE_DROP)`. `MountAlreadyOwnedException` et `\DomainException` (mount disabled) sont swallowed pour rester idempotent.
+- **`src/DataFixtures/Game/MountFixtures.php`** (+12 / 0 lignes) : implemente `DependentFixtureInterface` avec `getDependencies()` declarant `MonsterFixtures::class` (necessaire pour `getReference('forge_lord', Monster::class)`). Sanglier colossal (`direboar`) cable sur `forge_lord` (Seigneur de la Forge, level 20 boss metal) avec `dropProbability = 3` (3%, drop rare).
+- **`tests/Unit/GameEngine/Mount/MountDropResolverTest.php`** (147 lignes, nouveau) : 4 cas — (1) ignore les mobs invoques, (2) groupe de no-op (no candidates / zero probability / no fight / no alive players), (3) drop garanti (`probability = 100`) attribue uniquement au joueur vivant en presence d'un joueur mort, (4) `MountAlreadyOwnedException` levee par `MountAcquisitionService` est silencieusement absorbee. Helpers `buildPlayer/buildFight/buildMob/expectNoGrant` partages.
+- **`tests/Unit/Entity/Game/MountTest.php`** (+24 lignes) : 4 nouveaux cas — defaut `null` pour `dropMonster` et `0` pour `dropProbability`, setters fonctionnels, validation rejette `-1` et `101`.
+
+### Equilibrage
+
+- 1 seule monture cablee en fixture (`direboar`), pour rester sur le perimetre minimal de la sous-phase. Les autres bosses pourront etre cables ulterieurement (en restant a 1-5% pour preserver la rarete).
+- Le drop est attribue a UN joueur du fight (random parmi les non-morts), pas a tous : evite que le coop dilue la rarete.
+
+### Roadmap
+
+- `docs/roadmap/SPRINT_11.md` : tache 130 mise a jour (sous-phase 2b.loot livree, top-level "Obtention via quete, drop rare, ou achat" coche).
+- `docs/roadmap/ROADMAP_TODO_INDEX.md` : avancement Sprint 11 mis a jour.
 
 ---
 
