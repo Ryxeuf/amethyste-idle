@@ -1,7 +1,30 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-05 (130 sous-phase 2b.loot — `MountDropResolver` debloque le drop rare de montures sur la mort d'un monstre cible, sanglier colossal cable sur le Seigneur de la Forge a 3%).
+> Derniere mise a jour : 2026-05-05 (130 sous-phase 4a — `MountMapPayloadBuilder` expose la monture active dans le payload `/api/map/entities`, fondation backend du futur rendu PixiJS de la sous-phase 4b).
+
+---
+
+## 130 — Montures sous-phase 4a : monture active dans le payload `/api/map/entities` (Sprint 11, 2026-05-05)
+
+> Fondation backend de la sous-phase 4 (animation sprite monte sur la carte). Expose les meta donnees de la monture active du joueur dans le payload JSON consomme par le rendu PixiJS, pour preparer la sous-phase 4b qui ajoutera le rendu visuel du sprite monture sous le joueur.
+
+### Changements
+
+- **`src/Service/Mount/MountMapPayloadBuilder.php`** (24 lignes, nouveau) : service stateless qui retourne `null` si `$player->getActiveMount() === null`, sinon un payload `{slug, name, iconPath, spriteSheet, speedBonus}`. Pas de dependance externe (lecture pure de l'entite Mount), aucune query DB additionnelle (la relation `Player::activeMount` est deja chargee par le pipeline existant `reconcilePlayerFromPersistedRow` + `findBy(['map' => $map])`).
+- **`src/Controller/Api/MapApiController.php`** (+6 lignes) : injection du nouveau builder, appel apres le pipeline avatar dans la boucle des players. Le payload est ajoute sous la cle `mount` du `playerData` quand non null. Mob/PNJ/legacy renderMode preserves a l'identique.
+- **`tests/Unit/Service/Mount/MountMapPayloadBuilderTest.php`** (62 lignes, nouveau) : 3 cas — (1) null sans monture active, (2) payload complet avec sprites + speed bonus 50, (3) propagation des champs `iconPath`/`spriteSheet` nullables (chocobo sans sprite custom) + speed bonus 75.
+
+### Roadmap
+
+- `docs/roadmap/SPRINT_11.md` : sous-phase 4a livree, sous-phase 4 passe en `[~]` (en cours).
+- `docs/roadmap/ROADMAP_TODO_INDEX.md` : avancement Sprint 11 mis a jour (130 sous-phases ... + 4a + ...).
+
+### Notes
+
+- Diff total : ~92 lignes (24 service + 6 controller + 62 test). Aucune migration. Aucune modification de fixtures. Aucun changement client.
+- Independante des 1 PR ouverte (mount drop loot 2b.loot mergee). Pas de conflit attendu sur `MapApiController` (la zone modifiee est strictement apres le pipeline avatar).
+- La sous-phase 4b (rendu PixiJS du sprite monture sous le joueur) consommera ce payload dans `assets/controllers/map_pixi_controller.js` via le meme mecanisme que le rendu d'avatar.
 
 ---
 
