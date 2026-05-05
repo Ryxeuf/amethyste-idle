@@ -50,7 +50,7 @@
 | **Sprint 8** | Avatar: Backend & Carte | 10/10 | Moyenne | ✅ **Termine** |
 | **Sprint 9** | Avatar: Personnage & Equipement | 8/8 | Moyenne | ✅ **Termine** |
 | **Sprint 10** | Avatar: Polish & Animations | 4/8 | Basse | En cours |
-| **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b) |
+| **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 4a + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b) |
 | **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phases 1 + 2a + 2b + 2c + 2d + 3a + 3b + 3c + 3d, 135 sous-phases 1 + 2a + 2b + 3a + 3b + 3c + 3c.b + 3c.c + 3c.d + 3c.e + 3e.a + 3e.b.a + 3e.b.b + 3e.b.b.suite + 3e.c.d.quest + 3e.c.d.quest.b + 3e.c.d.quest.c + 3e.c.d.quest.d + 3e.c.d.quest.e + 3e.c.d.quest.f + 3e.c.d.quest.g + 3e.c.d.quest.h + 3e.c.d.quest.i + 3e.c.d.quest.j + 3e.c.domain + 3e.c.domain.b + 3e.c.domain.c + 3e.c.achievement + 3e.c.achievement.b + 3e.c.achievement.c + 3e.c.skill + 3e.d + 3e.f + 3e.f.b + 3e.i + 3e.j + 3e.j.b + 3e.j.c + 3e.j.d + 3e.j.e + 3e.l + 3e.m + 3e.n + 3e.o + 3e.p + 3e.v + 3e.w + 3e.x + 3e.y + 3e.z + 3e.aa) |
 
 **Total restant : 41 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)

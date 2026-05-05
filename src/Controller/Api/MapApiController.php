@@ -21,6 +21,7 @@ use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
 use App\Service\Avatar\AvatarCatalogProvider;
 use App\Service\Avatar\PlayerAvatarPayloadBuilder;
+use App\Service\Mount\MountMapPayloadBuilder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -44,6 +45,7 @@ class MapApiController extends AbstractController
         private readonly TownControlManager $townControlManager,
         private readonly PlayerAvatarPayloadBuilder $avatarPayloadBuilder,
         private readonly AvatarCatalogProvider $avatarCatalogProvider,
+        private readonly MountMapPayloadBuilder $mountMapPayloadBuilder,
     ) {
     }
 
@@ -174,6 +176,11 @@ class MapApiController extends AbstractController
                 $playerData['renderMode'] = $avatarPayload['renderMode'];
                 $playerData['avatarHash'] = $avatarPayload['avatarHash'];
                 $playerData['avatar'] = $avatarPayload['avatar'];
+            }
+
+            $mountPayload = $this->mountMapPayloadBuilder->build($p);
+            if ($mountPayload !== null) {
+                $playerData['mount'] = $mountPayload;
             }
 
             $players[] = $playerData;
