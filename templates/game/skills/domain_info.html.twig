@@ -68,7 +68,7 @@
                 {% if harvestSpots is defined and harvestSpots|length > 0 %}
                 <div class="mt-6">
                     <div class="bg-gray-900 p-4 rounded-lg">
-                        <h2 class="text-xl font-bold text-white mb-4">Filons exploitables</h2>
+                        <h2 class="text-xl font-bold text-white mb-4">{{ "game.domains.harvest_spots"|trans }}</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                             {% for spot in harvestSpots %}
                                 <div class="flex items-center gap-2 px-3 py-2 rounded {{ spot.unlocked ? 'bg-gray-800' : 'bg-gray-800/50 opacity-60' }}">
@@ -95,7 +95,7 @@
                 {% if equippableTools is defined and equippableTools|length > 0 %}
                 <div class="mt-4">
                     <div class="bg-gray-900 p-4 rounded-lg">
-                        <h2 class="text-xl font-bold text-white mb-4">Outils équipables</h2>
+                        <h2 class="text-xl font-bold text-white mb-4">{{ "game.domains.equippable_tools"|trans }}</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {% for tool in equippableTools %}
                                 <div class="flex items-center gap-2 px-3 py-2 rounded {{ tool.unlocked ? 'bg-gray-800' : 'bg-gray-800/50 opacity-60' }}">

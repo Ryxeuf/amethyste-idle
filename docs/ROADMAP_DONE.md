@@ -1,7 +1,35 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-05 (130 sous-phase 4a — `MountMapPayloadBuilder` expose la monture active dans le payload `/api/map/entities`, fondation backend du futur rendu PixiJS de la sous-phase 4b).
+> Derniere mise a jour : 2026-05-05 (135 sous-phase 3e.dd — i18n du modal de redistribution de competences + sidebar `Autres` + page de detail de domaine `/game/skills/domain/{id}` ; 11 cles ajoutees, parite 784=784).
+
+---
+
+## 135 — i18n du modal de respec et de la page domaine (Sprint 12, 2026-05-05)
+
+> 12eme livraison de la serie 3e dediee aux pages Twig statiques de la section Compétences. Couvre le modal de redistribution de competences (skill respec) du dashboard `/game/skills` ainsi que la page de detail d'un domaine `/game/skills/domain/{id}`.
+
+### Changements
+
+- **`templates/game/skills/index.html.twig`** (~10 chaines remplacees) : modal de respec (titre, description, 3 labels de stats `Compétences à redistribuer`/`Coût`/`Vos gils`, 2 montants au format `{{ count }} gils` parametres via `|trans({'%count%': ...})`, bouton trigger `Redistribuer`, etat verrouille `Fonds insuffisants`) + label de groupe `Autres` de la sidebar des domaines hors elements classifies. Reuse de `common.cancel` / `common.confirm` pour les 2 boutons Annuler/Confirmer du modal.
+- **`templates/game/skills/domain_info.html.twig`** (2 chaines remplacees) : en-tetes des sections `Filons exploitables` et `Outils equipables` remappees vers `game.domains.harvest_spots` / `game.domains.equippable_tools`.
+- **`translations/messages.fr.json`** + **`translations/messages.en.json`** (+11 cles chacune) :
+  - `game.skills.respec.{title,description,count_label,cost_label,your_gils_label,gils_amount,insufficient_funds,trigger_button}` (8 cles)
+  - `game.skills.sidebar.others_group` (1 cle)
+  - `game.domains.{harvest_spots,equippable_tools}` (2 cles)
+
+### Verifications
+
+- `php scripts/audit-translations.php --active-only` : `Cles definies : FR=784, EN=784`, parite preservee. La seule cle `game.inventory.paper_doll_label` listee comme manquante etait deja absente sur la branche avant ce commit (verifie via `git stash`), hors scope.
+- Aucun changement backend : `SkillController` n'expose aucune chaine FR template — toutes les chaines etaient cote Twig.
+- Aucune migration. Aucun changement de fixtures. Aucun nouveau test unitaire (pure substitution de literals Twig + |trans, comportement natif Symfony).
+
+### Notes
+
+- Diff total : ~50 lignes (templates + JSON). Sous le seuil `~300 lignes` prescrit.
+- `templates/game/skills/index.html.twig` est a 538 lignes (>400 prescrits par les regles d'execution) ; ce commit ne fait que remplacer des chaines existantes (zero ligne ajoutee, 10 lignes modifiees) — n'aggrave pas la situation.
+- Pattern strictement aligne sur les sous-phases precedentes 3e.r..3e.cc (audit-translations, parite FR/EN, reuse des cles communes).
+- Reste a couvrir dans une sous-phase ulterieure : les chaines hardcodees de `templates/game/skills/index.html.twig` lignes 108 (`Points`), 125 (`Build actif`), 158 (`Presets de build`) + presets editor + sections `Disponibles`/`Acquises`/`Verrouillees` + stat badges abregees (`deg.`/`soin`/`prec.`/`crit.`/`vie`).
 
 ---
 

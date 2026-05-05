@@ -420,7 +420,20 @@
       "learned": "Acquise",
       "list": "Liste des compétences",
       "status": "Statut",
-      "no_requirements": "Aucun prérequis"
+      "no_requirements": "Aucun prérequis",
+      "respec": {
+        "title": "Redistribuer les compétences",
+        "description": "Toutes vos compétences seront réinitialisées et les points d'expérience restitués dans chaque domaine.",
+        "count_label": "Compétences à redistribuer",
+        "cost_label": "Coût",
+        "your_gils_label": "Vos gils",
+        "gils_amount": "%count% gils",
+        "insufficient_funds": "Fonds insuffisants",
+        "trigger_button": "Redistribuer"
+      },
+      "sidebar": {
+        "others_group": "Autres"
+      }
     },
     "domains": {
       "experience": {
@@ -432,7 +445,9 @@
       "critical": "Critique",
       "details": "Détails du domaine",
       "statistics": "Statistiques",
-      "progress": "Progression"
+      "progress": "Progression",
+      "harvest_spots": "Filons exploitables",
+      "equippable_tools": "Outils équipables"
     },
     "back": "Retour",
     "fight": {

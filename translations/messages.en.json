@@ -420,7 +420,20 @@
       "learned": "Learned",
       "list": "Skills list",
       "status": "Status",
-      "no_requirements": "No requirements"
+      "no_requirements": "No requirements",
+      "respec": {
+        "title": "Redistribute skills",
+        "description": "All your skills will be reset and the experience points refunded into each domain.",
+        "count_label": "Skills to redistribute",
+        "cost_label": "Cost",
+        "your_gils_label": "Your gils",
+        "gils_amount": "%count% gils",
+        "insufficient_funds": "Insufficient funds",
+        "trigger_button": "Redistribute"
+      },
+      "sidebar": {
+        "others_group": "Others"
+      }
     },
     "domains": {
       "experience": {
@@ -432,7 +445,9 @@
       "critical": "Critical",
       "details": "Domain details",
       "statistics": "Statistics",
-      "progress": "Progress"
+      "progress": "Progress",
+      "harvest_spots": "Harvestable nodes",
+      "equippable_tools": "Equippable tools"
     },
     "back": "Back",
     "fight": {
