@@ -2,7 +2,7 @@
 
 namespace App\Controller\Api\V1;
 
-use App\Api\ApiResponse;
+use App\Api\LegacyResponseEnveloper;
 use App\Controller\Game\Fight\FightAttackController;
 use App\Controller\Game\Fight\FightFleeController;
 use App\Controller\Game\Fight\FightItemController;
@@ -33,6 +33,7 @@ class FightActionsController extends AbstractController
         private readonly FightSpellController $spellController,
         private readonly FightItemController $itemController,
         private readonly FightFleeController $fleeController,
+        private readonly LegacyResponseEnveloper $enveloper,
     ) {
     }
 
@@ -62,32 +63,6 @@ class FightActionsController extends AbstractController
 
     private function envelope(Response $legacyResponse): JsonResponse
     {
-        $payload = json_decode((string) $legacyResponse->getContent(), true);
-        if (!is_array($payload)) {
-            return ApiResponse::error('server_error', 'Unexpected legacy response format.', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
-        $status = $legacyResponse->getStatusCode();
-        if ($status >= 400) {
-            return ApiResponse::error(
-                ApiResponse::errorCodeForStatus($status),
-                (string) ($payload['error'] ?? (Response::$statusTexts[$status] ?? 'Error')),
-                $status,
-            );
-        }
-
-        // Rejet metier (pas votre tour, cooldown, energie insuffisante...) :
-        // le legacy repond 200 + success: false, l'API v1 repond 409.
-        if (($payload['success'] ?? true) === false) {
-            return ApiResponse::error(
-                'action_rejected',
-                (string) ($payload['error'] ?? 'Action refusee.'),
-                Response::HTTP_CONFLICT,
-            );
-        }
-
-        unset($payload['success']);
-
-        return ApiResponse::success($payload);
+        return $this->enveloper->envelope($legacyResponse);
     }
 }
