@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * convention ApiResponse des endpoints /api/v1 :
  * - 4xx legacy                      -> error {code du statut}
  * - 200 legacy avec success: false  -> error action_rejected (409)
- * - 200 legacy succes               -> success {payload}
+ * - 200 legacy succes               -> success {payload}.
  */
 class LegacyResponseEnveloper
 {

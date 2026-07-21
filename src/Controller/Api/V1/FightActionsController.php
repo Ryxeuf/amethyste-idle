@@ -56,9 +56,9 @@ class FightActionsController extends AbstractController
     }
 
     #[Route('/flee', name: 'api_v1_fight_flee', methods: ['POST'])]
-    public function flee(Request $request): JsonResponse
+    public function flee(): JsonResponse
     {
-        return $this->envelope(($this->fleeController)($request));
+        return $this->envelope(($this->fleeController)());
     }
 
     private function envelope(Response $legacyResponse): JsonResponse
