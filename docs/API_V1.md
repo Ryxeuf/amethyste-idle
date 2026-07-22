@@ -33,6 +33,30 @@ Toutes les reponses passent par `App\Api\ApiResponse` :
 | 503 | `service_unavailable` |
 | autres | `server_error` |
 
+## Authentification
+
+Deux mecanismes coexistent sur le meme firewall :
+
+- **Session cookie** (client web) : inchangee, avec la protection CSRF ci-dessous.
+- **Bearer JWT** (clients natifs mobile/Steam) : header `Authorization: Bearer <accessToken>`.
+
+| Endpoint | Corps | Reponse |
+|----------|-------|---------|
+| `POST /api/v1/auth/login` | `{email, password}` | `{user, accessToken, refreshToken, tokenType, expiresIn}` — 401 `invalid_credentials` sinon |
+| `POST /api/v1/auth/refresh` | `{refreshToken}` | Nouvelle paire de tokens — 401 si invalide/expire |
+
+Tokens HS256 signes avec `API_JWT_SECRET` (fallback `kernel.secret`), emis par
+`ApiJwtManager` via lcobucci/jwt (dependance existante de Mercure, aucun bundle ajoute).
+Access token : 1 h. Refresh token : 30 jours, **stateless** (pas de revocation
+individuelle — a durcir si le besoin apparait).
+
+## CORS
+
+`ApiCorsSubscriber` (sans bundle) gere le preflight et les headers sur `/api/*`
+pour les origins listes dans l'env `API_CORS_ALLOWED_ORIGINS` (virgules, ou `*`).
+Vide (defaut) = inactif. `Access-Control-Allow-Credentials` n'est jamais emis :
+le cross-origin s'authentifie par Bearer, jamais par cookie (CSRF intact).
+
 ## Gestion des exceptions
 
 `App\EventListener\ApiExceptionListener` convertit toute exception levee sous `/api/*`
@@ -94,8 +118,8 @@ leur statut d'origine (400, 403, 404).
 Phases validees (voir plan API-first) :
 
 - **0.1** ✅ Convention d'enveloppe + listener d'exceptions + `/api/v1/ping`
-- **0.2** JWT (lexik) + firewall stateless session OU token
-- **0.3** CORS (Capacitor/Tauri) + strategie CSRF
+- **0.2** ✅ JWT sans bundle (lcobucci + authenticator access_token natif, login/refresh)
+- **0.3** ✅ CORS sans bundle (ApiCorsSubscriber, env API_CORS_ALLOWED_ORIGINS)
 - **0.4** Auth Mercure par header pour clients natifs
 - **1.1** ✅ `GET /api/v1/fight` (etat du combat) — **1.2** ✅ actions combat sous /api/v1
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
