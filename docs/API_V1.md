@@ -66,6 +66,9 @@ en reponse JSON enveloppee (au lieu d'une page HTML ou d'une redirection login) 
 | `/api/v1/chat/history/{channel}` | GET | ROLE_USER | Historique d'un canal (50 derniers) — `?with={playerId}` pour le prive |
 | `/api/v1/chat/conversations` | GET | ROLE_USER | Conversations privees existantes |
 | `/api/v1/chat/players/search` | GET | ROLE_USER | Recherche de joueurs (`?q=`, min 2 caracteres) |
+| `/api/v1/notifications` | GET | ROLE_USER | Notifications recentes (`?limit=`, 30 par defaut, max 100) + `unreadCount` |
+| `/api/v1/notifications/mark-all-read` | POST | ROLE_USER | Tout marquer comme lu |
+| `/api/v1/notifications/{id}/read` | POST | ROLE_USER | Marquer une notification comme lue (403 si autrui) |
 
 **Protection CSRF des ecritures** : les endpoints POST authentifies par session exigent
 `Content-Type: application/json` (400 sinon). Un formulaire HTML cross-site ne peut pas
@@ -87,5 +90,5 @@ Phases validees (voir plan API-first) :
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
 - **2.1** ✅ `GET /api/v1/inventory` — **2.2+** actions inventaire (equiper, socketter, banque)
 - **3.1** ✅ `GET /api/v1/skills` — **3.2** ✅ acquisition/respec/presets — **3.3** ✅ `GET /api/v1/quests`
-- **4.1** ✅ chat sous /api/v1 — **4.x** social (suite) —
+- **4.1** ✅ chat — **4.4** ✅ notifications — **4.x** social (suite) —
   **5.x** Economie — **6.x** Ecrans meta — **7.x** Shell SPA + PWA/Capacitor/Steam
