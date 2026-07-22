@@ -62,6 +62,10 @@ en reponse JSON enveloppee (au lieu d'une page HTML ou d'une redirection login) 
 | `/api/v1/skills/presets/{id}/load` | POST | ROLE_USER | Charger un preset (respec + reacquisition) — 409 avec message sinon |
 | `/api/v1/skills/presets/{id}` | DELETE | ROLE_USER | Supprimer un preset |
 | `/api/v1/quests` | GET | ROLE_USER | Journal de quetes (lecture seule) : `active` (progression, tracking, donneur, chaine), `available`, `completed`, `daily` (actives/terminees/disponibles du jour) |
+| `/api/v1/chat/send` | POST | ROLE_USER | Envoyer un message (`content`, `channel` global/map/private/guild, `recipientId`) — commandes / incluses, delegue au legacy |
+| `/api/v1/chat/history/{channel}` | GET | ROLE_USER | Historique d'un canal (50 derniers) — `?with={playerId}` pour le prive |
+| `/api/v1/chat/conversations` | GET | ROLE_USER | Conversations privees existantes |
+| `/api/v1/chat/players/search` | GET | ROLE_USER | Recherche de joueurs (`?q=`, min 2 caracteres) |
 
 **Protection CSRF des ecritures** : les endpoints POST authentifies par session exigent
 `Content-Type: application/json` (400 sinon). Un formulaire HTML cross-site ne peut pas
@@ -83,5 +87,5 @@ Phases validees (voir plan API-first) :
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
 - **2.1** ✅ `GET /api/v1/inventory` — **2.2+** actions inventaire (equiper, socketter, banque)
 - **3.1** ✅ `GET /api/v1/skills` — **3.2** ✅ acquisition/respec/presets — **3.3** ✅ `GET /api/v1/quests`
-- **4.x** Social —
+- **4.1** ✅ chat sous /api/v1 — **4.x** social (suite) —
   **5.x** Economie — **6.x** Ecrans meta — **7.x** Shell SPA + PWA/Capacitor/Steam
