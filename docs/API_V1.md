@@ -57,6 +57,32 @@ pour les origins listes dans l'env `API_CORS_ALLOWED_ORIGINS` (virgules, ou `*`)
 Vide (defaut) = inactif. `Access-Control-Allow-Credentials` n'est jamais emis :
 le cross-origin s'authentifie par Bearer, jamais par cookie (CSRF intact).
 
+## Temps reel (Mercure)
+
+`GET /api/v1/realtime/config` (ROLE_USER) retourne tout ce qu'un client natif
+doit savoir pour s'abonner au hub Mercure :
+
+```json
+{
+  "hubUrl": "https://game.amethyste.best/.well-known/mercure",
+  "topics": {
+    "map": ["map/move", "map/respawn", "map/spot", "map/weather"],
+    "chat": ["chat/global", "chat/private/{playerId}", "chat/map/{mapId}", "chat/guild/{guildId}"],
+    "notifications": ["player/{playerId}/notifications"],
+    "events": ["event/announce", "guild/city_control"],
+    "fight": ["fight/{fightId}/turn"]
+  },
+  "subscriberToken": "<jwt>",
+  "expiresIn": 3600
+}
+```
+
+Le hub autorise aujourd'hui les abonnes anonymes ; `subscriberToken` (claim
+`mercure.subscribe`, signe avec `MERCURE_JWT_SECRET`) est fourni pour que les
+clients l'envoient des maintenant (query `authorization` ou header
+`Authorization`) et survivent a un futur durcissement du hub. A rafraichir
+quand l'etat change (combat, carte, guilde) ou a expiration.
+
 ## Gestion des exceptions
 
 `App\EventListener\ApiExceptionListener` convertit toute exception levee sous `/api/*`
@@ -120,7 +146,7 @@ Phases validees (voir plan API-first) :
 - **0.1** ✅ Convention d'enveloppe + listener d'exceptions + `/api/v1/ping`
 - **0.2** ✅ JWT sans bundle (lcobucci + authenticator access_token natif, login/refresh)
 - **0.3** ✅ CORS sans bundle (ApiCorsSubscriber, env API_CORS_ALLOWED_ORIGINS)
-- **0.4** Auth Mercure par header pour clients natifs
+- **0.4** ✅ Config temps reel + token subscriber Mercure (`GET /api/v1/realtime/config`)
 - **1.1** ✅ `GET /api/v1/fight` (etat du combat) — **1.2** ✅ actions combat sous /api/v1
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
 - **2.1** ✅ `GET /api/v1/inventory` — **2.2** ✅ equiper/desequiper/utiliser — **2.3** ✅ materia socketing (pas d'actions banque dans le legacy)
