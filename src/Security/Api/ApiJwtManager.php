@@ -32,7 +32,11 @@ class ApiJwtManager
         #[Autowire('%env(default:kernel.secret:API_JWT_SECRET)%')]
         string $secret,
     ) {
-        $this->configuration = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($secret));
+        // Derivation sha256 : garantit une cle de signature >= 256 bits
+        // (minimum HMAC de lcobucci) quelle que soit la longueur du secret.
+        $signingKey = hash('sha256', 'api-v1:' . $secret);
+
+        $this->configuration = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($signingKey));
     }
 
     /**
