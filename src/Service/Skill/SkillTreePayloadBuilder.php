@@ -87,11 +87,11 @@ class SkillTreePayloadBuilder
             $entry = $this->serializeSkill($skill, $locale);
 
             if ($entry['acquired']) {
-                $buildStats['damage'] += $entry['damage'];
-                $buildStats['heal'] += $entry['heal'];
-                $buildStats['hit'] += $entry['hit'];
-                $buildStats['critical'] += $entry['critical'];
-                $buildStats['life'] += $entry['life'];
+                $buildStats['damage'] += (int) $entry['damage'];
+                $buildStats['heal'] += (int) $entry['heal'];
+                $buildStats['hit'] += (int) $entry['hit'];
+                $buildStats['critical'] += (int) $entry['critical'];
+                $buildStats['life'] += (int) $entry['life'];
                 ++$buildStats['count'];
             }
 
