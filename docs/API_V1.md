@@ -72,6 +72,8 @@ en reponse JSON enveloppee (au lieu d'une page HTML ou d'une redirection login) 
 | `/api/v1/inventory/equip/{id}` | POST | ROLE_USER | Equiper un objet du sac (gear ou outil) — 409 si prerequis/slot manquants |
 | `/api/v1/inventory/unequip/{id}` | POST | ROLE_USER | Desequiper un objet |
 | `/api/v1/inventory/use/{id}` | POST | ROLE_USER | Utiliser un consommable (sort ou parchemin de competence) — 409 en combat/mort/deja connu |
+| `/api/v1/inventory/materia/set/{slotId}/{materiaId}` | POST | ROLE_USER | Socketter une materia (slot du gear du joueur) — 409 si deja socketee, competence manquante, equipement non porte |
+| `/api/v1/inventory/materia/unset/{slotId}` | POST | ROLE_USER | Dessocketter la materia d'un slot — 409 si slot vide |
 
 **Protection CSRF des ecritures** : les endpoints POST authentifies par session exigent
 `Content-Type: application/json` (400 sinon). Un formulaire HTML cross-site ne peut pas
@@ -91,7 +93,7 @@ Phases validees (voir plan API-first) :
 - **0.4** Auth Mercure par header pour clients natifs
 - **1.1** ✅ `GET /api/v1/fight` (etat du combat) — **1.2** ✅ actions combat sous /api/v1
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
-- **2.1** ✅ `GET /api/v1/inventory` — **2.2** ✅ equiper/desequiper/utiliser — **2.3+** materia socketing, banque
+- **2.1** ✅ `GET /api/v1/inventory` — **2.2** ✅ equiper/desequiper/utiliser — **2.3** ✅ materia socketing (pas d'actions banque dans le legacy)
 - **3.1** ✅ `GET /api/v1/skills` — **3.2** ✅ acquisition/respec/presets — **3.3** ✅ `GET /api/v1/quests`
 - **4.1** ✅ chat — **4.4** ✅ notifications — **4.x** social (suite) —
   **5.x** Economie — **6.x** Ecrans meta — **7.x** Shell SPA + PWA/Capacitor/Steam
