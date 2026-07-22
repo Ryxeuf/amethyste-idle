@@ -55,6 +55,7 @@ en reponse JSON enveloppee (au lieu d'une page HTML ou d'une redirection login) 
 | `/api/v1/fight/loot` | GET | ROLE_USER | Butin de fin de combat : `fightId`, `victory`, `items`, `contributions` (world boss) |
 | `/api/v1/fight/loot/proceed` | POST | ROLE_USER | Ramasser le butin (`fightId`, `items[]`) et clore le combat — delegue au legacy, enveloppe v1 |
 | `/api/v1/inventory` | GET | ROLE_USER | Inventaire complet (lecture seule) : `summary` (or, gils, sac, banque), `consumables`, `materials`, `equipment` (equipe par slot, outils, gear disponible, sets + bonus, stats), `materia`, `bank` |
+| `/api/v1/skills` | GET | ROLE_USER | Arbres de talent (lecture seule) : `domains` (XP, competences avec `acquired`/`canBeAcquired`/`requirementIds`/`actions`), `buildStats`, `respec`, `points`, `presets` |
 
 Les rejets metier (pas votre tour, cooldown, energie insuffisante, fuite impossible...)
 repondent `409 action_rejected` avec le message du legacy ; les erreurs dures gardent
@@ -71,5 +72,6 @@ Phases validees (voir plan API-first) :
 - **1.1** ✅ `GET /api/v1/fight` (etat du combat) — **1.2** ✅ actions combat sous /api/v1
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
 - **2.1** ✅ `GET /api/v1/inventory` — **2.2+** actions inventaire (equiper, socketter, banque)
-- **3.x** Progression — **4.x** Social —
+- **3.1** ✅ `GET /api/v1/skills` — **3.2+** acquisition/respec/presets, quetes
+- **4.x** Social —
   **5.x** Economie — **6.x** Ecrans meta — **7.x** Shell SPA + PWA/Capacitor/Steam
