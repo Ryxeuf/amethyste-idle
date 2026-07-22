@@ -61,6 +61,7 @@ en reponse JSON enveloppee (au lieu d'une page HTML ou d'une redirection login) 
 | `/api/v1/skills/presets` | POST | ROLE_USER | Sauvegarder un preset de build (`name`) — 201, 409 (limite), 422 (nom invalide) |
 | `/api/v1/skills/presets/{id}/load` | POST | ROLE_USER | Charger un preset (respec + reacquisition) — 409 avec message sinon |
 | `/api/v1/skills/presets/{id}` | DELETE | ROLE_USER | Supprimer un preset |
+| `/api/v1/quests` | GET | ROLE_USER | Journal de quetes (lecture seule) : `active` (progression, tracking, donneur, chaine), `available`, `completed`, `daily` (actives/terminees/disponibles du jour) |
 
 **Protection CSRF des ecritures** : les endpoints POST authentifies par session exigent
 `Content-Type: application/json` (400 sinon). Un formulaire HTML cross-site ne peut pas
@@ -81,6 +82,6 @@ Phases validees (voir plan API-first) :
 - **1.1** ✅ `GET /api/v1/fight` (etat du combat) — **1.2** ✅ actions combat sous /api/v1
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
 - **2.1** ✅ `GET /api/v1/inventory` — **2.2+** actions inventaire (equiper, socketter, banque)
-- **3.1** ✅ `GET /api/v1/skills` — **3.2** ✅ acquisition/respec/presets — **3.3+** quetes
+- **3.1** ✅ `GET /api/v1/skills` — **3.2** ✅ acquisition/respec/presets — **3.3** ✅ `GET /api/v1/quests`
 - **4.x** Social —
   **5.x** Economie — **6.x** Ecrans meta — **7.x** Shell SPA + PWA/Capacitor/Steam
