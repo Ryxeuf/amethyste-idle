@@ -41,7 +41,7 @@ class RealtimeConfigBuilder
                 : [],
         ];
 
-        $flatTopics = array_values(array_merge(...array_values($topics)));
+        $flatTopics = array_merge(...array_values($topics));
 
         return [
             'hubUrl' => $this->hubPublicUrl,
