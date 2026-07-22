@@ -130,6 +130,9 @@ en reponse JSON enveloppee (au lieu d'une page HTML ou d'une redirection login) 
 | `/api/v1/quests/deliver/{pnjId}` | POST | ROLE_USER | Livrer les objets requis a un PNJ — 409 si rien a livrer |
 | `/api/v1/quests/puzzle-answer/{pnjId}` | POST | ROLE_USER | Repondre a une enigme (`{answer}`) — 409 si mauvaise reponse |
 | `/api/v1/quests/daily/{id}/accept` `complete` `abandon` | POST | ROLE_USER | Quetes journalieres |
+| `/api/v1/realtime/config` | GET | ROLE_USER | Config Mercure : hub, topics du joueur, token subscriber (voir section Temps reel) |
+| `/api/v1/bestiary` | GET | ROLE_USER | Bestiaire : resume (decouverts/total/kills) + entrees (paliers, seuil suivant, dates) |
+| `/api/v1/achievements` | GET | ROLE_USER | Succes par categorie avec progression — les succes caches non decouverts sont exclus |
 
 **Protection CSRF des ecritures** : les endpoints POST authentifies par session exigent
 `Content-Type: application/json` (400 sinon). Un formulaire HTML cross-site ne peut pas
@@ -151,5 +154,5 @@ Phases validees (voir plan API-first) :
   (alias enveloppes des controleurs legacy) — **1.4** ✅ butin sous /api/v1 — **1.3** UI JS combat
 - **2.1** ✅ `GET /api/v1/inventory` — **2.2** ✅ equiper/desequiper/utiliser — **2.3** ✅ materia socketing (pas d'actions banque dans le legacy)
 - **3.1** ✅ `GET /api/v1/skills` — **3.2** ✅ acquisition/respec/presets — **3.3** ✅ `GET /api/v1/quests` — **3.4** ✅ actions de quetes
-- **4.1** ✅ chat — **4.4** ✅ notifications — **4.x** social (suite) —
+- **4.1** ✅ chat — **4.4** ✅ notifications — **6.x** ✅ bestiaire, succes (pack 1) — **4.x/6.x** social et meta (suite) —
   **5.x** Economie — **6.x** Ecrans meta — **7.x** Shell SPA + PWA/Capacitor/Steam
