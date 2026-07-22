@@ -23,20 +23,28 @@ class LegacyResponseEnveloper
 
         $status = $legacyResponse->getStatusCode();
         if ($status >= 400) {
+            $details = $payload;
+            unset($details['error'], $details['success'], $details['message']);
+
             return ApiResponse::error(
                 ApiResponse::errorCodeForStatus($status),
-                (string) ($payload['error'] ?? (Response::$statusTexts[$status] ?? 'Error')),
+                (string) ($payload['error'] ?? $payload['message'] ?? (Response::$statusTexts[$status] ?? 'Error')),
                 $status,
+                $details,
             );
         }
 
         // Rejet metier (pas votre tour, cooldown, energie insuffisante...) :
         // le legacy repond 200 + success: false, l'API v1 repond 409.
         if (($payload['success'] ?? true) === false) {
+            $details = $payload;
+            unset($details['error'], $details['success'], $details['message']);
+
             return ApiResponse::error(
                 'action_rejected',
-                (string) ($payload['error'] ?? 'Action refusee.'),
+                (string) ($payload['error'] ?? $payload['message'] ?? 'Action refusee.'),
                 Response::HTTP_CONFLICT,
+                $details,
             );
         }
 
