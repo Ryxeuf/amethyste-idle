@@ -114,6 +114,24 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'travel_arrives_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $travelArrivesAt = null;
 
+    /**
+     * Energie d'action PBBG (ZON-07) : gate l'acces aux rencontres (explorer,
+     * chasser, recolter, voyager...), JAMAIS le combat lui-meme. Distincte de
+     * `energy` (ressource de combat consommee par les sorts). Regeneration
+     * paresseuse via ActionEnergyManager (aucun cron).
+     */
+    #[ORM\Column(name: 'action_energy', type: 'integer', options: ['default' => 100])]
+    private int $actionEnergy = 100;
+
+    #[ORM\Column(name: 'max_action_energy', type: 'integer', options: ['default' => 100])]
+    private int $maxActionEnergy = 100;
+
+    /**
+     * Dernier point de calcul de la regeneration (null = jamais calcule).
+     */
+    #[ORM\Column(name: 'action_energy_updated_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $actionEnergyUpdatedAt = null;
+
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
 
@@ -313,6 +331,36 @@ class Player implements CharacterInterface
     public function isTraveling(): bool
     {
         return null !== $this->travelToZone;
+    }
+
+    public function getActionEnergy(): int
+    {
+        return $this->actionEnergy;
+    }
+
+    public function setActionEnergy(int $actionEnergy): void
+    {
+        $this->actionEnergy = max(0, $actionEnergy);
+    }
+
+    public function getMaxActionEnergy(): int
+    {
+        return $this->maxActionEnergy;
+    }
+
+    public function setMaxActionEnergy(int $maxActionEnergy): void
+    {
+        $this->maxActionEnergy = max(1, $maxActionEnergy);
+    }
+
+    public function getActionEnergyUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->actionEnergyUpdatedAt;
+    }
+
+    public function setActionEnergyUpdatedAt(?\DateTimeImmutable $actionEnergyUpdatedAt): void
+    {
+        $this->actionEnergyUpdatedAt = $actionEnergyUpdatedAt;
     }
 
     public function getLastCoordinates(): string

@@ -1,7 +1,36 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-01 — gel de la carte via feature flag `map_frozen` ; **Sprint 7 « Modele zone : Fondations » termine 6/6**, ZON-02 a ZON-06 livrees le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-07 — energie d'action PBBG, premiere tache du Sprint 8 ; Sprint 7 termine 6/6 le meme jour).
+
+---
+
+## ZON-07 — Ressource energie d'action (Sprint 8, 2026-07-24)
+
+> Le rythme PBBG s'installe : une ressource d'action regenerante en temps reel, **distincte de l'energie de combat** (`Player.energy`, cout des sorts — la reutiliser aurait viole le principe directeur « l'energie gate l'acces aux rencontres, jamais le combat »).
+
+### Changements
+
+- **`Player`** : `actionEnergy` (defaut 100), `maxActionEnergy` (defaut 100, extensible par joueur via talents/equipement futurs), `actionEnergyUpdatedAt` (dernier point de calcul). Setters bornes (>= 0 / >= 1).
+- **`src/GameEngine/Zone/ActionEnergyManager.php`** :
+  - `refresh(Player)` — regeneration paresseuse (calculee a la lecture, aucun cron) : points entiers ecoules, **reliquat de temps conserve** entre deux lectures, cap au max, timer remis a zero au plein (pas d'accumulation au-dela).
+  - `spend(Player, cost)` — applique la regen due puis refuse (`NotEnoughActionEnergyException`, message = cle de traduction) si insuffisant ; le timer demarre a la premiere depense depuis le plein.
+  - `secondsUntilNextPoint(Player)` — pour l'UI (null si plein).
+  - Curseur `zone.energy.regen_seconds` lu dans la table `parameter` (defaut code : 360 s/pt = 240 pts/jour), cache par requete.
+- **Ecran de zone** : jauge d'energie dans l'en-tete (valeur, barre, prochain point, tooltip rappelant que le combat est gratuit) ; `refresh` a chaque affichage.
+- **`docs/BALANCE.md` section 8** : mecanique, curseurs `parameter`, couts indicatifs des futures actions (explorer 5, chasser 5, recolter 3), rappel des 4 curseurs du pivot.
+- **Migration** `Version20260724ActionEnergy` (idempotente) + **traductions** +4 cles FR/EN (parite 830=830).
+
+### Verifications
+
+- `ActionEnergyManagerTest` (11 cas : init du timestamp, regen avec reliquat exact (25 min → 4 pts + 60 s), cap au max, plein = timer remis, depense avec timer depuis le plein, refus si insuffisant, regen due appliquee avant le controle, cout negatif rejete, secondes avant prochain point, override `parameter` (60 s → 2 pts en 120 s), fallback defaut).
+- `ZoneControllerTest` adapte (energie exposee au template) ; SmokeTest `/game/zone` = rendu reel de la jauge.
+- QA : cs-fixer 0, PHPStan OK, Unit 1758 verts, Functional 252 verts.
+
+### Notes
+
+- Aucune action ne DEPENSE encore d'energie : `spend` sera branche par Explorer (ZON-08), Chasser (ZON-09) et Recolter (ZON-10).
+- Nommage a clarifier plus tard : l'UI affiche desormais deux « energies » (action sur l'ecran de zone, combat dans l'ecran de combat). Piste : renommer l'energie de combat en « Mana » lors d'un passage d'equilibrage.
 
 ---
 

@@ -6,6 +6,7 @@ use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
@@ -45,6 +46,7 @@ class ZoneController extends AbstractController
         private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
         private readonly ZoneTravelService $zoneTravelService,
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
+        private readonly ActionEnergyManager $actionEnergyManager,
     ) {
     }
 
@@ -61,6 +63,9 @@ class ZoneController extends AbstractController
         // Arrivee automatique : regle un eventuel voyage arrive a terme.
         $arrived = $this->zoneTravelService->settleArrival($player);
 
+        // Regeneration paresseuse de l'energie d'action (ZON-07).
+        $this->actionEnergyManager->refresh($player, true);
+
         $zone = $this->resolveZone($player);
         if (null === $zone) {
             return $this->render('game/zone/index.html.twig', [
@@ -74,6 +79,7 @@ class ZoneController extends AbstractController
                 'travel' => null,
                 'visitedZoneIds' => [],
                 'justArrived' => null,
+                'energy' => null,
             ]);
         }
 
@@ -107,6 +113,11 @@ class ZoneController extends AbstractController
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
             'justArrived' => $arrived,
+            'energy' => [
+                'current' => $player->getActionEnergy(),
+                'max' => $player->getMaxActionEnergy(),
+                'nextPointIn' => $this->actionEnergyManager->secondsUntilNextPoint($player),
+            ],
             'poiLabels' => [
                 ObjectLayer::TYPE_HARVEST_SPOT => 'game.zone.poi.harvest_spot',
                 ObjectLayer::TYPE_FORGE => 'game.zone.poi.forge',

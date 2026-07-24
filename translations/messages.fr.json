@@ -1078,6 +1078,14 @@
           "unavailable": "Cette liaison n'est pas disponible.",
           "not_discovered": "Liaison rapide verrouillée : découvrez d'abord cette zone à pied."
         }
+      },
+      "energy": {
+        "label": "Énergie",
+        "tooltip": "L'énergie limite vos tentatives (explorer, chasser, récolter, voyager). Les tours de combat sont toujours gratuits.",
+        "next_point": "+1 dans ~%minutes% min",
+        "error": {
+          "not_enough": "Énergie insuffisante — elle se régénère en temps réel."
+        }
       }
     }
   },

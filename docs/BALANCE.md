@@ -113,3 +113,30 @@ La commande `app:balance:report` detecte automatiquement les anomalies :
 4. **Energie des sorts** : les sorts puissants doivent couter proportionnellement plus d'energie pour eviter le spam.
 
 5. **Difficulte progressive** : les zones de haut niveau doivent etre inaccessibles sans equipement adequat, mais pas frustrantes avec le bon build.
+
+---
+
+## 8. Energie d'action PBBG (pivot, ZON-07)
+
+Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager, rejoindre un evenement de zone). **Jamais le combat lui-meme** : les tours de combat restent gratuits et illimites (principe directeur du pivot, docs/PIVOT_PBBG.md). Distincte de l'energie de combat (`Player.energy`, cout des sorts).
+
+### Curseurs (table `parameter`, lus par `ActionEnergyManager`)
+
+| Cle | Defaut (code) | Effet |
+|-----|---------------|-------|
+| `zone.energy.regen_seconds` | 360 | Secondes par point regenere (360 s = 1 pt / 6 min = 240 pts/jour) |
+
+`Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
+
+### Mecanique
+
+- **Regeneration paresseuse** : calculee a la lecture (`refresh`), aucun cron. Le reliquat de temps est conserve entre deux lectures ; le timer demarre a la premiere depense depuis le plein.
+- **Depense** (`spend`) : refuse si insuffisant (`NotEnoughActionEnergyException`), les actions affichent le cout.
+- **Reperes** : plein en 10 h a 360 s/pt. Couts indicatifs a etalonner en Sprint 8 : explorer 5, chasser 5, recolter 3, voyager 0 (le voyage coute du temps, pas de l'energie — a re-evaluer), evenement de zone 10.
+
+### Les 4 curseurs du pivot
+
+1. **Energie** (tentatives) — ce chapitre.
+2. **PV** (echecs) — regen hors combat, ZON-12.
+3. **Lockouts** (donjons) — recompenses decroissantes, ZON-20.
+4. **Contribution** (loot de groupe) — boss de zone, ZON-18.

@@ -6,8 +6,27 @@
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header">
-            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.zone.title'|trans }}</h2>
-            <p class="text-gray-400 text-xs mt-0.5">{{ 'game.zone.subtitle'|trans }}</p>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.zone.title'|trans }}</h2>
+                    <p class="text-gray-400 text-xs mt-0.5">{{ 'game.zone.subtitle'|trans }}</p>
+                </div>
+                {% if energy %}
+                    <div class="text-right" title="{{ 'game.zone.energy.tooltip'|trans }}">
+                        <p class="text-sm font-semibold text-amber-300">
+                            ⚡ {{ 'game.zone.energy.label'|trans }} {{ energy.current }}/{{ energy.max }}
+                        </p>
+                        {% if energy.nextPointIn is not null %}
+                            <p class="text-[10px] text-gray-500">
+                                {{ 'game.zone.energy.next_point'|trans({'%minutes%': (energy.nextPointIn / 60)|round(0, 'ceil')}) }}
+                            </p>
+                        {% endif %}
+                        <div class="mt-1 h-1.5 w-32 rounded-full bg-gray-800 overflow-hidden">
+                            <div class="h-full bg-amber-400/80" style="width: {{ energy.max > 0 ? ((energy.current / energy.max) * 100)|round : 0 }}%"></div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
         <div class="game-card-body">

@@ -8,6 +8,7 @@ use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
@@ -41,6 +42,7 @@ class ZoneControllerTest extends TestCase
     private PlayerZoneSynchronizer&MockObject $playerZoneSynchronizer;
     private ZoneTravelService&MockObject $zoneTravelService;
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
+    private ActionEnergyManager&MockObject $actionEnergyManager;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -66,6 +68,7 @@ class ZoneControllerTest extends TestCase
         $this->playerZoneSynchronizer = $this->createMock(PlayerZoneSynchronizer::class);
         $this->zoneTravelService = $this->createMock(ZoneTravelService::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
+        $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -76,6 +79,7 @@ class ZoneControllerTest extends TestCase
             $this->playerZoneSynchronizer,
             $this->zoneTravelService,
             $this->visitedZoneRepository,
+            $this->actionEnergyManager,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -140,6 +144,8 @@ class ZoneControllerTest extends TestCase
         $this->assertNull($this->capturedTemplateParams['travel']);
         $this->assertNull($this->capturedTemplateParams['justArrived']);
         $this->assertSame([7], $this->capturedTemplateParams['visitedZoneIds']);
+        $this->assertSame(100, $this->capturedTemplateParams['energy']['current']);
+        $this->assertSame(100, $this->capturedTemplateParams['energy']['max']);
 
         $actionKeys = array_column($this->capturedTemplateParams['actions'], 'key');
         $this->assertSame(['explore', 'hunt', 'gather'], $actionKeys);

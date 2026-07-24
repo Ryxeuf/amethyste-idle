@@ -1078,6 +1078,14 @@
           "unavailable": "This route is not available.",
           "not_discovered": "Fast link locked: discover this zone on foot first."
         }
+      },
+      "energy": {
+        "label": "Energy",
+        "tooltip": "Energy limits your attempts (explore, hunt, gather, travel). Combat turns are always free.",
+        "next_point": "+1 in ~%minutes% min",
+        "error": {
+          "not_enough": "Not enough energy — it regenerates in real time."
+        }
       }
     }
   },
