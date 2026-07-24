@@ -1113,6 +1113,21 @@
           "unknown_target": "Vous ne connaissez pas encore cette créature. Rencontrez-la d'abord.",
           "no_prey": "La proie s'est dispersée pour le moment. Réessayez plus tard."
         }
+      },
+      "gather": {
+        "heading": "Récolter un filon",
+        "respawn_in": "Réapparition dans ~%minutes% min",
+        "depleted": "Filon épuisé",
+        "result": {
+          "success": "Vous récoltez %count%× %item%."
+        },
+        "error": {
+          "traveling": "Impossible de récolter en plein voyage.",
+          "in_fight": "Impossible de récolter en plein combat.",
+          "no_zone": "Votre personnage n'est rattaché à aucune zone.",
+          "unknown_resource": "Cette ressource n'est pas récoltable ici.",
+          "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue."
+        }
       }
     }
   },

@@ -78,6 +78,20 @@ class Zone
     private ?array $exploreConfig = null;
 
     /**
+     * Configuration declarative de la recolte (ZON-10) : filons partages de la
+     * zone. Chaque entree decrit une ressource recoltable —
+     * `{"resources": [{"slug": "filon-fer", "item": "ore-iron",
+     *   "profession": "mining", "capacity": 20, "respawn_seconds": 1800,
+     *   "yield_min": 1, "yield_max": 2}]}`.
+     * Null ou liste vide = zone sans recolte. Ajouter du contenu = ajouter de
+     * la donnee (le stock collectif runtime vit dans `ZoneVein`).
+     *
+     * @var array<string, mixed>|null
+     */
+    #[ORM\Column(name: 'gather_config', type: 'json', nullable: true)]
+    private ?array $gatherConfig = null;
+
+    /**
      * Carte TMX d'origine (transition depuis la carte en tuiles) : permet de
      * rattacher spawns et positions existants a la zone (ZON-03 / ZON-04),
      * puis disparaitra avec la suppression du code carte (ZON-21).
@@ -290,6 +304,47 @@ class Zone
         $this->exploreConfig = $exploreConfig;
 
         return $this;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getGatherConfig(): ?array
+    {
+        return $this->gatherConfig;
+    }
+
+    /**
+     * @param array<string, mixed>|null $gatherConfig
+     */
+    public function setGatherConfig(?array $gatherConfig): self
+    {
+        $this->gatherConfig = $gatherConfig;
+
+        return $this;
+    }
+
+    /**
+     * Ressources recoltables declarees pour la zone (liste normalisee, jamais
+     * null).
+     *
+     * @return list<array<array-key, mixed>>
+     */
+    public function getGatherResources(): array
+    {
+        $resources = $this->gatherConfig['resources'] ?? [];
+        if (!\is_array($resources)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($resources as $resource) {
+            if (\is_array($resource)) {
+                $normalized[] = $resource;
+            }
+        }
+
+        return $normalized;
     }
 
     public function getSourceMap(): ?Map

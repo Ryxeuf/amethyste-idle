@@ -1113,6 +1113,21 @@
           "unknown_target": "You do not know this creature yet. Encounter it first.",
           "no_prey": "The prey has scattered for now. Try again later."
         }
+      },
+      "gather": {
+        "heading": "Harvest a vein",
+        "respawn_in": "Respawns in ~%minutes% min",
+        "depleted": "Vein depleted",
+        "result": {
+          "success": "You harvest %count%× %item%."
+        },
+        "error": {
+          "traveling": "You cannot harvest while traveling.",
+          "in_fight": "You cannot harvest during a fight.",
+          "no_zone": "Your character is not attached to any zone.",
+          "unknown_resource": "This resource cannot be harvested here.",
+          "depleted": "The vein is depleted — wait for it to replenish."
+        }
       }
     }
   },

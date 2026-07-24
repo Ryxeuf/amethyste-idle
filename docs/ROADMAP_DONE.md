@@ -1,7 +1,38 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-09 — action Chasser, proies ciblees via le bestiaire ; ZON-08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-10 — action Recolter, filons partages par zone ; ZON-09/08/07 et Sprint 7 livres le meme jour).
+
+---
+
+## ZON-10 — Action Recolter & filons partages (Sprint 8, 2026-07-24)
+
+> Troisieme pilier de la boucle PBBG apres Explorer et Chasser : Recolter puise dans un **filon partage** de la zone — un stock collectif commun a tous les joueurs presents, qui s'epuise a mesure qu'on recolte puis respawn apres un delai (fenetre de tension cooperative). Coute de l'energie d'action ; les items gagnes reutilisent les ressources existantes (minerais, plantes, poissons).
+
+### Changements
+
+- **`Zone.gatherConfig`** (JSON nullable + migration) : table declarative par zone — `{"resources": [{"slug", "item", "profession", "capacity", "respawn_seconds", "yield_min", "yield_max"}]}`. Null/liste vide = zone sans recolte. Ajouter une ressource = ajouter de la donnee (prelude ZON-11). Helper `Zone::getGatherResources()`.
+- **`ZoneVein`** (nouvelle entite + `zone_vein`) : etat runtime du **stock collectif partage** par (zone, ressource) — `stock`, `depletedAt`. Unicite (zone, slug), cree paresseusement a la premiere recolte. La definition (capacite/respawn/rendement) reste declarative dans `gatherConfig`, seul l'etat variable vit ici.
+- **`src/GameEngine/Zone/GatherService.php`** :
+  - `getGatherables(Zone)` : filons recoltables avec l'etat du stock resolu a la lecture (respawn applique en memoire, **sans effet de bord**) — plein si jamais recolte, epuise + secondes de respawn restantes sinon.
+  - `gather(Player, slug)` : garde-fous (`ZoneActionException`) — en voyage (apres reglement d'arrivee), en combat, sans zone, ressource inconnue, filon epuise (`depleted`, **refus sans depenser d'energie** tant que le respawn n'a pas eu lieu). Sinon depense `zone.energy.cost.gather` (table `parameter`, defaut 3) via `ActionEnergyManager::spend`, decremente le stock partage (marque `depletedAt` a 0), genere les items (`PlayerItemGenerator` + `InventoryHelper::addItem`), ecrit une entree de **journal** (`PlayerJournalEntry::TYPE_GATHERING`, `action=gather`), limite des 200 entrees appliquee. Rendement borne par le stock restant. Respawn = recharge complete a la capacite apres la fenetre.
+- **`ZoneVeinRepository::findOneByZoneAndSlug(Zone, slug)`**.
+- **`ZoneController`** : `POST /game/zone/gather/{slug}` (CSRF `gather_{slug}`) — succes → flash structure `gather_result` (cle + parametres) ; refus → flash d'erreur. `index()` expose `gatherables` + `gatherCost`. `buildActions()` recentre sur Explorer (Chasser et Recolter ont chacun leur bloc dedie).
+- **Ecran de zone** : bloc « Recolter un filon » listant chaque ressource (icone metier ⛏️/🌿/🎣, jauge stock/capacite, cout ⚡), bouton neutralise pendant un voyage, minuterie de respawn quand le filon est epuise. Bandeau de resultat ⛏️.
+- **Fixtures** (`ZoneGraphFixtures`) : filons par zone du World 1 — Foret (plantes + truites), Mines (cuivre + fer), Marais (ortie + carpes), Crete (argent + cobalt) ; reutilise les slugs d'items existants.
+- **`GatherResult` / `GatherableResource`** DTOs readonly ; **traductions** +9 cles FR/EN (`game.zone.gather.*`, parite maintenue).
+
+### Verifications
+
+- `GatherServiceTest` (12 cas : 3 refus d'etat, ressource inconnue, filon epuise sans cout d'energie, chemin nominal (items+stock partage decremente+journal), rendement borne par le stock + marque epuise, respawn apres la fenetre, vue stock/capacite/respawn, ressource a l'item introuvable ignoree, cout via `parameter` + fallback).
+- `ZoneControllerTest` etendu (+flash succes, +flash refus, +CSRF gather ; cles d'action recentrees sur `explore`, exposition `gatherables`/`gatherCost`).
+- QA : cs-fixer, PHPStan, PHPUnit **a relancer dans le conteneur Docker** (indisponible dans l'environnement de dev de cette session).
+
+### Notes
+
+- **La boucle PBBG a ses trois actions** : Explorer (decouvre), Chasser (exploite le bestiaire), Recolter (exploite les filons partages). Toutes gatent l'acces par l'energie, jamais le combat.
+- **Filon partage vs spot de carte** : le filon est un stock *collectif par zone* (tension cooperative entre joueurs presents), distinct du respawn *par ObjectLayer* de la carte gelee. Premier cut sans outil requis ni XP de metier (garde la boucle accessible) ; le branchement outils/professions/`PlayerResourceCatalog` est un prolongement naturel.
+- L'evenement « filon » d'Explorer (ZON-08) reste narratif ; le brancher sur une vraie decouverte de filon partage est un raffinement possible.
 
 ---
 

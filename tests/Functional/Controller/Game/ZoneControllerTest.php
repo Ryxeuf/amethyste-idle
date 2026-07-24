@@ -12,6 +12,8 @@ use App\Entity\Game\Monster;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
+use App\GameEngine\Zone\GatherResult;
+use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\HuntService;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
@@ -52,6 +54,7 @@ class ZoneControllerTest extends TestCase
     private ActionEnergyManager&MockObject $actionEnergyManager;
     private ExploreService&MockObject $exploreService;
     private HuntService&MockObject $huntService;
+    private GatherService&MockObject $gatherService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -85,6 +88,9 @@ class ZoneControllerTest extends TestCase
         $this->huntService = $this->createMock(HuntService::class);
         $this->huntService->method('getHuntCost')->willReturn(5);
         $this->huntService->method('getHuntTargets')->willReturn([]);
+        $this->gatherService = $this->createMock(GatherService::class);
+        $this->gatherService->method('getGatherCost')->willReturn(3);
+        $this->gatherService->method('getGatherables')->willReturn([]);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -98,6 +104,7 @@ class ZoneControllerTest extends TestCase
             $this->actionEnergyManager,
             $this->exploreService,
             $this->huntService,
+            $this->gatherService,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -166,11 +173,15 @@ class ZoneControllerTest extends TestCase
         $this->assertSame(100, $this->capturedTemplateParams['energy']['max']);
 
         $actionKeys = array_column($this->capturedTemplateParams['actions'], 'key');
-        $this->assertSame(['explore', 'hunt', 'gather'], $actionKeys);
+        $this->assertSame(['explore'], $actionKeys);
 
         $exploreAction = $this->capturedTemplateParams['actions'][0];
         $this->assertTrue($exploreAction['enabled']);
         $this->assertSame(5, $exploreAction['cost']);
+
+        // Chasser (ZON-09) et Recolter (ZON-10) ont leur propre bloc.
+        $this->assertSame([], $this->capturedTemplateParams['gatherables']);
+        $this->assertSame(3, $this->capturedTemplateParams['gatherCost']);
     }
 
     public function testExploreRedirectsToFightOnMobEncounter(): void
@@ -293,6 +304,52 @@ class ZoneControllerTest extends TestCase
         $this->huntService->expects($this->never())->method('hunt');
 
         $response = $this->controller->hunt(9, new Request(request: ['_token' => 'bad']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.travel.error.invalid_token'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testGatherFlashesResultOnSuccess(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $this->gatherService->expects($this->once())->method('gather')->with($player, 'filon-de-fer')
+            ->willReturn(new GatherResult('filon-de-fer', 'Minerai de fer', 2, 18, 'game.zone.gather.result.success', ['%count%' => 2, '%item%' => 'Minerai de fer']));
+
+        $response = $this->controller->gather('filon-de-fer', new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            [['key' => 'game.zone.gather.result.success', 'params' => ['%count%' => 2, '%item%' => 'Minerai de fer']]],
+            $this->session->getFlashBag()->get('gather_result'),
+        );
+    }
+
+    public function testGatherShowsErrorFlashWhenRefused(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $this->gatherService->method('gather')
+            ->willThrowException(new ZoneActionException('game.zone.gather.error.depleted'));
+
+        $response = $this->controller->gather('filon-de-fer', new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.gather.error.depleted'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testGatherRejectsInvalidCsrfToken(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
+        $this->gatherService->expects($this->never())->method('gather');
+
+        $response = $this->controller->gather('filon-de-fer', new Request(request: ['_token' => 'bad']));
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(['game.zone.travel.error.invalid_token'], $this->session->getFlashBag()->get('error'));

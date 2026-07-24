@@ -1,6 +1,6 @@
 ## Sprint 8 — Energie & actions de zone
 
-> **6 taches** (3 livrees) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (4 livrees) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : installer le rythme PBBG — energie regenerante, actions par zone (explorer, chasser, recolter), contenu declaratif.
 > Prerequis : Sprint 7 (modele zone)
 
@@ -13,12 +13,7 @@
 > **ZON-07 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `Player.actionEnergy` (distincte de l'energie de combat), regeneration paresseuse via `ActionEnergyManager`, jauge sur l'ecran de zone, curseur `zone.energy.regen_seconds` en table `parameter`, section 8 de `docs/BALANCE.md`.
 > **ZON-08 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `ExploreService` + `Zone.exploreConfig` declaratif (poids mob/coffre/filon/PNJ/rien, zone sure sans rencontre), rencontres via `FightHandler` existant, journal d'exploration (`TYPE_EXPLORATION`), bouton Explorer actif (⚡ cout via `parameter`). **La boucle PBBG est jouable.**
 > **ZON-09 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `HuntService` — action Chasser qui cible une proie precise (monstre deja rencontre au bestiaire et present dans la zone), coute `zone.energy.cost.hunt` puis engage le combat existant. `POST /game/zone/hunt/{id}`, bloc « Chasser une proie » sur l'ecran de zone (masque en zone sure).
-
-### ZON-10 — Recolte par zone & filons partages (M | ★★)
-> Prerequis : ← ZON-07
-- [ ] Actions de recolte par zone (herboristerie, minage, peche... selon les ressources de la zone)
-- [ ] Filons partages : stock collectif par zone qui s'epuise et respawn (fenetre de tension cooperative)
-- [ ] Reutilise les definitions de ressources/recettes existantes
+> **ZON-10 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `GatherService` + `Zone.gatherConfig` declaratif + entite `ZoneVein` (stock collectif partage par zone/ressource qui s'epuise et respawn). Action Recolter (`POST /game/zone/gather/{slug}`) — coute `zone.energy.cost.gather` (defaut 3), puise dans le filon, genere les items existants, journal `TYPE_GATHERING`. Bloc « Recolter un filon » sur l'ecran de zone (jauge stock/capacite, minuterie de respawn). **La boucle PBBG a ses trois actions (explorer/chasser/recolter).**
 
 ### ZON-11 — Configuration declarative de zone (M | ★★★)
 > Prerequis : ← ZON-08, ZON-09, ZON-10

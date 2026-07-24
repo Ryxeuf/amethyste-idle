@@ -50,6 +50,12 @@
                     </div>
                 {% endfor %}
 
+                {% for result in app.flashes('gather_result') %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
+                        ⛏️ {{ result.key|trans(result.params) }}
+                    </div>
+                {% endfor %}
+
                 {% if justArrived %}
                     <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
                         {{ 'game.zone.travel.flash.arrived'|trans }}
@@ -110,15 +116,8 @@
                                             <span class="ml-2 text-[10px] uppercase tracking-wide {% if travel %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ action.cost }}</span>
                                         </button>
                                     </form>
-                                {% elseif action.key == 'gather' %}
-                                    <button type="button" disabled
-                                            title="{{ 'game.zone.actions.coming_soon'|trans }}"
-                                            class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed">
-                                        {{ action.label|trans }}
-                                        <span class="ml-2 text-[10px] uppercase tracking-wide text-gray-600">{{ 'game.zone.actions.coming_soon'|trans }}</span>
-                                    </button>
                                 {% endif %}
-                                {# 'hunt' est rendu dans son bloc dedie ci-dessous (ZON-09) #}
+                                {# 'hunt' (ZON-09) et 'gather' (ZON-10) ont leur bloc dedie ci-dessous #}
                             {% endfor %}
                         </div>
                     </div>
@@ -144,6 +143,52 @@
                                     {% endfor %}
                                 </div>
                             {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {# ── Recolter : filons partages de la zone (ZON-10) ── #}
+                    {% if gatherables is not empty %}
+                        {% set professionIcons = {'mining': '⛏️', 'herbalism': '🌿', 'fishing': '🎣'} %}
+                        <div class="mb-4">
+                            <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.gather.heading'|trans }}</h4>
+                            <div class="flex flex-wrap gap-2">
+                                {% for gatherable in gatherables %}
+                                    {% set depleted = gatherable.depleted %}
+                                    {% set blocked = depleted or travel %}
+                                    <div class="rounded-md border px-3 py-2 min-w-[9rem] {% if depleted %}bg-gray-800/40 border-gray-700/60{% else %}bg-teal-900/30 border-teal-700/50{% endif %}">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <span class="text-sm text-white">
+                                                {{ professionIcons[gatherable.profession] ?? '🧺' }} {{ gatherable.itemName }}
+                                            </span>
+                                            <span class="text-[10px] uppercase tracking-wide {% if blocked %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ gatherCost }}</span>
+                                        </div>
+                                        <div class="mt-1.5 flex items-center gap-2">
+                                            <div class="h-1.5 flex-1 rounded-full bg-gray-800 overflow-hidden">
+                                                <div class="h-full {% if depleted %}bg-gray-600{% else %}bg-teal-400/80{% endif %}" style="width: {{ gatherable.capacity > 0 ? ((gatherable.stock / gatherable.capacity) * 100)|round : 0 }}%"></div>
+                                            </div>
+                                            <span class="text-[10px] text-gray-400 tabular-nums">{{ gatherable.stock }}/{{ gatherable.capacity }}</span>
+                                        </div>
+                                        {% if depleted %}
+                                            <p class="mt-1 text-[10px] text-gray-500">
+                                                {% if gatherable.respawnRemaining > 0 %}
+                                                    {{ 'game.zone.gather.respawn_in'|trans({'%minutes%': (gatherable.respawnRemaining / 60)|round(0, 'ceil')}) }}
+                                                {% else %}
+                                                    {{ 'game.zone.gather.depleted'|trans }}
+                                                {% endif %}
+                                            </p>
+                                        {% else %}
+                                            <form method="post" action="{{ path('app_game_zone_gather', {slug: gatherable.slug}) }}" class="mt-1.5">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('gather_' ~ gatherable.slug) }}">
+                                                <button type="submit"
+                                                        {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
+                                                        class="w-full inline-flex items-center justify-center rounded-md px-2.5 py-1 text-xs font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-teal-900/40 border border-teal-600 text-teal-100 hover:bg-teal-800/50{% endif %}">
+                                                    {{ 'game.zone.actions.gather'|trans }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
                     {% endif %}
                 {% endif %}
