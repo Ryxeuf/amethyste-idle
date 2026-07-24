@@ -27,7 +27,7 @@ class ZoneDefinitionLoader
      */
     public function defaultFile(): string
     {
-        return $this->projectDir.'/config/game/zones/world_1.yaml';
+        return $this->projectDir . '/config/game/zones/world_1.yaml';
     }
 
     /**
