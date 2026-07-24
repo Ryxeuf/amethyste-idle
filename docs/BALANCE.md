@@ -127,8 +127,11 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | `zone.energy.regen_seconds` | 360 | Secondes par point regenere (360 s = 1 pt / 6 min = 240 pts/jour) |
 | `zone.energy.cost.explore` | 5 | Cout d'une action Explorer (ZON-08, lu par `ExploreService`) |
 | `zone.energy.cost.hunt` | 5 | Cout d'une action Chasser (ZON-09, lu par `HuntService`) |
+| `zone.energy.cost.gather` | 3 | Cout d'une action Recolter (ZON-10, lu par `GatherService`) |
 
 `Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
+
+**Filons partages (ZON-10)** : la capacite (`capacity`), le delai de respawn (`respawn_seconds`) et le rendement (`yield_min`/`yield_max`) de chaque ressource sont declares par zone dans `Zone.gatherConfig` (pas de curseur `parameter` global — le contenu se regle par la donnee). Defauts de code (`GatherService`) si absents : capacite 20, respawn 1800 s, rendement 1-2. Le stock est **collectif** (partage par tous les joueurs presents dans la zone) et se recharge entierement a la capacite une fois la fenetre de respawn ecoulee.
 
 ### Mecanique
 

@@ -10,6 +10,7 @@ use App\Entity\Game\Monster;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
+use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\HuntService;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
@@ -55,6 +56,7 @@ class ZoneController extends AbstractController
         private readonly ActionEnergyManager $actionEnergyManager,
         private readonly ExploreService $exploreService,
         private readonly HuntService $huntService,
+        private readonly GatherService $gatherService,
     ) {
     }
 
@@ -84,6 +86,8 @@ class ZoneController extends AbstractController
                 'actions' => [],
                 'huntTargets' => [],
                 'huntCost' => $this->huntService->getHuntCost(),
+                'gatherables' => [],
+                'gatherCost' => $this->gatherService->getGatherCost(),
                 'poiLabels' => [],
                 'typeLabels' => [],
                 'travel' => null,
@@ -119,9 +123,11 @@ class ZoneController extends AbstractController
             'connections' => $connections,
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,
-            'actions' => $this->buildActions($zone, $poiCounts),
+            'actions' => $this->buildActions(),
             'huntTargets' => $this->huntService->getHuntTargets($player, $zone),
             'huntCost' => $this->huntService->getHuntCost(),
+            'gatherables' => $this->gatherService->getGatherables($zone),
+            'gatherCost' => $this->gatherService->getGatherCost(),
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
             'justArrived' => $arrived,
@@ -215,6 +221,35 @@ class ZoneController extends AbstractController
         return $this->redirectToRoute('app_game_fight');
     }
 
+    #[Route('/game/zone/gather/{slug}', name: 'app_game_zone_gather', methods: ['POST'], requirements: ['slug' => '[a-z0-9\-]+'])]
+    public function gather(string $slug, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('gather_' . $slug, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $result = $this->gatherService->gather($player, $slug);
+        } catch (ZoneActionException|NotEnoughActionEnergyException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $this->addFlash('gather_result', ['key' => $result->messageKey, 'params' => $result->messageParams]);
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
     #[Route('/game/zone/travel/{id}', name: 'app_game_zone_travel', methods: ['POST'])]
     public function travel(int $id, Request $request): Response
     {
@@ -289,28 +324,16 @@ class ZoneController extends AbstractController
     }
 
     /**
-     * Actions conditionnees par la zone — structure extensible, branchees
-     * sur les mecaniques reelles en ZON-08 (explorer), ZON-09 (chasser),
-     * ZON-10 (recolter).
+     * Actions conditionnees par la zone. Explorer (ZON-08) est l'action de base
+     * de toute zone ; Chasser (ZON-09) et Recolter (ZON-10) ont chacune leur
+     * bloc dedie sur l'ecran de zone (proies du bestiaire, filons partages).
      *
-     * @param array<string, int> $poiCounts
-     *
-     * @return list<array{key: string, label: string, enabled: bool}>
+     * @return list<array{key: string, label: string, enabled: bool, cost?: int}>
      */
-    private function buildActions(Zone $zone, array $poiCounts): array
+    private function buildActions(): array
     {
-        $actions = [
+        return [
             ['key' => 'explore', 'label' => 'game.zone.actions.explore', 'enabled' => true, 'cost' => $this->exploreService->getExploreCost()],
         ];
-
-        if (!$zone->isSafe()) {
-            $actions[] = ['key' => 'hunt', 'label' => 'game.zone.actions.hunt', 'enabled' => false];
-        }
-
-        if (($poiCounts[ObjectLayer::TYPE_HARVEST_SPOT] ?? 0) > 0) {
-            $actions[] = ['key' => 'gather', 'label' => 'game.zone.actions.gather', 'enabled' => false];
-        }
-
-        return $actions;
     }
 }

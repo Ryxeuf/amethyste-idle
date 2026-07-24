@@ -43,6 +43,11 @@ class ZoneGraphFixtures extends Fixture implements DependentFixtureInterface
                 'type' => Zone::TYPE_WILDERNESS,
                 'safe' => false,
                 'mapRef' => 'map_3',
+                'gather' => [
+                    ['slug' => 'herbes-de-la-foret', 'item' => 'plant-mint', 'profession' => 'herbalism', 'capacity' => 24, 'respawn_seconds' => 900, 'yield_min' => 1, 'yield_max' => 3],
+                    ['slug' => 'sauge-sauvage', 'item' => 'plant-sage', 'profession' => 'herbalism', 'capacity' => 16, 'respawn_seconds' => 1200, 'yield_min' => 1, 'yield_max' => 2],
+                    ['slug' => 'truites-de-riviere', 'item' => 'fish-trout', 'profession' => 'fishing', 'capacity' => 18, 'respawn_seconds' => 1200, 'yield_min' => 1, 'yield_max' => 2],
+                ],
             ],
             'zone_mines' => [
                 'slug' => 'mines-profondes',
@@ -53,6 +58,10 @@ class ZoneGraphFixtures extends Fixture implements DependentFixtureInterface
                 'type' => Zone::TYPE_WILDERNESS,
                 'safe' => false,
                 'mapRef' => 'map_4',
+                'gather' => [
+                    ['slug' => 'filon-de-cuivre', 'item' => 'ore-copper', 'profession' => 'mining', 'capacity' => 24, 'respawn_seconds' => 1200, 'yield_min' => 1, 'yield_max' => 3],
+                    ['slug' => 'filon-de-fer', 'item' => 'ore-iron', 'profession' => 'mining', 'capacity' => 18, 'respawn_seconds' => 1800, 'yield_min' => 1, 'yield_max' => 2],
+                ],
             ],
             'zone_marais' => [
                 'slug' => 'marais-brumeux',
@@ -63,6 +72,10 @@ class ZoneGraphFixtures extends Fixture implements DependentFixtureInterface
                 'type' => Zone::TYPE_WILDERNESS,
                 'safe' => false,
                 'mapRef' => 'map_5',
+                'gather' => [
+                    ['slug' => 'ortie-des-marais', 'item' => 'plant-nettle', 'profession' => 'herbalism', 'capacity' => 20, 'respawn_seconds' => 1200, 'yield_min' => 1, 'yield_max' => 2],
+                    ['slug' => 'carpes-stagnantes', 'item' => 'fish-carp', 'profession' => 'fishing', 'capacity' => 16, 'respawn_seconds' => 1500, 'yield_min' => 1, 'yield_max' => 2],
+                ],
             ],
             'zone_crete' => [
                 'slug' => 'crete-de-ventombre',
@@ -73,6 +86,10 @@ class ZoneGraphFixtures extends Fixture implements DependentFixtureInterface
                 'type' => Zone::TYPE_WILDERNESS,
                 'safe' => false,
                 'mapRef' => 'map_6',
+                'gather' => [
+                    ['slug' => 'filon-d-argent', 'item' => 'ore-silver', 'profession' => 'mining', 'capacity' => 14, 'respawn_seconds' => 1800, 'yield_min' => 1, 'yield_max' => 2],
+                    ['slug' => 'filon-de-cobalt', 'item' => 'ore-cobalt', 'profession' => 'mining', 'capacity' => 10, 'respawn_seconds' => 2400, 'yield_min' => 1, 'yield_max' => 1],
+                ],
             ],
         ];
 
@@ -86,6 +103,9 @@ class ZoneGraphFixtures extends Fixture implements DependentFixtureInterface
             $zone->setDescriptionTranslations(['en' => $definition['descriptionEn']]);
             $zone->setType($definition['type']);
             $zone->setIsSafe($definition['safe']);
+            if (isset($definition['gather'])) {
+                $zone->setGatherConfig(['resources' => $definition['gather']]);
+            }
             $zone->setSourceMap($this->getReference($definition['mapRef'], Map::class));
             $zone->setCreatedAt(new \DateTime());
             $zone->setUpdatedAt(new \DateTime());
