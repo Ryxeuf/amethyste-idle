@@ -1,0 +1,127 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.zone.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.zone.title'|trans }}</h2>
+            <p class="text-gray-400 text-xs mt-0.5">{{ 'game.zone.subtitle'|trans }}</p>
+        </div>
+
+        <div class="game-card-body">
+            {% if zone is null %}
+                <div class="text-center py-8">
+                    <p class="text-white text-sm font-medium">{{ 'game.zone.no_zone.title'|trans }}</p>
+                    <p class="text-gray-500 text-sm mt-1">{{ 'game.zone.no_zone.description'|trans }}</p>
+                </div>
+            {% else %}
+                {# ── En-tete de zone ─────────────────────────────── #}
+                <div class="mb-4">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="text-lg font-semibold text-white">{{ zone.localizedName(app.request.locale) }}</h3>
+                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-300">
+                            {{ (typeLabels[zone.type] ?? 'game.zone.type.wilderness')|trans }}
+                        </span>
+                        {% if zone.isSafe %}
+                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
+                                {{ 'game.zone.safe_badge'|trans }}
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% set description = zone.localizedDescription(app.request.locale) %}
+                    {% if description %}
+                        <p class="text-gray-400 text-sm mt-2">{{ description }}</p>
+                    {% endif %}
+                    {% if zone.illustrationPath %}
+                        <img src="{{ asset('images/' ~ zone.illustrationPath) }}" alt="{{ zone.localizedName(app.request.locale) }}"
+                             class="mt-3 rounded-lg border border-gray-700 max-h-48 w-full object-cover">
+                    {% endif %}
+                </div>
+
+                {# ── Actions de zone (ZON-08..10) ────────────────── #}
+                {% if actions is not empty %}
+                    <div class="mb-4">
+                        <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.actions.heading'|trans }}</h4>
+                        <div class="flex flex-wrap gap-2">
+                            {% for action in actions %}
+                                <button type="button" disabled
+                                        title="{{ 'game.zone.actions.coming_soon'|trans }}"
+                                        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed">
+                                    {{ action.label|trans }}
+                                    <span class="ml-2 text-[10px] uppercase tracking-wide text-gray-600">{{ 'game.zone.actions.coming_soon'|trans }}</span>
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {# ── Connexions ──────────────────────────────── #}
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.connections.heading'|trans }}</h4>
+                        {% if connections is empty %}
+                            <p class="text-gray-500 text-sm">{{ 'game.zone.connections.empty'|trans }}</p>
+                        {% else %}
+                            <ul class="space-y-1.5">
+                                {% for connection in connections %}
+                                    <li class="flex items-center justify-between rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                                        <span class="text-sm text-white">
+                                            {{ connection.toZone.localizedName(app.request.locale) }}
+                                            {% if connection.requiresDiscovery %}
+                                                <span class="ml-1 text-xs text-amber-400/80" title="{{ 'game.zone.connections.locked'|trans }}">🔒</span>
+                                            {% endif %}
+                                        </span>
+                                        <span class="text-xs text-gray-400">
+                                            {% if connection.travelSeconds == 0 %}
+                                                {{ 'game.zone.connections.travel_instant'|trans }}
+                                            {% else %}
+                                                {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (connection.travelSeconds / 60)|round}) }}
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    {# ── Joueurs presents ────────────────────────── #}
+                    <div>
+                        <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.players.heading'|trans }}</h4>
+                        {% if playersPresent is empty %}
+                            <p class="text-gray-500 text-sm">{{ 'game.zone.players.empty'|trans }}</p>
+                        {% else %}
+                            <ul class="space-y-1.5">
+                                {% for presentPlayer in playersPresent %}
+                                    <li class="flex items-center gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                                        <span class="text-sm text-white">{{ presentPlayer.name }}</span>
+                                        {% if app.user and presentPlayer.user is defined and presentPlayer.user == app.user %}
+                                            <span class="text-[10px] uppercase tracking-wide text-purple-300">{{ 'game.zone.players.you'|trans }}</span>
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {# ── Points d'interet ────────────────────── #}
+                        <h4 class="text-sm font-semibold text-gray-200 mb-2 mt-4">{{ 'game.zone.poi.heading'|trans }}</h4>
+                        {% if poiCounts is empty %}
+                            <p class="text-gray-500 text-sm">{{ 'game.zone.poi.empty'|trans }}</p>
+                        {% else %}
+                            <ul class="space-y-1">
+                                {% for type, count in poiCounts %}
+                                    <li class="flex items-center justify-between text-sm text-gray-300">
+                                        <span>{{ (poiLabels[type] ?? type)|trans }}</span>
+                                        <span class="text-gray-500">× {{ count }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

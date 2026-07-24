@@ -50,6 +50,7 @@ class SmokeTest extends WebTestCase
     public static function gameRoutesProvider(): iterable
     {
         yield 'map' => ['/game/map'];
+        yield 'zone' => ['/game/zone'];
         yield 'inventory' => ['/game/inventory'];
         yield 'skills' => ['/game/skills'];
         yield 'bestiary' => ['/game/bestiary'];

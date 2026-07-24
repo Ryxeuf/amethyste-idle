@@ -72,7 +72,8 @@
         "character": "Personnage",
         "social": "Social"
       },
-      "catalog": "Herbier"
+      "catalog": "Herbier",
+      "zone": "Zone"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -1016,6 +1017,49 @@
           "empty": "Aucun historique de vente."
         },
         "gils_short": "G"
+      }
+    },
+    "zone": {
+      "title": "Zone courante",
+      "subtitle": "Votre position dans le monde",
+      "safe_badge": "Zone sûre",
+      "type": {
+        "city": "Ville",
+        "wilderness": "Nature sauvage",
+        "interior": "Intérieur",
+        "dungeon": "Donjon"
+      },
+      "actions": {
+        "heading": "Actions",
+        "explore": "Explorer",
+        "hunt": "Chasser",
+        "gather": "Récolter",
+        "coming_soon": "Bientôt"
+      },
+      "connections": {
+        "heading": "Connexions",
+        "empty": "Aucune liaison connue.",
+        "travel_minutes": "%count% min de voyage",
+        "travel_instant": "Passage immédiat",
+        "locked": "Liaison rapide : découverte de la zone requise"
+      },
+      "players": {
+        "heading": "Joueurs présents",
+        "empty": "Personne d'autre dans cette zone.",
+        "you": "vous"
+      },
+      "poi": {
+        "heading": "Points d'intérêt",
+        "empty": "Aucun point d'intérêt recensé.",
+        "harvest_spot": "Filons & récolte",
+        "forge": "Forge",
+        "tannery": "Tannerie",
+        "alchemy_lab": "Laboratoire d'alchimie",
+        "jeweler_bench": "Établi de joaillerie"
+      },
+      "no_zone": {
+        "title": "Position inconnue",
+        "description": "Votre personnage n'est rattaché à aucune zone pour le moment."
       }
     }
   },

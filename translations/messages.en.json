@@ -72,7 +72,8 @@
         "character": "Character",
         "social": "Social"
       },
-      "catalog": "Catalog"
+      "catalog": "Catalog",
+      "zone": "Zone"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -1016,6 +1017,49 @@
           "empty": "No sale history."
         },
         "gils_short": "G"
+      }
+    },
+    "zone": {
+      "title": "Current zone",
+      "subtitle": "Your position in the world",
+      "safe_badge": "Safe zone",
+      "type": {
+        "city": "City",
+        "wilderness": "Wilderness",
+        "interior": "Interior",
+        "dungeon": "Dungeon"
+      },
+      "actions": {
+        "heading": "Actions",
+        "explore": "Explore",
+        "hunt": "Hunt",
+        "gather": "Gather",
+        "coming_soon": "Soon"
+      },
+      "connections": {
+        "heading": "Connections",
+        "empty": "No known route.",
+        "travel_minutes": "%count% min travel",
+        "travel_instant": "Instant passage",
+        "locked": "Fast link: zone discovery required"
+      },
+      "players": {
+        "heading": "Players present",
+        "empty": "No one else in this zone.",
+        "you": "you"
+      },
+      "poi": {
+        "heading": "Points of interest",
+        "empty": "No point of interest recorded.",
+        "harvest_spot": "Veins & gathering",
+        "forge": "Forge",
+        "tannery": "Tannery",
+        "alchemy_lab": "Alchemy lab",
+        "jeweler_bench": "Jeweler bench"
+      },
+      "no_zone": {
+        "title": "Unknown position",
+        "description": "Your character is not attached to any zone yet."
       }
     }
   },

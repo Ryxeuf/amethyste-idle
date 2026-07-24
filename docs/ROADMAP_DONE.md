@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-04 — mobs, PNJ et object layers rattaches aux zones ; ZON-02 et ZON-03 livrees le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-05 — ecran de zone `/game/zone` ; ZON-02 a ZON-04 livrees le meme jour).
+
+---
+
+## ZON-05 — Ecran de zone (Sprint 7, 2026-07-24)
+
+> La vue principale du modele PBBG : `/game/zone` affiche la zone courante du joueur — identite de la zone, actions conditionnees, connexions du graphe, joueurs presents et points d'interet. Premiere page du jeu entierement construite sur le graphe de zones.
+
+### Changements
+
+- **`src/Controller/Game/ZoneController.php`** (`GET /game/zone`, route `app_game_zone`) : resolution de la zone courante avec double rattrapage — `PlayerZoneSynchronizer::syncFromMap` puis fallback hub `village-de-lumiere` persiste (meme regle que le backfill ZON-03) ; etat vide propre si le graphe n'est pas seede. Donnees exposees : connexions (`ZoneConnectionRepository::findEnabledFrom`), joueurs presents (`findBy currentZone`, tri nom, cap 50), comptage des points d'interet par type (`ObjectLayer` : filons/recolte, forge, tannerie, labo d'alchimie, etabli de joaillerie — portails et spawns exclus).
+- **Actions conditionnees par la zone** (structure extensible, boutons desactives « Bientot ») : Explorer (toujours), Chasser (masquee en zone sure — `isSafe`), Recolter (si filons presents). Branchees sur les mecaniques reelles en ZON-08..10.
+- **`templates/game/zone/index.html.twig`** : en-tete (nom localise, badge type, badge zone sure, description localisee, illustration si presente), actions, connexions avec duree de voyage (`%count% min` / passage immediat / cadenas decouverte), joueurs presents (badge « vous »), points d'interet.
+- **Navigation** : entree « Zone » dans le dropdown Aventure desktop (avant Carte), item drawer mobile, routes actives mises a jour.
+- **Traductions** : +30 cles FR/EN (`game.zone.*`, `game.nav.zone`), parite 814=814 verifiee via `audit-translations.php`.
+
+### Verifications
+
+- `ZoneControllerTest` (5 cas : redirection sans joueur, rendu complet zone+connexions+joueurs+POI avec comptage et exclusion des portails, zone sure masque Chasser, fallback hub persiste quand le joueur n'a pas de zone, etat vide sans graphe).
+- `SmokeTest` etendu avec `/game/zone` : rendu REEL du template avec fixtures (le joueur de la carte de test bascule sur le hub) — 9 tests verts.
+- `lint:twig` OK sur les 2 templates touches ; QA : cs-fixer 0, PHPStan niveau 5 OK, Unit 1735 verts, Functional 243 verts.
+
+### Notes
+
+- L'ecran est en lecture seule a ce stade : le voyage s'active en ZON-06 (les connexions deviennent cliquables), les actions en ZON-08..10, la presence temps reel (Mercure) en ZON-14.
+- La carte reste accessible dans la nav jusqu'a ZON-01 (gel), qui redirigera `/game/map` vers `/game/zone`.
 
 ---
 
