@@ -62,6 +62,7 @@ class QuestArcGrouper
 
         $arcs = [];
         foreach ($byArc as $slug => $arcItems) {
+            $slug = (string) $slug;
             $arcs[] = [
                 'slug' => $slug,
                 'completed' => $this->countCompletedInArc($slug, $completedQuestIds),
