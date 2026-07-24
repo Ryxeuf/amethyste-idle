@@ -1101,6 +1101,18 @@
           "in_fight": "You cannot explore during a fight.",
           "no_zone": "Your character is not attached to any zone."
         }
+      },
+      "hunt": {
+        "heading": "Hunt a prey",
+        "empty": "No known creature to track here. Explore the zone to discover some.",
+        "error": {
+          "traveling": "You cannot hunt while traveling.",
+          "in_fight": "You cannot hunt during a fight.",
+          "no_zone": "Your character is not attached to any zone.",
+          "safe_zone": "There is no prey to hunt in a safe zone.",
+          "unknown_target": "You do not know this creature yet. Encounter it first.",
+          "no_prey": "The prey has scattered for now. Try again later."
+        }
       }
     }
   },

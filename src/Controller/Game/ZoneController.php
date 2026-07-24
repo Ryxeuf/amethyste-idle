@@ -6,9 +6,11 @@ use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Entity\Game\Monster;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
+use App\GameEngine\Zone\HuntService;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
@@ -52,6 +54,7 @@ class ZoneController extends AbstractController
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly ActionEnergyManager $actionEnergyManager,
         private readonly ExploreService $exploreService,
+        private readonly HuntService $huntService,
     ) {
     }
 
@@ -79,6 +82,8 @@ class ZoneController extends AbstractController
                 'playersPresent' => [],
                 'poiCounts' => [],
                 'actions' => [],
+                'huntTargets' => [],
+                'huntCost' => $this->huntService->getHuntCost(),
                 'poiLabels' => [],
                 'typeLabels' => [],
                 'travel' => null,
@@ -115,6 +120,8 @@ class ZoneController extends AbstractController
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,
             'actions' => $this->buildActions($zone, $poiCounts),
+            'huntTargets' => $this->huntService->getHuntTargets($player, $zone),
+            'huntCost' => $this->huntService->getHuntCost(),
             'travel' => $travel,
             'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
             'justArrived' => $arrived,
@@ -171,6 +178,41 @@ class ZoneController extends AbstractController
         $this->addFlash('explore_result', ['key' => $result->messageKey, 'params' => $result->messageParams]);
 
         return $this->redirectToRoute('app_game_zone');
+    }
+
+    #[Route('/game/zone/hunt/{id}', name: 'app_game_zone_hunt', methods: ['POST'])]
+    public function hunt(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('hunt_' . $id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $monster = $this->entityManager->getRepository(Monster::class)->find($id);
+        if (null === $monster) {
+            $this->addFlash('error', 'game.zone.hunt.error.unknown_target');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $this->huntService->hunt($player, $monster);
+        } catch (ZoneActionException|NotEnoughActionEnergyException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        // La proie est engagee : le combat tour par tour existant prend la main.
+        return $this->redirectToRoute('app_game_fight');
     }
 
     #[Route('/game/zone/travel/{id}', name: 'app_game_zone_travel', methods: ['POST'])]

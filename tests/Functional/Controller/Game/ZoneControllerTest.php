@@ -8,11 +8,14 @@ use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Entity\Game\Monster;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
+use App\GameEngine\Zone\HuntService;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
+use App\GameEngine\Zone\ZoneActionException;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
@@ -39,6 +42,7 @@ class ZoneControllerTest extends TestCase
     private EntityRepository&MockObject $playerRepository;
     private EntityRepository&MockObject $objectLayerRepository;
     private EntityRepository&MockObject $zoneConnectionEntityRepository;
+    private EntityRepository&MockObject $monsterRepository;
     private PlayerHelper&MockObject $playerHelper;
     private ZoneRepository&MockObject $zoneRepository;
     private ZoneConnectionRepository&MockObject $zoneConnectionRepository;
@@ -47,6 +51,7 @@ class ZoneControllerTest extends TestCase
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
     private ActionEnergyManager&MockObject $actionEnergyManager;
     private ExploreService&MockObject $exploreService;
+    private HuntService&MockObject $huntService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -60,10 +65,12 @@ class ZoneControllerTest extends TestCase
         $this->playerRepository = $this->createMock(EntityRepository::class);
         $this->objectLayerRepository = $this->createMock(EntityRepository::class);
         $this->zoneConnectionEntityRepository = $this->createMock(EntityRepository::class);
+        $this->monsterRepository = $this->createMock(EntityRepository::class);
         $this->entityManager->method('getRepository')->willReturnMap([
             [Player::class, $this->playerRepository],
             [ObjectLayer::class, $this->objectLayerRepository],
             [ZoneConnection::class, $this->zoneConnectionEntityRepository],
+            [Monster::class, $this->monsterRepository],
         ]);
 
         $this->playerHelper = $this->createMock(PlayerHelper::class);
@@ -75,6 +82,9 @@ class ZoneControllerTest extends TestCase
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
         $this->exploreService = $this->createMock(ExploreService::class);
         $this->exploreService->method('getExploreCost')->willReturn(5);
+        $this->huntService = $this->createMock(HuntService::class);
+        $this->huntService->method('getHuntCost')->willReturn(5);
+        $this->huntService->method('getHuntTargets')->willReturn([]);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -87,6 +97,7 @@ class ZoneControllerTest extends TestCase
             $this->visitedZoneRepository,
             $this->actionEnergyManager,
             $this->exploreService,
+            $this->huntService,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -219,6 +230,69 @@ class ZoneControllerTest extends TestCase
         $this->exploreService->expects($this->never())->method('explore');
 
         $response = $this->controller->explore(new Request(request: ['_token' => 'bad']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.travel.error.invalid_token'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testHuntRedirectsToFightOnSuccess(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $monster = new Monster();
+        $this->monsterRepository->method('find')->with(9)->willReturn($monster);
+
+        $fight = $this->createMock(\App\Entity\App\Fight::class);
+        $this->huntService->expects($this->once())->method('hunt')->with($player, $monster)->willReturn($fight);
+
+        $response = $this->controller->hunt(9, new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame([], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testHuntShowsErrorFlashWhenRefused(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $monster = new Monster();
+        $this->monsterRepository->method('find')->willReturn($monster);
+        $this->huntService->method('hunt')
+            ->willThrowException(new ZoneActionException('game.zone.hunt.error.no_prey'));
+
+        $response = $this->controller->hunt(9, new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.hunt.error.no_prey'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testHuntFlashesErrorForUnknownMonster(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $this->monsterRepository->method('find')->willReturn(null);
+        $this->huntService->expects($this->never())->method('hunt');
+
+        $response = $this->controller->hunt(404, new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.hunt.error.unknown_target'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testHuntRejectsInvalidCsrfToken(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
+        $this->huntService->expects($this->never())->method('hunt');
+
+        $response = $this->controller->hunt(9, new Request(request: ['_token' => 'bad']));
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertSame(['game.zone.travel.error.invalid_token'], $this->session->getFlashBag()->get('error'));

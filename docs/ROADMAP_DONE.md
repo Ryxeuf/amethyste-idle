@@ -1,7 +1,36 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-08 — action Explorer, la boucle PBBG devient jouable ; ZON-07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-09 — action Chasser, proies ciblees via le bestiaire ; ZON-08/07 et Sprint 7 livres le meme jour).
+
+---
+
+## ZON-09 — Action Chasser (Sprint 8, 2026-07-24)
+
+> Second pilier de la boucle PBBG apres Explorer : Chasser ne tire pas au sort, il **cible une proie precise** — un type de monstre deja rencontre (lien bestiaire) et present dans la zone. Coute de l'energie d'action puis engage directement le combat tour par tour existant (qui, lui, reste gratuit).
+
+### Changements
+
+- **`src/GameEngine/Zone/HuntService.php`** :
+  - `getHuntTargets(Player, Zone)` : proies chassables = monstres avec un mob vivant hors combat dans la zone (`MobRepository::findAvailableInZone`) **et** deja au bestiaire du joueur (`PlayerBestiaryRepository::findMonsterIdsByPlayer`). Distinctes, triees par nom. Vide en zone sure.
+  - `hunt(Player, Monster)` : garde-fous (`ZoneActionException`) — en voyage (apres reglement d'arrivee), en combat, sans zone, zone sure, cible hors bestiaire (`unknown_target`), proie dispersee (`no_prey`, aucun mob dispo). Depense `zone.energy.cost.hunt` (table `parameter`, defaut 5) via `ActionEnergyManager::spend`, puis `FightHandler::startFight` sur un mob du monstre cible.
+  - Ecrit une entree de **journal** (`PlayerJournalEntry::TYPE_EXPLORATION`, `action=hunt`), limite des 200 entrees appliquee.
+- **`MobRepository::findAvailableInZoneForMonster(Zone, Monster)`** : un mob vivant hors combat du monstre cible dans la zone (null si disperse).
+- **`PlayerBestiaryRepository::findMonsterIdsByPlayer(Player)`** : ids des monstres deja rencontres (vivier des cibles).
+- **`ZoneController`** : `POST /game/zone/hunt/{id}` (CSRF `hunt_{id}`) — succes → redirection `/game/fight` ; monstre introuvable ou refus → flash d'erreur. `index()` expose `huntTargets` + `huntCost`.
+- **Ecran de zone** : bloc dedie « Chasser une proie » (masque en zone sure) listant chaque cible (🎯 nom + cout ⚡), neutralise pendant un voyage ; message d'invite si aucune creature connue.
+- **Traductions** +8 cles FR/EN (`game.zone.hunt.*`).
+
+### Verifications
+
+- `HuntServiceTest` (13 cas : 4 refus d'etat, cible hors bestiaire, proie indisponible, chemin nominal energie+combat+journal, cibles distinctes triees, vide zone sure, vide sans bestiaire, cout via `parameter` + fallback).
+- `ZoneControllerTest` etendu (+redirection combat, +flash refus, +monstre introuvable, +CSRF).
+- QA : cs-fixer, PHPStan, PHPUnit.
+
+### Notes
+
+- **Explorer vs Chasser** : Explorer decouvre (tirage pondere, peuple le bestiaire) ; Chasser exploite ce qui est connu (proie choisie, deterministe). Les deux gatent l'acces par l'energie, jamais le combat.
+- Le lien bestiaire signifie « deja tue au moins une fois » (le bestiaire se peuple au premier kill) : on ne peut traquer que ce qu'on a deja affronte via Explorer.
 
 ---
 

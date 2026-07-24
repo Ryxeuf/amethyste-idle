@@ -100,7 +100,7 @@
                         <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.actions.heading'|trans }}</h4>
                         <div class="flex flex-wrap gap-2">
                             {% for action in actions %}
-                                {% if action.enabled and action.key == 'explore' %}
+                                {% if action.key == 'explore' and action.enabled %}
                                     <form method="post" action="{{ path('app_game_zone_explore') }}">
                                         <input type="hidden" name="_token" value="{{ csrf_token('explore') }}">
                                         <button type="submit"
@@ -110,7 +110,7 @@
                                             <span class="ml-2 text-[10px] uppercase tracking-wide {% if travel %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ action.cost }}</span>
                                         </button>
                                     </form>
-                                {% else %}
+                                {% elseif action.key == 'gather' %}
                                     <button type="button" disabled
                                             title="{{ 'game.zone.actions.coming_soon'|trans }}"
                                             class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed">
@@ -118,9 +118,34 @@
                                         <span class="ml-2 text-[10px] uppercase tracking-wide text-gray-600">{{ 'game.zone.actions.coming_soon'|trans }}</span>
                                     </button>
                                 {% endif %}
+                                {# 'hunt' est rendu dans son bloc dedie ci-dessous (ZON-09) #}
                             {% endfor %}
                         </div>
                     </div>
+
+                    {# ── Chasser : proies ciblees du bestiaire (ZON-09) ── #}
+                    {% if not zone.isSafe %}
+                        <div class="mb-4">
+                            <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.hunt.heading'|trans }}</h4>
+                            {% if huntTargets is empty %}
+                                <p class="text-gray-500 text-sm">{{ 'game.zone.hunt.empty'|trans }}</p>
+                            {% else %}
+                                <div class="flex flex-wrap gap-2">
+                                    {% for target in huntTargets %}
+                                        <form method="post" action="{{ path('app_game_zone_hunt', {id: target.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('hunt_' ~ target.id) }}">
+                                            <button type="submit"
+                                                    {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
+                                                    class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-rose-900/40 border border-rose-600 text-rose-100 hover:bg-rose-800/50{% endif %}">
+                                                🎯 {{ target.localizedName(app.request.locale) }}
+                                                <span class="ml-2 text-[10px] uppercase tracking-wide {% if travel %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ huntCost }}</span>
+                                            </button>
+                                        </form>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
                 {% endif %}
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

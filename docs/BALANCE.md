@@ -125,6 +125,8 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | Cle | Defaut (code) | Effet |
 |-----|---------------|-------|
 | `zone.energy.regen_seconds` | 360 | Secondes par point regenere (360 s = 1 pt / 6 min = 240 pts/jour) |
+| `zone.energy.cost.explore` | 5 | Cout d'une action Explorer (ZON-08, lu par `ExploreService`) |
+| `zone.energy.cost.hunt` | 5 | Cout d'une action Chasser (ZON-09, lu par `HuntService`) |
 
 `Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
 
