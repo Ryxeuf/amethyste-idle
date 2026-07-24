@@ -60,13 +60,11 @@ moteur récurrent qui referme la boucle à trois piliers.
 > Reste optionnel (déféré au contenu) : **backfill** des chaînes de quêtes existantes vers un arc —
 > à faire quand c'est pertinent avec l'arc d'intro (NAR-03), sinon `storyArc = null`.
 
-### NAR-02 — Journal de quêtes regroupé par arc (S | ★★ | MOYENNE)
-> Rendre les arcs lisibles côté joueur : suivre un fil, pas une liste plate.
-> Prérequis : ← NAR-01
-- [ ] Regroupement des quêtes actives/terminées par `storyArc` dans l'écran quêtes
-- [ ] Quêtes isolées (`storyArc = null`) regroupées à part (« Divers » / par zone)
-- [ ] Progression d'arc affichée (n/total via `arcOrder`)
-- [ ] Tests de rendu (arc complet, arc partiel, quêtes isolées)
+### NAR-02 — Journal de quêtes regroupé par arc ✅ (livré 2026-07-24 — cf. `ROADMAP_DONE.md`)
+> Rendre les arcs lisibles côté joueur : suivre un fil, pas une liste plate. L'écran
+> `/game/quests` regroupe les quêtes actives/terminées par `storyArc` (progression `n/total`),
+> quêtes isolées sous « Divers ». Service `QuestArcGrouper`, cartes de quête en partials Twig,
+> badge « Étape N ». Tests : `QuestArcGrouperTest`.
 
 ---
 

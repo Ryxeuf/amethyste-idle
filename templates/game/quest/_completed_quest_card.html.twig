@@ -1,0 +1,41 @@
+{# Carte d'une quete terminee. Contexte attendu : pqc (PlayerQuestCompleted). #}
+{% set quest = pqc.quest %}
+<div class="bg-gray-700/30 rounded-lg p-3 border border-gray-700 opacity-75">
+    <div class="flex items-center justify-between">
+        <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-gray-300 font-medium text-sm truncate">{{ quest|localized_quest_name }}</h3>
+                {% if quest.storyArc and quest.arcOrder %}
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/40 text-indigo-300/80 border border-indigo-800/50">
+                        Etape {{ quest.arcOrder }}
+                    </span>
+                {% endif %}
+            </div>
+            {% set questDescription = quest|localized_quest_description %}
+            <p class="text-gray-500 text-xs">{{ questDescription|slice(0, 80) }}{% if questDescription|length > 80 %}...{% endif %}</p>
+            {% if pqc.choiceMade %}
+                {% set choiceLabel = pqc.choiceMade %}
+                {% for outcome in quest.choiceOutcome ?? [] %}
+                    {% if outcome.key == pqc.choiceMade %}
+                        {% set choiceLabel = outcome.label %}
+                    {% endif %}
+                {% endfor %}
+                <p class="text-purple-400/70 text-[10px] mt-0.5">Choix : {{ choiceLabel }}</p>
+            {% endif %}
+        </div>
+        <span class="text-green-500 text-xs font-mono flex-shrink-0 ml-2">Terminee</span>
+    </div>
+    {% set rewards = quest.rewards %}
+    {% if rewards is not empty %}
+        <div class="mt-1.5 flex flex-wrap gap-2">
+            {% if rewards.gils is defined %}
+                <span class="text-yellow-400/60 text-[10px]">{{ rewards.gils }} Gils</span>
+            {% elseif rewards.gold is defined %}
+                <span class="text-yellow-400/60 text-[10px]">{{ rewards.gold }} Gils</span>
+            {% endif %}
+            {% if rewards.xp is defined %}
+                <span class="text-blue-400/60 text-[10px]">{{ rewards.xp }} XP</span>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
