@@ -62,7 +62,6 @@ class QuestArcGrouper
 
         $arcs = [];
         foreach ($byArc as $slug => $arcItems) {
-            $slug = (string) $slug;
             $arcs[] = [
                 'slug' => $slug,
                 'completed' => $this->countCompletedInArc($slug, $completedQuestIds),
@@ -71,7 +70,7 @@ class QuestArcGrouper
             ];
         }
 
-        return ['arcs' => $arcs, 'isolated' => array_values($isolated)];
+        return ['arcs' => $arcs, 'isolated' => $isolated];
     }
 
     /**
@@ -111,8 +110,6 @@ class QuestArcGrouper
      */
     private function sortItemsByArcOrder(array $items, callable $questOf): array
     {
-        $items = array_values($items);
-
         usort($items, static function ($a, $b) use ($questOf): int {
             $orderA = $questOf($a)->getArcOrder();
             $orderB = $questOf($b)->getArcOrder();
