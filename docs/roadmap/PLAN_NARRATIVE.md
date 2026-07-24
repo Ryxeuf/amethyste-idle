@@ -54,17 +54,11 @@ moteur récurrent qui referme la boucle à trois piliers.
 
 ## Piste A — Socle narratif (séquentiel)
 
-### NAR-01 — Marqueur d'arc sur `Quest` (S | ★★★ | HAUTE)
-> Fondation : distinguer et regrouper les quêtes d'un même arc (intro, saison, zone).
-> Prérequis : aucun (quête déjà en place)
-- [ ] Champs `Quest.storyArc` (string, slug de l'arc, nullable — `null` = quête isolée) et
-      `Quest.arcOrder` (int, position dans l'arc, nullable)
-- [ ] Migration idempotente (`ADD COLUMN IF NOT EXISTS`) + index sur `story_arc`
-- [ ] Le chaînage **dur** reste sur `prerequisiteQuests` ; `storyArc` sert au regroupement,
-      à l'affichage et au marquage narratif (pas de logique de blocage)
-- [ ] Backfill : rattacher les chaînes de quêtes existantes à un arc quand c'est pertinent
-      (sinon `null`)
-- [ ] Tests unitaires (accès, tri par `arcOrder`)
+### NAR-01 — Marqueur d'arc sur `Quest` ✅ (livré 2026-07-24 — cf. `ROADMAP_DONE.md`)
+> Fondation livrée : champs `Quest.storyArc` / `Quest.arcOrder`, `QuestRepository::findByStoryArc()`,
+> helper `Quest::sortByArcOrder()`, index `idx_game_quests_story_arc`, migration idempotente, tests.
+> Reste optionnel (déféré au contenu) : **backfill** des chaînes de quêtes existantes vers un arc —
+> à faire quand c'est pertinent avec l'arc d'intro (NAR-03), sinon `storyArc = null`.
 
 ### NAR-02 — Journal de quêtes regroupé par arc (S | ★★ | MOYENNE)
 > Rendre les arcs lisibles côté joueur : suivre un fil, pas une liste plate.

@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-10 — action Recolter, filons partages par zone ; ZON-09/08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+
+---
+
+## NAR-01 — Marqueur d'arc sur `Quest` (Piste A narration, 2026-07-24)
+
+> Socle du plan narration : distinguer et regrouper les quetes d'un meme arc (intro, saison, zone) sans casser les quetes isolees existantes. Fondation reutilisee par NAR-02 (journal regroupe), NAR-03 (arc d'intro) et NAR-08 (arcs de saison `season_<slug>`).
+
+### Changements
+
+- **`Quest.storyArc`** (`story_arc` VARCHAR(100) nullable) : slug de l'arc regroupant la quete ; `null` = quete isolee. Setter normalisant (trim, chaine vide → `null`). Helpers `hasStoryArc()` et `belongsToArc(slug)`.
+- **`Quest.arcOrder`** (`arc_order` INT nullable) : position dans l'arc (1 = premiere etape) ; `null` si hors arc ou position indefinie.
+- **`Quest::sortByArcOrder(quests)`** : helper statique pur triant une liste par `arcOrder` croissant, les positions nulles rejetees en fin de liste (tri stable, liste reindexee) — reutilisable cote journal (NAR-02).
+- **`QuestRepository`** (nouveau, `repositoryClass` sur l'entite) : `findByStoryArc(slug)` renvoie les quetes de l'arc triees par `arcOrder` ASC puis `id` ASC (NULLs en fin via l'ordre PostgreSQL).
+- **Index** `idx_game_quests_story_arc` sur `story_arc` (attribut d'entite + migration).
+- **Migration** `Version20260724QuestStoryArc` idempotente (`ADD COLUMN IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS`).
+
+### Verifications
+
+- `QuestStoryArcTest` (9 cas : defauts null, accesseurs arc/ordre, normalisation chaine vide, `belongsToArc`, tri ascendant, positions nulles en fin, reindexation, stabilite du tri).
+- QA : cs-fixer, PHPStan, PHPUnit **a relancer dans le conteneur Docker** (indisponible dans l'environnement de dev de cette session).
+
+### Notes
+
+- Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
 
 ---
 
