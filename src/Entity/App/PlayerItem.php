@@ -324,6 +324,17 @@ class PlayerItem
         return $this->boundToPlayerId !== null;
     }
 
+    /**
+     * Un objet est echangeable (vendable a l'HV / a un PNJ, cessible) tant qu'il
+     * n'est ni lie au joueur ni actuellement equipe. Materialise la notion de
+     * « plancher T1 echangeable » de l'onboarding (NAR-04) : les recompenses de
+     * l'arc intro restent non liees, donc echangeables.
+     */
+    public function isExchangeable(): bool
+    {
+        return !$this->isBound() && $this->getGear() === 0;
+    }
+
     public function getMateriaLevel(): int
     {
         if ($this->experience < 100) {

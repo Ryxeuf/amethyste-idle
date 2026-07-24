@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
 
 ---
 
@@ -48,6 +48,29 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-04 — Onboarding & garantie de progression (Piste B narration, 2026-07-24)
+
+> Ferme la boucle d'onboarding : un joueur solo qui termine l'arc intro dispose d'un **kit T1 echangeable** suffisant pour jouer la boucle coeur (combat), sans dependre d'un marche joueur ni d'un autre joueur (protection cold-start, GAME_PRINCIPLES §4.1).
+
+### Changements
+
+- **`PlayerItem::isExchangeable()`** (nouveau) : materialise la notion de « plancher T1 echangeable » — un objet est echangeable tant qu'il n'est **ni lie** (`isBound()`) **ni equipe** (`getGear() === 0`). Reutilise par `Game/AuctionController` et `Admin/AuctionController` a la place du test inline duplique (comportement identique, consolidation).
+- Aucun changement de donnees necessaire : les recompenses de l'arc intro (`short-sword`, `life-potion`, `herbalist-domain-parchment`, `m1-life`) ont toutes `boundToPlayer=false` par defaut, donc les instances accordees restent **non liees = echangeables**.
+
+### Verifications
+
+- `OnboardingKitTest` (integration, 3 cas) : l'arc intro accorde (1) une **arme T1 echangeable dotee d'un sort** (`short-sword`, emplacement `main_weapon`, `getSpell()` non nul) — ce qui rend l'action d'attaque de la boucle coeur resolvable ; (2) un **consommable de soin echangeable** (`life-potion`) ; (3) **tous** les items de recompense intro sont echangeables (non lies).
+- `PlayerItemExchangeableTest` (unit, 5 cas) : non lie + non equipe = echangeable ; lie, equipe, ou les deux = non echangeable ; le desequipement restaure l'echangeabilite.
+- QA : cs-fixer OK ; PHPStan (helper + 2 controleurs) ; PHPUnit en CI.
+
+### Decisions
+
+- **`BindType::None`** : l'enum de type de liaison (ECO-01) n'existe pas encore ; l'echangeabilite passe aujourd'hui par le booleen « non lie » (`PlayerItem::isBound()`). La migration vers l'enum est deferee a ECO-01, sans impact sur l'onboarding (le kit reste echangeable dans les deux modeles).
+- **Multi-personnages (2ᵉ perso)** : l'arc intro est **rejoue integralement** par personnage — la progression de quete est deja portee par `Player`, aucun cout, coherent avec la limite d'un personnage par compte par defaut (CLAUDE.md §12).
+- **Attaque sans arme** : le `PlayerAttackHandler` de production exige une arme equipee dotee d'un sort ; l'arc intro garantit cette arme des l'etape 2 (short-sword). L'ecart avec la formulation litterale de CLAUDE.md regle 10 (« attaque de base toujours disponible ») est **note** mais non traite ici (concerne le combat, hors perimetre NAR-04).
 
 ---
 

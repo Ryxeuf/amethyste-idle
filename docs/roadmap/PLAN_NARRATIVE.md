@@ -78,15 +78,13 @@ moteur récurrent qui referme la boucle à trois piliers.
 > Chaînage `prerequisiteQuests` linéaire, back-patch du `pnj_id` mentor. Tests :
 > `IntroArcFixturesTest` (ordre contigu, chaîne de prérequis, étapes craft/guilde).
 
-### NAR-04 — Intégration onboarding & garantie de progression (S | ★★★ | HAUTE)
-> Aucun joueur bloqué : l'intro garantit l'accès au T1 et à la première boucle systémique.
-> Prérequis : ← NAR-03, ECO-02 (plancher T1 / kit d'onboarding)
-- [ ] Récompenses de l'arc intro = kit T1 échangeable (`BindType::None`, cohérence ECO-01/02)
-- [ ] Le joueur termine l'intro capable de jouer la boucle cœur **sans** dépendre d'un autre
-      joueur (protection cold-start, cohérence GAME_PRINCIPLES §4.1)
-- [ ] Multi-personnages (CLAUDE.md §12) : comportement de l'intro au 2ᵉ personnage à trancher
-      (cf. GAME_PRINCIPLES §6) — rejoué vs raccourci
-- [ ] Tests de parcours (nouveau compte → fin d'intro → boucle cœur accessible)
+### NAR-04 — Intégration onboarding & garantie de progression ✅ (livré 2026-07-24 — cf. `ROADMAP_DONE.md`)
+> L'arc intro accorde un kit T1 **échangeable** (arme dotée d'un sort + soin), rendant la
+> boucle cœur accessible à un joueur solo. Échangeabilité matérialisée par
+> `PlayerItem::isExchangeable()` (non lié + non équipé) ; le `BindType` enum reste déféré à
+> ECO-01. 2ᵉ personnage : intro **rejouée intégralement** (progression par `Player`).
+> Tests : `OnboardingKitTest` (kit T1 échangeable, arme à sort, cold-start) +
+> `PlayerItemExchangeableTest`.
 
 ---
 

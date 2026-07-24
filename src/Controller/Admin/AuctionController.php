@@ -52,7 +52,7 @@ class AuctionController extends AbstractController
         $bag = $this->playerHelper->getBagInventory();
         $sellableItems = [];
         foreach ($bag->getItems() as $playerItem) {
-            if (!$playerItem->isBound() && $playerItem->getGear() === 0) {
+            if ($playerItem->isExchangeable()) {
                 $sellableItems[] = $playerItem;
             }
         }
