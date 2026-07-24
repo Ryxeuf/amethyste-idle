@@ -1,0 +1,90 @@
+# Definition declarative des zones du World 1 (pivot PBBG, ZON-11).
+#
+# Source de verite unique du graphe de zones : les fixtures (ZoneGraphFixtures)
+# ET la commande `app:zone:import` lisent ce fichier. Ajouter du contenu =
+# ajouter de la donnee ici, pas du code.
+#
+# Format complet documente dans DOCUMENTATION.md, section « Configuration
+# declarative de zone (ZON-11) ». Rappel des cles :
+#   zones.<slug>:
+#     name / name_en                identite (name_en -> nameTranslations.en)
+#     description / description_en  texte (description_en -> descriptionTranslations.en)
+#     type                          city | wilderness | interior | dungeon
+#     safe                          true = aucune rencontre hostile
+#     enabled                       (optionnel, defaut true)
+#     source_map                    nom de la Map TMX d'origine (legacy, optionnel)
+#     explore:                      table de rencontres / loot (optionnel -> defauts service)
+#       weights: { mob, chest, harvest, pnj, nothing }
+#       chest_gils_min / chest_gils_max
+#     gather:                       filons recoltables partages (optionnel)
+#       - { slug, item, profession, capacity, respawn_seconds, yield_min, yield_max }
+#   connections:
+#     - { from, to, travel_seconds, bidirectional, requires_discovery, enabled }
+
+zones:
+    village-de-lumiere:
+        name: 'Village de Lumière'
+        name_en: 'Village of Light'
+        description: "Le hub central du World 1. Zone sure : commerces, artisans et voyageurs s'y croisent."
+        description_en: 'The central hub of World 1. Safe zone: shops, artisans and travelers cross paths here.'
+        type: city
+        safe: true
+        source_map: 'Village de Lumière'
+
+    foret-des-murmures:
+        name: 'Forêt des murmures'
+        name_en: 'Whispering Forest'
+        description: 'Arbres centenaires, clairieres et riviere. Premiers dangers pour les aventuriers.'
+        description_en: 'Ancient trees, clearings and a river. First dangers for adventurers.'
+        type: wilderness
+        safe: false
+        source_map: 'Forêt des murmures'
+        gather:
+            - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 24, respawn_seconds: 900, yield_min: 1, yield_max: 3 }
+            - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 16, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 18, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+
+    mines-profondes:
+        name: 'Mines profondes'
+        name_en: 'Deep Mines'
+        description: 'Tunnels et filons riches en minerai, mais les profondeurs sont hostiles.'
+        description_en: 'Tunnels and veins rich in ore, but the depths are hostile.'
+        type: wilderness
+        safe: false
+        source_map: 'Mines profondes'
+        gather:
+            - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 24, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
+            - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 18, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
+
+    marais-brumeux:
+        name: 'Marais Brumeux'
+        name_en: 'Misty Swamp'
+        description: 'Brume epaisse et eaux stagnantes ; des creatures corrompues rodent.'
+        description_en: 'Thick mist and stagnant waters; corrupted creatures lurk.'
+        type: wilderness
+        safe: false
+        source_map: 'Marais Brumeux'
+        gather:
+            - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 16, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
+
+    crete-de-ventombre:
+        name: 'Crête de Ventombre'
+        name_en: 'Shadowind Ridge'
+        description: 'Pics balayes par des vents violents ; le sommet abrite les creatures les plus rudes du World 1.'
+        description_en: 'Peaks swept by violent winds; the summit shelters the toughest creatures of World 1.'
+        type: wilderness
+        safe: false
+        source_map: 'Crête de Ventombre'
+        gather:
+            - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 14, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
+            - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
+
+# Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
+connections:
+    - { from: village-de-lumiere, to: foret-des-murmures, travel_seconds: 300, bidirectional: true }
+    - { from: village-de-lumiere, to: marais-brumeux, travel_seconds: 420, bidirectional: true }
+    - { from: village-de-lumiere, to: mines-profondes, travel_seconds: 600, bidirectional: true }
+    - { from: village-de-lumiere, to: crete-de-ventombre, travel_seconds: 900, bidirectional: true }
+    - { from: foret-des-murmures, to: marais-brumeux, travel_seconds: 300, bidirectional: true }
+    - { from: mines-profondes, to: crete-de-ventombre, travel_seconds: 480, bidirectional: true }

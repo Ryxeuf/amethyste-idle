@@ -40,6 +40,10 @@ services:
         arguments:
             $archiveDir: '%kernel.project_dir%/var/log/fights'
 
+    App\GameEngine\Zone\ZoneDefinitionLoader:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
     App\EventListener\LocaleListener:
         arguments:
             $defaultLocale: '%default_locale%'

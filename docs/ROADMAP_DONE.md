@@ -1,7 +1,29 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+
+---
+
+## ZON-11 — Configuration declarative de zone (Sprint 8, 2026-07-24)
+
+> Aboutissement des trois actions PBBG (Explorer/Chasser/Recolter) : le graphe de zones du World 1 est desormais decrit **en donnees** dans un unique fichier YAML. Ajouter ou ajuster une zone = editer la donnee puis relancer l'import, sans toucher au code. Les fixtures et la commande d'import partagent la meme source de verite.
+
+### Changements
+
+- **`config/game/zones/world_1.yaml`** (nouveau) : definition declarative des 5 zones du World 1 — identite (`name`/`name_en`, `description`/`description_en`), `type`, `safe`, `source_map` (legacy TMX), `explore` (table de rencontres/loot : `weights`, `chest_gils_min/max`), `gather` (filons partages), et la liste `connections` (avec `bidirectional`). Reprend a l'identique le contenu de l'ancien `ZoneGraphFixtures` imperatif (gather par zone, 6 liaisons bidirectionnelles).
+- **`src/GameEngine/Zone/ZoneDefinitionLoader.php`** : chargement (`Yaml::parseFile`) + **validation purement structurelle** (sans base) — zones non vides, `name` requis, `type` connu, ressources `gather` avec `slug`/`item`/`profession`, connexions pointant vers des zones declarees et sans boucle sur soi. Normalise vers `{zones: [...], connections: [...]}`. `defaultFile()` cible `config/game/zones/world_1.yaml` (bind `$projectDir`).
+- **`src/GameEngine/Zone/ZoneImporter.php`** : **upsert idempotent et non destructif** — `Zone` identifiee par `slug`, `ZoneConnection` par couple (`from`, `to`), `bidirectional` genere les deux aretes. Resout `source_map` par nom de Map (avertissement si absente). Ne supprime jamais les zones/liaisons hors fichier ; l'etat runtime `ZoneVein` n'est pas touche. `now()` surchargable en test.
+- **`src/GameEngine/Zone/ZoneImportReport.php`** / **`ZoneDefinitionException.php`** : bilan (compteurs crees/mis a jour + avertissements) et exception de validation.
+- **`src/Command/ZoneImportCommand.php`** : `app:zone:import [--file=<chemin>] [--dry-run]` — valide, importe, affiche le bilan. `--dry-run` n'ecrit rien en base.
+- **`ZoneGraphFixtures`** : ne construit plus les zones a la main — rejoue le meme YAML via `ZoneDefinitionLoader` + `ZoneImporter` (**source de verite unique**, plus de derive fixtures/import).
+- **`DOCUMENTATION.md`** : section 7 « Configuration declarative de zone (ZON-11) » (format complet + correspondance rencontres/loot/ressources/actions/connexions) ; commande ajoutee a la section 17.
+
+### Verifications
+
+- `ZoneDefinitionLoaderTest` (13 cas : zone minimale, zone complete explore+gather+traductions, connexion bidirectionnelle, rejets — zones vides, `name` manquant, type inconnu, connexion vers zone inconnue, boucle sur soi, ressource sans item — et parsing du `world_1.yaml` livre).
+- `ZoneImporterTest` (5 cas : creation zones + aretes bidirectionnelles, `gather` serialise sous `resources`, upsert d'existants sans doublon, dry-run sans ecriture, avertissement source map introuvable).
+- QA : cs-fixer, PHPStan, PHPUnit **a relancer dans le conteneur Docker** (indisponible dans l'environnement de dev de cette session).
 
 ---
 

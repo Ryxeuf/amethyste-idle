@@ -36,7 +36,7 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Chantier Modele zone (ZON) | 9/21 | En cours (Sprint 7 ✅ + ZON-07/08/09 — boucle PBBG jouable, chasse ciblee ; gel `map_frozen` activable en test) |
+| Chantier Modele zone (ZON) | 11/21 | En cours (Sprint 7 ✅ + ZON-07/08/09/10/11 — boucle PBBG jouable, recolte partagee, config declarative ; gel `map_frozen` activable en test) |
 
 ---
 
@@ -51,13 +51,13 @@
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
 | **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 6/6 | Critique | ✅ **Termine** (2026-07-24) |
-| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 4/6 | Haute | En cours (ZON-07/08/09/10 ✅) ← **Prochain : ZON-11** |
+| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 5/6 | Haute | En cours (ZON-07/08/09/10/11 ✅) ← **Prochain : ZON-12** |
 | **Sprint 9** | Time-gating, presence & evenements (ex-Avatar: Personnage & Equipement ✅ 8/8) | 5 | Haute | A venir |
 | **Sprint 10** | Contenu de groupe & decommission carte (ex-Avatar: Polish, interrompu a 4/8) | 4 | Moyenne | A venir |
 | **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 4a + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b + 1c ; adaptations pivot : montures → temps de voyage, events → evenements de zone) |
 | **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phases 1 + 2a + 2b + 2c + 2d + 3a + 3b + 3c + 3d, 135 sous-phases 1 + 2a + 2b + 3a + 3b + 3c + 3c.b + 3c.c + 3c.d + 3c.e + 3e.a + 3e.b.a + 3e.b.b + 3e.b.b.suite + 3e.c.d.quest + 3e.c.d.quest.b + 3e.c.d.quest.c + 3e.c.d.quest.d + 3e.c.d.quest.e + 3e.c.d.quest.f + 3e.c.d.quest.g + 3e.c.d.quest.h + 3e.c.d.quest.i + 3e.c.d.quest.j + 3e.c.domain + 3e.c.domain.b + 3e.c.domain.c + 3e.c.achievement + 3e.c.achievement.b + 3e.c.achievement.c + 3e.c.skill + 3e.d + 3e.f + 3e.f.b + 3e.i + 3e.j + 3e.j.b + 3e.j.c + 3e.j.d + 3e.j.e + 3e.l + 3e.m + 3e.n + 3e.o + 3e.p + 3e.v + 3e.w + 3e.x + 3e.y + 3e.z + 3e.aa + 3e.cc + 3e.dd) |
 
-**Total restant : 28 taches** (20 ZON + 6 monde vivant + 2 technique — dont plusieurs taches des Sprints 11-12 deja bien avancees en sous-phases)
+**Total restant : 27 taches** (19 ZON + 6 monde vivant + 2 technique — dont plusieurs taches des Sprints 11-12 deja bien avancees en sous-phases)
 **Avancement historique** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6), 7-avatar (12), 8-avatar (10) et 9-avatar (8) termines + Sprint 10-avatar interrompu (4/8) = 54 taches completes avant pivot
 
 ---
@@ -74,7 +74,7 @@ SPRINT 8 — ENERGIE & ACTIONS DE ZONE (← Sprint 7)
   ZON-08 Action Explorer           ✅ 2026-07-24
   ZON-09 Action Chasser            ✅ 2026-07-24
   ZON-10 Recolte & filons partages ✅ 2026-07-24
-  ZON-11 Config declarative        ← ZON-08..10
+  ZON-11 Config declarative        ✅ 2026-07-24
   ZON-12 Regulation par les PV     ← ZON-08
 
 SPRINT 9 — TIME-GATING & PRESENCE (← Sprint 8)

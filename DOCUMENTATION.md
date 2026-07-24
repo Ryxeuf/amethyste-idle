@@ -347,6 +347,39 @@ Le moteur repose sur **21 événements** organisés en deux catégories :
 
 **Carte** : `PlayerMovedEvent`, `MobMovedEvent`, `PlayerRespawnedEvent`, `MobRespawnedEvent`, `SpotHarvestEvent`, `SpotAvailableEvent`
 
+### Configuration déclarative de zone (ZON-11)
+
+Le graphe de zones du pivot PBBG (nœuds `Zone` + arêtes `ZoneConnection`) est décrit **en données**, pas en code. Ajouter ou ajuster une zone = éditer un fichier YAML puis relancer l'import ; aucune modification de PHP n'est requise.
+
+- **Source de vérité** : `config/game/zones/world_1.yaml`. Les fixtures (`ZoneGraphFixtures`) **et** la commande `app:zone:import` lisent ce même fichier via `ZoneDefinitionLoader` (chargement + validation) puis `ZoneImporter` (upsert idempotent).
+- **Import** : `docker compose exec php php bin/console app:zone:import [--file=<chemin>] [--dry-run]`. L'upsert est **idempotent** (Zone par `slug`, `ZoneConnection` par couple `from`/`to`) et **non destructif** : les zones/liaisons absentes du fichier ne sont pas supprimées, l'état runtime (`ZoneVein`) n'est pas touché.
+
+**Format** :
+
+```yaml
+zones:
+    <slug>:
+        name: 'Nom affiché'          # requis
+        name_en: 'Display name'      # optionnel → nameTranslations.en
+        description: '…'             # optionnel
+        description_en: '…'          # optionnel → descriptionTranslations.en
+        type: wilderness             # city | wilderness | interior | dungeon
+        safe: false                  # true = aucune rencontre hostile
+        enabled: true                # optionnel (défaut true)
+        source_map: 'Nom de Map'     # legacy TMX (optionnel, résolu par nom)
+        explore:                     # table de rencontres / loot (optionnel → défauts d'ExploreService)
+            weights: { mob: 50, chest: 10, harvest: 10, pnj: 10, nothing: 20 }
+            chest_gils_min: 5
+            chest_gils_max: 30
+        gather:                      # filons partagés (optionnel → sérialisé dans gatherConfig.resources)
+            - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 18, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
+
+connections:
+    - { from: <slug>, to: <slug>, travel_seconds: 300, bidirectional: true, requires_discovery: false, enabled: true }
+```
+
+Correspondance avec les cinq axes déclaratifs de ZON-11 : **rencontres** = `explore.weights` (le pool de monstres reste porté par les `Mob` placés dans la zone, ZON-04) ; **loot** = `explore.chest_gils_*` ; **ressources** = `gather` (→ `Zone::getGatherResources()`) ; **actions** = explorer/chasser/récolter, dérivées de `safe` et de la présence de filons (énergie d'action ZON-07) ; **connexions** = `connections`.
+
 ---
 
 ## 8. Système de combat
@@ -868,6 +901,7 @@ ROLE_USER (base)
 | `app:reset-ts` | Vide la collection Typesense `cells` |
 | `app:map:dump` | Dump JSON d'une map : modèle statique (`-m`) ou tag Dijkstra |
 | `app:audit:entity-placement` | Audite et corrige les entités placées sur des cases bloquées (`--fix`) |
+| `app:zone:import` | Importe le graphe de zones depuis un YAML déclaratif (ZON-11). Options : `--file`, `--dry-run` |
 
 ---
 
