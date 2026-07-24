@@ -2,18 +2,41 @@
 
 namespace App\GameEngine\Realtime\Map;
 
+use App\GameEngine\Zone\MapFreeze;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
+use Symfony\Contracts\Service\Attribute\Required;
 
 abstract class MovedHandler
 {
+    private ?MapFreeze $mapFreeze = null;
+
     public function __construct(private readonly HubInterface $hub, private readonly LoggerInterface $logger)
     {
     }
 
+    /**
+     * Injection par setter pour ne pas casser les constructeurs des enfants.
+     * Pivot PBBG (ZON-01) : publications map/move suspendues quand la carte est gelee.
+     */
+    #[Required]
+    public function setMapFreeze(MapFreeze $mapFreeze): void
+    {
+        $this->mapFreeze = $mapFreeze;
+    }
+
+    protected function isMapFrozen(): bool
+    {
+        return $this->mapFreeze?->isGloballyFrozen() ?? false;
+    }
+
     public function move(string $type, int $objectId, string $coordinates, array $data = []): void
     {
+        if ($this->isMapFrozen()) {
+            return;
+        }
+
         [$x, $y] = explode('.', $coordinates);
         $update = new Update(
             'map/move',
@@ -42,6 +65,10 @@ abstract class MovedHandler
      */
     public function movePath(string $type, int $objectId, string $finalCoordinates, array $path, array $data = []): void
     {
+        if ($this->isMapFrozen()) {
+            return;
+        }
+
         [$x, $y] = explode('.', $finalCoordinates);
         $update = new Update(
             'map/move',

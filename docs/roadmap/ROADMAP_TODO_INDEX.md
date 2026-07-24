@@ -36,7 +36,7 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Chantier Modele zone (ZON) | 5/21 | En cours (Sprints 7-10 ; ZON-02 a ZON-06 livrees 2026-07-24) |
+| Chantier Modele zone (ZON) | 6/21 | En cours (Sprint 7 ✅ termine 2026-07-24 ; gel `map_frozen` a activer apres Sprint 8) |
 
 ---
 
@@ -50,8 +50,8 @@
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
-| **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 5/6 | Critique | En cours (ZON-02 a ZON-06 ✅) |
-| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 6 | Haute | A venir |
+| **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 6/6 | Critique | ✅ **Termine** (2026-07-24) |
+| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 6 | Haute | A venir ← **Prochain** |
 | **Sprint 9** | Time-gating, presence & evenements (ex-Avatar: Personnage & Equipement ✅ 8/8) | 5 | Haute | A venir |
 | **Sprint 10** | Contenu de groupe & decommission carte (ex-Avatar: Polish, interrompu a 4/8) | 4 | Moyenne | A venir |
 | **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 4a + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b + 1c ; adaptations pivot : montures → temps de voyage, events → evenements de zone) |
@@ -65,13 +65,9 @@
 ## Graphe de dependances (sprints)
 
 ```
-SPRINT 7 — MODELE ZONE : FONDATIONS (priorite absolue post-pivot)
-  ZON-01 Gel de la carte           ∅
-  ZON-02 Entites Zone/Connexion    ✅ 2026-07-24
-  ZON-03 Position joueur → zone    ✅ 2026-07-24
-  ZON-04 Donnees monde → zones     ✅ 2026-07-24
-  ZON-05 Ecran de zone             ✅ 2026-07-24
-  ZON-06 Voyage entre zones        ✅ 2026-07-24
+SPRINT 7 — MODELE ZONE : FONDATIONS ✅ TERMINE 2026-07-24
+  ZON-01..06 livrees (gel `map_frozen` desactive par defaut,
+  activation prevue apres le Sprint 8)
 
 SPRINT 8 — ENERGIE & ACTIONS DE ZONE (← Sprint 7)
   ZON-07 Ressource energie         ∅
@@ -129,8 +125,8 @@ Independant ─ Sprint 12 (technique, parallelisable a tout moment)
 4. [Sprint 4 — Progression & Narration](SPRINT_04.md) ✅
 5. [Sprint 5 — Hotel des ventes](SPRINT_05.md) ✅
 6. [Sprint 6 — Social & Economie](SPRINT_06.md) ✅
-7. **[Sprint 7 — Modele zone : Fondations](SPRINT_07.md)** ← Prochain
-8. [Sprint 8 — Energie & actions de zone](SPRINT_08.md)
+7. [Sprint 7 — Modele zone : Fondations](SPRINT_07.md) ✅
+8. **[Sprint 8 — Energie & actions de zone](SPRINT_08.md)** ← Prochain
 9. [Sprint 9 — Time-gating, presence & evenements](SPRINT_09.md)
 10. [Sprint 10 — Contenu de groupe & decommission carte](SPRINT_10.md)
 11. [Sprint 11 — Monde vivant](SPRINT_11.md)

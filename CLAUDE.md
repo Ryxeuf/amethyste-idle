@@ -183,7 +183,9 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 
 | Route | Description |
 |-------|------------|
-| `/game/map` | Carte PixiJS |
+| `/game/zone` | Ecran de zone (pivot PBBG — vue principale a terme) |
+| `/game/zone/travel/{id}` | POST voyager via une connexion du graphe |
+| `/game/map` | Carte PixiJS (gelable via feature flag `map_frozen` → redirige vers `/game/zone`) |
 | `/game/fight` | Combat tour par tour |
 | `/game/fight/spell` | POST lancer un sort de combat |
 | `/game/fight/attack` | POST attaque basique |

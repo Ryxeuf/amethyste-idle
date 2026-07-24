@@ -3,6 +3,7 @@
 namespace App\Controller\Game\Map;
 
 use App\Entity\App\Fight;
+use App\GameEngine\Zone\MapFreeze;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,12 +16,18 @@ class IndexController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MapFreeze $mapFreeze,
     ) {
     }
 
     public function __invoke(): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // Pivot PBBG (ZON-01) : carte gelee -> l'ecran de zone est la vue principale.
+        if ($this->mapFreeze->isFrozenFor()) {
+            return $this->redirectToRoute('app_game_zone');
+        }
         $player = $this->playerHelper->getPlayer();
         if ($player === null) {
             return $this->redirectToRoute('app_dashboard');

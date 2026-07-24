@@ -1,7 +1,33 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-06 — voyage entre zones time-gated ; ZON-02 a ZON-05 livrees le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-01 — gel de la carte via feature flag `map_frozen` ; **Sprint 7 « Modele zone : Fondations » termine 6/6**, ZON-02 a ZON-06 livrees le meme jour).
+
+---
+
+## ZON-01 — Geler la carte navigable (Sprint 7, 2026-07-24)
+
+> Le gel de la carte est implemente derriere le feature flag `map_frozen` (systeme livre en avril, activable globalement ou par utilisateur), **desactive par defaut** : l'activer avant les actions de zone (Sprint 8) couperait la boucle de jeu (rencontres, quetes). Le code carte n'est PAS supprime — gel avant suppression (ZON-21), reversible sans deploiement. Cloture le Sprint 7.
+
+### Changements
+
+- **`src/GameEngine/Zone/MapFreeze.php`** : service de lecture du flag — `isFrozenFor(user)` (gel effectif pour un joueur : flag global OU active pour lui, ideal pour geler cote testeurs d'abord) et `isGloballyFrozen()` (suspension des flux globaux).
+- **`Map\IndexController` (`/game/map`)** : redirection vers `/game/zone` quand gele pour l'utilisateur courant — `map_pixi_controller.js` et le bundle PixiJS ne sont alors plus charges (la page qui les importe n'est plus rendue).
+- **`MapApiController`** : `POST /api/map/move` et `POST /api/map/teleport` repondent 403 quand gele.
+- **`MovedHandler` / `RespawnedHandler`** (bases abstraites des publishers Mercure) : publications `map/move` / `map/respawn` suspendues quand gel global — injection par setter `#[Required]` pour ne pas casser les constructeurs des 6 handlers enfants.
+- **Navigation** : liens « Carte » masques quand gele (dropdown Aventure desktop, barre mobile — remplacee par « Zone »).
+- **`FeatureFlagFixtures`** : seed du flag `map_frozen` desactive (+ insertion en base dev), gerable depuis `/admin/feature-flags`.
+
+### Verifications
+
+- `MapFreezeTest` (fonctionnel WebTestCase, 4 cas : sans gel `/game/map` ne redirige jamais vers `/game/zone` (les redirections metier restent legitimes), avec gel redirection vers `/game/zone`, move 403, teleport 403).
+- `MapRedirectToFightTest` adapte (mock MapFreeze non gele).
+- QA : cs-fixer 0, PHPStan OK, lint:twig OK, Unit 1747 verts, Functional 252 verts.
+
+### Notes
+
+- **Plan d'activation** : livrer ZON-07..09 (energie, Explorer, Chasser — Sprint 8), activer `map_frozen` pour les comptes testeurs, valider la boucle zone, puis activer globalement. La suppression du code (ZON-21) ne vient qu'apres stabilisation.
+- Les liens tutoriel vers la carte restent en place : ils redirigent naturellement vers l'ecran de zone quand le gel est actif (le tutoriel sera revu avec ZON-08).
 
 ---
 

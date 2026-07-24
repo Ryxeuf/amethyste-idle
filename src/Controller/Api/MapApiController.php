@@ -16,6 +16,7 @@ use App\GameEngine\Player\PnjDialogParser;
 use App\GameEngine\Quest\PnjQuestIndicatorResolver;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\World\GameTimeService;
+use App\GameEngine\Zone\MapFreeze;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
@@ -48,6 +49,7 @@ class MapApiController extends AbstractController
         private readonly AvatarCatalogProvider $avatarCatalogProvider,
         private readonly MountMapPayloadBuilder $mountMapPayloadBuilder,
         private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
+        private readonly MapFreeze $mapFreeze,
     ) {
     }
 
@@ -352,6 +354,12 @@ class MapApiController extends AbstractController
         PlayerActionHelper $playerActionHelper,
     ): JsonResponse {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // Pivot PBBG (ZON-01) : carte gelee -> deplacement refuse.
+        if ($this->mapFreeze->isFrozenFor()) {
+            return $this->json(['error' => 'Map is frozen (PBBG pivot)'], 403);
+        }
+
         $player = $this->playerHelper->getPlayer();
 
         $data = json_decode($request->getContent(), true) ?? [];
@@ -423,6 +431,12 @@ class MapApiController extends AbstractController
     public function teleport(Request $request): JsonResponse
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
+
+        // Pivot PBBG (ZON-01) : carte gelee -> teleportation par portail refusee.
+        if ($this->mapFreeze->isFrozenFor()) {
+            return $this->json(['error' => 'Map is frozen (PBBG pivot)'], 403);
+        }
+
         $player = $this->playerHelper->getPlayer();
 
         $data = json_decode($request->getContent(), true) ?? [];
