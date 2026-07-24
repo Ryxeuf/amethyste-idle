@@ -171,7 +171,7 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 ## Documentation approfondie
 
 - [DOCUMENTATION.md](DOCUMENTATION.md) — Documentation technique complete (22 sections, modele de donnees, combat, carte, inventaire, quetes, bestiaire, succes, etc.)
-- [docs/GAME_PRINCIPLES.md](docs/GAME_PRINCIPLES.md) — **Principes de game design** (source de verite) : controle de cite, narration (trame large + intro), economie joueur (craft joueur, plancher T1 PNJ, HV regional taxe par la cite, commandes de craft, echoppes, objets lies). Decline en jalons dans [docs/roadmap/PLAN_PLAYER_ECONOMY.md](docs/roadmap/PLAN_PLAYER_ECONOMY.md)
+- [docs/GAME_PRINCIPLES.md](docs/GAME_PRINCIPLES.md) — **Principes de game design** (source de verite) : controle de cite, narration (trame large + acte d'intro + narration saisonniere, monde hybride, credits narratifs de cite, Codex), economie joueur (craft joueur, plancher T1 PNJ, HV regional taxe par la cite, commandes de craft, echoppes, objets lies). Decline en jalons dans [docs/roadmap/PLAN_PLAYER_ECONOMY.md](docs/roadmap/PLAN_PLAYER_ECONOMY.md) (economie) et [docs/roadmap/PLAN_NARRATIVE.md](docs/roadmap/PLAN_NARRATIVE.md) (narration)
 - [docs/ROADMAP_DONE.md](docs/ROADMAP_DONE.md) — Roadmap realisee (historique des phases completees)
 - [docs/roadmap/ROADMAP_TODO_INDEX.md](docs/roadmap/ROADMAP_TODO_INDEX.md) — Roadmap a venir (index + liens par sprint) ; [docs/ROADMAP_TODO.md](docs/ROADMAP_TODO.md) — Point d'entree
 - [AGENTS.md](AGENTS.md) — Conventions du projet (identite jeu, stack, rendu PixiJS, UI, progression)

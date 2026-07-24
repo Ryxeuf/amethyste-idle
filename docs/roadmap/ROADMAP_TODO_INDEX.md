@@ -36,7 +36,7 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Chantier Modele zone (ZON) | 9/21 | En cours (Sprint 7 ✅ + ZON-07/08/09 — boucle PBBG jouable, chasse ciblee ; gel `map_frozen` activable en test) |
+| Chantier Modele zone (ZON) | 11/21 | En cours (Sprint 7 ✅ + ZON-07/08/09/10/11 — boucle PBBG jouable, recolte partagee, config declarative ; gel `map_frozen` activable en test) |
 
 ---
 
@@ -137,6 +137,7 @@ Independant ─ Sprint 12 (technique, parallelisable a tout moment)
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design** (controle de cite, narration, economie joueur)
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Economie joueur (ECO-01 a ECO-17)](PLAN_PLAYER_ECONOMY.md) — a venir (craft joueur, HV regional, commandes, echoppes)
+- [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) — en cours (NAR-01 ✅ marqueur d'arc ; a venir : journal par arc, acte d'intro, Codex, narration saisonniere)
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅ — termine, sans suite dans Amethyste (reutilisable pour un futur projet Zelda-like separe)
 - [Testing & qualite](PLAN_TESTING.md) — quasi-termine (taches restantes integrees en Sprint 1)
 - [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — ⛔ clos par le pivot PBBG (34/38 realisees)
