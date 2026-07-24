@@ -328,7 +328,7 @@ class Zone
      * Ressources recoltables declarees pour la zone (liste normalisee, jamais
      * null).
      *
-     * @return list<array<string, mixed>>
+     * @return list<array<array-key, mixed>>
      */
     public function getGatherResources(): array
     {
@@ -339,11 +339,9 @@ class Zone
 
         $normalized = [];
         foreach ($resources as $resource) {
-            if (!\is_array($resource)) {
-                continue;
+            if (\is_array($resource)) {
+                $normalized[] = $resource;
             }
-            /** @var array<string, mixed> $resource */
-            $normalized[] = $resource;
         }
 
         return $normalized;

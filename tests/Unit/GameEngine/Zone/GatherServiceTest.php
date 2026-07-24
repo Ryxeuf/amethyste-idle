@@ -6,7 +6,6 @@ use App\Entity\App\Fight;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
-use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneVein;
 use App\Entity\Game\Item;

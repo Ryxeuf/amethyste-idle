@@ -275,7 +275,7 @@ class GatherService
     }
 
     /**
-     * @param array<string, mixed> $resource
+     * @param array<array-key, mixed> $resource
      *
      * @return array{slug: string, item: string, profession: string, capacity: int, respawn_seconds: int, yield_min: int, yield_max: int}|null
      */
