@@ -34,6 +34,22 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
         $acte1Recolte->setPrerequisiteQuests([$acte1Bapteme->getId()]);
         $acte1Cristal->setPrerequisiteQuests([$acte1Recolte->getId()]);
 
+        // Arc « intro » (NAR-03) : deux étapes finales chaînées après le Cristal —
+        // craft T1 (première potion) puis découverte des guildes.
+        /** @var Quest $acte1PremierePotion */
+        $acte1PremierePotion = $this->getReference('quest_acte1_premiere_potion', Quest::class);
+        /** @var Quest $acte1Guilde */
+        $acte1Guilde = $this->getReference('quest_acte1_guilde', Quest::class);
+        $acte1PremierePotion->setPrerequisiteQuests([$acte1Cristal->getId()]);
+        $acte1Guilde->setPrerequisiteQuests([$acte1PremierePotion->getId()]);
+
+        // Back-patch du PNJ mentor (Claire la Sage, pnj_15) pour l'étape « guilde ».
+        /** @var Pnj $claireMentor */
+        $claireMentor = $this->getReference('pnj_15', Pnj::class);
+        $guildeReq = $acte1Guilde->getRequirements();
+        $guildeReq['talk_to'][0]['pnj_id'] = $claireMentor->getId();
+        $acte1Guilde->setRequirements($guildeReq);
+
         // Chaîne Acte 2 : Fragment Forêt (4 quêtes séquentielles, après Acte 1)
         /** @var Quest $acte2ForetMurmures */
         $acte2ForetMurmures = $this->getReference('quest_acte2_foret_murmures', Quest::class);

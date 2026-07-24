@@ -565,6 +565,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     'gold' => 10,
                 ],
                 'prerequisiteQuests' => null,
+                'storyArc' => 'intro',
+                'arcOrder' => 1,
             ],
             'quest_acte1_premiers_pas' => [
                 'name' => 'L\'Éveil — Premiers pas',
@@ -592,6 +594,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
                 // prerequisiteQuests set after flush
+                'storyArc' => 'intro',
+                'arcOrder' => 2,
             ],
             'quest_acte1_bapteme_du_feu' => [
                 'name' => 'L\'Éveil — Baptême du feu',
@@ -619,6 +623,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
                 // prerequisiteQuests set after flush
+                'storyArc' => 'intro',
+                'arcOrder' => 3,
             ],
             'quest_acte1_recolte' => [
                 'name' => 'L\'Éveil — Récolte',
@@ -642,6 +648,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
                 // prerequisiteQuests set after flush
+                'storyArc' => 'intro',
+                'arcOrder' => 4,
             ],
             'quest_acte1_cristal' => [
                 'name' => 'L\'Éveil — Le Cristal d\'Améthyste',
@@ -669,6 +677,54 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
                 // prerequisiteQuests set after flush
+                'storyArc' => 'intro',
+                'arcOrder' => 5,
+            ],
+            'quest_acte1_premiere_potion' => [
+                'name' => 'L\'Éveil — Première potion',
+                'name_translations' => ['en' => 'The Awakening — First Potion'],
+                'description' => 'Marie la Herboriste vous initie à l\'alchimie. Récoltez de la menthe et de la sauge, puis préparez une petite potion de soin à l\'atelier. Un aventurier qui sait se soigner survit plus longtemps.',
+                'description_translations' => ['en' => 'Marie the Herbalist introduces you to alchemy. Gather mint and sage, then brew a small healing potion at the workshop. An adventurer who can heal survives longer.'],
+                'requirements' => [
+                    'craft' => [
+                        'healing-potion-small' => 1,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 45,
+                    'gold' => 25,
+                    'items' => [
+                        [
+                            'type' => 'stuff',
+                            'count' => 2,
+                            'genericItemSlug' => 'life-potion',
+                        ],
+                    ],
+                ],
+                // prerequisiteQuests set after flush (← cristal)
+                'storyArc' => 'intro',
+                'arcOrder' => 6,
+            ],
+            'quest_acte1_guilde' => [
+                'name' => 'L\'Éveil — L\'appel des guildes',
+                'name_translations' => ['en' => 'The Awakening — The Call of the Guilds'],
+                'description' => 'Vos premiers pas sont derrière vous. Claire la Sage vous parle des guildes d\'aventuriers : ensemble, on va plus loin. Retournez la voir pour qu\'elle vous oriente vers la vie de guilde.',
+                'description_translations' => ['en' => 'Your first steps are behind you. Claire the Wise tells you about adventurer guilds: together, we go further. Return to her so she can guide you toward guild life.'],
+                'requirements' => [
+                    'talk_to' => [
+                        [
+                            'pnj_id' => 0,
+                            'name' => 'Claire la Sage',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 50,
+                    'gold' => 40,
+                ],
+                // prerequisiteQuests + talk_to pnj_id set after flush (← premiere_potion, Claire)
+                'storyArc' => 'intro',
+                'arcOrder' => 7,
             ],
             // --- Quetes cachees (decouverte) ---
             'quest_hidden_secret_clearing' => [
@@ -2017,6 +2073,12 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             }
             if (isset($data['triggerCondition'])) {
                 $quest->setTriggerCondition($data['triggerCondition']);
+            }
+            if (isset($data['storyArc'])) {
+                $quest->setStoryArc($data['storyArc']);
+            }
+            if (isset($data['arcOrder'])) {
+                $quest->setArcOrder($data['arcOrder']);
             }
             if (isset($data['gameEvent'])) {
                 $quest->setGameEvent($this->getReference($data['gameEvent'], GameEvent::class));
