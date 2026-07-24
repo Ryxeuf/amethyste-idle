@@ -9,7 +9,10 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
+use App\GameEngine\Zone\ZoneTravelException;
+use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
+use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,8 +20,13 @@ use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Twig\Environment as TwigEnvironment;
 
 class ZoneControllerTest extends TestCase
@@ -26,10 +34,15 @@ class ZoneControllerTest extends TestCase
     private EntityManagerInterface&MockObject $entityManager;
     private EntityRepository&MockObject $playerRepository;
     private EntityRepository&MockObject $objectLayerRepository;
+    private EntityRepository&MockObject $zoneConnectionEntityRepository;
     private PlayerHelper&MockObject $playerHelper;
     private ZoneRepository&MockObject $zoneRepository;
     private ZoneConnectionRepository&MockObject $zoneConnectionRepository;
     private PlayerZoneSynchronizer&MockObject $playerZoneSynchronizer;
+    private ZoneTravelService&MockObject $zoneTravelService;
+    private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
+    private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
+    private Session $session;
     private ZoneController $controller;
 
     /** @var array<string, mixed>|null */
@@ -40,15 +53,20 @@ class ZoneControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->playerRepository = $this->createMock(EntityRepository::class);
         $this->objectLayerRepository = $this->createMock(EntityRepository::class);
+        $this->zoneConnectionEntityRepository = $this->createMock(EntityRepository::class);
         $this->entityManager->method('getRepository')->willReturnMap([
             [Player::class, $this->playerRepository],
             [ObjectLayer::class, $this->objectLayerRepository],
+            [ZoneConnection::class, $this->zoneConnectionEntityRepository],
         ]);
 
         $this->playerHelper = $this->createMock(PlayerHelper::class);
         $this->zoneRepository = $this->createMock(ZoneRepository::class);
         $this->zoneConnectionRepository = $this->createMock(ZoneConnectionRepository::class);
         $this->playerZoneSynchronizer = $this->createMock(PlayerZoneSynchronizer::class);
+        $this->zoneTravelService = $this->createMock(ZoneTravelService::class);
+        $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
+        $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
             $this->entityManager,
@@ -56,6 +74,8 @@ class ZoneControllerTest extends TestCase
             $this->zoneRepository,
             $this->zoneConnectionRepository,
             $this->playerZoneSynchronizer,
+            $this->zoneTravelService,
+            $this->visitedZoneRepository,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -93,6 +113,10 @@ class ZoneControllerTest extends TestCase
         $player->setCurrentZone($zone);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
+        $this->zoneTravelService->expects($this->once())->method('settleArrival')->with($player)->willReturn(null);
+        $this->zoneTravelService->expects($this->once())->method('markZoneVisited')->with($player, $zone);
+        $this->visitedZoneRepository->method('findVisitedZoneIds')->willReturn([7]);
+
         $this->zoneConnectionRepository->expects($this->once())
             ->method('findEnabledFrom')->with($zone)->willReturn([$connection]);
         $this->playerRepository->method('findBy')->willReturn([$player]);
@@ -113,9 +137,34 @@ class ZoneControllerTest extends TestCase
             [ObjectLayer::TYPE_HARVEST_SPOT => 2, ObjectLayer::TYPE_FORGE => 1],
             $this->capturedTemplateParams['poiCounts'],
         );
+        $this->assertNull($this->capturedTemplateParams['travel']);
+        $this->assertNull($this->capturedTemplateParams['justArrived']);
+        $this->assertSame([7], $this->capturedTemplateParams['visitedZoneIds']);
 
         $actionKeys = array_column($this->capturedTemplateParams['actions'], 'key');
         $this->assertSame(['explore', 'hunt', 'gather'], $actionKeys);
+    }
+
+    public function testIndexExposesTravelStateWhileTraveling(): void
+    {
+        $zone = $this->buildZone('village-de-lumiere', Zone::TYPE_CITY, true);
+        $destination = $this->buildZone('crete-de-ventombre');
+        $player = new Player();
+        $player->setCurrentZone($zone);
+        $player->setTravelToZone($destination);
+        $player->setTravelArrivesAt(new \DateTimeImmutable('+300 seconds'));
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->zoneConnectionRepository->method('findEnabledFrom')->willReturn([]);
+        $this->playerRepository->method('findBy')->willReturn([$player]);
+        $this->objectLayerRepository->method('findBy')->willReturn([]);
+
+        $this->controller->index();
+
+        $travel = $this->capturedTemplateParams['travel'];
+        $this->assertSame($destination, $travel['destination']);
+        $this->assertGreaterThan(290, $travel['remainingSeconds']);
+        $this->assertLessThanOrEqual(300, $travel['remainingSeconds']);
     }
 
     public function testSafeZoneHidesHuntAction(): void
@@ -174,6 +223,56 @@ class ZoneControllerTest extends TestCase
         $this->assertSame([], $this->capturedTemplateParams['actions']);
     }
 
+    public function testTravelStartsAndRedirectsWithSuccessFlash(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $connection = new ZoneConnection($this->buildZone('village'), $this->buildZone('foret'), 300);
+        $this->zoneConnectionEntityRepository->method('find')->with(12)->willReturn($connection);
+
+        $this->zoneTravelService->expects($this->once())
+            ->method('startTravel')->with($player, $connection)
+            ->willReturn(new \DateTimeImmutable('+5 minutes'));
+
+        $response = $this->controller->travel(12, new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.travel.flash.started'], $this->session->getFlashBag()->get('success'));
+    }
+
+    public function testTravelRefusalShowsErrorFlash(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $connection = new ZoneConnection($this->buildZone('village'), $this->buildZone('foret'), 300);
+        $this->zoneConnectionEntityRepository->method('find')->willReturn($connection);
+
+        $this->zoneTravelService->method('startTravel')
+            ->willThrowException(new ZoneTravelException('game.zone.travel.error.in_fight'));
+
+        $response = $this->controller->travel(12, new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.travel.error.in_fight'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testTravelRejectsInvalidCsrfToken(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
+        $this->zoneTravelService->expects($this->never())->method('startTravel');
+
+        $response = $this->controller->travel(12, new Request(request: ['_token' => 'bad']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.travel.error.invalid_token'], $this->session->getFlashBag()->get('error'));
+    }
+
     private function createContainer(): ContainerInterface&MockObject
     {
         $authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -187,12 +286,20 @@ class ZoneControllerTest extends TestCase
         });
 
         $router = $this->createMock(UrlGeneratorInterface::class);
-        $router->method('generate')->willReturn('/game');
+        $router->method('generate')->willReturn('/game/zone');
+
+        $this->session = new Session(new MockArraySessionStorage());
+        $request = new Request();
+        $request->setSession($this->session);
+        $requestStack = new RequestStack();
+        $requestStack->push($request);
 
         $services = [
             'security.authorization_checker' => $authChecker,
             'twig' => $twig,
             'router' => $router,
+            'security.csrf.token_manager' => $this->csrfTokenManager,
+            'request_stack' => $requestStack,
         ];
 
         $container = $this->createMock(ContainerInterface::class);

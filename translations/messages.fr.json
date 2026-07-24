@@ -1060,6 +1060,24 @@
       "no_zone": {
         "title": "Position inconnue",
         "description": "Votre personnage n'est rattaché à aucune zone pour le moment."
+      },
+      "travel": {
+        "button": "Voyager",
+        "in_progress": "En voyage vers %zone%",
+        "arrival_in": "Arrivée dans ~%minutes% min",
+        "arrival_imminent": "Arrivée imminente — rechargez la page",
+        "flash": {
+          "started": "Voyage commencé. Votre personnage arrivera à destination en temps réel.",
+          "arrived": "Vous êtes arrivé à destination."
+        },
+        "error": {
+          "invalid_token": "Session expirée, réessayez.",
+          "already_traveling": "Vous êtes déjà en voyage.",
+          "in_fight": "Impossible de voyager en plein combat.",
+          "wrong_origin": "Cette liaison ne part pas de votre zone actuelle.",
+          "unavailable": "Cette liaison n'est pas disponible.",
+          "not_discovered": "Liaison rapide verrouillée : découvrez d'abord cette zone à pied."
+        }
       }
     }
   },

@@ -17,6 +17,35 @@
                     <p class="text-gray-500 text-sm mt-1">{{ 'game.zone.no_zone.description'|trans }}</p>
                 </div>
             {% else %}
+                {% for label, messages in app.flashes(['success', 'error']) %}
+                    {% for message in messages %}
+                        <div class="mb-3 px-3 py-2 rounded-md text-sm {{ label == 'success' ? 'bg-emerald-900/40 border border-emerald-700/50 text-emerald-200' : 'bg-red-900/40 border border-red-700/50 text-red-200' }}">
+                            {{ message|trans }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+
+                {% if justArrived %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
+                        {{ 'game.zone.travel.flash.arrived'|trans }}
+                    </div>
+                {% endif %}
+
+                {% if travel %}
+                    <div class="mb-4 px-3 py-2.5 rounded-md bg-sky-900/30 border border-sky-700/50">
+                        <p class="text-sm text-sky-200 font-medium">
+                            {{ 'game.zone.travel.in_progress'|trans({'%zone%': travel.destination.localizedName(app.request.locale)}) }}
+                        </p>
+                        <p class="text-xs text-sky-300/80 mt-0.5">
+                            {% if travel.remainingSeconds < 60 %}
+                                {{ 'game.zone.travel.arrival_imminent'|trans }}
+                            {% else %}
+                                {{ 'game.zone.travel.arrival_in'|trans({'%minutes%': (travel.remainingSeconds / 60)|round(0, 'ceil')}) }}
+                            {% endif %}
+                        </p>
+                    </div>
+                {% endif %}
+
                 {# ── En-tete de zone ─────────────────────────────── #}
                 <div class="mb-4">
                     <div class="flex flex-wrap items-center gap-2">
@@ -66,18 +95,39 @@
                         {% else %}
                             <ul class="space-y-1.5">
                                 {% for connection in connections %}
-                                    <li class="flex items-center justify-between rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                                    {% set locked = connection.requiresDiscovery and connection.toZone.id not in visitedZoneIds %}
+                                    <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
                                         <span class="text-sm text-white">
                                             {{ connection.toZone.localizedName(app.request.locale) }}
-                                            {% if connection.requiresDiscovery %}
+                                            {% if locked %}
                                                 <span class="ml-1 text-xs text-amber-400/80" title="{{ 'game.zone.connections.locked'|trans }}">🔒</span>
                                             {% endif %}
                                         </span>
-                                        <span class="text-xs text-gray-400">
-                                            {% if connection.travelSeconds == 0 %}
-                                                {{ 'game.zone.connections.travel_instant'|trans }}
+                                        <span class="flex items-center gap-2">
+                                            <span class="text-xs text-gray-400">
+                                                {% if connection.travelSeconds == 0 %}
+                                                    {{ 'game.zone.connections.travel_instant'|trans }}
+                                                {% else %}
+                                                    {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (connection.travelSeconds / 60)|round}) }}
+                                                {% endif %}
+                                            </span>
+                                            {% if locked %}
+                                                <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-600">
+                                                    {{ 'game.zone.travel.button'|trans }}
+                                                </span>
+                                            {% elseif travel %}
+                                                <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-600"
+                                                      title="{{ 'game.zone.travel.error.already_traveling'|trans }}">
+                                                    {{ 'game.zone.travel.button'|trans }}
+                                                </span>
                                             {% else %}
-                                                {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (connection.travelSeconds / 60)|round}) }}
+                                                <form method="post" action="{{ path('app_game_zone_travel', {id: connection.id}) }}">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('travel_' ~ connection.id) }}">
+                                                    <button type="submit"
+                                                            class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-purple-900/40 border border-purple-600 text-purple-100 hover:bg-purple-800/50">
+                                                        {{ 'game.zone.travel.button'|trans }}
+                                                    </button>
+                                                </form>
                                             {% endif %}
                                         </span>
                                     </li>

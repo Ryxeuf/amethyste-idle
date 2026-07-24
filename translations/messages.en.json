@@ -1060,6 +1060,24 @@
       "no_zone": {
         "title": "Unknown position",
         "description": "Your character is not attached to any zone yet."
+      },
+      "travel": {
+        "button": "Travel",
+        "in_progress": "Traveling to %zone%",
+        "arrival_in": "Arrival in ~%minutes% min",
+        "arrival_imminent": "Arrival imminent — reload the page",
+        "flash": {
+          "started": "Travel started. Your character will arrive in real time.",
+          "arrived": "You have arrived at your destination."
+        },
+        "error": {
+          "invalid_token": "Session expired, please retry.",
+          "already_traveling": "You are already traveling.",
+          "in_fight": "You cannot travel during a fight.",
+          "wrong_origin": "This route does not start from your current zone.",
+          "unavailable": "This route is not available.",
+          "not_discovered": "Fast link locked: discover this zone on foot first."
+        }
       }
     }
   },

@@ -5,12 +5,17 @@ namespace App\Controller\Game;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
+use App\Entity\App\ZoneConnection;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
+use App\GameEngine\Zone\ZoneTravelException;
+use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
+use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -38,6 +43,8 @@ class ZoneController extends AbstractController
         private readonly ZoneRepository $zoneRepository,
         private readonly ZoneConnectionRepository $zoneConnectionRepository,
         private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
+        private readonly ZoneTravelService $zoneTravelService,
+        private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
     ) {
     }
 
@@ -51,6 +58,9 @@ class ZoneController extends AbstractController
             return $this->redirectToRoute('app_game');
         }
 
+        // Arrivee automatique : regle un eventuel voyage arrive a terme.
+        $arrived = $this->zoneTravelService->settleArrival($player);
+
         $zone = $this->resolveZone($player);
         if (null === $zone) {
             return $this->render('game/zone/index.html.twig', [
@@ -61,8 +71,14 @@ class ZoneController extends AbstractController
                 'actions' => [],
                 'poiLabels' => [],
                 'typeLabels' => [],
+                'travel' => null,
+                'visitedZoneIds' => [],
+                'justArrived' => null,
             ]);
         }
+
+        // La zone courante compte comme decouverte (deverrouille les liaisons rapides).
+        $this->zoneTravelService->markZoneVisited($player, $zone);
 
         $connections = $this->zoneConnectionRepository->findEnabledFrom($zone);
 
@@ -72,12 +88,25 @@ class ZoneController extends AbstractController
 
         $poiCounts = $this->countPointsOfInterest($zone);
 
+        $travel = null;
+        if ($player->isTraveling() && null !== $player->getTravelArrivesAt()) {
+            $remaining = $player->getTravelArrivesAt()->getTimestamp() - time();
+            $travel = [
+                'destination' => $player->getTravelToZone(),
+                'arrivesAt' => $player->getTravelArrivesAt(),
+                'remainingSeconds' => max(0, $remaining),
+            ];
+        }
+
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
             'connections' => $connections,
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,
             'actions' => $this->buildActions($zone, $poiCounts),
+            'travel' => $travel,
+            'visitedZoneIds' => $this->visitedZoneRepository->findVisitedZoneIds($player),
+            'justArrived' => $arrived,
             'poiLabels' => [
                 ObjectLayer::TYPE_HARVEST_SPOT => 'game.zone.poi.harvest_spot',
                 ObjectLayer::TYPE_FORGE => 'game.zone.poi.forge',
@@ -92,6 +121,39 @@ class ZoneController extends AbstractController
                 Zone::TYPE_DUNGEON => 'game.zone.type.dungeon',
             ],
         ]);
+    }
+
+    #[Route('/game/zone/travel/{id}', name: 'app_game_zone_travel', methods: ['POST'])]
+    public function travel(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('travel_' . $id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $connection = $this->entityManager->getRepository(ZoneConnection::class)->find($id);
+        if (null === $connection) {
+            $this->addFlash('error', 'game.zone.travel.error.unavailable');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $this->zoneTravelService->startTravel($player, $connection);
+            $this->addFlash('success', 'game.zone.travel.flash.started');
+        } catch (ZoneTravelException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_zone');
     }
 
     /**

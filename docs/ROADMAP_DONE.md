@@ -1,7 +1,37 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-05 — ecran de zone `/game/zone` ; ZON-02 a ZON-04 livrees le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-06 — voyage entre zones time-gated ; ZON-02 a ZON-05 livrees le meme jour).
+
+---
+
+## ZON-06 — Voyage entre zones (Sprint 7, 2026-07-24)
+
+> Les connexions du graphe deviennent jouables : voyager coute du temps reel, l'arrivee est automatique (resolution paresseuse, aucun cron), et la decouverte des zones deverrouille les liaisons rapides — transposition du fast travel de la carte.
+
+### Changements
+
+- **`Player`** : `travelToZone` (FK nullable) + `travelArrivesAt` (datetime nullable) + helper `isTraveling()`.
+- **`src/Entity/App/PlayerVisitedZone.php`** + repository (`hasVisited`, `findVisitedZoneIds`) : decouverte des zones, calquee sur `PlayerVisitedRegion`.
+- **`src/GameEngine/Zone/ZoneTravelService.php`** :
+  - `startTravel(Player, ZoneConnection)` — refus type `ZoneTravelException` (message = cle de traduction) : deja en voyage, en combat, liaison ne partant pas de la zone courante, liaison/zone desactivee, liaison rapide vers zone non decouverte. Liaison a 0 s (interieurs) = arrivee reglee inline.
+  - `settleArrival(Player)` — resolution paresseuse : si l'heure d'arrivee est passee, le joueur change de zone, la decouverte est enregistree, l'etat de voyage est nettoye. Appelee a l'affichage de l'ecran de zone et en tete de `startTravel` ; les futures actions (ZON-08+) l'appelleront aussi.
+  - `markZoneVisited(Player, Zone)` — idempotent ; la zone courante est marquee decouverte a chaque affichage de l'ecran.
+- **`ZoneController`** : `POST /game/zone/travel/{id}` (CSRF `travel_{id}`, flashes succes/erreur) ; `index` regle l'arrivee, expose l'etat de voyage (destination, temps restant) et les zones decouvertes.
+- **Template zone** : bandeau « En voyage vers X — arrivee dans ~N min », flash d'arrivee, bouton Voyager par connexion (verrouille si liaison rapide non decouverte, neutralise pendant un voyage), flashes.
+- **`migrations/Version20260724ZoneTravel.php`** (idempotente) : colonnes voyage + table `player_visited_zone` (UNIQUE player+zone, FK CASCADE) + backfill « zone courante = decouverte ».
+- **Traductions** : +12 cles FR/EN (`game.zone.travel.*`), parite 826=826.
+
+### Verifications
+
+- `ZoneTravelServiceTest` (12 cas : depart nominal avec arrivee a +300 s, liaison instantanee arrivee inline, les 5 refus, liaison rapide autorisee vers zone visitee, settle avant/apres l'heure, settle sans voyage, decouverte idempotente).
+- `ZoneControllerTest` etendu (9 cas : +etat de voyage expose, +voyage OK/refus/CSRF invalide avec flashes verifies en session reelle).
+- Migration executee sur base dev (9 requetes) ; QA : cs-fixer, PHPStan, lint:twig OK, Unit 1747 verts, Functional 248 verts.
+
+### Notes
+
+- La reduction du temps de voyage par les montures est volontairement hors perimetre : c'est la tache 130 du Sprint 11 (« transposer l'effet monture au modele zone »).
+- Aucune connexion seedee n'utilise encore `requiresDiscovery` : le verrou est fonctionnel mais s'activera avec les futures liaisons rapides longue distance.
 
 ---
 

@@ -103,6 +103,17 @@ class Player implements CharacterInterface
     #[ORM\JoinColumn(name: 'current_zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Zone $currentZone = null;
 
+    /**
+     * Voyage en cours (pivot PBBG, ZON-06) : destination + horodatage d'arrivee.
+     * L'arrivee est resolue paresseusement par ZoneTravelService::settleArrival.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'travel_to_zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $travelToZone = null;
+
+    #[ORM\Column(name: 'travel_arrives_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $travelArrivesAt = null;
+
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
 
@@ -277,6 +288,31 @@ class Player implements CharacterInterface
     public function setCurrentZone(?Zone $currentZone): void
     {
         $this->currentZone = $currentZone;
+    }
+
+    public function getTravelToZone(): ?Zone
+    {
+        return $this->travelToZone;
+    }
+
+    public function setTravelToZone(?Zone $travelToZone): void
+    {
+        $this->travelToZone = $travelToZone;
+    }
+
+    public function getTravelArrivesAt(): ?\DateTimeImmutable
+    {
+        return $this->travelArrivesAt;
+    }
+
+    public function setTravelArrivesAt(?\DateTimeImmutable $travelArrivesAt): void
+    {
+        $this->travelArrivesAt = $travelArrivesAt;
+    }
+
+    public function isTraveling(): bool
+    {
+        return null !== $this->travelToZone;
     }
 
     public function getLastCoordinates(): string
