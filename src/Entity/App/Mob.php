@@ -14,6 +14,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'mob')]
 #[ORM\Index(columns: ['map_id'], name: 'idx_mob_map')]
+#[ORM\Index(columns: ['zone_id'], name: 'idx_mob_zone')]
 #[ORM\Index(columns: ['fight_id'], name: 'idx_mob_fight')]
 #[ORM\Index(columns: ['monster_id'], name: 'idx_mob_monster')]
 #[ORM\Entity(repositoryClass: \App\Repository\MobRepository::class)]
@@ -45,7 +46,15 @@ class Mob implements CharacterInterface
 
     #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'mobs')]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
-    private ?Map $map;
+    private ?Map $map = null;
+
+    /**
+     * Zone du graphe de monde (pivot PBBG, ZON-04). Derivee de la carte via
+     * WorldEntityZoneListener tant que la carte reste la source du placement.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $zone = null;
 
     /**
      * Combat dans lequel le monstre est engagé.
@@ -126,6 +135,16 @@ class Mob implements CharacterInterface
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): void
+    {
+        $this->zone = $zone;
     }
 
     public function getMonster(): Monster

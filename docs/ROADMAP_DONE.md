@@ -1,7 +1,31 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-03 — Player.currentZone remplace les coordonnees comme reference de position ; ZON-02 livree le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-04 — mobs, PNJ et object layers rattaches aux zones ; ZON-02 et ZON-03 livrees le meme jour).
+
+---
+
+## ZON-04 — Migrer les donnees de monde vers les zones (Sprint 7, 2026-07-24)
+
+> Mobs, PNJ et object layers (spots de recolte, coffres, stations de craft, portails...) sont rattaches a leur zone du graphe de monde. Le bestiaire, les PNJ et leurs dialogues sont reutilises tels quels — seul le rattachement spatial change.
+
+### Changements
+
+- **`Mob`, `Pnj`, `ObjectLayer`** : FK nullable `zone` → `Zone` (`ON DELETE SET NULL`) + index `idx_{table}_zone`. Fix au passage : `private ?Map $map = null;` (les trois proprietes etaient typees nullable sans defaut → `Error` a l'acces avant initialisation sur entite neuve).
+- **`src/GameEngine/Zone/WorldEntityZoneListener.php`** : listener Doctrine `prePersist` qui derive la zone de la carte (`Zone::sourceMap`) pour les trois types. Couvre TOUS les chemins de creation (fixtures, admin, invasions, invocations en combat, terrain sync) sans cabler chaque appelant. Memoization par carte (`spl_object_id`, sur aussi pour une carte non flushee), zone explicite jamais ecrasee, cartes hors graphe → zone null.
+- **`migrations/Version20260724WorldEntitiesZone.php`** (idempotente) : colonne + FK + index + backfill depuis `zone.source_map_id` pour les trois tables. Pas de fallback hub : une entite sur carte hors graphe reste volontairement sans zone.
+- **`src/Command/ZoneAuditCommand.php`** (`app:zone:audit`) : tableau par entite (joueurs inclus) — total / avec zone / orphelines (carte zonee mais zone_id NULL, exit code 1) / hors graphe (donjon, carte de test — attendu). Option `--fix` pour re-backfiller apres un import de contenu.
+
+### Verifications
+
+- `WorldEntityZoneListenerTest` (5 cas : assignation aux trois types, memoization (1 seule requete pour N entites d'une meme carte), carte hors graphe → null, zone explicite non ecrasee, entites sans carte / autres types ignores).
+- Migration executee sur base dev puis `app:zone:audit` : **0 orpheline** — 51 mobs, 27 PNJ, 33 object layers rattaches ; 91/60/29 hors graphe (donjons + carte de test, attendu).
+- QA : cs-fixer 0, PHPStan niveau 5 OK, Unit 1735 verts, Functional 238 verts (schema test resynchronise).
+
+### Notes
+
+- Le rattachement est passif a ce stade : aucune logique de jeu ne lit encore `zone_id` sur ces entites — ce sont les fondations des tables de rencontre/recolte par zone (ZON-08..11, requetes par `idx_{table}_zone`).
+- `app:zone:audit --fix` est le filet de securite a lancer apres tout import de terrain ou de contenu qui creerait des entites hors listener (SQL brut).
 
 ---
 

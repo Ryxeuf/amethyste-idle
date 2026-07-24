@@ -7,6 +7,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'pnj')]
 #[ORM\Index(columns: ['map_id'], name: 'idx_pnj_map')]
+#[ORM\Index(columns: ['zone_id'], name: 'idx_pnj_zone')]
 #[ORM\Entity()]
 class Pnj
 {
@@ -40,7 +41,15 @@ class Pnj
 
     #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'pnjs')]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
-    private ?Map $map;
+    private ?Map $map = null;
+
+    /**
+     * Zone du graphe de monde (pivot PBBG, ZON-04). Derivee de la carte via
+     * WorldEntityZoneListener tant que la carte reste la source du placement.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $zone = null;
 
     #[ORM\Column(name: 'shop_items', type: 'json', nullable: true)]
     private ?array $shopItems = null;
@@ -223,6 +232,16 @@ class Pnj
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): void
+    {
+        $this->zone = $zone;
     }
 
     public function getCoordinates(): string

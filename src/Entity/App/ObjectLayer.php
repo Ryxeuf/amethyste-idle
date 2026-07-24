@@ -8,6 +8,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'object_layer')]
 #[ORM\Index(columns: ['map_id', 'type'], name: 'idx_object_layer_map_type')]
+#[ORM\Index(columns: ['zone_id'], name: 'idx_object_layer_zone')]
 #[ORM\Entity()]
 class ObjectLayer
 {
@@ -75,9 +76,17 @@ class ObjectLayer
     #[ORM\Column(name: 'usable', type: 'boolean', options: ['default' => 0])]
     private bool $usable = false;
 
+    /**
+     * Zone du graphe de monde (pivot PBBG, ZON-04). Derivee de la carte via
+     * WorldEntityZoneListener tant que la carte reste la source du placement.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $zone = null;
+
     #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'objectLayers', fetch: 'EXTRA_LAZY')]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
-    private ?Map $map;
+    private ?Map $map = null;
 
     #[ORM\Column(name: 'destination_map_id', type: 'integer', nullable: true)]
     private ?int $destinationMapId = null;
@@ -201,6 +210,16 @@ class ObjectLayer
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): void
+    {
+        $this->zone = $zone;
     }
 
     public function getDestinationMapId(): ?int

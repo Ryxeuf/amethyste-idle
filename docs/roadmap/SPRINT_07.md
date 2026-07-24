@@ -1,9 +1,9 @@
 ## Sprint 7 — Modele zone : Fondations
 
-> **6 taches** (2 livrees) | Priorite : **Critique** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (3 livrees) | Priorite : **Critique** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : geler la carte navigable, poser le graphe de zones et y migrer les joueurs et les donnees du monde.
 > Prerequis : ∅ (demarre immediatement — le pivot recentre tout le dev sur ce chantier)
-> Avancement : ZON-02 ✅ + ZON-03 ✅ (2026-07-24, voir `ROADMAP_DONE.md`)
+> Avancement : ZON-02 ✅ + ZON-03 ✅ + ZON-04 ✅ (2026-07-24, voir `ROADMAP_DONE.md`)
 
 > **Pivot PBBG** : ce sprint reutilise le numero de l'ancien Sprint 7 « Avatar: Fondations » (✅ termine 12/12 le 2026-04-17, trace dans `ROADMAP_DONE.md`). Le chantier avatar est clos par le pivot — voir `PLAN_AVATAR_SYSTEM.md`.
 
@@ -22,13 +22,7 @@
 
 ### Phase 2 — Graphe de zones
 
-> ZON-02 (entites Zone & ZoneConnection + seed World 1) et ZON-03 (Player.currentZone + PlayerZoneSynchronizer + backfill + CLAUDE.md §7) livrees le 2026-07-24 — retirees du sprint, voir `ROADMAP_DONE.md`.
-
-### ZON-04 — Migrer les donnees de monde vers les zones (M | ★★)
-> Prerequis : ← ZON-02
-- [ ] Rattacher mobs, PNJ et ressources existants a leur zone (extraction depuis les donnees TMX importees)
-- [ ] Le bestiaire, les PNJ et leurs dialogues sont reutilises tels quels
-- [ ] Audit : aucune entite orpheline (sans zone) apres migration
+> ZON-02 (entites Zone & ZoneConnection + seed World 1), ZON-03 (Player.currentZone + PlayerZoneSynchronizer + backfill + CLAUDE.md §7) et ZON-04 (zone sur Mob/Pnj/ObjectLayer + WorldEntityZoneListener + `app:zone:audit`) livrees le 2026-07-24 — retirees du sprint, voir `ROADMAP_DONE.md`.
 
 ---
 
