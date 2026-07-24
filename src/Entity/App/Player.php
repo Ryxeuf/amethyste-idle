@@ -17,6 +17,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'player')]
 #[ORM\Index(columns: ['map_id'], name: 'idx_player_map')]
+#[ORM\Index(columns: ['current_zone_id'], name: 'idx_player_current_zone')]
 #[ORM\Index(columns: ['fight_id'], name: 'idx_player_fight')]
 #[ORM\Index(columns: ['user_id'], name: 'idx_player_user')]
 #[ORM\Index(columns: ['updated_at'], name: 'idx_player_updated_at')]
@@ -92,6 +93,15 @@ class Player implements CharacterInterface
     #[ORM\ManyToOne(targetEntity: Map::class, inversedBy: 'players')]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id')]
     private ?Map $map = null;
+
+    /**
+     * Zone courante du joueur — reference de position du modele PBBG (ZON-03).
+     * Remplace progressivement les coordonnees `x.y`, qui subsistent uniquement
+     * pour la carte gelee jusqu'a sa suppression (ZON-21).
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'current_zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $currentZone = null;
 
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
@@ -257,6 +267,16 @@ class Player implements CharacterInterface
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getCurrentZone(): ?Zone
+    {
+        return $this->currentZone;
+    }
+
+    public function setCurrentZone(?Zone $currentZone): void
+    {
+        $this->currentZone = $currentZone;
     }
 
     public function getLastCoordinates(): string

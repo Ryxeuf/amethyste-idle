@@ -1,9 +1,9 @@
 ## Sprint 7 — Modele zone : Fondations
 
-> **6 taches** (1 livree) | Priorite : **Critique** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (2 livrees) | Priorite : **Critique** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : geler la carte navigable, poser le graphe de zones et y migrer les joueurs et les donnees du monde.
 > Prerequis : ∅ (demarre immediatement — le pivot recentre tout le dev sur ce chantier)
-> Avancement : ZON-02 ✅ (entites Zone/ZoneConnection + graphe World 1, 2026-07-24, voir `ROADMAP_DONE.md`)
+> Avancement : ZON-02 ✅ + ZON-03 ✅ (2026-07-24, voir `ROADMAP_DONE.md`)
 
 > **Pivot PBBG** : ce sprint reutilise le numero de l'ancien Sprint 7 « Avatar: Fondations » (✅ termine 12/12 le 2026-04-17, trace dans `ROADMAP_DONE.md`). Le chantier avatar est clos par le pivot — voir `PLAN_AVATAR_SYSTEM.md`.
 
@@ -22,13 +22,7 @@
 
 ### Phase 2 — Graphe de zones
 
-> ZON-02 (entites Zone & ZoneConnection + seed World 1) livree le 2026-07-24 — retiree du sprint, voir `ROADMAP_DONE.md`.
-
-### ZON-03 — Migrer la position joueur vers la zone (M | ★★★)
-> Prerequis : ← ZON-02
-- [ ] `Player.currentZone` (FK) remplace les coordonnees `x.y` comme reference de position
-- [ ] Migration des positions existantes : map/coordonnees → zone d'appartenance
-- [ ] Mettre a jour la regle « coordonnees x.y » (CLAUDE.md §7) → reference de zone (slug/FK)
+> ZON-02 (entites Zone & ZoneConnection + seed World 1) et ZON-03 (Player.currentZone + PlayerZoneSynchronizer + backfill + CLAUDE.md §7) livrees le 2026-07-24 — retirees du sprint, voir `ROADMAP_DONE.md`.
 
 ### ZON-04 — Migrer les donnees de monde vers les zones (M | ★★)
 > Prerequis : ← ZON-02

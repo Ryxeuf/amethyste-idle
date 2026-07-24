@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\Game\Race;
 use App\Entity\User;
 use App\Enum\TutorialStep;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Service\Avatar\AvatarHashRecalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -24,6 +25,7 @@ class PlayerFactory
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly AvatarHashRecalculator $avatarHashRecalculator,
+        private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
     ) {
     }
 
@@ -61,6 +63,7 @@ class PlayerFactory
         $player->setMap($spawnMap);
         $player->setCoordinates(self::SPAWN_COORDINATES);
         $player->setLastCoordinates(self::SPAWN_COORDINATES);
+        $this->playerZoneSynchronizer->syncFromMap($player);
 
         $this->entityManager->persist($player);
 

@@ -8,6 +8,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\Game\Race;
 use App\Entity\User;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Service\Avatar\AvatarHashRecalculator;
 use App\Service\PlayerFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -25,7 +26,7 @@ class PlayerFactoryTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->recalculator = $this->createMock(AvatarHashRecalculator::class);
-        $this->factory = new PlayerFactory($this->entityManager, $this->recalculator);
+        $this->factory = new PlayerFactory($this->entityManager, $this->recalculator, $this->createMock(PlayerZoneSynchronizer::class));
 
         $mapRepository = $this->createMock(EntityRepository::class);
         $mapRepository->method('findOneBy')->willReturn(new Map());

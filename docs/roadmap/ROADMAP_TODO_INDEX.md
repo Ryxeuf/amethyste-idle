@@ -36,7 +36,7 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Chantier Modele zone (ZON) | 1/21 | En cours (Sprints 7-10 ; ZON-02 livree 2026-07-24) |
+| Chantier Modele zone (ZON) | 2/21 | En cours (Sprints 7-10 ; ZON-02 + ZON-03 livrees 2026-07-24) |
 
 ---
 
@@ -50,7 +50,7 @@
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
-| **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 1/6 | Critique | En cours (ZON-02 ✅) |
+| **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 2/6 | Critique | En cours (ZON-02 ✅, ZON-03 ✅) |
 | **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 6 | Haute | A venir |
 | **Sprint 9** | Time-gating, presence & evenements (ex-Avatar: Personnage & Equipement ✅ 8/8) | 5 | Haute | A venir |
 | **Sprint 10** | Contenu de groupe & decommission carte (ex-Avatar: Polish, interrompu a 4/8) | 4 | Moyenne | A venir |
@@ -67,8 +67,8 @@
 ```
 SPRINT 7 — MODELE ZONE : FONDATIONS (priorite absolue post-pivot)
   ZON-01 Gel de la carte           ∅
-  ZON-02 Entites Zone/Connexion    ∅ ✅ (2026-07-24)
-  ZON-03 Position joueur → zone    ← ZON-02 ✅
+  ZON-02 Entites Zone/Connexion    ✅ 2026-07-24
+  ZON-03 Position joueur → zone    ✅ 2026-07-24
   ZON-04 Donnees monde → zones     ← ZON-02 ✅
   ZON-05 Ecran de zone             ← ZON-03
   ZON-06 Voyage entre zones        ← ZON-05

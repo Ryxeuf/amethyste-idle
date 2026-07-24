@@ -6,6 +6,7 @@ use App\Entity\App\DungeonRun;
 use App\Entity\App\Player;
 use App\Entity\Game\Dungeon;
 use App\Enum\DungeonDifficulty;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Repository\DungeonRunRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -14,6 +15,7 @@ class DungeonManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly DungeonRunRepository $dungeonRunRepository,
+        private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
     ) {
     }
 
@@ -72,9 +74,11 @@ class DungeonManager
         $this->entityManager->persist($run);
 
         // Teleporter le joueur dans la carte du donjon
+        // (carte instanciee sans zone : currentZone reste celle d'origine, cf. ZON-19)
         $player->setLastCoordinates($player->getCoordinates());
         $player->setMap($dungeon->getMap());
         $player->setCoordinates('1.1');
+        $this->playerZoneSynchronizer->syncFromMap($player);
 
         $this->entityManager->flush();
 
@@ -102,6 +106,7 @@ class DungeonManager
         if ($originMap !== null) {
             $player->setMap($originMap);
             $player->setCoordinates($originCoords ?? '1.1');
+            $this->playerZoneSynchronizer->syncFromMap($player);
             // Clear origin to avoid re-triggering
             $run->setOriginMap(null);
             $run->setOriginCoordinates(null);

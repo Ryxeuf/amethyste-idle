@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\App\Map;
 use App\Entity\App\Zone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,6 +20,14 @@ class ZoneRepository extends ServiceEntityRepository
     public function findEnabledBySlug(string $slug): ?Zone
     {
         return $this->findOneBy(['slug' => $slug, 'enabled' => true]);
+    }
+
+    /**
+     * Zone rattachee a une carte TMX d'origine (transition pivot PBBG, ZON-03).
+     */
+    public function findEnabledBySourceMap(Map $map): ?Zone
+    {
+        return $this->findOneBy(['sourceMap' => $map, 'enabled' => true]);
     }
 
     /**

@@ -9,6 +9,7 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Entity\Game\Item;
 use App\GameEngine\GoldSink\GoldSinkManager;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Repository\PlayerVisitedRegionRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,7 +27,7 @@ class GoldSinkManagerTest extends TestCase
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->visitedRegionRepository = $this->createMock(PlayerVisitedRegionRepository::class);
-        $this->manager = new GoldSinkManager($this->entityManager, $this->visitedRegionRepository);
+        $this->manager = new GoldSinkManager($this->entityManager, $this->visitedRegionRepository, $this->createMock(PlayerZoneSynchronizer::class));
     }
 
     public function testRenameItemSuccess(): void

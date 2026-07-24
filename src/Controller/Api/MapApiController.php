@@ -16,6 +16,7 @@ use App\GameEngine\Player\PnjDialogParser;
 use App\GameEngine\Quest\PnjQuestIndicatorResolver;
 use App\GameEngine\Terrain\TilesetRegistry;
 use App\GameEngine\World\GameTimeService;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\MobRepository;
@@ -46,6 +47,7 @@ class MapApiController extends AbstractController
         private readonly PlayerAvatarPayloadBuilder $avatarPayloadBuilder,
         private readonly AvatarCatalogProvider $avatarCatalogProvider,
         private readonly MountMapPayloadBuilder $mountMapPayloadBuilder,
+        private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
     ) {
     }
 
@@ -452,6 +454,7 @@ class MapApiController extends AbstractController
         $player->setMap($destinationMap);
         $player->setCoordinates($destinationCoordinates);
         $player->setIsMoving(false);
+        $this->playerZoneSynchronizer->syncFromMap($player);
 
         $this->entityManager->flush();
 

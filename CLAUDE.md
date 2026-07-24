@@ -25,7 +25,7 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 6. **Pas de niveau global** : la progression est par arbres de talent/domaine uniquement. Ne jamais introduire un systeme de "level up" global.
 
-7. **Coordonnees** : toujours au format string `"x.y"` en base. Utiliser `getX()`/`getY()` pour extraire les composantes entieres.
+7. **Position = zone (pivot PBBG)** : la reference de position d'un joueur est `Player::currentZone` (FK vers `Zone`, maintenue par `PlayerZoneSynchronizer`). Toute nouvelle logique de position doit s'appuyer sur la zone, JAMAIS sur les coordonnees. Les coordonnees `"x.y"` (`getX()`/`getY()`) subsistent uniquement pour le code carte herite, gele puis supprime avec ZON-21.
 
 8. **Taille des phases** : si une phase ou feature semble trop volumineuse (taille L ou XL, ex: 400+ lignes de fixtures, 10+ fichiers a modifier), la decouper en sous-phases realisables en une seule session. Chaque sous-phase doit etre commitable et testable independamment. Ne jamais tenter d'ecrire plus de ~200 lignes de donnees/fixtures en une seule passe.
 

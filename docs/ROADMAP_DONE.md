@@ -1,7 +1,33 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-02 — entites Zone/ZoneConnection + graphe de zones World 1, premiere brique du pivot PBBG).
+> Derniere mise a jour : 2026-07-24 (ZON-03 — Player.currentZone remplace les coordonnees comme reference de position ; ZON-02 livree le meme jour).
+
+---
+
+## ZON-03 — Migrer la position joueur vers la zone (Sprint 7, 2026-07-24)
+
+> La reference de position d'un joueur devient sa zone courante (`Player::currentZone`), maintenue automatiquement pendant toute la transition ou la carte reste jouable. Les coordonnees `x.y` subsistent uniquement pour le code carte gele (suppression en ZON-21).
+
+### Changements
+
+- **`src/Entity/App/Player.php`** : FK nullable `currentZone` → `Zone` (`ON DELETE SET NULL`) + index `idx_player_current_zone`, accesseurs.
+- **`src/GameEngine/Zone/PlayerZoneSynchronizer.php`** : subscriber sur `PlayerMovedEvent` + `PlayerRespawnedEvent` avec methode publique `syncFromMap(Player, bool $flush = false): ?Zone`. Derive la zone de `Zone::sourceMap` via `ZoneRepository::findEnabledBySourceMap` (nouvelle methode). Optimisation : early-return sans requete quand la zone courante correspond deja a la carte (les pas intra-carte ne coutent rien). Les cartes sans zone (donjons instancies, carte de test) laissent la zone courante inchangee — le joueur y revient en sortant.
+- **Sites de changement de carte cables explicitement** (les 4 flux qui font `setMap` sans event de deplacement) : portail (`MapApiController::teleport`), donjon aller + retour (`DungeonManager::startRun` / `teleportPlayerBack`), fast travel (`GoldSinkManager::fastTravel`), creation de personnage (`PlayerFactory::createPlayer`).
+- **`migrations/Version20260724PlayerCurrentZone.php`** (idempotente) : colonne + FK + index, puis double backfill — (1) zone derivee de `zone.source_map_id = player.map_id`, (2) joueurs sur carte sans zone rattaches au hub `village-de-lumiere` (no-op si le hub n'est pas seede).
+- **`CLAUDE.md` regle 7 reecrite** : la position de reference est la zone ; toute nouvelle logique doit s'appuyer sur `currentZone`, jamais sur les coordonnees (heritage gele jusqu'a ZON-21).
+
+### Verifications
+
+- `PlayerZoneSynchronizerTest` (7 cas : subscriptions, assignation par carte, early-return sans requete quand deja alignee, conservation de la zone sur carte sans zone (donjon), joueur sans carte, flush conditionnel, handler onPlayerMoved bout en bout).
+- `GoldSinkManagerTest` + `PlayerFactoryTest` adaptes au nouveau constructeur (mock du synchronizer).
+- Migration executee sur base dev : backfill verifie en SQL (3 joueurs fixtures sur « Carte de test » sans zone → rattaches a `village-de-lumiere`).
+- QA : cs-fixer 0, PHPStan niveau 5 OK, Unit 1730 verts, Functional verts (base `amethyste_test` recreee). Les 14 erreurs E2E Panther sont un manquement d'environnement local (ChromeDriver `ERR_CONNECTION_REFUSED`), pre-existant et couvert en CI.
+
+### Notes
+
+- En donjon, `currentZone` reste la zone d'origine (choix assume : les donjons deviendront du contenu de zone en ZON-19).
+- `PlayerFixtures` laisse les joueurs de test sans zone explicite (carte de test hors graphe) ; le backfill migration ou la premiere action en jeu la renseigne.
 
 ---
 

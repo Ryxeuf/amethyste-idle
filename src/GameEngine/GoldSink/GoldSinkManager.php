@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
+use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Repository\PlayerVisitedRegionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -27,6 +28,7 @@ class GoldSinkManager
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerVisitedRegionRepository $visitedRegionRepository,
+        private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
     ) {
     }
 
@@ -118,6 +120,7 @@ class GoldSinkManager
         $player->setMap($capitalMap);
         $player->setCoordinates($this->getMapSpawnCoordinates($capitalMap));
         $player->setIsMoving(false);
+        $this->playerZoneSynchronizer->syncFromMap($player);
         $this->entityManager->flush();
 
         return ['success' => true, 'message' => sprintf('Teleporte a %s pour %d Gils.', $destination->getName(), $cost)];
