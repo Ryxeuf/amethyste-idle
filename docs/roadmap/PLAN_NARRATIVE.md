@@ -70,19 +70,13 @@ moteur récurrent qui referme la boucle à trois piliers.
 
 ## Piste B — Acte d'introduction (séquentiel)
 
-### NAR-03 — Arc d'introduction scripté (M | ★★★ | HAUTE)
-> Onboarding narratif : pose l'univers **et** enseigne les systèmes (voyage, énergie,
-> combat, craft, guilde). C'est le crochet.
-> Prérequis : ← NAR-01, modèle zone (ZON)
-- [ ] Fixtures : chaîne de quêtes `storyArc = 'intro'`, ordonnée, chaînée par
-      `prerequisiteQuests`
-- [ ] Chaque étape enseigne **un** système et n'exige que ce qui a été enseigné (voyager
-      vers une zone, mener un premier combat, récolter, crafter le T1, rejoindre/consulter
-      une guilde)
-- [ ] Découpage en sous-phases (CLAUDE.md §8) : ne pas écrire l'arc entier d'un bloc
-- [ ] Ancrage lore léger : un PNJ mentor (`Pnj`) fil rouge de l'arc
-- [ ] Tests : la chaîne se déroule dans l'ordre, chaque prérequis est satisfait par l'étape
-      précédente
+### NAR-03 — Arc d'introduction scripté ✅ (livré 2026-07-24 — cf. `ROADMAP_DONE.md`)
+> Backfill de la chaîne d'onboarding Acte 1 vers l'arc `intro` (`storyArc='intro'`,
+> `arcOrder` 1-7) + deux étapes ajoutées (craft T1 « première potion », consultation des
+> guildes). Chaque étape enseigne un système : voyage/explore → équipement → combat →
+> récolte → lore → craft T1 → guilde. Mentor fil rouge : Claire la Sage (`pnj_15`).
+> Chaînage `prerequisiteQuests` linéaire, back-patch du `pnj_id` mentor. Tests :
+> `IntroArcFixturesTest` (ordre contigu, chaîne de prérequis, étapes craft/guilde).
 
 ### NAR-04 — Intégration onboarding & garantie de progression (S | ★★★ | HAUTE)
 > Aucun joueur bloqué : l'intro garantit l'accès au T1 et à la première boucle systémique.

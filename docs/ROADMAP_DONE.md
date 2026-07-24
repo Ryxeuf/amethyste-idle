@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
 
 ---
 
@@ -48,6 +48,31 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-03 — Arc d'introduction scripte (Piste B narration, 2026-07-24)
+
+> L'onboarding narratif devient un arc lisible : la chaine Acte 1 « L'Eveil » est rattachee a l'arc `intro` (reutilise NAR-01/02) et prolongee de deux etapes pour couvrir tous les systemes de base. Approche conforme a GAME_PRINCIPLES §3 (« structurer et relier l'existant, pas batir un moteur »).
+
+### Changements
+
+- **`QuestFixtures`** : backfill `storyArc='intro'` + `arcOrder` 1-5 sur les quetes Acte 1 existantes (`reveil`, `premiers_pas`, `bapteme_du_feu`, `recolte`, `cristal`) ; ajout de deux etapes finales `arcOrder` 6-7 :
+  - `quest_acte1_premiere_potion` (arcOrder 6) — **enseigne le craft T1** via un requirement `craft` de `healing-potion-small` (recette alchimiste niveau 1, ingredients recoltables `plant-mint`/`plant-sage`).
+  - `quest_acte1_guilde` (arcOrder 7) — **oriente vers les guildes** via un `talk_to` la mentor Claire la Sage.
+  - Boucle de construction etendue pour lire les cles `storyArc` / `arcOrder` (jusque-la ignorees).
+- **`QuestChainFixtures`** : chainage lineaire des deux nouvelles etapes (`premiere_potion` ← `cristal`, `guilde` ← `premiere_potion`) et back-patch du `pnj_id` mentor (`pnj_15`, Claire) sur l'etape guilde (meme idiome que l'Acte 3).
+- Progression pedagogique de l'arc : voyage/explore → equipement → combat → recolte → lore → craft T1 → guilde. Chaque etape n'exige que ce qui a ete enseigne. Mentor fil rouge : Claire la Sage.
+
+### Verifications
+
+- `IntroArcFixturesTest` (integration, 3 cas) : 7 etapes ordonnees et contigues (`arcOrder` 1-7 via `findByStoryArc('intro')`), chaine de prerequis lineaire (chaque etape depend de la precedente, la premiere sans prerequis), presence des requirements `craft` (etape 6) et `talk_to` avec `pnj_id` resolu (etape 7).
+- QA : cs-fixer OK ; PHPStan non concerne (fixtures exclues) ; `doctrine:fixtures:load` + PHPUnit valides en CI.
+
+### Notes
+
+- Aucun nouveau PNJ ni migration : reutilise Claire (`pnj_15`) et les items/recettes existants. Les deux nouvelles quetes apparaissent dans l'onglet « Disponibles » une fois leurs prerequis remplis (l'offre via dialogue du mentor pourra etre ajoutee ulterieurement, sans blocage).
+- Multi-personnages : la progression de quete etant par `Player`, l'arc intro est rejoue integralement par personnage (cf. decision NAR-04).
 
 ---
 
