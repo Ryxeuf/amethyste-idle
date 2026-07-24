@@ -1101,6 +1101,18 @@
           "in_fight": "Impossible d'explorer en plein combat.",
           "no_zone": "Votre personnage n'est rattaché à aucune zone."
         }
+      },
+      "hunt": {
+        "heading": "Chasser une proie",
+        "empty": "Aucune créature connue à traquer ici. Explorez la zone pour en découvrir.",
+        "error": {
+          "traveling": "Impossible de chasser en plein voyage.",
+          "in_fight": "Impossible de chasser en plein combat.",
+          "no_zone": "Votre personnage n'est rattaché à aucune zone.",
+          "safe_zone": "Aucune proie à chasser dans une zone sûre.",
+          "unknown_target": "Vous ne connaissez pas encore cette créature. Rencontrez-la d'abord.",
+          "no_prey": "La proie s'est dispersée pour le moment. Réessayez plus tard."
+        }
       }
     }
   },

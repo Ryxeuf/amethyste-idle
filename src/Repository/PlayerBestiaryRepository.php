@@ -32,6 +32,25 @@ class PlayerBestiaryRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Ids des monstres deja rencontres par le joueur (bestiaire). Pivot PBBG
+     * (ZON-09) : vivier des cibles de l'action Chasser.
+     *
+     * @return list<int>
+     */
+    public function findMonsterIdsByPlayer(Player $player): array
+    {
+        /** @var array<int, array{monsterId: int|string}> $rows */
+        $rows = $this->createQueryBuilder('pb')
+            ->select('IDENTITY(pb.monster) AS monsterId')
+            ->andWhere('pb.player = :player')
+            ->setParameter('player', $player)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(static fn (array $row): int => (int) $row['monsterId'], $rows);
+    }
+
     public function findOneByPlayerAndMonster(Player $player, Monster $monster): ?PlayerBestiary
     {
         return $this->createQueryBuilder('pb')

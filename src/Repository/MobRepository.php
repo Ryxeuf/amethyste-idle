@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\Zone;
+use App\Entity\Game\Monster;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -35,6 +36,26 @@ class MobRepository extends ServiceEntityRepository
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Un mob rencontrable d'un monstre precis dans une zone (vivant, hors
+     * combat), Monster hydrate. Pivot PBBG (ZON-09) : proie ciblee par
+     * l'action Chasser. Retourne null si la proie s'est dispersee.
+     */
+    public function findAvailableInZoneForMonster(Zone $zone, Monster $monster): ?Mob
+    {
+        return $this->createQueryBuilder('mob')
+            ->join('mob.monster', 'monster')->addSelect('monster')
+            ->andWhere('mob.zone = :zone')
+            ->andWhere('mob.monster = :monster')
+            ->andWhere('mob.fight IS NULL')
+            ->andWhere('mob.life > 0')
+            ->setParameter('zone', $zone)
+            ->setParameter('monster', $monster)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     /**
