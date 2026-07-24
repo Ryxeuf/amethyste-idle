@@ -36,7 +36,7 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Chantier Modele zone (ZON) | 7/21 | En cours (Sprint 7 ✅ + ZON-07 ; gel `map_frozen` a activer apres Sprint 8) |
+| Chantier Modele zone (ZON) | 8/21 | En cours (Sprint 7 ✅ + ZON-07/08 — boucle PBBG jouable ; gel `map_frozen` activable en test) |
 
 ---
 
@@ -51,7 +51,7 @@
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
 | **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 6/6 | Critique | ✅ **Termine** (2026-07-24) |
-| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 1/6 | Haute | En cours (ZON-07 ✅) ← **Prochain : ZON-08** |
+| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 2/6 | Haute | En cours (ZON-07/08 ✅) ← **Prochain : ZON-09** |
 | **Sprint 9** | Time-gating, presence & evenements (ex-Avatar: Personnage & Equipement ✅ 8/8) | 5 | Haute | A venir |
 | **Sprint 10** | Contenu de groupe & decommission carte (ex-Avatar: Polish, interrompu a 4/8) | 4 | Moyenne | A venir |
 | **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 4a + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b + 1c ; adaptations pivot : montures → temps de voyage, events → evenements de zone) |
@@ -71,7 +71,7 @@ SPRINT 7 — MODELE ZONE : FONDATIONS ✅ TERMINE 2026-07-24
 
 SPRINT 8 — ENERGIE & ACTIONS DE ZONE (← Sprint 7)
   ZON-07 Ressource energie         ✅ 2026-07-24
-  ZON-08 Action Explorer           ← ZON-07
+  ZON-08 Action Explorer           ✅ 2026-07-24
   ZON-09 Action Chasser            ← ZON-07
   ZON-10 Recolte & filons partages ← ZON-07
   ZON-11 Config declarative        ← ZON-08..10

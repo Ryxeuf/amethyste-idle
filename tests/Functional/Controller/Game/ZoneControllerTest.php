@@ -9,6 +9,9 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\GameEngine\Zone\ActionEnergyManager;
+use App\GameEngine\Zone\ExploreResult;
+use App\GameEngine\Zone\ExploreService;
+use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
@@ -43,6 +46,7 @@ class ZoneControllerTest extends TestCase
     private ZoneTravelService&MockObject $zoneTravelService;
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
     private ActionEnergyManager&MockObject $actionEnergyManager;
+    private ExploreService&MockObject $exploreService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -69,6 +73,8 @@ class ZoneControllerTest extends TestCase
         $this->zoneTravelService = $this->createMock(ZoneTravelService::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
+        $this->exploreService = $this->createMock(ExploreService::class);
+        $this->exploreService->method('getExploreCost')->willReturn(5);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -80,6 +86,7 @@ class ZoneControllerTest extends TestCase
             $this->zoneTravelService,
             $this->visitedZoneRepository,
             $this->actionEnergyManager,
+            $this->exploreService,
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -149,6 +156,72 @@ class ZoneControllerTest extends TestCase
 
         $actionKeys = array_column($this->capturedTemplateParams['actions'], 'key');
         $this->assertSame(['explore', 'hunt', 'gather'], $actionKeys);
+
+        $exploreAction = $this->capturedTemplateParams['actions'][0];
+        $this->assertTrue($exploreAction['enabled']);
+        $this->assertSame(5, $exploreAction['cost']);
+    }
+
+    public function testExploreRedirectsToFightOnMobEncounter(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $fight = $this->createMock(\App\Entity\App\Fight::class);
+        $this->exploreService->expects($this->once())->method('explore')->with($player)
+            ->willReturn(new ExploreResult(ExploreResult::EVENT_MOB, 'game.zone.explore.result.mob', ['%monster%' => 'Slime'], $fight));
+
+        $response = $this->controller->explore(new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame([], $this->session->getFlashBag()->get('explore_result'));
+    }
+
+    public function testExploreFlashesResultForNonCombatEvent(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $this->exploreService->method('explore')
+            ->willReturn(new ExploreResult(ExploreResult::EVENT_CHEST, 'game.zone.explore.result.chest', ['%gils%' => 12]));
+
+        $response = $this->controller->explore(new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(
+            [['key' => 'game.zone.explore.result.chest', 'params' => ['%gils%' => 12]]],
+            $this->session->getFlashBag()->get('explore_result'),
+        );
+    }
+
+    public function testExploreShowsErrorFlashWhenRefused(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+
+        $this->exploreService->method('explore')
+            ->willThrowException(new NotEnoughActionEnergyException('game.zone.energy.error.not_enough'));
+
+        $response = $this->controller->explore(new Request(request: ['_token' => 'tok']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.energy.error.not_enough'], $this->session->getFlashBag()->get('error'));
+    }
+
+    public function testExploreRejectsInvalidCsrfToken(): void
+    {
+        $player = new Player();
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
+        $this->exploreService->expects($this->never())->method('explore');
+
+        $response = $this->controller->explore(new Request(request: ['_token' => 'bad']));
+
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertSame(['game.zone.travel.error.invalid_token'], $this->session->getFlashBag()->get('error'));
     }
 
     public function testIndexExposesTravelStateWhileTraveling(): void

@@ -824,7 +824,8 @@
         "craft": "Craft",
         "gathering": "Gathering",
         "dungeon": "Dungeon",
-        "domain_level": "Progression"
+        "domain_level": "Progression",
+        "exploration": "Exploration"
       },
       "empty": {
         "heading": "No entries in your logbook yet.",
@@ -1085,6 +1086,20 @@
         "next_point": "+1 in ~%minutes% min",
         "error": {
           "not_enough": "Not enough energy — it regenerates in real time."
+        }
+      },
+      "explore": {
+        "result": {
+          "mob": "You cross paths with a %monster%!",
+          "chest": "You discover a chest: +%gils% gils.",
+          "harvest": "You spot a promising vein. Gathering is coming soon.",
+          "pnj": "You meet %pnj%, who greets you.",
+          "nothing": "You explore the surroundings without finding anything notable."
+        },
+        "error": {
+          "traveling": "You cannot explore while traveling.",
+          "in_fight": "You cannot explore during a fight.",
+          "no_zone": "Your character is not attached to any zone."
         }
       }
     }

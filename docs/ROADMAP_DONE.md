@@ -1,7 +1,36 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-07 — energie d'action PBBG, premiere tache du Sprint 8 ; Sprint 7 termine 6/6 le meme jour).
+> Derniere mise a jour : 2026-07-24 (ZON-08 — action Explorer, la boucle PBBG devient jouable ; ZON-07 et Sprint 7 livres le meme jour).
+
+---
+
+## ZON-08 — Action Explorer (Sprint 8, 2026-07-24)
+
+> Le coeur de la boucle PBBG : Explorer coute de l'energie d'action, tire un evenement selon la table declarative de la zone et le resout avec les donnees deja rattachees (ZON-04) — les rencontres reutilisent les mobs et le combat tour par tour existants, le combat lui-meme reste gratuit.
+
+### Changements
+
+- **`Zone.exploreConfig`** (JSON nullable + migration) : table declarative par zone — `{"weights": {mob, chest, harvest, pnj, nothing}, "chest_gils_min", "chest_gils_max"}`. Null = defauts du service. Ajouter du contenu = ajuster de la donnee (prelude ZON-11).
+- **`src/GameEngine/Zone/ExploreService.php`** :
+  - Garde-fous (`ZoneActionException`) : en voyage (apres reglement d'arrivee), en combat, sans zone. Depense `zone.energy.cost.explore` (table `parameter`, defaut 5) via `ActionEnergyManager::spend`.
+  - Tirage pondere (defauts : mob 50, coffre 10, filon 10, PNJ 10, rien 20). **Zone sure : poids mob force a 0.** Tirage via `roll()` protegee, surchargeable en test (deterministe).
+  - Resolutions : **mob** → `MobRepository::findAvailableInZone` (vivants, hors combat, zone_id ZON-04) + `FightHandler::startFight` (fallback « rien » si vivier vide) ; **coffre** → gils dans la fourchette configuree ; **filon/PNJ** → decouvertes narratives (filon branche sur la vraie recolte en ZON-10, PNJ tire des PNJ reels de la zone) ; **rien**.
+  - Chaque exploration ecrit une entree de **journal** (`PlayerJournalEntry::TYPE_EXPLORATION`, nouveau type + icone boussole, visible sur `/game/journal`), limite des 200 entrees appliquee.
+- **`ZoneController`** : `POST /game/zone/explore` (CSRF) — rencontre mob → redirection `/game/fight` ; autres evenements → flash structure `explore_result` (cle + parametres) affiche sur l'ecran de zone ; erreurs (energie insuffisante...) en flash.
+- **Ecran de zone** : bouton Explorer actif avec cout affiche (⚡ 5), neutralise pendant un voyage ; bandeau de resultat 🧭.
+- **`ExploreResult`** DTO readonly (event, cle+params de message, fight eventuel) ; **traductions** +9 cles FR/EN + `game.journal.type.exploration` (parite 839=839).
+
+### Verifications
+
+- `ExploreServiceTest` (12 cas : 3 refus, depense d'energie avant tirage, rencontre mob → combat + journal, fallback vivier vide, coffre borne par la config, PNJ reel de la zone, zone sure sans rencontre meme en config 100% mob, override de config par zone, cout via `parameter` + fallback).
+- `ZoneControllerTest` etendu a 13 cas (+redirection combat, +flash structure, +refus energie, +CSRF).
+- QA : cs-fixer, PHPStan (apres typage du docblock `exploreConfig`), Unit 1770 verts, Functional 256 verts ; migration executee sur base dev.
+
+### Notes
+
+- **La boucle PBBG est jouable de bout en bout** : zone → Explorer → rencontre → combat → loot → regen. Le gel `map_frozen` peut desormais etre teste sur un compte (il manque Chasser/Recolter pour l'activation globale).
+- L'evenement « filon » est narratif tant que ZON-10 (recolte par zone) n'est pas livre ; l'evenement « rare » du pivot s'ajoutera par la config (poids 0 par defaut) sans code.
 
 ---
 

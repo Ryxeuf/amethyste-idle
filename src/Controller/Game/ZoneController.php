@@ -7,7 +7,11 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\GameEngine\Zone\ActionEnergyManager;
+use App\GameEngine\Zone\ExploreResult;
+use App\GameEngine\Zone\ExploreService;
+use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
+use App\GameEngine\Zone\ZoneActionException;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
@@ -47,6 +51,7 @@ class ZoneController extends AbstractController
         private readonly ZoneTravelService $zoneTravelService,
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly ActionEnergyManager $actionEnergyManager,
+        private readonly ExploreService $exploreService,
     ) {
     }
 
@@ -134,6 +139,40 @@ class ZoneController extends AbstractController
         ]);
     }
 
+    #[Route('/game/zone/explore', name: 'app_game_zone_explore', methods: ['POST'])]
+    public function explore(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('explore', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $result = $this->exploreService->explore($player);
+        } catch (ZoneActionException|NotEnoughActionEnergyException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        if (ExploreResult::EVENT_MOB === $result->event && null !== $result->fight) {
+            // Rencontre : le combat tour par tour existant prend la main.
+            return $this->redirectToRoute('app_game_fight');
+        }
+
+        $this->addFlash('explore_result', ['key' => $result->messageKey, 'params' => $result->messageParams]);
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
     #[Route('/game/zone/travel/{id}', name: 'app_game_zone_travel', methods: ['POST'])]
     public function travel(int $id, Request $request): Response
     {
@@ -219,7 +258,7 @@ class ZoneController extends AbstractController
     private function buildActions(Zone $zone, array $poiCounts): array
     {
         $actions = [
-            ['key' => 'explore', 'label' => 'game.zone.actions.explore', 'enabled' => false],
+            ['key' => 'explore', 'label' => 'game.zone.actions.explore', 'enabled' => true, 'cost' => $this->exploreService->getExploreCost()],
         ];
 
         if (!$zone->isSafe()) {

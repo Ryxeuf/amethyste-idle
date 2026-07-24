@@ -824,7 +824,8 @@
         "craft": "Artisanat",
         "gathering": "Recolte",
         "dungeon": "Donjon",
-        "domain_level": "Progression"
+        "domain_level": "Progression",
+        "exploration": "Exploration"
       },
       "empty": {
         "heading": "Aucune entree dans le journal.",
@@ -1085,6 +1086,20 @@
         "next_point": "+1 dans ~%minutes% min",
         "error": {
           "not_enough": "Énergie insuffisante — elle se régénère en temps réel."
+        }
+      },
+      "explore": {
+        "result": {
+          "mob": "Vous croisez la route d'un %monster% !",
+          "chest": "Vous découvrez un coffre : +%gils% gils.",
+          "harvest": "Vous repérez un filon prometteur. La récolte arrive bientôt.",
+          "pnj": "Vous rencontrez %pnj%, qui vous salue.",
+          "nothing": "Vous explorez les environs sans rien trouver de notable."
+        },
+        "error": {
+          "traveling": "Impossible d'explorer en plein voyage.",
+          "in_fight": "Impossible d'explorer en plein combat.",
+          "no_zone": "Votre personnage n'est rattaché à aucune zone."
         }
       }
     }

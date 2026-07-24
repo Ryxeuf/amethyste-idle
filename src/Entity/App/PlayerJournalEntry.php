@@ -21,6 +21,7 @@ class PlayerJournalEntry
     public const TYPE_GATHERING = 'gathering';
     public const TYPE_DUNGEON = 'dungeon';
     public const TYPE_DOMAIN_LEVEL = 'domain_level';
+    public const TYPE_EXPLORATION = 'exploration';
 
     public const TYPES = [
         self::TYPE_COMBAT_VICTORY,
@@ -30,6 +31,7 @@ class PlayerJournalEntry
         self::TYPE_GATHERING,
         self::TYPE_DUNGEON,
         self::TYPE_DOMAIN_LEVEL,
+        self::TYPE_EXPLORATION,
     ];
 
     public const TYPE_LABELS = [
@@ -40,6 +42,7 @@ class PlayerJournalEntry
         self::TYPE_GATHERING => 'game.journal.type.gathering',
         self::TYPE_DUNGEON => 'game.journal.type.dungeon',
         self::TYPE_DOMAIN_LEVEL => 'game.journal.type.domain_level',
+        self::TYPE_EXPLORATION => 'game.journal.type.exploration',
     ];
 
     public const TYPE_ICONS = [
@@ -50,6 +53,7 @@ class PlayerJournalEntry
         self::TYPE_GATHERING => 'pickaxe',
         self::TYPE_DUNGEON => 'dungeon',
         self::TYPE_DOMAIN_LEVEL => 'star',
+        self::TYPE_EXPLORATION => 'compass',
     ];
 
     public const MAX_ENTRIES_PER_PLAYER = 200;

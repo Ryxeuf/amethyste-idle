@@ -1,6 +1,6 @@
 ## Sprint 8 — Energie & actions de zone
 
-> **6 taches** (1 livree) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (2 livrees) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : installer le rythme PBBG — energie regenerante, actions par zone (explorer, chasser, recolter), contenu declaratif.
 > Prerequis : Sprint 7 (modele zone)
 
@@ -11,12 +11,7 @@
 ---
 
 > **ZON-07 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `Player.actionEnergy` (distincte de l'energie de combat), regeneration paresseuse via `ActionEnergyManager`, jauge sur l'ecran de zone, curseur `zone.energy.regen_seconds` en table `parameter`, section 8 de `docs/BALANCE.md`.
-
-### ZON-08 — Action Explorer (M | ★★★)
-> Prerequis : ← ZON-07
-- [ ] Coute de l'energie ; tire un evenement selon la table de la zone : mob, filon, coffre, PNJ, evenement rare
-- [ ] Rencontre mob → declenche le combat tour par tour existant (GameEngine/Fight inchange)
-- [ ] Resultats affiches dans un journal d'exploration de la zone
+> **ZON-08 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `ExploreService` + `Zone.exploreConfig` declaratif (poids mob/coffre/filon/PNJ/rien, zone sure sans rencontre), rencontres via `FightHandler` existant, journal d'exploration (`TYPE_EXPLORATION`), bouton Explorer actif (⚡ cout via `parameter`). **La boucle PBBG est jouable.**
 
 ### ZON-09 — Action Chasser (M | ★★★)
 > Prerequis : ← ZON-07

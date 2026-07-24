@@ -44,6 +44,12 @@
                     {% endfor %}
                 {% endfor %}
 
+                {% for result in app.flashes('explore_result') %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-indigo-900/40 border border-indigo-700/50 text-indigo-200">
+                        🧭 {{ result.key|trans(result.params) }}
+                    </div>
+                {% endfor %}
+
                 {% if justArrived %}
                     <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
                         {{ 'game.zone.travel.flash.arrived'|trans }}
@@ -94,12 +100,24 @@
                         <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.actions.heading'|trans }}</h4>
                         <div class="flex flex-wrap gap-2">
                             {% for action in actions %}
-                                <button type="button" disabled
-                                        title="{{ 'game.zone.actions.coming_soon'|trans }}"
-                                        class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed">
-                                    {{ action.label|trans }}
-                                    <span class="ml-2 text-[10px] uppercase tracking-wide text-gray-600">{{ 'game.zone.actions.coming_soon'|trans }}</span>
-                                </button>
+                                {% if action.enabled and action.key == 'explore' %}
+                                    <form method="post" action="{{ path('app_game_zone_explore') }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('explore') }}">
+                                        <button type="submit"
+                                                {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
+                                                class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-indigo-900/40 border border-indigo-600 text-indigo-100 hover:bg-indigo-800/50{% endif %}">
+                                            {{ action.label|trans }}
+                                            <span class="ml-2 text-[10px] uppercase tracking-wide {% if travel %}text-gray-600{% else %}text-amber-300/90{% endif %}">⚡ {{ action.cost }}</span>
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <button type="button" disabled
+                                            title="{{ 'game.zone.actions.coming_soon'|trans }}"
+                                            class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed">
+                                        {{ action.label|trans }}
+                                        <span class="ml-2 text-[10px] uppercase tracking-wide text-gray-600">{{ 'game.zone.actions.coming_soon'|trans }}</span>
+                                    </button>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>

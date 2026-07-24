@@ -67,6 +67,17 @@ class Zone
     private bool $enabled = true;
 
     /**
+     * Configuration declarative de l'exploration (ZON-08, prelude ZON-11) :
+     * `{"weights": {"mob": 50, "chest": 10, "harvest": 10, "pnj": 10, "nothing": 20},
+     *   "chest_gils_min": 5, "chest_gils_max": 30}`.
+     * Null = defauts d'ExploreService. Ajouter du contenu = ajouter de la donnee.
+     *
+     * @var array<string, mixed>|null
+     */
+    #[ORM\Column(name: 'explore_config', type: 'json', nullable: true)]
+    private ?array $exploreConfig = null;
+
+    /**
      * Carte TMX d'origine (transition depuis la carte en tuiles) : permet de
      * rattacher spawns et positions existants a la zone (ZON-03 / ZON-04),
      * puis disparaitra avec la suppression du code carte (ZON-21).
@@ -259,6 +270,24 @@ class Zone
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function getExploreConfig(): ?array
+    {
+        return $this->exploreConfig;
+    }
+
+    /**
+     * @param array<string, mixed>|null $exploreConfig
+     */
+    public function setExploreConfig(?array $exploreConfig): self
+    {
+        $this->exploreConfig = $exploreConfig;
 
         return $this;
     }
