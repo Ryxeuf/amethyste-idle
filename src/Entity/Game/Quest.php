@@ -9,8 +9,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
-#[ORM\Entity()]
+#[ORM\Entity(repositoryClass: \App\Repository\QuestRepository::class)]
 #[ORM\Table(name: 'game_quests')]
+#[ORM\Index(name: 'idx_game_quests_story_arc', columns: ['story_arc'])]
 class Quest
 {
     use TimestampableEntity;
@@ -73,6 +74,20 @@ class Quest
      */
     #[ORM\Column(name: 'min_renown_score', type: 'integer', nullable: true)]
     private ?int $minRenownScore = null;
+
+    /**
+     * Slug de l'arc narratif regroupant cette quete (intro, saison, zone...).
+     * null = quete isolee, hors de tout arc.
+     */
+    #[ORM\Column(name: 'story_arc', type: 'string', length: 100, nullable: true)]
+    private ?string $storyArc = null;
+
+    /**
+     * Position de la quete dans son arc (1 = premiere etape).
+     * null si la quete n'appartient a aucun arc ou n'a pas de position definie.
+     */
+    #[ORM\Column(name: 'arc_order', type: 'integer', nullable: true)]
+    private ?int $arcOrder = null;
 
     #[ORM\OneToMany(targetEntity: PlayerQuest::class, mappedBy: 'quest')]
     private $players;
@@ -377,6 +392,73 @@ class Quest
         }
 
         return PlayerRenownTier::fromScore($this->minRenownScore);
+    }
+
+    public function getStoryArc(): ?string
+    {
+        return $this->storyArc;
+    }
+
+    public function setStoryArc(?string $storyArc): self
+    {
+        $normalized = $storyArc !== null ? trim($storyArc) : null;
+        $this->storyArc = $normalized === '' ? null : $normalized;
+
+        return $this;
+    }
+
+    public function hasStoryArc(): bool
+    {
+        return $this->storyArc !== null;
+    }
+
+    public function belongsToArc(string $storyArc): bool
+    {
+        return $this->storyArc !== null && $this->storyArc === $storyArc;
+    }
+
+    public function getArcOrder(): ?int
+    {
+        return $this->arcOrder;
+    }
+
+    public function setArcOrder(?int $arcOrder): self
+    {
+        $this->arcOrder = $arcOrder;
+
+        return $this;
+    }
+
+    /**
+     * Trie une liste de quetes par `arcOrder` croissant. Les quetes sans position
+     * (`arcOrder = null`) sont rejetees en fin de liste, dans un ordre stable.
+     *
+     * @param Quest[] $quests
+     *
+     * @return Quest[] liste reindexee, triee par position d'arc
+     */
+    public static function sortByArcOrder(array $quests): array
+    {
+        $quests = array_values($quests);
+
+        usort($quests, static function (Quest $a, Quest $b): int {
+            $orderA = $a->getArcOrder();
+            $orderB = $b->getArcOrder();
+
+            if ($orderA === $orderB) {
+                return 0;
+            }
+            if ($orderA === null) {
+                return 1;
+            }
+            if ($orderB === null) {
+                return -1;
+            }
+
+            return $orderA <=> $orderB;
+        });
+
+        return $quests;
     }
 
     public function __toString(): string

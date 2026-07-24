@@ -137,7 +137,7 @@ Independant ─ Sprint 12 (technique, parallelisable a tout moment)
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design** (controle de cite, narration, economie joueur)
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Economie joueur (ECO-01 a ECO-17)](PLAN_PLAYER_ECONOMY.md) — a venir (craft joueur, HV regional, commandes, echoppes)
-- [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) — a venir (arcs, acte d'intro, Codex, narration saisonniere)
+- [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) — en cours (NAR-01 ✅ marqueur d'arc ; a venir : journal par arc, acte d'intro, Codex, narration saisonniere)
 - [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅ — termine, sans suite dans Amethyste (reutilisable pour un futur projet Zelda-like separe)
 - [Testing & qualite](PLAN_TESTING.md) — quasi-termine (taches restantes integrees en Sprint 1)
 - [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — ⛔ clos par le pivot PBBG (34/38 realisees)
