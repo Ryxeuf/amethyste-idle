@@ -1,7 +1,34 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-05-05 (135 sous-phase 3e.dd — i18n du modal de redistribution de competences + sidebar `Autres` + page de detail de domaine `/game/skills/domain/{id}` ; 11 cles ajoutees, parite 784=784).
+> Derniere mise a jour : 2026-07-24 (ZON-02 — entites Zone/ZoneConnection + graphe de zones World 1, premiere brique du pivot PBBG).
+
+---
+
+## ZON-02 — Entites Zone & ZoneConnection (Sprint 7, 2026-07-24)
+
+> Premiere brique du chantier « Modele zone » (pivot PBBG, [docs/PIVOT_PBBG.md](PIVOT_PBBG.md)) : le monde devient un graphe de lieux nommes relies par des liaisons a duree de voyage reelle. Les 5 zones du World 1 reprennent les cartes TMX existantes via `sourceMap` pour preparer la migration des positions (ZON-03) et des spawns (ZON-04).
+
+### Changements
+
+- **`src/Entity/App/Zone.php`** : slug unique, name/description + traductions (pattern `getLocalizedName`/`getLocalizedDescription` aligne sur Map/Mount), `illustrationPath`, `type` avec whitelist (`city`/`wilderness`/`interior`/`dungeon`, validation par setter), `isSafe` (zone sans rencontre hostile), `enabled`, FK nullable `sourceMap` → Map (`ON DELETE SET NULL`, transitoire jusqu'a ZON-21), collection `connections`.
+- **`src/Entity/App/ZoneConnection.php`** : arete orientee `fromZone` → `toZone` avec `travelSeconds` (>= 0, 0 = passage instantane), `requiresDiscovery` (transposition du fast travel, cf. ZON-06), `enabled`. Constructeur exigeant les deux zones + rejet des boucles sur soi et des durees negatives. UNIQUE (`from_zone_id`, `to_zone_id`), FK `ON DELETE CASCADE`. Les liaisons bidirectionnelles = deux aretes (durees asymetriques possibles).
+- **`src/Repository/ZoneRepository.php`** : `findEnabledBySlug`, `findAllEnabled`.
+- **`src/Repository/ZoneConnectionRepository.php`** : `findEnabledFrom(Zone)` (filtre liaison ET zone cible activees, tri par duree).
+- **`migrations/Version20260724ZoneGraph.php`** : tables `zone` + `zone_connection`, idempotente (`CREATE TABLE/INDEX IF NOT EXISTS`, contraintes via blocs `DO $$`).
+- **`src/DataFixtures/ZoneGraphFixtures.php`** : 5 zones World 1 (Village de Lumiere `city`/safe hub, Foret des murmures, Mines profondes, Marais Brumeux, Crete de Ventombre) mappees sur `map_2`..`map_6`, traductions EN incluses. 12 aretes : etoile depuis le village (300/420/600/900 s) + laterales foret↔marais (300 s) et mines↔crete (480 s). Durees indicatives a etalonner via `docs/BALANCE.md`. Nomme `ZoneGraphFixtures` pour ne pas collisionner avec `ZoneFixtures` (sous-zones Tiled biome/meteo sur `Area`, heritees de l'editeur).
+
+### Verifications
+
+- Tests unitaires : `ZoneTest` (7 cas : defauts, whitelist des types, type inconnu rejete, traductions localisees nom + description, normalisation des valeurs blanches, attach/detach sourceMap) + `ZoneConnectionTest` (6 cas : defauts, duree explicite, voyage instantane a 0, boucle sur soi rejetee, duree negative rejetee au constructeur et au setter) — 15 tests, 57 assertions.
+- Migration executee sur base dev (SQL valide, idempotence verifiee contre les tables deja creees par `doctrine:schema:create`).
+- Fixtures chargees : 5 zones + 12 connexions verifiees en SQL (types, is_safe, source_map corrects).
+- QA : PHP-CS-Fixer 0 fichier a corriger, PHPStan niveau 5 sans erreur, suite Unit complete 1723 tests verts.
+
+### Notes
+
+- Les donjons (`map_dungeon_*`) et la carte de test ne deviennent pas des zones : les donjons restent des instances (`DungeonRun`), a rebrancher via ZON-19.
+- Le type `interior` est prevu pour la granularite « interieurs » (question ouverte du pivot), aucun seed pour l'instant.
 
 ---
 
