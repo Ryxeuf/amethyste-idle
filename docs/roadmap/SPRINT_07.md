@@ -1,94 +1,66 @@
-## Sprint 7 — Avatar: Fondations
+## Sprint 7 — Modele zone : Fondations
 
-> **12 taches** | Priorite : **Moyenne** | Origine : Plan Avatar, Phases 0-2
-> Objectif : preparer les assets, etendre le SpriteAnimator pour le format 8x8, composer les textures.
-> Prerequis : ∅ (peut demarrer en parallele des sprints 1-6)
-> Reference detaillee : [PLAN_AVATAR_SYSTEM.md](PLAN_AVATAR_SYSTEM.md)
+> **6 taches** | Priorite : **Critique** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> Objectif : geler la carte navigable, poser le graphe de zones et y migrer les joueurs et les donnees du monde.
+> Prerequis : ∅ (demarre immediatement — le pivot recentre tout le dev sur ce chantier)
 
----
-
-### Phase 0 — Preparation des assets
-
-### ~~AVT-01 — Inventorier les assets disponibles (S | ★★★)~~ ✅
-> Prerequis : ∅
-- [x] Lister tous les body, outfits, hairstyles fournis dans le pack
-- [x] Verifier la coherence de taille entre layers (memes dimensions)
-
-### ~~AVT-02 — Documenter le layout exact du spritesheet (S | ★★★)~~ ✅
-> Prerequis : ← AVT-01
-- [x] Taille totale (ex: 512x512), taille par frame (ex: 64x64) — sheet base 512x512, frame 64x64, extensible en hauteur
-- [x] Mapping precis des animations par zone de la grille 8x8 — walk (rows 0-3) + stand (rows 4-7), animations etendues rows 8+
-- [x] Reference sheet annotee (quelles cols/rows = quelle animation) — voir `docs/avatar-spritesheet-layout.md`
-
-### ~~AVT-03 — Organiser les assets dans le projet (S | ★★)~~ ✅
-> Prerequis : ← AVT-01
-- [x] Deposer dans `assets/styles/images/avatar/` : body/, hair/, outfit/, head/ — structure creee avec `.gitkeep` et README documentant le format 8x8, le z-order et la convention de nommage
-
-### ~~AVT-04 — Verifier l'alignement pixel-perfect (S | ★★)~~ ✅
-> Prerequis : ← AVT-03
-- [x] Superposer body + outfit + hair dans un editeur d'image — les assets Mana Seed `char_a_p1` partagent nativement le meme canvas 512x512 et les memes ancrages par construction
-- [x] Confirmer que les layers s'alignent sur les 64 frames — verifie via `file` (toutes les layers body/outfit/hair/head sont 512x512 RGBA) et via la doc officielle Mana Seed
-
-> Les assets sont integres depuis `ManaSeedRPGStarterPack/character_base/char_a_p1/` (body `0bas`, outfit `1out`, hair `4har`, hat `5hat`). Le layout natif (stand/push/pull/jump rows 0-3, walk/run rows 4-7) est documente dans `docs/avatar-spritesheet-layout.md` et le mapping `SpriteAnimator` a ete adapte.
-
-### ~~AVT-05 — Mettre a jour ASSETS.md (S | ★)~~ ✅
-> Prerequis : ← AVT-02
-- [x] Ajouter la section "Format avatar 8x8" avec le layout documente — section ajoutee dans ASSETS.md, dimensions legacy corrigees (72x128 → 96x128, 24x32 → 32x32)
+> **Pivot PBBG** : ce sprint reutilise le numero de l'ancien Sprint 7 « Avatar: Fondations » (✅ termine 12/12 le 2026-04-17, trace dans `ROADMAP_DONE.md`). Le chantier avatar est clos par le pivot — voir `PLAN_AVATAR_SYSTEM.md`.
 
 ---
 
-### Phase 1 — SpriteAnimator multi-animations
+### Phase 1 — Gel de la carte (avant suppression)
 
-### ~~AVT-06 — Ajouter le type `avatar` dans SpriteAnimator.js (M | ★★★)~~ ✅
-> Prerequis : ← AVT-02
-- [x] Nouvelle branche dans `_computeFrameSize()` : grille 8x8
-- [x] Nouvelle branche dans `_buildFrames()` : 8 rows x 8 cols
-- [x] Mapping configurable des animations (stand, walk, run, jump, push, pull)
-
-### ~~AVT-07 — Methode `setAnimation(name)` + animation courante (S | ★★★)~~ ✅
-> Prerequis : ← AVT-06
-- [x] Switcher entre stand/walk/run/jump/push/pull
-- [x] Animation par defaut : `walk` (compatibilite mouvement)
-
-### ~~AVT-08 — Adapter le positionnement dans le tile (S | ★★)~~ ✅
-> Prerequis : ← AVT-06
-- [x] Frame plus grande (64x64 vs 24x32) → ajuster ancrage et scale
-- [x] Alignement correct sur les tiles 32x32
-
-### ~~AVT-09 — Tests manuels : type avatar isole (S | ★★)~~ ✅
-> Prerequis : ← AVT-06
-- [x] Charger un spritesheet 8x8 brut et verifier toutes les animations/directions
-- [x] Verifier que les types `single` et `multi` ne sont pas impactes
+### ZON-01 — Geler la carte navigable (M | ★★★)
+> Prerequis : ∅
+- [ ] Retirer les routes/menus vers `/game/map` (redirection vers l'ecran de zone une fois ZON-05 livre)
+- [ ] Ne plus charger `map_pixi_controller.js` ni le bundle PixiJS cote client
+- [ ] Ne PAS supprimer le code : gel avant suppression (extraction propre des reutilisables, nettoyage en ZON-21)
+- [ ] Suspendre les publications Mercure `map/move` / `map/respawn`
 
 ---
 
-### Phase 2 — Composition de textures par layers
+### Phase 2 — Graphe de zones
 
-### ~~AVT-10 — Integrer AvatarTextureComposer.js (S | ★★★)~~ ✅
+### ZON-02 — Entites Zone & ZoneConnection (M | ★★★)
 > Prerequis : ∅
-- [x] Copier depuis blueprint dans `assets/lib/avatar/`
-- [x] Verifier compatibilite PixiJS v8 (RenderTexture API)
+- [ ] Entite `Zone` : slug, name, description, illustration, flags (ville, exterieur, interieur...)
+- [ ] Entite `ZoneConnection` : zone A ↔ zone B, duree de voyage (temps reel), conditions d'acces
+- [ ] Seed initial : les 9 zones du World 1 (+ interieurs — granularite a trancher, cf. questions ouvertes du pivot)
+- [ ] Migration Doctrine + fixtures
 
-### ~~AVT-11 — Integrer AvatarSpriteSheetCache.js (S | ★★)~~ ✅
-> Prerequis : ∅
-- [x] Copier depuis blueprint, cache LRU 128 entrees
+### ZON-03 — Migrer la position joueur vers la zone (M | ★★★)
+> Prerequis : ← ZON-02
+- [ ] `Player.currentZone` (FK) remplace les coordonnees `x.y` comme reference de position
+- [ ] Migration des positions existantes : map/coordonnees → zone d'appartenance
+- [ ] Mettre a jour la regle « coordonnees x.y » (CLAUDE.md §7) → reference de zone (slug/FK)
 
-### ~~AVT-12 — Adapter AvatarAnimatorFactory.js (M | ★★★)~~ ✅
-> Prerequis : ← AVT-06, AVT-10, AVT-11
-- [x] `createFromAvatarPayload()` cree un SpriteAnimator avec `type: 'avatar'`
-- [x] `createFromLegacySpriteKey()` reste identique (type single/multi)
-- [x] Deux pipelines coexistent : legacy pour mobs/PNJ, avatar pour joueurs
+### ZON-04 — Migrer les donnees de monde vers les zones (M | ★★)
+> Prerequis : ← ZON-02
+- [ ] Rattacher mobs, PNJ et ressources existants a leur zone (extraction depuis les donnees TMX importees)
+- [ ] Le bestiaire, les PNJ et leurs dialogues sont reutilises tels quels
+- [ ] Audit : aucune entite orpheline (sans zone) apres migration
+
+---
+
+### Phase 3 — Navigation
+
+### ZON-05 — Ecran de zone (L | ★★★)
+> Prerequis : ← ZON-03
+- [ ] Vue de la zone courante : illustration, description, actions disponibles, connexions
+- [ ] Liste des joueurs presents dans la zone
+- [ ] La zone courante conditionne les actions affichees (structure extensible pour ZON-08..10)
+
+### ZON-06 — Voyage entre zones (M | ★★★)
+> Prerequis : ← ZON-05
+- [ ] Voyager via une connexion : etat « en voyage » avec duree reelle, arrivee automatique
+- [ ] Transposer le fast travel existant : liaisons rapides deverrouillees en visitant la zone (deja livre cote decouverte de region — `PlayerVisitedRegion` + `GoldSinkManager::fastTravel`, tache 130 sous-phase 5)
+- [ ] Interdictions : pas de voyage en combat ou pendant une autre action time-gated
 
 ---
 
 ### Definition of Done
 
-- [x] Assets inventories, organises et documentes
-- [x] SpriteAnimator supporte le type `avatar` (8x8, layout Mana Seed natif)
-- [x] Composition de textures multi-layers fonctionnelle
-- [x] Types legacy (single/multi) inchanges
-- [x] 19 fichiers Mana Seed integres (4 body + 5 outfit + 5 hair + 5 hat)
-
----
-
-**Statut : ✅ Sprint 7 termine (2026-04-17)** — Voir `docs/ROADMAP_DONE.md` (Sprint 7 — Avatar : Fondations) et `docs/avatar-spritesheet-layout.md`.
+- [ ] La carte PixiJS n'est plus accessible ni chargee (code gele, non supprime)
+- [ ] Tout joueur a une zone courante ; plus aucune logique ne depend des coordonnees `x.y`
+- [ ] On navigue de zone en zone avec un cout en temps reel
+- [ ] Mobs/PNJ/ressources rattaches aux zones du World 1

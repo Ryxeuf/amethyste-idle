@@ -1,5 +1,10 @@
 # Plan — Systeme d'avatar modulaire (nouveau format 8x8)
 
+> ⛔ **CLOS PAR LE PIVOT PBBG (juillet 2026)** — voir [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md).
+> Le systeme avatar est un systeme de rendu sur carte ; la carte navigable est decommissionnee.
+> Realise avant la cloture : **34/38** — AVT-01 a 32 (Sprints 7-9 avatar termines), AVT-35 (sous-phases 1-2), AVT-36, AVT-37 (traces dans `ROADMAP_DONE.md`). Reliquat abandonne : AVT-33, AVT-34, AVT-35 (sous-phase 3 coiffeur PNJ), AVT-38.
+> Le plan et le code associe pourront resservir a un futur projet Zelda-like separe (historique git).
+
 > Roadmap d'integration du systeme d'avatar modulaire pour les personnages joueurs.
 > Basee sur un nouveau pack d'assets au format **8 colonnes x 8 lignes** avec animations multiples.
 > Remplace l'ancien plan base sur le format RPG Maker 3x4 (72x128).

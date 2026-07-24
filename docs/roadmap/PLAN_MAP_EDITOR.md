@@ -1,5 +1,7 @@
 # Plan — Editeur de cartes integre & generateur procedural
 
+> ✅ **Termine — sans suite dans Amethyste (pivot PBBG, juillet 2026)** : la carte navigable est decommissionnee ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md)). L'editeur pourra resservir a un futur projet Zelda-like separe.
+
 > **Numerotation :** les jalons de **ce** document sont prefixes **MED-** (Map EDitor). Ils n'entrent **pas** en conflit avec les numeros de la roadmap globale (`SPRINT_*.md`). Les prerequis **roadmap globale** sont indiques en clair (ex. **44**, **57**, **58**).
 
 > Editeur web complet remplacant le logiciel Tiled pour la creation et l'edition de cartes.

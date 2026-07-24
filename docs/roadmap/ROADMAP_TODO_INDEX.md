@@ -1,10 +1,11 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-05-05 (135 sous-phase 3e.dd — i18n du modal de redistribution de competences + sidebar `Autres` + page de detail de domaine `/game/skills/domain/{id}` : 11 cles `game.skills.respec.*` / `game.skills.sidebar.others_group` / `game.domains.{harvest_spots,equippable_tools}` + reuse de `common.cancel` / `common.confirm` pour les 2 boutons Annuler/Confirmer du modal. Parite 784=784.)
-> **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC).
-> **Sprints 1, 2, 3, 4, 5, 6, 7, 8 et 9 termines.** Sprint 7 (Avatar : Fondations) — 12/12 taches completees (AVT-01..AVT-12). Sprint 8 (Avatar : Backend & Carte) — 10/10 taches completees. Sprint 9 (Avatar : Personnage & Equipement) — 8/8 taches completees (AVT-13..AVT-30, derniere : AVT-26 race liee au body de base, mai 2026). Sprint 10 (Avatar : Polish) — 4/8 taches completees (AVT-32 jump animation, AVT-31 run animation via sprint Shift, AVT-36 lazy loading, AVT-37 cache IndexedDB) + AVT-35 sous-phases 1 (menu self-service /game/character/customize) + 2 (integration nav desktop + mobile). Sprint 11 (Monde vivant) — 130 sous-phases 1 + 2a + 3 ✅ (vitesse +50% complet : 3a + 3b + 3c.a + 3c.b + 3c.c) + 5 livrees (catalogue Mount + fondation ownership PlayerMount + speed bonus complet + fast travel verrouille par decouverte de region), 131 sous-phases 2a + 3 + 4 livrees (nouveau type `gathering_bonus` pour boost temporaire de la recolte + historique des events lances via `/admin/events/history` + couverture test de la chaine admin toggle -> annonce Mercure globale), 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c livrees (page `/game/rankings` avec onglets kills + quetes completees + XP totale, archivage a la fin de saison, titres de podium top-3 attribues a la fin de saison + affichage des titres sur la page classement + affichage sur le profil public + Hall of Fame des saisons archivees `/game/rankings/history`), 133 sous-phase 1 livree (peche : zone parfaite 45-55 preserve la durabilite de la canne). Sprint 12 (Technique & i18n) — 134 sous-phases 1 + 2a + 2b + 2c + 2d + 3a + 3b + 3c + 3d livrees (infra k6 + 4 scenarios + recueil goulots/plan d'optimisation + indexes /metrics + cache TTL collectors /metrics jalon C complet + suppression produit cartesien findByMapWithMonster + partial index fight.in_progress), 135 sous-phases 1 + 2a + 2b + 3a + 3b + 3c + 3e.a + 3e.b.a + 3e.b.b + 3e.c.d.quest + 3e.c.d.quest.b + 3e.c.d.quest.c + 3e.c.skill + 3e.d livrees (selecteur de langue securise + parite de cles FR/EN sur l'UI + audit des cles utilisees avec script re-executable + infrastructure multilingue des noms d'items + cablage du filter Twig `localized_name` dans les templates shop/inventaire/bestiaire + fixtures EN pour 35 items de debut de jeu + infrastructure multilingue pour les noms de monstres + cablage du filter `localized_monster_name` dans les templates bestiaire/profile/fight + fixtures EN pour 24 monstres de niveaux 1-3 + infrastructure multilingue pour les noms de quetes + cablage du filter `localized_quest_name` dans les templates du journal de quetes et du dashboard + fixtures EN pour 26 quetes de debut de jeu + infrastructure multilingue pour les titres de competences + infrastructure multilingue pour les noms de PNJ).
-> **Organisation sprint** : les anciennes vagues 7-10 + le plan avatar ont ete reorganises en 12 sprints focuses.
+> Derniere mise a jour : 2026-07-24 (adoption du pivot PBBG)
+> **PIVOT PBBG (juillet 2026)** : le jeu abandonne la carte en tuiles au profit d'un monde en graphe de zones (energie, time-gating reel). Decision et equivalences : [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md).
+> **Bilan** : Vagues 1-6 terminees (103 taches), editeur de cartes termine (16 MED), guildes termine (20 GCC), Sprints 1-6 termines (coeur de jeu).
+> **Avatar (ex-Sprints 7-10)** : chantier clos par le pivot. Sprints 7 (12/12), 8 (10/10) et 9 (8/8) avatar termines, Sprint 10 avatar interrompu a 4/8 (AVT-31, AVT-32, AVT-36, AVT-37 + AVT-35 sous-phases 1-2 livrees). Tout le realise est trace dans `ROADMAP_DONE.md` ; le reliquat (AVT-33, AVT-34, AVT-35 sous-phase 3, AVT-38) est abandonne — voir [PLAN_AVATAR_SYSTEM.md](PLAN_AVATAR_SYSTEM.md).
+> **Numerotation** : les numeros de sprint 7-10 sont reutilises pour le chantier « Modele zone » (taches ZON-01 a ZON-21).
 
 ---
 
@@ -32,7 +33,10 @@
 | Vague 4 — Monde & systemes avances | 16/16 + 16 MED + 20 GCC | ✅ Terminee |
 | Vague 5 — Endgame & contenu avance | 10/10 | ✅ Terminee |
 | Vague 6 — Long terme & polish | 11/11 | ✅ Terminee |
+| Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
+| Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
+| Chantier Modele zone (ZON) | 0/21 | ← **Prochain** (Sprints 7-10) |
 
 ---
 
@@ -46,80 +50,61 @@
 | **Sprint 4** | Progression & Narration | 3 | Haute | ✅ **Termine** |
 | **Sprint 5** | Hotel des ventes | 3 | Moyenne | ✅ **Termine** |
 | **Sprint 6** | Social & Economie | 6/6 | Moyenne | ✅ **Termine** |
-| **Sprint 7** | Avatar: Fondations | 12/12 | Moyenne | ✅ **Termine** |
-| **Sprint 8** | Avatar: Backend & Carte | 10/10 | Moyenne | ✅ **Termine** |
-| **Sprint 9** | Avatar: Personnage & Equipement | 8/8 | Moyenne | ✅ **Termine** |
-| **Sprint 10** | Avatar: Polish & Animations | 4/8 | Basse | En cours |
-| **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 4a + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b) |
+| **Sprint 7** | Modele zone : Fondations (ex-Avatar: Fondations ✅ 12/12) | 6 | Critique | A venir ← **Prochain** |
+| **Sprint 8** | Energie & actions de zone (ex-Avatar: Backend & Carte ✅ 10/10) | 6 | Haute | A venir |
+| **Sprint 9** | Time-gating, presence & evenements (ex-Avatar: Personnage & Equipement ✅ 8/8) | 5 | Haute | A venir |
+| **Sprint 10** | Contenu de groupe & decommission carte (ex-Avatar: Polish, interrompu a 4/8) | 4 | Moyenne | A venir |
+| **Sprint 11** | Monde vivant | 6 | Basse | En cours (130 sous-phases 1 + 2a + 2b.shop + 2b.quest + 2b.loot + 4a + 5 + 6 + 6b, 131 sous-phases 2a + 2b + 3 + 4, 132 sous-phases 1 + 2a + 2b + 3 + 4a + 4b.1 + 4b.1b + 4b.1c + 4b.2, 133 sous-phases 1 + 1b + 1c ; adaptations pivot : montures → temps de voyage, events → evenements de zone) |
 | **Sprint 12** | Technique & i18n | 2 | Basse | En cours (134 sous-phases 1 + 2a + 2b + 2c + 2d + 3a + 3b + 3c + 3d, 135 sous-phases 1 + 2a + 2b + 3a + 3b + 3c + 3c.b + 3c.c + 3c.d + 3c.e + 3e.a + 3e.b.a + 3e.b.b + 3e.b.b.suite + 3e.c.d.quest + 3e.c.d.quest.b + 3e.c.d.quest.c + 3e.c.d.quest.d + 3e.c.d.quest.e + 3e.c.d.quest.f + 3e.c.d.quest.g + 3e.c.d.quest.h + 3e.c.d.quest.i + 3e.c.d.quest.j + 3e.c.domain + 3e.c.domain.b + 3e.c.domain.c + 3e.c.achievement + 3e.c.achievement.b + 3e.c.achievement.c + 3e.c.skill + 3e.d + 3e.f + 3e.f.b + 3e.i + 3e.j + 3e.j.b + 3e.j.c + 3e.j.d + 3e.j.e + 3e.l + 3e.m + 3e.n + 3e.o + 3e.p + 3e.v + 3e.w + 3e.x + 3e.y + 3e.z + 3e.aa + 3e.cc + 3e.dd) |
 
-**Total restant : 41 taches** (hors plan avatar interne, reference dans PLAN_AVATAR_SYSTEM.md)
-**Avancement** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6), 7 (12), 8 (10) et 9 (8) termines + Sprint 10 (4/8 en cours) = 54 taches completes / initial 66+
+**Total restant : 29 taches** (21 ZON + 6 monde vivant + 2 technique — dont plusieurs taches des Sprints 11-12 deja bien avancees en sous-phases)
+**Avancement historique** : Sprints 1 (3), 2 (2), 3 (3), 4 (3), 5 (3), 6 (6), 7-avatar (12), 8-avatar (10) et 9-avatar (8) termines + Sprint 10-avatar interrompu (4/8) = 54 taches completes avant pivot
 
 ---
 
 ## Graphe de dependances (sprints)
 
 ```
-SPRINT 1 — STABILITE & ONBOARDING (priorite absolue)
-  110 Correction bugs              ∅
-  111 Equilibrage combat           ∅
-  113 Tutoriel / onboarding        ∅
+SPRINT 7 — MODELE ZONE : FONDATIONS (priorite absolue post-pivot)
+  ZON-01 Gel de la carte           ∅
+  ZON-02 Entites Zone/Connexion    ∅
+  ZON-03 Position joueur → zone    ← ZON-02
+  ZON-04 Donnees monde → zones     ← ZON-02
+  ZON-05 Ecran de zone             ← ZON-03
+  ZON-06 Voyage entre zones        ← ZON-05
 
-SPRINT 2 — BESTIAIRE & PNJ
-  141 Monstres tier 2-3 & boss    ← 140 ✅
-  146 PNJ & dialogues par zone    ∅
+SPRINT 8 — ENERGIE & ACTIONS DE ZONE (← Sprint 7)
+  ZON-07 Ressource energie         ∅
+  ZON-08 Action Explorer           ← ZON-07
+  ZON-09 Action Chasser            ← ZON-07
+  ZON-10 Recolte & filons partages ← ZON-07
+  ZON-11 Config declarative        ← ZON-08..10
+  ZON-12 Regulation par les PV     ← ZON-08
 
-SPRINT 3 — ARSENAL & MAGIE (‖ Sprint 2)
-  142 Armes variees par tier      ∅
-  143 Armures & accessoires       ∅
-  144 Sorts & materia tier 2-3    ∅
+SPRINT 9 — TIME-GATING & PRESENCE (← Sprint 8)
+  ZON-13 Expeditions time-gated    ← ZON-11
+  ZON-14 Presence & chat de zone   ← ZON-05
+  ZON-15 Evenements de zone        ← ZON-14
+  ZON-16 Carte du monde illustree  ← ZON-06
+  ZON-17 Cycle jour/nuit mecanique ← ZON-11
 
-SPRINT 4 — PROGRESSION & NARRATION (← Sprints 2 & 3)
-  147 Arbres de talent combat     ← 144
-  145 Recettes craft manquantes   ← 142, 143
-  148 Quetes secondaires          ← 146, 140 ✅
+SPRINT 10 — GROUPE & DECOMMISSION (← Sprint 9)
+  ZON-18 Boss de zone asynchrone   ← ZON-15
+  ZON-19 Donjon semi-synchrone     ← ZON-14
+  ZON-20 Lockouts & decroissance   ← ZON-19
+  ZON-21 Suppression code carte    ← ZON-16
 
-SPRINT 5 — HOTEL DES VENTES (← Sprint 4 recommande)
-  116 HdV — entites & backend     ∅
-  117 HdV — UI & recherche        ← 116
-  118 HdV — anti-exploit          ← 117
-
-SPRINT 6 — SOCIAL & ECONOMIE (← Sprint 5)
-  119 Messagerie joueur            ∅
-  121 Reputation & karma           ← 120 ✅
-  122 Metiers specialises          ← 145
-  123 Encheres temporaires         ← 116
-  124 Taxes dynamiques             ← GCC ✅
-  125 Gold sinks avances           ∅
-
-SPRINT 7 — AVATAR: FONDATIONS (‖ Sprints 1-6)
-  AVT-01..05 Phase 0 Assets       ∅
-  AVT-06..09 Phase 1 Animator     ← AVT-02
-  AVT-10..12 Phase 2 Composition  ← AVT-06
-
-SPRINT 8 — AVATAR: BACKEND & CARTE (← Sprint 7)
-  AVT-13..18 Phase 3 Backend      ∅ / ← AVT-13..14
-  AVT-19..22 Phase 4 Integration  ← AVT-12, AVT-17
-
-SPRINT 9 — AVATAR: PERSONNAGE & EQUIPEMENT (← Sprint 8)
-  AVT-23..26 Phase 5 Creation     ← AVT-13
-  AVT-27..30 Phase 6 Mercure      ← AVT-15, AVT-16
-
-SPRINT 10 — AVATAR: POLISH (← Sprint 9)
-  AVT-31..38 Phase 7 Animations   ← AVT-07, AVT-20
-
-SPRINT 11 — MONDE VIVANT (← Sprints 4-5)
-  128 Nouvelles zones Acte 4      ← 94, 141
-  129 Housing joueur               ← 116
-  130 Montures                     ∅
-  131 Events live                  ← 79
-  132 Classement saisonnier        ← 92
-  133 Mini-jeux                    ∅
+SPRINT 11 — MONDE VIVANT (← Sprints 7-9)
+  128 Nouvelles zones Acte 4       ← 94 ✅, 141 ✅, ZON-11
+  129 Housing joueur               ← 116 ✅
+  130 Montures (temps de voyage)   ← ZON-06 (obtention/catalogue/activation ✅)
+  131 Events live                  ← 79 ✅, ZON-15 (buff global/historique/annonce ✅)
+  132 Classement saisonnier        ← 92 ✅ (quasi-termine)
+  133 Mini-jeux                    ∅ (peche ✅, defis chrono a faire)
 
 SPRINT 12 — TECHNIQUE & I18N (‖ tout)
-  134 Load testing & scaling       ∅
-  135 Localisation i18n            ∅
+  134 Load testing & scaling       ∅ (en cours)
+  135 Localisation i18n            ∅ (en cours)
 ```
 
 ---
@@ -127,15 +112,11 @@ SPRINT 12 — TECHNIQUE & I18N (‖ tout)
 ## Parallelisation des sprints
 
 ```
-Critique ─── Sprint 1 ──┐
-                         ├── Sprint 2 ──┐
-                         ├── Sprint 3 ──┤── Sprint 4 ──── Sprint 5 ──── Sprint 6
-                         │              │
-                         │              └── Sprint 11 (monde vivant)
-                         │
-Independant ─ Sprint 7 ──── Sprint 8 ──── Sprint 9 ──── Sprint 10
-                         │
-                         └── Sprint 12 (technique, parallelisable a tout moment)
+Pivot ──── Sprint 7 ──── Sprint 8 ──── Sprint 9 ──── Sprint 10
+                                          │
+                                          └── Sprint 11 (monde vivant)
+
+Independant ─ Sprint 12 (technique, parallelisable a tout moment)
 ```
 
 ---
@@ -148,15 +129,16 @@ Independant ─ Sprint 7 ──── Sprint 8 ──── Sprint 9 ───�
 4. [Sprint 4 — Progression & Narration](SPRINT_04.md) ✅
 5. [Sprint 5 — Hotel des ventes](SPRINT_05.md) ✅
 6. [Sprint 6 — Social & Economie](SPRINT_06.md) ✅
-7. [Sprint 7 — Avatar: Fondations](SPRINT_07.md) ✅
-8. [Sprint 8 — Avatar: Backend & Carte](SPRINT_08.md)
-9. [Sprint 9 — Avatar: Personnage & Equipement](SPRINT_09.md)
-10. [Sprint 10 — Avatar: Polish & Animations](SPRINT_10.md)
+7. **[Sprint 7 — Modele zone : Fondations](SPRINT_07.md)** ← Prochain
+8. [Sprint 8 — Energie & actions de zone](SPRINT_08.md)
+9. [Sprint 9 — Time-gating, presence & evenements](SPRINT_09.md)
+10. [Sprint 10 — Contenu de groupe & decommission carte](SPRINT_10.md)
 11. [Sprint 11 — Monde vivant](SPRINT_11.md)
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
 
 **Plans annexes :**
+- [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Controle de cite par les guildes](PLAN_GUILD_CITY_CONTROL.md) ✅
-- [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅
+- [Editeur de cartes integre & generateur procedural](PLAN_MAP_EDITOR.md) ✅ — termine, sans suite dans Amethyste (reutilisable pour un futur projet Zelda-like separe)
 - [Testing & qualite](PLAN_TESTING.md) — quasi-termine (taches restantes integrees en Sprint 1)
-- [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — 38 taches detaillees (Sprints 7-10)
+- [Systeme d'avatar modulaire (format 8x8)](PLAN_AVATAR_SYSTEM.md) — ⛔ clos par le pivot PBBG (34/38 realisees)

@@ -1,64 +1,48 @@
-## Sprint 9 — Avatar: Personnage & Equipement
+## Sprint 9 — Time-gating, presence & evenements de zone
 
-> **8 taches** | Priorite : **Moyenne** | Origine : Plan Avatar, Phases 5-6
-> Objectif : ecran de creation de personnage avec choix d'apparence, equipement visible en temps reel.
-> Prerequis : Sprint 8 (backend + integration carte)
-> Reference detaillee : [PLAN_AVATAR_SYSTEM.md](PLAN_AVATAR_SYSTEM.md)
+> **5 taches** | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> Objectif : le monde vit quand le joueur est deconnecte — expeditions, presence par zone, evenements annonces, carte du monde illustree.
+> Prerequis : Sprint 8 (energie & actions de zone)
 
----
-
-### Phase 5 — Ecran de creation de personnage
-
-### ~~AVT-23 — Ajouter les champs d'apparence au formulaire (M | ★★★)~~ ✅
-> Prerequis : ← AVT-13
-- [x] `CharacterCreateType` : choix body (skin tone), hair, hairColor, outfit de depart — 4 champs `ChoiceType` expanded + palette hairColor hex de 6 tons
-- [x] Liste des choix alimentee depuis les assets disponibles dans `avatar/` — nouvelle methode `AvatarCatalogProvider::getCreationChoices()` qui scanne body/hair/outfit/head
-- [x] Preview sprite `data-sheet` exposee sur chaque option via `choice_attr` (consommable par le futur `character_creator_controller.js` — AVT-24)
-
-### ~~AVT-24 — Preview temps reel (L | ★★★)~~ ✅
-> Prerequis : ← AVT-10, AVT-23
-- [x] Stimulus controller `character_creator_controller.js` — ecoute les changements body/outfit/hair/hairColor et re-rend le canvas a chaque selection
-- [ ] Mini canvas PixiJS composant les layers en temps reel au changement — non retenu
-- [x] Ou fallback : images statiques pre-generees — canvas 64x64 compose la frame stand-down (col 0, row 0) de chaque sheet Mana Seed ; tint du cheveux applique via pipeline multiply + destination-in (pas de dependance PixiJS)
-
-### ~~AVT-25 — Persister l'apparence a la creation (S | ★★)~~ ✅
-> Prerequis : ← AVT-23
-- [x] `PlayerFactory` sauvegarde `avatarAppearance` + calcule `avatarHash` — la fabrique normalise les choix body/hair/hairColor du formulaire, seed `Player::avatarAppearance`, puis delegue le calcul du hash + la publication Mercure a `AvatarHashRecalculator::recalculate()` apres flush. Defaut `human_m_light` si aucune selection.
-
-### ~~AVT-26 — Lier Race au body de base (S | ★★)~~ ✅
-> Prerequis : ← AVT-25
-- [x] Exploiter `Race.spriteSheet` pour determiner le body de base — `PlayerFactory::resolveBodyForRace` lit `Race::getSpriteSheet()` ; le body explicite du formulaire reste prioritaire (override), puis fallback sur la spriteSheet de la race, puis fallback final sur la constante `DEFAULT_BODY = 'human_m_light'` si la race n'a pas de spriteSheet (ou si la valeur est blanche).
-- [x] Race affecte les stats (inchange), body affecte le visuel — fixtures `RaceFixtures` etendues : human -> `human_v00`, elf -> `human_v01`, dwarf -> `human_v02`, orc -> `human_v03` (les 4 sheets du dossier `assets/styles/images/avatar/body/`). Aucune modification des modificateurs de stats existants.
+> **Pivot PBBG** : ce sprint reutilise le numero de l'ancien Sprint 9 « Avatar: Personnage & Equipement » (✅ termine 8/8 en mai 2026, trace dans `ROADMAP_DONE.md`). Le chantier avatar est clos par le pivot — voir `PLAN_AVATAR_SYSTEM.md`.
 
 ---
 
-### Phase 6 — Equipement visible & Mercure
+### ZON-13 — Expeditions time-gated (L | ★★★)
+> Prerequis : ← ZON-11
+- [ ] Envoyer son personnage en expedition N heures reelles dans une zone ; retour = butin a recuperer
+- [ ] Tables de recompenses par zone/duree (config declarative ZON-11)
+- [ ] Etat exclusif : pas de voyage/exploration/combat pendant une expedition
+- [ ] Notification a la fin (in-game ; Mercure si connecte)
 
-### ~~AVT-27 — Peupler `avatarSheet` sur les items existants (M | ★★★)~~ ✅
-> Prerequis : ← AVT-16, AVT-03
-- [x] Associer chaque item d'equipement a son sprite sheet avatar (format 8x8) — service `ItemAvatarSheetResolver` qui derive `/avatar/{gear_directory}/{slug}.png` depuis `Item.gearLocation` + `Item.slug`, couvrant head / chest / leg / foot / hand / belt / shoulder / weapon_main / weapon_side
-- [x] Mettre a jour les fixtures — approche convention-based : aucune modification manuelle de `ItemFixtures.php` (4087 lignes) necessaire. Les items d'equipement obtiennent leur sheet automatiquement via le resolveur. Le champ explicite `Item.avatarSheet` reste prioritaire pour les overrides custom futurs.
+### ZON-14 — Presence par zone & chat de zone (M | ★★★)
+> Prerequis : ← ZON-05
+- [ ] Liste temps reel des joueurs presents dans la zone (base de la cooperation : groupes, commerce)
+- [ ] Chat de zone via Mercure (topics par zone ; les topics de deplacement restent supprimes)
+- [ ] Interactions rapides depuis la liste : profil, invitation groupe, commerce
 
-### ~~AVT-28 — Recalcul automatique du hash (S | ★★)~~ ✅
-> Prerequis : ← AVT-15
-- [x] Hook sur changement d'equipement dans `GearSetter::setGear`/`unsetGear` — appel direct du service `AvatarHashRecalculator`
-- [x] Recalcul `avatarHash` + `avatarUpdatedAt` — `Player::setAvatarHash` touche `avatarUpdatedAt` uniquement quand la valeur change
+### ZON-15 — Evenements de zone (M | ★★★)
+> Prerequis : ← ZON-14
+- [ ] Generaliser world bosses / invasions en evenements de zone annonces, a rejoindre dans un temps limite
+- [ ] Adapter `WorldBossManager` / `WorldBossLootDistributor` au modele zone (fenetre temporelle, annonce Mercure)
+- [ ] Rejoindre un evenement coute de l'energie (regle Sprint 8)
 
-### ~~AVT-29 — Publication Mercure `player.avatar.updated` (M | ★★★)~~ ✅
-> Prerequis : ← AVT-28
-- [x] Quand le hash change : publier le nouveau payload avatar — nouveau service `App\GameEngine\Realtime\Avatar\AvatarUpdatedPublisher` (topic `map/avatar`, type `avatar_updated`), appele depuis `AvatarHashRecalculator::recalculate()` uniquement quand le hash change effectivement
-- [x] Le client invalide le cache et recompose la texture — integration client realisee dans AVT-30
+### ZON-16 — Carte du monde illustree (M | ★★)
+> Prerequis : ← ZON-06
+- [ ] Image map cliquable (illustration pixel art, pas de moteur de rendu) pour garder l'intuition geographique
+- [ ] Zones decouvertes/verrouillees visibles ; clic = voyage via ZON-06
+- [ ] Indicateurs : evenements de zone actifs, expeditions en cours
 
-### ~~AVT-30 — Gestion cote client des updates Mercure (M | ★★)~~ ✅
-> Prerequis : ← AVT-20, AVT-29
-- [x] Ecouter le topic `map/avatar` (type `avatar_updated`) dans `map_pixi_controller` — ajoute aux abonnements `EventSource` dans `_setupMercure()` et dispatch dans `_handleMercureEvent()`
-- [x] Invalider le cache + recreer l'animator pour le joueur concerne — nouvelle methode consolidee `_handleAvatarUpdatedEvent()` qui gere self + autres joueurs : invalidation de l'ancien hash via `AvatarAnimatorFactory.invalidateAvatarHash`, recomposition de la texture et remplacement du sprite dans le container cible. Filtre par `mapId`. `avatarHash` memorise sur chaque `_entitySprites[key]` pour permettre l'invalidation ciblee.
+### ZON-17 — Cycle jour/nuit mecanique (S | ★)
+> Prerequis : ← ZON-11
+- [ ] Trancher la question ouverte du pivot : le cycle jour/nuit (cosmetique sur l'ancienne carte) devient mecanique
+- [ ] Si retenu : tables de rencontres jour/nuit par zone (variante dans la config declarative)
 
 ---
 
 ### Definition of Done
 
-- [ ] Creation de personnage avec choix d'apparence fonctionnel
-- [ ] Preview temps reel dans le formulaire
-- [ ] Equipement modifie le rendu visuel du joueur
-- [ ] Autres joueurs voient les changements en temps reel via Mercure
+- [ ] Un joueur peut lancer une expedition, se deconnecter, et recuperer son butin plus tard
+- [ ] On voit qui est present dans sa zone et on peut discuter/cooperer
+- [ ] Les world bosses fonctionnent comme evenements de zone annonces
+- [ ] La carte du monde illustree remplace visuellement l'ancienne carte navigable

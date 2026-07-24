@@ -1,74 +1,54 @@
-## Sprint 8 — Avatar: Backend & Carte
+## Sprint 8 — Energie & actions de zone
 
-> **10 taches** | Priorite : **Moyenne** | Origine : Plan Avatar, Phases 3-4
-> Objectif : stocker l'apparence du joueur, servir via l'API, integrer dans le renderer PixiJS.
-> Prerequis : Sprint 7 (fondations avatar)
-> Reference detaillee : [PLAN_AVATAR_SYSTEM.md](PLAN_AVATAR_SYSTEM.md)
+> **6 taches** | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> Objectif : installer le rythme PBBG — energie regenerante, actions par zone (explorer, chasser, recolter), contenu declaratif.
+> Prerequis : Sprint 7 (modele zone)
 
----
+> **Principe directeur** : l'energie gate l'acces aux rencontres, JAMAIS le combat lui-meme. Les tours de combat restent gratuits et illimites une fois la rencontre engagee. Second regulateur : les PV (l'energie limite les tentatives, la vie fait payer les echecs). Curseurs a etalonner via `docs/BALANCE.md`, sans toucher au code.
 
-### Phase 3 — Backend : entite Player + API avatar
-
-### ~~AVT-13 — Ajouter les champs avatar sur Player (M | ★★★)~~ ✅
-> Prerequis : ∅
-- [x] `avatarAppearance` (JSON nullable), `avatarHash` (string 64), `avatarVersion` (int), `avatarUpdatedAt` (datetime)
-- [x] Migration Doctrine + valeurs par defaut pour joueurs existants
-- [x] Structure JSON : `{ "body": "human_m_light", "hair": "short_01", "hairColor": "#d6b25e", "outfit": "starter_tunic" }`
-
-### ~~AVT-14 — Integrer AvatarHashGenerator (S | ★★)~~ ✅
-> Prerequis : ∅
-- [x] Copier depuis blueprint, adapter namespace, enregistrer comme service
-
-### ~~AVT-15 — Integrer PlayerAvatarPayloadBuilder (M | ★★★)~~ ✅
-> Prerequis : ← AVT-13, AVT-14
-- [x] Adapter `extractAppearance()` pour lire les vrais champs Player
-- [x] Construire le payload avec baseSheet + layers
-- [x] Brancher sur `GearHelper` pour les items equipes
-
-### ~~AVT-16 — Ajouter `avatarSheet` sur Item (S | ★★)~~ ✅
-> Prerequis : ∅
-- [x] Champ nullable string : chemin vers le sprite sheet du layer visuel de l'item
-- [x] Migration Doctrine
-
-### ~~AVT-17 — Enrichir `/api/map/entities` (M | ★★★)~~ ✅
-> Prerequis : ← AVT-15
-- [x] Joueurs : ajouter `renderMode`, `avatarHash`, `avatar` (baseSheet + layers)
-- [x] Conserver `spriteKey` en fallback (`renderMode: 'legacy'` si pas d'avatar)
-
-### ~~AVT-18 — Enrichir `/api/map/config` (S | ★★)~~ ✅
-> Prerequis : ← AVT-16
-- [x] Ajouter `avatarCatalog` : liste des sheets avatar a precharger
+> **Pivot PBBG** : ce sprint reutilise le numero de l'ancien Sprint 8 « Avatar: Backend & Carte » (✅ termine 10/10, trace dans `ROADMAP_DONE.md`). Le chantier avatar est clos par le pivot — voir `PLAN_AVATAR_SYSTEM.md`.
 
 ---
 
-### Phase 4 — Integration dans le renderer map
+### ZON-07 — Ressource energie (M | ★★★)
+> Prerequis : ∅
+- [ ] `Player.energy` / `maxEnergy` + regeneration en temps reel (calcul lazy au chargement, pas de cron par joueur)
+- [ ] Affichage permanent dans l'UI (jauge + timer de regen)
+- [ ] Formules (regen, couts) parametrees via `docs/BALANCE.md`
 
-### ~~AVT-19 — Instancier AvatarAnimatorFactory dans le map controller (M | ★★★)~~ ✅
-> Prerequis : ← AVT-12, AVT-17
-- [x] Instanciation apres chargement des textures
-- [x] Precharger les sheets avatar depuis `avatarCatalog`
+### ZON-08 — Action Explorer (M | ★★★)
+> Prerequis : ← ZON-07
+- [ ] Coute de l'energie ; tire un evenement selon la table de la zone : mob, filon, coffre, PNJ, evenement rare
+- [ ] Rencontre mob → declenche le combat tour par tour existant (GameEngine/Fight inchange)
+- [ ] Resultats affiches dans un journal d'exploration de la zone
 
-### ~~AVT-20 — Remplacer `_createAnimator()` par `_createAnimatorForEntity()` (M | ★★★)~~ ✅
-> Prerequis : ← AVT-19
-- [x] Si `entity.renderMode === 'avatar'` → pipeline composition via `AvatarAnimatorFactory.createFromAvatarPayload`
-- [x] Sinon → pipeline legacy (spriteKey, inchange) via `_createAnimator`
-- [x] `_createEntitySprite` recoit desormais l'entite complete (renderMode, avatar, avatarHash inclus)
+### ZON-09 — Action Chasser (M | ★★★)
+> Prerequis : ← ZON-07
+- [ ] Coute de l'energie ; tables de mobs/loot par zone (bestiaire existant reutilise tel quel)
+- [ ] Ciblage : chasser un type de mob deja rencontre dans la zone (lien bestiaire)
 
-### ~~AVT-21 — Gerer le joueur local (self) (S | ★★)~~ ✅
-> Prerequis : ← AVT-20
-- [x] Le joueur courant utilise aussi le pipeline avatar — `_createPlayerMarker(selfEntity)` passe par `_createAnimatorForEntity`, qui choisit avatar ou legacy selon `renderMode`
-- [x] Invalidation du cache quand l'equipement change — detection via `avatarHash`, appel `AvatarAnimatorFactory.invalidateAvatarHash` sur l'ancien hash a chaque reload
+### ZON-10 — Recolte par zone & filons partages (M | ★★)
+> Prerequis : ← ZON-07
+- [ ] Actions de recolte par zone (herboristerie, minage, peche... selon les ressources de la zone)
+- [ ] Filons partages : stock collectif par zone qui s'epuise et respawn (fenetre de tension cooperative)
+- [ ] Reutilise les definitions de ressources/recettes existantes
 
-### ~~AVT-22 — Tests integration carte (S | ★★)~~ ✅
-> Prerequis : ← AVT-20
-- [x] Verifier : joueurs en avatar, mobs en legacy, PNJ en legacy — `tests/Functional/Controller/Game/MapApiEntitiesTest.php` couvre la sortie JSON de `/api/map/entities` (renderMode avatar vs legacy, absence des champs avatar sur mobs/PNJ)
-- [x] Verifier : taille, positionnement, z-order, emotes sur avatars — validation manuelle in-game (rendu PixiJS non testable en PHPUnit)
+### ZON-11 — Configuration declarative de zone (M | ★★★)
+> Prerequis : ← ZON-08, ZON-09, ZON-10
+- [ ] Format declaratif par zone : tables de rencontres, loot, ressources, actions, connexions
+- [ ] Ajouter du contenu = ajouter de la donnee, pas du code (fixtures/YAML + import)
+- [ ] Documentation du format dans `DOCUMENTATION.md`
+
+### ZON-12 — Regulation par les PV (S | ★★)
+> Prerequis : ← ZON-08
+- [ ] Regeneration des PV en temps reel hors combat (formule dans `docs/BALANCE.md`)
+- [ ] Sortir affaibli d'un combat impose d'attendre ou de consommer des soins
+- [ ] Verifier que les soins existants (objets, sorts) s'integrent au modele
 
 ---
 
 ### Definition of Done
 
-- [x] Champs avatar persistes sur Player avec migration
-- [x] API `/api/map/entities` sert le payload avatar
-- [x] Renderer PixiJS utilise le pipeline avatar pour les joueurs
-- [x] Pipeline legacy inchange pour mobs/PNJ
+- [ ] L'energie gate explorer/chasser/recolter ; les tours de combat restent gratuits
+- [ ] Chaque zone du World 1 a ses tables de rencontres/loot/ressources en donnees declaratives
+- [ ] Les 4 curseurs (energie, PV, lockouts a venir, contribution) sont pilotables via `docs/BALANCE.md`
