@@ -4,7 +4,8 @@
 > Source de vérité des **grands principes de game design** post-pivot PBBG.
 > Complète (ne remplace pas) : [PIVOT_PBBG.md](PIVOT_PBBG.md) (décision technique du pivot),
 > [roadmap/PLAN_GUILD_CITY_CONTROL.md](roadmap/PLAN_GUILD_CITY_CONTROL.md) (contrôle de cité, livré),
-> [roadmap/PLAN_PLAYER_ECONOMY.md](roadmap/PLAN_PLAYER_ECONOMY.md) (déclinaison en jalons de l'économie joueur).
+> [roadmap/PLAN_PLAYER_ECONOMY.md](roadmap/PLAN_PLAYER_ECONOMY.md) (déclinaison en jalons de l'économie joueur),
+> [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md) (déclinaison en jalons de la narration).
 
 Ce document fige les décisions de direction issues des discussions de conception.
 Les règles absolues du projet (pas de PvP, pas de niveau global, PvE coopératif,
@@ -58,7 +59,7 @@ un **enjeu économique réel** et non seulement cosmétique.
 
 ## 3. Scénario et narration
 
-**Décision : trame de monde large + acte d'introduction fort + narration épisodique
+**Décision (D8) : trame de monde large + acte d'introduction fort + narration épisodique
 saisonnière.** Pas de campagne linéaire massive écrite d'avance.
 
 Justification : dans ce genre, la rétention vient des systèmes, pas d'une histoire
@@ -66,15 +67,92 @@ linéaire. Une campagne fournie est un coût d'écriture élevé pour une valeur
 une fois. La contre-référence narrative (Fallen London) est un jeu *narrative-first*
 au coût d'écriture colossal — ce n'est pas le modèle visé.
 
-Dosage retenu :
+Objectif : **maximiser la valeur narrative par unité écrite.** Chaque couche est adossée
+à une brique déjà présente dans le modèle (`Quest`, `GameEvent`, `InfluenceSeason`,
+`Region`, `Zone`, `Pnj`) — poser la narration = *structurer* et *relier* l'existant, pas
+bâtir un moteur de dialogue. Déclinaison en jalons : [roadmap/PLAN_NARRATIVE.md](roadmap/PLAN_NARRATIVE.md).
 
-1. **Acte d'introduction** = tutoriel narratif qui pose l'univers, les enjeux et enseigne
-   les systèmes (voyage, énergie, combat, craft, guilde). C'est l'onboarding et le crochet.
-2. **Trame de monde** = lore des régions/factions, assez large pour donner du contexte et
-   des accroches, sans tout scripter.
-3. **Narration saisonnière** posée par-dessus les systèmes : le champ `theme` de
-   `InfluenceSeason` est le véhicule (chaque saison porte un événement/une menace).
-4. **Chaînes de quêtes répétables/procédurales par zone** pour le contenu de fond.
+### 3.1 Les quatre couches narratives
+
+| Couche | Rôle | Brique code support | Cadence | Coût d'écriture |
+|---|---|---|---|---|
+| **Trame de monde** | Socle immuable : lore des régions/factions, contexte, accroches | `Zone.description`, **Codex** (§3.5) | Écrite une fois | Moyen, amorti |
+| **Acte d'introduction** | Onboarding narratif : pose l'univers *et* enseigne les systèmes | Chaîne `Quest` via `prerequisiteQuests` + marqueur d'arc (§3.6) | Une fois par joueur | Élevé, ponctuel |
+| **Narration saisonnière** | Moteur épisodique : chaque saison porte une menace/un événement | `InfluenceSeason.theme` + `GameEvent` + `Quest.gameEvent` | Toutes les 4 semaines | Faible par saison (template) |
+| **Contenu de fond** | Volume : chaînes de quêtes de zone répétables | `Quest` (`minRenownScore`, `isHidden`, `triggerCondition`) | Continue | Faible (hybride, §3.7) |
+
+### 3.2 État du monde — hybride (D9)
+
+**Décision : trame de fond stable + méta-arc lent qui n'avance que par jalons rares et
+scénarisés.** Chaque saison est un **épisode résoluble** (le monde ne dépend pas de sa
+mémorisation), mais quelques **basculements marquants** s'inscrivent durablement au canon
+du serveur (une menace vaincue laisse une trace, une région change de main pour de bon).
+
+Ni méta-arc persistant pur (poids d'un état de monde cumulatif, casse-tête de catch-up
+pour les nouveaux, cohérence fragile), ni reset total (le monde « ne garde rien » des
+exploits collectifs). L'hybride donne un serveur qui **a une histoire** sans imposer de la
+lire pour jouer. Concrètement : un petit **journal de monde** (faits canon horodatés)
+alimenté par les résolutions de saison marquées « canon » ; le reste des saisons se clôt
+sans trace durable au-delà des récompenses.
+
+### 3.3 Structure d'un arc saisonnier
+
+`InfluenceSeason.theme` cesse d'être un simple libellé : il **nomme un mini-arc** en quatre
+beats, chacun matérialisé par un `GameEvent` daté et ses quêtes d'événement (`Quest.gameEvent`,
+déjà branchable) :
+
+1. **Amorce** (semaine 1) — un `GameEvent` d'ouverture révèle la menace/le thème ; quêtes
+   d'accroche débloquées.
+2. **Montée** (semaines 2-3) — activités PvE thématiques ; l'accumulation d'influence des
+   guildes *est* la participation à l'arc (le pilier contrôle de cité fournit la tension).
+3. **Climax** (fin semaine 3 / semaine 4) — événement de zone / boss de saison à rejoindre
+   (généralisation de `WorldBossManager`, cf. PIVOT §Contenu de groupe).
+4. **Résolution** — clôture ; distribution des récompenses de saison ; entrée éventuelle au
+   journal de monde si le beat est marqué « canon » (§3.2).
+
+Un arc saisonnier est donc une **donnée déclarative** (thème + 4 `GameEvent` + quêtes liées),
+pas du code : ajouter une saison = ajouter de la donnée.
+
+### 3.4 Cité × narration — crédits narratifs (D10)
+
+**Décision : l'issue narrative d'une saison est prédéfinie et PvE (une seule branche à
+écrire et tester) ; la guilde qui remporte la région en récolte les _crédits narratifs_.**
+
+La guilde gagnante ne *réécrit* pas l'histoire (pas de branches multiples par vainqueur, coût
+combinatoire prohibitif), mais elle **y laisse son nom** : titre de saison, mention dans le
+récit de la région, cosmétiques, **nom gravé au journal de monde** (§3.2). C'est le liant
+concret de la boucle à trois piliers : le contrôle de cité devient *l'auteur crédité* de la
+résolution saisonnière, sans coût d'écriture proportionnel au nombre d'issues.
+
+### 3.5 Le Codex — foyer de la trame et surface de rétention
+
+La trame de monde vit aujourd'hui, diffuse, dans `Zone.description`. On lui donne un foyer :
+un **Codex** (journal de connaissance), écran joueur où chaque entrée (région, faction,
+bestiaire lore, fait de saison) se **débloque par la découverte** : visiter une zone, vaincre
+un boss, terminer un arc, clore une saison. Double fonction :
+
+- **Lecture** de la trame large, à son rythme, sans la scripter dans le flux de jeu.
+- **Rétention** : la complétion du Codex est un objectif de collection (à croiser avec les
+  succès existants), et le journal de monde (§3.2) s'y affiche — le joueur voit l'histoire
+  du serveur s'écrire, avec le nom des guildes créditées.
+
+### 3.6 Marqueur d'arc sur les quêtes (impact modèle)
+
+Rien ne distingue aujourd'hui une quête d'« acte principal » d'une quête de fond, ni ne les
+regroupe. On enrichit `Quest` d'une notion d'**arc** : `story_arc` (slug de l'arc, nullable —
+`null` = quête isolée) + `arc_order` (position dans l'arc). L'acte d'introduction est
+simplement l'arc `intro` ; un arc saisonnier réutilise le même mécanisme. Le chaînage dur
+reste porté par `prerequisiteQuests` ; `story_arc` sert au **regroupement, à l'affichage
+(journal de quêtes par arc) et au marquage narratif**.
+
+### 3.7 Contenu de fond — hybride procédural / écrit
+
+**Décision : squelettes procéduraux + points d'ancrage écrits à la main.** Les chaînes de
+quêtes de zone reposent sur des **gabarits** (structure, objectifs, récompenses générés à
+partir des tables de zone déjà déclaratives) dont les **nœuds saillants** (donneur de quête
+mémorable, twist, révélation liée au lore) sont écrits à la main. On obtient du volume sans
+le coût d'écriture intégral, et sans le vide d'un contenu 100 % généré. Le contenu de fond
+**ne bloque jamais** la progression système (il l'enrobe).
 
 ---
 
@@ -190,6 +268,10 @@ endgame raid-centrique ; tout niveau global (interdit par CLAUDE.md).
 | D6 | `Item.boundToPlayer` → enum de type de liaison (none / bind_on_equip / bind_on_pickup). |
 | D7 | Séquençage : plancher T1 + liaison → HV régional → commandes → échoppes → métiers/équilibrage. |
 | D8 | Narration : trame large + acte d'intro + narration saisonnière ; pas de campagne linéaire massive. |
+| D9 | État du monde **hybride** : trame de fond stable + méta-arc lent (basculements canon rares, journal de monde) ; chaque saison est un épisode résoluble. |
+| D10 | Cité × narration : issue de saison **prédéfinie** ; la guilde gagnante récolte les **crédits narratifs** (titres, mention, cosmétiques, nom au journal), sans branches par vainqueur. |
+| D11 | **Codex** : foyer de la trame de monde, débloqué par la découverte ; double rôle lecture + rétention (collection + journal de monde). |
+| D12 | `Quest` enrichie d'un marqueur d'**arc** (`story_arc` + `arc_order`) pour regrouper/afficher/marquer ; le chaînage dur reste sur `prerequisiteQuests`. |
 
 ## 6. Questions ouvertes
 
@@ -201,3 +283,11 @@ endgame raid-centrique ; tout niveau global (interdit par CLAUDE.md).
   la guilde contrôlante (renforce le contrôle de cité) ?
 - Durabilité/réparation : gold sink à introduire, ou s'appuyer uniquement sur les
   consommables perpétuels pour la demande de fond ?
+- Narration — quels beats de saison méritent le statut « canon » (§3.2) : tous les climax,
+  seulement les premières résolutions d'une menace, ou une curation manuelle par l'équipe ?
+- Codex : entité dédiée (`CodexEntry` + déblocage joueur) ou réutilisation/extension du
+  système de succès existant (les paliers de bestiaire jouent déjà ce rôle en partie) ?
+- Contenu de fond procédural (§3.7) : jusqu'où pousser la génération (objectifs + récompenses
+  seulement) avant que le manque d'ancrage écrit ne le rende générique ?
+- Rejouabilité de l'acte d'intro sur un compte multi-personnages (§CLAUDE.md 12) : rejoué
+  intégralement par personnage, ou raccourci/skippable dès le 2ᵉ personnage ?
