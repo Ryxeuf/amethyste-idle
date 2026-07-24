@@ -12,6 +12,7 @@ use App\GameEngine\Mount\MountQuestRewardGranter;
 use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
 use App\GameEngine\Quest\PlayerQuestUpdater;
+use App\GameEngine\Quest\QuestArcGrouper;
 use App\GameEngine\Quest\QuestGiverResolver;
 use App\GameEngine\Quest\QuestMonsterBySlugResolver;
 use App\GameEngine\Quest\QuestTrackingFormater;
@@ -39,6 +40,7 @@ class QuestController extends AbstractController
         private readonly DailyQuestService $dailyQuestService,
         private readonly QuestMonsterBySlugResolver $questMonsterBySlugResolver,
         private readonly MountQuestRewardGranter $mountQuestRewardGranter,
+        private readonly QuestArcGrouper $questArcGrouper,
     ) {
     }
 
@@ -95,9 +97,27 @@ class QuestController extends AbstractController
             $availableDailyQuests,
         );
 
+        // Group active and completed quests by story arc (NAR-02).
+        $completedQuestIds = array_map(
+            static fn (PlayerQuestCompleted $pqc): int => $pqc->getQuest()->getId(),
+            $completedQuests,
+        );
+        $activeArcs = $this->questArcGrouper->group(
+            $activeQuests,
+            static fn (PlayerQuest $pq): Quest => $pq->getQuest(),
+            $completedQuestIds,
+        );
+        $completedArcs = $this->questArcGrouper->group(
+            $completedQuests,
+            static fn (PlayerQuestCompleted $pqc): Quest => $pqc->getQuest(),
+            $completedQuestIds,
+        );
+
         return $this->render('game/quest/index.html.twig', [
             'activeQuests' => $activeQuests,
             'completedQuests' => $completedQuests,
+            'activeArcs' => $activeArcs,
+            'completedArcs' => $completedArcs,
             'availableQuests' => $availableQuests,
             'questProgress' => $questProgress,
             'questGivers' => $questGivers,

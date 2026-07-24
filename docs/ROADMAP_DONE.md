@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-24 (NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
 
 ---
 
@@ -48,6 +48,30 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-02 — Journal de quetes regroupe par arc (Piste A narration, 2026-07-24)
+
+> Rendre les arcs lisibles cote joueur : suivre un fil, pas une liste plate. L'ecran `/game/quests` regroupe desormais les quetes **en cours** et **terminees** par arc narratif (`storyArc`), avec la progression `n/total` de chaque arc. Les quetes isolees (`storyArc = null`) sont reunies sous « Divers ».
+
+### Changements
+
+- **`src/GameEngine/Quest/QuestArcGrouper.php`** (nouveau service) : `group(items, questOf, completedQuestIds)` groupe une liste generique d'items portant chacun une `Quest` (via un extracteur `callable`) par `storyArc`. Arcs ordonnes alphabetiquement par slug ; items tries par `arcOrder` croissant (positions nulles en fin, memes regles que `Quest::sortByArcOrder()`). Chaque arc porte `completed/total` : `total` = nombre de quetes de l'arc (source de verite `QuestRepository::findByStoryArc()`, mis en cache par slug), `completed` = intersection avec les quetes terminees du joueur. Les quetes sans arc sont renvoyees dans `isolated`.
+- **`QuestController::index`** : construit `activeArcs` (a partir des `PlayerQuest`) et `completedArcs` (a partir des `PlayerQuestCompleted`) via le grouper, en partageant la liste des IDs de quetes terminees pour la progression d'arc ; passes au template.
+- **`templates/game/quest/index.html.twig`** : onglets « En cours » et « Terminees » rendus par sections d'arc (en-tete slug humanise + badge `n/total`) puis une section « Divers » pour les quetes isolees. Les cartes de quete extraites en partials reutilisables :
+  - **`_active_quest_card.html.twig`** (carte quete active, avec nouveau badge « Etape N » quand `storyArc` + `arcOrder`).
+  - **`_completed_quest_card.html.twig`** (carte quete terminee, meme badge d'etape).
+- Onglets « Quotidiennes » et « Disponibles » inchanges (hors perimetre du regroupement par arc).
+
+### Verifications
+
+- `QuestArcGrouperTest` (8 cas : groupement + tri par `arcOrder`, quetes isolees, progression partielle, progression complete, IDs completes hors arc ignores, ordre alphabetique des arcs, extraction via `callable` sur item wrapper, entree vide).
+- QA : cs-fixer, PHPStan, PHPUnit **a relancer dans le conteneur Docker** (indisponible dans l'environnement de dev de cette session).
+
+### Notes
+
+- Aucun changement de schema ni de donnees : reutilise `storyArc`/`arcOrder` (NAR-01). Tant qu'aucune quete n'a d'arc, tout apparait sous « Divers » sans en-tete redondant (l'en-tete « Divers » n'est affiche que s'il existe au moins un arc).
 
 ---
 

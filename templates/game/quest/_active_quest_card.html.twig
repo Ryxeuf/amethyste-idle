@@ -1,0 +1,246 @@
+{# Carte d'une quete active. Contexte attendu : playerQuest, questProgress,
+   questChains, questTypes, questGivers, monstersBySlug (herites de l'inclusion). #}
+{% set quest = playerQuest.quest %}
+{% set progress = questProgress[playerQuest.id] %}
+{% set chainInfo = questChains[quest.id] ?? null %}
+{% set questType = questTypes[quest.id] ?? 'other' %}
+{% set giver = questGivers[quest.id] ?? null %}
+<div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border border-gray-600" id="quest-{{ playerQuest.id }}">
+    <div class="flex items-start justify-between gap-2 mb-2">
+        <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-white font-semibold text-sm sm:text-base">{{ quest|localized_quest_name }}</h3>
+                {% if quest.storyArc and quest.arcOrder %}
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/50 text-indigo-300 border border-indigo-700/50">
+                        Etape {{ quest.arcOrder }}
+                    </span>
+                {% endif %}
+                {% if chainInfo %}
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-900/50 text-purple-300 border border-purple-700/50">
+                        Quete {{ chainInfo.position }}/{{ chainInfo.total }}
+                    </span>
+                {% endif %}
+                <span class="text-[10px] px-1.5 py-0.5 rounded {{ questType == 'kill' ? 'bg-red-900/50 text-red-300 border border-red-700/50' : (questType == 'collect' ? 'bg-green-900/50 text-green-300 border border-green-700/50' : (questType == 'talk_to' ? 'bg-cyan-900/50 text-cyan-300 border border-cyan-700/50' : (questType == 'boss_challenge' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/50' : (questType == 'defend' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50' : (questType == 'escort' ? 'bg-teal-900/50 text-teal-300 border border-teal-700/50' : (questType == 'puzzle' ? 'bg-purple-900/50 text-purple-300 border border-purple-700/50' : 'bg-gray-800/50 text-gray-300 border border-gray-600/50')))))) }}">
+                    {{ questType == 'kill' ? 'Combat' : (questType == 'collect' ? 'Recolte' : (questType == 'deliver' ? 'Livraison' : (questType == 'explore' ? 'Exploration' : (questType == 'talk_to' ? 'Enquete' : (questType == 'boss_challenge' ? 'Defi Boss' : (questType == 'defend' ? 'Defense' : (questType == 'escort' ? 'Escorte' : (questType == 'puzzle' ? 'Enigme' : 'Divers')))))))) }}
+                </span>
+                {% if quest.hidden %}
+                    <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/50 text-amber-300 border border-amber-700/50">
+                        Decouverte
+                    </span>
+                {% endif %}
+            </div>
+            <p class="text-gray-400 text-xs sm:text-sm mt-0.5">{{ quest|localized_quest_description }}</p>
+            {% if giver %}
+                <p class="text-gray-500 text-[10px] mt-1">
+                    Donnee par <span class="text-amber-400/80">{{ giver.name }}</span>
+                    {% if giver.map %}
+                        — <a href="{{ path('app_game_map') }}" class="text-purple-400/80 hover:text-purple-300 underline">{{ giver.map ? giver.map|localized_map_name : 'Carte' }}</a>
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+        <div class="flex gap-1.5 flex-shrink-0">
+            {% if progress >= 100 %}
+                {% if quest.choiceOutcome is not empty %}
+                    <button onclick="showChoiceModal({{ playerQuest.id }}, {{ quest.choiceOutcome|json_encode|e('html_attr') }})"
+                            class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white text-xs rounded transition-colors touch-target">
+                        Choisir & Rendre
+                    </button>
+                {% else %}
+                    <button onclick="completeQuest({{ playerQuest.id }})"
+                            class="px-2.5 py-1.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white text-xs rounded transition-colors touch-target">
+                        Rendre
+                    </button>
+                {% endif %}
+            {% endif %}
+            <button onclick="abandonQuest({{ playerQuest.id }})"
+                    class="px-2.5 py-1.5 bg-red-600/60 hover:bg-red-500 active:bg-red-700 text-white text-xs rounded transition-colors touch-target">
+                Abandonner
+            </button>
+        </div>
+    </div>
+
+    {# Progress bar #}
+    <div class="mt-2">
+        <div class="flex justify-between text-[10px] sm:text-xs text-gray-400 mb-1">
+            <span>Progression</span>
+            <span>{{ progress }}%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill {% if progress >= 100 %}bg-green-500{% else %}bg-purple-500{% endif %}"
+                 style="width: {{ progress }}%"></div>
+        </div>
+    </div>
+
+    {# Tracking details #}
+    {% set tracking = playerQuest.tracking %}
+    {% if tracking.monsters is defined and tracking.monsters is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for monster in tracking.monsters %}
+                {% set monsterEntity = monstersBySlug[monster.slug] ?? null %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Tuer {{ monsterEntity ? monsterEntity|localized_monster_name : monster.name }}</span>
+                    <span class="{% if monster.count >= monster.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ monster.count }}/{{ monster.necessary }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.collect is defined and tracking.collect is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for item in tracking.collect %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Recolter {{ item.slug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                    <span class="{% if item.count >= item.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ item.count }}/{{ item.necessary }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.craft is defined and tracking.craft is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for item in tracking.craft %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Fabriquer {{ item.slug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                    <span class="{% if item.count >= item.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ item.count }}/{{ item.necessary }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.deliver is defined and tracking.deliver is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.deliver %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Livrer {{ entry.name|default(entry.item_slug)|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count }}/{{ entry.necessary }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.explore is defined and tracking.explore is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.explore %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Explorer {{ entry.name|default('Zone inconnue') }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count >= entry.necessary ? 'Decouvert' : 'Non decouvert' }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.talk_to is defined and tracking.talk_to is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.talk_to %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Parler a {{ entry.name|default('PNJ inconnu') }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count >= entry.necessary ? 'Fait' : 'A faire' }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.boss_challenge is defined and tracking.boss_challenge is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.boss_challenge %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Vaincre {{ entry.name|default('Boss') }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count >= entry.necessary ? 'Vaincu' : 'Non vaincu' }}
+                    </span>
+                </div>
+                {% if entry.conditions is defined and entry.conditions is not empty %}
+                    <div class="ml-3 text-[10px] text-gray-500">
+                        {% if entry.conditions.no_heal is defined and entry.conditions.no_heal %}
+                            <span class="inline-block mr-2">Sans soin</span>
+                        {% endif %}
+                        {% if entry.conditions.solo is defined and entry.conditions.solo %}
+                            <span class="inline-block mr-2">Solo</span>
+                        {% endif %}
+                        {% if entry.conditions.time_limit is defined %}
+                            <span class="inline-block">< {{ (entry.conditions.time_limit / 60)|round }}min</span>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.defend is defined and tracking.defend is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.defend %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">Defendre {{ entry.zone_name|default('Zone') }} — Tuer {{ entry.name }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count }}/{{ entry.necessary }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.escort is defined and tracking.escort is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.escort %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">{{ entry.name|default('Escorter') }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count >= entry.necessary ? 'Arrive a destination' : 'En route...' }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if tracking.puzzle is defined and tracking.puzzle is not empty %}
+        <div class="mt-2 space-y-0.5">
+            {% for entry in tracking.puzzle %}
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-gray-300">{{ entry.name|default('Enigme') }}</span>
+                    <span class="{% if entry.count >= entry.necessary %}text-green-400{% else %}text-gray-400{% endif %}">
+                        {{ entry.count >= entry.necessary ? 'Resolue' : 'Non resolue' }}
+                    </span>
+                </div>
+                {% if entry.count < entry.necessary %}
+                    <div class="mt-1 flex gap-1">
+                        <input type="text" id="puzzle-answer-{{ entry.pnj_id }}" placeholder="Votre reponse..."
+                               class="flex-1 px-2 py-0.5 text-xs bg-gray-900 border border-gray-600 rounded text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none">
+                        <button onclick="submitPuzzleAnswer({{ entry.pnj_id }})"
+                                class="px-2 py-0.5 text-xs bg-purple-700 hover:bg-purple-600 text-white rounded transition-colors">
+                            Repondre
+                        </button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {# Rewards #}
+    {% set rewards = quest.rewards %}
+    {% if rewards is not empty %}
+        <div class="mt-2 pt-2 border-t border-gray-600">
+            <span class="text-[10px] text-gray-500">Recompenses :</span>
+            <div class="flex flex-wrap gap-3 mt-0.5">
+                {% if rewards.gils is defined %}
+                    <span class="text-yellow-400 text-xs">{{ rewards.gils }} Gils</span>
+                {% elseif rewards.gold is defined %}
+                    <span class="text-yellow-400 text-xs">{{ rewards.gold }} Gils</span>
+                {% endif %}
+                {% if rewards.xp is defined %}
+                    <span class="text-blue-400 text-xs">{{ rewards.xp }} XP</span>
+                {% endif %}
+                {% if rewards.items is defined %}
+                    {% for itemData in rewards.items %}
+                        {% if itemData is iterable and itemData.genericItemSlug is defined %}
+                            <span class="text-green-400 text-xs">{{ itemData.count|default(1) }}x {{ itemData.genericItemSlug|replace({'_': ' ', '-': ' '})|capitalize }}</span>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
