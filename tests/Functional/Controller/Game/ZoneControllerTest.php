@@ -15,6 +15,7 @@ use App\GameEngine\Zone\ExploreService;
 use App\GameEngine\Zone\GatherResult;
 use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\HuntService;
+use App\GameEngine\Zone\LifeRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
@@ -52,6 +53,7 @@ class ZoneControllerTest extends TestCase
     private ZoneTravelService&MockObject $zoneTravelService;
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
     private ActionEnergyManager&MockObject $actionEnergyManager;
+    private LifeRegenManager&MockObject $lifeRegenManager;
     private ExploreService&MockObject $exploreService;
     private HuntService&MockObject $huntService;
     private GatherService&MockObject $gatherService;
@@ -83,6 +85,7 @@ class ZoneControllerTest extends TestCase
         $this->zoneTravelService = $this->createMock(ZoneTravelService::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
+        $this->lifeRegenManager = $this->createMock(LifeRegenManager::class);
         $this->exploreService = $this->createMock(ExploreService::class);
         $this->exploreService->method('getExploreCost')->willReturn(5);
         $this->huntService = $this->createMock(HuntService::class);
@@ -102,6 +105,7 @@ class ZoneControllerTest extends TestCase
             $this->zoneTravelService,
             $this->visitedZoneRepository,
             $this->actionEnergyManager,
+            $this->lifeRegenManager,
             $this->exploreService,
             $this->huntService,
             $this->gatherService,
@@ -139,6 +143,8 @@ class ZoneControllerTest extends TestCase
         $connection = new ZoneConnection($zone, $target, 300);
 
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $player->setCurrentZone($zone);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
@@ -187,6 +193,8 @@ class ZoneControllerTest extends TestCase
     public function testExploreRedirectsToFightOnMobEncounter(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -203,6 +211,8 @@ class ZoneControllerTest extends TestCase
     public function testExploreFlashesResultForNonCombatEvent(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -221,6 +231,8 @@ class ZoneControllerTest extends TestCase
     public function testExploreShowsErrorFlashWhenRefused(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -236,6 +248,8 @@ class ZoneControllerTest extends TestCase
     public function testExploreRejectsInvalidCsrfToken(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
         $this->exploreService->expects($this->never())->method('explore');
@@ -249,6 +263,8 @@ class ZoneControllerTest extends TestCase
     public function testHuntRedirectsToFightOnSuccess(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -267,6 +283,8 @@ class ZoneControllerTest extends TestCase
     public function testHuntShowsErrorFlashWhenRefused(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -284,6 +302,8 @@ class ZoneControllerTest extends TestCase
     public function testHuntFlashesErrorForUnknownMonster(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -299,6 +319,8 @@ class ZoneControllerTest extends TestCase
     public function testHuntRejectsInvalidCsrfToken(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
         $this->huntService->expects($this->never())->method('hunt');
@@ -312,6 +334,8 @@ class ZoneControllerTest extends TestCase
     public function testGatherFlashesResultOnSuccess(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -330,6 +354,8 @@ class ZoneControllerTest extends TestCase
     public function testGatherShowsErrorFlashWhenRefused(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -345,6 +371,8 @@ class ZoneControllerTest extends TestCase
     public function testGatherRejectsInvalidCsrfToken(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
         $this->gatherService->expects($this->never())->method('gather');
@@ -360,6 +388,8 @@ class ZoneControllerTest extends TestCase
         $zone = $this->buildZone('village-de-lumiere', Zone::TYPE_CITY, true);
         $destination = $this->buildZone('crete-de-ventombre');
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $player->setCurrentZone($zone);
         $player->setTravelToZone($destination);
         $player->setTravelArrivesAt(new \DateTimeImmutable('+300 seconds'));
@@ -381,6 +411,8 @@ class ZoneControllerTest extends TestCase
     {
         $zone = $this->buildZone('village-de-lumiere', Zone::TYPE_CITY, true);
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $player->setCurrentZone($zone);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
@@ -398,6 +430,8 @@ class ZoneControllerTest extends TestCase
     {
         $hub = $this->buildZone(ZoneController::HUB_SLUG, Zone::TYPE_CITY, true);
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $player->setMap(new Map());
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
@@ -420,6 +454,8 @@ class ZoneControllerTest extends TestCase
     public function testRendersEmptyStateWhenNoZoneResolvable(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
         $this->playerZoneSynchronizer->method('syncFromMap')->willReturn(null);
@@ -436,6 +472,8 @@ class ZoneControllerTest extends TestCase
     public function testTravelStartsAndRedirectsWithSuccessFlash(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -455,6 +493,8 @@ class ZoneControllerTest extends TestCase
     public function testTravelRefusalShowsErrorFlash(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
 
@@ -473,6 +513,8 @@ class ZoneControllerTest extends TestCase
     public function testTravelRejectsInvalidCsrfToken(): void
     {
         $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
         $this->playerHelper->method('getPlayer')->willReturn($player);
         $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
         $this->zoneTravelService->expects($this->never())->method('startTravel');

@@ -142,6 +142,23 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 ### Les 4 curseurs du pivot
 
 1. **Energie** (tentatives) — ce chapitre.
-2. **PV** (echecs) — regen hors combat, ZON-12.
+2. **PV** (echecs) — regen hors combat, ZON-12 (section 9).
 3. **Lockouts** (donjons) — recompenses decroissantes, ZON-20.
 4. **Contribution** (loot de groupe) — boss de zone, ZON-18.
+
+## 9. Regeneration des PV hors combat (pivot, ZON-12)
+
+Deuxieme regulateur du pivot PBBG : l'energie limite les **tentatives** (section 8), les PV font payer les **echecs**. Sortir affaibli d'un combat (victoire couteuse, fuite, respawn a 50 %) impose d'attendre la regeneration ou de consommer des **soins** (objets/sorts existants, inchanges) avant de repartir a pleine puissance. **Jamais pendant le combat** : les PV y restent geres par le combat tour par tour ; la regen hors combat ne s'applique qu'a un joueur vivant, hors combat et blesse.
+
+### Curseur (table `parameter`, lu par `LifeRegenManager`)
+
+| Cle | Defaut (code) | Effet |
+|-----|---------------|-------|
+| `zone.life.regen_seconds` | 12 | Secondes par point de vie regenere (12 s/PV = 100 PV en 20 min, 200 PV en 40 min) |
+
+### Mecanique
+
+- **Regeneration paresseuse** : calculee a la lecture (`LifeRegenManager::refresh`, appele sur l'ecran de zone), aucun cron. Le reliquat de temps est conserve entre deux lectures.
+- **Ancre a la sortie de combat** (`anchor`) : `Player.lifeUpdatedAt` est remis a maintenant a chaque sortie de combat (victoire via `FightCleaner`, fuite, defaite/respawn). Sans cette ancre, le temps ecoule depuis le dernier plein *anterieur* au combat compterait comme regen — un joueur plein avant combat guerirait instantanement en sortie.
+- **Bornes** : ne regenere pas en combat (`getFight() !== null`), ni un joueur mort (`isDead()` — il passe par le respawn), ni au plein (`life >= maxLife`, l'ancre suit alors « maintenant »).
+- **Repere** : recuperation complete d'un joueur a 0/max en `maxLife * 12 s`. Curseur a etalonner : plus la regen est lente, plus les soins et la prudence prennent de la valeur.

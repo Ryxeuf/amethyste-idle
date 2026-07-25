@@ -4,13 +4,16 @@ namespace App\GameEngine\Fight;
 
 use App\Entity\App\Fight;
 use App\Event\Fight\FightLootedEvent;
+use App\GameEngine\Zone\LifeRegenManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class FightCleaner implements EventSubscriberInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LifeRegenManager $lifeRegenManager,
+    ) {
     }
 
     public static function getSubscribedEvents(): array
@@ -32,6 +35,8 @@ class FightCleaner implements EventSubscriberInterface
             }
             foreach ($fight->getPlayers() as $player) {
                 $player->setFight(null);
+                // Ancre la regen des PV a la sortie de combat (ZON-12).
+                $this->lifeRegenManager->anchor($player);
             }
             $this->entityManager->remove($fight);
 

@@ -1,6 +1,6 @@
 ## Sprint 8 — Energie & actions de zone
 
-> **6 taches** (5 livrees) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (6 livrees ✅) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : installer le rythme PBBG — energie regenerante, actions par zone (explorer, chasser, recolter), contenu declaratif.
 > Prerequis : Sprint 7 (modele zone)
 
@@ -15,12 +15,7 @@
 > **ZON-09 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `HuntService` — action Chasser qui cible une proie precise (monstre deja rencontre au bestiaire et present dans la zone), coute `zone.energy.cost.hunt` puis engage le combat existant. `POST /game/zone/hunt/{id}`, bloc « Chasser une proie » sur l'ecran de zone (masque en zone sure).
 > **ZON-10 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : `GatherService` + `Zone.gatherConfig` declaratif + entite `ZoneVein` (stock collectif partage par zone/ressource qui s'epuise et respawn). Action Recolter (`POST /game/zone/gather/{slug}`) — coute `zone.energy.cost.gather` (defaut 3), puise dans le filon, genere les items existants, journal `TYPE_GATHERING`. Bloc « Recolter un filon » sur l'ecran de zone (jauge stock/capacite, minuterie de respawn). **La boucle PBBG a ses trois actions (explorer/chasser/recolter).**
 > **ZON-11 livree le 2026-07-24** (voir `ROADMAP_DONE.md`) : format declaratif YAML par zone (`config/game/zones/world_1.yaml`) — identite, type, `safe`, `explore` (rencontres/loot), `gather` (filons), `connections`. `ZoneDefinitionLoader` (chargement + validation) + `ZoneImporter` (upsert idempotent, non destructif) ; commande `app:zone:import` (`--file`, `--dry-run`). `ZoneGraphFixtures` rejoue le meme YAML (source de verite unique). Format documente dans `DOCUMENTATION.md` (section 7).
-
-### ZON-12 — Regulation par les PV (S | ★★)
-> Prerequis : ← ZON-08
-- [ ] Regeneration des PV en temps reel hors combat (formule dans `docs/BALANCE.md`)
-- [ ] Sortir affaibli d'un combat impose d'attendre ou de consommer des soins
-- [ ] Verifier que les soins existants (objets, sorts) s'integrent au modele
+> **ZON-12 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : `LifeRegenManager` — regeneration paresseuse des PV hors combat (calquee sur `ActionEnergyManager`, curseur `zone.life.regen_seconds` defaut 12), ancree a la sortie de combat (`FightCleaner`/fuite/defaite) via `Player.lifeUpdatedAt`. Jauge PV sur l'ecran de zone, section 9 de `docs/BALANCE.md`. Les soins existants (objets/sorts) s'integrent sans modification. **Sprint 8 complet (6/6).**
 
 ---
 

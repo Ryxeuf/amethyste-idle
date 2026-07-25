@@ -5,6 +5,26 @@
 
 ---
 
+## ZON-12 — Regulation par les PV (Sprint 8, 2026-07-25)
+
+> Deuxieme regulateur du pivot PBBG : l'energie limite les tentatives (ZON-07), les PV font payer les echecs. Sortir affaibli d'un combat (victoire couteuse, fuite, respawn a 50 %) impose desormais d'attendre la regeneration en temps reel ou de consommer des soins avant de repartir a pleine puissance. Aucun soin actif n'est modifie : objets et sorts existants s'ajoutent simplement au meme modele de PV.
+
+### Changements
+
+- **`src/GameEngine/Zone/LifeRegenManager.php`** (nouveau) : regeneration paresseuse des PV hors combat, calquee sur `ActionEnergyManager` (calcul a la lecture, aucun cron, reliquat de temps conserve). `refresh()` ne fait rien en combat (`getFight() !== null`), pour un joueur mort (`isDead()`) ou au plein. `anchor()` remet `Player.lifeUpdatedAt` a maintenant a chaque sortie de combat. `secondsUntilNextPoint()` / `secondsUntilFull()` pour l'affichage. Curseur `zone.life.regen_seconds` (defaut 12) lu en table `parameter`.
+- **`Player.lifeUpdatedAt`** (colonne `datetime_immutable` nullable + migration `Version20260725ZoneLifeRegen`) : ancre de la regen. Reinitialisee a la sortie de combat pour que le temps ecoule ne soit compte qu'a partir du moment ou le joueur quitte le combat blesse — jamais depuis un plein anterieur au combat (sinon guerison instantanee).
+- **Ancrage a la sortie de combat** : `FightCleaner` (victoire/loot), `FightFleeController` (fuite reussie) et `FightIndexController` (defaite/respawn, mono et multi-joueurs) appellent `LifeRegenManager::anchor()`.
+- **`ZoneController::index`** : applique `refresh()` apres l'energie, expose `life` (current/max/nextPointIn/fullIn) au template. Jauge PV (❤️) a cote de la jauge energie sur l'ecran de zone (barre rouge sous 50 %), minuterie « plein dans ~N min ». Traductions FR/EN (`game.zone.life.*`).
+- **`docs/BALANCE.md`** : nouvelle section 9 « Regeneration des PV hors combat » (curseur, mecanique, ancre, bornes, repere d'etalonnage).
+
+### Verifications
+
+- `LifeRegenManagerTest` (13 cas : init de l'ancre, points regeneres, reliquat conserve, plafond au max, no-op au plein / en combat / mort, `anchor` remet a maintenant, `secondsUntilNextPoint` (+ null en combat), `secondsUntilFull`, override du curseur `parameter`, fallback defaut).
+- `ZoneControllerTest` etendu (mock `LifeRegenManager` injecte, players dotes de PV) — 20 cas verts.
+- Integration des soins existants (objets/sorts) verifiee : ils modifient `Player.life` sans passer par la regen ; `refresh()` respecte simplement le plafond `maxLife`.
+
+---
+
 ## ZON-11 — Configuration declarative de zone (Sprint 8, 2026-07-24)
 
 > Aboutissement des trois actions PBBG (Explorer/Chasser/Recolter) : le graphe de zones du World 1 est desormais decrit **en donnees** dans un unique fichier YAML. Ajouter ou ajuster une zone = editer la donnee puis relancer l'import, sans toucher au code. Les fixtures et la commande d'import partagent la meme source de verite.

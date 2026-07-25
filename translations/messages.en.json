@@ -1088,6 +1088,11 @@
           "not_enough": "Not enough energy — it regenerates in real time."
         }
       },
+      "life": {
+        "label": "HP",
+        "tooltip": "Your HP regenerates in real time out of combat. Leaving a fight weakened forces you to wait or heal (items, spells) before setting out again.",
+        "full_in": "Full in ~%minutes% min"
+      },
       "explore": {
         "result": {
           "mob": "You cross paths with a %monster%!",
