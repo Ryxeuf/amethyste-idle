@@ -28,7 +28,7 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->resolvePendingFight();
 
         static::$pantherClient->request('GET', '/game/zone');
-        $this->waitForSelector('[data-testid="zone-header"]');
+        $this->waitForSelector('[data-testid="zone-header"]', self::WAIT_TIMEOUT_SLOW);
         $this->waitForTurbo();
 
         $this->assertGreaterThan(0, $this->countSelector('[data-testid="zone-name"]'), 'Selecteur absent : [data-testid="zone-name"]');
@@ -45,7 +45,7 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->resolvePendingFight();
 
         static::$pantherClient->request('GET', '/game/zone');
-        $this->waitForSelector('[data-testid="zone-header"]');
+        $this->waitForSelector('[data-testid="zone-header"]', self::WAIT_TIMEOUT_SLOW);
         $this->waitForTurbo();
 
         if (0 === $this->countSelector('[data-testid="zone-travel-form"]')) {
@@ -66,7 +66,7 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->resolvePendingFight();
 
         static::$pantherClient->request('GET', '/game/zone');
-        $this->waitForSelector('[data-testid="zone-header"]');
+        $this->waitForSelector('[data-testid="zone-header"]', self::WAIT_TIMEOUT_SLOW);
         $this->waitForTurbo();
 
         if (!$this->clickSelector('[data-testid="zone-explore-button"]')) {

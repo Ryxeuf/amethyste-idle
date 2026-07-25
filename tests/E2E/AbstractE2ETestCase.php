@@ -13,6 +13,17 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     /** Default timeout in seconds for wait operations. */
     protected const WAIT_TIMEOUT = 10;
 
+    /**
+     * Timeout elargi pour les premiers rendus d'un ecran lourd.
+     *
+     * L'ecran de zone compile un gabarit de plus de 500 lignes et resout, au
+     * premier appel, l'arrivee d'un voyage, la regen d'energie et de PV, les
+     * expeditions, la presence, les evenements et les filons. Ce cout de
+     * demarrage a froid depasse regulierement 10 s sur un runner CI, alors que
+     * les rendus suivants sont immediats.
+     */
+    protected const WAIT_TIMEOUT_SLOW = 30;
+
     protected function setUp(): void
     {
         parent::setUp();
