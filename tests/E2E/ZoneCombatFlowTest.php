@@ -63,7 +63,12 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
         }
 
         $this->waitForSelector('#action-attack', self::WAIT_TIMEOUT_SLOW);
+
+        // L'attaque de base exige une cible selectionnee : sans elle, le bouton
+        // ouvre une alerte native au lieu de jouer un tour.
+        $this->assertTrue($this->selectFirstMobTarget(), 'Le combat doit proposer une cible.');
         $this->assertTrue($this->clickSelector('#action-attack'), 'Le bouton d\'attaque doit etre cliquable.');
+        $this->dismissAlertIfAny();
         $this->waitForTurbo();
 
         // Apres un tour : soit le combat continue, soit il est resolu (butin,

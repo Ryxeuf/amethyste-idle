@@ -33,6 +33,38 @@ abstract class AbstractE2ETestCase extends PantherTestCase
                 'browser' => static::CHROME,
             ]);
         }
+
+        // Une alerte native laissee ouverte par un test precedent bloque
+        // **toutes** les commandes WebDriver suivantes
+        // (`UnexpectedAlertOpenException`) : la suite entiere tombe pour une
+        // seule popup. On repart d'un navigateur propre.
+        $this->dismissAlertIfAny();
+    }
+
+    /**
+     * Ferme une alerte JS native si le navigateur en affiche une.
+     *
+     * L'ecran de combat en ouvre une lorsqu'on attaque sans cible selectionnee
+     * (« Veuillez selectionner une cible »).
+     */
+    protected function dismissAlertIfAny(): void
+    {
+        try {
+            static::$pantherClient->switchTo()->alert()->accept();
+        } catch (\Throwable) {
+            // Aucune alerte ouverte : cas nominal.
+        }
+    }
+
+    /**
+     * Selectionne la premiere cible ennemie de l'ecran de combat.
+     *
+     * L'attaque de base exige une cible : sans elle, le bouton declenche une
+     * alerte bloquante au lieu d'un tour de combat.
+     */
+    protected function selectFirstMobTarget(): bool
+    {
+        return $this->clickSelector('.selectable-target[data-target-type="mob"]');
     }
 
     protected function login(string $email = 'remy@amethyste.game', string $password = 'test'): void
@@ -262,12 +294,23 @@ abstract class AbstractE2ETestCase extends PantherTestCase
         $this->waitForTurbo();
 
         for ($turn = 0; $turn < $maxTurns; ++$turn) {
+            $this->dismissAlertIfAny();
+
             if (!str_contains(static::$pantherClient->getCurrentURL(), '/game/fight')) {
                 return true;
             }
+            if (!$this->selectorExists('#action-attack')) {
+                return true;
+            }
+
+            // Sans cible selectionnee, le bouton ouvre une alerte bloquante.
+            $this->selectFirstMobTarget();
+            $this->dismissAlertIfAny();
+
             if (!$this->clickSelector('#action-attack')) {
                 return true;
             }
+            $this->dismissAlertIfAny();
 
             $this->waitForTurbo();
         }
