@@ -165,9 +165,7 @@ class AuctionTransactionRepository extends ServiceEntityRepository
 
         $byDay = [];
         foreach ($rows as $row) {
-            $day = $row['purchasedAt'] instanceof \DateTimeInterface
-                ? $row['purchasedAt']->format('Y-m-d')
-                : (string) $row['purchasedAt'];
+            $day = $row['purchasedAt']->format('Y-m-d');
             $byDay[$day] ??= ['day' => $day, 'trades' => 0, 'volume' => 0];
             ++$byDay[$day]['trades'];
             $byDay[$day]['volume'] += (int) $row['totalPrice'];
