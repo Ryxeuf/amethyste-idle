@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,30 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-10 — Boss / climax de saison (Piste D narration, 2026-07-25)
+
+> Le climax d'une saison devient un **boss de saison** de zone, annonce sur la fenetre de climax et combattu de facon **asynchrone a la contribution** (aucune presence simultanee requise). Generalisation minimale du systeme de world boss existant — pas de reconstruction du combat.
+
+### Changements
+
+- **`WorldBossManager`** : gate de type elargi via `handlesBossFor()` — le manager spawn/despawn desormais aussi sur un GameEvent **beat de climax** (`GameEvent::BEAT_CLIMAX`), en plus des `TYPE_BOSS_SPAWN`. Le spawn reel reste conditionne aux parametres de boss (`monster_slug`/`map_id`/`coordinates`, valides par `spawnWorldBoss`). Le boss est lie a son GameEvent (`Mob::gameEvent`), d'ou le lien transitif `Mob → GameEvent → saison`.
+- **`Mob::isSeasonBoss()`** : world boss rattache au beat de climax d'un arc de saison.
+- **`SeasonArcFixtures`** : le beat de climax de la Saison 1 porte les parametres du boss (`forest_guardian`, `map_id` 3 = Foret des murmures) — le boss est annonce/spawne quand le beat entre dans sa fenetre.
+- **Reutilise sans changement** : accumulation de contribution (`Fight.contributions`) et **loot par contribution** (`WorldBossLootDistributor` : top-3 garanti + bonus de probabilite + mise a l'echelle par participants). Le boss herite de ce modele parce qu'il est spawne avec `isWorldBoss = true`. La fenetre de climax borne naturellement le boss (l'executor spawn a l'activation, despawn a la fin).
+
+### Verifications
+
+- `WorldBossManagerTest` (unit, +2 cas) : spawn d'un boss de saison sur un **beat de climax `TYPE_CUSTOM`** (Mob `isWorldBoss` + `isSeasonBoss`, rattache au GameEvent) ; **pas** de spawn sur un beat de montee (non climax).
+- `MobSeasonBossTest` (unit, 4 cas) : `isSeasonBoss` vrai seulement pour un world boss rattache a un beat de saison.
+- QA : cs-fixer OK ; PHPStan ; PHPUnit en CI.
+
+### Decisions / perimetre
+
+- **Energie-par-assaut deferee** : dans le modele actuel, engager un world boss se fait en le rejoignant (walk-in) sans cout d'energie ; ajouter un cout necessiterait de modifier le flux de mouvement/combat (`PlayerMoveProcessor`), a fort rayon d'impact et hors du perimetre narratif de NAR-10. Le cœur du design (asynchrone, a la contribution, sans presence simultanee) est deja satisfait. A reprendre avec l'economie d'action PBBG si souhaite.
+- Recompenses de climax « thematiques » : portees par la table de loot du monstre boss (`forest_guardian` : `guardian_bark_armor`/`guardian_thorn_staff` garantis pour le top-3).
 
 ---
 

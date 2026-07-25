@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\GameEngine\Event;
 
 use App\Entity\App\GameEvent;
+use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\Game\Monster;
@@ -151,6 +152,84 @@ class WorldBossManagerTest extends TestCase
         $this->em->expects($this->never())->method('flush');
 
         $this->manager->onEventCompleted(new GameEventCompletedEvent($event));
+    }
+
+    public function testSpawnSeasonBossOnClimaxBeatActivation(): void
+    {
+        $monster = $this->createMonster('forest_guardian', 'Gardien de la Forêt', 400, 20);
+        $map = $this->createMap(3);
+
+        // Beat de climax de type CUSTOM (NAR-08) portant des parametres de boss (NAR-10).
+        $event = $this->createSeasonClimaxEvent([
+            'monster_slug' => 'forest_guardian',
+            'map_id' => 3,
+            'coordinates' => '20.20',
+        ]);
+
+        $monsterRepo = $this->createMock(EntityRepository::class);
+        $monsterRepo->method('findOneBy')->with(['slug' => 'forest_guardian'])->willReturn($monster);
+
+        $mapRepo = $this->createMock(EntityRepository::class);
+        $mapRepo->method('find')->with(3)->willReturn($map);
+
+        $this->em->method('getRepository')->willReturnCallback(
+            fn (string $class) => match ($class) {
+                Monster::class => $monsterRepo,
+                Map::class => $mapRepo,
+                default => $this->createMock(EntityRepository::class),
+            },
+        );
+
+        $this->em->expects($this->once())->method('persist')
+            ->with($this->callback(function (Mob $mob) use ($monster, $event): bool {
+                $this->assertSame($monster, $mob->getMonster());
+                $this->assertTrue($mob->isWorldBoss());
+                $this->assertSame($event, $mob->getGameEvent());
+                $this->assertTrue($mob->isSeasonBoss(), 'Le boss de climax doit etre un boss de saison.');
+
+                return true;
+            }));
+        $this->em->expects($this->once())->method('flush');
+
+        $this->manager->onEventActivated(new GameEventActivatedEvent($event));
+    }
+
+    public function testDoesNotSpawnOnNonClimaxCustomBeat(): void
+    {
+        // Beat de montee (CUSTOM, non climax) : pas de spawn de boss.
+        $event = $this->createSeasonBeatEvent(GameEvent::BEAT_MONTEE, [
+            'monster_slug' => 'forest_guardian',
+            'map_id' => 3,
+            'coordinates' => '20.20',
+        ]);
+
+        $this->em->expects($this->never())->method('persist');
+        $this->em->expects($this->never())->method('flush');
+
+        $this->manager->onEventActivated(new GameEventActivatedEvent($event));
+    }
+
+    private function createSeasonClimaxEvent(array $params): GameEvent
+    {
+        return $this->createSeasonBeatEvent(GameEvent::BEAT_CLIMAX, $params);
+    }
+
+    /**
+     * @param array<string, mixed> $params
+     */
+    private function createSeasonBeatEvent(string $beat, array $params): GameEvent
+    {
+        $event = new GameEvent();
+        $event->setName('Season Beat Test');
+        $event->setType(GameEvent::TYPE_CUSTOM);
+        $event->setStatus(GameEvent::STATUS_ACTIVE);
+        $event->setStartsAt(new \DateTime('-1 hour'));
+        $event->setEndsAt(new \DateTime('+1 hour'));
+        $event->setSeason(new InfluenceSeason());
+        $event->setBeat($beat);
+        $event->setParameters($params);
+
+        return $event;
     }
 
     private function createBossSpawnEvent(array $params): GameEvent
