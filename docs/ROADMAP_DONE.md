@@ -1,7 +1,32 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ZON-20 — Lockouts & recompenses decroissantes de donjon de groupe (Sprint 10, 2026-07-25)
+
+> Protege l'economie contre le farm repetitif des donjons de groupe **sans blocage sec** : plutot qu'un lockout dur (1 clear/jour), la recompense **decroit** a chaque reussite du meme donjon dans une fenetre glissante. Le joueur peut toujours rejouer (cooperation, variete de contenu), mais le rendement fond. Premiere recompense concrete a la reussite d'un donjon de groupe (le sous-jalon combat ZON-19 ne faisait que completer le run).
+
+### Changements
+
+- **`GroupDungeonClear`** (entite + table + migration + repository) : trace une reussite par membre (joueur, donjon, run, gils obtenus, horodatage). Index `(player, dungeon, cleared_at)` pour le comptage de la fenetre glissante.
+- **`GroupDungeonRewardService`** : `award(run)` — pour chaque membre, compte les reussites recentes du donjon (`countRecentClears` depuis `now - window_hours`), calcule le facteur `max(min_factor, decay^recentClears)`, cree la trace et credite les gils (`base_gils × facteur`). Curseurs lus dans `parameter` avec defauts de code ; `now()` surchargeable pour les tests.
+- **`GroupDungeonCombatService`** : appelle `rewardService->award($run)` au seul instant ou le run passe `completed` (couvre l'attaque volontaire et la resolution auto d'un tour en retard — point de completion unique, idempotent).
+- **`ZoneController`** : la banniere expose `rewardGils` (recompense du joueur pour ce run) quand le run vient d'etre complete.
+- **Ecran de zone** : la banniere « rencontre vaincue » affiche les gils gagnes.
+- **`docs/BALANCE.md`** : curseurs `zone.dungeon.reward.base_gils` (150), `zone.dungeon.lockout.window_hours` (24), `zone.dungeon.lockout.decay` (0.5), `zone.dungeon.lockout.min_factor` (0.25) — section 8.
+
+### Decision de conception
+
+- **Recompenses decroissantes plutot que lockout dur** (conforme a la roadmap : « preferer les recompenses decroissantes au blocage sec »). Aucun cooldown bloquant par defaut : la decroissance suffit a proteger l'economie tout en laissant le contenu accessible pour la cooperation. Un lockout dur reste possible ulterieurement via un curseur dedie si le besoin apparait.
+
+### Verifications
+
+- `GroupDungeonRewardServiceTest` (3 cas : 1re reussite = recompense pleine, 2e dans la fenetre = moitie, plancher applique au-dela).
+- `GroupDungeonCombatServiceTest` adapte (mock `GroupDungeonRewardService`), `ZoneControllerTest` adapte (mock `GroupDungeonClearRepository`).
+- Local : suite ciblee verte (36 tests), PHPStan niveau 5 OK, PHP-CS-Fixer clean, `lint:container` OK, `app:game:validate` OK, migration validee en PostgreSQL.
 
 ---
 

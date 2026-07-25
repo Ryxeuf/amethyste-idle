@@ -29,6 +29,7 @@ use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
+use App\Repository\GroupDungeonClearRepository;
 use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
@@ -71,6 +72,7 @@ class ZoneControllerTest extends TestCase
     private ZoneBossService&MockObject $zoneBossService;
     private GroupDungeonService&MockObject $groupDungeonService;
     private GroupDungeonCombatService&MockObject $groupDungeonCombatService;
+    private GroupDungeonClearRepository&MockObject $groupDungeonClearRepository;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -124,6 +126,7 @@ class ZoneControllerTest extends TestCase
         $this->groupDungeonService = $this->createMock(GroupDungeonService::class);
         $this->groupDungeonService->method('getActiveRunForPlayer')->willReturn(null);
         $this->groupDungeonCombatService = $this->createMock(GroupDungeonCombatService::class);
+        $this->groupDungeonClearRepository = $this->createMock(GroupDungeonClearRepository::class);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -146,6 +149,7 @@ class ZoneControllerTest extends TestCase
             $this->zoneBossService,
             $this->groupDungeonService,
             $this->groupDungeonCombatService,
+            $this->groupDungeonClearRepository,
         );
         $this->controller->setContainer($this->createContainer());
     }

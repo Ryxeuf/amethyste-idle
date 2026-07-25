@@ -133,6 +133,10 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | `zone.boss.assault_damage_factor` | 100 | Multiplicateur des degats d'assaut en % (100 = x1.0 de la stat d'attaque du joueur, ZON-18) |
 | `zone.dungeon.turn_seconds` | 45 | Delai par tour d'un donjon de groupe ; au-dela, attaque de base auto (ZON-19, lu par `GroupDungeonCombatService`) |
 | `zone.dungeon.encounter_hp_per_member` | 200 | PV de la rencontre partagee par membre du groupe (ZON-19) |
+| `zone.dungeon.reward.base_gils` | 150 | Gils de base par membre a la reussite d'un donjon de groupe (ZON-20, lu par `GroupDungeonRewardService`) |
+| `zone.dungeon.lockout.window_hours` | 24 | Fenetre glissante (heures) de comptage des reussites pour la decroissance (ZON-20) |
+| `zone.dungeon.lockout.decay` | 0.5 | Facteur multiplicatif de la recompense par reussite recente du meme donjon (ZON-20) |
+| `zone.dungeon.lockout.min_factor` | 0.25 | Plancher de la recompense decroissante (protection de l'economie, on prefere la decroissance au blocage sec, ZON-20) |
 
 `Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
 

@@ -255,7 +255,7 @@
                         </div>
 
                         <p class="text-sm text-emerald-200 mt-1.5 {{ groupDungeon.combat.status == 'completed' ? '' : 'hidden' }}"
-                           data-group-dungeon-target="cleared">🏆 {{ 'game.zone.dungeon.cleared'|trans }}</p>
+                           data-group-dungeon-target="cleared">🏆 {{ 'game.zone.dungeon.cleared'|trans }}{% if groupDungeon.rewardGils is not null %} <span class="text-amber-300">+{{ groupDungeon.rewardGils }} gils</span>{% endif %}</p>
 
                         <div data-group-dungeon-target="combat" class="{{ groupDungeon.combat.status == 'completed' ? 'hidden' : '' }}">
                             <div class="mt-2 mb-1 h-2 w-full rounded-full bg-gray-900 overflow-hidden">
