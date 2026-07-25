@@ -22,6 +22,7 @@ use App\GameEngine\Zone\LifeRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
+use App\GameEngine\Zone\ZoneBossService;
 use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
@@ -65,6 +66,7 @@ class ZoneControllerTest extends TestCase
     private ChatManager&MockObject $chatManager;
     private ZoneEventService&MockObject $zoneEventService;
     private GameTimeService&MockObject $gameTimeService;
+    private ZoneBossService&MockObject $zoneBossService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -113,6 +115,8 @@ class ZoneControllerTest extends TestCase
         $this->zoneEventService->method('getEventCost')->willReturn(10);
         $this->gameTimeService = $this->createMock(GameTimeService::class);
         $this->gameTimeService->method('getPhase')->willReturn('day');
+        $this->zoneBossService = $this->createMock(ZoneBossService::class);
+        $this->zoneBossService->method('getActiveBossForZone')->willReturn(null);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -132,6 +136,7 @@ class ZoneControllerTest extends TestCase
             $this->chatManager,
             $this->zoneEventService,
             $this->gameTimeService,
+            $this->zoneBossService,
         );
         $this->controller->setContainer($this->createContainer());
     }

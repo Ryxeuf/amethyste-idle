@@ -20,6 +20,7 @@ use App\GameEngine\Zone\LifeRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
+use App\GameEngine\Zone\ZoneBossService;
 use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
@@ -69,6 +70,7 @@ class ZoneController extends AbstractController
         private readonly ChatManager $chatManager,
         private readonly ZoneEventService $zoneEventService,
         private readonly GameTimeService $gameTimeService,
+        private readonly ZoneBossService $zoneBossService,
     ) {
     }
 
@@ -116,6 +118,7 @@ class ZoneController extends AbstractController
                 'life' => null,
                 'expedition' => null,
                 'zoneEvents' => [],
+                'zoneBoss' => null,
                 'zoneChat' => null,
                 'phase' => $this->gameTimeService->getPhase(),
             ]);
@@ -168,6 +171,7 @@ class ZoneController extends AbstractController
             ],
             'expedition' => $this->buildExpedition($player, $zone),
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
+            'zoneBoss' => $this->buildZoneBoss($zone),
             'phase' => $this->gameTimeService->getPhase(),
             'zoneChat' => [
                 'zoneId' => $zone->getId(),
@@ -454,6 +458,71 @@ class ZoneController extends AbstractController
         }
 
         return $this->redirectToRoute('app_game_zone');
+    }
+
+    #[Route('/game/zone/boss/{id}/assault', name: 'app_game_zone_boss_assault', methods: ['POST'])]
+    public function assaultBoss(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('zone_boss_assault_' . $id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $event = $this->entityManager->getRepository(GameEvent::class)->find($id);
+        if (null === $event) {
+            $this->addFlash('error', 'game.zone.event.error.unknown');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $result = $this->zoneBossService->assault($player, $event);
+        } catch (ZoneActionException|NotEnoughActionEnergyException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $this->addFlash('boss_result', [
+            'damage' => $result->damageDealt,
+            'hpCurrent' => $result->hpCurrent,
+            'hpMax' => $result->hpMax,
+            'defeated' => $result->defeated,
+        ]);
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Boss de zone asynchrone actif dans la zone (ZON-18) : nom, PV partages,
+     * cout d'assaut. null si aucun boss actif.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildZoneBoss(Zone $zone): ?array
+    {
+        $boss = $this->zoneBossService->getActiveBossForZone($zone);
+        if (null === $boss) {
+            return null;
+        }
+
+        return [
+            'eventId' => $boss->getGameEvent()->getId(),
+            'name' => $boss->getMonster()->getName(),
+            'eventName' => $boss->getGameEvent()->getName(),
+            'hpCurrent' => $boss->getHpCurrent(),
+            'hpMax' => $boss->getHpMax(),
+            'hpPercent' => $boss->getHpPercent(),
+            'cost' => $this->zoneBossService->getAssaultCost(),
+        ];
     }
 
     /**

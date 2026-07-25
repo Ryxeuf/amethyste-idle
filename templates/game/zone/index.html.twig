@@ -80,6 +80,16 @@
                     </div>
                 {% endfor %}
 
+                {% for result in app.flashes('boss_result') %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm {{ result.defeated ? 'bg-fuchsia-900/40 border border-fuchsia-600/60 text-fuchsia-100' : 'bg-red-900/30 border border-red-800/50 text-red-200' }}">
+                        {% if result.defeated %}
+                            ⚔️ {{ 'game.zone.boss.flash.defeated'|trans({'%damage%': result.damage}) }}
+                        {% else %}
+                            ⚔️ {{ 'game.zone.boss.flash.hit'|trans({'%damage%': result.damage, '%current%': result.hpCurrent, '%max%': result.hpMax}) }}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
                 {% for result in app.flashes('expedition_result') %}
                     <div class="mb-3 px-3 py-2 rounded-md text-sm bg-amber-900/30 border border-amber-700/50 text-amber-100">
                         🧭 {{ 'game.zone.expedition.result'|trans({'%zone%': result.zone, '%gils%': result.gils}) }}
@@ -194,6 +204,29 @@
                                 </div>
                             </div>
                         {% endfor %}
+                    </div>
+                {% endif %}
+
+                {# ── Boss de zone asynchrone (ZON-18) ────────────── #}
+                {% if zoneBoss %}
+                    <div class="mb-4 px-3 py-3 rounded-md bg-fuchsia-950/40 border border-fuchsia-700/60">
+                        <div class="flex items-center justify-between gap-2 mb-1.5">
+                            <p class="text-sm font-semibold text-fuchsia-100">☠️ {{ zoneBoss.name }}
+                                <span class="ml-1 text-[10px] uppercase tracking-wide text-fuchsia-300/70">{{ zoneBoss.eventName }}</span>
+                            </p>
+                            <span class="text-xs text-fuchsia-200/80">{{ zoneBoss.hpCurrent }} / {{ zoneBoss.hpMax }} PV</span>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-gray-900 overflow-hidden mb-2">
+                            <div class="h-full bg-fuchsia-500/80" style="width: {{ zoneBoss.hpPercent }}%"></div>
+                        </div>
+                        <form method="post" action="{{ path('app_game_zone_boss_assault', {id: zoneBoss.eventId}) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('zone_boss_assault_' ~ zoneBoss.eventId) }}">
+                            <button type="submit" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-fuchsia-800/50 border border-fuchsia-500 text-fuchsia-50 hover:bg-fuchsia-700/60">
+                                {{ 'game.zone.boss.assault'|trans }}
+                                <span class="ml-2 text-[10px] uppercase tracking-wide text-amber-300/90">⚡ {{ zoneBoss.cost }}</span>
+                            </button>
+                        </form>
+                        <p class="text-[11px] text-fuchsia-200/60 mt-1.5">{{ 'game.zone.boss.hint'|trans }}</p>
                     </div>
                 {% endif %}
 
