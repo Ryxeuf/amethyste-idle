@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,31 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-13 — Gabarits de quetes de fond (Piste E narration, 2026-07-25)
+
+> Du volume sans le cout d'ecriture integral (§3.7) : une chaine de quetes de zone d'exemple, derivee des tables de zone declaratives, avec des noeuds saillants ecrits a la main. Le contenu de fond enrobe la progression sans jamais la bloquer.
+
+### Changements
+
+- **Chaine de fond « Foret des Murmures »** (`storyArc = 'zone_foret-des-murmures'`, 3 etapes) dans `QuestFixtures` :
+  1. `quest_bg_foret_rumeurs` — **decouverte** (`isHidden` + `triggerCondition` explore de la foret, `map_id 3`) : recolte de `plant-mint` (herbe de la table `gather` de la zone).
+  2. `quest_bg_foret_meute` — **renommee 50** : chasse de `wolf` (faune de zone).
+  3. `quest_bg_foret_coeur` — **renommee 100**, **noeud saillant ecrit** (revelation liee au lore) : affrontement d'un `mushroom_golem` gardien.
+- Chainage lineaire des prerequis dans `QuestChainFixtures` (meute ← rumeurs, cœur ← meute).
+- Boucle de construction de `QuestFixtures` etendue pour lire la cle **`minRenownScore`** (gating de renommee declaratif, jusque-la non applique en fixtures).
+- Objectifs/recompenses derives des donnees de zone (herbe, faune) ; recompenses en items existants (`life-potion`, `herbalist-domain-parchment`).
+
+### Verifications
+
+- `BackgroundQuestFixturesTest` (integration, 3 cas) : chaine ordonnee (`arcOrder` 1-3) et chainee par prerequis ; gating **decouverte puis renommee croissante** (isHidden sur l'etape 1, `minRenownScore` 50 puis 100) ; **jamais bloquante** — aucune quete hors de l'arc de fond ne depend d'une quete de fond.
+- QA : cs-fixer OK ; PHPStan non concerne (fixtures exclues) ; PHPUnit + fixtures en CI.
+
+### Notes
+
+- Le gabarit est reproductible pour d'autres zones (mines, marais, crete) en reutilisant leurs tables `gather`/faune ; une seule zone est livree en exemple (CLAUDE.md §8 : fixtures decoupees).
 
 ---
 

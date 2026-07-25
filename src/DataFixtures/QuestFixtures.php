@@ -789,6 +789,81 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'arcOrder' => 4,
                 'gameEvent' => 'season1_beat_resolution',
             ],
+            // --- Contenu de fond : chaine de zone « Foret des Murmures » (NAR-13) ---
+            // Gabarit de chaine de zone : structure/objectifs/recompenses derives des
+            // tables de la zone (herbes, faune), avec des noeuds ecrits a la main.
+            // Non bloquant : gate par la decouverte (isHidden) puis la renommee
+            // (minRenownScore) — jamais requis pour la progression systeme.
+            'quest_bg_foret_rumeurs' => [
+                'name' => 'Rumeurs sous les frondaisons',
+                'name_translations' => ['en' => 'Rumors Beneath the Canopy'],
+                'description' => 'Un bûcheron prétend que les herbes de la Forêt des Murmures murmurent la nuit. Récoltez-en une brassée pour lui prouver qu\'il n\'a pas rêvé.',
+                'description_translations' => ['en' => 'A woodcutter claims the herbs of the Whispering Forest whisper at night. Gather a handful to prove he was not dreaming.'],
+                'requirements' => [
+                    'collect' => [
+                        'plant-mint' => 5,
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 60,
+                    'gold' => 40,
+                ],
+                // Decouverte : revelee en explorant la foret.
+                'isHidden' => true,
+                'triggerCondition' => [
+                    'type' => 'explore',
+                    'map_id' => 3,
+                    'coordinates' => '20.20',
+                ],
+                'storyArc' => 'zone_foret-des-murmures',
+                'arcOrder' => 1,
+            ],
+            'quest_bg_foret_meute' => [
+                'name' => 'La meute des ombres',
+                'name_translations' => ['en' => 'The Shadow Pack'],
+                'description' => 'Les herbes ne murmuraient pas : elles prévenaient. Une meute de loups rôde au cœur de la forêt. Réduisez sa taille avant qu\'elle ne s\'approche du village.',
+                'description_translations' => ['en' => 'The herbs were not whispering: they were warning. A wolf pack prowls the forest heart. Thin it before it nears the village.'],
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Loup', 'slug' => 'wolf', 'count' => 4],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 130,
+                    'gold' => 80,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 2, 'genericItemSlug' => 'life-potion'],
+                    ],
+                ],
+                // Renommee : contenu de fond reserve aux aventuriers etablis.
+                'minRenownScore' => 50,
+                // prerequisiteQuests set after flush (← rumeurs)
+                'storyArc' => 'zone_foret-des-murmures',
+                'arcOrder' => 2,
+            ],
+            'quest_bg_foret_coeur' => [
+                'name' => 'Le Cœur endormi',
+                'name_translations' => ['en' => 'The Sleeping Heart'],
+                'description' => 'En suivant la meute, vous découvrez un bosquet où le temps semble suspendu — et, en son centre, un golem de mousse veillant sur une graine ancienne. La forêt ne murmurait pas des rumeurs, mais un nom : le vôtre. Affrontez le gardien pour percer ce mystère.',
+                'description_translations' => ['en' => 'Following the pack, you find a grove where time seems suspended — and, at its center, a moss golem guarding an ancient seed. The forest was not whispering rumors, but a name: yours. Face the guardian to uncover the mystery.'],
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Golem de Champignons', 'slug' => 'mushroom_golem', 'count' => 1],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 220,
+                    'gold' => 140,
+                    'items' => [
+                        ['type' => 'stuff', 'count' => 1, 'genericItemSlug' => 'herbalist-domain-parchment'],
+                    ],
+                ],
+                // Renommee superieure : aboutissement de la chaine de fond.
+                'minRenownScore' => 100,
+                // prerequisiteQuests set after flush (← meute)
+                'storyArc' => 'zone_foret-des-murmures',
+                'arcOrder' => 3,
+            ],
             // --- Quetes cachees (decouverte) ---
             'quest_hidden_secret_clearing' => [
                 'name' => 'Le secret de la clairiere',
@@ -2142,6 +2217,9 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
             }
             if (isset($data['arcOrder'])) {
                 $quest->setArcOrder($data['arcOrder']);
+            }
+            if (isset($data['minRenownScore'])) {
+                $quest->setMinRenownScore($data['minRenownScore']);
             }
             if (isset($data['gameEvent'])) {
                 $quest->setGameEvent($this->getReference($data['gameEvent'], GameEvent::class));
