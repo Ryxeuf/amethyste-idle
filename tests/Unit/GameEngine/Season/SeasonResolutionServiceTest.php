@@ -12,11 +12,12 @@ use PHPUnit\Framework\TestCase;
 
 final class SeasonResolutionServiceTest extends TestCase
 {
-    private function season(): InfluenceSeason
+    private function season(bool $canon = true): InfluenceSeason
     {
         $season = new InfluenceSeason();
         $season->setSlug('saison-1');
         $season->setName('Saison 1');
+        $season->setCanon($canon);
 
         return $season;
     }
@@ -106,5 +107,17 @@ final class SeasonResolutionServiceTest extends TestCase
         self::assertSame(1, $recorded);
         self::assertNull($calls[0]['guild']);
         self::assertSame('season_saison-1_resolution', $calls[0]['slug']);
+    }
+
+    public function testNonCanonSeasonLeavesNoWorldFact(): void
+    {
+        $calls = [];
+        $service = $this->serviceCapturing($calls);
+
+        // Saison NON marquee canon : aucune trace durable, meme avec un vainqueur.
+        $recorded = $service->resolve($this->season(canon: false), ['foret-des-murmures' => 'Les Gardiens']);
+
+        self::assertSame(0, $recorded);
+        self::assertCount(0, $calls);
     }
 }

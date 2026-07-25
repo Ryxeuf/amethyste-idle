@@ -22,6 +22,7 @@ class InfluenceSeasonFixtures extends Fixture
         $season1->setEndsAt((clone $now)->modify('+21 days'));
         $season1->setStatus(SeasonStatus::Active);
         $season1->setTheme('Éveil');
+        $season1->setCanon(true);
         $season1->setParameters([
             'multipliers' => [
                 'mob_kill' => 1.0,

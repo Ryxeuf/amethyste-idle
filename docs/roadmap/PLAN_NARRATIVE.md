@@ -150,13 +150,12 @@ moteur récurrent qui referme la boucle à trois piliers.
 > varie. Cas sans guilde → fait de résolution neutre. Idempotent par slug. Tests :
 > `SeasonResolutionServiceTest`, `SeasonTickCommandTest` (mock ajouté).
 
-### NAR-12 — Marquage « canon » & entrée journal de monde (S | ★★ | MOYENNE)
-> Le monde hybride : seuls les beats marqués « canon » laissent une trace durable.
-> Prérequis : ← NAR-07, NAR-11
-- [ ] Marqueur « canon » sur un beat/résolution de saison (curation, cf. GAME_PRINCIPLES §6)
-- [ ] Un beat canon génère un `world_fact` horodaté (NAR-07), créditant la guilde (NAR-11)
-- [ ] Les saisons non marquées se clôturent **sans** trace durable (au-delà des récompenses)
-- [ ] Tests (canon → fait de monde ; non-canon → pas de fait)
+### NAR-12 — Marquage « canon » & entrée journal de monde ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> Monde hybride : marqueur `InfluenceSeason::isCanon()` (colonne `is_canon`, migration
+> idempotente). `SeasonResolutionService::resolve` gate désormais l'écriture au journal de
+> monde — seule une saison **canon** génère des `world_fact` (crédit de guilde, NAR-11) ;
+> une saison non-canon se clôture **sans trace durable**. Saison 1 marquée canon (fixture).
+> Tests : `SeasonResolutionServiceTest` (canon → fait / non-canon → aucun), `InfluenceSeasonCanonTest`.
 
 ---
 
