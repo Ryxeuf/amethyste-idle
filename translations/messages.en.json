@@ -1093,6 +1093,39 @@
         "tooltip": "Your HP regenerates in real time out of combat. Leaving a fight weakened forces you to wait or heal (items, spells) before setting out again.",
         "full_in": "Full in ~%minutes% min"
       },
+      "expedition": {
+        "heading": "Expedition",
+        "subtitle": "Send your character to explore this zone for several hours. Loot awaits on return. No other action is possible meanwhile.",
+        "duration": {
+          "short": "Short",
+          "medium": "Medium",
+          "long": "Long"
+        },
+        "in_progress": "Expedition under way to %zone%.",
+        "return_in": "Back in ~%minutes% min.",
+        "return_imminent": "Return imminent.",
+        "ready": "Your expedition to %zone% is complete — loot awaits!",
+        "claim": "Claim the loot",
+        "result": "Expedition to %zone%: +%gils% gils brought back.",
+        "flash": {
+          "started": "Expedition launched. Your character has set out."
+        },
+        "notification": {
+          "title": "Expedition complete",
+          "message": "Your character is back from the expedition. Loot awaits on the zone screen."
+        },
+        "error": {
+          "busy": "Not possible: your character is on an expedition.",
+          "already_active": "An expedition is already under way.",
+          "traveling": "Cannot start an expedition while travelling.",
+          "in_fight": "Cannot start an expedition during a fight.",
+          "no_zone": "No zone to run an expedition in.",
+          "zone_ineligible": "This zone offers no expedition.",
+          "unknown_duration": "Unknown expedition duration.",
+          "none": "No expedition to claim.",
+          "not_complete": "Your expedition is not complete yet."
+        }
+      },
       "explore": {
         "result": {
           "mob": "You cross paths with a %monster%!",

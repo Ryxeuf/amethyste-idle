@@ -1,6 +1,6 @@
 ## Sprint 9 — Time-gating, presence & evenements de zone
 
-> **5 taches** | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **5 taches** (1 livree) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : le monde vit quand le joueur est deconnecte — expeditions, presence par zone, evenements annonces, carte du monde illustree.
 > Prerequis : Sprint 8 (energie & actions de zone)
 
@@ -8,12 +8,7 @@
 
 ---
 
-### ZON-13 — Expeditions time-gated (L | ★★★)
-> Prerequis : ← ZON-11
-- [ ] Envoyer son personnage en expedition N heures reelles dans une zone ; retour = butin a recuperer
-- [ ] Tables de recompenses par zone/duree (config declarative ZON-11)
-- [ ] Etat exclusif : pas de voyage/exploration/combat pendant une expedition
-- [ ] Notification a la fin (in-game ; Mercure si connecte)
+> **ZON-13 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : entite `PlayerExpedition` (une par joueur, contrainte UNIQUE) + `ExpeditionService` — envoi en expedition N heures reelles dans la zone courante (paliers courte/moyenne/longue, curseurs `zone.expedition.duration.*`), resolution paresseuse, butin a recuperer au retour. Recompenses **derivees des tables declaratives de la zone** (coffre `exploreConfig` + filons `gatherConfig`) mises a l'echelle par la duree. Etat exclusif (bloque explorer/chasser/recolter/voyager). Notification de fin via `NotificationService` (in-game + Mercure `player/<id>/notifications`). Section 10 de `docs/BALANCE.md`.
 
 ### ZON-14 — Presence par zone & chat de zone (M | ★★★)
 > Prerequis : ← ZON-05

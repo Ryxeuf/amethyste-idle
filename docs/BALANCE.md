@@ -162,3 +162,28 @@ Deuxieme regulateur du pivot PBBG : l'energie limite les **tentatives** (section
 - **Ancre a la sortie de combat** (`anchor`) : `Player.lifeUpdatedAt` est remis a maintenant a chaque sortie de combat (victoire via `FightCleaner`, fuite, defaite/respawn). Sans cette ancre, le temps ecoule depuis le dernier plein *anterieur* au combat compterait comme regen — un joueur plein avant combat guerirait instantanement en sortie.
 - **Bornes** : ne regenere pas en combat (`getFight() !== null`), ni un joueur mort (`isDead()` — il passe par le respawn), ni au plein (`life >= maxLife`, l'ancre suit alors « maintenant »).
 - **Repere** : recuperation complete d'un joueur a 0/max en `maxLife * 12 s`. Curseur a etalonner : plus la regen est lente, plus les soins et la prudence prennent de la valeur.
+
+## 10. Expeditions time-gated (pivot, ZON-13)
+
+Le joueur envoie son personnage explorer une zone pendant N heures reelles ; au retour, un butin l'attend (a recuperer). **Etat exclusif** : pendant l'expedition, plus de voyage, ni d'exploration/chasse/recolte, ni de combat. Time-gated en temps reel, resolu paresseusement au chargement de l'ecran de zone (aucun cron par joueur). Une seule expedition par joueur a la fois (`LifeRegenManager`/`ActionEnergyManager` restent actifs, la regen des PV continue pendant l'attente).
+
+### Curseurs (table `parameter`, lus par `ExpeditionService`)
+
+| Cle | Defaut (code) | Effet |
+|-----|---------------|-------|
+| `zone.expedition.duration.short` | 3600 | Duree du palier « courte » en secondes (1 h) |
+| `zone.expedition.duration.medium` | 14400 | Duree du palier « moyenne » (4 h) |
+| `zone.expedition.duration.long` | 43200 | Duree du palier « longue » (12 h) |
+
+### Recompenses (derivees des tables declaratives de zone, ZON-11)
+
+Pas de table de butin dediee : les recompenses **reprennent la donnee de zone existante**, mise a l'echelle par la duree (`heures = duree / 3600`).
+
+- **Gils** : la fourchette « coffre » de `Zone.exploreConfig` (`chest_gils_min`/`chest_gils_max`), tiree une fois par heure.
+- **Objets** : un filon de `Zone.gatherConfig` tire au hasard par heure, avec son rendement declare (`yield_min`/`yield_max`). Une zone sans filon ne rapporte que des gils.
+
+Regler le butin d'une expedition = ajuster la donnee de zone (coffre/filons), pas le code. **Zones eligibles** : toute zone non sure (`safe: false`) — les cites/hubs n'ont pas d'expedition.
+
+### Notification de fin
+
+A la fin (heure de retour passee), la resolution paresseuse emet une notification `NotificationService` (persistee in-game + poussee Mercure `player/<id>/notifications` si le joueur est connecte), une seule fois (`PlayerExpedition.notifiedAt`). Le butin se recupere ensuite via le bouton dedie sur l'ecran de zone.

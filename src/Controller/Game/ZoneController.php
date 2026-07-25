@@ -8,6 +8,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
 use App\GameEngine\Zone\ActionEnergyManager;
+use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
 use App\GameEngine\Zone\GatherService;
@@ -59,6 +60,7 @@ class ZoneController extends AbstractController
         private readonly ExploreService $exploreService,
         private readonly HuntService $huntService,
         private readonly GatherService $gatherService,
+        private readonly ExpeditionService $expeditionService,
     ) {
     }
 
@@ -81,6 +83,10 @@ class ZoneController extends AbstractController
         // Regeneration paresseuse des PV hors combat (ZON-12).
         $this->lifeRegenManager->refresh($player, true);
 
+        // Resolution paresseuse d'une expedition terminee (ZON-13) : notifie une
+        // seule fois (in-game + Mercure si connecte).
+        $this->expeditionService->settle($player);
+
         $zone = $this->resolveZone($player);
         if (null === $zone) {
             return $this->render('game/zone/index.html.twig', [
@@ -100,6 +106,7 @@ class ZoneController extends AbstractController
                 'justArrived' => null,
                 'energy' => null,
                 'life' => null,
+                'expedition' => null,
             ]);
         }
 
@@ -148,6 +155,7 @@ class ZoneController extends AbstractController
                 'nextPointIn' => $this->lifeRegenManager->secondsUntilNextPoint($player),
                 'fullIn' => $this->lifeRegenManager->secondsUntilFull($player),
             ],
+            'expedition' => $this->buildExpedition($player, $zone),
             'poiLabels' => [
                 ObjectLayer::TYPE_HARVEST_SPOT => 'game.zone.poi.harvest_spot',
                 ObjectLayer::TYPE_FORGE => 'game.zone.poi.forge',
@@ -178,6 +186,10 @@ class ZoneController extends AbstractController
             $this->addFlash('error', 'game.zone.travel.error.invalid_token');
 
             return $this->redirectToRoute('app_game_zone');
+        }
+
+        if (null !== ($blocked = $this->denyIfOnExpedition($player))) {
+            return $blocked;
         }
 
         try {
@@ -212,6 +224,10 @@ class ZoneController extends AbstractController
             $this->addFlash('error', 'game.zone.travel.error.invalid_token');
 
             return $this->redirectToRoute('app_game_zone');
+        }
+
+        if (null !== ($blocked = $this->denyIfOnExpedition($player))) {
+            return $blocked;
         }
 
         $monster = $this->entityManager->getRepository(Monster::class)->find($id);
@@ -249,6 +265,10 @@ class ZoneController extends AbstractController
             return $this->redirectToRoute('app_game_zone');
         }
 
+        if (null !== ($blocked = $this->denyIfOnExpedition($player))) {
+            return $blocked;
+        }
+
         try {
             $result = $this->gatherService->gather($player, $slug);
         } catch (ZoneActionException|NotEnoughActionEnergyException $exception) {
@@ -278,6 +298,10 @@ class ZoneController extends AbstractController
             return $this->redirectToRoute('app_game_zone');
         }
 
+        if (null !== ($blocked = $this->denyIfOnExpedition($player))) {
+            return $blocked;
+        }
+
         $connection = $this->entityManager->getRepository(ZoneConnection::class)->find($id);
         if (null === $connection) {
             $this->addFlash('error', 'game.zone.travel.error.unavailable');
@@ -293,6 +317,109 @@ class ZoneController extends AbstractController
         }
 
         return $this->redirectToRoute('app_game_zone');
+    }
+
+    #[Route('/game/zone/expedition/start/{durationKey}', name: 'app_game_zone_expedition_start', methods: ['POST'], requirements: ['durationKey' => '[a-z]+'])]
+    public function expeditionStart(string $durationKey, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('expedition_start_' . $durationKey, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $this->expeditionService->start($player, $durationKey);
+            $this->addFlash('success', 'game.zone.expedition.flash.started');
+        } catch (ZoneActionException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    #[Route('/game/zone/expedition/claim', name: 'app_game_zone_expedition_claim', methods: ['POST'])]
+    public function expeditionClaim(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('expedition_claim', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $result = $this->expeditionService->claim($player);
+        } catch (ZoneActionException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $this->addFlash('expedition_result', [
+            'zone' => $result->zoneName,
+            'gils' => $result->gils,
+            'items' => $result->items,
+        ]);
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Bloque une action de zone (explorer/chasser/recolter/voyager) tant qu'une
+     * expedition est en cours ou a recuperer : etat exclusif (ZON-13).
+     */
+    private function denyIfOnExpedition(Player $player): ?Response
+    {
+        if (null === $this->expeditionService->getActive($player)) {
+            return null;
+        }
+
+        $this->addFlash('error', 'game.zone.expedition.error.busy');
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Etat de l'expedition pour l'ecran de zone : soit une expedition en cours /
+     * a recuperer, soit les paliers de duree proposables dans la zone courante.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildExpedition(Player $player, Zone $zone): array
+    {
+        $active = $this->expeditionService->getActive($player);
+        if (null !== $active) {
+            $remaining = $active->getEndsAt()->getTimestamp() - time();
+
+            return [
+                'active' => true,
+                'zone' => $active->getZone(),
+                'durationKey' => $active->getDurationKey(),
+                'endsAt' => $active->getEndsAt(),
+                'remainingSeconds' => max(0, $remaining),
+                'ready' => $active->isComplete(),
+            ];
+        }
+
+        return [
+            'active' => false,
+            'eligible' => $this->expeditionService->isEligibleZone($zone),
+            'durations' => $this->expeditionService->getDurations(),
+        ];
     }
 
     /**
