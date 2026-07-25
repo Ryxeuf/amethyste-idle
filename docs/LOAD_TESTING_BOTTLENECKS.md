@@ -10,6 +10,25 @@
 > mais les zones a surveiller, les hypotheses de travail et l'ordre
 > d'attaque recommande sont consolides ici.
 
+> ### ⚠️ Mise a jour ZON-24 (2026-07-25) — perimetre requalifie
+>
+> Cette analyse a ete produite **avant** la suppression du code carte (ZON-21).
+> Les scenarios ont ete realignes sur le modele zone (`mercure-streaming` →
+> topic `chat/zone/<id>`, `authenticated-gameplay` → `/game/zone`), ce qui
+> requalifie une partie du contenu ci-dessous :
+>
+> | Constat d'origine | Statut apres le pivot |
+> |---|---|
+> | Indexes composites pour `/api/map/*` (**jalon D**) | **Sans objet** — les endpoints n'existent plus. L'index partiel `idx_mob_alive_map` livre en 3a reste utile (les mobs restent rattaches a une carte, support de donnees des zones). |
+> | Topic `map/move` tres charge (**§ Mercure**) | Remplace par les topics de zone : `chat/zone/<id>` (le plus repandu), `zone/<id>/event`, `dungeon/run/<id>`. Le raisonnement sur le fan-out reste valable, la volumetrie est a remesurer. |
+> | Cout de `/game/map` et des APIs map (**§ Twig / APIs**) | Remplace par `/game/zone`, dont le cout est d'une autre nature : resolution d'arrivee de voyage, regeneration energie/PV, expedition, puis presence + evenements + filons de la zone. |
+> | Collectors `/metrics`, pool Doctrine, hardening Mercure, scaling horizontal | **Inchanges** — independants du modele de monde. Ce sont les jalons A, B, E, F restants. |
+>
+> **A retenir** : les jalons **C** et **D** sont clos, mais les mesures qui les
+> avaient motives portaient sur un profil de charge disparu. Une **passe de
+> mesure sur le profil zone** est necessaire avant de conclure sur l'objectif
+> « 200 joueurs simultanes » (tache 134).
+
 ---
 
 ## 1. Couverture des scenarios
@@ -18,8 +37,8 @@
 |----------|---------------|-----------------|
 | `guest-browsing` | 6 endpoints publics (home, login, register, demo, /health, /metrics) | FrankenPHP + Twig + collectors Doctrine de `/metrics` |
 | `metrics-stress` | `/metrics` en boucle, sans think-time | Pool Doctrine + collectors PostgreSQL (`COUNT()` Player/Fight/Mob) |
-| `mercure-streaming` | Abonnes SSE concurrents sur `map/move` | Hub Mercure integre (Caddy/FrankenPHP) + FD systeme + proxy Traefik |
-| `authenticated-gameplay` | Login + dashboard + carte + inventaire | Firewall Symfony + sessions + APIs `/api/map/*` + rendu Twig `/game/*` |
+| `mercure-streaming` | Abonnes SSE concurrents sur `chat/zone/<id>` | Hub Mercure integre (Caddy/FrankenPHP) + FD systeme + proxy Traefik |
+| `authenticated-gameplay` | Login + dashboard + zone + inventaire | Firewall Symfony + sessions + petites API JSON + rendu Twig `/game/*` |
 
 Les scenarios couvrent l'essentiel de la surface gameplay en lecture. Les
 ecritures (POST mouvement, POST combat, POST achat HdV) restent un angle mort
@@ -35,7 +54,7 @@ documente dans la section "Prochaines etapes" du `README.md`.
 
 - `metrics-stress` : p95 `/metrics` qui derive au-dela de 500 ms quand
   `Player`/`Fight`/`Mob` grossissent.
-- `authenticated-gameplay` : `authed_map_api_latency` p95 > 800 ms.
+- `authenticated-gameplay` : `authed_json_api_latency` p95 > 800 ms.
 - `http_req_failed` qui monte a > 0.5 % avec apparition de `connection
   refused` ou `too many clients`.
 
@@ -320,9 +339,10 @@ dans `docs/audits/` avec date, configuration, resume k6.
 | A — Cache Redis | ⏳ A faire | — |
 | B — PgBouncer | ⏳ A faire | — |
 | **C — Cache + indexes `/metrics`** | **✅ Termine** | 3a (indexes Player/Mob) + 3b (cache TTL 10s) + 3d (partial index Fight) |
-| **D — Indexes composites + refactor map** | **✅ Termine** | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) + 3f (cloture analytique : `idx_player_map_coords` non actionable car coords sont une string filtree en PHP) |
+| **D — Indexes composites + refactor map** | **✅ Termine**, puis **sans objet** (ZON-24) | 3a (`idx_mob_alive_map` chevauche) + 3c (refactor `findByMapWithMonster`) + 3f (cloture analytique : `idx_player_map_coords` non actionable car coords sont une string filtree en PHP). Les endpoints `/api/map/*` qui motivaient ce jalon ont disparu avec ZON-21 ; seul `idx_mob_alive_map` reste utile. |
 | E — Hardening Mercure | ⏳ A faire | — |
 | F — Scaling horizontal | ⏳ A faire | — |
+| **Z — Passe de mesure sur le profil zone** | ⏳ **A faire, prerequis de l'objectif 200 joueurs** | Scenarios realignes par ZON-24 ; aucun run n'a encore ete effectue sur le profil zone. |
 
 ### Roadmap a venir
 

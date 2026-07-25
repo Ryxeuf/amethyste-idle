@@ -45,7 +45,7 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
             $this->markTestSkipped('Aucune rencontre tiree apres ' . self::MAX_EXPLORE_ATTEMPTS . ' explorations.');
         }
 
-        $this->waitForSelector('#panel-actions');
+        $this->waitForSelector('#panel-actions', self::WAIT_TIMEOUT_SLOW);
         $this->assertGreaterThan(0, $this->countSelector('#action-attack'), 'Selecteur absent : #action-attack');
         $this->assertGreaterThan(0, $this->countSelector('#action-flee'), 'Selecteur absent : #action-flee');
         $this->assertGreaterThan(0, $this->countSelector('#combat-log'), 'Selecteur absent : #combat-log');
@@ -62,8 +62,13 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
             $this->markTestSkipped('Aucune rencontre tiree apres ' . self::MAX_EXPLORE_ATTEMPTS . ' explorations.');
         }
 
-        $this->waitForSelector('#action-attack');
+        $this->waitForSelector('#action-attack', self::WAIT_TIMEOUT_SLOW);
+
+        // L'attaque de base exige une cible selectionnee : sans elle, le bouton
+        // ouvre une alerte native au lieu de jouer un tour.
+        $this->assertTrue($this->selectFirstMobTarget(), 'Le combat doit proposer une cible.');
         $this->assertTrue($this->clickSelector('#action-attack'), 'Le bouton d\'attaque doit etre cliquable.');
+        $this->dismissAlertIfAny();
         $this->waitForTurbo();
 
         // Apres un tour : soit le combat continue, soit il est resolu (butin,
@@ -88,7 +93,7 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
             try {
                 // Attendre le rendu reel : Turbo peut afficher un apercu en
                 // cache avant de remplacer le corps du document.
-                $this->waitForSelector('[data-testid="zone-explore-button"]');
+                $this->waitForSelector('[data-testid="zone-explore-button"]', self::WAIT_TIMEOUT_SLOW);
             } catch (\Throwable) {
                 return false;
             }

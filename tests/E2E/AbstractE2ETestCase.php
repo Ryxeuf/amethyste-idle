@@ -13,6 +13,17 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     /** Default timeout in seconds for wait operations. */
     protected const WAIT_TIMEOUT = 10;
 
+    /**
+     * Timeout elargi pour les premiers rendus d'un ecran lourd.
+     *
+     * L'ecran de zone compile un gabarit de plus de 500 lignes et resout, au
+     * premier appel, l'arrivee d'un voyage, la regen d'energie et de PV, les
+     * expeditions, la presence, les evenements et les filons. Ce cout de
+     * demarrage a froid depasse regulierement 10 s sur un runner CI, alors que
+     * les rendus suivants sont immediats.
+     */
+    protected const WAIT_TIMEOUT_SLOW = 30;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -22,6 +33,38 @@ abstract class AbstractE2ETestCase extends PantherTestCase
                 'browser' => static::CHROME,
             ]);
         }
+
+        // Une alerte native laissee ouverte par un test precedent bloque
+        // **toutes** les commandes WebDriver suivantes
+        // (`UnexpectedAlertOpenException`) : la suite entiere tombe pour une
+        // seule popup. On repart d'un navigateur propre.
+        $this->dismissAlertIfAny();
+    }
+
+    /**
+     * Ferme une alerte JS native si le navigateur en affiche une.
+     *
+     * L'ecran de combat en ouvre une lorsqu'on attaque sans cible selectionnee
+     * (« Veuillez selectionner une cible »).
+     */
+    protected function dismissAlertIfAny(): void
+    {
+        try {
+            static::$pantherClient->switchTo()->alert()->accept();
+        } catch (\Throwable) {
+            // Aucune alerte ouverte : cas nominal.
+        }
+    }
+
+    /**
+     * Selectionne la premiere cible ennemie de l'ecran de combat.
+     *
+     * L'attaque de base exige une cible : sans elle, le bouton declenche une
+     * alerte bloquante au lieu d'un tour de combat.
+     */
+    protected function selectFirstMobTarget(): bool
+    {
+        return $this->clickSelector('.selectable-target[data-target-type="mob"]');
     }
 
     protected function login(string $email = 'remy@amethyste.game', string $password = 'test'): void
@@ -245,20 +288,38 @@ abstract class AbstractE2ETestCase extends PantherTestCase
      *
      * @return bool true si le joueur n'est plus en combat
      */
-    protected function resolvePendingFight(int $maxTurns = 25): bool
+    protected function resolvePendingFight(int $maxTurns = 8): bool
     {
         static::$pantherClient->request('GET', '/game/fight');
         $this->waitForTurbo();
 
         for ($turn = 0; $turn < $maxTurns; ++$turn) {
+            $this->dismissAlertIfAny();
+
             if (!str_contains(static::$pantherClient->getCurrentURL(), '/game/fight')) {
                 return true;
             }
-            if (!$this->clickSelector('#action-attack')) {
+            if (!$this->selectorExists('#action-attack')) {
                 return true;
             }
 
+            // Sans cible selectionnee, le bouton ouvre une alerte bloquante.
+            $this->selectFirstMobTarget();
+            $this->dismissAlertIfAny();
+
+            if (!$this->clickSelector('#action-attack')) {
+                return true;
+            }
+            $this->dismissAlertIfAny();
+
             $this->waitForTurbo();
+
+            // Les actions de combat sont limitees a 5 requetes/seconde par
+            // joueur (`config/packages/rate_limiter.yaml`). Enchainer les
+            // attaques sans pause fait ejecter la requete par le limiteur et
+            // laisse le navigateur sur une page d'erreur, ce qui fait tomber
+            // les tests suivants pour une cause sans rapport.
+            usleep(300_000);
         }
 
         return !str_contains(static::$pantherClient->getCurrentURL(), '/game/fight');

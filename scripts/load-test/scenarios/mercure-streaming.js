@@ -1,13 +1,13 @@
-// Scenario k6 — capacite SSE Mercure (`map/move`).
+// Scenario k6 — capacite SSE Mercure (`chat/zone/<id>`).
 //
 // Objectif : mesurer la tenue en charge du hub Mercure integre a FrankenPHP
-// (Caddy) en simulant N abonnes simultanes au topic `map/move`. Ce topic est
-// le plus actif du jeu : chaque mouvement de joueur ou de mob declenche une
-// publication, et chaque client carte (`map_pixi_controller`) maintient une
-// `EventSource` ouverte en permanence.
+// (Caddy) en simulant N abonnes simultanes a un topic de zone. Depuis le pivot
+// PBBG (ZON-21), les topics de deplacement (`map/move`, `map/respawn`) n'existent
+// plus : les abonnements longue duree du jeu sont ceux de l'ecran de zone —
+// chat de zone, evenements de zone, et donjon de groupe.
 //
 // Comme k6 stock ne sait pas decouper un flux SSE evenement par evenement,
-// chaque VU ouvre une requete HTTP vers `/.well-known/mercure?topic=map/move`
+// chaque VU ouvre une requete HTTP vers `/.well-known/mercure?topic=<topic>`
 // avec un timeout egal a SUBSCRIBE_DURATION : le serveur tient la connexion
 // ouverte (heartbeats SSE), k6 la coupe au timeout, puis le VU recommence.
 // La p95 de connexion + le taux de succes mesurent la capacite reelle a
@@ -49,9 +49,15 @@ const parsePositiveInt = (value, fallback) => {
 // mais pas au point de masquer un probleme de coupure precoce.
 const SUBSCRIBE_DURATION = parsePositiveInt(__ENV.SUBSCRIBE_DURATION, 30);
 
-// Topic SSE cible. `map/move` est le plus actif ; `map/respawn`, `map/avatar`
-// ou `event/announce` peuvent etre testes en surchargeant la variable.
-const TOPIC = __ENV.MERCURE_TOPIC || 'map/move';
+// Topic SSE cible (modele zone, ZON-24). `chat/zone/<id>` est l'abonnement le
+// plus repandu : chaque joueur present sur l'ecran de zone en ouvre un. Les
+// autres topics du modele zone peuvent etre testes en surchargeant la variable :
+//   zone/<id>/event    evenements de zone (ZON-15) et boss (ZON-18)
+//   dungeon/run/<id>   etat de combat d'un donjon de groupe (ZON-19)
+//   event/announce     annonces globales
+// L'identifiant de zone est parametrable pour cibler une zone reellement peuplee.
+const ZONE_ID = __ENV.MERCURE_ZONE_ID || '1';
+const TOPIC = __ENV.MERCURE_TOPIC || `chat/zone/${ZONE_ID}`;
 
 // Marge de tolerance ajoutee au timeout HTTP : evite que k6 ne coupe la
 // connexion 1ms avant la fin "officielle" et fausse les checks de duree.

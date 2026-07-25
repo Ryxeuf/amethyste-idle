@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **2 livrees** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **3 livrees** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -42,36 +42,13 @@
 > - **Demarrage effectif d'un voyage** : immobiliserait le joueur partage plusieurs minutes (liaison la
 >   plus courte : 5 min). Deja couvert cote fonctionnel (`ZoneControllerTest`).
 
-### ZON-27 — Couche PNJ de zone (L | ★★★ | **HAUTE**)
-> Prerequis : ∅ | Decouvert en preparant ZON-23
-> **Constat** : la suppression du front carte (ZON-21a) a emporte les overlays PNJ (`dialog`,
-> boutique) **sans les remplacer**. Consequences verifiees :
-> - `/game/shop/{id}` existe et fonctionne, mais **aucun template du jeu n'y renvoie** : les boutiques
->   PNJ sont injoignables.
-> - Aucune route de **dialogue PNJ** ne subsiste ; `PnjDialogEvent` n'a plus d'emetteur (cf. ZON-25),
->   donc les objectifs de quete `talk_to` (quetes d'enquete) ne progressent pas.
-> - Les PNJ presents dans une zone ne sont exposes nulle part dans l'ecran de zone.
->
-> **Recommandation** : exposer les PNJ presents dans l'ecran de zone (liste avec leurs actions —
-> boutique, dialogue, quetes), en reutilisant l'entite `Pnj` et le rattachement de zone existants.
-> C'est la brique qui rebranche d'un coup boutiques, dialogues et quetes `talk_to`.
-
-- [ ] Lister les PNJ presents dans la zone courante sur `/game/zone` (nom, role, actions)
-- [ ] Point d'entree **boutique** vers `/game/shop/{id}` pour les PNJ marchands (gating par la zone)
-- [ ] Ecran/action de **dialogue PNJ** emettant `PnjDialogEvent` → debloque les quetes `talk_to`
-- [ ] Couverture E2E : acces boutique depuis une zone ville (remplace l'ex-`ShopFlowTest`)
-- [ ] Tests fonctionnels : PNJ d'une autre zone inaccessible
-
-### ZON-24 — Realigner les scenarios de charge sur le modele zone (S | ★★ | HAUTE)
-> Prerequis : ← ZON-21 ✅ | Bloque : **134** (objectif 200 joueurs)
-> **Constat** : `scripts/load-test/` mesure encore un profil carte — le scenario `mercure-streaming`
-> s'abonne par defaut au topic **`map/move`** (supprime), et le README decrit `/game/map`,
-> `/api/map/cells`, `/api/map/entities`.
-- [ ] `mercure-streaming` : topic par defaut → `zone/<id>/event` (ou `chat/zone/<id>`)
-- [ ] `authenticated-gameplay` : boucle carte → boucle zone (voyage, explorer, chasser, inventaire)
-- [ ] Mise a jour de `scripts/load-test/README.md` (sections carte) et des seuils associes
-- [ ] Note de correspondance dans `docs/LOAD_TESTING_BOTTLENECKS.md` (jalon D refermé sur la carte :
-      requalifier les mesures qui portaient sur les APIs map)
+> **ZON-24 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : `mercure-streaming` s'abonne desormais
+> a `chat/zone/<id>` (avec `MERCURE_ZONE_ID`) au lieu du topic supprime `map/move` ; metrique morte
+> `authed_map_api_latency` remplacee par `authed_json_api_latency` dans `authenticated-gameplay` ;
+> README de charge reecrit sur le modele zone (plus aucune route supprimee decrite) ;
+> `LOAD_TESTING_BOTTLENECKS.md` requalifie — le jalon D devient **sans objet** (ses endpoints
+> n'existent plus) et un jalon **Z** est ouvert : aucune mesure n'a encore ete faite sur le profil
+> zone, c'est le prerequis de l'objectif « 200 joueurs » de la tache 134.
 
 ### ZON-25 — Residus carte & evenements orphelins (M | ★★ | HAUTE)
 > Prerequis : ← ZON-22 ✅
@@ -108,6 +85,26 @@
 - [ ] Illustrations de zone + positions `map_x`/`map_y` sur la carte du monde (ZON-16)
 - [ ] Etalonner les couts d'energie et les durees de voyage dans `docs/BALANCE.md` sur ce graphe elargi
 
+### ZON-27 — Couche PNJ de zone (L | ★★★ | **HAUTE**)
+> Prerequis : ∅ | Decouvert en preparant ZON-23
+> **Constat** : la suppression du front carte (ZON-21a) a emporte les overlays PNJ (`dialog`,
+> boutique) **sans les remplacer**. Consequences verifiees :
+> - `/game/shop/{id}` existe et fonctionne, mais **aucun template du jeu n'y renvoie** : les boutiques
+>   PNJ sont injoignables.
+> - Aucune route de **dialogue PNJ** ne subsiste ; `PnjDialogEvent` n'a plus d'emetteur (cf. ZON-25),
+>   donc les objectifs de quete `talk_to` (quetes d'enquete) ne progressent pas.
+> - Les PNJ presents dans une zone ne sont exposes nulle part dans l'ecran de zone.
+>
+> **Recommandation** : exposer les PNJ presents dans l'ecran de zone (liste avec leurs actions —
+> boutique, dialogue, quetes), en reutilisant l'entite `Pnj` et le rattachement de zone existants.
+> C'est la brique qui rebranche d'un coup boutiques, dialogues et quetes `talk_to`.
+
+- [ ] Lister les PNJ presents dans la zone courante sur `/game/zone` (nom, role, actions)
+- [ ] Point d'entree **boutique** vers `/game/shop/{id}` pour les PNJ marchands (gating par la zone)
+- [ ] Ecran/action de **dialogue PNJ** emettant `PnjDialogEvent` → debloque les quetes `talk_to`
+- [ ] Couverture E2E : acces boutique depuis une zone ville (remplace l'ex-`ShopFlowTest`)
+- [ ] Tests fonctionnels : PNJ d'une autre zone inaccessible
+
 ---
 
 ### Definition of Done
@@ -117,5 +114,5 @@
 - [x] Boucle de jeu principale (zone → action → combat) couverte en E2E dans la CI (ZON-23)
 - [ ] Aucun evenement de domaine sans emetteur — liste `KNOWN_ORPHANS` videe (ZON-25)
 - [ ] PNJ joignables depuis la zone : boutiques et dialogues (ZON-27)
-- [ ] Scenarios k6 mesurant des routes reellement servies (ZON-24)
+- [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
 - [ ] World 1 jouable de bout en bout sur un graphe de zones dense (ZON-26)

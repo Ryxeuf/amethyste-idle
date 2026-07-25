@@ -245,7 +245,7 @@ function buildTextSummary(data) {
     const checksRate = metrics.checks && metrics.checks.values;
     const login = metrics.auth_login_latency && metrics.auth_login_latency.values;
     const loginFailRate = metrics.auth_login_fail && metrics.auth_login_fail.values;
-    const mapApi = metrics.authed_map_api_latency && metrics.authed_map_api_latency.values;
+    const jsonApi = metrics.authed_json_api_latency && metrics.authed_json_api_latency.values;
     const authedFail = metrics.authed_request_fail && metrics.authed_request_fail.values;
 
     const line = (label, value) => `  ${label.padEnd(36)} ${value}\n`;
@@ -268,8 +268,8 @@ function buildTextSummary(data) {
     if (loginFailRate) {
         out += line('auth_login_fail rate', `${(loginFailRate.rate * 100).toFixed(2)} %`);
     }
-    if (mapApi) {
-        out += line('authed_map_api_latency p95', `${mapApi['p(95)'].toFixed(1)} ms`);
+    if (jsonApi) {
+        out += line('authed_json_api_latency p95', `${jsonApi['p(95)'].toFixed(1)} ms`);
     }
     if (authedFail) {
         out += line('authed_request_fail rate', `${(authedFail.rate * 100).toFixed(2)} %`);
