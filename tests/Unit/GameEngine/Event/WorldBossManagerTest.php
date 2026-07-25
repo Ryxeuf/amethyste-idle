@@ -187,6 +187,11 @@ class WorldBossManagerTest extends TestCase
                 $this->assertSame($event, $mob->getGameEvent());
                 $this->assertTrue($mob->isSeasonBoss(), 'Le boss de climax doit etre un boss de saison.');
 
+                // Simule l'attribution d'un ID par Doctrine apres persist
+                // (le publish Mercure lit getId(): int).
+                $ref = new \ReflectionProperty(Mob::class, 'id');
+                $ref->setValue($mob, 77);
+
                 return true;
             }));
         $this->em->expects($this->once())->method('flush');
