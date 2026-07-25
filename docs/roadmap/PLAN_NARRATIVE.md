@@ -117,16 +117,13 @@ moteur récurrent qui referme la boucle à trois piliers.
 
 ## Piste D — Narration saisonnière (séquentiel — moteur récurrent)
 
-### NAR-08 — Structure d'arc saisonnier (M | ★★★ | HAUTE)
-> `theme` cesse d'être un libellé : il nomme un mini-arc en 4 beats datés.
-> Prérequis : ← NAR-01, `InfluenceSeason` (existant), `GameEvent` (existant)
-- [ ] Modéliser l'arc de saison : `theme` + 4 `GameEvent` (amorce / montée / climax /
-      résolution) rattachés à la saison, avec fenêtres temporelles
-- [ ] Admin : composer un arc de saison de façon **déclarative** (ajouter une saison = ajouter
-      de la donnée, pas du code)
-- [ ] Un `storyArc` dédié par saison (`season_<slug>`) pour regrouper ses quêtes (réutilise
-      NAR-01)
-- [ ] Tests (séquencement des beats, fenêtres cohérentes)
+### NAR-08 — Structure d'arc saisonnier ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> `theme` devient un mini-arc en 4 beats datés : `GameEvent` enrichi de `season`
+> (ManyToOne `InfluenceSeason`) + `beat` (amorce/montée/climax/résolution) + `beatOrder`,
+> avec fenêtres temporelles. `GameEventRepository::findBySeasonOrdered`, `SeasonArcService`
+> (`getBeats`, `getActiveBeat` à un instant donné via `GameEvent::isActiveAt`), convention
+> `InfluenceSeason::getStoryArc()` = `season_<slug>`. Composition déclarative (`SeasonArcFixtures`,
+> Saison 1). Tests : `GameEventBeatTest`, `SeasonArcServiceTest`, `SeasonArcFixturesTest`.
 
 ### NAR-09 — Quêtes d'événement de saison (S | ★★ | MOYENNE)
 > Chaque beat porte ses quêtes d'accroche, actives seulement dans sa fenêtre.

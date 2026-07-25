@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,31 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-08 — Structure d'arc saisonnier (Piste D narration, 2026-07-25)
+
+> Le `theme` d'une saison cesse d'etre un simple libelle : il nomme un mini-arc en 4 beats dates (amorce / montee / climax / resolution), materialises par des `GameEvent` rattaches a la saison. Composition **declarative** (ajouter une saison = ajouter de la donnee).
+
+### Changements
+
+- **`GameEvent`** : rattachement a une saison via `season` (ManyToOne `InfluenceSeason`, `onDelete CASCADE`) + `beat` (`amorce`/`montee`/`climax`/`resolution`, constantes) + `beatOrder`. `isSeasonBeat()`. `isActive()` refactore pour deleguer a **`isActiveAt(\DateTimeInterface $now)`** (fenetre injectable → sequencement testable). `repositoryClass` + index `season_id`. Migration idempotente `Version20260725SeasonBeats` (colonnes + FK `DO $$` + index).
+- **`GameEventRepository`** (nouveau) : `findBySeasonOrdered(season)` (par `beatOrder` puis `startsAt`).
+- **`SeasonArcService`** : `getBeats(season)` et `getActiveBeat(season, now)` (premier beat dont la fenetre couvre l'instant).
+- **`InfluenceSeason::getStoryArc()`** : convention `season_<slug>` (reutilise `Quest.storyArc` de NAR-01 ; `QuestArcGrouper`/`findByStoryArc` le consomment sans changement).
+- **`SeasonArcFixtures`** : 4 beats de la Saison 1, fenetres de 7 jours **contiguës et derivees des bornes reelles de la saison** (donc contenues dans `[startsAt, endsAt]`, sans flakiness d'horodatage).
+
+### Verifications
+
+- `GameEventBeatTest` (unit, 4 cas) : `isActiveAt` dans/hors fenetre, statut `active` toujours actif, `completed` jamais actif par fenetre, champs de beat + `isSeasonBeat`.
+- `SeasonArcServiceTest` (unit, 3 cas) : `getActiveBeat` selectionne le beat couvrant l'instant, null hors fenetres, delegation de `getBeats`.
+- `SeasonArcFixturesTest` (integration, 3 cas) : la Saison 1 a 4 beats ordonnes, fenetres contiguës et contenues dans les bornes, convention `season_saison-1`.
+- QA : cs-fixer OK ; PHPStan ; PHPUnit + schema:create + fixtures en CI.
+
+### Notes
+
+- Les **quetes d'evenement de saison** (rattachees a un beat via `Quest.gameEvent`, arc `season_<slug>`) arrivent en **NAR-09** ; le **boss de climax** en **NAR-10** ; la **resolution & crediting** en **NAR-11**.
 
 ---
 

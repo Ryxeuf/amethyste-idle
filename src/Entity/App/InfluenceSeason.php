@@ -66,6 +66,15 @@ class InfluenceSeason
         return $this->slug;
     }
 
+    /**
+     * Slug de l'arc narratif regroupant les quetes de cette saison (NAR-08).
+     * Convention : `season_<slug>` (reutilise le marqueur d'arc `Quest.storyArc`).
+     */
+    public function getStoryArc(): string
+    {
+        return 'season_' . $this->slug;
+    }
+
     public function setSlug(string $slug): self
     {
         $this->slug = $slug;
