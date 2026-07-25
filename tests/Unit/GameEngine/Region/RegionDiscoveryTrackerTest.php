@@ -6,7 +6,8 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedRegion;
 use App\Entity\App\Region;
-use App\Event\Map\PlayerMovedEvent;
+use App\Entity\App\Zone;
+use App\Event\Zone\PlayerTraveledEvent;
 use App\GameEngine\Region\RegionDiscoveryTracker;
 use App\Repository\PlayerVisitedRegionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -26,10 +27,11 @@ class RegionDiscoveryTrackerTest extends TestCase
         $this->tracker = new RegionDiscoveryTracker($this->entityManager, $this->repository);
     }
 
-    public function testOnPlayerMovedPersistsNewVisit(): void
+    public function testOnPlayerTraveledPersistsNewVisit(): void
     {
         $region = $this->makeRegion('forest');
         $player = $this->makePlayerOnRegion($region);
+        $zone = $this->makeZoneInRegion($region);
 
         $this->repository->method('hasVisited')->with($player, $region)->willReturn(false);
 
@@ -40,7 +42,32 @@ class RegionDiscoveryTrackerTest extends TestCase
                 && $e->getRegion() === $region));
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->tracker->onPlayerMoved(new PlayerMovedEvent($player));
+        $this->tracker->onPlayerTraveled(new PlayerTraveledEvent($player, $zone));
+    }
+
+    public function testOnPlayerTraveledIgnoresZoneWithoutRegion(): void
+    {
+        $player = $this->makePlayerOnRegion(null);
+        $zone = (new Zone())->setSlug('donjon-instancie')->setName('Donjon');
+
+        $this->repository->expects($this->never())->method('hasVisited');
+        $this->entityManager->expects($this->never())->method('persist');
+
+        $this->tracker->onPlayerTraveled(new PlayerTraveledEvent($player, $zone));
+    }
+
+    public function testRecordCurrentRegionPrefersZoneOverMap(): void
+    {
+        $mapRegion = $this->makeRegion('plaine');
+        $zoneRegion = $this->makeRegion('forest');
+        $player = $this->makePlayerOnRegion($mapRegion);
+        $player->setCurrentZone($this->makeZoneInRegion($zoneRegion));
+
+        $this->repository->expects($this->once())
+            ->method('hasVisited')->with($player, $zoneRegion)->willReturn(false);
+        $this->entityManager->expects($this->once())->method('persist');
+
+        $this->assertTrue($this->tracker->recordCurrentRegion($player));
     }
 
     public function testRecordCurrentRegionIsIdempotent(): void
@@ -86,10 +113,20 @@ class RegionDiscoveryTrackerTest extends TestCase
         $this->assertTrue($this->tracker->recordCurrentRegion($player, false));
     }
 
-    public function testSubscribedEventsListsPlayerMoved(): void
+    public function testSubscribedEventsListsPlayerTraveled(): void
     {
         $events = RegionDiscoveryTracker::getSubscribedEvents();
-        $this->assertSame(['onPlayerMoved'], [$events[PlayerMovedEvent::NAME] ?? null]);
+        $this->assertSame(['onPlayerTraveled'], [$events[PlayerTraveledEvent::NAME] ?? null]);
+    }
+
+    private function makeZoneInRegion(Region $region): Zone
+    {
+        $map = new Map();
+        $map->setAreaWidth(10);
+        $map->setAreaHeight(10);
+        $map->setRegion($region);
+
+        return (new Zone())->setSlug('zone-' . $region->getSlug())->setName('Zone')->setSourceMap($map);
     }
 
     private function makeRegion(string $slug): Region

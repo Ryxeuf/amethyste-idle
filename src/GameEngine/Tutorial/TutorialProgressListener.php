@@ -8,7 +8,7 @@ use App\Event\CraftEvent;
 use App\Event\Fight\FightLootedEvent;
 use App\Event\Fight\MobDeadEvent;
 use App\Event\Game\QuestCompletedEvent;
-use App\Event\Map\PlayerMovedEvent;
+use App\Event\Zone\PlayerTraveledEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -23,7 +23,7 @@ class TutorialProgressListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerMovedEvent::NAME => 'onPlayerMoved',
+            PlayerTraveledEvent::NAME => 'onPlayerTraveled',
             MobDeadEvent::NAME => 'onMobDead',
             FightLootedEvent::NAME => 'onFightLooted',
             QuestCompletedEvent::NAME => 'onQuestCompleted',
@@ -31,7 +31,11 @@ class TutorialProgressListener implements EventSubscriberInterface
         ];
     }
 
-    public function onPlayerMoved(PlayerMovedEvent $event): void
+    /**
+     * L'etape « deplacement » du tutoriel est validee par un voyage de zone
+     * depuis le pivot PBBG (ZON-22), la carte navigable ayant disparu.
+     */
+    public function onPlayerTraveled(PlayerTraveledEvent $event): void
     {
         $this->tutorialManager->advanceIfOnStep($event->getPlayer(), TutorialStep::Movement);
     }
