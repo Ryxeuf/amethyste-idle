@@ -482,3 +482,60 @@ surenchere. ECO-16a n'a rien eu a construire de ce cote. Le retour d'objet a **l
 reste le seul chemin sans test : le couvrir en unitaire demanderait de simuler le
 constructeur de requetes Doctrine, un mock trop fragile pour la garantie qu'il
 apporte. A reprendre en integration avec ECO-16b.
+
+---
+
+## 17. Arbres de talent et recettes (ECO-18)
+
+Les arbres de talent et les recettes ont ete ecrits separement et jamais croises.
+Le defaut est **totalement silencieux** : un skill qui cite un slug de recette
+inexistant s'apprend normalement, le joueur depense ses points, et aucune recette
+n'apparait. Symetriquement, une recette qu'aucun skill ne debloque est du contenu
+livre mais inatteignable.
+
+### Etat trouve par l'audit
+
+| Sens | Avant | Apres |
+|------|-------|-------|
+| Slugs cites par un skill sans recette livree | 33 | 17 |
+| Recettes livrees qu'aucun skill ne debloque | 37 | 1 |
+| Paliers d'outils d'artisanat equipables | bronze seul | bronze → fer → acier → mithril |
+
+### Ce qui a ete recable, et ce qui ne l'a pas ete
+
+Les rattachements **evidents** ont ete faits : un skill dont le titre decrit deja
+l'objet a ete branche sur la recette correspondante (« Forge de plaques » →
+plastron, jambieres, casque, gantelets, bottes de fer ; « Maitre forgeron » → lame
+du maitre ; « Alliages speciaux » → les quatre lingots ; etc.).
+
+Les **17 slugs restants** correspondent a du contenu qui n'existe pas : aucune
+recette d'acier, de cuir de dragon, de carquois, de pierre a aiguiser, ni d'elixir
+de vitesse ou de transmutation n'a jamais ete ecrite. Les creer est une decision
+de contenu, pas une correction de plomberie — elles sont declarees dans
+`RECIPES_TO_AUTHOR` plutot qu'inventees a la va-vite.
+
+La derniere recette orpheline (`recipe-poison-vial`) attend de meme un skill :
+aucun nœud d'alchimie ne parle de poison, et en creer un est un choix de design.
+
+### Progression des outils d'artisanat
+
+`equip.tool` suit desormais le meme motif que les arbres de recolte : le palier
+s'ouvre au rang qui le merite.
+
+| Metier | bronze | fer | acier | mithril |
+|--------|--------|-----|-------|---------|
+| Forgeron | 0 pt | 10 pts | 25 pts | 60 pts |
+| Tanneur | 0 pt | 10 pts | 25 pts | 60 pts |
+| Alchimiste | 0 pt | 10 pts | 25 pts | 60 pts |
+| Joaillier | 0 pt | 10 pts | 25 pts | 50 pts |
+
+Avant ECO-18, seul le bronze etait equipable : un artisan de 150 points travaillait
+avec le meme outil qu'au premier point depense.
+
+### Le garde-fou
+
+`tests/Integration/Economy/SkillRecipeConsistencyTest` croise les deux jeux de
+donnees **dans les deux sens**, verifie qu'un outil vendu par un PNJ est toujours
+equipable, et — surtout — verifie que **les exceptions declarees en sont encore**.
+Sans ce dernier controle, les listes de dette survivraient au probleme qu'elles
+decrivent.

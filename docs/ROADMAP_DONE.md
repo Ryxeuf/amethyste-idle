@@ -7,7 +7,41 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-18 — Reconcilier les arbres de talent et les recettes (Sprint 14, 2026-07-25)
+
+> Decouvert par l'audit ECO-02. Le defaut est **totalement silencieux** : un skill qui cite un slug de recette inexistant s'apprend normalement, le joueur depense ses points, et aucune recette n'apparait.
+
+### L'ecart
+
+| Sens | Avant | Apres |
+|------|-------|-------|
+| Slugs cites par un skill sans recette livree | 33 | 17 |
+| Recettes livrees qu'aucun skill ne debloque | 37 | 1 |
+| Paliers d'outils d'artisanat equipables | bronze seul | bronze → fer → acier → mithril |
+
+### Ce qui a ete recable
+
+Les rattachements **evidents** — ceux ou le titre du skill decrit deja l'objet : « Forge de plaques » vers le plastron, les jambieres, le casque, les gantelets et les bottes de fer ; « Alliages speciaux » vers les quatre lingots ; « Forge de mithril » vers les six pieces de mithril ; « Maitre forgeron / tanneur / alchimiste / joaillier » vers les recettes de maitrise correspondantes ; les paliers de potions de soin vers les potions reellement livrees. Dix-neuf nœuds au total.
+
+Deux nœuds purement passifs (« Cuir souple », « Alliages speciaux ») ont recu une action d'artisanat : ils decrivaient un savoir-faire sans rien debloquer.
+
+### Ce qui n'a pas ete recable, et pourquoi
+
+Les **17 slugs restants** correspondent a du contenu qui n'a jamais ete ecrit : aucune recette d'acier, de cuir de dragon, de carquois, de pierre a aiguiser, ni d'elixir de vitesse ou de transmutation n'existe. Les inventer a la volee aurait produit de l'equilibrage au jugé, dans un jalon dont ce n'est pas l'objet. Elles sont **declarees** dans `RECIPES_TO_AUTHOR` et suivies en **ECO-19**.
+
+Meme raisonnement pour la derniere recette orpheline, `recipe-poison-vial` : aucun nœud d'alchimie ne parle de poison, et en creer un est un choix de design.
+
+### Progression des outils d'artisanat
+
+`equip.tool` suit desormais le motif des arbres de recolte : bronze a l'entree, fer a 10 points, acier a 25, mithril a 50-60. Avant ce jalon, **seul le bronze etait equipable** : un artisan de 150 points travaillait avec le meme outil qu'au premier point depense.
+
+### Tests
+
+`SkillRecipeConsistencyTest` croise les deux jeux de donnees **dans les deux sens**, verifie qu'un outil vendu par un PNJ reste equipable (acquis d'ECO-02), et surtout verifie que **les exceptions declarees en sont encore** : sans ce dernier controle, les listes de dette survivraient au probleme qu'elles decrivent. Detail dans `docs/BALANCE.md` §17.
 
 ---
 
