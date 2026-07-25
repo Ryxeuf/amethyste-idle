@@ -60,6 +60,10 @@ zones:
             - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 24, respawn_seconds: 900, yield_min: 1, yield_max: 3 }
             - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 16, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
             - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 18, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            # ECO-02 : la camomille n'avait aucune source dans le monde livre, ce
+            # qui rendait `recipe_potion_base` — la premiere recette d'alchimie —
+            # impossible a realiser.
+            - { slug: camomille-des-clairieres, item: plant-chamomile, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
 
     mines-profondes:
         name: 'Mines profondes'
@@ -85,6 +89,10 @@ zones:
                 mob_slugs: [clay_golem, rusty_automaton, stone_golem]
         gather:
             - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 24, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
+            # ECO-02 : l'etain n'avait aucune source. Sans lui, pas de lingot de
+            # bronze — donc aucun outil de bronze, et toute la chaine d'outillage
+            # T1 restait hors d'atteinte.
+            - { slug: filon-d-etain, item: ore-tin, profession: mining, capacity: 22, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
             - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 18, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
             - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
 

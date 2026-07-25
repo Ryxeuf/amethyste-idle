@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **6 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16), **1 livree** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **2 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -25,14 +25,22 @@
 > **Decision** : la liaison effective reste portee par `PlayerItem::boundToPlayerId` (deja en place
 > et deja consommee par `isExchangeable()`), plutot que d'ajouter un flag `bound` redondant.
 
-### ECO-02 — Plancher T1 PNJ & kit d'onboarding (S | ★★ | **CRITIQUE**)
-> Anti cold-start : aucun joueur jamais hard-bloque par un marche joueur vide.
-> Prerequis : ← ECO-01
-- [ ] Audit : lister le T1 de survie (outils de base, potions/consommables de base)
-- [ ] Garantir la disponibilite PNJ **ou** le loot garanti du tutoriel pour ce T1
-- [ ] Marquer le T1 comme echangeable (`BindType::None`)
-- [ ] Verifier qu'un nouveau joueur peut progresser jusqu'au premier palier de craft **sans**
-      dependre d'un autre joueur (l'arc d'intro NAR-03/04 sert de scenario de reference)
+> **ECO-02 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : l'audit a trouve l'artisanat
+> **entierement inaccessible**, par quatre defauts independants et tous silencieux — 7 recettes
+> de niveau 1 sur 13 sans ingredient obtenable, aucun skill d'artisanat n'accordant `equip.tool`,
+> aucun outil de craft vendu par un PNJ visible depuis une zone, et 2 metiers sur 4 dont le skill
+> d'entree pointait vers une recette inexistante. Les quatre etages du plancher sont desormais
+> poses et verrouilles par `ColdStartFloorTest`.
+
+### ECO-18 — Reconcilier les arbres de talent et les recettes (M | ★★ | MOYENNE)
+> Decouvert par l'audit ECO-02 : les deux jeux de donnees ont ete ecrits separement et jamais
+> croises. Un skill qui cite un slug de recette inexistant ne debloque rien, **sans erreur**.
+> Prerequis : ← ECO-02
+- [ ] 35 slugs de recette cites par des skills n'existent pas : creer la recette ou corriger le slug
+- [ ] 39 recettes livrees ne sont debloquees par aucun skill : les rattacher a un rang d'arbre
+- [ ] Etendre `equip.tool` aux paliers fer/acier/mithril des outils d'artisanat (seul le bronze
+      est equipable depuis ECO-02 — le plancher, pas le plafond)
+- [ ] Garde-fou : test croisant les deux jeux de donnees dans les deux sens
 
 ### ECO-03 — HV regional — segmentation par region (M | ★★★ | HAUTE)
 > La geographie compte : arbitrage, transport = temps de voyage.
@@ -73,7 +81,8 @@
 
 - [x] `BindType` en place, vente d'objet lie impossible a l'hotel des ventes (ECO-01) ;
       reste a etendre le garde-fou aux echoppes quand elles existeront (ECO-10)
-- [ ] Un nouveau joueur atteint le premier palier de craft sans dependre d'un autre joueur
+- [x] Un nouveau joueur atteint le premier palier de craft sans dependre d'un autre joueur (ECO-02) ;
+      la porte d'entree de chaque metier est ouverte, la profondeur des arbres reste a reconcilier (ECO-18)
 - [ ] HV segmente par region, taxe reversee a la guilde controlante (ou detruite)
 - [ ] Chaine de production documentee, aucun metier autosuffisant
 - [ ] Escrow + journalisation des transactions operationnels

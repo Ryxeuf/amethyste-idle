@@ -12,6 +12,12 @@ use Doctrine\Persistence\ObjectManager;
 
 class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * ECO-02 : les betes lachent `leather_raw` / `leather_thick`, les cuirs que
+     * les recettes de tanneur consomment reellement. Elles lachaient auparavant
+     * `leather_skin_1` / `leather_skin_2`, doublons sans aucun consommateur —
+     * resultat, le tanneur n'avait pas une seule recette realisable.
+     */
     public function load(ObjectManager $manager): void
     {
         $monsterItems = [
@@ -29,11 +35,11 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'goblin', 'item' => 'wooden_sword', 'probability' => 5],
             ['monster' => 'goblin', 'item' => 'starter_helmet', 'probability' => 4],
 
-            ['monster' => 'bat', 'item' => 'leather_skin_1', 'probability' => 40],
+            ['monster' => 'bat', 'item' => 'leather_raw', 'probability' => 40],
             ['monster' => 'bat', 'item' => 'mushroom', 'probability' => 25],
             ['monster' => 'bat', 'item' => 'starter_legs', 'probability' => 3],
 
-            ['monster' => 'giant_rat', 'item' => 'leather_skin_1', 'probability' => 60],
+            ['monster' => 'giant_rat', 'item' => 'leather_raw', 'probability' => 60],
             ['monster' => 'giant_rat', 'item' => 'mushroom', 'probability' => 35],
             ['monster' => 'giant_rat', 'item' => 'healing_potion_small', 'probability' => 10],
             ['monster' => 'giant_rat', 'item' => 'bread', 'probability' => 15],
@@ -41,7 +47,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'giant_rat', 'item' => 'starter_shield', 'probability' => 2],
 
             ['monster' => 'zombie', 'item' => 'mushroom', 'probability' => 75],
-            ['monster' => 'zombie', 'item' => 'leather_skin_1', 'probability' => 90],
+            ['monster' => 'zombie', 'item' => 'leather_raw', 'probability' => 90],
             ['monster' => 'zombie', 'item' => 'pickaxe', 'probability' => 10],
             ['monster' => 'zombie', 'item' => 'antidote', 'probability' => 12],
             ['monster' => 'zombie', 'item' => 'wooden_sword', 'probability' => 6],
@@ -49,18 +55,18 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'zombie', 'item' => 'starter_chest', 'probability' => 4],
 
             // --- Niveau 1-2 : Loup, Scorpion, Scarabée, Golem champignon, Fantôme (tâche 140) ---
-            ['monster' => 'wolf', 'item' => 'leather_skin_1', 'probability' => 65],
+            ['monster' => 'wolf', 'item' => 'leather_raw', 'probability' => 65],
             ['monster' => 'wolf', 'item' => 'mushroom', 'probability' => 40],
             ['monster' => 'wolf', 'item' => 'grilled_meat', 'probability' => 15],
             ['monster' => 'wolf', 'item' => 'starter_gloves', 'probability' => 3],
 
-            ['monster' => 'scorpion', 'item' => 'leather_skin_1', 'probability' => 55],
+            ['monster' => 'scorpion', 'item' => 'leather_raw', 'probability' => 55],
             ['monster' => 'scorpion', 'item' => 'antidote', 'probability' => 25],
             ['monster' => 'scorpion', 'item' => 'mushroom', 'probability' => 30],
             ['monster' => 'scorpion', 'item' => 'healing_potion_small', 'probability' => 10],
             ['monster' => 'scorpion', 'item' => 'starter_boots', 'probability' => 3],
 
-            ['monster' => 'beetle', 'item' => 'leather_skin_1', 'probability' => 70],
+            ['monster' => 'beetle', 'item' => 'leather_raw', 'probability' => 70],
             ['monster' => 'beetle', 'item' => 'mushroom', 'probability' => 50],
             ['monster' => 'beetle', 'item' => 'bread', 'probability' => 15],
             ['monster' => 'beetle', 'item' => 'starter_legs', 'probability' => 3],
@@ -77,17 +83,17 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'ghost', 'item' => 'starter_shield', 'probability' => 3],
 
             // --- Niveau 2 : Squelette, Araignée, Serpent, Taiju, Spectre, Banshee ---
-            ['monster' => 'skeleton', 'item' => 'leather_skin_2', 'probability' => 50],
+            ['monster' => 'skeleton', 'item' => 'leather_thick', 'probability' => 50],
             ['monster' => 'skeleton', 'item' => 'short_sword', 'probability' => 8],
             ['monster' => 'skeleton', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'skeleton', 'item' => 'bread', 'probability' => 15],
 
-            ['monster' => 'spider', 'item' => 'leather_skin_1', 'probability' => 70],
+            ['monster' => 'spider', 'item' => 'leather_raw', 'probability' => 70],
             ['monster' => 'spider', 'item' => 'mushroom', 'probability' => 40],
             ['monster' => 'spider', 'item' => 'energy_potion_small', 'probability' => 12],
             ['monster' => 'spider', 'item' => 'antidote', 'probability' => 20],
 
-            ['monster' => 'venom_snake', 'item' => 'leather_skin_1', 'probability' => 65],
+            ['monster' => 'venom_snake', 'item' => 'leather_raw', 'probability' => 65],
             ['monster' => 'venom_snake', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'venom_snake', 'item' => 'antidote', 'probability' => 30],
 
@@ -112,17 +118,17 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'ochu', 'item' => 'antidote', 'probability' => 15],
             ['monster' => 'ochu', 'item' => 'grilled_meat', 'probability' => 12],
 
-            ['monster' => 'werewolf', 'item' => 'leather_skin_2', 'probability' => 80],
+            ['monster' => 'werewolf', 'item' => 'leather_thick', 'probability' => 80],
             ['monster' => 'werewolf', 'item' => 'short_sword', 'probability' => 12],
             ['monster' => 'werewolf', 'item' => 'healing_potion_small', 'probability' => 25],
             ['monster' => 'werewolf', 'item' => 'grilled_meat', 'probability' => 20],
 
-            ['monster' => 'gargoyle', 'item' => 'leather_skin_2', 'probability' => 50],
+            ['monster' => 'gargoyle', 'item' => 'leather_thick', 'probability' => 50],
             ['monster' => 'gargoyle', 'item' => 'pickaxe', 'probability' => 15],
             ['monster' => 'gargoyle', 'item' => 'energy_potion_small', 'probability' => 20],
             ['monster' => 'gargoyle', 'item' => 'scroll_teleport', 'probability' => 5],
 
-            ['monster' => 'troll', 'item' => 'leather_skin_2', 'probability' => 70],
+            ['monster' => 'troll', 'item' => 'leather_thick', 'probability' => 70],
             ['monster' => 'troll', 'item' => 'wood_log', 'probability' => 50],
             ['monster' => 'troll', 'item' => 'long_sword', 'probability' => 5],
             ['monster' => 'troll', 'item' => 'healing_potion_medium', 'probability' => 15],
@@ -134,7 +140,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'fire_elemental', 'item' => 'scroll_xp_boost', 'probability' => 3],
 
             // --- Niveau 4 : Griffon, Minotaure, Golem ---
-            ['monster' => 'griffin', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'griffin', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'griffin', 'item' => 'healing_potion_medium', 'probability' => 20],
             ['monster' => 'griffin', 'item' => 'ancient_scroll', 'probability' => 10],
             ['monster' => 'griffin', 'item' => 'healing_potion_major', 'probability' => 8],
@@ -154,7 +160,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 
             // --- Monstres tier 2 (tâche 47) — lvl 10-15 ---
             // Wyverne (Air/Feu, lvl 10)
-            ['monster' => 'wyvern', 'item' => 'leather_skin_2', 'probability' => 70],
+            ['monster' => 'wyvern', 'item' => 'leather_thick', 'probability' => 70],
             ['monster' => 'wyvern', 'item' => 'healing_potion_medium', 'probability' => 25],
             ['monster' => 'wyvern', 'item' => 'healing_potion_major', 'probability' => 10],
             ['monster' => 'wyvern', 'item' => 'materia_wind_lame', 'probability' => 6],
@@ -164,7 +170,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'wyvern', 'item' => 't2_fire_helmet', 'probability' => 4],
 
             // Chevalier maudit (Dark/Métal, lvl 12)
-            ['monster' => 'cursed_knight', 'item' => 'leather_skin_2', 'probability' => 60],
+            ['monster' => 'cursed_knight', 'item' => 'leather_thick', 'probability' => 60],
             ['monster' => 'cursed_knight', 'item' => 'long_sword', 'probability' => 8],
             ['monster' => 'cursed_knight', 'item' => 'iron_sword', 'probability' => 5],
             ['monster' => 'cursed_knight', 'item' => 'healing_potion_medium', 'probability' => 25],
@@ -174,7 +180,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'cursed_knight', 'item' => 'ancient_scroll', 'probability' => 10],
 
             // Naga (Eau/Bête, lvl 13)
-            ['monster' => 'naga', 'item' => 'leather_skin_2', 'probability' => 65],
+            ['monster' => 'naga', 'item' => 'leather_thick', 'probability' => 65],
             ['monster' => 'naga', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'naga', 'item' => 'healing_potion_major', 'probability' => 10],
             ['monster' => 'naga', 'item' => 'antidote', 'probability' => 25],
@@ -184,7 +190,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'naga', 'item' => 't2_water_shield', 'probability' => 4],
 
             // Golem de cristal (Terre/Lumière, lvl 15)
-            ['monster' => 'crystal_golem', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'crystal_golem', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'crystal_golem', 'item' => 'healing_potion_major', 'probability' => 20],
             ['monster' => 'crystal_golem', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'crystal_golem', 'item' => 'materia_stone_throw', 'probability' => 8],
@@ -196,7 +202,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
 
             // --- Monstres tier 2 avancés (tâche 65) — lvl 15-25 ---
             // Archidruide corrompu (Bête/Ombre, lvl 16)
-            ['monster' => 'corrupted_archdruid', 'item' => 'leather_skin_2', 'probability' => 70],
+            ['monster' => 'corrupted_archdruid', 'item' => 'leather_thick', 'probability' => 70],
             ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_major', 'probability' => 20],
             ['monster' => 'corrupted_archdruid', 'item' => 'healing_potion_medium', 'probability' => 30],
             ['monster' => 'corrupted_archdruid', 'item' => 'antidote', 'probability' => 25],
@@ -216,7 +222,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'lesser_lich', 'item' => 't2_air_boots', 'probability' => 4],
 
             // Hydre des marais (Eau/Bête, lvl 20)
-            ['monster' => 'swamp_hydra', 'item' => 'leather_skin_2', 'probability' => 80],
+            ['monster' => 'swamp_hydra', 'item' => 'leather_thick', 'probability' => 80],
             ['monster' => 'swamp_hydra', 'item' => 'healing_potion_major', 'probability' => 30],
             ['monster' => 'swamp_hydra', 'item' => 'healing_potion_medium', 'probability' => 35],
             ['monster' => 'swamp_hydra', 'item' => 'antidote', 'probability' => 30],
@@ -227,7 +233,7 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'swamp_hydra', 'item' => 't2_water_chest', 'probability' => 5],
 
             // Forgeron abyssal (Métal/Feu, lvl 24)
-            ['monster' => 'abyssal_blacksmith', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'abyssal_blacksmith', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'abyssal_blacksmith', 'item' => 'healing_potion_major', 'probability' => 35],
             ['monster' => 'abyssal_blacksmith', 'item' => 'iron_sword', 'probability' => 12],
             ['monster' => 'abyssal_blacksmith', 'item' => 'materia_steel_riposte', 'probability' => 8],
@@ -288,28 +294,28 @@ class MonsterItemFixtures extends Fixture implements DependentFixtureInterface
             ['monster' => 'undine', 'item' => 'energy_potion_small', 'probability' => 12],
 
             // Sylphe (Air, lvl 4)
-            ['monster' => 'sylph', 'item' => 'leather_skin_2', 'probability' => 50],
+            ['monster' => 'sylph', 'item' => 'leather_thick', 'probability' => 50],
             ['monster' => 'sylph', 'item' => 'healing_potion_medium', 'probability' => 15],
             ['monster' => 'sylph', 'item' => 'ancient_scroll', 'probability' => 8],
             ['monster' => 'sylph', 'item' => 'materia_wind_lame', 'probability' => 5],
             ['monster' => 'sylph', 'item' => 'scroll_teleport', 'probability' => 6],
 
             // Golem d'argile (Terre, lvl 5)
-            ['monster' => 'clay_golem', 'item' => 'leather_skin_2', 'probability' => 60],
+            ['monster' => 'clay_golem', 'item' => 'leather_thick', 'probability' => 60],
             ['monster' => 'clay_golem', 'item' => 'healing_potion_medium', 'probability' => 20],
             ['monster' => 'clay_golem', 'item' => 'pickaxe', 'probability' => 25],
             ['monster' => 'clay_golem', 'item' => 'materia_stone_throw', 'probability' => 8],
             ['monster' => 'clay_golem', 'item' => 'stew', 'probability' => 10],
 
             // Automate rouillé (Métal, lvl 3)
-            ['monster' => 'rusty_automaton', 'item' => 'leather_skin_2', 'probability' => 45],
+            ['monster' => 'rusty_automaton', 'item' => 'leather_thick', 'probability' => 45],
             ['monster' => 'rusty_automaton', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'rusty_automaton', 'item' => 'short_sword', 'probability' => 8],
             ['monster' => 'rusty_automaton', 'item' => 'materia_steel_riposte', 'probability' => 5],
             ['monster' => 'rusty_automaton', 'item' => 'energy_potion_small', 'probability' => 18],
 
             // Loup alpha (Bête, lvl 4)
-            ['monster' => 'alpha_wolf', 'item' => 'leather_skin_2', 'probability' => 75],
+            ['monster' => 'alpha_wolf', 'item' => 'leather_thick', 'probability' => 75],
             ['monster' => 'alpha_wolf', 'item' => 'grilled_meat', 'probability' => 30],
             ['monster' => 'alpha_wolf', 'item' => 'healing_potion_small', 'probability' => 20],
             ['monster' => 'alpha_wolf', 'item' => 'materia_savage_bite', 'probability' => 5],

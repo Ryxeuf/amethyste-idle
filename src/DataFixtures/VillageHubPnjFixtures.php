@@ -167,7 +167,20 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
                 'coordinates' => '7.23',
                 'classType' => 'merchant',
                 'portrait' => '/styles/images/portraits/merchant.png',
-                'shopItems' => ['pickaxe', 'fishing-rod', 'bread', 'grilled-meat', 'stew', 'mushroom', 'beer-pint', 'scroll-teleport'],
+                // ECO-02 — plancher T1 : les huit outils de bronze, un par metier,
+                // **sans limite de stock**. C'est ce qui fait de cette echoppe un
+                // plancher : un stock fini se vide, et le nouveau venu se retrouve
+                // face a un marche joueur qu'il ne peut pas encore alimenter.
+                //
+                // `pickaxe` et `fishing-rod` ont ete retires : ce sont des objets
+                // `stuff` sans `toolType`, donc inoperants — ni la recolte ni
+                // l'artisanat ne les reconnaissent. Les vendre revenait a vendre un
+                // outil qui ne fonctionne pas.
+                'shopItems' => [
+                    'pickaxe-bronze', 'sickle-bronze', 'fishing-rod-bronze', 'skinning-knife-bronze',
+                    'hammer-bronze', 'tanning-kit-bronze', 'mortar-bronze', 'chisel-bronze',
+                    'bread', 'grilled-meat', 'stew', 'mushroom', 'beer-pint', 'scroll-teleport',
+                ],
                 'opensAt' => 8,
                 'closesAt' => 21,
                 'shopStock' => [
@@ -428,6 +441,10 @@ class VillageHubPnjFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             MapFixtures::class,
+            // ECO-02 : les zones doivent exister avant cette fixture, sinon
+            // `WorldEntityZoneListener` ne trouve aucune zone a rattacher et
+            // l'entite reste hors du graphe — invisible depuis l'ecran de zone.
+            ZoneGraphFixtures::class,
         ];
     }
 }
