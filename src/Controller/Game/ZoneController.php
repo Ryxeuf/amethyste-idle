@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\GameEvent;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
@@ -18,6 +19,7 @@ use App\GameEngine\Zone\LifeRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
+use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
@@ -64,6 +66,7 @@ class ZoneController extends AbstractController
         private readonly GatherService $gatherService,
         private readonly ExpeditionService $expeditionService,
         private readonly ChatManager $chatManager,
+        private readonly ZoneEventService $zoneEventService,
     ) {
     }
 
@@ -110,6 +113,7 @@ class ZoneController extends AbstractController
                 'energy' => null,
                 'life' => null,
                 'expedition' => null,
+                'zoneEvents' => [],
                 'zoneChat' => null,
             ]);
         }
@@ -160,6 +164,7 @@ class ZoneController extends AbstractController
                 'fullIn' => $this->lifeRegenManager->secondsUntilFull($player),
             ],
             'expedition' => $this->buildExpedition($player, $zone),
+            'zoneEvents' => $this->buildZoneEvents($player, $zone),
             'zoneChat' => [
                 'zoneId' => $zone->getId(),
                 'messages' => array_reverse($this->chatManager->getZoneHistory($zone, 30)),
@@ -412,6 +417,64 @@ class ZoneController extends AbstractController
         ], $present);
 
         return new JsonResponse(['players' => $players]);
+    }
+
+    #[Route('/game/zone/event/{id}/join', name: 'app_game_zone_event_join', methods: ['POST'])]
+    public function joinEvent(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('zone_event_join_' . $id, (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $event = $this->entityManager->getRepository(GameEvent::class)->find($id);
+        if (null === $event) {
+            $this->addFlash('error', 'game.zone.event.error.unknown');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        try {
+            $this->zoneEventService->join($player, $event);
+            $this->addFlash('success', 'game.zone.event.flash.joined');
+        } catch (ZoneActionException|NotEnoughActionEnergyException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_zone');
+    }
+
+    /**
+     * Evenements de zone actifs pour l'ecran de zone (ZON-15) : nom, type,
+     * fin, cout, et si le joueur a deja rejoint.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private function buildZoneEvents(Player $player, Zone $zone): array
+    {
+        $events = [];
+        foreach ($this->zoneEventService->getActiveEventsForZone($zone) as $event) {
+            $remaining = $event->getEndsAt()->getTimestamp() - time();
+            $events[] = [
+                'id' => $event->getId(),
+                'name' => $event->getName(),
+                'typeLabel' => $event->getTypeLabel(),
+                'description' => $event->getDescription(),
+                'remainingSeconds' => max(0, $remaining),
+                'cost' => $this->zoneEventService->getEventCost(),
+                'joined' => $this->zoneEventService->hasJoined($player, $event),
+            ];
+        }
+
+        return $events;
     }
 
     /**

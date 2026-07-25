@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\App\GameEvent;
 use App\Entity\App\Map;
+use App\Entity\App\Zone;
 use App\Event\Game\GameEventActivatedEvent;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -103,6 +104,7 @@ class GameEventController extends AbstractController
     public function new(Request $request): Response
     {
         $maps = $this->em->getRepository(Map::class)->findBy([], ['name' => 'ASC']);
+        $zones = $this->em->getRepository(Zone::class)->findBy([], ['name' => 'ASC']);
 
         if ($request->isMethod('POST')) {
             $event = new GameEvent();
@@ -126,6 +128,11 @@ class GameEventController extends AbstractController
                 $event->setMap($map);
             }
 
+            $zoneId = $request->request->getInt('zone_id');
+            if ($zoneId) {
+                $event->setZone($this->em->getRepository(Zone::class)->find($zoneId));
+            }
+
             $parametersJson = $request->request->get('parameters', '');
             if (!empty($parametersJson)) {
                 $parameters = json_decode($parametersJson, true);
@@ -136,6 +143,7 @@ class GameEventController extends AbstractController
 
                     return $this->render('admin/event/form.html.twig', [
                         'maps' => $maps,
+                        'zones' => $zones,
                         'title' => 'Programmer un evenement',
                     ]);
                 }
@@ -152,6 +160,7 @@ class GameEventController extends AbstractController
 
         return $this->render('admin/event/form.html.twig', [
             'maps' => $maps,
+            'zones' => $zones,
             'title' => 'Programmer un evenement',
         ]);
     }
@@ -160,6 +169,7 @@ class GameEventController extends AbstractController
     public function edit(Request $request, GameEvent $event): Response
     {
         $maps = $this->em->getRepository(Map::class)->findBy([], ['name' => 'ASC']);
+        $zones = $this->em->getRepository(Zone::class)->findBy([], ['name' => 'ASC']);
 
         if ($request->isMethod('POST')) {
             $event->setName($request->request->get('name', $event->getName()));
@@ -182,6 +192,9 @@ class GameEventController extends AbstractController
                 $event->setMap(null);
             }
 
+            $zoneId = $request->request->getInt('zone_id');
+            $event->setZone($zoneId ? $this->em->getRepository(Zone::class)->find($zoneId) : null);
+
             $parametersJson = $request->request->get('parameters', '');
             if (!empty($parametersJson)) {
                 $parameters = json_decode($parametersJson, true);
@@ -192,6 +205,7 @@ class GameEventController extends AbstractController
 
                     return $this->render('admin/event/form.html.twig', [
                         'maps' => $maps,
+                        'zones' => $zones,
                         'event' => $event,
                         'title' => 'Modifier l\'evenement',
                     ]);
@@ -210,6 +224,7 @@ class GameEventController extends AbstractController
 
         return $this->render('admin/event/form.html.twig', [
             'maps' => $maps,
+            'zones' => $zones,
             'event' => $event,
             'title' => 'Modifier l\'evenement',
         ]);

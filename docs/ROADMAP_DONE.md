@@ -5,6 +5,28 @@
 
 ---
 
+## ZON-15 — Evenements de zone (Sprint 9, 2026-07-25)
+
+> Generalise les world bosses / invasions en evenements annonces, rattaches a une zone, a rejoindre dans leur fenetre temporelle contre de l'energie. Pose la couche d'evenements de zone et le modele de participation/contribution sur lequel le boss de zone asynchrone (ZON-18) se construira.
+
+### Changements
+
+- **`GameEvent.zone`** (FK nullable `ON DELETE SET NULL`) : un evenement peut etre rattache a une zone (remplace `map` dans le modele zone). Migration `Version20260725ZoneEvents`.
+- **`PlayerZoneEventParticipation`** (entite + table + repository) : participation d'un joueur a un evenement (UNIQUE `player + event`), avec `joinedAt` et un champ `contribution` (defaut 0) qui prepare la distribution du loot a la contribution (ZON-18). Repository : `findOneForPlayerAndEvent`, `hasJoined`, `findByEventOrderedByContribution`.
+- **`ZoneEventService`** : `getActiveEventsForZone(zone)` (statut actif/scheduled filtre par `isActiveAt`), `join(player, event)` (valide zone-event + presence dans la zone + fenetre + non deja rejoint, prleve `zone.energy.cost.event` defaut 10, enregistre la participation), `hasJoined`, `getEventCost`.
+- **`ZoneEventAnnouncementHandler`** : sur `GameEventActivatedEvent`, publie une annonce Mercure `zone/<id>/event` pour les evenements de zone (complete l'annonce globale existante).
+- **`ZoneController`** : bloc « evenement de zone » sur l'ecran de zone (nom, type, minuterie de fin, cout, etat rejoint) + route `POST /game/zone/event/{id}/join` (CSRF). Traductions FR/EN (`game.zone.event.*`).
+- **Admin** : selecteur de zone dans le formulaire d'evenements (`GameEventController` new/edit + `form.html.twig`), rendant les evenements de zone creables.
+- **`docs/BALANCE.md`** : curseur `zone.energy.cost.event` ajoute a la section 8.
+
+### Verifications
+
+- `ZoneEventServiceTest` (8 cas : cout par defaut / override parametre, join OK, rejets non-zone-event / pas present / ferme / deja rejoint, propagation du manque d'energie).
+- `ZoneControllerTest` etendu (mock `ZoneEventService`) — 20 cas verts.
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-14 — Presence par zone & chat de zone (Sprint 9, 2026-07-25)
 
 > La cooperation prend racine sur l'ecran de zone : on voit qui est present, on discute en direct, et on invite d'un clic. Transpose le canal de chat `map` gele vers le modele zone.

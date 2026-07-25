@@ -68,6 +68,16 @@
             </div>
 
             <div class="mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Zone (pivot PBBG, ZON-15 — evenement de zone)</label>
+                <select name="zone_id" class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+                    <option value="">Aucune (evenement global/carte)</option>
+                    {% for z in zones|default([]) %}
+                        <option value="{{ z.id }}" {% if event is defined and event.zone and event.zone.id == z.id %}selected{% endif %}>{{ z.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-2">
                 <label class="flex items-center gap-2 text-sm text-gray-300 mt-6">
                     <input type="checkbox" name="recurring" value="1"
                            {% if event is defined and event.recurring %}checked{% endif %}

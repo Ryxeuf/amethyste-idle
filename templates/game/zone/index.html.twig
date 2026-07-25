@@ -153,6 +153,43 @@
                     {% endif %}
                 {% endif %}
 
+                {# ── Evenements de zone (ZON-15) ─────────────────── #}
+                {% if zoneEvents is not empty %}
+                    <div class="mb-4 space-y-2">
+                        {% for event in zoneEvents %}
+                            <div class="px-3 py-2.5 rounded-md bg-fuchsia-900/25 border border-fuchsia-700/50">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <div>
+                                        <p class="text-sm font-semibold text-fuchsia-100">⚔️ {{ event.name }}
+                                            <span class="ml-1 text-[10px] uppercase tracking-wide text-fuchsia-300/80">{{ event.typeLabel }}</span>
+                                        </p>
+                                        <p class="text-xs text-fuchsia-200/70 mt-0.5">
+                                            {% if event.remainingSeconds < 60 %}
+                                                {{ 'game.zone.event.ends_imminent'|trans }}
+                                            {% else %}
+                                                {{ 'game.zone.event.ends_in'|trans({'%minutes%': (event.remainingSeconds / 60)|round(0, 'ceil')}) }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    {% if event.joined %}
+                                        <span class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-fuchsia-800/40 border border-fuchsia-600 text-fuchsia-100">
+                                            {{ 'game.zone.event.joined'|trans }}
+                                        </span>
+                                    {% else %}
+                                        <form method="post" action="{{ path('app_game_zone_event_join', {id: event.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('zone_event_join_' ~ event.id) }}">
+                                            <button type="submit" class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-fuchsia-900/50 border border-fuchsia-600 text-fuchsia-100 hover:bg-fuchsia-800/60">
+                                                {{ 'game.zone.event.join'|trans }}
+                                                <span class="ml-2 text-[10px] uppercase tracking-wide text-amber-300/90">⚡ {{ event.cost }}</span>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
                 {# ── En-tete de zone ─────────────────────────────── #}
                 <div class="mb-4">
                     <div class="flex flex-wrap items-center gap-2">

@@ -1132,6 +1132,22 @@
           "not_complete": "Your expedition is not complete yet."
         }
       },
+      "event": {
+        "ends_in": "Ends in ~%minutes% min.",
+        "ends_imminent": "Ending soon.",
+        "join": "Join",
+        "joined": "Joined",
+        "flash": {
+          "joined": "You joined the event."
+        },
+        "error": {
+          "unknown": "Event not found.",
+          "not_zone_event": "This event is not tied to a zone.",
+          "not_present": "You must be present in the event's zone.",
+          "closed": "This event has ended.",
+          "already_joined": "You already joined this event."
+        }
+      },
       "explore": {
         "result": {
           "mob": "You cross paths with a %monster%!",

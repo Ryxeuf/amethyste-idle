@@ -12,11 +12,7 @@
 
 > **ZON-14 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : canal de chat `zone` (nouveau `ChatMessage::CHANNEL_ZONE` + FK `zone_id`), `ChatManager::sendZoneMessage`/`getZoneHistory`, topic Mercure `chat/zone/<id>`. Panneau de chat temps reel + liste de presence avec interactions rapides (profil, invitation groupe) sur l'ecran de zone (`zone_chat_controller.js`), endpoint `GET /game/zone/presence`. Le « commerce » rapide reste hors perimetre (aucun systeme de troc joueur-joueur en place ; a introduire par une tache economie dediee).
 
-### ZON-15 — Evenements de zone (M | ★★★)
-> Prerequis : ← ZON-14
-- [ ] Generaliser world bosses / invasions en evenements de zone annonces, a rejoindre dans un temps limite
-- [ ] Adapter `WorldBossManager` / `WorldBossLootDistributor` au modele zone (fenetre temporelle, annonce Mercure)
-- [ ] Rejoindre un evenement coute de l'energie (regle Sprint 8)
+> **ZON-15 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : couche « evenements de zone » — `GameEvent.zone` FK, `ZoneEventService` (evenements actifs par zone dans leur fenetre, `join` qui prleve `zone.energy.cost.event` et enregistre une `PlayerZoneEventParticipation` avec champ `contribution` preparant ZON-18), annonce Mercure `zone/<id>/event` (`ZoneEventAnnouncementHandler`). Surface sur l'ecran de zone (bloc evenement + bouton Rejoindre), selecteur de zone dans le formulaire admin d'evenements. Curseur BALANCE section 8. Le combat asynchrone du boss (assauts a l'energie, loot a la contribution) est generalise en **ZON-18**.
 
 ### ZON-16 — Carte du monde illustree (M | ★★)
 > Prerequis : ← ZON-06

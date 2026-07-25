@@ -70,6 +70,15 @@ class GameEvent
     private ?Map $map = null;
 
     /**
+     * Zone a laquelle l'evenement est rattache (pivot PBBG, ZON-15) : evenement
+     * de zone annonce, a rejoindre dans une fenetre temporelle. Remplace `map`
+     * dans le modele zone ; null pour un evenement global/legacy.
+     */
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Zone $zone = null;
+
+    /**
      * Saison a laquelle ce GameEvent est rattache comme beat d'arc (NAR-08).
      * null pour un evenement hors saison.
      */
@@ -188,6 +197,16 @@ class GameEvent
     public function setMap(?Map $map): void
     {
         $this->map = $map;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): void
+    {
+        $this->zone = $zone;
     }
 
     public function isActive(): bool
