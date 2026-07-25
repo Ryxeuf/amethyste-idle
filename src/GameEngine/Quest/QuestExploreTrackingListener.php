@@ -2,9 +2,13 @@
 
 namespace App\GameEngine\Quest;
 
-use App\Event\Map\PlayerMovedEvent;
+use App\Event\Zone\PlayerTraveledEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Fait progresser les objectifs d'exploration a l'arrivee dans une zone
+ * (ZON-22). L'accroche etait le deplacement sur la carte avant le pivot PBBG.
+ */
 class QuestExploreTrackingListener implements EventSubscriberInterface
 {
     public function __construct(private readonly PlayerQuestUpdater $playerQuestUpdater)
@@ -14,22 +18,12 @@ class QuestExploreTrackingListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerMovedEvent::NAME => 'onPlayerMoved',
+            PlayerTraveledEvent::NAME => 'onPlayerTraveled',
         ];
     }
 
-    public function onPlayerMoved(PlayerMovedEvent $event): void
+    public function onPlayerTraveled(PlayerTraveledEvent $event): void
     {
-        $player = $event->getPlayer();
-        $map = $player->getMap();
-
-        if (!$map) {
-            return;
-        }
-
-        $this->playerQuestUpdater->updateExplored(
-            $map->getId(),
-            $player->getCoordinates()
-        );
+        $this->playerQuestUpdater->updateExplored($event->getZone());
     }
 }

@@ -145,9 +145,14 @@ class QuestTrackingFormater
     /**
      * Format explore requirements into tracking entries.
      *
-     * Requirements format: [['map_id' => 1, 'coordinates' => '15.20', 'name' => 'La Clairiere']]
+     * Forme cible (ZON-22) : [['zone_slug' => 'foret-des-murmures', 'name' => 'La Foret']]
+     * Forme heritee (carte) : [['map_id' => 1, 'coordinates' => '15.20', 'name' => 'La Clairiere']]
      *
-     * @return array<int, array{count: int, necessary: int, map_id: int, coordinates: string|null, name: string}>
+     * Depuis le pivot PBBG, l'objectif est valide a l'arrivee dans la zone ;
+     * `coordinates` n'est plus qu'une trace historique (aucun deplacement
+     * intra-zone n'existe).
+     *
+     * @return array<int, array{count: int, necessary: int, zone_slug: string|null, map_id: int|null, coordinates: string|null, name: string}>
      */
     public function formatExplore(array $requirements): array
     {
@@ -159,7 +164,8 @@ class QuestTrackingFormater
             $explore[] = [
                 'count' => 0,
                 'necessary' => 1,
-                'map_id' => $entry['map_id'],
+                'zone_slug' => $entry['zone_slug'] ?? null,
+                'map_id' => $entry['map_id'] ?? null,
                 'coordinates' => $entry['coordinates'] ?? null,
                 'name' => $entry['name'] ?? 'Zone inconnue',
             ];
@@ -247,11 +253,12 @@ class QuestTrackingFormater
     }
 
     /**
-     * Format escort requirements (reach a destination on a specific map).
+     * Format escort requirements (reach a destination zone).
      *
-     * Requirements format: [['destination_map_id' => 4, 'destination_coordinates' => '15.10', 'name' => 'Escorter le marchand']]
+     * Forme cible (ZON-22) : [['destination_zone_slug' => 'village-de-lumiere', 'name' => 'Escorter le marchand']]
+     * Forme heritee (carte) : [['destination_map_id' => 4, 'destination_coordinates' => '15.10', 'name' => '...']]
      *
-     * @return array<int, array{count: int, necessary: int, destination_map_id: int, destination_coordinates: string, name: string}>
+     * @return array<int, array{count: int, necessary: int, destination_zone_slug: string|null, destination_map_id: int|null, destination_coordinates: string|null, name: string}>
      */
     public function formatEscort(array $requirements): array
     {
@@ -263,8 +270,9 @@ class QuestTrackingFormater
             $escort[] = [
                 'count' => 0,
                 'necessary' => 1,
-                'destination_map_id' => $entry['destination_map_id'],
-                'destination_coordinates' => $entry['destination_coordinates'],
+                'destination_zone_slug' => $entry['destination_zone_slug'] ?? null,
+                'destination_map_id' => $entry['destination_map_id'] ?? null,
+                'destination_coordinates' => $entry['destination_coordinates'] ?? null,
                 'name' => $entry['name'] ?? 'Escorte',
             ];
         }

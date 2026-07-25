@@ -11,6 +11,35 @@
 
 ---
 
+## ZON-22 — Rebranchement des systemes orphelins du deplacement (Sprint 13, 2026-07-25) — **decoupe en 2 sous-PR**
+
+> Premier jalon du Sprint 13 (consolidation post-pivot). La suppression du code carte (ZON-21b) avait retire le **dispatcher** de `PlayerMovedEvent` en laissant **6 abonnes** branches dessus : plusieurs systemes de progression etaient **inertes en production**. Ce jalon pose le point d'accroche du modele zone et rebranche l'ensemble.
+
+### Sous-jalon a — Evenement de voyage, tutoriel & region (PR #627)
+
+- Nouvel evenement `App\Event\Zone\PlayerTraveledEvent` (joueur, zone d'arrivee, zone de depart), dispatche par `ZoneTravelService::settleArrival` a **chaque** arrivee — a distinguer de `ZoneVisitedEvent`, emis uniquement a la premiere decouverte d'une zone et donc insuffisant comme accroche.
+- `TutorialProgressListener` : etape `TutorialStep::Movement` validee par un voyage de zone ; libelle de l'etape corrige (il demandait encore de cliquer sur une case adjacente).
+- `RegionDiscoveryTracker` : region derivee de la **zone** d'arrivee (`Zone::sourceMap`) et non plus de `Player::getMap()` (champ herite fige) ; `recordCurrentRegion` prefere la zone courante, la carte restant un repli. La decouverte de region conditionne le filtre de destinations de teleportation.
+- `PlayerZoneSynchronizer` : desabonne du deplacement ; conserve comme **amorce** (creation de personnage, sortie de donjon, teleportation, repli de l'ecran de zone) et branche sur le respawn.
+
+### Sous-jalon b — Quetes, suppression de l'evenement & garde-fou
+
+- `PlayerQuestUpdater::updateExplored(Zone)` / `updateEscort(Zone)` : le suivi se compte en **zones**. Cible resolue par `zone_slug` (forme cible) ou `map_id` / `destination_map_id` (forme heritee, via `Zone::sourceMap`). Les coordonnees ne sont plus discriminantes — une zone est plus grossiere qu'une case.
+- `QuestTrackingFormater` : cles `zone_slug` et `destination_zone_slug` acceptees dans les `requirements` ; formes heritees preservees (aucune migration de fixtures requise).
+- `QuestExploreTrackingListener`, `QuestEscortTrackingListener`, `HiddenQuestTriggerListener` (declencheur `explore`) rebranches sur `PlayerTraveledEvent`.
+- **`PlayerMovedEvent` supprime.**
+- **Garde-fou** `DomainEventDispatchGuardTest` : verifie que chaque evenement de domaine (`src/Event/**` avec une constante `NAME`) est emis quelque part dans `src/`. Le defaut d'origine etait silencieux — aucun test ne cassait, la fonctionnalite s'eteignait.
+
+### Decouverte annexe (→ ZON-25)
+
+Le garde-fou a revele **4 evenements sans emetteur** anterieurs au pivot, tolerés par une liste d'exceptions explicite : `PnjDialogEvent` (les objectifs de quete « parler a un PNJ » ne progressent pas), `FightLootedEvent` (purge du combat apres butin + etape inventaire du tutoriel), `PlayerActionHitEvent` / `PlayerActionMissEvent` (code mort, sans abonne).
+
+### Suivi de contenu (→ ZON-26)
+
+Les 25 objectifs d'exploration et 2 d'escorte des fixtures ciblent encore `map_id` + coordonnees : ils fonctionnent via la compatibilite heritee, mais plusieurs points d'une meme carte se valident desormais ensemble. Migration vers `zone_slug` a faire avec la densification du graphe.
+
+---
+
 ## ZON-21 — Suppression du code carte (Sprint 10, 2026-07-25) — **decoupe en 3 sous-PR**
 
 > Dernier jalon du Sprint 10 : la suppression **definitive** du code carte herite, rendu obsolete par le pivot PBBG (modele zone). Le monde est desormais un graphe de zones (`config/game/zones/*.yaml`) et non plus une grille de tuiles navigable. Decoupe en 3 sous-PR pour maitriser le risque (front → backend runtime → editeur admin + terrain).

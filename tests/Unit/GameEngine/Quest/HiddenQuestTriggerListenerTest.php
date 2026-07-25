@@ -9,8 +9,8 @@ use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Monster;
 use App\Entity\Game\Quest;
 use App\Event\Fight\MobDeadEvent;
-use App\Event\Map\PlayerMovedEvent;
 use App\Event\Map\SpotHarvestEvent;
+use App\Event\Zone\PlayerTraveledEvent;
 use App\GameEngine\Quest\HiddenQuestTriggerListener;
 use App\GameEngine\Quest\QuestTrackingFormater;
 use App\Helper\PlayerHelper;
@@ -43,7 +43,8 @@ class HiddenQuestTriggerListenerTest extends TestCase
     {
         $events = HiddenQuestTriggerListener::getSubscribedEvents();
 
-        $this->assertArrayHasKey(PlayerMovedEvent::NAME, $events);
+        // ZON-22 : le declencheur `explore` porte desormais sur l'arrivee en zone.
+        $this->assertArrayHasKey(PlayerTraveledEvent::NAME, $events);
         $this->assertArrayHasKey(MobDeadEvent::NAME, $events);
         $this->assertArrayHasKey(SpotHarvestEvent::NAME, $events);
     }

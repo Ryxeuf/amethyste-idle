@@ -6,8 +6,8 @@ use App\Entity\App\PlayerQuest;
 use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Quest;
 use App\Event\Fight\MobDeadEvent;
-use App\Event\Map\PlayerMovedEvent;
 use App\Event\Map\SpotHarvestEvent;
+use App\Event\Zone\PlayerTraveledEvent;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -24,23 +24,24 @@ class HiddenQuestTriggerListener implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerMovedEvent::NAME => 'onPlayerMoved',
+            PlayerTraveledEvent::NAME => 'onPlayerTraveled',
             MobDeadEvent::NAME => 'onMobDead',
             SpotHarvestEvent::NAME => 'onSpotHarvest',
         ];
     }
 
-    public function onPlayerMoved(PlayerMovedEvent $event): void
+    /**
+     * Depuis ZON-22, le declencheur `explore` porte sur l'arrivee dans une
+     * zone : la condition cible une `zone_slug` (forme cible) ou un `map_id`
+     * (forme heritee, resolue via `Zone::sourceMap`).
+     */
+    public function onPlayerTraveled(PlayerTraveledEvent $event): void
     {
-        $player = $event->getPlayer();
-        $map = $player->getMap();
-        if (!$map) {
-            return;
-        }
+        $zone = $event->getZone();
 
         $this->checkAndTrigger('explore', [
-            'map_id' => $map->getId(),
-            'coordinates' => $player->getCoordinates(),
+            'zone_slug' => $zone->getSlug(),
+            'map_id' => $zone->getSourceMap()?->getId(),
         ]);
     }
 
@@ -154,12 +155,14 @@ class HiddenQuestTriggerListener implements EventSubscriberInterface
      */
     private function matchesExplore(array $condition, array $context): bool
     {
-        if (isset($condition['map_id']) && $condition['map_id'] !== $context['map_id']) {
-            return false;
+        if (isset($condition['zone_slug'])) {
+            return $condition['zone_slug'] === $context['zone_slug'];
         }
 
-        if (isset($condition['coordinates']) && $condition['coordinates'] !== $context['coordinates']) {
-            return false;
+        if (isset($condition['map_id'])) {
+            // Les coordonnees des conditions heritees sont ignorees : une zone
+            // est plus grossiere qu'une case (pivot PBBG, cf. ZON-22).
+            return $condition['map_id'] === $context['map_id'];
         }
 
         return true;
