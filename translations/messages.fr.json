@@ -1155,6 +1155,20 @@
           "already_joined": "Vous avez deja rejoint cet evenement."
         }
       },
+      "boss": {
+        "assault": "Lancer un assaut",
+        "hint": "Chaque assaut coute de l'energie et inflige des degats au boss. Le butin est distribue a la contribution quand le boss tombe — aucune presence simultanee requise.",
+        "flash": {
+          "hit": "Assaut : %damage% degats infliges (%current%/%max% PV restants).",
+          "defeated": "Boss vaincu ! Assaut final de %damage% degats. Le butin est distribue a la contribution."
+        },
+        "error": {
+          "no_boss": "Aucun boss de zone actif ici.",
+          "already_defeated": "Ce boss est deja vaincu.",
+          "closed": "La fenetre de ce boss est terminee.",
+          "not_present": "Vous devez etre present dans la zone du boss."
+        }
+      },
       "explore": {
         "result": {
           "mob": "Vous croisez la route d'un %monster% !",

@@ -1,6 +1,6 @@
 ## Sprint 10 — Contenu de groupe & decommission carte
 
-> **4 taches** | Priorite : **Moyenne** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **4 taches** (1 livree) | Priorite : **Moyenne** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : le PvE cooperatif en modele zone (boss asynchrones, donjons semi-synchrones) et la suppression definitive du code carte.
 > Prerequis : Sprint 9 (presence & evenements de zone)
 
@@ -8,11 +8,7 @@
 
 ---
 
-### ZON-18 — Boss de zone asynchrone (M | ★★★)
-> Prerequis : ← ZON-15
-- [ ] Boss a large pool de PV dans une zone pour une fenetre donnee ; chaque joueur present depense de l'energie pour lancer ses assauts quand il le souhaite
-- [ ] Loot distribue a la contribution (generalisation de `WorldBossLootDistributor`)
-- [ ] Aucune presence simultanee requise
+> **ZON-18 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : boss de zone asynchrone — entite `ZoneBoss` (pool de PV partage, 1:1 `GameEvent` de zone), `ZoneBossService::assault` (chaque joueur present depense `zone.energy.cost.assault`, inflige des degats bases sur sa stat d'attaque, alimente `PlayerZoneEventParticipation.contribution`), aucune presence simultanee. A 0 PV, loot distribue a la contribution (top-3 = drops garantis + proba boostee, autres = probabiliste) — generalisation de `WorldBossLootDistributor` au modele zone. `ZoneBossManager` cree le boss a l'activation d'un evenement de zone porteur (`monster_slug`/`boss_hp`). Barre de PV + bouton Assaut sur l'ecran de zone, annonce Mercure de defaite. Curseurs BALANCE section 8.
 
 ### ZON-19 — Donjon de groupe semi-synchrone (XL | ★★★)
 > Prerequis : ← ZON-14

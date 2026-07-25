@@ -5,6 +5,25 @@
 
 ---
 
+## ZON-18 — Boss de zone asynchrone (Sprint 10, 2026-07-25)
+
+> Premier jalon du Sprint 10 : le PvE cooperatif en modele zone. Un boss a large pool de PV apparait dans une zone pour une fenetre donnee ; chaque joueur present depense de l'energie pour lancer ses assauts quand il le souhaite — aucune presence simultanee requise. Le loot va a la contribution, generalisant `WorldBossLootDistributor` sans combat tour par tour.
+
+### Changements
+
+- **`ZoneBoss`** (entite + table + migration + repository) : pool de PV partage (`hpMax`/`hpCurrent`), 1:1 avec un `GameEvent` de zone (ZON-15), reference le `Monster` (identite + table de loot). `applyDamage()` borne les degats et marque la defaite a 0 PV ; `getHpPercent()`.
+- **`ZoneBossService`** : `assault(player, event)` — valide boss actif + fenetre + presence, prleve `zone.energy.cost.assault` (defaut 10), inflige des degats = stat d'attaque du joueur (`getHit`) mise a l'echelle par `zone.boss.assault_damage_factor` (defaut 100 %) avec variance +/-20 %, applique au pool partage, alimente `PlayerZoneEventParticipation.contribution` (cree la participation si absente). A 0 PV : distribue le loot a la contribution (top-3 = drops garantis + proba x1.5, autres = probabiliste, ajout direct a l'inventaire) et publie une annonce Mercure de defaite.
+- **`ZoneBossManager`** (subscriber) : cree le `ZoneBoss` a l'activation d'un evenement de zone porteur d'un boss (`parameters.monster_slug` + `boss_hp` optionnel, defaut PV du monstre). Idempotent.
+- **`ZoneController`** : barre de PV + bouton « Lancer un assaut » sur l'ecran de zone, route `POST /game/zone/boss/{id}/assault` (CSRF), flashs de degats / defaite. Traductions FR/EN (`game.zone.boss.*`).
+- **`docs/BALANCE.md`** : curseurs `zone.energy.cost.assault` et `zone.boss.assault_damage_factor` (section 8) ; 4e curseur « Contribution » du pivot desormais concret.
+
+### Verifications
+
+- `ZoneBossServiceTest` (7 cas : assaut inflige/accumule, defaite + distribution loot, rejets no-boss / pas present / deja vaincu, cout parametre) ; `ZoneBossManagerTest` (5 cas : creation, defaut PV = vie du monstre, ignore sans zone / sans slug, idempotence) ; `ZoneControllerTest` adapte (mock `ZoneBossService`).
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-17 — Cycle jour/nuit mecanique (Sprint 9, 2026-07-25)
 
 > **Decision tranchee (question ouverte du pivot) : le cycle jour/nuit devient mecanique**, variante RICHE. Le jour et la nuit changent reellement le jeu — rencontres, butin et evenements varient, avec un contenu nocturne dedie — au-dessus du cycle cosmetique fin existant.

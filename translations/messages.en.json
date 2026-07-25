@@ -1155,6 +1155,20 @@
           "already_joined": "You already joined this event."
         }
       },
+      "boss": {
+        "assault": "Launch an assault",
+        "hint": "Each assault costs energy and deals damage to the boss. Loot is distributed by contribution when the boss falls — no simultaneous presence required.",
+        "flash": {
+          "hit": "Assault: %damage% damage dealt (%current%/%max% HP left).",
+          "defeated": "Boss defeated! Final assault of %damage% damage. Loot is distributed by contribution."
+        },
+        "error": {
+          "no_boss": "No active zone boss here.",
+          "already_defeated": "This boss is already defeated.",
+          "closed": "This boss's window has ended.",
+          "not_present": "You must be present in the boss's zone."
+        }
+      },
       "explore": {
         "result": {
           "mob": "You cross paths with a %monster%!",

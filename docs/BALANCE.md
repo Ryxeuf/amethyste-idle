@@ -129,6 +129,8 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | `zone.energy.cost.hunt` | 5 | Cout d'une action Chasser (ZON-09, lu par `HuntService`) |
 | `zone.energy.cost.gather` | 3 | Cout d'une action Recolter (ZON-10, lu par `GatherService`) |
 | `zone.energy.cost.event` | 10 | Cout pour rejoindre un evenement de zone (ZON-15, lu par `ZoneEventService`) |
+| `zone.energy.cost.assault` | 10 | Cout d'un assaut contre un boss de zone (ZON-18, lu par `ZoneBossService`) |
+| `zone.boss.assault_damage_factor` | 100 | Multiplicateur des degats d'assaut en % (100 = x1.0 de la stat d'attaque du joueur, ZON-18) |
 
 `Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
 
@@ -145,7 +147,7 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 1. **Energie** (tentatives) — ce chapitre.
 2. **PV** (echecs) — regen hors combat, ZON-12 (section 9).
 3. **Lockouts** (donjons) — recompenses decroissantes, ZON-20.
-4. **Contribution** (loot de groupe) — boss de zone, ZON-18.
+4. **Contribution** (loot de groupe) — boss de zone asynchrones, ZON-18 : chaque assaut coute de l'energie et alimente `PlayerZoneEventParticipation.contribution` ; a 0 PV, le loot va aux contributeurs (top-3 = drops garantis + proba boostee, autres = probabiliste).
 
 ## 9. Regeneration des PV hors combat (pivot, ZON-12)
 
