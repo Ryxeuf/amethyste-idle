@@ -61,6 +61,23 @@ class AuctionManagerTest extends TestCase
         $this->assertNull($item->getInventory()); // item retire de l'inventaire
     }
 
+    public function testCreateListingRefusesABoundItem(): void
+    {
+        // ECO-01 : le formulaire de vente filtre deja les objets liables, mais
+        // l'UI n'est pas une regle metier — une requete forgee ne doit pas
+        // pouvoir mettre en vente un objet lie a son proprietaire.
+        $seller = $this->createPlayer(1, 1000);
+        $item = $this->createPlayerItem();
+        $item->setBoundToPlayerId(1);
+
+        $this->em->expects($this->never())->method('persist');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('lie a son proprietaire');
+
+        $this->manager->createListing($seller, $item, 100, 1);
+    }
+
     public function testCreateListingWithRegionTax(): void
     {
         $region = new Region();

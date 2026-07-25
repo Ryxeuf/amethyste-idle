@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **6 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16) | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **6 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16), **1 livree** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -16,16 +16,14 @@
 
 ---
 
-### ECO-01 — Type de liaison des objets (S | ★★★ | **CRITIQUE**)
-> Fondation economique : distingue echangeable / lie-equipement / lie-obtention.
-> Prerequis : ∅ | Bloque : ECO-02, ECO-05, ECO-10
-> **Note** : `PlayerItem::isExchangeable()` existe deja (livre avec NAR-04) et attend cet enum.
-- [ ] Enum `BindType` : `none`, `bind_on_equip`, `bind_on_pickup`
-- [ ] Migration : `Item.boundToPlayer` (bool) → `Item.bindType` (enum), retro-compat
-      (`true` → `bind_on_pickup`, `false` → `none`)
-- [ ] `PlayerItem` : flag `bound` (liaison effective, ex. apres 1er equipement pour `bind_on_equip`)
-- [ ] Blocage vente HV/echoppe si l'item est lie (garde-fou cote service)
-- [ ] Tests unitaires
+> **ECO-01 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : enum `BindType`
+> (`none` / `bind_on_equip` / `bind_on_pickup`), colonne `game_items.bind_type` remplacant le booleen
+> `bound_to_player` (migration avec backfill), liaison au premier equipement dans `GearSetter`, et
+> **garde-fou cote service** dans `AuctionManager::createListing` — le formulaire filtrait deja les
+> objets liables, mais rien n'empechait une requete forgee de mettre en vente un objet lie.
+>
+> **Decision** : la liaison effective reste portee par `PlayerItem::boundToPlayerId` (deja en place
+> et deja consommee par `isExchangeable()`), plutot que d'ajouter un flag `bound` redondant.
 
 ### ECO-02 — Plancher T1 PNJ & kit d'onboarding (S | ★★ | **CRITIQUE**)
 > Anti cold-start : aucun joueur jamais hard-bloque par un marche joueur vide.
@@ -73,7 +71,8 @@
 
 ### Definition of Done
 
-- [ ] `BindType` en place, vente d'objet lie impossible sur tous les canaux
+- [x] `BindType` en place, vente d'objet lie impossible a l'hotel des ventes (ECO-01) ;
+      reste a etendre le garde-fou aux echoppes quand elles existeront (ECO-10)
 - [ ] Un nouveau joueur atteint le premier palier de craft sans dependre d'un autre joueur
 - [ ] HV segmente par region, taxe reversee a la guilde controlante (ou detruite)
 - [ ] Chaine de production documentee, aucun metier autosuffisant

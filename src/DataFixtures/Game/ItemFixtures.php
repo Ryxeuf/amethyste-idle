@@ -8,6 +8,7 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -94,8 +95,10 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                     $item->setSpell($this->getReference($spellReference, Spell::class));
                 }
 
-                if (isset($data['boundToPlayer'])) {
-                    $item->setBoundToPlayer((bool) $data['boundToPlayer']);
+                if (isset($data['bindType'])) {
+                    $item->setBindType(BindType::from($data['bindType']));
+                } elseif (isset($data['boundToPlayer'])) {
+                    $item->setBindType(BindType::fromLegacyFlag((bool) $data['boundToPlayer']));
                 }
 
                 if (isset($data['gear_location'])) {

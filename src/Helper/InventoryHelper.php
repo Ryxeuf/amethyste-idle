@@ -38,7 +38,7 @@ class InventoryHelper
         $item->setInventory($this->playerHelper->getBagInventory());
 
         // Auto-bind soulbound items to the player
-        if ($item->getGenericItem()->isBoundToPlayer() && !$item->isBound()) {
+        if ($item->getGenericItem()->isBoundOnPickup() && !$item->isBound()) {
             $item->setBoundToPlayerId($this->playerHelper->getPlayer()->getId());
         }
 

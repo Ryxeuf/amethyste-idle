@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\App\GameEvent;
 use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
+use App\Enum\BindType;
 use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -70,7 +71,7 @@ class GameEventFixtures extends Fixture
             $item->setPrice($data['price']);
             $item->setLevel($data['level']);
             $item->setIsCosmetic($data['is_cosmetic']);
-            $item->setBoundToPlayer($data['bound_to_player']);
+            $item->setBindType(BindType::fromLegacyFlag((bool) $data['bound_to_player']));
             $item->setSpace(1);
             $item->setCreatedAt(new \DateTime());
             $item->setUpdatedAt(new \DateTime());

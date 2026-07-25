@@ -2,6 +2,7 @@
 
 namespace App\Entity\Game;
 
+use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -222,8 +223,12 @@ class Item
     #[ORM\Column(name: 'rarity', type: 'string', length: 50, nullable: true, enumType: ItemRarity::class)]
     private ?ItemRarity $rarity = null;
 
-    #[ORM\Column(name: 'bound_to_player', type: 'boolean', options: ['default' => false])]
-    private bool $boundToPlayer = false;
+    /**
+     * Type de liaison (ECO-01). Remplace l'ancien booleen `bound_to_player`,
+     * qui ne savait exprimer que « lie des l'obtention ».
+     */
+    #[ORM\Column(name: 'bind_type', type: 'string', length: 20, options: ['default' => 'none'], enumType: BindType::class)]
+    private BindType $bindType = BindType::None;
 
     #[ORM\Column(name: 'materia_slots', type: 'integer', options: ['default' => 0])]
     private int $materiaSlots = 0;
@@ -650,14 +655,30 @@ class Item
         $this->rarity = $rarity;
     }
 
-    public function isBoundToPlayer(): bool
+    public function getBindType(): BindType
     {
-        return $this->boundToPlayer;
+        return $this->bindType;
     }
 
-    public function setBoundToPlayer(bool $boundToPlayer): void
+    public function setBindType(BindType $bindType): void
     {
-        $this->boundToPlayer = $boundToPlayer;
+        $this->bindType = $bindType;
+    }
+
+    /**
+     * L'objet se lie-t-il des l'obtention ? Equivalent de l'ancien booleen
+     * `boundToPlayer` : conserve car c'est la question que posent les points
+     * d'entree du butin et de la boutique.
+     */
+    public function isBoundOnPickup(): bool
+    {
+        return BindType::BindOnPickup === $this->bindType;
+    }
+
+    /** L'objet se lie-t-il au premier equipement ? */
+    public function isBoundOnEquip(): bool
+    {
+        return BindType::BindOnEquip === $this->bindType;
     }
 
     public function getMateriaSlots(): int

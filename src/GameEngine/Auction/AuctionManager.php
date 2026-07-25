@@ -56,6 +56,13 @@ class AuctionManager
             throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
         }
 
+        // ECO-01 : garde-fou cote service. Le formulaire de vente filtre deja les
+        // objets liables, mais rien n'empechait une requete forgee de mettre en
+        // vente un objet lie — l'UI n'est pas une regle metier.
+        if (!$playerItem->isExchangeable()) {
+            throw new \InvalidArgumentException('Cet objet est lie a son proprietaire et ne peut pas etre mis en vente.');
+        }
+
         $this->validatePriceLimits($playerItem, $pricePerUnit);
         $this->validateActiveListingsLimit($seller);
         $this->validateCancelCooldown($seller);

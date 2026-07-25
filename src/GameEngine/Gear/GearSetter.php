@@ -36,6 +36,7 @@ class GearSetter
             $this->unsetGear($equipped, false);
         }
         $gear->setGear($this->gearHelper->getPlayerItemGearByLocation($location));
+        $this->bindOnEquip($gear);
 
         $this->entityManager->flush();
 
@@ -67,6 +68,25 @@ class GearSetter
 
         if ($player instanceof Player) {
             $this->avatarHashRecalculator->recalculate($player);
+        }
+    }
+
+    /**
+     * Materialise la liaison a l'equipement (ECO-01).
+     *
+     * Un objet `bind_on_equip` circule librement tant qu'il n'a pas ete porte ;
+     * il s'immobilise sur le porteur au premier equipement. La liaison est
+     * definitive : `unsetGear` ne la leve pas.
+     */
+    private function bindOnEquip(PlayerItem $gear): void
+    {
+        if ($gear->isBound() || !$gear->getGenericItem()->isBoundOnEquip()) {
+            return;
+        }
+
+        $owner = $gear->getInventory()?->getPlayer();
+        if ($owner instanceof Player) {
+            $gear->setBoundToPlayerId($owner->getId());
         }
     }
 }
