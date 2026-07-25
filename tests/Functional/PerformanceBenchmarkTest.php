@@ -83,9 +83,7 @@ class PerformanceBenchmarkTest extends WebTestCase
         yield 'achievements' => ['/game/achievements', 'Game: Achievements'];
         yield 'quests' => ['/game/quests', 'Game: Quests'];
 
-        // API endpoints (no hardcoded IDs — cells defaults to player's map)
-        yield 'api-map-config' => ['/api/map/config', 'API: Map Config'];
-        yield 'api-map-cells' => ['/api/map/cells?x=0&y=0&radius=5', 'API: Map Cells'];
+        // API endpoints
         yield 'api-quickbar' => ['/api/quickbar/items', 'API: Quickbar Items'];
         yield 'api-game-time' => ['/api/game/time', 'API: Game Time'];
         yield 'api-active-events' => ['/api/game/events/active', 'API: Active Events'];

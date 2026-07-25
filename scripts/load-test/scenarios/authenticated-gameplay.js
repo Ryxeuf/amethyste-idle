@@ -1,9 +1,9 @@
-// Scenario k6 — gameplay authentifie (login + boucle map/inventaire/HdV).
+// Scenario k6 — gameplay authentifie (login + boucle zone/inventaire).
 //
 // Objectif : simuler des joueurs connectes qui parcourent les pages et API
-// protegees (/game, /game/map, /game/inventory, /api/map/config,
-// /api/map/cells, /api/map/entities). Couvre la chaine login (CSRF + session
-// cookies) ainsi que la boucle classique de chargement de carte cote client.
+// protegees (/game, /game/zone, /game/inventory, /api/game/time,
+// /api/game/events/active). Couvre la chaine login (CSRF + session cookies)
+// ainsi que la boucle de l'ecran de zone (pivot PBBG, server-rendered).
 //
 // Utilisation :
 //   TEST_USER_EMAIL=tester@amethyste.test TEST_USER_PASSWORD=password \
@@ -38,21 +38,20 @@ import {
 const CSRF_TOKEN_REGEX =
     /name=["']_csrf_token["']\s+value=["']([^"']+)["']|value=["']([^"']+)["']\s+name=["']_csrf_token["']/i;
 
-const MAP_RADIUS = parseInt(__ENV.MAP_RADIUS || '15', 10);
 
 // Custom metrics : separer chaque etape pour faciliter le diagnostic.
 const loginLatency = new Trend('auth_login_latency', true);
 const loginFail = new Rate('auth_login_fail');
 const authedRequestFail = new Rate('authed_request_fail');
-const mapApiLatency = new Trend('authed_map_api_latency', true);
+const jsonApiLatency = new Trend('authed_json_api_latency', true);
 
 const credentialsPool = loadCredentials();
 
 export const options = rampingOptions({
     tags: { scenario: 'authenticated-gameplay' },
     thresholds: {
-        // P95 plus large que guest-browsing : les routes /game et /api/map
-        // declenchent plusieurs requetes Doctrine (Player, Map, Mob, Pnj).
+        // P95 plus large que guest-browsing : les routes /game et /game/zone
+        // declenchent plusieurs requetes Doctrine (Player, Zone, presence...).
         http_req_duration: ['p(95)<1500', 'p(99)<3000'],
         http_req_failed: ['rate<0.02'],
         auth_login_fail: ['rate<0.05'],
@@ -83,13 +82,13 @@ export default function (data) {
     group('dashboard', () => visitAuthedHtml('dashboard', '/game'));
     randomThink();
 
-    group('map-view', () => {
-        visitAuthedHtml('map-view', '/game/map');
+    group('zone-view', () => {
+        visitAuthedHtml('zone-view', '/game/zone');
         randomThink();
 
-        callMapApi('map-config', '/api/map/config');
-        callMapApi('map-cells', `/api/map/cells?x=0&y=0&radius=${MAP_RADIUS}`);
-        callMapApi('map-entities', `/api/map/entities?radius=${MAP_RADIUS}`);
+        // Modele zone (pivot PBBG) : ecran server-rendered + petites API JSON.
+        callJsonApi('game-time', '/api/game/time');
+        callJsonApi('active-events', '/api/game/events/active');
     });
     randomThink();
 
@@ -209,12 +208,12 @@ function visitAuthedHtml(name, path) {
     return res;
 }
 
-function callMapApi(name, path) {
+function callJsonApi(name, path) {
     const res = http.get(`${BASE_URL}${path}`, {
         headers: { Accept: 'application/json' },
         tags: { endpoint: name },
     });
-    mapApiLatency.add(res.timings.duration);
+    jsonApiLatency.add(res.timings.duration);
     const ok = check(res, {
         [`${name} status 200`]: (r) => r.status === 200,
         [`${name} returns JSON`]: (r) =>

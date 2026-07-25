@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Tests\Unit\GameEngine\Map;
+namespace App\Tests\Unit\GameEngine\Sprite;
 
-use App\GameEngine\Map\SpriteConfigProvider;
+use App\GameEngine\Sprite\SpriteConfigProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Asset\Packages;
 

@@ -17,16 +17,11 @@ class RateLimitingSubscriber implements EventSubscriberInterface
 
     public function __construct(
         private readonly Security $security,
-        private readonly RateLimiterFactoryInterface $apiMoveLimiter,
         private readonly RateLimiterFactoryInterface $gameFightLimiter,
         private readonly RateLimiterFactoryInterface $gameShopLimiter,
         private readonly RateLimiterFactoryInterface $gameCraftLimiter,
     ) {
         $this->limiterMap = [
-            'api_move' => [
-                'limiter' => $this->apiMoveLimiter,
-                'routes' => ['api_map_move'],
-            ],
             'game_fight' => [
                 'limiter' => $this->gameFightLimiter,
                 'routes' => [
