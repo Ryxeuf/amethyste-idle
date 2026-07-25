@@ -5,7 +5,8 @@ namespace App\GameEngine\Region;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedRegion;
 use App\Entity\App\Region;
-use App\Event\Map\PlayerMovedEvent;
+use App\Entity\App\Zone;
+use App\Event\Zone\PlayerTraveledEvent;
 use App\Repository\PlayerVisitedRegionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -14,6 +15,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * Records the regions a player has set foot in. The data backs the fast-travel
  * destination filter: a region must have been visited at least once before the
  * player can teleport back to it (cf. tache 130 sous-phase 5).
+ *
+ * Depuis le pivot PBBG (ZON-22), la region est derivee de la **zone** ou le
+ * joueur arrive (via `Zone::sourceMap`), et non plus de sa carte : la position
+ * de reference d'un joueur est sa zone.
  */
 class RegionDiscoveryTracker implements EventSubscriberInterface
 {
@@ -26,22 +31,39 @@ class RegionDiscoveryTracker implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerMovedEvent::NAME => 'onPlayerMoved',
+            PlayerTraveledEvent::NAME => 'onPlayerTraveled',
         ];
     }
 
-    public function onPlayerMoved(PlayerMovedEvent $event): void
+    public function onPlayerTraveled(PlayerTraveledEvent $event): void
     {
-        $this->recordCurrentRegion($event->getPlayer());
+        $this->recordZoneRegion($event->getPlayer(), $event->getZone());
     }
 
     /**
-     * Records the player's current region (if any) as visited. Idempotent: a
+     * Records the region of the given zone (if any) as visited. Idempotent: a
      * second call for the same (player, region) pair is a no-op.
+     */
+    public function recordZoneRegion(Player $player, Zone $zone, bool $flush = true): bool
+    {
+        return $this->record($player, $zone->getSourceMap()?->getRegion(), $flush);
+    }
+
+    /**
+     * Records the player's current region (if any) as visited. La zone courante
+     * prime ; la carte reste un repli pour les joueurs pas encore rattaches a
+     * une zone. Idempotent.
      */
     public function recordCurrentRegion(Player $player, bool $flush = true): bool
     {
-        $region = $player->getMap()?->getRegion();
+        $region = $player->getCurrentZone()?->getSourceMap()?->getRegion()
+            ?? $player->getMap()?->getRegion();
+
+        return $this->record($player, $region, $flush);
+    }
+
+    private function record(Player $player, ?Region $region, bool $flush): bool
+    {
         if (!$region instanceof Region) {
             return false;
         }

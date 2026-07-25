@@ -24,7 +24,7 @@ enum TutorialStep: int
     public function objective(): string
     {
         return match ($this) {
-            self::Movement => 'Deplacez-vous sur la carte en cliquant sur une case adjacente.',
+            self::Movement => 'Voyagez vers une zone voisine depuis l\'ecran de zone.',
             self::Combat => 'Combattez un monstre et remportez la victoire !',
             self::Inventory => 'Recuperez votre butin apres un combat.',
             self::Quests => 'Completez votre premiere quete.',

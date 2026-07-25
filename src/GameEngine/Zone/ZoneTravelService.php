@@ -6,6 +6,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedZone;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -78,6 +79,8 @@ class ZoneTravelService
             return null;
         }
 
+        $origin = $player->getCurrentZone();
+
         $player->setCurrentZone($destination);
         $player->setTravelToZone(null);
         $player->setTravelArrivesAt(null);
@@ -86,6 +89,14 @@ class ZoneTravelService
         if ($flush) {
             $this->entityManager->flush();
         }
+
+        // Arrivee effective : point d'accroche du modele zone (ZON-22) pour le
+        // tutoriel, la decouverte de region et le suivi de quetes. Emis a chaque
+        // voyage, contrairement a ZoneVisitedEvent (premiere decouverte).
+        $this->eventDispatcher->dispatch(
+            new PlayerTraveledEvent($player, $destination, $origin),
+            PlayerTraveledEvent::NAME
+        );
 
         return $destination;
     }

@@ -4,20 +4,23 @@ namespace App\GameEngine\Zone;
 
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
-use App\Event\Map\PlayerMovedEvent;
 use App\Event\Map\PlayerRespawnedEvent;
 use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Maintient Player::currentZone alignee sur la carte du joueur pendant la
- * transition vers le modele zone (pivot PBBG, ZON-03).
+ * Derive Player::currentZone depuis la carte de rattachement (Zone::sourceMap).
  *
- * Tant que la carte reste la source des deplacements (jusqu'a ZON-01/ZON-05),
- * la zone est derivee de Zone::sourceMap. Les cartes sans zone (donjons
- * instancies, carte de test) laissent la zone courante inchangee : le joueur
- * y retournera en sortant (cf. ZON-19 pour les donjons).
+ * Depuis ZON-22, ce service n'est plus branche sur le deplacement : la zone est
+ * la source de verite de la position (regle projet #7) et le voyage la met a
+ * jour directement (ZoneTravelService). Il subsiste comme **amorce** pour les
+ * cas ou un joueur n'a pas encore de zone : creation de personnage
+ * (PlayerFactory), sortie de donjon (DungeonManager), teleportation
+ * (GoldSinkManager), repli de l'ecran de zone, et respawn.
+ *
+ * Les cartes sans zone (donjons instancies, carte de test) laissent la zone
+ * courante inchangee : le joueur y retournera en sortant.
  */
 class PlayerZoneSynchronizer implements EventSubscriberInterface
 {
@@ -30,14 +33,8 @@ class PlayerZoneSynchronizer implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PlayerMovedEvent::NAME => 'onPlayerMoved',
             PlayerRespawnedEvent::NAME => 'onPlayerRespawned',
         ];
-    }
-
-    public function onPlayerMoved(PlayerMovedEvent $event): void
-    {
-        $this->syncFromMap($event->getPlayer(), true);
     }
 
     public function onPlayerRespawned(PlayerRespawnedEvent $event): void

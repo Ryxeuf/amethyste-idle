@@ -5,7 +5,6 @@ namespace App\Tests\Unit\GameEngine\Zone;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
-use App\Event\Map\PlayerMovedEvent;
 use App\Event\Map\PlayerRespawnedEvent;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Repository\ZoneRepository;
@@ -26,12 +25,13 @@ class PlayerZoneSynchronizerTest extends TestCase
         $this->synchronizer = new PlayerZoneSynchronizer($this->entityManager, $this->zoneRepository);
     }
 
-    public function testSubscribesToMoveAndRespawnEvents(): void
+    public function testSubscribesToRespawnEventOnly(): void
     {
         $events = PlayerZoneSynchronizer::getSubscribedEvents();
 
-        $this->assertArrayHasKey(PlayerMovedEvent::NAME, $events);
-        $this->assertArrayHasKey(PlayerRespawnedEvent::NAME, $events);
+        // ZON-22 : le synchroniseur n'est plus branche sur le deplacement — la
+        // zone est la source de verite et le voyage la met a jour directement.
+        $this->assertSame([PlayerRespawnedEvent::NAME], array_keys($events));
     }
 
     public function testAssignsZoneMatchingPlayerMap(): void
@@ -102,7 +102,7 @@ class PlayerZoneSynchronizerTest extends TestCase
         $this->synchronizer->syncFromMap($player, true);
     }
 
-    public function testOnPlayerMovedSyncsAndFlushes(): void
+    public function testOnPlayerRespawnedSyncsAndFlushes(): void
     {
         $map = new Map();
         $zone = (new Zone())->setSlug('crete-de-ventombre')->setName('Crête')->setSourceMap($map);
@@ -112,7 +112,7 @@ class PlayerZoneSynchronizerTest extends TestCase
         $this->zoneRepository->method('findEnabledBySourceMap')->willReturn($zone);
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->synchronizer->onPlayerMoved(new PlayerMovedEvent($player));
+        $this->synchronizer->onPlayerRespawned(new PlayerRespawnedEvent($player));
 
         $this->assertSame($zone, $player->getCurrentZone());
     }

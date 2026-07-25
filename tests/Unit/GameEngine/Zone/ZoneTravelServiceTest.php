@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedZone;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Event\Zone\PlayerTraveledEvent;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -171,6 +172,44 @@ class ZoneTravelServiceTest extends TestCase
         $this->assertSame($to, $player->getCurrentZone());
         $this->assertFalse($player->isTraveling());
         $this->assertNull($player->getTravelArrivesAt());
+    }
+
+    public function testSettleArrivalDispatchesPlayerTraveledEvent(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+        $player->setTravelToZone($to);
+        $player->setTravelArrivesAt(new \DateTimeImmutable('-1 second'));
+
+        $this->visitedZoneRepository->method('hasVisited')->willReturn(true);
+
+        $dispatched = [];
+        $this->eventDispatcher->method('dispatch')
+            ->willReturnCallback(function (object $event) use (&$dispatched) {
+                $dispatched[] = $event;
+
+                return $event;
+            });
+
+        $this->service->settleArrival($player);
+
+        $traveled = array_values(array_filter($dispatched, fn ($e) => $e instanceof PlayerTraveledEvent));
+        $this->assertCount(1, $traveled, 'Une arrivee emet exactement un PlayerTraveledEvent.');
+        $this->assertSame($player, $traveled[0]->getPlayer());
+        $this->assertSame($to, $traveled[0]->getZone());
+        $this->assertSame($from, $traveled[0]->getFromZone());
+    }
+
+    public function testNoTravelEventWhenArrivalTimeNotReached(): void
+    {
+        $player = $this->buildPlayerIn($this->buildZone('village'));
+        $player->setTravelToZone($this->buildZone('foret'));
+        $player->setTravelArrivesAt(new \DateTimeImmutable('+10 minutes'));
+
+        $this->eventDispatcher->expects($this->never())->method('dispatch');
+
+        $this->service->settleArrival($player);
     }
 
     public function testSettleArrivalReturnsNullWhenNotTraveling(): void
