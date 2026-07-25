@@ -10,6 +10,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(columns: ['created_at'], name: 'idx_chat_created_at')]
 #[ORM\Index(columns: ['channel', 'created_at'], name: 'idx_chat_channel_created')]
 #[ORM\Index(columns: ['guild_id', 'created_at'], name: 'idx_chat_guild_created')]
+#[ORM\Index(columns: ['zone_id', 'created_at'], name: 'idx_chat_zone_created')]
 #[ORM\Entity()]
 class ChatMessage
 {
@@ -19,6 +20,8 @@ class ChatMessage
     public const CHANNEL_MAP = 'map';
     public const CHANNEL_PRIVATE = 'private';
     public const CHANNEL_GUILD = 'guild';
+    // Chat de zone (pivot PBBG, ZON-14) : remplace a terme le canal `map` gele.
+    public const CHANNEL_ZONE = 'zone';
 
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -42,6 +45,10 @@ class ChatMessage
     #[ORM\ManyToOne(targetEntity: Map::class)]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id', nullable: true)]
     private ?Map $map = null;
+
+    #[ORM\ManyToOne(targetEntity: Zone::class)]
+    #[ORM\JoinColumn(name: 'zone_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?Zone $zone = null;
 
     #[ORM\ManyToOne(targetEntity: Guild::class)]
     #[ORM\JoinColumn(name: 'guild_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
@@ -114,6 +121,18 @@ class ChatMessage
     public function setMap(?Map $map): self
     {
         $this->map = $map;
+
+        return $this;
+    }
+
+    public function getZone(): ?Zone
+    {
+        return $this->zone;
+    }
+
+    public function setZone(?Zone $zone): self
+    {
+        $this->zone = $zone;
 
         return $this;
     }

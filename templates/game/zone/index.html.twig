@@ -319,22 +319,54 @@
                         {% endif %}
                     </div>
 
-                    {# ── Joueurs presents ────────────────────────── #}
-                    <div>
+                    {# ── Presence & chat de zone (ZON-14) ────────── #}
+                    <div {% if zoneChat %}data-controller="zone-chat"
+                         data-zone-chat-mercure-url-value="{{ (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure') }}"
+                         data-zone-chat-zone-id-value="{{ zoneChat.zoneId }}"
+                         data-zone-chat-send-url-value="{{ path('app_game_chat_send') }}"
+                         data-zone-chat-presence-url-value="{{ path('app_game_zone_presence') }}"
+                         data-zone-chat-invite-url-value="{{ path('app_game_party_invite', {playerId: '__ID__'}) }}"
+                         data-zone-chat-profile-url-value="{{ path('app_game_player_profile', {id: '__ID__'}) }}"{% endif %}>
                         <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.players.heading'|trans }}</h4>
-                        {% if playersPresent is empty %}
-                            <p class="text-gray-500 text-sm">{{ 'game.zone.players.empty'|trans }}</p>
-                        {% else %}
-                            <ul class="space-y-1.5">
+                        <div data-zone-chat-target="presence" class="space-y-1">
+                            {% if playersPresent is empty %}
+                                <p class="text-gray-500 text-sm">{{ 'game.zone.players.empty'|trans }}</p>
+                            {% else %}
                                 {% for presentPlayer in playersPresent %}
-                                    <li class="flex items-center gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
-                                        <span class="text-sm text-white">{{ presentPlayer.name }}</span>
+                                    <div class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-1.5">
+                                        <a href="{{ path('app_game_player_profile', {id: presentPlayer.id}) }}" class="text-sm text-white hover:text-sky-200 truncate">{{ presentPlayer.name }}</a>
                                         {% if app.user and presentPlayer.user is defined and presentPlayer.user == app.user %}
                                             <span class="text-[10px] uppercase tracking-wide text-purple-300">{{ 'game.zone.players.you'|trans }}</span>
+                                        {% else %}
+                                            <form method="post" action="{{ path('app_game_party_invite', {playerId: presentPlayer.id}) }}">
+                                                <button type="submit" class="text-[10px] px-1.5 py-0.5 rounded bg-indigo-900/50 border border-indigo-700 text-indigo-200 hover:bg-indigo-800/60" title="{{ 'game.zone.players.invite'|trans }}">+</button>
+                                            </form>
                                         {% endif %}
-                                    </li>
+                                    </div>
                                 {% endfor %}
-                            </ul>
+                            {% endif %}
+                        </div>
+
+                        {# ── Chat de zone (temps reel Mercure) ────── #}
+                        {% if zoneChat %}
+                            <h4 class="text-sm font-semibold text-gray-200 mb-2 mt-4">{{ 'game.zone.chat.heading'|trans }}</h4>
+                            <div class="rounded-md bg-gray-900/60 border border-gray-700/60">
+                                <div data-zone-chat-target="messages" class="h-40 overflow-y-auto px-3 py-2 text-xs">
+                                    {% for message in zoneChat.messages %}
+                                        <div class="text-xs py-0.5">
+                                            <span class="text-gray-600 mr-1">{{ message.createdAt ? message.createdAt|date('H:i') : '' }}</span>
+                                            <span class="font-semibold text-sky-300 mr-1">{{ message.sender.name }}:</span>
+                                            <span class="text-gray-200">{{ message.content }}</span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <form data-action="zone-chat#send" class="flex gap-1 border-t border-gray-700/60 p-2">
+                                    <input data-zone-chat-target="input" type="text" maxlength="500"
+                                           placeholder="{{ 'game.zone.chat.placeholder'|trans }}"
+                                           class="flex-1 rounded bg-gray-800 border border-gray-700 px-2 py-1 text-xs text-gray-100 focus:outline-none focus:border-sky-600">
+                                    <button type="submit" class="rounded bg-sky-900/50 border border-sky-700 text-sky-200 hover:bg-sky-800/60 px-3 py-1 text-xs font-medium">{{ 'game.zone.chat.send'|trans }}</button>
+                                </form>
+                            </div>
                         {% endif %}
 
                         {# ── Points d'interet ────────────────────── #}

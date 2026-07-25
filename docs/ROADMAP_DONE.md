@@ -5,6 +5,26 @@
 
 ---
 
+## ZON-14 — Presence par zone & chat de zone (Sprint 9, 2026-07-25)
+
+> La cooperation prend racine sur l'ecran de zone : on voit qui est present, on discute en direct, et on invite d'un clic. Transpose le canal de chat `map` gele vers le modele zone.
+
+### Changements
+
+- **`ChatMessage`** : nouveau canal `CHANNEL_ZONE` + FK `zone_id` (nullable, `ON DELETE CASCADE`) + index `(zone_id, created_at)`. Migration `Version20260725ZoneChat`.
+- **`ChatManager`** : `sendZoneMessage(sender, content)` (diffuse dans la zone courante, meme rate-limit/sanitize que les autres canaux), `getZoneHistory(zone)`. `getTopicsForMessage` publie sur `chat/zone/<id>` ; `serializeMessage` expose `zoneId`.
+- **`ChatController`** : canal `zone` cable dans `send` et `history/{channel}` (reutilise l'endpoint existant).
+- **Ecran de zone** : liste de presence enrichie (lien profil + bouton d'invitation groupe par joueur), panneau de chat temps reel. Nouveau `zone_chat_controller.js` (Stimulus) : abonnement Mercure `chat/zone/<id>`, envoi via `/game/chat/send`, rafraichissement de la presence sur activite + toutes les 20 s. Endpoint `GET /game/zone/presence` (JSON). Traductions FR/EN (`game.zone.chat.*`, `game.zone.players.invite`).
+- **Hors perimetre assume** : l'interaction rapide « commerce » — aucun systeme de troc joueur-joueur n'existe encore ; a introduire par une tache economie dediee. Profil + invitation groupe couvrent la cooperation immediate.
+
+### Verifications
+
+- `ChatManagerZoneTest` (6 cas : constante de canal, accesseur zone, topic `chat/zone/<id>` avec/sans zone, serialisation du `zoneId`).
+- `ZoneControllerTest` etendu (mock `ChatManager`) — 20 cas verts.
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-13 — Expeditions time-gated (Sprint 9, 2026-07-25)
 
 > Premiere tache du Sprint 9 : le monde continue de rapporter quand le joueur est deconnecte. On envoie son personnage explorer une zone plusieurs heures reelles ; au retour, un butin attend d'etre recupere. Etat exclusif, resolu paresseusement (aucun cron), butin **derive des tables declaratives de la zone** (ZON-11) — enrichir le contenu = editer la donnee de zone.
