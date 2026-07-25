@@ -142,15 +142,13 @@ moteur récurrent qui referme la boucle à trois piliers.
 > **Déféré** : énergie-par-assaut (change le flux de mouvement/combat, hors périmètre narratif) —
 > le modèle actuel reste asynchrone et sans présence simultanée requise.
 
-### NAR-11 — Résolution de saison & crédits narratifs (M | ★★★ | HAUTE)
-> Le liant de la boucle : la guilde gagnante est *créditée* de la résolution (D10).
-> Prérequis : ← NAR-10, GCC (fin de saison / contrôle de région ✅)
-- [ ] À la clôture de saison, issue **prédéfinie** (une seule branche) ; identifier la guilde
-      contrôlante de la région (réutiliser la logique GCC / `RegionControl`)
-- [ ] Crédits narratifs à la guilde gagnante : titre de saison, mention dans le récit de
-      région, cosmétiques, **nom au journal de monde** (NAR-07)
-- [ ] Aucune branche par vainqueur (pas de coût combinatoire) — seuls les crédits varient
-- [ ] Tests (attribution des crédits, cas sans guilde contrôlante)
+### NAR-11 — Résolution de saison & crédits narratifs ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> À la clôture (`SeasonTickCommand::handleExpiredSeasons`), `SeasonResolutionService::resolve`
+> consomme le résultat de `TownControlManager::attributeControl` (slug région → guilde
+> contrôlante) et **crédite la guilde gagnante au journal de monde** (fait canon public via
+> `WorldFactService`, NAR-07 ; `creditedGuildName`). Une seule branche : seul le nom crédité
+> varie. Cas sans guilde → fait de résolution neutre. Idempotent par slug. Tests :
+> `SeasonResolutionServiceTest`, `SeasonTickCommandTest` (mock ajouté).
 
 ### NAR-12 — Marquage « canon » & entrée journal de monde (S | ★★ | MOYENNE)
 > Le monde hybride : seuls les beats marqués « canon » laissent une trace durable.

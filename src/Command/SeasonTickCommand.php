@@ -8,6 +8,7 @@ use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
+use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -32,6 +33,7 @@ class SeasonTickCommand extends Command
         private readonly PrestigeTitleManager $prestigeTitleManager,
         private readonly SeasonRankingSnapshotService $rankingSnapshotService,
         private readonly SeasonRewardsManager $rewardsManager,
+        private readonly SeasonResolutionService $resolutionService,
     ) {
         parent::__construct();
     }
@@ -80,6 +82,9 @@ class SeasonTickCommand extends Command
         // Award podium titles (task 132 sous-phase 4)
         $rewardCounts = $this->rewardsManager->awardPodium($activeSeason);
 
+        // Credits narratifs : la guilde controlante s'inscrit au journal de monde (NAR-11)
+        $factsRecorded = $this->resolutionService->resolve($activeSeason, $results);
+
         $this->seasonManager->endSeason($activeSeason);
 
         $controlSummary = [];
@@ -99,6 +104,8 @@ class SeasonTickCommand extends Command
             $snapshotCounts['quests'] ?? 0,
             $snapshotCounts['xp'] ?? 0,
         ));
+
+        $io->info(sprintf('Journal de monde : %d fait(s) de résolution enregistré(s).', $factsRecorded));
 
         $io->info(sprintf(
             'Titres du podium attribués : %d kills, %d quêtes, %d XP.',

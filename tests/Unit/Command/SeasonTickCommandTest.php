@@ -9,6 +9,7 @@ use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
+use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -25,6 +26,7 @@ class SeasonTickCommandTest extends TestCase
     private PrestigeTitleManager&MockObject $prestigeTitleManager;
     private SeasonRankingSnapshotService&MockObject $rankingSnapshotService;
     private SeasonRewardsManager&MockObject $rewardsManager;
+    private SeasonResolutionService&MockObject $resolutionService;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -36,6 +38,7 @@ class SeasonTickCommandTest extends TestCase
         $this->prestigeTitleManager = $this->createMock(PrestigeTitleManager::class);
         $this->rankingSnapshotService = $this->createMock(SeasonRankingSnapshotService::class);
         $this->rewardsManager = $this->createMock(SeasonRewardsManager::class);
+        $this->resolutionService = $this->createMock(SeasonResolutionService::class);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
         $this->em->method('getRepository')
@@ -49,6 +52,7 @@ class SeasonTickCommandTest extends TestCase
             $this->prestigeTitleManager,
             $this->rankingSnapshotService,
             $this->rewardsManager,
+            $this->resolutionService,
         );
 
         $app = new Application();
