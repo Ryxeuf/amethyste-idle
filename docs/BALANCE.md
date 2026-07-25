@@ -128,6 +128,7 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | `zone.energy.cost.explore` | 5 | Cout d'une action Explorer (ZON-08, lu par `ExploreService`) |
 | `zone.energy.cost.hunt` | 5 | Cout d'une action Chasser (ZON-09, lu par `HuntService`) |
 | `zone.energy.cost.gather` | 3 | Cout d'une action Recolter (ZON-10, lu par `GatherService`) |
+| `zone.energy.cost.event` | 10 | Cout pour rejoindre un evenement de zone (ZON-15, lu par `ZoneEventService`) |
 
 `Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
 

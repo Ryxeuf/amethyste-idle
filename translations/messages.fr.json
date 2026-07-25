@@ -1132,6 +1132,22 @@
           "not_complete": "Votre expédition n'est pas encore terminée."
         }
       },
+      "event": {
+        "ends_in": "Se termine dans ~%minutes% min.",
+        "ends_imminent": "Se termine bientot.",
+        "join": "Rejoindre",
+        "joined": "Rejoint",
+        "flash": {
+          "joined": "Vous avez rejoint l'evenement."
+        },
+        "error": {
+          "unknown": "Evenement introuvable.",
+          "not_zone_event": "Cet evenement n'est pas rattache a une zone.",
+          "not_present": "Vous devez etre present dans la zone de l'evenement.",
+          "closed": "Cet evenement est termine.",
+          "already_joined": "Vous avez deja rejoint cet evenement."
+        }
+      },
       "explore": {
         "result": {
           "mob": "Vous croisez la route d'un %monster% !",
