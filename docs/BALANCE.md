@@ -480,8 +480,9 @@ l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration 
 les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la
 surenchere. ECO-16a n'a rien eu a construire de ce cote. Le retour d'objet a **l'expiration**
 reste le seul chemin sans test : le couvrir en unitaire demanderait de simuler le
-constructeur de requetes Doctrine, un mock trop fragile pour la garantie qu'il
-apporte. A reprendre en integration avec ECO-16b.
+constructeur de requetes Doctrine, et la tentative en integration (ECO-16b) a du
+etre retiree faute de pouvoir diagnostiquer son echec a distance. A reprendre avec
+un run local.
 
 ---
 

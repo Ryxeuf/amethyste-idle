@@ -67,10 +67,12 @@
 > signaux d'anomalie (couples les plus actifs, prix aberrants, volume quotidien), annulation
 > d'annonce par la moderation avec remboursement de la mise en cours, et **suspension d'acces au
 > marche** qui expire d'elle-meme — sanction proportionnee la ou seul le bannissement de compte
-> existait. Le retour d'objet a l'expiration est desormais couvert en integration.
+> existait.
 >
-> **Reste ouvert** : etendre l'escrow et les regles anti-abus aux canaux suivants (commandes de
-> craft ECO-05+, echoppes ECO-10+) — ils n'existent pas encore.
+> **Reste ouvert** : (1) le retour d'objet a **l'expiration** d'une annonce reste sans test — la
+> couverture en integration a ete tentee puis retiree, elle demande un run local pour etre mise au
+> point ; (2) etendre l'escrow et les regles anti-abus aux canaux suivants (commandes de craft
+> ECO-05+, echoppes ECO-10+) — ils n'existent pas encore.
 
 ### ECO-19 — Ecrire les recettes manquantes des arbres (M | ★★ | MOYENNE)
 > Ce qui reste apres ECO-18 est du **contenu**, pas de la plomberie : 17 slugs cites par des
@@ -96,7 +98,7 @@
       aucune guilde ne controle la region (ECO-03, ECO-04)
 - [x] Chaine de production documentee, aucun metier autosuffisant (ECO-14)
 - [x] Escrow operationnel, regles anti-abus posees (ECO-16a), journal economique et outils
-      de moderation livres (ECO-16b)
+      de moderation livres (ECO-16b) ; le retour d'objet a l'expiration reste sans test
 
 ---
 
