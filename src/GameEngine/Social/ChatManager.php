@@ -7,6 +7,7 @@ use App\Entity\App\Guild;
 use App\Entity\App\GuildMember;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
+use App\Entity\App\Zone;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
@@ -69,6 +70,40 @@ class ChatManager
         $message->setContent($content);
         $message->setSender($sender);
         $message->setMap($map);
+
+        $this->em->persist($message);
+        $this->em->flush();
+
+        $this->publishMessage($message);
+
+        return $message;
+    }
+
+    /**
+     * Chat de zone (pivot PBBG, ZON-14) : diffuse a tous les joueurs presents
+     * dans la zone courante du joueur. Transpose le canal `map` gele.
+     */
+    public function sendZoneMessage(Player $sender, string $content): ?ChatMessage
+    {
+        $content = $this->sanitizeContent($content);
+        if (!$this->validateMessage($content)) {
+            return null;
+        }
+
+        if ($this->isRateLimited($sender)) {
+            return null;
+        }
+
+        $zone = $sender->getCurrentZone();
+        if (!$zone) {
+            return null;
+        }
+
+        $message = new ChatMessage();
+        $message->setChannel(ChatMessage::CHANNEL_ZONE);
+        $message->setContent($content);
+        $message->setSender($sender);
+        $message->setZone($zone);
 
         $this->em->persist($message);
         $this->em->flush();
@@ -206,6 +241,25 @@ class ChatManager
     /**
      * @return ChatMessage[]
      */
+    public function getZoneHistory(Zone $zone, int $limit = 50): array
+    {
+        return $this->em->getRepository(ChatMessage::class)->createQueryBuilder('m')
+            ->leftJoin('m.sender', 's')
+            ->addSelect('s')
+            ->where('m.channel = :channel')
+            ->andWhere('m.zone = :zone')
+            ->andWhere('m.isDeleted = false')
+            ->setParameter('channel', ChatMessage::CHANNEL_ZONE)
+            ->setParameter('zone', $zone)
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return ChatMessage[]
+     */
     public function getPrivateHistory(Player $player1, Player $player2, int $limit = 50): array
     {
         return $this->em->getRepository(ChatMessage::class)->createQueryBuilder('m')
@@ -293,6 +347,7 @@ class ChatManager
         return match ($message->getChannel()) {
             ChatMessage::CHANNEL_GLOBAL => ['chat/global'],
             ChatMessage::CHANNEL_MAP => $message->getMap() ? ['chat/map/' . $message->getMap()->getId()] : [],
+            ChatMessage::CHANNEL_ZONE => $message->getZone() ? ['chat/zone/' . $message->getZone()->getId()] : [],
             ChatMessage::CHANNEL_PRIVATE => $message->getRecipient() ? [
                 'chat/private/' . $message->getSender()->getId(),
                 'chat/private/' . $message->getRecipient()->getId(),
@@ -341,6 +396,10 @@ class ChatManager
 
         if ($message->getMap()) {
             $data['mapId'] = $message->getMap()->getId();
+        }
+
+        if ($message->getZone()) {
+            $data['zoneId'] = $message->getZone()->getId();
         }
 
         if ($message->getGuild()) {

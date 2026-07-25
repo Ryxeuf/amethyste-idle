@@ -10,11 +10,7 @@
 
 > **ZON-13 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : entite `PlayerExpedition` (une par joueur, contrainte UNIQUE) + `ExpeditionService` — envoi en expedition N heures reelles dans la zone courante (paliers courte/moyenne/longue, curseurs `zone.expedition.duration.*`), resolution paresseuse, butin a recuperer au retour. Recompenses **derivees des tables declaratives de la zone** (coffre `exploreConfig` + filons `gatherConfig`) mises a l'echelle par la duree. Etat exclusif (bloque explorer/chasser/recolter/voyager). Notification de fin via `NotificationService` (in-game + Mercure `player/<id>/notifications`). Section 10 de `docs/BALANCE.md`.
 
-### ZON-14 — Presence par zone & chat de zone (M | ★★★)
-> Prerequis : ← ZON-05
-- [ ] Liste temps reel des joueurs presents dans la zone (base de la cooperation : groupes, commerce)
-- [ ] Chat de zone via Mercure (topics par zone ; les topics de deplacement restent supprimes)
-- [ ] Interactions rapides depuis la liste : profil, invitation groupe, commerce
+> **ZON-14 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : canal de chat `zone` (nouveau `ChatMessage::CHANNEL_ZONE` + FK `zone_id`), `ChatManager::sendZoneMessage`/`getZoneHistory`, topic Mercure `chat/zone/<id>`. Panneau de chat temps reel + liste de presence avec interactions rapides (profil, invitation groupe) sur l'ecran de zone (`zone_chat_controller.js`), endpoint `GET /game/zone/presence`. Le « commerce » rapide reste hors perimetre (aucun systeme de troc joueur-joueur en place ; a introduire par une tache economie dediee).
 
 ### ZON-15 — Evenements de zone (M | ★★★)
 > Prerequis : ← ZON-14

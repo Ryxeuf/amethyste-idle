@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\GameEngine\Social\ChatManager;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ExploreResult;
@@ -59,6 +60,7 @@ class ZoneControllerTest extends TestCase
     private HuntService&MockObject $huntService;
     private GatherService&MockObject $gatherService;
     private ExpeditionService&MockObject $expeditionService;
+    private ChatManager&MockObject $chatManager;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -100,6 +102,8 @@ class ZoneControllerTest extends TestCase
         $this->expeditionService->method('getActive')->willReturn(null);
         $this->expeditionService->method('isEligibleZone')->willReturn(true);
         $this->expeditionService->method('getDurations')->willReturn(['short' => 3600, 'medium' => 14400, 'long' => 43200]);
+        $this->chatManager = $this->createMock(ChatManager::class);
+        $this->chatManager->method('getZoneHistory')->willReturn([]);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -116,13 +120,19 @@ class ZoneControllerTest extends TestCase
             $this->huntService,
             $this->gatherService,
             $this->expeditionService,
+            $this->chatManager,
         );
         $this->controller->setContainer($this->createContainer());
     }
 
     private function buildZone(string $slug, string $type = Zone::TYPE_WILDERNESS, bool $safe = false): Zone
     {
-        return (new Zone())->setSlug($slug)->setName(ucfirst($slug))->setType($type)->setIsSafe($safe);
+        $zone = (new Zone())->setSlug($slug)->setName(ucfirst($slug))->setType($type)->setIsSafe($safe);
+        // Id requis par l'ecran de zone (chat de zone, ZON-14) ; simule la persistance.
+        $ref = new \ReflectionProperty(Zone::class, 'id');
+        $ref->setValue($zone, abs(crc32($slug)) % 100000 + 1);
+
+        return $zone;
     }
 
     private function buildObjectLayer(string $type): ObjectLayer

@@ -7,6 +7,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\GameEngine\Social\ChatManager;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ExploreResult;
@@ -25,6 +26,7 @@ use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -61,6 +63,7 @@ class ZoneController extends AbstractController
         private readonly HuntService $huntService,
         private readonly GatherService $gatherService,
         private readonly ExpeditionService $expeditionService,
+        private readonly ChatManager $chatManager,
     ) {
     }
 
@@ -107,6 +110,7 @@ class ZoneController extends AbstractController
                 'energy' => null,
                 'life' => null,
                 'expedition' => null,
+                'zoneChat' => null,
             ]);
         }
 
@@ -156,6 +160,10 @@ class ZoneController extends AbstractController
                 'fullIn' => $this->lifeRegenManager->secondsUntilFull($player),
             ],
             'expedition' => $this->buildExpedition($player, $zone),
+            'zoneChat' => [
+                'zoneId' => $zone->getId(),
+                'messages' => array_reverse($this->chatManager->getZoneHistory($zone, 30)),
+            ],
             'poiLabels' => [
                 ObjectLayer::TYPE_HARVEST_SPOT => 'game.zone.poi.harvest_spot',
                 ObjectLayer::TYPE_FORGE => 'game.zone.poi.forge',
@@ -376,6 +384,34 @@ class ZoneController extends AbstractController
         ]);
 
         return $this->redirectToRoute('app_game_zone');
+    }
+
+    #[Route('/game/zone/presence', name: 'app_game_zone_presence', methods: ['GET'])]
+    public function presence(): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return new JsonResponse(['players' => []]);
+        }
+
+        $zone = $player->getCurrentZone();
+        if (null === $zone) {
+            return new JsonResponse(['players' => []]);
+        }
+
+        /** @var list<Player> $present */
+        $present = $this->entityManager->getRepository(Player::class)
+            ->findBy(['currentZone' => $zone], ['name' => 'ASC'], 50);
+
+        $players = array_map(static fn (Player $p): array => [
+            'id' => $p->getId(),
+            'name' => $p->getName(),
+            'self' => $p->getId() === $player->getId(),
+        ], $present);
+
+        return new JsonResponse(['players' => $players]);
     }
 
     /**

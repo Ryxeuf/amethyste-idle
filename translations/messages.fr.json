@@ -1047,7 +1047,13 @@
       "players": {
         "heading": "Joueurs présents",
         "empty": "Personne d'autre dans cette zone.",
-        "you": "vous"
+        "you": "vous",
+        "invite": "Inviter dans le groupe"
+      },
+      "chat": {
+        "heading": "Chat de zone",
+        "placeholder": "Message a la zone…",
+        "send": "Envoyer"
       },
       "poi": {
         "heading": "Points d'intérêt",

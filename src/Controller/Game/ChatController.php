@@ -95,6 +95,7 @@ class ChatController extends AbstractController
         $message = match ($channel) {
             'global' => $this->chatManager->sendGlobalMessage($player, $content),
             'map' => $this->chatManager->sendMapMessage($player, $content),
+            'zone' => $this->chatManager->sendZoneMessage($player, $content),
             'private' => $this->sendPrivate($player, $recipientId, $content),
             'guild' => $this->sendGuild($player, $content),
             default => null,
@@ -120,6 +121,9 @@ class ChatController extends AbstractController
             'global' => $this->chatManager->getGlobalHistory(50),
             'map' => $player->getMap()
                 ? $this->chatManager->getMapHistory($player->getMap(), 50)
+                : [],
+            'zone' => $player->getCurrentZone()
+                ? $this->chatManager->getZoneHistory($player->getCurrentZone(), 50)
                 : [],
             'private' => $this->getPrivateHistory($player, $request),
             'guild' => $this->getGuildHistory($player),

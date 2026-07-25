@@ -1047,7 +1047,13 @@
       "players": {
         "heading": "Players present",
         "empty": "No one else in this zone.",
-        "you": "you"
+        "you": "you",
+        "invite": "Invite to party"
+      },
+      "chat": {
+        "heading": "Zone chat",
+        "placeholder": "Message the zone…",
+        "send": "Send"
       },
       "poi": {
         "heading": "Points of interest",
