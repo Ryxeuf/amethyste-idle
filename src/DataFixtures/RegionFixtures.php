@@ -34,6 +34,8 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         // Associer les maps à la région
         $map1->setRegion($plaines);
         $map2->setRegion($plaines);
+        // ECO-03 : la forêt est le prolongement naturel du hub de départ.
+        $this->getReference('map_3', Map::class)->setRegion($plaines);
 
         // Région 2 : Sanctuaire de Lumière (zone safe, non contestable)
         $sanctuaire = new Region();
@@ -64,6 +66,18 @@ class RegionFixtures extends Fixture implements DependentFixtureInterface
         $terresSauvages->setUpdatedAt(new \DateTime());
         $manager->persist($terresSauvages);
         $this->addReference('region_terres_sauvages', $terresSauvages);
+
+        // ECO-03 : les trois zones rudes forment le second marche. Sans ce
+        // rattachement, la segmentation regionale n'aurait rien segmente — une
+        // seule region portait des cartes, et un joueur aux mines, au marais ou
+        // sur la crete n'appartenait a aucun marche.
+        //
+        // L'ecart de taxe (5 % dans les Plaines, 8 % dans les Terres Sauvages)
+        // est le levier d'arbitrage : la matiere premiere se recolte au nord,
+        // la demande est au sud, et le transport se paie en temps de voyage.
+        foreach (['map_4', 'map_5', 'map_6'] as $mapReference) {
+            $this->getReference($mapReference, Map::class)->setRegion($terresSauvages);
+        }
 
         $manager->flush();
     }

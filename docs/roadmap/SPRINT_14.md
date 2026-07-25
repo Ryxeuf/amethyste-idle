@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **2 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **3 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -32,24 +32,12 @@
 > d'entree pointait vers une recette inexistante. Les quatre etages du plancher sont desormais
 > poses et verrouilles par `ColdStartFloorTest`.
 
-### ECO-18 — Reconcilier les arbres de talent et les recettes (M | ★★ | MOYENNE)
-> Decouvert par l'audit ECO-02 : les deux jeux de donnees ont ete ecrits separement et jamais
-> croises. Un skill qui cite un slug de recette inexistant ne debloque rien, **sans erreur**.
-> Prerequis : ← ECO-02
-- [ ] 35 slugs de recette cites par des skills n'existent pas : creer la recette ou corriger le slug
-- [ ] 39 recettes livrees ne sont debloquees par aucun skill : les rattacher a un rang d'arbre
-- [ ] Etendre `equip.tool` aux paliers fer/acier/mithril des outils d'artisanat (seul le bronze
-      est equipable depuis ECO-02 — le plancher, pas le plafond)
-- [ ] Garde-fou : test croisant les deux jeux de donnees dans les deux sens
-
-### ECO-03 — HV regional — segmentation par region (M | ★★★ | HAUTE)
-> La geographie compte : arbitrage, transport = temps de voyage.
-> Prerequis : ← modele zone ✅, socle HV (Sprint 5) ✅
-- [ ] `AuctionListing` rattache a une region (via la zone du vendeur au moment du depot)
-- [ ] Recherche/consultation HV filtree par region (marche local par defaut)
-- [ ] Decision a acter : segmentation stricte vs marche global taxe (cf. GAME_PRINCIPLES §6)
-- [ ] Transport de marchandises entre regions = cout de voyage/energie (reutilise le graphe)
-- [ ] Tests
+> **ECO-03 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : segmentation **stricte** actee
+> (decision **D13**), `AuctionListing.region` figee au depot, marche local par defaut, garde-fou
+> de service sur l'achat et la mise. Le transport n'est pas un systeme a part : c'est le voyage.
+> Deux corrections de fond au passage — la region se lisait sur `Player::map`, que le pivot ne met
+> plus a jour (la taxe suivait le vendeur au lieu de rester au marche), et **quatre cartes sur six
+> n'appartenaient a aucune region**, ce qui rendait la segmentation sans objet.
 
 ### ECO-04 — Taxe HV → tresor de guilde controlante (S | ★★ | HAUTE)
 > Branche l'HV sur le controle de cite (le champ `region_tax_rate` existe deja).
@@ -67,6 +55,16 @@
 - [ ] Reequilibrer les `ingredients` pour croiser les metiers
 - [ ] Documenter la chaine de production dans `docs/BALANCE.md`
 
+### ECO-18 — Reconcilier les arbres de talent et les recettes (M | ★★ | MOYENNE)
+> Decouvert par l'audit ECO-02 : les deux jeux de donnees ont ete ecrits separement et jamais
+> croises. Un skill qui cite un slug de recette inexistant ne debloque rien, **sans erreur**.
+> Prerequis : ← ECO-02
+- [ ] 35 slugs de recette cites par des skills n'existent pas : creer la recette ou corriger le slug
+- [ ] 39 recettes livrees ne sont debloquees par aucun skill : les rattacher a un rang d'arbre
+- [ ] Etendre `equip.tool` aux paliers fer/acier/mithril des outils d'artisanat (seul le bronze
+      est equipable depuis ECO-02 — le plancher, pas le plafond)
+- [ ] Garde-fou : test croisant les deux jeux de donnees dans les deux sens
+
 ### ECO-16 — Moderation economique (S | ★★ | HAUTE)
 > Anti price-fixing, farm par alts, RMT — a poser **avant** l'ouverture des canaux joueur.
 > Prerequis : ← ECO-03
@@ -83,7 +81,8 @@
       reste a etendre le garde-fou aux echoppes quand elles existeront (ECO-10)
 - [x] Un nouveau joueur atteint le premier palier de craft sans dependre d'un autre joueur (ECO-02) ;
       la porte d'entree de chaque metier est ouverte, la profondeur des arbres reste a reconcilier (ECO-18)
-- [ ] HV segmente par region, taxe reversee a la guilde controlante (ou detruite)
+- [~] HV **segmente par region** (ECO-03) ; la taxe est prelevee et versee a la guilde
+      controlante quand il y en a une — reste le repli gold sink et la reduction membre (ECO-04)
 - [ ] Chaine de production documentee, aucun metier autosuffisant
 - [ ] Escrow + journalisation des transactions operationnels
 

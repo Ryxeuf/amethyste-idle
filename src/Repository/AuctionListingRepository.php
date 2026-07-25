@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\App\AuctionListing;
 use App\Entity\App\Player;
+use App\Entity\App\Region;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -20,9 +21,17 @@ class AuctionListingRepository extends ServiceEntityRepository
     }
 
     /**
+     * Annonces actives du **marche local** (ECO-03).
+     *
+     * `$region` porte la segmentation : seules les annonces deposees dans cette
+     * region sont visibles, les ventes flash exceptees — canal systeme, global
+     * par nature. Un `$region` nul cible le marche des joueurs hors region, et
+     * non « toutes les regions » : sans cela, un personnage hors graphe verrait
+     * l'integralite des marches.
+     *
      * @return array{items: AuctionListing[], total: int, pages: int, page: int}
      */
-    public function findActiveListings(?string $search, ?string $type, ?string $rarity, int $page = 1, int $limit = 20): array
+    public function findActiveListings(?string $search, ?string $type, ?string $rarity, int $page = 1, int $limit = 20, ?Region $region = null): array
     {
         $qb = $this->createQueryBuilder('l')
             ->join('l.playerItem', 'pi')->addSelect('pi')
@@ -32,6 +41,15 @@ class AuctionListingRepository extends ServiceEntityRepository
             ->andWhere('l.expiresAt > :now')
             ->setParameter('status', AuctionStatus::Active)
             ->setParameter('now', new \DateTimeImmutable());
+
+        if ($region !== null) {
+            $qb->andWhere('(l.region = :region OR l.type = :flashType)')
+                ->setParameter('region', $region)
+                ->setParameter('flashType', AuctionType::Flash);
+        } else {
+            $qb->andWhere('(l.region IS NULL OR l.type = :flashType)')
+                ->setParameter('flashType', AuctionType::Flash);
+        }
 
         if ($search !== null && $search !== '') {
             $qb->andWhere('LOWER(gi.name) LIKE LOWER(:search)')

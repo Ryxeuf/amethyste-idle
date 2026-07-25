@@ -10,6 +10,7 @@ use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Player;
 use App\Entity\App\Region;
 use App\Enum\InfluenceActivityType;
+use App\GameEngine\Region\PlayerRegionResolver;
 use Doctrine\ORM\EntityManagerInterface;
 
 class InfluenceManager
@@ -18,6 +19,7 @@ class InfluenceManager
         private readonly EntityManagerInterface $entityManager,
         private readonly SeasonManager $seasonManager,
         private readonly InfluenceAntiExploit $antiExploit,
+        private readonly PlayerRegionResolver $regionResolver,
     ) {
     }
 
@@ -102,11 +104,16 @@ class InfluenceManager
     }
 
     /**
-     * Resout la region depuis la map du joueur.
+     * Resout la region ou se tient le joueur.
+     *
+     * ECO-03 : la lecture passe par le resolveur, qui derive la region de la
+     * **zone** (regle projet #7). La carte du joueur n'est plus mise a jour par
+     * le voyage depuis le pivot : l'influence etait creditee a la region d'ou le
+     * joueur venait, pas a celle ou il agit.
      */
     public function getPlayerRegion(Player $player): ?Region
     {
-        return $player->getMap()?->getRegion();
+        return $this->regionResolver->resolve($player);
     }
 
     /**

@@ -273,3 +273,47 @@ Les arbres de talent et les recettes ont ete ecrits separement : **35 slugs de r
 cites par des skills n'existent pas**, et **39 recettes livrees ne sont debloquees par
 aucun skill**. ECO-02 n'a traite que le plancher (une porte d'entree par metier) ; la
 reconciliation complete est un chantier a part.
+
+---
+
+## 13. Marches regionaux (economie joueur, ECO-03)
+
+L'hotel des ventes est **segmente par region** (decision D13). Une annonce
+appartient au marche ou elle a ete deposee, et on n'accede a un marche qu'en
+s'y rendant.
+
+### Pourquoi strict
+
+Un marche global taxe aurait laisse la geographie sans effet : un seul prix
+partout, aucun arbitrage, et le graphe de zones sans role economique. Avec la
+segmentation, le **transport n'est pas un systeme a part** — c'est le temps de
+voyage du graphe, deja paye en energie et en minutes. Rien a ajouter pour que la
+distance ait un cout.
+
+### Decoupage livre
+
+| Region | Cartes | Taxe | Role |
+|--------|--------|------|------|
+| Plaines de l'Eveil | Village de Lumiere (capitale), Foret des murmures | 5 % | Marche de depart : la demande, les nouveaux joueurs |
+| Terres Sauvages | Mines profondes, Marais Brumeux, Crete de Ventombre | 8 % | Front pionnier : la matiere premiere rare |
+| Sanctuaire de Lumiere | *(aucune carte)* | 0 % | Region declaree, non contestable, sans contenu a ce jour |
+
+**L'ecart de taxe est le levier d'arbitrage** : la matiere se recolte au nord (8 %),
+la demande est au sud (5 %). Vendre sur place est immediat mais coute plus cher ;
+porter la marchandise aux Plaines rapporte davantage, au prix du voyage. Regle de
+calibrage : l'ecart de taxe entre deux regions doit rester **inferieur** a la marge
+qu'un joueur peut esperer sur le trajet, sinon personne ne transporte jamais rien.
+
+Avant ECO-03, une seule region portait des cartes : un joueur en foret, aux mines,
+au marais ou sur la crete n'appartenait a **aucune** region — la taxe regionale y
+etait donc nulle et aucune guilde ne percevait quoi que ce soit sur ses ventes.
+
+### Exceptions
+
+Les **ventes flash** sont un canal systeme (promotion serveur, cree par un admin) :
+elles portent une region pour la taxe mais restent visibles et achetables partout.
+Segmenter une promotion serveur la reduirait a une fraction des joueurs.
+
+Les joueurs **hors region** (personnage pas encore rattache a une zone du graphe)
+forment un marche a part, entre eux. Ce n'est pas un marche global de repli : sans
+cette symetrie, un personnage hors graphe verrait l'integralite des marches.

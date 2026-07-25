@@ -6,6 +6,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
+use App\GameEngine\Region\PlayerRegionResolver;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\Repository\PlayerVisitedRegionRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,6 +30,7 @@ class GoldSinkManager
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerVisitedRegionRepository $visitedRegionRepository,
         private readonly PlayerZoneSynchronizer $playerZoneSynchronizer,
+        private readonly PlayerRegionResolver $regionResolver,
     ) {
     }
 
@@ -67,7 +69,7 @@ class GoldSinkManager
     public function getAvailableDestinations(Player $player): array
     {
         $regions = $this->entityManager->getRepository(Region::class)->findAll();
-        $currentRegion = $player->getMap()?->getRegion();
+        $currentRegion = $this->regionResolver->resolve($player);
         $visitedIds = $this->visitedRegionRepository->findVisitedRegionIds($player);
         $visitedSet = array_flip($visitedIds);
 
@@ -103,7 +105,7 @@ class GoldSinkManager
             return ['success' => false, 'message' => 'Cette region n\'a pas de capitale.'];
         }
 
-        $currentRegion = $player->getMap()?->getRegion();
+        $currentRegion = $this->regionResolver->resolve($player);
         if ($currentRegion === $destination) {
             return ['success' => false, 'message' => 'Vous etes deja dans cette region.'];
         }
