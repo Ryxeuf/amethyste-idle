@@ -165,6 +165,35 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
+     * Termine un combat laisse en cours par un test precedent (ZON-23).
+     *
+     * Les tests E2E partagent un joueur : un combat non resolu bloque les
+     * actions de zone du test suivant. On enchaine les attaques de base
+     * jusqu'a la resolution, sans jamais echouer si le combat resiste.
+     *
+     * @return bool true si le joueur n'est plus en combat
+     */
+    protected function resolvePendingFight(int $maxTurns = 25): bool
+    {
+        static::$pantherClient->request('GET', '/game/fight');
+        $this->waitForTurbo();
+
+        for ($turn = 0; $turn < $maxTurns; ++$turn) {
+            if (!str_contains(static::$pantherClient->getCurrentURL(), '/game/fight')) {
+                return true;
+            }
+            if (!$this->selectorExists('#action-attack')) {
+                return true;
+            }
+
+            static::$pantherClient->findElement(WebDriverBy::id('action-attack'))->click();
+            $this->waitForTurbo();
+        }
+
+        return !str_contains(static::$pantherClient->getCurrentURL(), '/game/fight');
+    }
+
+    /**
      * Take a screenshot on test failure for CI debugging.
      */
     protected function takeScreenshot(string $name): void
