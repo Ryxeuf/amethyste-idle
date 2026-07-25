@@ -11,9 +11,11 @@ use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Entity\App\Zone;
 use App\Entity\Game\Item;
+use App\Entity\User;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
+use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\TownControlManager;
@@ -33,6 +35,7 @@ class AuctionManagerTest extends TestCase
     private TownControlManager&MockObject $townControlManager;
     private NotificationService&MockObject $notificationService;
     private GuildManager&MockObject $guildManager;
+    private AuctionAntiExploit&MockObject $antiExploit;
     private AuctionManager $manager;
 
     protected function setUp(): void
@@ -44,7 +47,8 @@ class AuctionManagerTest extends TestCase
         $this->townControlManager = $this->createMock(TownControlManager::class);
         $this->notificationService = $this->createMock(NotificationService::class);
         $this->guildManager = $this->createMock(GuildManager::class);
-        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
+        $this->antiExploit = $this->createMock(AuctionAntiExploit::class);
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit);
     }
 
     public function testCreateListingSuccess(): void
@@ -359,6 +363,92 @@ class AuctionManagerTest extends TestCase
         $this->assertSame(0, $transaction->getMemberRebateAmount());
     }
 
+    /**
+     * ECO-16 : le jeu autorise plusieurs personnages par compte (regle #12), et
+     * l'hotel des ventes ne refusait que la vente a soi-meme, comparee par
+     * identifiant de **personnage**. Deux personnages d'un meme joueur pouvaient
+     * donc s'echanger objets et Gils, et inscrire au marche des prix qu'aucune
+     * transaction reelle n'a valides.
+     */
+    public function testBuyListingRefusesATradeBetweenTwoCharactersOfTheSameAccount(): void
+    {
+        $this->antiExploit->method('isSameAccount')->willReturn(true);
+
+        $seller = $this->createPlayer(1, 0, null, 42);
+        $buyer = $this->createPlayer(2, 1000, null, 42);
+        $listing = $this->createSimpleListing($seller, 100);
+
+        $this->em->expects($this->never())->method('persist');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('un autre de vos personnages');
+
+        $this->manager->buyListing($buyer, $listing);
+    }
+
+    public function testBuyListingRefusesOnceThePairTransactionCapIsReached(): void
+    {
+        $this->antiExploit->method('isSameAccount')->willReturn(false);
+        $this->antiExploit->method('isPairCapReached')->willReturn(true);
+        $this->antiExploit->method('getPairTransactionCap')->willReturn(10);
+        $this->antiExploit->method('getPairWindowHours')->willReturn(24);
+
+        $listing = $this->createSimpleListing($this->createPlayer(1, 0), 100);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('limite d\'echanges avec ce joueur');
+
+        $this->manager->buyListing($this->createPlayer(2, 1000), $listing);
+    }
+
+    /**
+     * La vente flash a pour vendeur l'administration : lui appliquer les regles
+     * anti-blanchiment reviendrait a plafonner une promotion serveur.
+     */
+    public function testFlashSaleSkipsTheAntiExploitRules(): void
+    {
+        $this->antiExploit->expects($this->never())->method('isSameAccount');
+        $this->antiExploit->expects($this->never())->method('isPairCapReached');
+
+        $listing = $this->createSimpleListing($this->createPlayer(1, 0), 100);
+        $listing->setType(AuctionType::Flash);
+
+        $this->manager->buyListing($this->createPlayer(2, 1000), $listing);
+
+        $this->assertSame(AuctionStatus::Sold, $listing->getStatus());
+    }
+
+    public function testPlaceBidRefusesATradeBetweenTwoCharactersOfTheSameAccount(): void
+    {
+        $this->antiExploit->method('isSameAccount')->willReturn(true);
+
+        $seller = $this->createPlayer(1, 0, null, 42);
+        $bidder = $this->createPlayer(2, 1000, null, 42);
+
+        $listing = $this->createSimpleListing($seller, 100);
+        $listing->setType(AuctionType::Auction);
+        $listing->setMinIncrement(1);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('un autre de vos personnages');
+
+        $this->manager->placeBid($bidder, $listing, 200);
+    }
+
+    private function createSimpleListing(Player $seller, int $price): AuctionListing
+    {
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($this->createPlayerItem());
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit($price);
+        $listing->setListingFee(0);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        return $listing;
+    }
+
     private function createListingIn(Region $region, Player $seller, int $price): AuctionListing
     {
         $listing = new AuctionListing();
@@ -546,7 +636,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -563,7 +653,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(19);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -581,7 +671,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-2 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -598,7 +688,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-10 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -876,7 +966,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-30 seconds'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager, $this->antiExploit);
 
         $admin = $this->createPlayer(1, 0);
         $item = $this->createPlayerItem();
@@ -1030,12 +1120,19 @@ class AuctionManagerTest extends TestCase
         $this->assertSame(AuctionStatus::Cancelled, $listing->getStatus());
     }
 
-    private function createPlayer(int $id, int $gils, ?Map $map = null): Player
+    private function createPlayer(int $id, int $gils, ?Map $map = null, ?int $userId = null): Player
     {
         $player = new Player();
         $r = new \ReflectionProperty(Player::class, 'id');
         $r->setValue($player, $id);
         $player->setGils($gils);
+
+        // ECO-16 : un compte distinct par personnage sauf mention contraire —
+        // c'est le cas normal, et l'appartenance au meme compte est desormais
+        // une regle de refus qu'il faut pouvoir exprimer dans les deux sens.
+        $user = new User();
+        (new \ReflectionProperty(User::class, 'id'))->setValue($user, $userId ?? $id);
+        $player->setUser($user);
 
         if ($map !== null) {
             $player->setMap($map);

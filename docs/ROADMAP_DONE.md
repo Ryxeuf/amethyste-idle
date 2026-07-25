@@ -7,7 +7,36 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-16a — Regles anti-abus de l'hotel des ventes (Sprint 14, 2026-07-25)
+
+> Les canaux d'echange entre joueurs sont la surface d'attaque naturelle d'une economie de production. Ces regles se posent **avant** l'ouverture des canaux suivants : une economie qu'on assainit apres coup oblige a arbitrer entre corriger l'exploit et spolier les joueurs de bonne foi.
+
+### La faille
+
+Le jeu autorise **plusieurs personnages par compte** (regle projet #12). L'hotel des ventes ne refusait que la vente a soi-meme, comparee par identifiant de **personnage**. Deux personnages d'un meme joueur pouvaient donc s'echanger objets et Gils librement — et surtout **inscrire au marche des prix qu'aucune transaction reelle n'a valides**. C'est l'exploit le plus simple a monter et le plus destructeur pour un historique de prix, puisqu'il fabrique de la donnee fausse plutot que de detourner de la valeur.
+
+### Livre
+
+- **Refus du commerce intra-compte** a l'achat et a la mise. La regle n'a aucun faux positif : l'appartenance de compte est un fait, pas une heuristique.
+- **Plafond d'echanges par couple de joueurs** (10 ventes / 24 h par defaut, configurable dans `services.yaml`). Le plafond porte sur le **couple** et non sur le joueur : il ne gene pas un joueur qui commerce largement, seulement celui qui commerce toujours avec la meme personne — la signature du blanchiment entre complices, que le controle de compte ne peut pas attraper. Comptage bidirectionnel : un aller-retour est precisement le motif recherche.
+- **Un plafond a 0 desactive la regle** au lieu de tout bloquer, pour qu'une mauvaise valeur de configuration ne ferme pas le marche.
+- **Exception ventes flash** : le vendeur y est l'administration ; leur appliquer les regles reviendrait a plafonner une promotion serveur.
+
+### Ou le controle s'applique — et ou il ne s'applique pas
+
+A l'achat et a la mise, **jamais a la finalisation d'enchere** : celle-ci est declenchee par l'expiration et non par un joueur. Y refuser l'operation laisserait l'objet et les Gils bloques indefiniment — le garde-fou deviendrait lui-meme le probleme.
+
+### Escrow : ce que l'audit a trouve
+
+Rien a construire. L'objet quitte l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration ; les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la surenchere. Le seul manque est un **test** sur le retour d'objet a l'expiration. Le couvrir en unitaire demanderait de simuler le constructeur de requetes Doctrine — un mock qui casse au premier changement de type de retour de l'ORM, pour une garantie qui merite mieux. Le chemin est laisse decouvert et suivi en ECO-16b, ou il sera repris en integration.
+
+### Perimetre
+
+Le jalon a ete **scinde** (regle projet #8) : ECO-16a livre les regles, **ECO-16b** livrera le journal/analytics de transactions et les outils de moderation admin. Calibrage documente dans `docs/BALANCE.md` §16.
 
 ---
 

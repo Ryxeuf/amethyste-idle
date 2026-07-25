@@ -50,6 +50,7 @@ class AuctionManager
         private readonly NotificationService $notificationService,
         private readonly PlayerRegionResolver $regionResolver,
         private readonly GuildManager $guildManager,
+        private readonly AuctionAntiExploit $antiExploit,
     ) {
     }
 
@@ -130,6 +131,7 @@ class AuctionManager
         }
 
         $this->assertSameMarket($buyer, $listing);
+        $this->assertTradeAllowed($buyer, $listing);
 
         $totalPrice = $listing->getTotalPrice();
         $ruler = $this->resolveRuler($listing);
@@ -403,6 +405,10 @@ class AuctionManager
         }
 
         $this->assertSameMarket($bidder, $listing);
+        // Le controle porte sur la mise et non sur la finalisation : celle-ci est
+        // declenchee par l'expiration, pas par un joueur — y refuser l'operation
+        // laisserait l'objet et les Gils bloques indefiniment.
+        $this->assertTradeAllowed($bidder, $listing);
 
         $currentBidder = $listing->getCurrentBidder();
         if ($currentBidder !== null && $currentBidder->getId() === $bidder->getId()) {
@@ -590,6 +596,31 @@ class AuctionManager
             $seconds = $remaining->s;
 
             throw new \InvalidArgumentException(sprintf('Vous devez attendre %d min %02d s apres avoir annule une annonce avant d\'en creer une nouvelle.', $minutes, $seconds));
+        }
+    }
+
+    /**
+     * Refuse un echange entre deux personnages d'un meme compte, ou au-dela du
+     * plafond d'echanges entre un meme couple de joueurs (ECO-16).
+     *
+     * Les ventes flash echappent a la regle : le vendeur y est l'administration,
+     * pas un joueur.
+     */
+    private function assertTradeAllowed(Player $buyer, AuctionListing $listing): void
+    {
+        // Canal systeme : le vendeur est l'administration, pas un joueur.
+        if ($listing->isFlash()) {
+            return;
+        }
+
+        $seller = $listing->getSeller();
+
+        if ($this->antiExploit->isSameAccount($buyer, $seller)) {
+            throw new \InvalidArgumentException('Vous ne pouvez pas commercer avec un autre de vos personnages.');
+        }
+
+        if ($this->antiExploit->isPairCapReached($buyer, $seller)) {
+            throw new \InvalidArgumentException(sprintf('Vous avez atteint la limite d\'echanges avec ce joueur (%d sur %d heures). Reessayez plus tard.', $this->antiExploit->getPairTransactionCap(), $this->antiExploit->getPairWindowHours()));
         }
     }
 
