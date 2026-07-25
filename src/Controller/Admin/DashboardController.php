@@ -61,12 +61,6 @@ class DashboardController extends AbstractController
                 'route' => 'admin_quest_index',
             ],
             [
-                'label' => 'Cartes',
-                'count' => $this->em->getRepository(Map::class)->count([]),
-                'color' => 'pink',
-                'route' => 'admin_map_index',
-            ],
-            [
                 'label' => 'Recettes',
                 'count' => $this->em->getRepository(Recipe::class)->count([]),
                 'color' => 'orange',

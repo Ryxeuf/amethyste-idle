@@ -6,9 +6,8 @@
 - **Inspirations principales** : The Legend of Zelda (exploration), Final Fantasy 7/8/9 (combat tour par tour, materia, univers medieval-fantastique-futuriste), stein.world (MMO navigateur), Warcraft (ressources, crafting)
 - **Vue** : 2D top-down avec tiles 32×32 px
 - **Sprites personnage** : format RPG Maker VX, 24×32 px par frame (3 colonnes × 4 lignes)
-- **Déplacements** : pathfinding Dijkstra, animation de marche avec sprites directionnels
+- **Position (pivot PBBG)** : le joueur se situe dans une **zone** (`Player::currentZone`) ; il voyage via un graphe de zones (`/game/zone/travel`). La carte navigable tile-par-tile a été retirée avec ZON-21.
 - **Progression** : arbres de talent par domaine, PAS de niveaux globaux
-- **Cartes** : fichiers TMX créés avec Tiled Map Editor, importés via `app:terrain:import`
 - **Univers** : medieval-fantastique-futuriste (comme Final Fantasy 7/8/9)
 
 ## Stack technique
@@ -18,7 +17,7 @@
 - Mercure SSE pour le temps réel (intégré dans Caddy)
 - Frontend : Twig + Tailwind CSS 4.1 + Symfony UX Live Component + Turbo + Stimulus
 - Assets : Symfony AssetMapper (importmap, sans bundler Node.js)
-- PixiJS pour le rendu canvas de la carte (WebGL avec fallback Canvas 2D)
+- Vues server-rendered (Twig + Stimulus) — le rendu carte PixiJS a été retiré (pivot PBBG, ZON-21)
 - Containerisation Docker multi-stage + Traefik reverse proxy
 
 ## Versioning
@@ -32,31 +31,27 @@
 ## Conventions de développement
 
 - Architecture événementielle (Event-Driven) : actions → événements → EventSubscribers
-- Les déplacements sont traités de façon synchrone par `PlayerMoveProcessor` dans la requête HTTP
+- Le voyage entre zones est traité par `ZoneTravelService` (met à jour `Player::currentZone`)
 - Les entités de jeu sont dans `src/Entity/Game/`, les entités applicatives dans `src/Entity/App/`
-- Le moteur de jeu est dans `src/GameEngine/` organisé par sous-domaine (Fight, Map, Movement, etc.)
+- Le moteur de jeu est dans `src/GameEngine/` organisé par sous-domaine (Fight, Zone, Dungeon, Progression, etc.)
 - Les Live Components Symfony UX sont dans `src/Twig/Components/`
 - Les traductions sont en FR (défaut) et EN dans `translations/messages.{fr,en}.json`
 - La documentation technique principale est dans `DOCUMENTATION.md`
 - Commits atomiques : un commit par changement fonctionnel testable
 - Tester après chaque modification avant de passer à la suivante
 
-## Conventions de carte / terrain
+## Modèle zone (pivot PBBG)
 
-- Les cartes sont éditées dans Tiled Map Editor et exportées en TMX (orientation orthogonale, 60×60 tuiles)
-- Tilesets : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx` dans `terrain/tileset/`
-- Les règles (collisions, téléportations, bordures) sont dans `terrain/rules/`
-- Le workflow complet : Tiled → TMX → `app:terrain:import` → JSON → fixtures areas
-- Collisions : bitmask directionnel (N/S/E/W), -1 = mur impassable
+> Le code carte navigable (rendu PixiJS, pathfinding Dijkstra, mouvement tile-par-tile,
+> endpoints `/api/map/*`, éditeur de carte admin, moteur `GameEngine/Terrain`, fichiers
+> Tiled `terrain/`) a été **entièrement supprimé** avec ZON-21. Ce qui suit le remplace.
 
-## Conventions de rendu (PixiJS)
-
-- Rendu carte via `assets/controllers/map_pixi_controller.js` (Stimulus controller)
-- Containers PixiJS : _tileContainer (z:0), _entityContainer (z:10), _playerContainer (z:20)
-- Données tuiles API : `{ x, y, l: [gid1, gid2...], w: boolean }` (l = layers, w = walkable)
-- Caméra : interpolation fluide 15%/frame, centrée sur le joueur
-- Modules JS réutilisables dans `assets/lib/` (ex: SpriteAnimator)
-- Sync temps réel via Mercure SSE (topics: `map/move`, `map/respawn`)
+- Le monde est un **graphe de zones** (`Zone` + `ZoneConnection`) seedé depuis `config/game/zones/*.yaml` (`app:zone:import`).
+- La position du joueur est `Player::currentZone` ; il voyage via `/game/zone/travel/{id}` (`ZoneTravelService`).
+- L'écran de zone (`/game/zone`, `ZoneController`) est **server-rendered** (Twig + Stimulus) : actions explorer/chasser/récolter, présence, chat, événements, boss, donjons de groupe.
+- Une carte du monde **illustrée** (graphe, non navigable) reste disponible via `/game/world-map`.
+- Temps réel via Mercure SSE (topics : `chat/zone/<id>`, `zone/<id>/event`, `dungeon/run/<id>`, annonces).
+- Les entités `Map`/`Area` subsistent comme support de données des zones (pas de rendu client).
 
 ## Conventions d'interface
 

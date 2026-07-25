@@ -1,7 +1,39 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ZON-21 — Suppression du code carte (Sprint 10, 2026-07-25) — **decoupe en 3 sous-PR**
+
+> Dernier jalon du Sprint 10 : la suppression **definitive** du code carte herite, rendu obsolete par le pivot PBBG (modele zone). Le monde est desormais un graphe de zones (`config/game/zones/*.yaml`) et non plus une grille de tuiles navigable. Decoupe en 3 sous-PR pour maitriser le risque (front → backend runtime → editeur admin + terrain).
+
+### Sous-jalon a — Carte navigable (front)
+
+- Suppression JS : `map_pixi_controller`, `map_mercure_controller`, `SpriteAnimator`, pipeline avatar client (`AvatarTextureComposer`, `AvatarSheetLoader`, `AvatarAnimatorFactory`, caches), overlays `dialog`/`harvest` (carte-only), **bundle PixiJS** (sorti de `importmap.php`).
+- Suppression vues : `templates/game/map/index`, `templates/components/Map` + `Twig\Components\Map`, controleur `/game/map` (`app_game_map`), harness admin `avatar_test`.
+- Reroutage `app_game_map` → `app_game_zone` (nav, dashboard, boutique, donjon, quetes, combat). Tests E2E carte + `MapRedirectToFightTest` retires. Guard CI `pixi-bundle.js` remplace par `app.js`.
+
+### Sous-jalon b — Services runtime (backend)
+
+- Suppression : `MapApiController` (`/api/map/*`), pathfinding `GameEngine/Map/*` (Dijkstra, PriorityQueue, MovementCalculator, MoveProcessor, PortalDetector), `PlayerMoveProcessor`, publishers `Realtime/Map/*` (7 handlers), `MountMapPayloadBuilder`, `MobMovedEvent`, flag `map_frozen`/`MapFreeze` + fixture, rate limiter `api_move`.
+- Deps traitees : `AdminFightModerationService` + `Admin/PlayerController` ne publient plus `map/move`. `SpriteConfigProvider` relocalise `GameEngine/Map` → `GameEngine/Sprite` (apercus sprites admin vivants). `PlayerMovedEvent` conserve mais **dormant** (plus de dispatcher carte ; listeners zone/quete/tutoriel candidats a un rebranchement zone — suivi).
+
+### Sous-jalon c — Editeur admin + terrain + documentation
+
+- Suppression editeur carte admin : `Admin/{MapController,MapEditorController,TilesetController}`, templates `admin/map/*` + `admin/tileset`, JS `admin_map_editor`/`admin_tileset_*`/`admin_player_move_preview`, formulaires `MobSpawnType`/`PnjPositionType`.
+- Suppression moteur : `GameEngine/Terrain/*` (TmxParser, TmxExporter, MapFactory, WangTileResolver, generateur procedural + 8 biomes), cluster transformer/storage carte (`MapModelTransformer`, `CellModelTransformer`, `MapStorage`, `CellActionsProvider`, `CellSearchEngine`, `CellTransformer`), commandes `app:terrain:*` / `app:map:dump` / `app:audit:entity-placement`.
+- Suppression donnees : entite `Tileset` (+ migration `DROP TABLE tileset`, aucune FK entrante), dossier `terrain/` (TMX, tilesets, regles), `docs/TILED_GUIDE.md`.
+- Nav admin (Cartes/Tilesets) + carte stat dashboard retirees. **Documentation MAJ** : `CLAUDE.md` (regle #7, stack, commandes, architecture, routes, pieges), `AGENTS.md` (section modele zone remplace carte/PixiJS), `DOCUMENTATION.md` (§1 principes, §3 arborescence, §7 GameEngine, §20 Tiled → note de suppression).
+
+### Conserve (partage avec le modele zone / combat / gathering)
+
+`CellHelper`, `MapCellValidator`, entites `Map`/`Area`/`ObjectLayer`/`Pnj`/`Mob`/`QueueRespawnMob` (support de donnees des zones + combat), `WorldMapController` (carte du monde **illustree** par graphe de zones, `/game/world-map`), `MapLocalizationExtension`, `SpriteConfigProvider` (relocalise).
+
+### Verifications (chaque sous-PR)
+
+- Suite Unit+Functional+Integration verte, PHPStan niveau 5 OK (baseline regeneree 2×), PHP-CS-Fixer clean, `lint:container` OK, `asset-map:compile` OK (sans pixi), `app:game:validate` OK, routing sans `/api/map` ni `/game/map` ni `admin_map_*`/`admin_tileset_*`, migration `tileset` validee en PostgreSQL. E2E Panther verts en CI.
 
 ---
 

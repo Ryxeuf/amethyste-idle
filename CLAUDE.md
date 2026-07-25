@@ -25,7 +25,7 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 6. **Pas de niveau global** : la progression est par arbres de talent/domaine uniquement. Ne jamais introduire un systeme de "level up" global.
 
-7. **Position = zone (pivot PBBG)** : la reference de position d'un joueur est `Player::currentZone` (FK vers `Zone`, maintenue par `PlayerZoneSynchronizer`). Toute nouvelle logique de position doit s'appuyer sur la zone, JAMAIS sur les coordonnees. Les coordonnees `"x.y"` (`getX()`/`getY()`) subsistent uniquement pour le code carte herite, gele puis supprime avec ZON-21.
+7. **Position = zone (pivot PBBG)** : la reference de position d'un joueur est `Player::currentZone` (FK vers `Zone`, maintenue par `ZoneTravelService`). Toute logique de position s'appuie sur la zone, JAMAIS sur les coordonnees. Le code carte navigable (rendu PixiJS, pathfinding, mouvement, editeur admin, terrain) a ete **supprime avec ZON-21** ; les coordonnees `"x.y"` (`getX()`/`getY()`) subsistent comme champ herite sur `Player` sans logique de deplacement.
 
 8. **Taille des phases** : si une phase ou feature semble trop volumineuse (taille L ou XL, ex: 400+ lignes de fixtures, 10+ fichiers a modifier), la decouper en sous-phases realisables en une seule session. Chaque sous-phase doit etre commitable et testable independamment. Ne jamais tenter d'ecrire plus de ~200 lignes de donnees/fixtures en une seule passe.
 
@@ -62,11 +62,10 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 | Backend | PHP 8.4 + Symfony 7.4 + Doctrine ORM 3.x |
 | BDD | PostgreSQL 17 (port dev: `localhost:32768`) |
 | Serveur | FrankenPHP (Caddy) + Mercure SSE integre |
-| Frontend | Twig + Tailwind CSS 4.1 + Stimulus.js + Turbo |
-| Rendu carte | PixiJS v8 (bundle dans `assets/vendor/pixi-bundle.js`) |
+| Frontend | Twig + Tailwind CSS 4.1 + Stimulus.js + Turbo (vues server-rendered, pivot PBBG) |
 | Assets | Symfony AssetMapper (importmap, SANS bundler) |
 | Conteneurs | Docker multi-stage + Traefik reverse proxy |
-| Temps reel | Mercure SSE (topics: `map/move`, `map/respawn`) |
+| Temps reel | Mercure SSE (topics: `chat/zone/<id>`, `zone/<id>/event`, `dungeon/run/<id>`, annonces) |
 
 ## Commandes courantes
 
@@ -82,15 +81,11 @@ docker compose exec php php bin/console asset-map:compile
 docker compose exec php php bin/console doctrine:migrations:migrate
 docker compose exec php php bin/console doctrine:schema:update --force
 
-# Terrain (cartes Tiled)
-docker compose exec php php bin/console app:terrain:import
-
 # Fixtures
 docker compose exec php php bin/console doctrine:fixtures:load
 
-# Debug
-docker compose exec php php bin/console app:map:dump
-docker compose exec php php bin/console app:audit:entity-placement
+# Zones (modele PBBG — seedees depuis config/game/zones/*.yaml)
+docker compose exec php php bin/console app:zone:import
 
 # PostgreSQL direct
 docker compose exec database psql -U app -d amethyste
@@ -113,20 +108,24 @@ src/
   Entity/Game/          # Definitions (Item, Monster, Spell, Skill, Domain)
   GameEngine/           # Logique metier par domaine :
     Fight/              #   Combat tour par tour (SpellApplicator, MobActionHandler, StatusEffectManager, CombatSkillResolver, ElementalSynergyCalculator, MateriaXpGranter)
-    Map/                #   Pathfinding Dijkstra
-    Movement/           #   PlayerMoveProcessor
+    Zone/               #   Modele zone PBBG (voyage, presence, evenements, expeditions, boss)
+    Dungeon/            #   Donjons de groupe semi-synchrones (formation, combat, recompenses)
     Progression/        #   XP et talents
-    Realtime/Map/       #   Publishers Mercure
-  Event/                # 21 evenements domaine
+    Realtime/           #   Publishers Mercure (zone, combat, guilde, donjon)
+  Event/                # Evenements domaine
   EventListener/        # Subscribers
 assets/
   controllers/          # Stimulus controllers JS
-  lib/                  # Modules JS (SpriteAnimator)
-  vendor/               # PixiJS bundle
-  styles/images/        # Sprites et tilesets
-terrain/                # Fichiers Tiled (.tmx, .tsx, .world)
+  lib/                  # Modules JS
+  styles/images/        # Sprites
 scripts/                # Scripts deploy, fixtures, etc.
 ```
+
+> **Note ZON-21** : le code carte navigable (rendu PixiJS, pathfinding Dijkstra,
+> `PlayerMoveProcessor`, endpoints `/api/map/*`, editeur de carte admin, moteur
+> `GameEngine/Terrain`, dossier `terrain/`) a ete **supprime** avec le pivot PBBG.
+> La position d'un joueur est sa **zone** (voir regle #7). Les entites `Map`/`Area`
+> subsistent comme support de donnees des zones.
 
 ## Conventions de code
 
@@ -141,7 +140,6 @@ scripts/                # Scripts deploy, fixtures, etc.
 
 - `public/assets/` compile ecrase l'AssetMapper dev -> `rm -rf public/assets/` si comportement JS inattendu
 - Mercure integre dans Caddy, pas de serveur separe a demarrer
-- Les sprites sont au format RPG Maker VX (3 col x 4 lignes), le `SpriteAnimator` detecte la taille automatiquement depuis la texture
 - En dev, le volume Docker monte `.:/app` -> les fichiers sont partages entre hote et conteneur
 - `tailwind:build` doit tourner avant `asset-map:compile` ou `debug:asset`
 - **Migrations PostgreSQL** : `ADD CONSTRAINT IF NOT EXISTS` n'existe PAS en PostgreSQL. Pour une contrainte idempotente, utiliser un bloc `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'nom') THEN ALTER TABLE ... ADD CONSTRAINT ...; END IF; END $$`. En revanche, `ADD COLUMN IF NOT EXISTS`, `CREATE TABLE IF NOT EXISTS` et `CREATE INDEX IF NOT EXISTS` sont valides.
@@ -184,9 +182,10 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 
 | Route | Description |
 |-------|------------|
-| `/game/zone` | Ecran de zone (pivot PBBG — vue principale a terme) |
+| `/game/zone` | Ecran de zone (pivot PBBG — vue principale) |
 | `/game/zone/travel/{id}` | POST voyager via une connexion du graphe |
-| `/game/map` | Carte PixiJS (gelable via feature flag `map_frozen` → redirige vers `/game/zone`) |
+| `/game/zone/dungeon/*` | Donjon de groupe (launch/act/abandon) |
+| `/game/world-map` | Carte du monde illustree (graphe de zones) |
 | `/game/fight` | Combat tour par tour |
 | `/game/fight/spell` | POST lancer un sort de combat |
 | `/game/fight/attack` | POST attaque basique |
@@ -195,11 +194,6 @@ docker compose exec php vendor/bin/phpunit --filter NomDuTest
 | `/game/fight/loot` | Ecran de butin apres victoire |
 | `/game/inventory` | Inventaire (items, equipement, materia, banque) |
 | `/game/skills` | Arbres de talent |
-| `/api/map/config` | Config tilesets + sprites |
-| `/api/map/cells` | Donnees tuiles (x, y, radius, mapId) |
-| `/api/map/entities` | Positions joueurs/mobs/PNJ |
-| `/api/map/move` | POST mouvement joueur |
-| `/api/map/pnj/{id}/dialog` | Dialogue PNJ |
 | `/game/bestiary` | Bestiaire joueur (paliers 10/50/100 kills) |
 | `/game/achievements` | Succes (combat, exploration, quetes) |
 

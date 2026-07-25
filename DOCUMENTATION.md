@@ -42,14 +42,14 @@
 
 ### Principes fondamentaux
 
-- **Vue isométrique** en 2D avec des tiles 32×32 pixels
-- **Déplacements sur cases carrées** avec pathfinding Dijkstra
+- **Vue 2D top-down**, sprites 32×32 pixels ; écrans server-rendered (Twig + Stimulus)
+- **Position par zone (pivot PBBG)** : le monde est un graphe de zones ; le joueur voyage de zone en zone (la carte navigable tile-par-tile a été retirée avec ZON-21)
 - **Progression par arbres de talent** : pas de niveaux d'expérience propres au joueur ; la progression repose sur l'acquisition de compétences dans des arbres de talent organisés par domaine (combat, récolte, artisanat)
-- **Cartes éditées via Tiled Map Editor** : les cartes sont conçues dans des fichiers TMX, puis importées dans l'application
+- **Zones déclaratives** : définies dans `config/game/zones/*.yaml`, importées via `app:zone:import`
 
 ### Fonctionnalités principales
 
-- **Carte du monde** interactive avec pathfinding Dijkstra et déplacements synchrones
+- **Carte du monde illustrée** (`/game/world-map`) : graphe de zones navigable par voyage (non tile-par-tile)
 - **Combat tour par tour** avec système de timeline basé sur la vitesse, sorts élémentaires, critiques
 - **Inventaire complet** : sac, banque, materia, équipement avec slots et bitmask
 - **Arbres de talent** par domaine avec XP de domaine, pré-requis et bonus de stats
@@ -114,8 +114,7 @@ amethyste-idle/
 │   ├── Security/             # Authenticator
 │   ├── Transformer/          # Transformateurs de données
 │   └── Twig/Components/      # 5 Live Components
-├── templates/               # 84 templates Twig
-├── terrain/                 # Fichiers Tiled (TMX, tilesets)
+├── templates/               # Templates Twig
 ├── translations/            # i18n (fr, en)
 ├── compose.yaml             # Docker Compose principal
 ├── compose.prod.yaml        # Override production
@@ -330,9 +329,9 @@ GameEngine/
 ├── Generator/          # Génération d'items
 ├── Item/               # Résolution d'effets d'items (ItemEffectEncoder)
 ├── Job/                # Récolte et jobs
-├── Map/                # Pathfinding Dijkstra
 ├── Mob/                # Génération de mobs
-├── Movement/           # Traitement des déplacements
+├── Zone/               # Modèle zone PBBG (voyage, présence, événements, boss)
+├── Dungeon/            # Donjons de groupe semi-synchrones
 ├── Player/             # Actions joueur, respawn, dialogues PNJ
 ├── Progression/        # XP et acquisition de compétences
 ├── Quest/              # Tracking de quêtes
@@ -971,57 +970,16 @@ Route `GET /change-locale/{locale}` → `LocaleController` → stocke la locale 
 
 ## 20. Terrain & Tiled Map Editor
 
-### Workflow de création de cartes
-
-1. **Édition** : Tiled Map Editor (`terrain/*.tmx`, `terrain/*.tiled-project`)
-2. **Import** : `app:terrain:import` → parse XML TMX → JSON avec object layers
-   - `--all` : importer tous les fichiers TMX
-   - `--validate` : vérifier la cohérence sans importer
-   - `--sync-entities` : créer/mettre à jour les entités en base (Mob, ObjectLayer)
-   - `--dry-run` : analyse complète sans écriture de fichiers
-   - `--stats` : afficher les statistiques détaillées (cells, layers, tilesets)
-3. **Seed Areas** : `php scripts/concat_area_fixtures.php` → `area_data.json`
-4. **Indexation** : `app:index:cell` → Typesense
-5. **Sync unifié** *(futur)* : `app:terrain:sync --all` → import + upsert BDD + tags Dijkstra en une commande
-
-### Format TMX
-
-- **Orientation** : orthogonale, rendu left-up
-- **Dimensions** : 60×60 tuiles, 32×32 pixels/tuile
-- **Tilesets** : `Terrain.tsx`, `forest.tsx`, `BaseChip_pipo.tsx`, `Collisions.tsx`
-- **Couches** : tile layers (background, objects) + object layers (mob_spawn, portal, harvest_spot, chest)
-- **Encodage** : CSV
-- **Object Layers** : types supportés — `portal`, `mob_spawn`, `harvest_spot`/`spot`, `chest`
-
-### Système de collision
-
-Le bitmask de collision gère les directions :
-- Mur complet : `movement = -1`
-- Collision directionnelle : bits pour N, S, E, W
-- Capacités spéciales : escalade, natation (bitmask `abilityMask` dans Dijkstra)
-
-### Fichiers de règles
-
-| Fichier | Rôle |
-|---------|------|
-| `borders.tmx` | Transitions entre biomes |
-| `collisions.tmx` | Zones bloquantes |
-| `uncollisions.tmx` | Zones accessibles (override) |
-| `post_collisions.tmx` | Ajustements post-traitement |
-| `teleports.tmx` | Portails entre zones |
-
-### Problèmes connus & améliorations planifiées
-
-| # | Problème | Phase |
-|---|----------|-------|
-| 1 | Animations de tiles (eau, lave) ignorées — monde statique | T1 |
-| 2 | Pas de données biome/zone pour effets d'ambiance | T3 |
-| 4 | Pipeline en 3 étapes manuelles déconnectées | T2 |
-| 5 | Map ID hardcodé (`map_id = 10`) | T5 |
-| 6 | Pas d'animations dans `/api/map/config` | T1 |
-| 7 | Object layers sans support zones/régions | T3 |
-
-> Détail complet : [docs/TILED_PIPELINE_ROADMAP.md](docs/TILED_PIPELINE_ROADMAP.md)
+> **Supprimé avec ZON-21 (pivot PBBG).** Le pipeline Tiled/TMX, le moteur
+> `GameEngine/Terrain`, l'éditeur de carte admin, les commandes `app:terrain:*` /
+> `app:map:dump` et le dossier `terrain/` ont été retirés du dépôt. Le monde
+> n'est plus une grille de tuiles navigable mais un **graphe de zones** déclaré
+> dans `config/game/zones/*.yaml` et importé via `app:zone:import` (voir la
+> section GameEngine → `Zone/` et le principe #7 de `CLAUDE.md`).
+>
+> Les fichiers Tiled restent récupérables dans l'historique git pour un éventuel
+> projet Zelda-like séparé. Le guide historique `docs/TILED_GUIDE.md` a été
+> supprimé avec le code.
 
 ---
 
