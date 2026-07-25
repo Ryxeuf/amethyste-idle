@@ -6,8 +6,10 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedZone;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Event\Zone\ZoneVisitedEvent;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Voyage entre zones (pivot PBBG, ZON-06).
@@ -22,6 +24,7 @@ class ZoneTravelService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -101,5 +104,8 @@ class ZoneTravelService
         if ($flush) {
             $this->entityManager->flush();
         }
+
+        // Premiere decouverte : notifie les abonnes (deblocage Codex zone_visit, NAR-05).
+        $this->eventDispatcher->dispatch(new ZoneVisitedEvent($player, $zone), ZoneVisitedEvent::NAME);
     }
 }

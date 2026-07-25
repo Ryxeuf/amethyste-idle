@@ -90,17 +90,14 @@ moteur récurrent qui referme la boucle à trois piliers.
 
 ## Piste C — Codex & trame de monde (séquentiel)
 
-### NAR-05 — Entité Codex & déblocage par découverte (M | ★★ | MOYENNE)
-> Foyer de la trame de monde ; chaque entrée se débloque en jouant.
-> Prérequis : ← modèle zone (ZON) pour les régions/zones
-- [ ] Entité `CodexEntry` : slug, catégorie (`region` / `faction` / `bestiary_lore` /
-      `world_fact`), titre + corps (avec `*_translations`), condition de déblocage (JSON),
-      `illustrationPath` (nullable)
-- [ ] Entité de liaison `PlayerCodexEntry` (déblocage par joueur, horodaté)
-- [ ] Déclencheurs de déblocage : visite de zone, kill de boss, fin d'arc, clôture de saison
-      (réutiliser les Events domaine existants — architecture Event-Driven)
-- [ ] Décision (GAME_PRINCIPLES §6) : entité dédiée vs extension des succès existants — acter
-- [ ] Migration + tests (déblocage idempotent, pas de doublon)
+### NAR-05 — Entité Codex & déblocage par découverte ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> Entité dédiée `CodexEntry` (slug, catégorie, titre/corps + `*_translations`, couple
+> déclaratif `unlockType`/`unlockKey`, `illustrationPath`) + liaison `PlayerCodexEntry`
+> (déblocage horodaté, unique). `CodexUnlockService` idempotent + 3 subscribers :
+> visite de zone (nouvel `ZoneVisitedEvent`), kill de boss (`MobDeadEvent`), fin d'arc
+> (`QuestCompletedEvent` + `countCompletedInArc`). Clôture de saison **déférée** à la
+> Piste D (NAR-11/12). Décision actée : **entité dédiée** (pas d'extension des succès).
+> Migration idempotente, fixtures (4 entrées), tests `CodexUnlockServiceTest` + `CodexEntryTest`.
 
 ### NAR-06 — Écran Codex (S | ★★ | MOYENNE)
 > Lecture de la trame large, au rythme du joueur, hors du flux de jeu.

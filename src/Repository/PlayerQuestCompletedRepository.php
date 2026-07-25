@@ -28,6 +28,22 @@ class PlayerQuestCompletedRepository extends ServiceEntityRepository
     }
 
     /**
+     * Nombre de quetes d'un arc narratif donne completees par le joueur (NAR-05).
+     */
+    public function countCompletedInArc(Player $player, string $storyArc): int
+    {
+        return (int) $this->createQueryBuilder('pqc')
+            ->select('COUNT(pqc.id)')
+            ->innerJoin('pqc.quest', 'q')
+            ->andWhere('pqc.player = :player')
+            ->andWhere('q.storyArc = :arc')
+            ->setParameter('player', $player)
+            ->setParameter('arc', $storyArc)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
      * Top joueurs par nombre de quetes completees (all-time).
      *
      * @return array<int, array{player: Player, totalQuests: int}>
