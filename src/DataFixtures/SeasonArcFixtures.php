@@ -49,6 +49,13 @@ class SeasonArcFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'La menace atteint son paroxysme. Un événement de zone appelle tous les aventuriers à l\'assaut.',
                 'startDay' => 14,
                 'endDay' => 21,
+                // Boss de saison (NAR-10) : spawn asynchrone sur la fenetre de climax,
+                // combat partage a la contribution (WorldBossManager + WorldBossLootDistributor).
+                'parameters' => [
+                    'monster_slug' => 'forest_guardian',
+                    'map_id' => 3,
+                    'coordinates' => '20.20',
+                ],
             ],
             [
                 'beat' => GameEvent::BEAT_RESOLUTION,
@@ -71,6 +78,9 @@ class SeasonArcFixtures extends Fixture implements DependentFixtureInterface
             $event->setSeason($season);
             $event->setBeat($data['beat']);
             $event->setBeatOrder($data['order']);
+            if (isset($data['parameters'])) {
+                $event->setParameters($data['parameters']);
+            }
             $event->setCreatedAt(new \DateTime());
             $event->setUpdatedAt(new \DateTime());
 

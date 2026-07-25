@@ -289,4 +289,12 @@ class Mob implements CharacterInterface
     {
         $this->gameEvent = $gameEvent;
     }
+
+    /**
+     * World boss rattache au beat de climax d'un arc de saison (NAR-10).
+     */
+    public function isSeasonBoss(): bool
+    {
+        return $this->isWorldBoss && $this->gameEvent?->isSeasonBeat() === true;
+    }
 }

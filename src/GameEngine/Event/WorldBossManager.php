@@ -47,7 +47,7 @@ class WorldBossManager implements EventSubscriberInterface
     {
         $gameEvent = $event->getGameEvent();
 
-        if ($gameEvent->getType() !== GameEvent::TYPE_BOSS_SPAWN) {
+        if (!$this->handlesBossFor($gameEvent)) {
             return;
         }
 
@@ -58,11 +58,24 @@ class WorldBossManager implements EventSubscriberInterface
     {
         $gameEvent = $event->getGameEvent();
 
-        if ($gameEvent->getType() !== GameEvent::TYPE_BOSS_SPAWN) {
+        if (!$this->handlesBossFor($gameEvent)) {
             return;
         }
 
         $this->despawnWorldBoss($gameEvent);
+    }
+
+    /**
+     * Un GameEvent porte un world boss s'il est de type `boss_spawn`, ou s'il est
+     * le beat de **climax** d'un arc de saison (NAR-10) — auquel cas le boss de
+     * saison est annonce et combattu sur la fenetre du climax. Dans les deux cas,
+     * le spawn reel n'a lieu que si les parametres de boss sont presents
+     * (valides par spawnWorldBoss).
+     */
+    private function handlesBossFor(GameEvent $gameEvent): bool
+    {
+        return $gameEvent->getType() === GameEvent::TYPE_BOSS_SPAWN
+            || $gameEvent->getBeat() === GameEvent::BEAT_CLIMAX;
     }
 
     private function spawnWorldBoss(GameEvent $gameEvent): void

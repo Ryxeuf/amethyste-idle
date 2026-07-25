@@ -132,15 +132,15 @@ moteur récurrent qui referme la boucle à trois piliers.
 > `QuestFixtures` (dépend de `SeasonArcFixtures`). Tests : `SeasonQuestFixturesTest`
 > (4 quêtes ordonnées rattachées à un beat, montée active / climax gaté par la fenêtre).
 
-### NAR-10 — Boss / climax de saison (M | ★★ | MOYENNE)
-> Le climax = événement de zone à rejoindre (asynchrone, contribution).
-> Prérequis : ← NAR-08, `WorldBossManager` (existant), modèle zone (ZON)
-- [ ] Généraliser `WorldBossManager` / `WorldBossLootDistributor` en **boss de saison** de
-      zone, annoncé sur la fenêtre de climax (cf. PIVOT §Contenu de groupe — asynchrone)
-- [ ] Énergie pour lancer les assauts, loot à la contribution, aucune présence simultanée
-      requise (cohérence PIVOT §Économie d'action)
-- [ ] Récompenses de climax thématiques de la saison
-- [ ] Tests (fenêtre, contribution, distribution)
+### NAR-10 — Boss / climax de saison ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> `WorldBossManager` généralisé : spawn aussi sur le **beat de climax** d'un arc de saison
+> (gate de type élargi + params de boss sur le beat), despawn en fin de fenêtre. Le boss
+> hérite du modèle existant — combat partagé **asynchrone à la contribution** (`Fight.contributions`)
+> et **loot par contribution** (`WorldBossLootDistributor`, top-3 + proportionnel) sans changement.
+> `Mob::isSeasonBoss()`. Fixture : `forest_guardian` sur le climax de la Saison 1. Tests :
+> `WorldBossManagerTest` (spawn climax / pas hors climax), `MobSeasonBossTest`.
+> **Déféré** : énergie-par-assaut (change le flux de mouvement/combat, hors périmètre narratif) —
+> le modèle actuel reste asynchrone et sans présence simultanée requise.
 
 ### NAR-11 — Résolution de saison & crédits narratifs (M | ★★★ | HAUTE)
 > Le liant de la boucle : la guilde gagnante est *créditée* de la résolution (D10).
