@@ -161,15 +161,13 @@ moteur récurrent qui referme la boucle à trois piliers.
 
 ## Piste E — Contenu de fond & tests (parallélisable)
 
-### NAR-13 — Gabarits de quêtes de fond (M | ★★ | BASSE)
-> Volume sans coût d'écriture intégral : squelettes procéduraux + ancrages écrits (§3.7).
-> Prérequis : ← modèle zone (ZON), tables de zone déclaratives
-- [ ] Gabarits de chaînes de quêtes de zone (structure, objectifs, récompenses dérivés des
-      tables de zone existantes)
-- [ ] **Nœuds saillants écrits à la main** (donneur mémorable, twist, révélation liée au lore)
-- [ ] Gating par découverte (`isHidden`) et renommée (`minRenownScore`) — briques existantes
-- [ ] Le contenu de fond **n'est jamais bloquant** pour la progression système
-- [ ] Fixtures d'exemple sur 1-2 zones
+### NAR-13 — Gabarits de quêtes de fond ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> Chaîne de zone d'exemple « Forêt des Murmures » (`storyArc='zone_foret-des-murmures'`,
+> 3 étapes) : objectifs/récompenses dérivés des tables de zone (herbe `plant-mint`, faune
+> `wolf`/`mushroom_golem`), avec un **nœud saillant écrit à la main** (le Cœur endormi,
+> révélation liée au lore). Gating **découverte** (`isHidden` + `triggerCondition` explore)
+> puis **renommée** (`minRenownScore` croissant 50→100). **Non bloquant** : aucune quête
+> système ne dépend d'une quête de fond. Test : `BackgroundQuestFixturesTest`.
 
 ### NAR-14 — Tests unitaires du plan (M | ★★ | HAUTE)
 > Prérequis : ← NAR-01, NAR-05, NAR-08, NAR-11

@@ -50,6 +50,16 @@ class QuestChainFixtures extends Fixture implements DependentFixtureInterface
         $guildeReq['talk_to'][0]['pnj_id'] = $claireMentor->getId();
         $acte1Guilde->setRequirements($guildeReq);
 
+        // Chaine de fond « Foret des Murmures » (NAR-13) : rumeurs → meute → cœur.
+        /** @var Quest $bgForetRumeurs */
+        $bgForetRumeurs = $this->getReference('quest_bg_foret_rumeurs', Quest::class);
+        /** @var Quest $bgForetMeute */
+        $bgForetMeute = $this->getReference('quest_bg_foret_meute', Quest::class);
+        /** @var Quest $bgForetCoeur */
+        $bgForetCoeur = $this->getReference('quest_bg_foret_coeur', Quest::class);
+        $bgForetMeute->setPrerequisiteQuests([$bgForetRumeurs->getId()]);
+        $bgForetCoeur->setPrerequisiteQuests([$bgForetMeute->getId()]);
+
         // Chaîne Acte 2 : Fragment Forêt (4 quêtes séquentielles, après Acte 1)
         /** @var Quest $acte2ForetMurmures */
         $acte2ForetMurmures = $this->getReference('quest_acte2_foret_murmures', Quest::class);
