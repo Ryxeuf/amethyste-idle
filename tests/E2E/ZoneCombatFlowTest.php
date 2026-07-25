@@ -2,8 +2,6 @@
 
 namespace App\Tests\E2E;
 
-use Facebook\WebDriver\WebDriverBy;
-
 /**
  * E2E : declenchement d'un combat depuis une zone (ZON-23).
  *
@@ -19,7 +17,7 @@ use Facebook\WebDriver\WebDriverBy;
 class ZoneCombatFlowTest extends AbstractE2ETestCase
 {
     /** Nombre d'explorations avant d'abandonner (rencontre = 45 % de jour). */
-    private const MAX_EXPLORE_ATTEMPTS = 6;
+    private const MAX_EXPLORE_ATTEMPTS = 8;
 
     public function testFightPageRedirectsToZoneWhenNoFight(): void
     {
@@ -51,6 +49,8 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
         $this->assertSelectorExists('#action-attack');
         $this->assertSelectorExists('#action-flee');
         $this->assertSelectorExists('#combat-log');
+
+        $this->resolvePendingFight();
     }
 
     public function testBasicAttackAdvancesTheFight(): void
@@ -63,7 +63,7 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
         }
 
         $this->waitForSelector('#action-attack');
-        static::$pantherClient->findElement(WebDriverBy::id('action-attack'))->click();
+        $this->assertTrue($this->clickSelector('#action-attack'), 'Le bouton d\'attaque doit etre cliquable.');
         $this->waitForTurbo();
 
         // Apres un tour : soit le combat continue, soit il est resolu (butin,
@@ -73,6 +73,8 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
             str_contains($url, '/game/fight') || str_contains($url, '/game/zone'),
             sprintf('L\'attaque de base doit faire avancer le combat, URL obtenue : %s', $url)
         );
+
+        $this->resolvePendingFight();
     }
 
     /**
@@ -82,16 +84,19 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
     {
         for ($attempt = 0; $attempt < self::MAX_EXPLORE_ATTEMPTS; ++$attempt) {
             static::$pantherClient->request('GET', '/game/zone');
-            $this->waitForTurbo();
 
-            $buttons = static::$pantherClient->findElements(
-                WebDriverBy::cssSelector('[data-testid="zone-explore-button"]')
-            );
-            if ([] === $buttons) {
+            try {
+                // Attendre le rendu reel : Turbo peut afficher un apercu en
+                // cache avant de remplacer le corps du document.
+                $this->waitForSelector('[data-testid="zone-explore-button"]');
+            } catch (\Throwable) {
                 return false;
             }
+            $this->waitForTurbo();
 
-            $buttons[0]->click();
+            if (!$this->clickSelector('[data-testid="zone-explore-button"]')) {
+                return false;
+            }
             $this->waitForTurbo();
 
             if (str_contains(static::$pantherClient->getCurrentURL(), '/game/fight')) {

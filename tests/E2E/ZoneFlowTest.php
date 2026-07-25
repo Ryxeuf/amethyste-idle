@@ -2,8 +2,6 @@
 
 namespace App\Tests\E2E;
 
-use Facebook\WebDriver\WebDriverBy;
-
 /**
  * E2E : ecran de zone (ZON-23).
  *
@@ -18,6 +16,9 @@ use Facebook\WebDriver\WebDriverBy;
  * graphe dure 5 min). Les transitions d'etat du voyage sont couvertes cote
  * fonctionnel (`ZoneControllerTest::testTravelStartsAndRedirectsWithSuccessFlash`
  * et `testIndexExposesTravelStateWhileTraveling`).
+ *
+ * Aucune reference d'element n'est conservee d'une assertion a l'autre : Turbo
+ * remplace le corps du document, ce qui invalide les references WebDriver.
  */
 class ZoneFlowTest extends AbstractE2ETestCase
 {
@@ -33,10 +34,9 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->assertSelectorExists('[data-testid="zone-name"]');
         $this->assertSelectorExists('[data-testid="zone-energy"]');
 
-        $zoneName = static::$pantherClient
-            ->findElement(WebDriverBy::cssSelector('[data-testid="zone-name"]'))
-            ->getText();
-        $this->assertNotSame('', trim($zoneName), 'La zone courante doit etre nommee.');
+        $zoneName = $this->textOf('[data-testid="zone-name"]');
+        $this->assertNotNull($zoneName, 'La zone courante doit etre nommee.');
+        $this->assertNotSame('', $zoneName, 'La zone courante doit etre nommee.');
     }
 
     public function testZoneOffersTravelConnections(): void
@@ -48,18 +48,15 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('[data-testid="zone-header"]');
         $this->waitForTurbo();
 
-        $forms = static::$pantherClient->findElements(
-            WebDriverBy::cssSelector('[data-testid="zone-travel-form"]')
-        );
-
-        if ([] === $forms) {
+        if (0 === $this->countSelector('[data-testid="zone-travel-form"]')) {
             $this->markTestSkipped('Le joueur est en voyage ou la zone n\'a aucune connexion ouverte.');
         }
 
         // Chaque connexion voyageable poste vers l'endpoint de voyage avec un
         // jeton CSRF : c'est la seule sortie de zone du modele PBBG.
-        $action = $forms[0]->getAttribute('action');
-        $this->assertStringContainsString('/game/zone/travel/', (string) $action);
+        $action = $this->attributeOf('[data-testid="zone-travel-form"]', 'action');
+        $this->assertNotNull($action);
+        $this->assertStringContainsString('/game/zone/travel/', $action);
         $this->assertSelectorExists('[data-testid="zone-travel-button"]');
     }
 
@@ -72,15 +69,9 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('[data-testid="zone-header"]');
         $this->waitForTurbo();
 
-        $exploreButtons = static::$pantherClient->findElements(
-            WebDriverBy::cssSelector('[data-testid="zone-explore-button"]')
-        );
-
-        if ([] === $exploreButtons) {
+        if (!$this->clickSelector('[data-testid="zone-explore-button"]')) {
             $this->markTestSkipped("L'action Explorer n'est pas disponible dans cette zone.");
         }
-
-        $exploreButtons[0]->click();
         $this->waitForTurbo();
 
         // Explorer tire un evenement : rencontre (redirection combat) ou
