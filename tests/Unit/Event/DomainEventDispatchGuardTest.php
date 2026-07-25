@@ -22,22 +22,18 @@ class DomainEventDispatchGuardTest extends TestCase
     /**
      * Evenements connus sans emetteur, tolerés le temps d'etre traites.
      *
-     * `FightLootedEvent` a ete rebranche par ZON-25 ; `PlayerActionHitEvent` et
-     * `PlayerActionMissEvent` etaient des **faux positifs** — ce sont des classes
-     * parentes, jamais instanciees directement mais etendues par des evenements
-     * bel et bien emis (`PlayerAttackHitEvent`, `PlayerSpellHitEvent`...). Le
-     * test les exclut desormais automatiquement.
+     * **La liste est vide** : tous les orphelins releves par ce garde-fou ont
+     * ete traites (ZON-25 pour `FightLootedEvent`, ZON-27b pour
+     * `PnjDialogEvent`), et `PlayerActionHitEvent` / `PlayerActionMissEvent`
+     * etaient des faux positifs — des classes parentes, desormais exclues
+     * automatiquement.
      *
-     * Reste `PnjDialogEvent` : son emission suppose un ecran de dialogue PNJ,
-     * disparu avec les overlays carte (ZON-21a). Il est traite par **ZON-27**
-     * (couche PNJ de zone) ; d'ici la, les objectifs de quete « parler a un
-     * PNJ » ne progressent pas.
+     * Y ajouter une entree est un aveu explicite, pas une commodite : le second
+     * test verifie qu'une entree declaree est toujours reellement orpheline.
      *
      * @var list<string>
      */
-    private const KNOWN_ORPHANS = [
-        'PnjDialogEvent',
-    ];
+    private const KNOWN_ORPHANS = [];
 
     public function testEveryDomainEventHasAnEmitter(): void
     {
