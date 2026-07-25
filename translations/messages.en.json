@@ -1100,6 +1100,12 @@
         "tooltip": "Your HP regenerates in real time out of combat. Leaving a fight weakened forces you to wait or heal (items, spells) before setting out again.",
         "full_in": "Full in ~%minutes% min"
       },
+      "phase": {
+        "day": "Day",
+        "night": "Night",
+        "day_tooltip": "It is daytime. Encounters, loot and events follow the zone's daytime rhythm.",
+        "night_tooltip": "It is night. Some zones spawn nocturnal creatures, different loot and night-only events."
+      },
       "expedition": {
         "heading": "Expedition",
         "subtitle": "Send your character to explore this zone for several hours. Loot awaits on return. No other action is possible meanwhile.",

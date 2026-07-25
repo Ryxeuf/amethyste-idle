@@ -153,6 +153,55 @@ class ZoneDefinitionLoader
             }
         }
 
+        // Variante nocturne (ZON-17) : surcharge partielle jouee la nuit
+        // (weights, chest_gils_*, et pool de rencontres dedie `mob_slugs`).
+        $night = $this->normalizeExploreNight($slug, $explore['night'] ?? null, $source);
+        if (null !== $night) {
+            $config['night'] = $night;
+        }
+
+        return $config === [] ? null : $config;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function normalizeExploreNight(string $slug, mixed $night, string $source): ?array
+    {
+        if ($night === null) {
+            return null;
+        }
+        if (!\is_array($night)) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid "explore.night" block in "%s".', $slug, $source));
+        }
+
+        $config = [];
+        if (isset($night['weights']) && \is_array($night['weights'])) {
+            $weights = [];
+            foreach ($night['weights'] as $event => $weight) {
+                if (\is_string($event) && is_numeric($weight)) {
+                    $weights[$event] = (int) $weight;
+                }
+            }
+            if ($weights !== []) {
+                $config['weights'] = $weights;
+            }
+        }
+        foreach (['chest_gils_min', 'chest_gils_max'] as $key) {
+            if (isset($night[$key]) && is_numeric($night[$key])) {
+                $config[$key] = (int) $night[$key];
+            }
+        }
+        if (isset($night['mob_slugs']) && \is_array($night['mob_slugs'])) {
+            $slugs = array_values(array_filter(
+                array_map(static fn ($s): string => \is_string($s) ? $s : '', $night['mob_slugs']),
+                static fn (string $s): bool => '' !== $s,
+            ));
+            if ($slugs !== []) {
+                $config['mob_slugs'] = $slugs;
+            }
+        }
+
         return $config === [] ? null : $config;
     }
 

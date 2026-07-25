@@ -44,6 +44,18 @@ zones:
         map_x: 28
         map_y: 38
         source_map: 'Forêt des murmures'
+        explore:
+            weights: { mob: 45, chest: 12, harvest: 12, pnj: 8, nothing: 23 }
+            chest_gils_min: 5
+            chest_gils_max: 25
+            # Variance jour/nuit (ZON-17) : la nuit, la foret devient plus hostile,
+            # le butin des coffres plus genereux, et des morts-vivants nocturnes
+            # (fantomes, squelettes) remplacent le vivier diurne quand ils sont presents.
+            night:
+                weights: { mob: 65, chest: 15, harvest: 5, pnj: 2, nothing: 13 }
+                chest_gils_min: 10
+                chest_gils_max: 40
+                mob_slugs: [ghost, skeleton]
         gather:
             - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 24, respawn_seconds: 900, yield_min: 1, yield_max: 3 }
             - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 16, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }

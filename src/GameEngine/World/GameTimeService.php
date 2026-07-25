@@ -82,6 +82,32 @@ class GameTimeService
         return 'night';
     }
 
+    public const PHASE_DAY = 'day';
+    public const PHASE_NIGHT = 'night';
+
+    /**
+     * Phase mecanique jour/nuit (pivot PBBG, ZON-17) : binaire au-dessus du
+     * cycle cosmetique fin (`getTimeOfDay`). Jour = 6h-18h ; nuit = 18h-6h
+     * (le crepuscule bascule en nuit, l'aube en jour). Sert de curseur de
+     * variance aux rencontres, au loot et aux evenements de zone.
+     */
+    public function getPhase(?\DateTimeInterface $realTime = null): string
+    {
+        $hour = $this->getHour($realTime);
+
+        return ($hour >= 6 && $hour < 18) ? self::PHASE_DAY : self::PHASE_NIGHT;
+    }
+
+    public function isNight(?\DateTimeInterface $realTime = null): bool
+    {
+        return self::PHASE_NIGHT === $this->getPhase($realTime);
+    }
+
+    public function isDay(?\DateTimeInterface $realTime = null): bool
+    {
+        return self::PHASE_DAY === $this->getPhase($realTime);
+    }
+
     /**
      * Saisons selon le mois UTC (hemisphere nord).
      */
@@ -117,6 +143,7 @@ class GameTimeService
      *     hour: int,
      *     minute: int,
      *     timeOfDay: string,
+     *     phase: string,
      *     season: string,
      *     day: int,
      *     utcDayCycleFactor: float,
@@ -129,6 +156,7 @@ class GameTimeService
             'hour' => $this->getHour($realTime),
             'minute' => $this->getMinute($realTime),
             'timeOfDay' => $this->getTimeOfDay($realTime),
+            'phase' => $this->getPhase($realTime),
             'season' => $this->getSeason($realTime),
             'day' => $this->getDay($realTime),
             'utcDayCycleFactor' => $this->getUtcDayCycleFactor(),

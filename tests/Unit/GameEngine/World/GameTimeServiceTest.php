@@ -67,6 +67,22 @@ class GameTimeServiceTest extends TestCase
         $this->assertSame('night', $this->service(1.0)->getTimeOfDay($time));
     }
 
+    public function testGetPhaseDayAndNight(): void
+    {
+        $svc = $this->service(1.0);
+        $tz = new \DateTimeZone('UTC');
+
+        // Jour : 6h-18h.
+        $this->assertSame('day', $svc->getPhase(new \DateTimeImmutable('2024-03-10 06:00:00', $tz)));
+        $this->assertSame('day', $svc->getPhase(new \DateTimeImmutable('2024-03-10 12:00:00', $tz)));
+        $this->assertTrue($svc->isDay(new \DateTimeImmutable('2024-03-10 17:59:00', $tz)));
+
+        // Nuit : 18h-6h (le crepuscule et le coeur de nuit).
+        $this->assertSame('night', $svc->getPhase(new \DateTimeImmutable('2024-03-10 18:00:00', $tz)));
+        $this->assertSame('night', $svc->getPhase(new \DateTimeImmutable('2024-03-10 23:30:00', $tz)));
+        $this->assertTrue($svc->isNight(new \DateTimeImmutable('2024-03-10 03:00:00', $tz)));
+    }
+
     public function testGetSeasonByUtcMonth(): void
     {
         $this->assertSame('winter', $this->service(1.0)->getSeason(new \DateTimeImmutable('2024-01-15 12:00:00', new \DateTimeZone('UTC'))));
