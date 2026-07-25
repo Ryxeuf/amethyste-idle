@@ -548,10 +548,12 @@ class ZoneController extends AbstractController
         $combat = $this->groupDungeonCombatService->state($run);
 
         return [
+            'runId' => $run->getId(),
             'dungeonName' => $run->getDungeon()->getName(),
             'status' => $run->getStatus(),
             'memberCount' => $run->getMembers()->count(),
             'isLeader' => $run->getLeader()->getId() === $player->getId(),
+            'viewerId' => $player->getId(),
             'combat' => $combat,
             'isMyTurn' => ($combat['activePlayerId'] ?? null) === $player->getId(),
         ];
