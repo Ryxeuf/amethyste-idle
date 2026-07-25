@@ -230,6 +230,26 @@
                     </div>
                 {% endif %}
 
+                {# ── Donjon de groupe semi-synchrone (ZON-19) ────── #}
+                {% if groupDungeon %}
+                    <div class="mb-4 px-3 py-2.5 rounded-md bg-cyan-900/25 border border-cyan-700/50">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <p class="text-sm font-semibold text-cyan-100">
+                                🛡️ {{ 'game.zone.dungeon.in_progress'|trans({'%dungeon%': groupDungeon.dungeonName, '%count%': groupDungeon.memberCount}) }}
+                            </p>
+                            {% if groupDungeon.isLeader %}
+                                <form method="post" action="{{ path('app_game_zone_dungeon_abandon') }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_abandon') }}">
+                                    <button type="submit" class="text-xs px-2.5 py-1 rounded bg-red-900/40 border border-red-700/50 text-red-200 hover:bg-red-800/50">
+                                        {{ 'game.zone.dungeon.abandon'|trans }}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <p class="text-[11px] text-cyan-200/60 mt-1">{{ 'game.zone.dungeon.hint'|trans }}</p>
+                    </div>
+                {% endif %}
+
                 {# ── En-tete de zone ─────────────────────────────── #}
                 <div class="mb-4">
                     <div class="flex flex-wrap items-center gap-2">

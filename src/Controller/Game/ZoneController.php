@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -71,6 +72,7 @@ class ZoneController extends AbstractController
         private readonly ZoneEventService $zoneEventService,
         private readonly GameTimeService $gameTimeService,
         private readonly ZoneBossService $zoneBossService,
+        private readonly GroupDungeonService $groupDungeonService,
     ) {
     }
 
@@ -119,6 +121,7 @@ class ZoneController extends AbstractController
                 'expedition' => null,
                 'zoneEvents' => [],
                 'zoneBoss' => null,
+                'groupDungeon' => null,
                 'zoneChat' => null,
                 'phase' => $this->gameTimeService->getPhase(),
             ]);
@@ -172,6 +175,7 @@ class ZoneController extends AbstractController
             'expedition' => $this->buildExpedition($player, $zone),
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
             'zoneBoss' => $this->buildZoneBoss($zone),
+            'groupDungeon' => $this->buildGroupDungeon($player),
             'phase' => $this->gameTimeService->getPhase(),
             'zoneChat' => [
                 'zoneId' => $zone->getId(),
@@ -522,6 +526,27 @@ class ZoneController extends AbstractController
             'hpMax' => $boss->getHpMax(),
             'hpPercent' => $boss->getHpPercent(),
             'cost' => $this->zoneBossService->getAssaultCost(),
+        ];
+    }
+
+    /**
+     * Donjon de groupe actif du joueur (ZON-19) pour l'ecran de zone : nom,
+     * statut, role de leader. null si aucun run actif.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function buildGroupDungeon(Player $player): ?array
+    {
+        $run = $this->groupDungeonService->getActiveRunForPlayer($player);
+        if (null === $run) {
+            return null;
+        }
+
+        return [
+            'dungeonName' => $run->getDungeon()->getName(),
+            'status' => $run->getStatus(),
+            'memberCount' => $run->getMembers()->count(),
+            'isLeader' => $run->getLeader()->getId() === $player->getId(),
         ];
     }
 
