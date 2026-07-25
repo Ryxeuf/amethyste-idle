@@ -56,6 +56,18 @@ class CodexEntryFixtures extends Fixture
                 'unlockType' => CodexEntry::UNLOCK_ARC_COMPLETED,
                 'unlockKey' => 'intro',
             ],
+            [
+                // Fait de monde public (NAR-07), horodate. Les faits crédités à une
+                // guilde seront générés par les résolutions de saison canon (NAR-11/12).
+                'slug' => 'fondation-du-village-de-lumiere',
+                'category' => CodexEntry::CATEGORY_WORLD_FACT,
+                'title' => 'La Fondation du Village de Lumière',
+                'title_translations' => ['en' => 'The Founding of the Village of Light'],
+                'description' => "Bien avant l'Éveil des sans-mémoire, des colons dressèrent le Village de Lumière comme un fanal contre les ténèbres environnantes. Il demeure le premier refuge de tout nouvel arrivant.",
+                'description_translations' => ['en' => 'Long before the awakening of the memoryless, settlers raised the Village of Light as a beacon against the surrounding dark. It remains the first refuge of every newcomer.'],
+                'unlockType' => CodexEntry::UNLOCK_MANUAL,
+                'unlockKey' => null,
+            ],
         ];
 
         foreach ($entries as $data) {

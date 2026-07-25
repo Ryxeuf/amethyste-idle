@@ -49,6 +49,7 @@ class CodexControllerTest extends TestCase
         $bestiary = $this->createEntryMock(3, CodexEntry::CATEGORY_BESTIARY_LORE);
 
         $this->codexEntryRepository->method('findAllOrdered')->willReturn([$region1, $region2, $bestiary]);
+        $this->codexEntryRepository->method('findWorldFactsChronological')->willReturn([]);
         // Le joueur a debloque region1 et bestiary (2 sur 3).
         $this->playerCodexEntryRepository->method('unlockedEntryIds')->willReturn([1, 3]);
 
@@ -59,12 +60,37 @@ class CodexControllerTest extends TestCase
         self::assertSame(3, $this->capturedTemplateParams['totalCount']);
         self::assertSame(2, $this->capturedTemplateParams['unlockedCount']);
         self::assertSame([1, 3], $this->capturedTemplateParams['unlockedIds']);
+        self::assertSame([], $this->capturedTemplateParams['worldFacts']);
 
         $categories = $this->capturedTemplateParams['categories'];
         self::assertArrayHasKey(CodexEntry::CATEGORY_REGION, $categories);
         self::assertArrayHasKey(CodexEntry::CATEGORY_BESTIARY_LORE, $categories);
         self::assertCount(2, $categories[CodexEntry::CATEGORY_REGION]);
         self::assertCount(1, $categories[CodexEntry::CATEGORY_BESTIARY_LORE]);
+    }
+
+    public function testWorldFactsAreExcludedFromCompletionAndPassedSeparately(): void
+    {
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $region = $this->createEntryMock(1, CodexEntry::CATEGORY_REGION);
+        $worldFact = $this->createEntryMock(2, CodexEntry::CATEGORY_WORLD_FACT);
+
+        // findAllOrdered renvoie les deux ; le fait de monde est public.
+        $this->codexEntryRepository->method('findAllOrdered')->willReturn([$region, $worldFact]);
+        $this->codexEntryRepository->method('findWorldFactsChronological')->willReturn([$worldFact]);
+        $this->playerCodexEntryRepository->method('unlockedEntryIds')->willReturn([]);
+
+        $response = $this->controller->index();
+
+        self::assertSame(200, $response->getStatusCode());
+        // Seule l'entree a collectionner compte dans la completion.
+        self::assertSame(1, $this->capturedTemplateParams['totalCount']);
+        // Le fait de monde n'apparait pas dans les categories a collectionner...
+        self::assertArrayNotHasKey(CodexEntry::CATEGORY_WORLD_FACT, $this->capturedTemplateParams['categories']);
+        // ...mais bien dans le journal de monde.
+        self::assertCount(1, $this->capturedTemplateParams['worldFacts']);
     }
 
     public function testIndexWithNoUnlocks(): void
@@ -75,6 +101,7 @@ class CodexControllerTest extends TestCase
         $this->codexEntryRepository->method('findAllOrdered')->willReturn([
             $this->createEntryMock(1, CodexEntry::CATEGORY_REGION),
         ]);
+        $this->codexEntryRepository->method('findWorldFactsChronological')->willReturn([]);
         $this->playerCodexEntryRepository->method('unlockedEntryIds')->willReturn([]);
 
         $response = $this->controller->index();
@@ -89,6 +116,7 @@ class CodexControllerTest extends TestCase
         $entry = $this->createMock(CodexEntry::class);
         $entry->method('getId')->willReturn($id);
         $entry->method('getCategory')->willReturn($category);
+        $entry->method('isPublic')->willReturn($category === CodexEntry::CATEGORY_WORLD_FACT);
 
         return $entry;
     }

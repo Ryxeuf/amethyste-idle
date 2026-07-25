@@ -63,4 +63,21 @@ class CodexEntryRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Faits de monde (`world_fact`) publics, du plus recent au plus ancien —
+     * fil de l'histoire du serveur (NAR-07).
+     *
+     * @return CodexEntry[]
+     */
+    public function findWorldFactsChronological(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.category = :category')
+            ->setParameter('category', CodexEntry::CATEGORY_WORLD_FACT)
+            ->orderBy('c.createdAt', 'DESC')
+            ->addOrderBy('c.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

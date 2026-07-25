@@ -34,21 +34,31 @@ class CodexController extends AbstractController
         $entries = $this->codexEntryRepository->findAllOrdered();
         $unlockedIds = $this->playerCodexEntryRepository->unlockedEntryIds($player);
 
-        // Regroupe par categorie ; compte les entrees debloquees.
+        // Regroupe les entrees « a collectionner » par categorie ; compte les
+        // entrees debloquees. Les faits de monde (public, NAR-07) sont exclus de
+        // la completion et affiches a part, chronologiquement.
         $categories = [];
         $unlockedCount = 0;
+        $totalCollectible = 0;
         foreach ($entries as $entry) {
+            if ($entry->isPublic()) {
+                continue;
+            }
             $categories[$entry->getCategory()][] = $entry;
+            ++$totalCollectible;
             if (\in_array($entry->getId(), $unlockedIds, true)) {
                 ++$unlockedCount;
             }
         }
 
+        $worldFacts = $this->codexEntryRepository->findWorldFactsChronological();
+
         return $this->render('game/codex/index.html.twig', [
             'categories' => $categories,
+            'worldFacts' => $worldFacts,
             'unlockedIds' => $unlockedIds,
             'unlockedCount' => $unlockedCount,
-            'totalCount' => \count($entries),
+            'totalCount' => $totalCollectible,
             'player' => $player,
         ]);
     }
