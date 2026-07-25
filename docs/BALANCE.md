@@ -232,3 +232,44 @@ Chaque zone sauvage declare ses poids de rencontre (`explore.weights`) et sa var
 ### Filons
 
 13 filons repartis sur les 4 zones sauvages, par profession (`mining`, `herbalism`, `fishing`). Regle : plus la ressource est rare, plus la **capacite** est faible et le **respawn** long (`ore-gold` : capacite 8, respawn 1 h). La capacite etant un stock **partage** entre joueurs, elle est aussi le levier de tension d'une ressource sur un serveur peuple.
+
+---
+
+## 12. Plancher T1 anti cold-start (economie joueur, ECO-02)
+
+L'economie visee est une economie de **production joueur** : a terme, l'essentiel
+de l'equipement vient d'autres joueurs. Le risque structurel d'un tel modele est le
+**cold-start** — marche vide, ou ingredient que personne ne produit, et le nouveau
+venu se retrouve bloque sans recours.
+
+**La regle** : tout ingredient d'une recette de **premier palier** (`required_level: 1`)
+doit etre accessible en solo, par au moins une source que le joueur controle seul —
+filon de zone, boutique PNJ, butin de monstre, ou recompense de quete. Le garde-fou
+est `tests/Integration/Economy/ColdStartFloorTest`.
+
+### Les quatre etages du plancher
+
+Un metier n'est accessible que si les **quatre** conditions sont reunies. L'audit
+ECO-02 a trouve les quatre en defaut, chacune de facon silencieuse :
+
+| Etage | Regle | Etat trouve par l'audit |
+|-------|-------|-------------------------|
+| Ingredients | Chaque ingredient T1 a une source solo | 7 recettes niv. 1 sur 13 irrealisables (`ore-tin`, `plant-chamomile`, `leather-raw` sans aucune source) |
+| Outil equipable | Un skill accorde `equip.tool` pour l'outil du metier | **Aucun** des 4 arbres d'artisanat ne l'accordait — l'emplacement s'ouvrait, rien ne pouvait y entrer |
+| Outil achetable | Cet outil est vendu par un PNJ **rattache a une zone** | Les outils n'etaient vendus que par un PNJ hors graphe, invisible depuis l'ecran de zone |
+| Recette d'entree | Le skill d'entree debloque une recette qui **existe** | 2 metiers sur 4 pointaient vers un slug de recette inexistant |
+
+### Calibrage du stock PNJ
+
+Le plancher PNJ se vend **sans limite de stock** (`shopStock` non renseigne). C'est
+deliberé : un stock fini se vide, et le joueur qui arrive apres se retrouve face a un
+marche joueur qu'il ne peut pas encore alimenter. Le plancher n'a pas vocation a etre
+competitif — il est volontairement au **prix fort et a la qualite minimale** (bronze),
+pour que la production joueur reste plus interessante des le second palier.
+
+### Reste a reconcilier
+
+Les arbres de talent et les recettes ont ete ecrits separement : **35 slugs de recette
+cites par des skills n'existent pas**, et **39 recettes livrees ne sont debloquees par
+aucun skill**. ECO-02 n'a traite que le plancher (une porte d'entree par metier) ; la
+reconciliation complete est un chantier a part.

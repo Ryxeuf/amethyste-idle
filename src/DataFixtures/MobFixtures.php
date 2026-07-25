@@ -761,6 +761,10 @@ class MobFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             MapFixtures::class,
+            // ECO-02 : les zones doivent exister avant cette fixture, sinon
+            // `WorldEntityZoneListener` ne trouve aucune zone a rattacher et
+            // l'entite reste hors du graphe — invisible depuis l'ecran de zone.
+            ZoneGraphFixtures::class,
             MonsterFixtures::class,
         ];
     }

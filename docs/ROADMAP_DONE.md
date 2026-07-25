@@ -7,7 +7,38 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-02 — Plancher T1 anti cold-start (Sprint 14, 2026-07-25)
+
+> Garantie d'onboarding de l'economie joueur : un nouveau venu atteint le premier palier d'artisanat **sans dependre d'un autre joueur**. L'audit devait verifier cette propriete ; il a trouve l'artisanat **entierement inaccessible**.
+
+### Ce que l'audit a trouve
+
+Quatre defauts independants, tous silencieux — rien n'echouait, les recettes s'affichaient, elles etaient simplement impossibles :
+
+1. **7 recettes de niveau 1 sur 13 irrealisables.** Trois ingredients n'avaient aucune source dans le monde livre : `ore-tin` (lingot de bronze, donc toute la chaine d'outillage), `plant-chamomile` (premiere recette d'alchimie) et `leather-raw` — les cinq recettes de tanneur, soit le metier entier. Les betes lachaient `leather-skin-1/2`, doublons sans aucun consommateur, pendant que les recettes reclamaient `leather-raw`/`leather-thick`, que rien ne produisait.
+2. **Aucun outil d'artisanat equipable.** Les quatre arbres de metier ouvraient bien l'emplacement d'outil (`tool_slot.unlock`) mais n'accordaient jamais `equip.tool`. `CraftingManager::checkCraftTool` refusait donc **tout** artisanat, pour tout joueur : l'emplacement s'ouvrait, rien ne pouvait y entrer.
+3. **Aucun outil d'artisanat achetable.** Les outils n'etaient vendus que par un PNJ rattache a la « Carte de test », hors du graphe de zones — invisible depuis l'ecran de zone depuis ZON-27a. Le hub, lui, vendait `pickaxe` et `fishing-rod`, objets `stuff` **sans `toolType`** : des outils qui n'en sont pas.
+4. **2 metiers sur 4 sans porte d'entree.** Les skills de rang 1 du tanneur et de l'alchimiste citaient `recipe-leather-vest` et `recipe-health-potion-minor`, deux slugs qui n'existent pas.
+
+### Livre
+
+- **Sources manquantes** : filons `filon-d-etain` (Mines) et `camomille-des-clairieres` (Foret) dans `config/game/zones/world_1.yaml` ; tables de butin basculees de `leather_skin_1/2` vers `leather_raw`/`leather_thick`, les cuirs que les recettes consomment reellement.
+- **Outils equipables** : les quatre skills d'entree d'artisanat accordent `equip.tool` sur le palier bronze, comme le faisaient deja les arbres de recolte.
+- **Plancher marchand** : les huit outils de bronze rejoignent l'echoppe de Marcellin (Village de Lumiere), **sans limite de stock** — un stock fini n'est pas un plancher. Les deux faux outils sont retires de son etal.
+- **Portes d'entree** : les skills de rang 1 du tanneur et de l'alchimiste pointent desormais vers des recettes livrees (`recipe-leather-boots` + `recipe-leather-strip`, `recipe-healing-potion`).
+- **Rattachement de zone deterministe** : les fixtures de PNJ et de mobs dependent explicitement de `ZoneGraphFixtures`. Sans cette dependance, l'ordre de chargement decidait si `WorldEntityZoneListener` trouvait une zone — et un PNJ ou un mob sans zone n'apparait sur aucun ecran.
+
+### Tests
+
+`ColdStartFloorTest` (integration) verrouille les quatre etages du plancher : source solo pour chaque ingredient T1, echangeabilite de ces ingredients (`BindType::None`, sans quoi le marche ne peut pas se former sur le palier d'entree), outil d'entree a la fois equipable et vendu par un PNJ **rattache a une zone**, et recette d'entree existante pour chaque metier. Le kit d'onboarding (NAR-04) doit rester rachetable a un PNJ : accorde une seule fois, il ne garantit rien s'il est perdu.
+
+### Suite identifiee
+
+Les arbres de talent et les recettes ont ete ecrits separement et jamais croises : **35 slugs de recette cites par des skills n'existent pas**, **39 recettes livrees ne sont debloquees par aucun skill**, et seul le palier bronze des outils d'artisanat est equipable. ECO-02 a pose le plancher — une porte d'entree par metier ; la reconciliation complete est suivie en **ECO-18**. Calibrage documente dans `docs/BALANCE.md` §12.
 
 ---
 

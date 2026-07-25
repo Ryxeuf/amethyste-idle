@@ -4498,7 +4498,11 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'smith-dagger',
                 'title' => 'Forge de dagues',
                 'description' => 'Permet de forger des dagues en fer et debloque l\'emplacement de marteau de forge',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger']], ['action' => 'tool_slot.unlock', 'slot' => 'hammer']],
+                // ECO-02 : `equip.tool` accompagne l'ouverture de l'emplacement, comme
+                // dans les arbres de recolte. Sans lui, `CraftingManager::checkCraftTool`
+                // refusait tout artisanat — l'emplacement s'ouvrait, aucun outil n'y
+                // entrait, et les quatre metiers etaient injouables.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-iron-dagger']], ['action' => 'tool_slot.unlock', 'slot' => 'hammer'], ['action' => 'equip.tool', 'slugs' => ['hammer-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4651,7 +4655,10 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'leather-light-armor',
                 'title' => 'Travail du cuir brut',
                 'description' => 'Permet de confectionner des armures legeres en cuir brut et debloque l\'emplacement de kit de tannage',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-vest']], ['action' => 'tool_slot.unlock', 'slot' => 'tanning_kit']],
+                // ECO-02 : `recipe-leather-vest` n'existe pas — le skill d'entree du
+                // tanneur ne debloquait rien. Il ouvre desormais le palier 1 reel du
+                // metier (bottes + lanieres, deux recettes a base de cuir brut).
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-leather-boots', 'recipe-leather-strip']], ['action' => 'tool_slot.unlock', 'slot' => 'tanning_kit'], ['action' => 'equip.tool', 'slugs' => ['tanning-kit-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4804,7 +4811,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'alchi-health-pot',
                 'title' => 'Potion de soin mineure',
                 'description' => 'Permet de brasser des potions de soin mineures et debloque l\'emplacement de mortier d\'alchimie',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-health-potion-minor']], ['action' => 'tool_slot.unlock', 'slot' => 'mortar']],
+                // ECO-02 : `recipe-health-potion-minor` n'existe pas ; la recette de
+                // soin reellement livree est `recipe-healing-potion`.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-healing-potion']], ['action' => 'tool_slot.unlock', 'slot' => 'mortar'], ['action' => 'equip.tool', 'slugs' => ['mortar-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
@@ -4958,7 +4967,7 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'jewel-cut-basic',
                 'title' => 'Taille de gemmes brutes',
                 'description' => 'Permet de tailler des gemmes brutes en pierres utilisables et debloque l\'emplacement de burin de joaillier',
-                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-basic']], ['action' => 'tool_slot.unlock', 'slot' => 'chisel']],
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-cut-gem-basic']], ['action' => 'tool_slot.unlock', 'slot' => 'chisel'], ['action' => 'equip.tool', 'slugs' => ['chisel-bronze']]],
                 'requiredPoints' => 0,
                 'domain' => $d,
             ],
