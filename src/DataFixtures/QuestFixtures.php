@@ -726,6 +726,69 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'storyArc' => 'intro',
                 'arcOrder' => 7,
             ],
+            // --- Quetes d'evenement de Saison 1 (arc `season_saison-1`, NAR-09) ---
+            // Chaque quete est rattachee a un beat (GameEvent) : elle n'est
+            // disponible que dans la fenetre temporelle de son beat (isEventActive).
+            'quest_season1_amorce' => [
+                'name' => 'Éveil — L\'appel des cloches',
+                'name_translations' => ['en' => 'Awakening — The Call of the Bells'],
+                'description' => 'Les cloches du Village de Lumière sonnent l\'alerte. Rendez-vous sur la place pour entendre le héraut annoncer la menace de la saison.',
+                'description_translations' => ['en' => 'The bells of the Village of Light ring the alarm. Head to the square to hear the herald announce the season\'s threat.'],
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '80.34', 'name' => 'Place du village'],
+                    ],
+                ],
+                'rewards' => ['xp' => 40, 'gold' => 20],
+                'storyArc' => 'season_saison-1',
+                'arcOrder' => 1,
+                'gameEvent' => 'season1_beat_amorce',
+            ],
+            'quest_season1_montee' => [
+                'name' => 'Éveil — Repousser les incursions',
+                'name_translations' => ['en' => 'Awakening — Repel the Incursions'],
+                'description' => 'La menace enfle. Chaque créature abattue affaiblit l\'ennemi et nourrit l\'effort des guildes pour le contrôle des régions. Éliminez des gobelins aux abords du village.',
+                'description_translations' => ['en' => 'The threat swells. Every creature slain weakens the enemy and feeds the guilds\' push for regional control. Slay goblins around the village.'],
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gobelin', 'slug' => 'goblin', 'count' => 3],
+                    ],
+                ],
+                'rewards' => ['xp' => 90, 'gold' => 45],
+                'storyArc' => 'season_saison-1',
+                'arcOrder' => 2,
+                'gameEvent' => 'season1_beat_montee',
+            ],
+            'quest_season1_climax' => [
+                'name' => 'Éveil — L\'assaut de la Faille',
+                'name_translations' => ['en' => 'Awakening — Assault on the Rift'],
+                'description' => 'La menace atteint son paroxysme. Rejoignez l\'assaut et affrontez le Gardien surgi de la Faille.',
+                'description_translations' => ['en' => 'The threat reaches its peak. Join the assault and face the Guardian risen from the Rift.'],
+                'requirements' => [
+                    'monsters' => [
+                        ['name' => 'Gardien de la Forêt', 'slug' => 'forest_guardian', 'count' => 1],
+                    ],
+                ],
+                'rewards' => ['xp' => 180, 'gold' => 100],
+                'storyArc' => 'season_saison-1',
+                'arcOrder' => 3,
+                'gameEvent' => 'season1_beat_climax',
+            ],
+            'quest_season1_resolution' => [
+                'name' => 'Éveil — L\'accalmie',
+                'name_translations' => ['en' => 'Awakening — The Lull'],
+                'description' => 'La saison se referme. Parcourez les alentours apaisés et constatez le retour au calme — la guilde victorieuse en récoltera les honneurs.',
+                'description_translations' => ['en' => 'The season closes. Walk the quieted surroundings and witness the return of calm — the victorious guild will reap the honors.'],
+                'requirements' => [
+                    'explore' => [
+                        ['map_id' => 1, 'coordinates' => '85.50', 'name' => 'Clairière du Cristal'],
+                    ],
+                ],
+                'rewards' => ['xp' => 120, 'gold' => 70],
+                'storyArc' => 'season_saison-1',
+                'arcOrder' => 4,
+                'gameEvent' => 'season1_beat_resolution',
+            ],
             // --- Quetes cachees (decouverte) ---
             'quest_hidden_secret_clearing' => [
                 'name' => 'Le secret de la clairiere',
@@ -2112,6 +2175,7 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             GameEventFixtures::class,
+            SeasonArcFixtures::class,
             MapFixtures::class,
         ];
     }
