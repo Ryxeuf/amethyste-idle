@@ -1,6 +1,6 @@
 ## Sprint 10 — Contenu de groupe & decommission carte
 
-> **4 taches** (2 livrees) | Priorite : **Moyenne** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **4 taches** (3 livrees) | Priorite : **Moyenne** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : le PvE cooperatif en modele zone (boss asynchrones, donjons semi-synchrones) et la suppression definitive du code carte.
 > Prerequis : Sprint 9 (presence & evenements de zone)
 
@@ -16,11 +16,7 @@
 > **Sous-jalon 2 (boucle de combat) livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : combat tour par tour partage sur une rencontre a PV partages (`GroupDungeonCombatService`), ordre de tour des membres, delai par tour (`zone.dungeon.turn_seconds` defaut 45 s) resolu paresseusement — action par defaut = attaque de base auto. A 0 PV, le run est complete. Barre de PV + bouton Attaquer (a son tour) sur l'ecran de zone.
 > **Sous-jalon 3 (Mercure temps reel) livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : `GroupDungeonCombatPublisher` publie l'etat de combat sur le topic `dungeon/run/<id>` a chaque changement (attaque, resolution auto d'un tour en retard, defaite). Controleur Stimulus `group-dungeon` sur la banniere de zone : rafraichit PV/tour/bouton Attaquer sans recharger, decompte local du minuteur. Modele semi-synchrone preserve — Mercure n'est qu'un confort quand le groupe est en ligne. **ZON-19 complet.**
 
-### ZON-20 — Lockouts & recompenses decroissantes (M | ★★)
-> Prerequis : ← ZON-19
-- [ ] Lockout par joueur et par donjon (ex: 1 clear/jour ou cooldown X heures)
-- [ ] Preferer les recompenses decroissantes au blocage sec (protection de l'economie, variete de contenu)
-- [ ] Curseurs dans `docs/BALANCE.md` (4e curseur : contribution/lockouts)
+> **ZON-20 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : recompenses de donjon de groupe **decroissantes** plutot que lockout dur. A la reussite d'un run, chaque membre recoit des gils (`zone.dungeon.reward.base_gils`, defaut 150) ; chaque reussite supplementaire du meme donjon dans la fenetre glissante (`zone.dungeon.lockout.window_hours`, defaut 24 h) reduit la recompense d'un facteur `zone.dungeon.lockout.decay` (defaut 0.5), borne par `zone.dungeon.lockout.min_factor` (defaut 0.25). Le joueur peut toujours rejouer (variete de contenu, cooperation) — le farm rapporte de moins en moins. Entite `GroupDungeonClear` (trace par membre), `GroupDungeonRewardService`, recompense affichee dans la banniere de zone.
 
 ### ZON-21 — Suppression du code carte (L | ★)
 > Prerequis : ← ZON-16 (modele zone stabilise)
@@ -35,5 +31,5 @@
 ### Definition of Done
 
 - [ ] Boss de zone jouables sans presence simultanee, loot a la contribution
-- [ ] Donjons de groupe jouables en semi-synchrone avec lockout/recompenses decroissantes
+- [x] Donjons de groupe jouables en semi-synchrone avec lockout/recompenses decroissantes
 - [ ] Plus aucun code carte dans le repo (PixiJS retire de l'importmap, client allege) ; documentation a jour

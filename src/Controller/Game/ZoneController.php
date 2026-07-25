@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\GameEvent;
+use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
 use App\Entity\App\Zone;
@@ -27,6 +28,7 @@ use App\GameEngine\Zone\ZoneEventService;
 use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
+use App\Repository\GroupDungeonClearRepository;
 use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
@@ -75,6 +77,7 @@ class ZoneController extends AbstractController
         private readonly ZoneBossService $zoneBossService,
         private readonly GroupDungeonService $groupDungeonService,
         private readonly GroupDungeonCombatService $groupDungeonCombatService,
+        private readonly GroupDungeonClearRepository $groupDungeonClearRepository,
     ) {
     }
 
@@ -547,6 +550,13 @@ class ZoneController extends AbstractController
         // Etat de combat (resolution paresseuse des tours en retard, ZON-19 s.2).
         $combat = $this->groupDungeonCombatService->state($run);
 
+        // Recompense obtenue par le joueur si le run vient d'etre complete (ZON-20).
+        $rewardGils = null;
+        if (GroupDungeonRun::STATUS_COMPLETED === $combat['status']) {
+            $clear = $this->groupDungeonClearRepository->findForRunAndPlayer($run, $player);
+            $rewardGils = null !== $clear ? $clear->getGilsAwarded() : null;
+        }
+
         return [
             'runId' => $run->getId(),
             'dungeonName' => $run->getDungeon()->getName(),
@@ -556,6 +566,7 @@ class ZoneController extends AbstractController
             'viewerId' => $player->getId(),
             'combat' => $combat,
             'isMyTurn' => ($combat['activePlayerId'] ?? null) === $player->getId(),
+            'rewardGils' => $rewardGils,
         ];
     }
 

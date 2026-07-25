@@ -35,6 +35,7 @@ class GroupDungeonCombatService
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly GroupDungeonCombatPublisher $publisher,
+        private readonly GroupDungeonRewardService $rewardService,
     ) {
     }
 
@@ -152,6 +153,9 @@ class GroupDungeonCombatService
         if ($run->getEncounterHpCurrent() <= 0) {
             $run->setStatus(GroupDungeonRun::STATUS_COMPLETED);
             $run->setTurnDeadline(null);
+            // Recompenses decroissantes & lockouts (ZON-20), au seul instant
+            // ou le run passe complete.
+            $this->rewardService->award($run);
 
             return;
         }
