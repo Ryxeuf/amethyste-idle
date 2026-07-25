@@ -34,9 +34,9 @@ final readonly class AuctionSettlement
     }
 
     /**
-     * @param float $taxRate         taux de taxe de la region du marche
-     * @param bool  $regionHasRuler  une guilde controle-t-elle la region ?
-     * @param bool  $buyerIsMember   l'acheteur appartient-il a cette guilde ?
+     * @param float $taxRate          taux de taxe de la region du marche
+     * @param bool  $regionHasRuler   une guilde controle-t-elle la region ?
+     * @param bool  $buyerIsMember    l'acheteur appartient-il a cette guilde ?
      * @param float $memberRebateRate remise accordee aux membres (coherence GCC)
      */
     public static function compute(
