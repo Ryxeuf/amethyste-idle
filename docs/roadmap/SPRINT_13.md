@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **5 taches** (ZON-22 → ZON-26), **1 livree** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **2 livrees** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -9,7 +9,9 @@
 > **Pourquoi ce sprint est prioritaire** : le pivot avait supprime le *dispatcher* de
 > `PlayerMovedEvent` sans rebrancher ses **6 abonnes** — plusieurs systemes de progression etaient
 > inertes en production. Retabli par **ZON-22** ✅. Le garde-fou livre au passage a revele
-> **4 autres evenements sans emetteur** (voir ZON-25).
+> **4 autres evenements sans emetteur** (voir ZON-25), et la preparation de ZON-23 a montre que la
+> **couche PNJ** (boutiques, dialogues) est devenue injoignable (voir **ZON-27**). Le pivot a coupe
+> plus de fils qu'il n'y parait : ce sprint les rebranche un par un.
 
 ---
 
@@ -27,15 +29,38 @@
 > grossiere qu'une case). Migration vers `zone_slug` — et objectifs d'exploration plus fins adosses a
 > l'action **Explorer** — a faire avec la densification du graphe.
 
-### ZON-23 — Couverture E2E « zone » (M | ★★ | HAUTE)
-> Prerequis : ← ZON-22
-> **Constat** : les E2E Panther Map/Combat/Shop ont ete **supprimes** avec ZON-21a (ils pilotaient le
-> canvas PixiJS) sans remplacement. Il ne reste que 4 scenarios E2E : `Authentication`, `Craft`,
-> `Inventory`, `Quest` — la boucle de jeu principale (zone → action → combat) n'est plus couverte.
-- [ ] `ZoneFlowTest` : arrivee sur `/game/zone`, voyage via une connexion, cout d'energie, arrivee
-- [ ] `ZoneCombatFlowTest` : action Chasser/Explorer → declenchement de combat → tour → butin
-- [ ] `ZoneShopFlowTest` : acces boutique depuis une zone ville (remplace l'ex-E2E Shop)
-- [ ] Reintegration dans la suite E2E de la CI
+> **ZON-23 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : `ZoneFlowTest` (ecran, ressources,
+> connexions, action Explorer) et `ZoneCombatFlowTest` (Explorer jusqu'a la rencontre → UI de combat →
+> attaque de base) remplacent les E2E carte supprimes par ZON-21a. `data-testid` stables poses sur
+> l'ecran de zone, helper `resolvePendingFight()` pour l'etat partage entre tests, et fixtures joueur
+> rattachees a une **vraie zone** (elles laissaient les joueurs sur la « Carte de test » heritee).
+>
+> **Non couvert, et pourquoi** :
+> - **Boutique** : aucun E2E possible — plus aucun ecran ne mene a `/game/shop/{id}` (voir **ZON-27**).
+> - **Chasser** : `HuntService::getHuntTargets` ne propose que des proies **deja connues du bestiaire**,
+>   et aucune fixture ne renseigne d'entree de bestiaire. A rouvrir avec des fixtures de bestiaire.
+> - **Demarrage effectif d'un voyage** : immobiliserait le joueur partage plusieurs minutes (liaison la
+>   plus courte : 5 min). Deja couvert cote fonctionnel (`ZoneControllerTest`).
+
+### ZON-27 — Couche PNJ de zone (L | ★★★ | **HAUTE**)
+> Prerequis : ∅ | Decouvert en preparant ZON-23
+> **Constat** : la suppression du front carte (ZON-21a) a emporte les overlays PNJ (`dialog`,
+> boutique) **sans les remplacer**. Consequences verifiees :
+> - `/game/shop/{id}` existe et fonctionne, mais **aucun template du jeu n'y renvoie** : les boutiques
+>   PNJ sont injoignables.
+> - Aucune route de **dialogue PNJ** ne subsiste ; `PnjDialogEvent` n'a plus d'emetteur (cf. ZON-25),
+>   donc les objectifs de quete `talk_to` (quetes d'enquete) ne progressent pas.
+> - Les PNJ presents dans une zone ne sont exposes nulle part dans l'ecran de zone.
+>
+> **Recommandation** : exposer les PNJ presents dans l'ecran de zone (liste avec leurs actions —
+> boutique, dialogue, quetes), en reutilisant l'entite `Pnj` et le rattachement de zone existants.
+> C'est la brique qui rebranche d'un coup boutiques, dialogues et quetes `talk_to`.
+
+- [ ] Lister les PNJ presents dans la zone courante sur `/game/zone` (nom, role, actions)
+- [ ] Point d'entree **boutique** vers `/game/shop/{id}` pour les PNJ marchands (gating par la zone)
+- [ ] Ecran/action de **dialogue PNJ** emettant `PnjDialogEvent` → debloque les quetes `talk_to`
+- [ ] Couverture E2E : acces boutique depuis une zone ville (remplace l'ex-`ShopFlowTest`)
+- [ ] Tests fonctionnels : PNJ d'une autre zone inaccessible
 
 ### ZON-24 — Realigner les scenarios de charge sur le modele zone (S | ★★ | HAUTE)
 > Prerequis : ← ZON-21 ✅ | Bloque : **134** (objectif 200 joueurs)
@@ -87,8 +112,10 @@
 
 ### Definition of Done
 
-- [ ] Aucun evenement de domaine sans dispatcher ; quetes d'exploration, escorte, tutoriel et
-      decouverte de region fonctionnels en modele zone
-- [ ] Boucle de jeu principale (zone → action → combat → butin) couverte en E2E dans la CI
-- [ ] Scenarios k6 mesurant des routes reellement servies
-- [ ] World 1 jouable de bout en bout sur un graphe de zones dense
+- [x] Quetes d'exploration, escorte, quetes cachees, tutoriel et decouverte de region fonctionnels
+      en modele zone (ZON-22)
+- [x] Boucle de jeu principale (zone → action → combat) couverte en E2E dans la CI (ZON-23)
+- [ ] Aucun evenement de domaine sans emetteur — liste `KNOWN_ORPHANS` videe (ZON-25)
+- [ ] PNJ joignables depuis la zone : boutiques et dialogues (ZON-27)
+- [ ] Scenarios k6 mesurant des routes reellement servies (ZON-24)
+- [ ] World 1 jouable de bout en bout sur un graphe de zones dense (ZON-26)

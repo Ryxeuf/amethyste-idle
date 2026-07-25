@@ -165,6 +165,106 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
+     * Lit le texte d'un element sans conserver de reference WebDriver.
+     *
+     * Turbo Drive remplace le corps du document (apercu en cache puis rendu
+     * reel) : toute reference d'element conservee d'un appel a l'autre devient
+     * obsolete (`StaleElementReferenceException`). Passer par le DOM a chaque
+     * lecture evite entierement le probleme.
+     */
+    protected function textOf(string $selector): ?string
+    {
+        $text = static::$pantherClient->executeScript(sprintf(
+            'const el = document.querySelector(%s); return el ? el.textContent.trim() : null;',
+            json_encode($selector)
+        ));
+
+        return is_string($text) ? $text : null;
+    }
+
+    /**
+     * Lit un attribut d'element sans conserver de reference WebDriver.
+     */
+    protected function attributeOf(string $selector, string $attribute): ?string
+    {
+        $value = static::$pantherClient->executeScript(sprintf(
+            'const el = document.querySelector(%s); return el ? el.getAttribute(%s) : null;',
+            json_encode($selector),
+            json_encode($attribute)
+        ));
+
+        return is_string($value) ? $value : null;
+    }
+
+    /**
+     * Compte les elements correspondant a un selecteur.
+     */
+    protected function countSelector(string $selector): int
+    {
+        return (int) static::$pantherClient->executeScript(sprintf(
+            'return document.querySelectorAll(%s).length;',
+            json_encode($selector)
+        ));
+    }
+
+    /**
+     * Clique un selecteur en le re-resolvant a chaque tentative.
+     *
+     * Robuste aux remplacements de DOM par Turbo : si l'element devient
+     * obsolete entre la resolution et le clic, on recommence.
+     *
+     * @return bool false si l'element est absent
+     */
+    protected function clickSelector(string $selector, int $attempts = 3): bool
+    {
+        for ($attempt = 0; $attempt < $attempts; ++$attempt) {
+            if (!$this->selectorExists($selector)) {
+                return false;
+            }
+
+            try {
+                static::$pantherClient->findElement(WebDriverBy::cssSelector($selector))->click();
+
+                return true;
+            } catch (\Throwable) {
+                // Element remplace par Turbo entre la resolution et le clic :
+                // on laisse le rendu se stabiliser et on retente.
+                $this->waitForTurbo();
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Termine un combat laisse en cours par un test precedent (ZON-23).
+     *
+     * Les tests E2E partagent un joueur : un combat non resolu bloque les
+     * actions de zone du test suivant. On enchaine les attaques de base
+     * jusqu'a la resolution, sans jamais echouer si le combat resiste.
+     *
+     * @return bool true si le joueur n'est plus en combat
+     */
+    protected function resolvePendingFight(int $maxTurns = 25): bool
+    {
+        static::$pantherClient->request('GET', '/game/fight');
+        $this->waitForTurbo();
+
+        for ($turn = 0; $turn < $maxTurns; ++$turn) {
+            if (!str_contains(static::$pantherClient->getCurrentURL(), '/game/fight')) {
+                return true;
+            }
+            if (!$this->clickSelector('#action-attack')) {
+                return true;
+            }
+
+            $this->waitForTurbo();
+        }
+
+        return !str_contains(static::$pantherClient->getCurrentURL(), '/game/fight');
+    }
+
+    /**
      * Take a screenshot on test failure for CI debugging.
      */
     protected function takeScreenshot(string $name): void

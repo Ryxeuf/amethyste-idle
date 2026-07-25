@@ -6,6 +6,7 @@ use App\DataFixtures\Game\RaceFixtures;
 use App\DataFixtures\Game\SkillFixtures;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
+use App\Entity\App\Zone;
 use App\Entity\Game\Race;
 use App\Entity\Game\Skill;
 use App\Entity\User;
@@ -17,6 +18,18 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
+        // Position de reference du joueur = sa zone (regle projet #7). Les
+        // fixtures laissaient les joueurs rattaches a la seule « Carte de test »,
+        // heritee de l'ere carte : ils demarraient donc sans zone, et l'ecran de
+        // zone se rabattait sur le hub. On les place explicitement (ZON-23).
+        $zones = $manager->getRepository(Zone::class);
+        // Compte de test/admin : en pleine nature, pour que les actions de zone
+        // (chasser, recolter) soient exercables — c'est le compte utilise par les
+        // tests E2E.
+        $wilderness = $zones->findOneBy(['slug' => 'foret-des-murmures']);
+        // Comptes de demonstration : au hub, comme un nouveau joueur.
+        $hub = $zones->findOneBy(['slug' => 'village-de-lumiere']);
+
         // Joueur pour l'admin remy
         $playerRemy = new Player();
         $playerRemy->setName('Rémy');
@@ -25,6 +38,9 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setEnergy(80);
         $playerRemy->setMaxEnergy(100);
         $playerRemy->setMap($this->getReference('map_1', Map::class));
+        if ($wilderness instanceof Zone) {
+            $playerRemy->setCurrentZone($wilderness);
+        }
         $playerRemy->setCoordinates('85.34');
         $playerRemy->setLastCoordinates('85.34');
         $playerRemy->setUser($this->getReference('user_remy', User::class));
@@ -46,6 +62,9 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo->setEnergy(80);
         $playerDemo->setMaxEnergy(100);
         $playerDemo->setMap($this->getReference('map_1', Map::class));
+        if ($hub instanceof Zone) {
+            $playerDemo->setCurrentZone($hub);
+        }
         $playerDemo->setCoordinates('85.35');
         $playerDemo->setLastCoordinates('85.35');
         $playerDemo->setUser($this->getReference('user_demo', User::class));
@@ -69,6 +88,9 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerDemo2->setEnergy(80);
         $playerDemo2->setMaxEnergy(100);
         $playerDemo2->setMap($this->getReference('map_1', Map::class));
+        if ($hub instanceof Zone) {
+            $playerDemo2->setCurrentZone($hub);
+        }
         $playerDemo2->setCoordinates('85.36');
         $playerDemo2->setLastCoordinates('85.36');
         $playerDemo2->setUser($this->getReference('user_demo_2', User::class));
@@ -94,6 +116,7 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
             MapFixtures::class,
             SkillFixtures::class,
             RaceFixtures::class,
+            ZoneGraphFixtures::class,
         ];
     }
 }

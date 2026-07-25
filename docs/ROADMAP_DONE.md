@@ -11,6 +11,26 @@
 
 ---
 
+## ZON-23 — Couverture E2E « zone » (Sprint 13, 2026-07-25)
+
+> Les E2E Panther Map / Combat / Shop ont ete supprimes avec ZON-21a — ils pilotaient le canvas PixiJS et l'endpoint `/api/map/move`, c'est-a-dire precisement le code retire. Il ne restait que 4 scenarios (Authentication, Craft, Inventory, Quest) : **la boucle de jeu principale n'etait plus couverte de bout en bout.**
+
+### Livre
+
+- **`ZoneFlowTest`** : ecran de zone (nom, energie), connexions de voyage (cible et jeton CSRF), action Explorer.
+- **`ZoneCombatFlowTest`** : Explorer jusqu'a la rencontre (jusqu'a 6 tentatives, 45 % de mob de jour en foret) → UI de combat (`#action-attack`, `#action-flee`, `#combat-log`) → attaque de base → combat avance ou resolu. Remplace `CombatFlowTest`.
+- **`data-testid` stables** sur l'ecran de zone (`zone-header`, `zone-name`, `zone-energy`, formulaires et boutons explore / hunt / gather / travel) : la page n'avait aucun point d'accroche de test.
+- **`AbstractE2ETestCase::resolvePendingFight()`** : les tests E2E partagent un joueur, un combat non resolu bloquait les actions de zone du test suivant. Enchaine les attaques de base jusqu'a resolution, sans jamais faire echouer le test.
+- **Fixtures joueur rattachees a une vraie zone** : elles laissaient les joueurs sur la « Carte de test » heritee, donc **sans zone** (l'ecran se rabattait sur le hub). Le compte de test/admin demarre en foret (actions de zone exercables), les comptes demo au hub.
+
+### Non couvert, et pourquoi
+
+- **Boutique** : aucun E2E possible — plus aucun ecran ne mene a `/game/shop/{id}` depuis la suppression des overlays carte. Constat ouvert en **ZON-27**.
+- **Chasser** : `HuntService::getHuntTargets` ne propose que des proies **deja connues du bestiaire**, et aucune fixture ne renseigne d'entree de bestiaire.
+- **Demarrage effectif d'un voyage** : immobiliserait le joueur partage plusieurs minutes (liaison la plus courte : 5 min). Deja couvert cote fonctionnel (`ZoneControllerTest`).
+
+---
+
 ## ZON-22 — Rebranchement des systemes orphelins du deplacement (Sprint 13, 2026-07-25) — **decoupe en 2 sous-PR**
 
 > Premier jalon du Sprint 13 (consolidation post-pivot). La suppression du code carte (ZON-21b) avait retire le **dispatcher** de `PlayerMovedEvent` en laissant **6 abonnes** branches dessus : plusieurs systemes de progression etaient **inertes en production**. Ce jalon pose le point d'accroche du modele zone et rebranche l'ensemble.

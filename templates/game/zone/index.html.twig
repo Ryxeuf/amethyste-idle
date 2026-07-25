@@ -35,7 +35,7 @@
                         </div>
                     {% endif %}
                     {% if energy %}
-                        <div class="text-right" title="{{ 'game.zone.energy.tooltip'|trans }}">
+                        <div class="text-right" title="{{ 'game.zone.energy.tooltip'|trans }}" data-testid="zone-energy">
                             <p class="text-sm font-semibold text-amber-300">
                                 ⚡ {{ 'game.zone.energy.label'|trans }} {{ energy.current }}/{{ energy.max }}
                             </p>
@@ -284,9 +284,9 @@
                 {% endif %}
 
                 {# ── En-tete de zone ─────────────────────────────── #}
-                <div class="mb-4">
+                <div class="mb-4" data-testid="zone-header">
                     <div class="flex flex-wrap items-center gap-2">
-                        <h3 class="text-lg font-semibold text-white">{{ zone.localizedName(app.request.locale) }}</h3>
+                        <h3 class="text-lg font-semibold text-white" data-testid="zone-name">{{ zone.localizedName(app.request.locale) }}</h3>
                         <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-300">
                             {{ (typeLabels[zone.type] ?? 'game.zone.type.wilderness')|trans }}
                         </span>
@@ -313,9 +313,9 @@
                         <div class="flex flex-wrap gap-2">
                             {% for action in actions %}
                                 {% if action.key == 'explore' and action.enabled %}
-                                    <form method="post" action="{{ path('app_game_zone_explore') }}">
+                                    <form method="post" action="{{ path('app_game_zone_explore') }}" data-testid="zone-explore-form">
                                         <input type="hidden" name="_token" value="{{ csrf_token('explore') }}">
-                                        <button type="submit"
+                                        <button type="submit" data-testid="zone-explore-button"
                                                 {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
                                                 class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-indigo-900/40 border border-indigo-600 text-indigo-100 hover:bg-indigo-800/50{% endif %}">
                                             {{ action.label|trans }}
@@ -337,9 +337,9 @@
                             {% else %}
                                 <div class="flex flex-wrap gap-2">
                                     {% for target in huntTargets %}
-                                        <form method="post" action="{{ path('app_game_zone_hunt', {id: target.id}) }}">
+                                        <form method="post" action="{{ path('app_game_zone_hunt', {id: target.id}) }}" data-testid="zone-hunt-form">
                                             <input type="hidden" name="_token" value="{{ csrf_token('hunt_' ~ target.id) }}">
-                                            <button type="submit"
+                                            <button type="submit" data-testid="zone-hunt-button"
                                                     {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
                                                     class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-rose-900/40 border border-rose-600 text-rose-100 hover:bg-rose-800/50{% endif %}">
                                                 🎯 {{ target.localizedName(app.request.locale) }}
@@ -383,9 +383,9 @@
                                                 {% endif %}
                                             </p>
                                         {% else %}
-                                            <form method="post" action="{{ path('app_game_zone_gather', {slug: gatherable.slug}) }}" class="mt-1.5">
+                                            <form method="post" action="{{ path('app_game_zone_gather', {slug: gatherable.slug}) }}" class="mt-1.5" data-testid="zone-gather-form">
                                                 <input type="hidden" name="_token" value="{{ csrf_token('gather_' ~ gatherable.slug) }}">
-                                                <button type="submit"
+                                                <button type="submit" data-testid="zone-gather-button"
                                                         {% if travel %}disabled title="{{ 'game.zone.travel.error.already_traveling'|trans }}"{% endif %}
                                                         class="w-full inline-flex items-center justify-center rounded-md px-2.5 py-1 text-xs font-medium {% if travel %}bg-gray-800/60 border border-gray-700 text-gray-500 cursor-not-allowed{% else %}bg-teal-900/40 border border-teal-600 text-teal-100 hover:bg-teal-800/50{% endif %}">
                                                     {{ 'game.zone.actions.gather'|trans }}
@@ -434,9 +434,9 @@
                                                     {{ 'game.zone.travel.button'|trans }}
                                                 </span>
                                             {% else %}
-                                                <form method="post" action="{{ path('app_game_zone_travel', {id: connection.id}) }}">
+                                                <form method="post" action="{{ path('app_game_zone_travel', {id: connection.id}) }}" data-testid="zone-travel-form">
                                                     <input type="hidden" name="_token" value="{{ csrf_token('travel_' ~ connection.id) }}">
-                                                    <button type="submit"
+                                                    <button type="submit" data-testid="zone-travel-button"
                                                             class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-purple-900/40 border border-purple-600 text-purple-100 hover:bg-purple-800/50">
                                                         {{ 'game.zone.travel.button'|trans }}
                                                     </button>
