@@ -8,6 +8,7 @@ use App\Entity\App\Map;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
+use App\Entity\App\Zone;
 use App\Entity\Game\Item;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
@@ -15,6 +16,7 @@ use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Notification\NotificationService;
+use App\GameEngine\Region\PlayerRegionResolver;
 use App\Repository\AuctionListingRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,7 +40,7 @@ class AuctionManagerTest extends TestCase
         $this->listingRepo->method('findLastCancelledAt')->willReturn(null);
         $this->townControlManager = $this->createMock(TownControlManager::class);
         $this->notificationService = $this->createMock(NotificationService::class);
-        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService);
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
     }
 
     public function testCreateListingSuccess(): void
@@ -95,6 +97,35 @@ class AuctionManagerTest extends TestCase
 
         $this->assertSame('0.1000', $listing->getRegionTaxRate());
         $this->assertSame(10, $listing->getListingFee()); // 5% de 200
+    }
+
+    /**
+     * ECO-03 : la region du marche se lit sur la **zone**, pas sur la carte.
+     *
+     * Depuis le pivot, `ZoneTravelService` ne met plus `Player::map` a jour :
+     * elle reste figee sur la carte de depart. L'hotel des ventes lisait cette
+     * carte — il prelevait donc la taxe d'une region que le vendeur avait pu
+     * quitter depuis longtemps, et la reversait a la mauvaise guilde.
+     */
+    public function testCreateListingReadsTheRegionFromTheZoneNotTheStaleMap(): void
+    {
+        $zoneRegion = (new Region())->setName('Region de la zone')->setSlug('zone-region');
+        $zoneRegion->setTaxRate('0.0800');
+        $staleRegion = (new Region())->setName('Region de la carte')->setSlug('stale-region');
+        $staleRegion->setTaxRate('0.0100');
+
+        $zoneMap = $this->createMock(Map::class);
+        $zoneMap->method('getRegion')->willReturn($zoneRegion);
+        $staleMap = $this->createMock(Map::class);
+        $staleMap->method('getRegion')->willReturn($staleRegion);
+
+        $seller = $this->createPlayer(1, 1000, $staleMap);
+        $seller->setCurrentZone((new Zone())->setSourceMap($zoneMap));
+
+        $listing = $this->manager->createListing($seller, $this->createPlayerItem(), 200, 1);
+
+        $this->assertSame($zoneRegion, $listing->getRegion());
+        $this->assertSame('0.0800', $listing->getRegionTaxRate());
     }
 
     public function testCreateListingInsufficientFunds(): void
@@ -170,6 +201,116 @@ class AuctionManagerTest extends TestCase
         $this->assertSame(180, $seller->getGils());
         $this->assertSame(200, $transaction->getTotalPrice());
         $this->assertSame(20, $transaction->getRegionTaxAmount());
+    }
+
+    /**
+     * ECO-03 : le filtre de l'ecran n'est pas une regle metier. Sans garde-fou
+     * cote service, une requete forgee avec l'identifiant d'une annonce d'une
+     * autre region contournait entierement la segmentation — et avec elle tout
+     * l'interet geographique du marche.
+     */
+    public function testBuyListingRefusesAListingFromAnotherMarket(): void
+    {
+        $listing = $this->createRemoteListing('nord');
+        $buyer = $this->createPlayerInRegion(2, 1000, 'sud');
+
+        $this->em->expects($this->never())->method('persist');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('marche d\'une autre region');
+
+        $this->manager->buyListing($buyer, $listing);
+    }
+
+    public function testBuyListingAllowsAListingFromTheSameMarket(): void
+    {
+        $listing = $this->createRemoteListing('nord');
+        $buyer = $this->createPlayerInRegion(2, 1000, 'nord');
+
+        $transaction = $this->manager->buyListing($buyer, $listing);
+
+        $this->assertSame(AuctionStatus::Sold, $listing->getStatus());
+        $this->assertSame(100, $transaction->getTotalPrice());
+    }
+
+    /**
+     * La vente flash est un canal **systeme**, pas un marche joueur : la
+     * segmentation ne s'y applique pas, sinon une promotion serveur ne
+     * toucherait qu'une fraction des joueurs.
+     */
+    public function testFlashSaleRemainsBuyableFromAnyMarket(): void
+    {
+        $listing = $this->createRemoteListing('nord');
+        $listing->setType(AuctionType::Flash);
+        $buyer = $this->createPlayerInRegion(2, 1000, 'sud');
+
+        $transaction = $this->manager->buyListing($buyer, $listing);
+
+        $this->assertSame(AuctionStatus::Sold, $listing->getStatus());
+        $this->assertSame(100, $transaction->getTotalPrice());
+    }
+
+    /**
+     * La taxe appartient au marche **ou la marchandise a ete deposee**. Elle se
+     * lisait sur la position courante du vendeur : elle suivait donc le vendeur
+     * s'il voyageait entre le depot et l'achat.
+     */
+    public function testTaxGoesToTheGuildOfTheListingRegionNotTheSellerCurrentOne(): void
+    {
+        $listingRegion = (new Region())->setName('Nord')->setSlug('nord');
+        $listingRegion->setTaxRate('0.1000');
+
+        $seller = $this->createPlayerInRegion(1, 0, 'sud');
+        $buyer = $this->createPlayerInRegion(2, 1000, 'nord');
+
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($this->createPlayerItem());
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(5);
+        $listing->setRegionTaxRate('0.1000');
+        $listing->setRegion($listingRegion);
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        $this->townControlManager->expects($this->once())
+            ->method('getControllingGuild')
+            ->with($this->identicalTo($listingRegion))
+            ->willReturn(null);
+
+        $this->manager->buyListing($buyer, $listing);
+    }
+
+    private function createRemoteListing(string $regionSlug): AuctionListing
+    {
+        $region = (new Region())->setName($regionSlug)->setSlug($regionSlug);
+        $region->setTaxRate('0.0000');
+
+        $listing = new AuctionListing();
+        $listing->setSeller($this->createPlayer(1, 0));
+        $listing->setPlayerItem($this->createPlayerItem());
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit(100);
+        $listing->setListingFee(5);
+        $listing->setRegionTaxRate('0.0000');
+        $listing->setRegion($region);
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        return $listing;
+    }
+
+    private function createPlayerInRegion(int $id, int $gils, string $regionSlug): Player
+    {
+        $region = (new Region())->setName($regionSlug)->setSlug($regionSlug);
+        $region->setTaxRate('0.0000');
+
+        $map = $this->createMock(Map::class);
+        $map->method('getRegion')->willReturn($region);
+
+        $player = $this->createPlayer($id, $gils);
+        $player->setCurrentZone((new Zone())->setSourceMap($map));
+
+        return $player;
     }
 
     public function testBuyListingInsufficientFunds(): void

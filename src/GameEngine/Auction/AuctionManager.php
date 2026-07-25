@@ -7,10 +7,12 @@ use App\Entity\App\AuctionTransaction;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
+use App\Entity\App\Region;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Notification\NotificationService;
+use App\GameEngine\Region\PlayerRegionResolver;
 use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -43,6 +45,7 @@ class AuctionManager
         private readonly TownControlManager $townControlManager,
         private readonly LoggerInterface $logger,
         private readonly NotificationService $notificationService,
+        private readonly PlayerRegionResolver $regionResolver,
     ) {
     }
 
@@ -74,7 +77,8 @@ class AuctionManager
             throw new \InvalidArgumentException('Fonds insuffisants pour payer les frais de mise en vente.');
         }
 
-        $regionTaxRate = $this->getRegionTaxRate($seller);
+        $region = $this->resolveMarketRegion($seller);
+        $regionTaxRate = $this->getRegionTaxRate($region);
 
         $listing = new AuctionListing();
         $listing->setSeller($seller);
@@ -83,6 +87,7 @@ class AuctionManager
         $listing->setPricePerUnit($pricePerUnit);
         $listing->setListingFee($listingFee);
         $listing->setRegionTaxRate($regionTaxRate);
+        $listing->setRegion($region);
         $listing->setExpiresAt(new \DateTimeImmutable('+' . self::DEFAULT_DURATION_HOURS . ' hours'));
 
         $playerItem->setInventory(null);
@@ -119,6 +124,8 @@ class AuctionManager
         if ($listing->getSeller()->getId() === $buyer->getId()) {
             throw new \InvalidArgumentException('Vous ne pouvez pas acheter votre propre annonce.');
         }
+
+        $this->assertSameMarket($buyer, $listing);
 
         $totalPrice = $listing->getTotalPrice();
 
@@ -247,7 +254,8 @@ class AuctionManager
             throw new \InvalidArgumentException('Fonds insuffisants pour payer les frais de mise en vente.');
         }
 
-        $regionTaxRate = $this->getRegionTaxRate($seller);
+        $region = $this->resolveMarketRegion($seller);
+        $regionTaxRate = $this->getRegionTaxRate($region);
 
         $listing = new AuctionListing();
         $listing->setSeller($seller);
@@ -256,6 +264,7 @@ class AuctionManager
         $listing->setPricePerUnit($startingPrice);
         $listing->setListingFee($listingFee);
         $listing->setRegionTaxRate($regionTaxRate);
+        $listing->setRegion($region);
         $listing->setType(AuctionType::Auction);
         $listing->setMinIncrement($minIncrement);
         $listing->setExpiresAt(new \DateTimeImmutable('+' . self::AUCTION_DURATION_HOURS . ' hours'));
@@ -300,7 +309,11 @@ class AuctionManager
             throw new \InvalidArgumentException(sprintf('La duree d\'une vente flash doit etre comprise entre %d et %d heures.', self::FLASH_SALE_MIN_DURATION_HOURS, self::FLASH_SALE_MAX_DURATION_HOURS));
         }
 
-        $regionTaxRate = $this->getRegionTaxRate($adminSeller);
+        // ECO-03 : la vente flash porte bien une region (celle de l'admin, pour la
+        // taxe) mais reste **visible partout** — c'est un canal systeme, pas un
+        // marche joueur. La segmentation ne s'applique qu'aux annonces de joueurs.
+        $region = $this->resolveMarketRegion($adminSeller);
+        $regionTaxRate = $this->getRegionTaxRate($region);
 
         $listing = new AuctionListing();
         $listing->setSeller($adminSeller);
@@ -309,6 +322,7 @@ class AuctionManager
         $listing->setPricePerUnit($pricePerUnit);
         $listing->setListingFee(0);
         $listing->setRegionTaxRate($regionTaxRate);
+        $listing->setRegion($region);
         $listing->setType(AuctionType::Flash);
         $listing->setExpiresAt(new \DateTimeImmutable('+' . $durationHours . ' hours'));
 
@@ -382,6 +396,8 @@ class AuctionManager
         if ($listing->getSeller()->getId() === $bidder->getId()) {
             throw new \InvalidArgumentException('Vous ne pouvez pas enchereir sur votre propre annonce.');
         }
+
+        $this->assertSameMarket($bidder, $listing);
 
         $currentBidder = $listing->getCurrentBidder();
         if ($currentBidder !== null && $currentBidder->getId() === $bidder->getId()) {
@@ -571,12 +587,11 @@ class AuctionManager
             return;
         }
 
-        $map = $listing->getSeller()->getMap();
-        if ($map === null) {
-            return;
-        }
-
-        $region = $map->getRegion();
+        // ECO-03 : la taxe revient au marche **ou l'annonce a ete deposee**. Elle
+        // se lisait auparavant sur la carte courante du vendeur, qui pouvait avoir
+        // change entre le depot et l'achat — la taxe suivait le vendeur au lieu de
+        // rester au marche qui l'a percue.
+        $region = $listing->getRegion();
         if ($region === null) {
             return;
         }
@@ -595,18 +610,40 @@ class AuctionManager
         ]);
     }
 
-    private function getRegionTaxRate(Player $seller): string
+    private function getRegionTaxRate(?Region $region): string
     {
-        $map = $seller->getMap();
-        if ($map === null) {
-            return '0.0000';
+        return $region?->getTaxRate() ?? '0.0000';
+    }
+
+    /**
+     * Marche regional du vendeur au moment du depot (ECO-03).
+     *
+     * Un joueur hors region (personnage pas encore rattache a une zone du
+     * graphe) depose sur le marche « sans region », visible des seuls joueurs
+     * dans le meme cas : le depot n'est jamais refuse, mais il n'atterrit pas
+     * non plus dans un marche auquel le vendeur n'appartient pas.
+     */
+    private function resolveMarketRegion(Player $seller): ?Region
+    {
+        return $this->regionResolver->resolve($seller);
+    }
+
+    /**
+     * Refuse une operation sur une annonce d'un autre marche (ECO-03).
+     *
+     * Le filtre de l'ecran n'est pas une regle metier : sans ce garde-fou, une
+     * requete forgee avec l'identifiant d'une annonce distante contournait
+     * entierement la segmentation.
+     */
+    private function assertSameMarket(Player $player, AuctionListing $listing): void
+    {
+        // Les ventes flash sont un canal systeme, volontairement global.
+        if ($listing->isFlash()) {
+            return;
         }
 
-        $region = $map->getRegion();
-        if ($region === null) {
-            return '0.0000';
+        if (!$this->regionResolver->isSameMarket($this->regionResolver->resolve($player), $listing->getRegion())) {
+            throw new \InvalidArgumentException('Cette annonce appartient au marche d\'une autre region : rendez-vous sur place pour y acceder.');
         }
-
-        return $region->getTaxRate();
     }
 }

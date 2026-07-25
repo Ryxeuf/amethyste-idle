@@ -8,7 +8,15 @@
         <div class="game-card-header flex items-center justify-between">
             <div>
                 <h2 class="text-base sm:text-lg font-semibold text-white">Mettre en vente</h2>
-                <p class="text-gray-400 text-xs mt-0.5">Frais de mise en vente : 5% du prix</p>
+                <p class="text-gray-400 text-xs mt-0.5">
+                    Frais de mise en vente : 5% du prix
+                    {# ECO-03 : le depot est local et definitif — l'annonce reste sur ce
+                       marche meme si le vendeur repart ailleurs. #}
+                    {% if region %}
+                        · marche de {{ region.icon }} {{ region.localizedName(app.request.locale) }}
+                        <span class="text-gray-500">(taxe {{ (region.taxRateFloat * 100)|number_format(1, ',', ' ') }} % a la vente)</span>
+                    {% endif %}
+                </p>
             </div>
             <a href="{{ path('app_game_auction') }}"
                class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm rounded-lg transition-colors">

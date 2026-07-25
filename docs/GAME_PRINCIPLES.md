@@ -272,11 +272,10 @@ endgame raid-centrique ; tout niveau global (interdit par CLAUDE.md).
 | D10 | Cité × narration : issue de saison **prédéfinie** ; la guilde gagnante récolte les **crédits narratifs** (titres, mention, cosmétiques, nom au journal), sans branches par vainqueur. |
 | D11 | **Codex** : foyer de la trame de monde, débloqué par la découverte ; double rôle lecture + rétention (collection + journal de monde). |
 | D12 | `Quest` enrichie d'un marqueur d'**arc** (`story_arc` + `arc_order`) pour regrouper/afficher/marquer ; le chaînage dur reste sur `prerequisiteQuests`. |
+| D13 | HV : **segmentation régionale stricte**. Une annonce appartient au marché où elle a été déposée ; on n'accède à un marché qu'en s'y rendant. Le transport n'est pas un système à part — c'est le temps de voyage du graphe de zones. Les ventes flash, canal **système**, restent globales. |
 
 ## 6. Questions ouvertes
 
-- HV : segmentation régionale stricte vs marché global avec taxe régionale à la vente
-  (choix d'ampleur — l'arbitrage géographique n'existe qu'avec segmentation).
 - Paliers de **qualité de craft** (le champ `Recipe.quality` existe) : les exposer dans
   les commandes (qualité minimale exigée par le client) ?
 - Emplacements d'échoppe : liés au housing du joueur, ou **actif de ville** attribué par

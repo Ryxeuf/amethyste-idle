@@ -12,6 +12,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(name: 'idx_auction_listing_status', columns: ['status'])]
 #[ORM\Index(name: 'idx_auction_listing_seller', columns: ['seller_id'])]
 #[ORM\Index(name: 'idx_auction_listing_expires', columns: ['status', 'expires_at'])]
+#[ORM\Index(name: 'idx_auction_listing_region', columns: ['region_id', 'status', 'expires_at'])]
 class AuctionListing
 {
     use TimestampableEntity;
@@ -43,6 +44,18 @@ class AuctionListing
 
     #[ORM\Column(name: 'expires_at', type: 'datetime')]
     private \DateTimeInterface $expiresAt;
+
+    /**
+     * Marche regional ou l'annonce a ete deposee (ECO-03).
+     *
+     * Fige au depot : l'annonce appartient au marche ou la marchandise a ete
+     * mise en vente, pas a celui ou le vendeur se trouve au moment de l'achat.
+     * Nullable pour les annonces anterieures a la segmentation et pour les
+     * ventes flash, qui sont un canal systeme et restent globales.
+     */
+    #[ORM\ManyToOne(targetEntity: Region::class)]
+    #[ORM\JoinColumn(name: 'region_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Region $region = null;
 
     #[ORM\Column(name: 'region_tax_rate', type: 'decimal', precision: 5, scale: 4, options: ['default' => '0.0000'])]
     private string $regionTaxRate = '0.0000';
@@ -148,6 +161,18 @@ class AuctionListing
     public function setExpiresAt(\DateTimeInterface $expiresAt): self
     {
         $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function getRegion(): ?Region
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?Region $region): self
+    {
+        $this->region = $region;
 
         return $this;
     }

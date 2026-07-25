@@ -7,6 +7,7 @@ use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
+use App\GameEngine\Region\PlayerRegionResolver;
 use App\Helper\PlayerHelper;
 use App\Repository\AuctionListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,6 +24,7 @@ class AuctionController extends AbstractController
         private readonly AuctionListingRepository $listingRepository,
         private readonly AuctionManager $auctionManager,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PlayerRegionResolver $regionResolver,
     ) {
     }
 
@@ -41,11 +43,18 @@ class AuctionController extends AbstractController
         $rarity = $request->query->get('rarity', '');
         $page = max(1, $request->query->getInt('page', 1));
 
+        // ECO-03 : le marche est **local**. La region n'est pas un filtre que le
+        // joueur choisit — c'est l'endroit ou il se tient. Pour acceder a un autre
+        // marche, il faut s'y rendre : le cout du transport, c'est le voyage.
+        $region = $this->regionResolver->resolve($player);
+
         $result = $this->listingRepository->findActiveListings(
             $search ?: null,
             $type ?: null,
             $rarity ?: null,
             $page,
+            20,
+            $region,
         );
 
         return $this->render('game/auction/index.html.twig', [
@@ -57,6 +66,7 @@ class AuctionController extends AbstractController
             'type' => $type,
             'rarity' => $rarity,
             'player' => $player,
+            'region' => $region,
             'itemTypes' => $this->getItemTypeLabels(),
             'rarities' => ItemRarity::cases(),
         ]);
@@ -115,6 +125,9 @@ class AuctionController extends AbstractController
             'player' => $player,
             'sellableItems' => $sellableItems,
             'selectedItemId' => $selectedItemId,
+            // ECO-03 : le vendeur depose sur le marche ou il se tient. Le lui
+            // dire avant la mise en vente, pas apres.
+            'region' => $this->regionResolver->resolve($player),
         ]);
     }
 

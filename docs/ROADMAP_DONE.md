@@ -7,7 +7,38 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-03 — Hotel des ventes regional (Sprint 14, 2026-07-25)
+
+> La geographie entre dans l'economie : une annonce appartient au marche ou elle a ete deposee, et on n'accede a un marche qu'en s'y rendant.
+
+### Decision actee — D13, segmentation stricte
+
+Le plan laissait le choix ouvert entre **segmentation stricte** et **marche global taxe**. Retenu : strict. Un marche global aurait laisse la geographie sans effet — un seul prix partout, aucun arbitrage, et le graphe de zones sans role economique. Corollaire : le **transport n'est pas un systeme a part**, c'est le temps de voyage du graphe, deja paye en energie et en minutes. Il n'y avait rien a construire pour que la distance coute.
+
+### Deux defauts trouves en chemin
+
+- **La region se lisait sur `Player::map`.** Depuis le pivot, `ZoneTravelService` ne met plus cette carte a jour : elle reste figee sur la carte de depart. L'hotel des ventes prelevait donc la taxe d'une region que le vendeur avait pu quitter depuis longtemps, et la reversait a la guilde de cette region. Pire, `transferTaxToGuildTreasury` lisait la position du vendeur **au moment de l'achat** : la taxe suivait le vendeur au lieu de rester au marche qui l'avait percue.
+- **Quatre cartes sur six n'appartenaient a aucune region.** Seuls le Village de Lumiere et la carte de test etaient rattaches. Un joueur en foret, aux mines, au marais ou sur la crete n'appartenait donc a aucun marche — la taxe regionale y etait nulle et aucune guilde ne percevait quoi que ce soit sur ses ventes. La segmentation n'aurait rien segmente.
+
+### Livre
+
+- **`PlayerRegionResolver`** : source unique de « ou se tient ce joueur », derivee de la **zone** (regle #7) avec la carte en repli. La lecture etait dupliquee et divergente — `RegionDiscoveryTracker` lisait bien la zone, `AuctionManager`, `InfluenceManager` et `GoldSinkManager` lisaient la carte. Les trois lisent desormais le resolveur.
+- **`AuctionListing.region`** figee au depot (migration `Version20260725AuctionListingRegion`, avec backfill zone-puis-carte des annonces existantes), et taxe lue sur l'annonce plutot que sur la position courante du vendeur.
+- **Marche local par defaut** : la region n'est pas un filtre que le joueur choisit, c'est l'endroit ou il se tient. Nommee dans l'ecran, avec son taux de taxe, cote achat comme cote depot.
+- **Garde-fou cote service** sur l'achat **et** la mise : le filtre de l'ecran n'est pas une regle metier, une requete forgee avec l'identifiant d'une annonce distante contournait sinon toute la segmentation.
+- **Decoupage regional** : Plaines de l'Eveil (village + foret, taxe 5 %) et Terres Sauvages (mines + marais + crete, taxe 8 %) — l'ecart de taxe est le levier d'arbitrage.
+
+### Exceptions assumees
+
+Les **ventes flash** portent une region pour la taxe mais restent visibles et achetables partout : c'est un canal systeme, pas un marche joueur, et segmenter une promotion serveur la reduirait a une fraction des joueurs. Les joueurs **hors region** forment un marche entre eux — et non un marche global de repli, sans quoi un personnage hors graphe verrait tous les marches.
+
+### Tests
+
+`PlayerRegionResolverTest` (la zone prime sur la carte, replis, comparaison par slug — l'identifiant est nul pour une region non persistee) et quatre cas ajoutes a `AuctionManagerTest` : region lue sur la zone et non sur la carte figee, refus d'achat inter-marche, vente flash achetable partout, taxe versee a la guilde de la region **de l'annonce** et non de la position courante du vendeur. Calibrage documente dans `docs/BALANCE.md` §13.
 
 ---
 

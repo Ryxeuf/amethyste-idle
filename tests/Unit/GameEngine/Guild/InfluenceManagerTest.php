@@ -12,6 +12,7 @@ use App\Enum\InfluenceActivityType;
 use App\GameEngine\Guild\InfluenceAntiExploit;
 use App\GameEngine\Guild\InfluenceManager;
 use App\GameEngine\Guild\SeasonManager;
+use App\GameEngine\Region\PlayerRegionResolver;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -44,7 +45,7 @@ class InfluenceManagerTest extends TestCase
         // Par defaut, l'anti-exploit laisse tout passer
         $this->antiExploit->method('computeFactor')->willReturn(1.0);
 
-        $this->manager = new InfluenceManager($this->em, $this->seasonManager, $this->antiExploit);
+        $this->manager = new InfluenceManager($this->em, $this->seasonManager, $this->antiExploit, new PlayerRegionResolver());
     }
 
     public function testCalculatePointsMobKill(): void
@@ -254,7 +255,7 @@ class InfluenceManagerTest extends TestCase
         $antiExploit = $this->createMock(InfluenceAntiExploit::class);
         $antiExploit->method('computeFactor')->willReturn(0.0);
 
-        $manager = new InfluenceManager($this->em, $this->seasonManager, $antiExploit);
+        $manager = new InfluenceManager($this->em, $this->seasonManager, $antiExploit, new PlayerRegionResolver());
 
         $this->em->expects($this->never())->method('persist');
 

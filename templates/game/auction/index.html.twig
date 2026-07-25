@@ -7,8 +7,18 @@
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
             <div>
-                <h2 class="text-base sm:text-lg font-semibold text-white">Hotel des ventes</h2>
-                <p class="text-gray-400 text-xs mt-0.5">{{ total }} annonce{{ total > 1 ? 's' : '' }} en cours</p>
+                <h2 class="text-base sm:text-lg font-semibold text-white">
+                    Hotel des ventes
+                    {# ECO-03 : le marche est local. On nomme la region pour que le joueur
+                       comprenne que ce qu'il voit depend de la ou il se trouve. #}
+                    {% if region %}
+                        <span class="text-purple-300 font-normal">— {{ region.icon }} {{ region.localizedName(app.request.locale) }}</span>
+                    {% endif %}
+                </h2>
+                <p class="text-gray-400 text-xs mt-0.5">
+                    {{ total }} annonce{{ total > 1 ? 's' : '' }} sur le marche local
+                    {% if region %}<span class="text-gray-500">· taxe {{ (region.taxRateFloat * 100)|number_format(1, ',', ' ') }} %</span>{% endif %}
+                </p>
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ path('app_game_auction_sell') }}"
@@ -63,8 +73,11 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    <p class="text-gray-500 text-sm">Aucune annonce trouvee.</p>
-                    <p class="text-gray-600 text-xs mt-1">Modifiez vos filtres ou revenez plus tard.</p>
+                    <p class="text-gray-500 text-sm">Aucune annonce trouvee sur ce marche.</p>
+                    <p class="text-gray-600 text-xs mt-1">
+                        Modifiez vos filtres, revenez plus tard, ou voyagez vers une autre region :
+                        chaque region a son propre marche.
+                    </p>
                 </div>
             {% else %}
                 <div class="space-y-2 sm:space-y-3">
