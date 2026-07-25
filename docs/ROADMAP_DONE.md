@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,27 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-11 — Resolution de saison & credits narratifs (Piste D narration, 2026-07-25)
+
+> Le liant de la boucle a trois piliers : a la cloture d'une saison, la guilde qui **controle une region** (systeme GCC) recolte les **credits narratifs** — son nom s'inscrit au **journal de monde** public (NAR-07). Issue **predefinie**, aucune branche par vainqueur : seul le nom credite varie.
+
+### Changements
+
+- **`SeasonResolutionService::resolve(InfluenceSeason, array $regionControl): int`** : consomme la carte `slug region => nom de guilde controlante` deja produite par `TownControlManager::attributeControl` (pas de requete supplementaire). Pour chaque region tenue par une guilde, enregistre un **fait de monde credite** via `WorldFactService::recordWorldFact` (slug deterministe `<arc de saison>_<region>_resolution`, `creditedGuildName` = nom de la guilde). Si **aucune** region n'a de guilde controlante, enregistre un **fait de resolution neutre** (`<arc>_resolution`, sans credit). Idempotent par slug (rejouer met a jour, ne duplique pas).
+- **`SeasonTickCommand::handleExpiredSeasons`** : appel de `resolve($activeSeason, $results)` insere **apres l'attribution du controle** (dont il reutilise le resultat) et **avant** `endSeason`, avec un compte-rendu `$io->info`.
+
+### Verifications
+
+- `SeasonResolutionServiceTest` (unit, 5 cas) : credit d'une guilde controlante (slug + `creditedGuildName` corrects) ; credit de chaque region tenue en ignorant les regions libres ; **fait neutre** quand aucune guilde ne controle ; fait neutre quand aucune region ; nom de guilde vide traite comme region libre.
+- `SeasonTickCommandTest` : mock `SeasonResolutionService` ajoute a la construction de la commande.
+- QA : cs-fixer OK ; PHPStan (le param `array<string, string|null>` correspond au retour de `attributeControl`) ; PHPUnit en CI.
+
+### Notes
+
+- Le **marquage « canon »** (seuls les beats/resolutions marques laissent une trace durable, §3.2) est ajoute en **NAR-12** : il gatera l'enregistrement du fait de monde (aujourd'hui systematique) selon un marqueur de curation.
 
 ---
 
