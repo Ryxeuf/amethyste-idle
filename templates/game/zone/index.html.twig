@@ -11,21 +11,38 @@
                     <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.zone.title'|trans }}</h2>
                     <p class="text-gray-400 text-xs mt-0.5">{{ 'game.zone.subtitle'|trans }}</p>
                 </div>
-                {% if energy %}
-                    <div class="text-right" title="{{ 'game.zone.energy.tooltip'|trans }}">
-                        <p class="text-sm font-semibold text-amber-300">
-                            ⚡ {{ 'game.zone.energy.label'|trans }} {{ energy.current }}/{{ energy.max }}
-                        </p>
-                        {% if energy.nextPointIn is not null %}
-                            <p class="text-[10px] text-gray-500">
-                                {{ 'game.zone.energy.next_point'|trans({'%minutes%': (energy.nextPointIn / 60)|round(0, 'ceil')}) }}
+                <div class="flex items-start gap-4">
+                    {% if life %}
+                        <div class="text-right" title="{{ 'game.zone.life.tooltip'|trans }}">
+                            <p class="text-sm font-semibold {{ life.current < (life.max / 2) ? 'text-red-300' : 'text-rose-300' }}">
+                                ❤️ {{ 'game.zone.life.label'|trans }} {{ life.current }}/{{ life.max }}
                             </p>
-                        {% endif %}
-                        <div class="mt-1 h-1.5 w-32 rounded-full bg-gray-800 overflow-hidden">
-                            <div class="h-full bg-amber-400/80" style="width: {{ energy.max > 0 ? ((energy.current / energy.max) * 100)|round : 0 }}%"></div>
+                            {% if life.fullIn is not null %}
+                                <p class="text-[10px] text-gray-500">
+                                    {{ 'game.zone.life.full_in'|trans({'%minutes%': (life.fullIn / 60)|round(0, 'ceil')}) }}
+                                </p>
+                            {% endif %}
+                            <div class="mt-1 h-1.5 w-32 rounded-full bg-gray-800 overflow-hidden">
+                                <div class="h-full {{ life.current < (life.max / 2) ? 'bg-red-500/80' : 'bg-rose-400/80' }}" style="width: {{ life.max > 0 ? ((life.current / life.max) * 100)|round : 0 }}%"></div>
+                            </div>
                         </div>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                    {% if energy %}
+                        <div class="text-right" title="{{ 'game.zone.energy.tooltip'|trans }}">
+                            <p class="text-sm font-semibold text-amber-300">
+                                ⚡ {{ 'game.zone.energy.label'|trans }} {{ energy.current }}/{{ energy.max }}
+                            </p>
+                            {% if energy.nextPointIn is not null %}
+                                <p class="text-[10px] text-gray-500">
+                                    {{ 'game.zone.energy.next_point'|trans({'%minutes%': (energy.nextPointIn / 60)|round(0, 'ceil')}) }}
+                                </p>
+                            {% endif %}
+                            <div class="mt-1 h-1.5 w-32 rounded-full bg-gray-800 overflow-hidden">
+                                <div class="h-full bg-amber-400/80" style="width: {{ energy.max > 0 ? ((energy.current / energy.max) * 100)|round : 0 }}%"></div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
             </div>
         </div>
 

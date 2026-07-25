@@ -12,6 +12,7 @@ use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
 use App\GameEngine\Zone\GatherService;
 use App\GameEngine\Zone\HuntService;
+use App\GameEngine\Zone\LifeRegenManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\PlayerZoneSynchronizer;
 use App\GameEngine\Zone\ZoneActionException;
@@ -54,6 +55,7 @@ class ZoneController extends AbstractController
         private readonly ZoneTravelService $zoneTravelService,
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly ActionEnergyManager $actionEnergyManager,
+        private readonly LifeRegenManager $lifeRegenManager,
         private readonly ExploreService $exploreService,
         private readonly HuntService $huntService,
         private readonly GatherService $gatherService,
@@ -76,6 +78,9 @@ class ZoneController extends AbstractController
         // Regeneration paresseuse de l'energie d'action (ZON-07).
         $this->actionEnergyManager->refresh($player, true);
 
+        // Regeneration paresseuse des PV hors combat (ZON-12).
+        $this->lifeRegenManager->refresh($player, true);
+
         $zone = $this->resolveZone($player);
         if (null === $zone) {
             return $this->render('game/zone/index.html.twig', [
@@ -94,6 +99,7 @@ class ZoneController extends AbstractController
                 'visitedZoneIds' => [],
                 'justArrived' => null,
                 'energy' => null,
+                'life' => null,
             ]);
         }
 
@@ -135,6 +141,12 @@ class ZoneController extends AbstractController
                 'current' => $player->getActionEnergy(),
                 'max' => $player->getMaxActionEnergy(),
                 'nextPointIn' => $this->actionEnergyManager->secondsUntilNextPoint($player),
+            ],
+            'life' => [
+                'current' => $player->getLife(),
+                'max' => $player->getMaxLife(),
+                'nextPointIn' => $this->lifeRegenManager->secondsUntilNextPoint($player),
+                'fullIn' => $this->lifeRegenManager->secondsUntilFull($player),
             ],
             'poiLabels' => [
                 ObjectLayer::TYPE_HARVEST_SPOT => 'game.zone.poi.harvest_spot',

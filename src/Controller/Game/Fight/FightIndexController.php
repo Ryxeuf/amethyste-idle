@@ -11,6 +11,7 @@ use App\GameEngine\Fight\FightTurnResolver;
 use App\GameEngine\Fight\StatusEffectManager;
 use App\GameEngine\GoldSink\GoldSinkManager;
 use App\GameEngine\Player\PlayerEffectiveStatsCalculator;
+use App\GameEngine\Zone\LifeRegenManager;
 use App\Helper\PlayerHelper;
 use App\Repository\DungeonRunRepository;
 use App\Repository\FightRepository;
@@ -35,6 +36,7 @@ class FightIndexController extends AbstractController
         private readonly DungeonManager $dungeonManager,
         private readonly FightRepository $fightRepository,
         private readonly GoldSinkManager $goldSinkManager,
+        private readonly LifeRegenManager $lifeRegenManager,
     ) {
     }
 
@@ -169,6 +171,8 @@ class FightIndexController extends AbstractController
         // Respawn du joueur
         $player->setLife((int) round($player->getMaxLife() / 2));
         $player->setDiedAt(null);
+        // Ancre la regen des PV a la sortie de combat (ZON-12).
+        $this->lifeRegenManager->anchor($player);
 
         $this->entityManager->persist($player);
         $this->entityManager->flush();
@@ -205,6 +209,8 @@ class FightIndexController extends AbstractController
                 $fightPlayer->setLife((int) round($fightPlayer->getMaxLife() / 2));
                 $fightPlayer->setDiedAt(null);
             }
+            // Ancre la regen des PV a la sortie de combat (ZON-12).
+            $this->lifeRegenManager->anchor($fightPlayer);
             $this->entityManager->persist($fightPlayer);
         }
 

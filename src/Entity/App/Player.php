@@ -132,6 +132,15 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'action_energy_updated_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $actionEnergyUpdatedAt = null;
 
+    /**
+     * Ancre de la regeneration paresseuse des PV hors combat (ZON-12).
+     * Reinitialisee a la sortie de chaque combat : la regen ne compte le temps
+     * ecoule qu'a partir du moment ou le joueur quitte le combat blesse.
+     * null = jamais calcule.
+     */
+    #[ORM\Column(name: 'life_updated_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $lifeUpdatedAt = null;
+
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
 
@@ -361,6 +370,16 @@ class Player implements CharacterInterface
     public function setActionEnergyUpdatedAt(?\DateTimeImmutable $actionEnergyUpdatedAt): void
     {
         $this->actionEnergyUpdatedAt = $actionEnergyUpdatedAt;
+    }
+
+    public function getLifeUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->lifeUpdatedAt;
+    }
+
+    public function setLifeUpdatedAt(?\DateTimeImmutable $lifeUpdatedAt): void
+    {
+        $this->lifeUpdatedAt = $lifeUpdatedAt;
     }
 
     public function getLastCoordinates(): string
