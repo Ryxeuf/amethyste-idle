@@ -11,6 +11,32 @@
 
 ---
 
+## ZON-27b — Couche PNJ de zone : dialogue (Sprint 13, 2026-07-25)
+
+> Dernier orphelin du garde-fou. Les dialogues PNJ etaient un overlay de la carte, supprime avec ZON-21a : plus aucun ecran n'y menait, `PnjDialogEvent` n'avait plus d'emetteur, et les objectifs de quete `talk_to` (quetes d'enquete) **ne progressaient plus**.
+
+### Livre
+
+- **`PnjTalkController`** (`GET /game/pnj/{id}/talk`) : dialogue **server-rendered**, dans la lignee du pivot — un noeud par page, les choix sont des liens. Les choix `open_shop` renvoient vers la boutique du PNJ, les autres avancent au noeud suivant ; un index de noeud hors bornes retombe sur le premier.
+- **Emission de `PnjDialogEvent`** a la consultation : `QuestTalkToTrackingListener` → `PlayerQuestUpdater::updateTalkedTo` refonctionne.
+- **Lien « Parler »** sur l'ecran de zone pour tout PNJ ayant un dialogue.
+- **Meme regle de zone** que la boutique (ZON-27a) : un PNJ d'une autre zone est refuse ; un PNJ sans zone (donnees heritees) reste joignable.
+- Traductions FR/EN (`game.pnj.talk.*`, `game.zone.pnjs.talk`).
+
+### `KNOWN_ORPHANS` est vide
+
+Le garde-fou `DomainEventDispatchGuardTest` ne tolere plus **aucune** exception : tous les evenements de domaine ont un emetteur. La liste reste en place comme mecanisme d'aveu explicite — et un second test verifie qu'une entree declaree est reellement orpheline, pour qu'elle ne se perime pas en silence.
+
+### Hors perimetre
+
+Les actions de choix autres que `open_shop` et l'avancee au noeud suivant (declenchement de quete, branchements conditionnels) ne sont pas cablees : le dialogue affiche le texte et enchaine les noeuds. A instruire avec le contenu narratif si le besoin se confirme.
+
+### Tests
+
+`PnjTalkControllerTest` : emission de l'evenement avec le bon PNJ et le bon joueur, refus d'un PNJ d'une autre zone, refus d'un PNJ inconnu, repli sur le premier noeud hors bornes.
+
+---
+
 ## ZON-27a — Couche PNJ de zone : presence & boutiques (Sprint 13, 2026-07-25)
 
 > Constat ouvert en preparant ZON-23 : la suppression du front carte (ZON-21a) a emporte les overlays PNJ **sans les remplacer**. `/game/shop/{id}` fonctionnait toujours, mais **aucun template du jeu n'y renvoyait** — les boutiques PNJ etaient injoignables, et les PNJ presents dans une zone n'apparaissaient nulle part.

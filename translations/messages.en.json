@@ -1239,7 +1239,8 @@
         "heading": "Characters here",
         "empty": "Nobody here right now.",
         "shop": "Shop",
-        "shop_closed": "Shop closed"
+        "shop_closed": "Shop closed",
+        "talk": "Talk"
       }
     },
     "world_map": {
@@ -1254,6 +1255,16 @@
         "locked": "Undiscovered",
         "event": "Active event",
         "expedition": "Expedition"
+      }
+    },
+    "pnj": {
+      "talk": {
+        "subtitle": "Conversation",
+        "back": "Back to zone",
+        "silent": "This character has nothing to say right now.",
+        "next": "Continue",
+        "shop": "Browse the shop",
+        "end": "End of conversation."
       }
     }
   },

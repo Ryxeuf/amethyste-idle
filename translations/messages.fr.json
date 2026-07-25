@@ -1239,7 +1239,8 @@
         "heading": "Personnages présents",
         "empty": "Personne ici pour le moment.",
         "shop": "Boutique",
-        "shop_closed": "Boutique fermée"
+        "shop_closed": "Boutique fermée",
+        "talk": "Parler"
       }
     },
     "world_map": {
@@ -1254,6 +1255,16 @@
         "locked": "Non decouverte",
         "event": "Evenement actif",
         "expedition": "Expedition"
+      }
+    },
+    "pnj": {
+      "talk": {
+        "subtitle": "Conversation",
+        "back": "Retour a la zone",
+        "silent": "Ce personnage n'a rien a vous dire pour le moment.",
+        "next": "Continuer",
+        "shop": "Voir la boutique",
+        "end": "Fin de la conversation."
       }
     }
   },

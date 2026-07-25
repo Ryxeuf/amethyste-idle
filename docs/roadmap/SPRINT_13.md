@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **5 livrees** (ZON-27 : sous-jalon a livre) | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **5 livrees** | 1 restante : **ZON-26** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -85,14 +85,14 @@
 > E2E `ZoneShopFlowTest` (remplace l'ex-`ShopFlowTest`). Les boutiques etaient injoignables depuis
 > ZON-21a.
 
-### ZON-27 — Couche PNJ de zone : dialogue (sous-jalon b) (M | ★★★ | HAUTE)
-> Prerequis : ← ZON-27a ✅
-> Reste le volet **dialogue**, qui debloque `PnjDialogEvent` (dernier orphelin) et les objectifs de
-> quete `talk_to` (quetes d'enquete), aujourd'hui sans aucun moyen de progresser.
-- [ ] Ecran/action de dialogue PNJ depuis l'ecran de zone (reutiliser `Pnj::getDialog()`)
-- [ ] Emission de `PnjDialogEvent` → `QuestTalkToTrackingListener` → `updateTalkedTo`
-- [ ] Retrait de `PnjDialogEvent` de `KNOWN_ORPHANS` (le garde-fou echoue s'il retrouve un emetteur)
-- [ ] Tests : progression d'un objectif `talk_to`, dialogue d'un PNJ hors zone refuse
+> **ZON-27 sous-jalon b livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : dialogue PNJ
+> server-rendered (`/game/pnj/{id}/talk`), accessible depuis l'ecran de zone, emettant
+> `PnjDialogEvent` — les objectifs de quete `talk_to` progressent a nouveau. Meme regle de zone que
+> la boutique. **`KNOWN_ORPHANS` est desormais vide** : plus aucun evenement de domaine sans emetteur.
+>
+> **Hors perimetre** : les actions de choix autres que `open_shop` et l'avancee au noeud suivant
+> (declenchement de quete, branchements conditionnels) ne sont pas cablees — le dialogue affiche le
+> texte et enchaine les noeuds. A instruire avec le contenu narratif si le besoin se confirme.
 
 ---
 
@@ -101,7 +101,7 @@
 - [x] Quetes d'exploration, escorte, quetes cachees, tutoriel et decouverte de region fonctionnels
       en modele zone (ZON-22)
 - [x] Boucle de jeu principale (zone → action → combat) couverte en E2E dans la CI (ZON-23)
-- [~] Aucun evenement de domaine sans emetteur — reste `PnjDialogEvent`, traite par ZON-27
-- [~] PNJ joignables depuis la zone : boutiques ✅ (ZON-27a), dialogues a faire (ZON-27b)
+- [x] Aucun evenement de domaine sans emetteur — liste `KNOWN_ORPHANS` vide
+- [x] PNJ joignables depuis la zone : boutiques (ZON-27a) et dialogues (ZON-27b)
 - [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
 - [ ] World 1 jouable de bout en bout sur un graphe de zones dense (ZON-26)

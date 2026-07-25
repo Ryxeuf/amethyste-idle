@@ -316,6 +316,14 @@
                             {% for pnj in pnjsPresent %}
                                 <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
                                     <span class="text-sm text-white">{{ pnj.localizedName(app.request.locale) }}</span>
+                                    <span class="flex items-center gap-2">
+                                    {% if pnj.dialog is not empty %}
+                                        <a href="{{ path('app_game_pnj_talk', {id: pnj.id}) }}"
+                                           data-testid="zone-pnj-talk-link"
+                                           class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-cyan-900/40 border border-cyan-600 text-cyan-100 hover:bg-cyan-800/50">
+                                            {{ 'game.zone.pnjs.talk'|trans }}
+                                        </a>
+                                    {% endif %}
                                     {% if pnj.isMerchant %}
                                         {% if pnj.isShopOpen(gameHour) %}
                                             <a href="{{ path('app_game_shop', {id: pnj.id}) }}"
@@ -329,6 +337,7 @@
                                             </span>
                                         {% endif %}
                                     {% endif %}
+                                    </span>
                                 </li>
                             {% endfor %}
                         </ul>
