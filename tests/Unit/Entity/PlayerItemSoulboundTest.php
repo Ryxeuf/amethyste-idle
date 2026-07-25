@@ -4,6 +4,7 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
+use App\Enum\BindType;
 use PHPUnit\Framework\TestCase;
 
 class PlayerItemSoulboundTest extends TestCase
@@ -35,12 +36,26 @@ class PlayerItemSoulboundTest extends TestCase
         $this->assertFalse($playerItem->isBound());
     }
 
-    public function testItemBoundToPlayerFlag(): void
+    public function testItemBindTypeDefaultsToTradable(): void
     {
         $item = new Item();
-        $this->assertFalse($item->isBoundToPlayer());
 
-        $item->setBoundToPlayer(true);
-        $this->assertTrue($item->isBoundToPlayer());
+        $this->assertSame(BindType::None, $item->getBindType());
+        $this->assertFalse($item->isBoundOnPickup());
+        $this->assertFalse($item->isBoundOnEquip());
+    }
+
+    public function testItemBindTypeDistinguishesPickupFromEquip(): void
+    {
+        // ECO-01 : l'ancien booleen ne savait exprimer que « lie des l'obtention ».
+        $item = new Item();
+
+        $item->setBindType(BindType::BindOnPickup);
+        $this->assertTrue($item->isBoundOnPickup());
+        $this->assertFalse($item->isBoundOnEquip());
+
+        $item->setBindType(BindType::BindOnEquip);
+        $this->assertFalse($item->isBoundOnPickup());
+        $this->assertTrue($item->isBoundOnEquip());
     }
 }

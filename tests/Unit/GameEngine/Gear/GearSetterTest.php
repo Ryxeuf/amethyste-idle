@@ -46,6 +46,56 @@ class GearSetterTest extends TestCase
         );
     }
 
+    public function testSetGearBindsABindOnEquipItemToItsWearer(): void
+    {
+        // ECO-01 : un objet `bind_on_equip` circule tant qu'il n'a pas ete porte,
+        // puis s'immobilise sur le porteur au premier equipement.
+        $player = new Player();
+        $ref = new \ReflectionProperty(Player::class, 'id');
+        $ref->setValue($player, 77);
+        $inventory = new Inventory();
+        $inventory->setPlayer($player);
+
+        $genericItem = $this->createMock(Item::class);
+        $genericItem->method('getGearLocation')->willReturn(Item::GEAR_LOCATION_CHEST);
+        $genericItem->method('isBoundOnEquip')->willReturn(true);
+
+        $gear = $this->createMock(PlayerItem::class);
+        $gear->method('isGear')->willReturn(true);
+        $gear->method('getGenericItem')->willReturn($genericItem);
+        $gear->method('getInventory')->willReturn($inventory);
+        $gear->method('isBound')->willReturn(false);
+        $gear->expects($this->once())->method('setBoundToPlayerId')->with(77);
+
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
+        $this->gearHelper->method('getPlayerItemGearByLocation')->willReturn(PlayerItem::GEAR_CHEST);
+
+        $this->gearSetter->setGear($gear);
+    }
+
+    public function testSetGearLeavesTradableItemsUnbound(): void
+    {
+        $player = new Player();
+        $inventory = new Inventory();
+        $inventory->setPlayer($player);
+
+        $genericItem = $this->createMock(Item::class);
+        $genericItem->method('getGearLocation')->willReturn(Item::GEAR_LOCATION_CHEST);
+        $genericItem->method('isBoundOnEquip')->willReturn(false);
+
+        $gear = $this->createMock(PlayerItem::class);
+        $gear->method('isGear')->willReturn(true);
+        $gear->method('getGenericItem')->willReturn($genericItem);
+        $gear->method('getInventory')->willReturn($inventory);
+        $gear->method('isBound')->willReturn(false);
+        $gear->expects($this->never())->method('setBoundToPlayerId');
+
+        $this->gearHelper->method('getEquippedGearByLocation')->willReturn(null);
+        $this->gearHelper->method('getPlayerItemGearByLocation')->willReturn(PlayerItem::GEAR_CHEST);
+
+        $this->gearSetter->setGear($gear);
+    }
+
     public function testSetGearRecalculatesAvatarHashForPlayerWithAvatar(): void
     {
         $player = new Player();

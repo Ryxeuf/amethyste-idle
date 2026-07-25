@@ -51,7 +51,7 @@ final class OnboardingKitTest extends AbstractIntegrationTestCase
         // (le PlayerAttackHandler exige une arme equipee dotee d'un sort).
         self::assertNotNull($weapon->getSpell(), 'L\'arme d\'onboarding doit porter un sort d\'attaque.');
         // Echangeable : la definition n'est pas liee.
-        self::assertFalse($weapon->isBoundToPlayer(), 'Le kit T1 doit rester echangeable.');
+        self::assertFalse($weapon->isBoundOnPickup(), 'Le kit T1 doit rester echangeable.');
     }
 
     public function testIntroGrantsAnExchangeableHealConsumable(): void
@@ -60,7 +60,7 @@ final class OnboardingKitTest extends AbstractIntegrationTestCase
 
         $potion = $this->em->getRepository(Item::class)->findOneBy(['slug' => 'life-potion']);
         self::assertNotNull($potion);
-        self::assertFalse($potion->isBoundToPlayer());
+        self::assertFalse($potion->isBoundOnPickup());
     }
 
     public function testEveryIntroRewardItemIsExchangeable(): void
@@ -74,7 +74,7 @@ final class OnboardingKitTest extends AbstractIntegrationTestCase
             $item = $itemRepository->findOneBy(['slug' => $slug]);
             self::assertNotNull($item, sprintf('Item de recompense intro introuvable : %s', $slug));
             self::assertFalse(
-                $item->isBoundToPlayer(),
+                $item->isBoundOnPickup(),
                 sprintf('La recompense intro « %s » doit rester echangeable (non liee).', $slug)
             );
         }

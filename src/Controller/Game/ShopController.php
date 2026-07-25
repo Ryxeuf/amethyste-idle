@@ -157,7 +157,7 @@ class ShopController extends AbstractController
             $playerItem->setGenericItem($item);
             $playerItem->setInventory($bag);
             $playerItem->setGear(0);
-            if ($item->isBoundToPlayer()) {
+            if ($item->isBoundOnPickup()) {
                 $playerItem->setBoundToPlayerId($player->getId());
             }
             $this->entityManager->persist($playerItem);

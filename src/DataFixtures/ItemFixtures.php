@@ -7,6 +7,7 @@ use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\Enum\BindType;
 use App\Enum\Element;
 use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -92,8 +93,11 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 $item->setMateriaSlots($data['materiaSlots']);
             }
 
-            if (isset($data['boundToPlayer'])) {
-                $item->setBoundToPlayer($data['boundToPlayer']);
+            if (isset($data['bindType'])) {
+                $item->setBindType(BindType::from($data['bindType']));
+            } elseif (isset($data['boundToPlayer'])) {
+                // Forme heritee : booleen valant « lie des l'obtention » (ECO-01).
+                $item->setBindType(BindType::fromLegacyFlag((bool) $data['boundToPlayer']));
             }
 
             // Traductions localisees du nom (EN/DE/...) — sous-phase 135 s3c

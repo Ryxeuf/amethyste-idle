@@ -231,7 +231,7 @@ class ShopControllerTest extends TestCase
         $item->method('getSlug')->willReturn($slug);
         $item->method('getPrice')->willReturn($price);
         $item->method('getName')->willReturn($name);
-        $item->method('isBoundToPlayer')->willReturn(false);
+        $item->method('isBoundOnPickup')->willReturn(false);
 
         return $item;
     }

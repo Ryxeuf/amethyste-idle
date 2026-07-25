@@ -11,6 +11,32 @@
 
 ---
 
+## ECO-01 — Type de liaison des objets (Sprint 14, 2026-07-25)
+
+> Premier jalon du plan Economie joueur. Fondation de l'economie de production : distingue ce qui circule sur les canaux d'echange de ce qui est immobilise sur un personnage.
+
+### Le modele precedent
+
+`Item::boundToPlayer` etait un **booleen** : un objet etait soit librement echangeable, soit lie des l'obtention. Impossible d'exprimer le cas central d'une economie joueur — un objet qui **circule tant qu'il n'a pas ete porte**, puis s'immobilise.
+
+### Livre
+
+- **Enum `App\Enum\BindType`** : `none`, `bind_on_equip`, `bind_on_pickup`, avec `fromLegacyFlag()` pour la conversion depuis l'ancien booleen.
+- **Colonne `game_items.bind_type`** remplacant `bound_to_player` (migration `Version20260725ItemBindType`, avec **backfill** : les objets lies deviennent `bind_on_pickup`, les autres `none` — aucun objet ne change de comportement). La `down()` est reversible, a une perte pres, documentee : `bind_on_equip` n'a pas d'equivalent dans l'ancien modele.
+- **Liaison au premier equipement** dans `GearSetter::setGear` : un objet `bind_on_equip` s'immobilise sur son porteur. La liaison est definitive — `unsetGear` ne la leve pas.
+- **Garde-fou cote service** dans `AuctionManager::createListing` : le formulaire de vente filtrait deja les objets liables via `isExchangeable()`, mais **rien n'empechait une requete forgee** de mettre en vente un objet lie. L'UI n'est pas une regle metier.
+- Fixtures : nouvelle cle `bindType` acceptee, ancienne cle booleenne toujours lue et convertie.
+
+### Decision
+
+La liaison **effective** reste portee par `PlayerItem::boundToPlayerId`, deja en place et deja consommee par `isExchangeable()`, plutot que d'ajouter un flag `bound` redondant comme le suggerait le plan. `BindType` decrit la **regle** (sur l'`Item`), `boundToPlayerId` enregistre le **fait** (sur le `PlayerItem`).
+
+### Tests
+
+`BindTypeTest` (conversion depuis l'ancien booleen, valeurs stables pour la persistance, distinction equipement/obtention), `PlayerItemSoulboundTest` (accesseurs de l'entite), `GearSetterTest` (liaison au premier equipement, et non-liaison d'un objet echangeable), `AuctionManagerTest` (refus d'un objet lie).
+
+---
+
 ## ZON-26a — Densification du graphe de zones (Sprint 13, 2026-07-25)
 
 > Le modele declaratif fonctionnait, mais le monde etait maigre : **5 zones, 6 connexions, 10 filons**, et une seule zone (la Foret) declarait une table d'exploration — les trois autres tombaient sur les defauts du service, sans variance jour/nuit.
