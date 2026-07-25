@@ -7,7 +7,36 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-04 — Taxe HV vers le tresor de guilde (Sprint 14, 2026-07-25)
+
+> Branche le marche joueur sur le controle de cite : conquerir une region convertit un gold sink en revenu de guilde.
+
+### Le point de depart
+
+Le versement de la taxe existait deja et ECO-03 l'avait rendu correct (lecture sur la region de l'annonce). Restaient la **reduction membre** et le **repli gold sink**. Le second reservait une surprise : il fonctionnait deja, mais **par accident**. Les Gils de taxe etaient retires a l'acheteur, non verses au vendeur, et quand aucune guilde ne controlait la region la methode de transfert sortait sans rien faire — les Gils disparaissaient. Le comportement voulu, obtenu par omission, et donc a un refactor pres de devenir un « bug » qu'on aurait corrige en les rendant au vendeur.
+
+### Livre
+
+- **`AuctionSettlement`** : objet de valeur qui porte toute la repartition (taxe, ristourne, revenu vendeur, montant paye, part de tresor, montant detruit). La regle vit a un seul endroit et se teste sans mock.
+- **Ristourne membre** : l'acheteur membre de la guilde controlante paie 10 % de moins — le meme taux que la remise en boutique de GCC, dont la constante est desormais partagee plutot que dupliquee.
+- **Gold sink explicite** : une region sans maitre detruit la taxe, avec journalisation dediee et un test qui verrouille le comportement.
+- **`AuctionTransaction.member_rebate_amount`** : le montant reellement consenti est conserve, pas recalcule — le taux, le controle de la region et l'appartenance de l'acheteur peuvent tous changer apres coup, et ECO-16 aura besoin du fait, pas d'une reconstitution.
+- **Encheres** : la ristourne ne peut pas etre deduite a la mise (l'issue est inconnue, les Gils sont deja en escrow) ; elle est rendue au gagnant a la finalisation.
+- **Affichage** : un bandeau signale la remise au membre concerne — un avantage invisible n'incite a rien.
+
+### Les deux invariants
+
+**Le vendeur ne depend jamais de l'identite de l'acheteur** : il touche toujours `prix - taxe`. Sinon son revenu varierait selon l'appartenance de guilde de l'acheteur, impossible a anticiper au moment de fixer un prix.
+
+**La ristourne est plafonnee par la taxe** : la guilde ne peut reverser que ce qu'elle preleve. Au-dela, la remise se financerait sur le tresor a chaque transaction — une fuite, pas un avantage. Effet de calibrage assume : dans une region a 5 %, la ristourne plafonne a 5 % et non 10 % ; l'interet d'adherer croit avec le taux que la guilde impose.
+
+### Tests
+
+`AuctionSettlementTest` couvre les regles sans mock (versement, destruction, plafond de ristourne, invariance du revenu vendeur, arrondis toujours vers le bas des deux cotes) ; trois cas ajoutes a `AuctionManagerTest` verifient le cablage reel — tresor credite de la taxe moins la ristourne, acheteur non-membre au prix plein, et taxe detruite sans guilde controlante. Calibrage documente dans `docs/BALANCE.md` §14.
 
 ---
 

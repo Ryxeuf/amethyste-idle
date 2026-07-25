@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\GameEngine\Auction;
 
 use App\Entity\App\AuctionListing;
+use App\Entity\App\Guild;
 use App\Entity\App\Inventory;
 use App\Entity\App\Map;
 use App\Entity\App\Player;
@@ -14,6 +15,7 @@ use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
 use App\Enum\ItemRarity;
 use App\GameEngine\Auction\AuctionManager;
+use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Notification\NotificationService;
 use App\GameEngine\Region\PlayerRegionResolver;
@@ -30,6 +32,7 @@ class AuctionManagerTest extends TestCase
     private AuctionListingRepository&MockObject $listingRepo;
     private TownControlManager&MockObject $townControlManager;
     private NotificationService&MockObject $notificationService;
+    private GuildManager&MockObject $guildManager;
     private AuctionManager $manager;
 
     protected function setUp(): void
@@ -40,7 +43,8 @@ class AuctionManagerTest extends TestCase
         $this->listingRepo->method('findLastCancelledAt')->willReturn(null);
         $this->townControlManager = $this->createMock(TownControlManager::class);
         $this->notificationService = $this->createMock(NotificationService::class);
-        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
+        $this->guildManager = $this->createMock(GuildManager::class);
+        $this->manager = new AuctionManager($this->em, $this->listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
     }
 
     public function testCreateListingSuccess(): void
@@ -281,6 +285,104 @@ class AuctionManagerTest extends TestCase
         $this->manager->buyListing($buyer, $listing);
     }
 
+    /**
+     * ECO-04 : la guilde qui controle la region renonce a sa taxe pour ses
+     * propres membres. La remise sort du tresor, jamais du revenu du vendeur.
+     */
+    public function testMemberBuyerPaysLessAndTheTreasuryAbsorbsTheRebate(): void
+    {
+        $region = (new Region())->setName('Nord')->setSlug('nord');
+        $region->setTaxRate('0.2000');
+
+        $guild = $this->createGuild(7);
+        $this->townControlManager->method('getControllingGuild')->willReturn($guild);
+        $this->guildManager->method('getPlayerGuild')->willReturn($guild);
+
+        $seller = $this->createPlayer(1, 0);
+        $buyer = $this->createPlayerInRegion(2, 1000, 'nord');
+        $listing = $this->createListingIn($region, $seller, 1000);
+
+        $transaction = $this->manager->buyListing($buyer, $listing);
+
+        // Taxe 200, ristourne 100 (10 % de 1000, sous le plafond de la taxe).
+        $this->assertSame(100, $buyer->getGils()); // 1000 - 900 paye
+        $this->assertSame(800, $seller->getGils()); // inchange par la ristourne
+        $this->assertSame(100, $guild->getGilsTreasury()); // 200 - 100
+        $this->assertSame(200, $transaction->getRegionTaxAmount());
+        $this->assertSame(100, $transaction->getMemberRebateAmount());
+        $this->assertSame(900, $transaction->getAmountPaid());
+    }
+
+    public function testNonMemberBuyerPaysFullPriceAndTheGuildKeepsTheWholeTax(): void
+    {
+        $region = (new Region())->setName('Nord')->setSlug('nord');
+        $region->setTaxRate('0.2000');
+
+        $guild = $this->createGuild(7);
+        $this->townControlManager->method('getControllingGuild')->willReturn($guild);
+        $this->guildManager->method('getPlayerGuild')->willReturn($this->createGuild(9));
+
+        $seller = $this->createPlayer(1, 0);
+        $buyer = $this->createPlayerInRegion(2, 1000, 'nord');
+        $listing = $this->createListingIn($region, $seller, 1000);
+
+        $transaction = $this->manager->buyListing($buyer, $listing);
+
+        $this->assertSame(0, $buyer->getGils());
+        $this->assertSame(800, $seller->getGils());
+        $this->assertSame(200, $guild->getGilsTreasury());
+        $this->assertSame(0, $transaction->getMemberRebateAmount());
+    }
+
+    /**
+     * Region sans maitre : les Gils prelevees ne vont a personne. C'est le gold
+     * sink du canal — le test le verrouille pour qu'une refonte ne les rende pas
+     * au vendeur en croyant corriger une fuite.
+     */
+    public function testTaxIsBurnedWhenNoGuildControlsTheRegion(): void
+    {
+        $region = (new Region())->setName('Nord')->setSlug('nord');
+        $region->setTaxRate('0.2000');
+
+        $this->townControlManager->method('getControllingGuild')->willReturn(null);
+
+        $seller = $this->createPlayer(1, 0);
+        $buyer = $this->createPlayerInRegion(2, 1000, 'nord');
+        $listing = $this->createListingIn($region, $seller, 1000);
+
+        $transaction = $this->manager->buyListing($buyer, $listing);
+
+        $this->assertSame(0, $buyer->getGils());     // a paye 1000
+        $this->assertSame(800, $seller->getGils());  // a recu 800
+        $this->assertSame(200, $transaction->getRegionTaxAmount());
+        // 200 Gils ont quitte le jeu : ni l'acheteur, ni le vendeur, ni une guilde.
+        $this->assertSame(0, $transaction->getMemberRebateAmount());
+    }
+
+    private function createListingIn(Region $region, Player $seller, int $price): AuctionListing
+    {
+        $listing = new AuctionListing();
+        $listing->setSeller($seller);
+        $listing->setPlayerItem($this->createPlayerItem());
+        $listing->setQuantity(1);
+        $listing->setPricePerUnit($price);
+        $listing->setListingFee(0);
+        $listing->setRegionTaxRate($region->getTaxRate());
+        $listing->setRegion($region);
+        $listing->setExpiresAt(new \DateTimeImmutable('+24 hours'));
+
+        return $listing;
+    }
+
+    private function createGuild(int $id): Guild
+    {
+        $guild = new Guild();
+        $guild->setName('Guilde ' . $id)->setTag('G' . $id);
+        (new \ReflectionProperty(Guild::class, 'id'))->setValue($guild, $id);
+
+        return $guild;
+    }
+
     private function createRemoteListing(string $regionSlug): AuctionListing
     {
         $region = (new Region())->setName($regionSlug)->setSlug($regionSlug);
@@ -444,7 +546,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -461,7 +563,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(19);
         $listingRepo->method('findLastCancelledAt')->willReturn(null);
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -479,7 +581,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-2 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -496,7 +598,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(0);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-10 minutes'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
 
         $seller = $this->createPlayer(1, 10000);
         $item = $this->createPlayerItem();
@@ -774,7 +876,7 @@ class AuctionManagerTest extends TestCase
         $listingRepo->method('countActiveBySeller')->willReturn(AuctionManager::MAX_ACTIVE_LISTINGS);
         $listingRepo->method('findLastCancelledAt')->willReturn(new \DateTimeImmutable('-30 seconds'));
 
-        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver());
+        $manager = new AuctionManager($this->em, $listingRepo, $this->townControlManager, new NullLogger(), $this->notificationService, new PlayerRegionResolver(), $this->guildManager);
 
         $admin = $this->createPlayer(1, 0);
         $item = $this->createPlayerItem();

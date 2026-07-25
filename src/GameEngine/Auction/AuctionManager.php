@@ -4,12 +4,15 @@ namespace App\GameEngine\Auction;
 
 use App\Entity\App\AuctionListing;
 use App\Entity\App\AuctionTransaction;
+use App\Entity\App\Guild;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Region;
 use App\Enum\AuctionStatus;
 use App\Enum\AuctionType;
+use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Notification\NotificationService;
 use App\GameEngine\Region\PlayerRegionResolver;
@@ -46,6 +49,7 @@ class AuctionManager
         private readonly LoggerInterface $logger,
         private readonly NotificationService $notificationService,
         private readonly PlayerRegionResolver $regionResolver,
+        private readonly GuildManager $guildManager,
     ) {
     }
 
@@ -128,16 +132,15 @@ class AuctionManager
         $this->assertSameMarket($buyer, $listing);
 
         $totalPrice = $listing->getTotalPrice();
+        $ruler = $this->resolveRuler($listing);
+        $settlement = $this->settle($listing, $buyer, $totalPrice, $ruler);
 
-        $regionTaxAmount = (int) floor($totalPrice * (float) $listing->getRegionTaxRate());
-        $sellerRevenue = $totalPrice - $regionTaxAmount;
-
-        if (!$buyer->removeGils($totalPrice)) {
+        if (!$buyer->removeGils($settlement->buyerCharge)) {
             throw new \InvalidArgumentException('Fonds insuffisants pour cet achat.');
         }
-        $listing->getSeller()->addGils($sellerRevenue);
+        $listing->getSeller()->addGils($settlement->sellerRevenue);
 
-        $this->transferTaxToGuildTreasury($listing, $regionTaxAmount);
+        $this->applyTax($listing, $settlement, $ruler);
 
         $listing->setStatus(AuctionStatus::Sold);
 
@@ -147,7 +150,8 @@ class AuctionManager
         $transaction->setListing($listing);
         $transaction->setBuyer($buyer);
         $transaction->setTotalPrice($totalPrice);
-        $transaction->setRegionTaxAmount($regionTaxAmount);
+        $transaction->setRegionTaxAmount($settlement->taxAmount);
+        $transaction->setMemberRebateAmount($settlement->memberRebate);
         $transaction->setPurchasedAt(new \DateTimeImmutable());
 
         $this->entityManager->persist($transaction);
@@ -158,7 +162,8 @@ class AuctionManager
             'buyer_id' => $buyer->getId(),
             'seller_id' => $listing->getSeller()->getId(),
             'total_price' => $totalPrice,
-            'region_tax' => $regionTaxAmount,
+            'region_tax' => $settlement->taxAmount,
+            'member_rebate' => $settlement->memberRebate,
         ]);
 
         return $transaction;
@@ -481,12 +486,17 @@ class AuctionManager
             throw new \InvalidArgumentException('Cette enchere n\'a pas de gagnant.');
         }
 
-        $regionTaxAmount = (int) floor($winningBid * (float) $listing->getRegionTaxRate());
-        $sellerRevenue = $winningBid - $regionTaxAmount;
+        $ruler = $this->resolveRuler($listing);
+        $settlement = $this->settle($listing, $winner, $winningBid, $ruler);
 
         // Les Gils etaient deja verrouilles chez le bidder : on les transfere au vendeur.
-        $listing->getSeller()->addGils($sellerRevenue);
-        $this->transferTaxToGuildTreasury($listing, $regionTaxAmount);
+        $listing->getSeller()->addGils($settlement->sellerRevenue);
+        // La ristourne membre ne pouvait pas etre deduite au moment de la mise —
+        // l'issue de l'enchere n'etait pas connue. Elle est rendue au gagnant.
+        if ($settlement->memberRebate > 0) {
+            $winner->addGils($settlement->memberRebate);
+        }
+        $this->applyTax($listing, $settlement, $ruler);
 
         $listing->setStatus(AuctionStatus::Sold);
         $this->transferItemToBuyer($winner, $listing->getPlayerItem());
@@ -495,7 +505,8 @@ class AuctionManager
         $transaction->setListing($listing);
         $transaction->setBuyer($winner);
         $transaction->setTotalPrice($winningBid);
-        $transaction->setRegionTaxAmount($regionTaxAmount);
+        $transaction->setRegionTaxAmount($settlement->taxAmount);
+        $transaction->setMemberRebateAmount($settlement->memberRebate);
         $transaction->setPurchasedAt(new \DateTimeImmutable());
 
         $this->entityManager->persist($transaction);
@@ -504,7 +515,8 @@ class AuctionManager
             'listing_id' => $listing->getId(),
             'winner_id' => $winner->getId(),
             'winning_bid' => $winningBid,
-            'region_tax' => $regionTaxAmount,
+            'region_tax' => $settlement->taxAmount,
+            'member_rebate' => $settlement->memberRebate,
         ]);
 
         return $transaction;
@@ -581,32 +593,99 @@ class AuctionManager
         }
     }
 
-    private function transferTaxToGuildTreasury(AuctionListing $listing, int $taxAmount): void
+    /**
+     * Taux de ristourne dont beneficie ce joueur sur ce marche (ECO-04).
+     *
+     * Expose pour l'affichage : un avantage que le joueur ne voit pas ne
+     * l'incite a rien. Retourne 0.0 hors region, sans guilde controlante, ou
+     * quand le joueur n'en est pas membre.
+     */
+    public function getMemberRebateRate(Player $player, ?Region $region): float
     {
-        if ($taxAmount <= 0) {
-            return;
-        }
-
-        // ECO-03 : la taxe revient au marche **ou l'annonce a ete deposee**. Elle
-        // se lisait auparavant sur la carte courante du vendeur, qui pouvait avoir
-        // change entre le depot et l'achat — la taxe suivait le vendeur au lieu de
-        // rester au marche qui l'a percue.
-        $region = $listing->getRegion();
-        if ($region === null) {
-            return;
+        if (null === $region) {
+            return 0.0;
         }
 
         $guild = $this->townControlManager->getControllingGuild($region);
-        if ($guild === null) {
+        if (null === $guild) {
+            return 0.0;
+        }
+
+        $playerGuild = $this->guildManager->getPlayerGuild($player);
+        if (null === $playerGuild || $playerGuild->getId() !== $guild->getId()) {
+            return 0.0;
+        }
+
+        return RegionBonusProvider::MEMBER_DISCOUNT;
+    }
+
+    /**
+     * Calcule la repartition des Gils d'une vente (ECO-04).
+     *
+     * La taxe revient au marche **ou l'annonce a ete deposee** (ECO-03) : elle se
+     * lisait auparavant sur la carte courante du vendeur, qui pouvait avoir change
+     * entre le depot et l'achat.
+     */
+    private function settle(AuctionListing $listing, Player $buyer, int $totalPrice, ?Guild $ruler): AuctionSettlement
+    {
+        $buyerGuild = null !== $ruler ? $this->guildManager->getPlayerGuild($buyer) : null;
+        $buyerIsMember = null !== $ruler && null !== $buyerGuild && $buyerGuild->getId() === $ruler->getId();
+
+        return AuctionSettlement::compute(
+            $totalPrice,
+            (float) $listing->getRegionTaxRate(),
+            null !== $ruler,
+            $buyerIsMember,
+            RegionBonusProvider::MEMBER_DISCOUNT,
+        );
+    }
+
+    /**
+     * Guilde controlant le marche de l'annonce, resolue **une seule fois** par
+     * vente : le calcul de la repartition et le versement en ont tous deux
+     * besoin, et deux lectures ouvriraient la porte a une incoherence si le
+     * controle basculait entre les deux.
+     */
+    private function resolveRuler(AuctionListing $listing): ?Guild
+    {
+        $region = $listing->getRegion();
+
+        return null !== $region ? $this->townControlManager->getControllingGuild($region) : null;
+    }
+
+    /**
+     * Verse la part de taxe revenant a la guilde controlante — ou constate la
+     * destruction des Gils quand la region n'a pas de maitre.
+     *
+     * Le gold sink n'est pas un effet de bord : les Gils ont ete retires a
+     * l'acheteur et ne sont pas alles au vendeur. Sans guilde pour les recevoir,
+     * ils **sortent du jeu**. On le journalise explicitement, sans quoi une
+     * refonte pourrait les rendre au vendeur en croyant corriger une fuite.
+     */
+    private function applyTax(AuctionListing $listing, AuctionSettlement $settlement, ?Guild $ruler): void
+    {
+        $region = $listing->getRegion();
+
+        if ($settlement->burnedAmount > 0) {
+            $this->logger->info('Auction tax burned (region has no ruling guild)', [
+                'region' => $region?->getSlug(),
+                'amount' => $settlement->burnedAmount,
+            ]);
+
             return;
         }
 
-        $guild->addGilsTreasury($taxAmount);
+        if (null === $ruler || $settlement->treasuryAmount <= 0) {
+            return;
+        }
+
+        $ruler->addGilsTreasury($settlement->treasuryAmount);
 
         $this->logger->info('Tax transferred to guild treasury', [
-            'region' => $region->getSlug(),
-            'guild' => $guild->getName(),
-            'amount' => $taxAmount,
+            'region' => $region?->getSlug(),
+            'guild' => $ruler->getName(),
+            'amount' => $settlement->treasuryAmount,
+            'member_rebate' => $settlement->memberRebate,
         ]);
     }
 

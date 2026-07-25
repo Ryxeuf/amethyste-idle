@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **3 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **4 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -39,14 +39,11 @@
 > plus a jour (la taxe suivait le vendeur au lieu de rester au marche), et **quatre cartes sur six
 > n'appartenaient a aucune region**, ce qui rendait la segmentation sans objet.
 
-### ECO-04 — Taxe HV → tresor de guilde controlante (S | ★★ | HAUTE)
-> Branche l'HV sur le controle de cite (le champ `region_tax_rate` existe deja).
-> Prerequis : ← ECO-03, GCC-10/GCC-11 ✅
-- [ ] A la vente, `region_tax_rate` prelevee → `gilsTreasury` de la guilde controlante
-      (reutiliser `RegionBonusProvider` / la logique de taxe GCC-11)
-- [ ] Reduction membre appliquee si acheteur dans la guilde controlante (coherence GCC)
-- [ ] Aucune guilde controlante → taxe conservee comme gold sink (destruction de gils)
-- [ ] Tests
+> **ECO-04 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : `AuctionSettlement` porte la
+> repartition des Gils d'une vente, sous deux invariants — le vendeur ne depend jamais de
+> l'identite de l'acheteur, et la ristourne membre est plafonnee par la taxe percue. Le gold sink
+> existait deja mais **par accident** (les Gils se perdaient faute de destinataire) : il est
+> desormais explicite, journalise et verrouille par un test.
 
 ### ECO-14 — Interdependance des metiers (S | ★★ | MOYENNE)
 > Aucun metier autosuffisant : chaque metier consomme la sortie d'un autre.
@@ -81,8 +78,8 @@
       reste a etendre le garde-fou aux echoppes quand elles existeront (ECO-10)
 - [x] Un nouveau joueur atteint le premier palier de craft sans dependre d'un autre joueur (ECO-02) ;
       la porte d'entree de chaque metier est ouverte, la profondeur des arbres reste a reconcilier (ECO-18)
-- [~] HV **segmente par region** (ECO-03) ; la taxe est prelevee et versee a la guilde
-      controlante quand il y en a une — reste le repli gold sink et la reduction membre (ECO-04)
+- [x] HV segmente par region, taxe reversee a la guilde controlante — ou detruite quand
+      aucune guilde ne controle la region (ECO-03, ECO-04)
 - [ ] Chaine de production documentee, aucun metier autosuffisant
 - [ ] Escrow + journalisation des transactions operationnels
 

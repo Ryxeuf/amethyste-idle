@@ -67,6 +67,8 @@ class AuctionController extends AbstractController
             'rarity' => $rarity,
             'player' => $player,
             'region' => $region,
+            // ECO-04 : un avantage que le joueur ne voit pas ne l'incite a rien.
+            'memberRebateRate' => $this->auctionManager->getMemberRebateRate($player, $region),
             'itemTypes' => $this->getItemTypeLabels(),
             'rarities' => ItemRarity::cases(),
         ]);

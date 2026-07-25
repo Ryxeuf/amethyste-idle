@@ -317,3 +317,57 @@ Segmenter une promotion serveur la reduirait a une fraction des joueurs.
 Les joueurs **hors region** (personnage pas encore rattache a une zone du graphe)
 forment un marche a part, entre eux. Ce n'est pas un marche global de repli : sans
 cette symetrie, un personnage hors graphe verrait l'integralite des marches.
+
+---
+
+## 14. Taxe de l'hotel des ventes (economie joueur, ECO-04)
+
+La taxe regionale de l'HV branche le marche sur le controle de cite (decision D4).
+Quatre parties peuvent toucher aux Gils d'une vente : l'acheteur, le vendeur, la
+guilde controlante, et le neant.
+
+### Repartition
+
+| Montant | Formule |
+|---------|---------|
+| Taxe | `floor(prix × taux de la region)` |
+| Revenu du vendeur | `prix − taxe` — **toujours**, quel que soit l'acheteur |
+| Ristourne membre | `min(taxe, floor(prix × 10 %))` si l'acheteur est membre de la guilde controlante |
+| Prix paye par l'acheteur | `prix − ristourne` |
+| Tresor de la guilde | `taxe − ristourne` |
+| Gils detruits | `taxe` si **aucune** guilde ne controle la region |
+
+### Deux invariants
+
+**Le vendeur ne depend jamais de l'identite de l'acheteur.** Il touche toujours
+`prix − taxe`. Sans cela son revenu varierait selon l'appartenance de guilde de
+l'acheteur — impossible a anticiper au moment de fixer un prix, et une source de
+frustration opaque.
+
+**La ristourne est plafonnee par la taxe.** La guilde ne peut reverser que ce
+qu'elle preleve. Au-dela, la remise se financerait sur le tresor a chaque
+transaction : une fuite, pas un avantage. Consequence de calibrage : dans une
+region a faible taux (Plaines, 5 %), la ristourne membre plafonne a 5 % et non
+10 % — l'avantage d'adherer croit avec le taux que la guilde impose.
+
+### Le gold sink
+
+Une region sans guilde controlante **detruit** la taxe. Les Gils sont retires a
+l'acheteur et ne sont pas verses au vendeur : sans guilde pour les recevoir, ils
+sortent du jeu. C'est deliberé et journalise explicitement — les rendre au vendeur
+ferait de la taxe une illusion d'affichage, et supprimerait le seul gold sink
+adosse au volume d'echange entre joueurs.
+
+Corollaire de game design : **conquerir une region convertit un gold sink en
+revenu de guilde**. C'est l'incitation economique du controle de cite, la ou GCC
+n'offrait jusqu'ici que des bonus de zone.
+
+### Le cas des encheres
+
+La ristourne ne peut pas etre deduite au moment de la mise : l'issue de l'enchere
+n'est pas connue, et les Gils sont deja verrouilles en escrow. Elle est donc
+**rendue au gagnant** a la finalisation. Le montant reellement paye est conserve
+sur la transaction (`member_rebate_amount`) plutot que recalcule : le taux, le
+controle de la region et l'appartenance de l'acheteur peuvent tous changer apres
+coup, et la detection d'anomalies (ECO-16) a besoin du montant consenti, pas d'une
+reconstitution.
