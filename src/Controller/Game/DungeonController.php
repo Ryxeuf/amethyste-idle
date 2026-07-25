@@ -109,6 +109,6 @@ class DungeonController extends AbstractController
 
         $this->addFlash('success', sprintf('Vous entrez dans %s en difficulte %s !', $dungeon->getName(), $difficulty->label()));
 
-        return $this->redirectToRoute('app_game_map');
+        return $this->redirectToRoute('app_game_zone');
     }
 }

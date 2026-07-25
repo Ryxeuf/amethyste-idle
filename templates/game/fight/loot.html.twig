@@ -133,7 +133,7 @@
 			})
 			.then(data => {
 				if (data.success) {
-					window.location.href = '{{ path('app_game_map') }}';
+					window.location.href = '{{ path('app_game_zone') }}';
 				} else {
 					alert("{{ 'game.fight.loot.error_collect'|trans|e('js') }}");
 				}

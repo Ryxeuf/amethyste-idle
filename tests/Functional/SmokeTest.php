@@ -49,7 +49,6 @@ class SmokeTest extends WebTestCase
      */
     public static function gameRoutesProvider(): iterable
     {
-        yield 'map' => ['/game/map'];
         yield 'zone' => ['/game/zone'];
         yield 'inventory' => ['/game/inventory'];
         yield 'skills' => ['/game/skills'];
@@ -77,7 +76,7 @@ class SmokeTest extends WebTestCase
         static::ensureKernelShutdown();
         $anonymousClient = static::createClient();
 
-        $anonymousClient->request('GET', '/game/map');
+        $anonymousClient->request('GET', '/game/zone');
         $statusCode = $anonymousClient->getResponse()->getStatusCode();
 
         $this->assertTrue(

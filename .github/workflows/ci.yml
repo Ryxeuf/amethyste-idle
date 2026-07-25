@@ -357,6 +357,6 @@ jobs:
       - name: Smoke test — verify critical assets in image
         run: |
           docker run --rm ghcr.io/${{ env.IMAGE_NAME }}:ci-${{ github.sha }} \
-            test -f /app/assets/vendor/pixi-bundle.js \
-            && echo "OK: pixi-bundle.js present" \
-            || (echo "FAIL: pixi-bundle.js missing from image" && exit 1)
+            test -f /app/assets/app.js \
+            && echo "OK: app.js present" \
+            || (echo "FAIL: app.js missing from image" && exit 1)

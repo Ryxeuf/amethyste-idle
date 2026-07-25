@@ -51,13 +51,13 @@ class FightIndexController extends AbstractController
             throw $this->createNotFoundException('Player not found');
         }
         if (!$player->getFight()) {
-            return $this->redirectToRoute('app_game_map');
+            return $this->redirectToRoute('app_game_zone');
         }
 
         // Charger le combat avec toutes ses relations via JOIN FETCH (élimine N+1)
         $fight = $this->fightRepository->findWithRelations($player->getFight()->getId());
         if (!$fight) {
-            return $this->redirectToRoute('app_game_map');
+            return $this->redirectToRoute('app_game_zone');
         }
 
         if ($fight->isVictory()) {
@@ -184,8 +184,8 @@ class FightIndexController extends AbstractController
     }
 
     /**
-     * Gere la defaite : nettoie le combat, respawn le joueur, et redirige vers la carte.
-     * Casse la boucle de redirection /game/fight <-> /game/map.
+     * Gere la defaite : nettoie le combat, respawn le joueur, et redirige vers la zone.
+     * Casse la boucle de redirection /game/fight <-> /game/zone.
      */
     private function handleDefeat(Player $player): Response
     {
