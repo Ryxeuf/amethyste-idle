@@ -90,6 +90,8 @@ class ZoneImporter
         $zone->setType((string) $data['type']);
         $zone->setIsSafe((bool) $data['safe']);
         $zone->setEnabled((bool) $data['enabled']);
+        $zone->setMapX(isset($data['map_x']) ? (int) $data['map_x'] : null);
+        $zone->setMapY(isset($data['map_y']) ? (int) $data['map_y'] : null);
 
         /** @var array<string, mixed>|null $explore */
         $explore = \is_array($data['explore'] ?? null) ? $data['explore'] : null;

@@ -54,6 +54,16 @@ class Zone
     #[ORM\Column(name: 'illustration_path', type: 'string', length: 255, nullable: true)]
     private ?string $illustrationPath = null;
 
+    /**
+     * Position sur la carte du monde illustree (pivot PBBG, ZON-16), en
+     * pourcentage 0-100 du cadre. null = zone non placee (absente de la carte).
+     */
+    #[ORM\Column(name: 'map_x', type: 'integer', nullable: true)]
+    private ?int $mapX = null;
+
+    #[ORM\Column(name: 'map_y', type: 'integer', nullable: true)]
+    private ?int $mapY = null;
+
     #[ORM\Column(name: 'type', type: 'string', length: 32, options: ['default' => self::TYPE_WILDERNESS])]
     private string $type = self::TYPE_WILDERNESS;
 
@@ -240,6 +250,35 @@ class Zone
     public function getIllustrationPath(): ?string
     {
         return $this->illustrationPath;
+    }
+
+    public function getMapX(): ?int
+    {
+        return $this->mapX;
+    }
+
+    public function setMapX(?int $mapX): self
+    {
+        $this->mapX = $mapX;
+
+        return $this;
+    }
+
+    public function getMapY(): ?int
+    {
+        return $this->mapY;
+    }
+
+    public function setMapY(?int $mapY): self
+    {
+        $this->mapY = $mapY;
+
+        return $this;
+    }
+
+    public function hasMapPosition(): bool
+    {
+        return null !== $this->mapX && null !== $this->mapY;
     }
 
     public function setIllustrationPath(?string $illustrationPath): self
