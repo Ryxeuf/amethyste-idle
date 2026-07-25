@@ -16,8 +16,8 @@ Les taches **todo** sont reparties par sprint dans `docs/roadmap/` :
 
 | Sprint | Theme | Priorite |
 |--------|-------|----------|
-| **[Sprint 13](roadmap/SPRINT_13.md)** | Consolidation post-pivot (ZON-22..26) | **Critique** |
-| **[Sprint 14](roadmap/SPRINT_14.md)** | Economie joueur — socle (ECO-01..04, 14, 16) | Haute |
+| **[Sprint 14](roadmap/SPRINT_14.md)** | Economie joueur — socle (ECO-01..04, 14, 16) | **Haute** |
+| [Sprint 13](roadmap/SPRINT_13.md) | Consolidation post-pivot — 6/7, reste ZON-26b | Critique |
 
 ## Sprints en cours (priorite basse)
 

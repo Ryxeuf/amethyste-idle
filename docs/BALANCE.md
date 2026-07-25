@@ -196,3 +196,39 @@ Regler le butin d'une expedition = ajuster la donnee de zone (coffre/filons), pa
 ### Notification de fin
 
 A la fin (heure de retour passee), la resolution paresseuse emet une notification `NotificationService` (persistee in-game + poussee Mercure `player/<id>/notifications` si le joueur est connecte), une seule fois (`PlayerExpedition.notifiedAt`). Le butin se recupere ensuite via le bouton dedie sur l'ecran de zone.
+
+---
+
+## 11. Graphe de zones du World 1 (pivot, ZON-26)
+
+Le monde est un graphe declare dans `config/game/zones/world_1.yaml` — **source de verite unique**, partagee par la fixture `ZoneGraphFixtures` et la commande `app:zone:import`. Ajouter du contenu de zone = editer ce fichier.
+
+### Topologie
+
+Etoile autour du hub **+ anneau peripherique** (ZON-26) : les quatre zones sauvages sont reliees deux a deux, de sorte que contourner le hub soit une alternative credible au detour par le village.
+
+| Liaison | Duree | Role |
+|---------|-------|------|
+| Village ↔ Foret | 5 min | Porte d'entree du contenu hostile |
+| Village ↔ Marais | 7 min | |
+| Village ↔ Mines | 10 min | |
+| Village ↔ Crete | 15 min | Zone la plus rude, la plus eloignee du hub |
+| Foret ↔ Marais | 5 min | Anneau |
+| Foret ↔ Mines | 8 min | Anneau |
+| Mines ↔ Crete | 8 min | Anneau |
+| Marais ↔ Crete | 9 min | Anneau |
+
+**Pourquoi un anneau** : avec une pure etoile, tout trajet passait par le hub et le choix d'itineraire n'existait pas — la reduction de temps de voyage des montures (tache 130) n'aurait rien eu a optimiser. Regle de calibrage : une liaison peripherique doit couter **moins** que la somme des deux branches par le hub, sinon elle ne sera jamais empruntee.
+
+### Tables d'exploration
+
+Chaque zone sauvage declare ses poids de rencontre (`explore.weights`) et sa variance nocturne (`explore.night`, ZON-17). Principes de calibrage :
+
+- **Total libre** : les poids sont relatifs, ils n'ont pas a sommer a 100.
+- **La nuit durcit** : le poids `mob` monte, `harvest` et `pnj` descendent, et les coffres paient mieux — le risque nocturne doit se voir dans le butin.
+- **`night.mob_slugs`** restreint le vivier nocturne a un pool thematique (constructs aux Mines, creatures corrompues au Marais, creatures ailees a la Crete). Si aucun mob du pool n'est present dans la zone, le vivier complet est conserve : le filtre ne peut pas vider une zone.
+- **Profil par zone** : Mines = recolte (`harvest` eleve), Marais = hostile et pauvre en butin, Crete = le plus hostile mais les meilleurs coffres.
+
+### Filons
+
+13 filons repartis sur les 4 zones sauvages, par profession (`mining`, `herbalism`, `fishing`). Regle : plus la ressource est rare, plus la **capacite** est faible et le **respawn** long (`ore-gold` : capacite 8, respawn 1 h). La capacite etant un stock **partage** entre joueurs, elle est aussi le levier de tension d'une ressource sur un serveur peuple.

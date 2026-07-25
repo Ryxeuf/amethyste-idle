@@ -71,9 +71,22 @@ zones:
         map_x: 72
         map_y: 36
         source_map: 'Mines profondes'
+        explore:
+            # Zone d'extraction : la recolte prime sur la rencontre, et les
+            # coffres (caches de mineurs) sont plus genereux qu'en foret.
+            weights: { mob: 38, chest: 18, harvest: 24, pnj: 4, nothing: 16 }
+            chest_gils_min: 10
+            chest_gils_max: 40
+            night:
+                # Les galeries desertees reveillent les constructs.
+                weights: { mob: 58, chest: 20, harvest: 8, pnj: 1, nothing: 13 }
+                chest_gils_min: 15
+                chest_gils_max: 60
+                mob_slugs: [clay_golem, rusty_automaton, stone_golem]
         gather:
             - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 24, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
             - { slug: filon-de-fer, item: ore-iron, profession: mining, capacity: 18, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
+            - { slug: veine-d-or, item: ore-gold, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
 
     marais-brumeux:
         name: 'Marais Brumeux'
@@ -85,9 +98,22 @@ zones:
         map_x: 32
         map_y: 74
         source_map: 'Marais Brumeux'
+        explore:
+            # Terrain hostile et pauvre en butin : on y vient pour ses plantes.
+            weights: { mob: 48, chest: 8, harvest: 20, pnj: 4, nothing: 20 }
+            chest_gils_min: 5
+            chest_gils_max: 30
+            night:
+                # La brume nocturne appartient aux creatures corrompues.
+                weights: { mob: 68, chest: 10, harvest: 6, pnj: 1, nothing: 15 }
+                chest_gils_min: 10
+                chest_gils_max: 45
+                mob_slugs: [will_o_wisp, creeping_shadow, specter]
         gather:
             - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
             - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 16, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
+            - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 12, respawn_seconds: 2100, yield_min: 1, yield_max: 2 }
+            - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
 
     crete-de-ventombre:
         name: 'Crête de Ventombre'
@@ -99,9 +125,21 @@ zones:
         map_x: 74
         map_y: 70
         source_map: 'Crête de Ventombre'
+        explore:
+            # Zone la plus rude du World 1 : peu de repit, mais les caches des
+            # expeditions perdues y sont les mieux garnies.
+            weights: { mob: 55, chest: 15, harvest: 12, pnj: 2, nothing: 16 }
+            chest_gils_min: 15
+            chest_gils_max: 55
+            night:
+                weights: { mob: 70, chest: 18, harvest: 4, pnj: 0, nothing: 8 }
+                chest_gils_min: 25
+                chest_gils_max: 80
+                mob_slugs: [gargoyle, wyvern, griffin]
         gather:
             - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 14, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
             - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
+            - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 12, respawn_seconds: 2100, yield_min: 1, yield_max: 2 }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
 connections:
@@ -111,3 +149,9 @@ connections:
     - { from: village-de-lumiere, to: crete-de-ventombre, travel_seconds: 900, bidirectional: true }
     - { from: foret-des-murmures, to: marais-brumeux, travel_seconds: 300, bidirectional: true }
     - { from: mines-profondes, to: crete-de-ventombre, travel_seconds: 480, bidirectional: true }
+    # ZON-26 : fermeture de l'anneau. Le graphe etait une etoile autour du hub
+    # avec deux liaisons laterales ; passer par la peripherie devient une
+    # alternative credible au detour par le village, ce qui donne enfin du sens
+    # au choix d'itineraire (et a la reduction de temps de voyage des montures).
+    - { from: foret-des-murmures, to: mines-profondes, travel_seconds: 480, bidirectional: true }
+    - { from: marais-brumeux, to: crete-de-ventombre, travel_seconds: 540, bidirectional: true }

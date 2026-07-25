@@ -32,7 +32,7 @@
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot (realise trace dans ROADMAP_DONE, reliquat abandonne) |
 | Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) |
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
-| **Consolidation post-pivot (ZON-22→26)** | **0/5** | 🔴 **A faire — Sprint 13 (prioritaire)** |
+| **Consolidation post-pivot (ZON-22→27)** | **6/7** | ✅ Sprint 13 quasi termine — reste **ZON-26b** (zones declaratives) |
 | **Plan Economie joueur (ECO)** | **0/17** | 🟠 **A faire — Sprint 14 puis suite** |
 | Sprint 11 — Monde vivant | ~8 items | En cours (montures/events/classement quasi finis) |
 | Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
@@ -53,8 +53,8 @@
 | **Sprint 8** | Energie & actions de zone (ZON-07..12) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 9** | Time-gating, presence & evenements (ZON-13..17) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 10** | Contenu de groupe & decommission carte (ZON-18..21) | Moyenne | ✅ Termine (2026-07-25) |
-| **Sprint 13** | **Consolidation post-pivot (ZON-22..26)** | **Critique** | 🔴 **Prochain** |
-| **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | 🟠 A suivre |
+| **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ 6/7 — reste ZON-26b |
+| **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | 🟠 **Prochain** |
 | **Sprint 11** | Monde vivant (128-133) | Basse | En cours |
 | **Sprint 12** | Technique & i18n (134-135) | Basse | En cours (← bloque par ZON-24) |
 
@@ -64,15 +64,21 @@
 
 ---
 
-## Prochain chantier : pourquoi le Sprint 13 d'abord
+## Bilan du Sprint 13 (2026-07-25)
 
-La suppression du code carte (ZON-21) a retire le **dispatcher** de `PlayerMovedEvent` sans
-rebrancher ses **6 abonnes**. Sont donc inertes en production : progression des quetes
-d'exploration et d'escorte, declencheurs de quetes cachees sur deplacement, etape de deplacement du
-tutoriel, decouverte de region. S'y ajoutent la perte de couverture E2E de la boucle de jeu
-principale et des scenarios de charge pointant sur des routes supprimees.
+Le pivot avait coupe plus de fils qu'il n'y paraissait. Etaient **inertes en production**, et
+refonctionnent : quetes d'exploration et d'escorte, quetes cachees, etapes « deplacement » et
+« inventaire » du tutoriel, decouverte de region, quetes `talk_to`, acces aux boutiques PNJ.
 
-Le Sprint 13 referme cette dette **avant** d'ajouter du contenu ou des systemes par-dessus.
+Deux defauts trouves au passage, invisibles jusque-la : la victoire suivie du butin etait le **seul
+chemin de sortie de combat** qui n'ancrait pas la regeneration des PV (annulant le second regulateur
+du pivot), et les fixtures laissaient les joueurs sans zone, sur la « Carte de test » heritee.
+
+Le garde-fou `DomainEventDispatchGuardTest` verrouille la recidive : **plus aucun evenement de
+domaine sans emetteur**, liste d'exceptions vide.
+
+**Reste ZON-26b** : les rencontres ne sont pas encore declaratives (les `Mob` sont seedes en PHP a
+partir d'une carte), ce qui bloque la creation de nouvelles zones — donc l'Acte 4.
 
 ---
 
@@ -81,12 +87,14 @@ Le Sprint 13 referme cette dette **avant** d'ajouter du contenu ou des systemes 
 ```
 CAMPAGNE ZON — MODELE ZONE ✅ TERMINEE (Sprints 7-10, ZON-01..21)
 
-SPRINT 13 — CONSOLIDATION POST-PIVOT (← ZON-21)     🔴 PRIORITAIRE
-  ZON-22 Rebranchement PlayerMovedEvent   ∅   ← CRITIQUE (regression)
-  ZON-23 Couverture E2E zone              ← ZON-22
-  ZON-24 Realignement scenarios k6        ∅        → debloque 134
-  ZON-25 Nettoyage residus carte          ← ZON-22
-  ZON-26 Densification graphe de zones    ∅        → debloque 128
+SPRINT 13 — CONSOLIDATION POST-PIVOT (← ZON-21)     ✅ 6/7
+  ZON-22 Rebranchement PlayerMovedEvent   ✅
+  ZON-23 Couverture E2E zone              ✅
+  ZON-24 Realignement scenarios k6        ✅        → debloque 134
+  ZON-25 Evenements orphelins & residus   ✅
+  ZON-27 Couche PNJ (boutiques, dialogue) ✅
+  ZON-26a Densification du graphe         ✅
+  ZON-26b Zones declaratives (mobs/pnjs)  ← ZON-26a → debloque 128
 
 SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
   ECO-01 BindType                         ∅   ← CRITIQUE (bloque ECO-02/05/10)
@@ -142,8 +150,8 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 10. [Sprint 10 — Contenu de groupe & decommission carte](SPRINT_10.md) ✅
 11. [Sprint 11 — Monde vivant](SPRINT_11.md)
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
-13. **[Sprint 13 — Consolidation post-pivot](SPRINT_13.md)** ← **Prochain**
-14. **[Sprint 14 — Economie joueur (socle)](SPRINT_14.md)**
+13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 6/7 (reste ZON-26b)
+14. **[Sprint 14 — Economie joueur (socle)](SPRINT_14.md)** ← **Prochain**
 
 **Plans annexes :**
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
