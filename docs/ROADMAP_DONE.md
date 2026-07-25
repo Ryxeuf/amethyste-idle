@@ -5,6 +5,25 @@
 
 ---
 
+## ZON-16 — Carte du monde illustree (Sprint 9, 2026-07-25)
+
+> Une carte du monde cliquable pour garder l'intuition geographique du modele zone, sans ressusciter le moteur de rendu carte (PixiJS). Rendu SVG schematique, decouverte progressive, voyage au clic.
+
+### Changements
+
+- **`Zone.mapX` / `Zone.mapY`** (colonnes `integer` nullable, % 0-100) : position de la zone sur la carte du monde. Declaratif via `world_1.yaml` (`map_x`/`map_y`), lu par `ZoneDefinitionLoader` et applique par `ZoneImporter` (source de verite ZON-11). Migration `Version20260725ZoneMapPosition`. Helper `Zone::hasMapPosition()`. Les 5 zones du World 1 sont placees en etoile autour du hub.
+- **`WorldMapController`** (`GET /game/world-map`) : construit les noeuds (zone placee : decouverte via `PlayerVisitedZone`, courante, evenement actif ZON-15, expedition en cours ZON-13, connexion de voyage depuis la zone courante) et les aretes (connexions entre zones placees, dedupliquees).
+- **Template `world_map.html.twig`** : rendu **SVG schematique** (aucun moteur de rendu) — aretes en `<line>`, noeuds HTML positionnes en `%`, colores par biome (safe/wilderness/dungeon), zone courante surlignee, zones non decouvertes masquees (« ??? »), pastilles evenement (fuchsia pulsant) et expedition (🧭). Un clic sur une zone adjacente decouverte lance le voyage (`app_game_zone_travel`, ZON-06). Legende. Classes Tailwind litterales (pas de construction dynamique purgee).
+- **Nav** : lien « Carte du monde » dans le menu Aventure. Traductions FR/EN (`game.world_map.*`, `game.nav.world_map`).
+
+### Verifications
+
+- `WorldMapControllerTest` (2 cas : redirection sans joueur ; construction noeuds/aretes/liens de voyage — zone sans position exclue, zone courante non ciblable, zone adjacente decouverte porteuse de la connexion de voyage).
+- `ZoneDefinitionLoaderTest` / `ZoneImporterTest` : non-regression (le champ position s'ajoute sans casser le parsing existant).
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-15 — Evenements de zone (Sprint 9, 2026-07-25)
 
 > Generalise les world bosses / invasions en evenements annonces, rattaches a une zone, a rejoindre dans leur fenetre temporelle contre de l'energie. Pose la couche d'evenements de zone et le modele de participation/contribution sur lequel le boss de zone asynchrone (ZON-18) se construira.

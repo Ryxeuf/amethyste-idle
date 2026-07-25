@@ -73,7 +73,8 @@
         "social": "Social"
       },
       "catalog": "Herbier",
-      "zone": "Zone"
+      "zone": "Zone",
+      "world_map": "Carte du monde"
     },
     "currency": "Or",
     "energy": "Énergie",
@@ -1188,6 +1189,20 @@
           "unknown_resource": "Cette ressource n'est pas récoltable ici.",
           "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue."
         }
+      }
+    },
+    "world_map": {
+      "title": "Carte du monde",
+      "subtitle": "Cliquez une zone adjacente decouverte pour vous y rendre.",
+      "back_to_zone": "Retour a la zone",
+      "empty": "Aucune zone placee sur la carte pour l'instant.",
+      "travel_to": "Voyager vers %zone%",
+      "legend": {
+        "current": "Zone actuelle",
+        "travelable": "Voyage possible",
+        "locked": "Non decouverte",
+        "event": "Evenement actif",
+        "expedition": "Expedition"
       }
     }
   },

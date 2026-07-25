@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Controller\Game;
+
+use App\Entity\App\Zone;
+use App\GameEngine\Zone\ExpeditionService;
+use App\GameEngine\Zone\ZoneEventService;
+use App\GameEngine\Zone\ZoneTravelService;
+use App\Helper\PlayerHelper;
+use App\Repository\PlayerVisitedZoneRepository;
+use App\Repository\ZoneConnectionRepository;
+use App\Repository\ZoneRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Carte du monde illustree (pivot PBBG, ZON-16).
+ *
+ * Rendu SVG schematique (aucun moteur de rendu type PixiJS) : les zones placees
+ * (`Zone.mapX`/`mapY`) apparaissent comme des noeuds relies par leurs
+ * connexions, colores par biome. Les zones decouvertes sont cliquables ; un clic
+ * vers une zone adjacente lance le voyage (ZON-06). Indicateurs : evenement de
+ * zone actif (ZON-15) et expedition en cours (ZON-13).
+ */
+class WorldMapController extends AbstractController
+{
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly ZoneRepository $zoneRepository,
+        private readonly ZoneConnectionRepository $zoneConnectionRepository,
+        private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
+        private readonly ZoneTravelService $zoneTravelService,
+        private readonly ZoneEventService $zoneEventService,
+        private readonly ExpeditionService $expeditionService,
+    ) {
+    }
+
+    #[Route('/game/world-map', name: 'app_game_world_map', methods: ['GET'])]
+    public function index(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        // Regle une arrivee eventuelle pour refleter la zone courante a jour.
+        $this->zoneTravelService->settleArrival($player);
+        $currentZone = $player->getCurrentZone();
+
+        $placedZones = array_values(array_filter(
+            $this->zoneRepository->findAllEnabled(),
+            static fn (Zone $zone): bool => $zone->hasMapPosition(),
+        ));
+
+        $visitedIds = $this->visitedZoneRepository->findVisitedZoneIds($player);
+        $expedition = $this->expeditionService->getActive($player);
+        $expeditionZoneId = null !== $expedition ? $expedition->getZone()->getId() : null;
+
+        // Connexions traversables depuis la zone courante : cible -> id de connexion.
+        $reachable = [];
+        if (null !== $currentZone) {
+            foreach ($this->zoneConnectionRepository->findEnabledFrom($currentZone) as $connection) {
+                $reachable[$connection->getToZone()->getId()] = $connection->getId();
+            }
+        }
+
+        $nodes = [];
+        foreach ($placedZones as $zone) {
+            $id = $zone->getId();
+            $discovered = \in_array($id, $visitedIds, true) || ($currentZone && $id === $currentZone->getId());
+            $nodes[] = [
+                'id' => $id,
+                'slug' => $zone->getSlug(),
+                'name' => $zone->getName(),
+                'type' => $zone->getType(),
+                'safe' => $zone->isSafe(),
+                'x' => $zone->getMapX(),
+                'y' => $zone->getMapY(),
+                'discovered' => $discovered,
+                'current' => null !== $currentZone && $id === $currentZone->getId(),
+                'hasEvent' => $discovered && [] !== $this->zoneEventService->getActiveEventsForZone($zone),
+                'expedition' => $id === $expeditionZoneId,
+                'travelConnectionId' => $reachable[$id] ?? null,
+            ];
+        }
+
+        // Aretes entre zones placees (une seule fois par paire).
+        $edges = [];
+        $seen = [];
+        $positions = [];
+        foreach ($placedZones as $zone) {
+            $positions[$zone->getId()] = ['x' => $zone->getMapX(), 'y' => $zone->getMapY()];
+        }
+        foreach ($placedZones as $zone) {
+            foreach ($this->zoneConnectionRepository->findEnabledFrom($zone) as $connection) {
+                $toId = $connection->getToZone()->getId();
+                if (!isset($positions[$toId])) {
+                    continue;
+                }
+                $key = min($zone->getId(), $toId) . '-' . max($zone->getId(), $toId);
+                if (isset($seen[$key])) {
+                    continue;
+                }
+                $seen[$key] = true;
+                $edges[] = [
+                    'x1' => $positions[$zone->getId()]['x'],
+                    'y1' => $positions[$zone->getId()]['y'],
+                    'x2' => $positions[$toId]['x'],
+                    'y2' => $positions[$toId]['y'],
+                ];
+            }
+        }
+
+        return $this->render('game/zone/world_map.html.twig', [
+            'nodes' => $nodes,
+            'edges' => $edges,
+            'hasCurrent' => null !== $currentZone,
+        ]);
+    }
+}

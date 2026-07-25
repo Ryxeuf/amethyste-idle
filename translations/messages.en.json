@@ -73,7 +73,8 @@
         "social": "Social"
       },
       "catalog": "Catalog",
-      "zone": "Zone"
+      "zone": "Zone",
+      "world_map": "World map"
     },
     "currency": "Gold",
     "energy": "Energy",
@@ -1188,6 +1189,20 @@
           "unknown_resource": "This resource cannot be harvested here.",
           "depleted": "The vein is depleted — wait for it to replenish."
         }
+      }
+    },
+    "world_map": {
+      "title": "World map",
+      "subtitle": "Click an adjacent discovered zone to travel there.",
+      "back_to_zone": "Back to zone",
+      "empty": "No zone placed on the map yet.",
+      "travel_to": "Travel to %zone%",
+      "legend": {
+        "current": "Current zone",
+        "travelable": "Travelable",
+        "locked": "Undiscovered",
+        "event": "Active event",
+        "expedition": "Expedition"
       }
     }
   },

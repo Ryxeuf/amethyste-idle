@@ -1,0 +1,91 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.world_map.title'|trans }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.world_map.title'|trans }}</h2>
+                    <p class="text-gray-400 text-xs mt-0.5">{{ 'game.world_map.subtitle'|trans }}</p>
+                </div>
+                <a href="{{ path('app_game_zone') }}" class="text-xs text-sky-300 hover:text-sky-200">{{ 'game.world_map.back_to_zone'|trans }}</a>
+            </div>
+        </div>
+
+        <div class="game-card-body">
+            {% for label, messages in app.flashes(['success', 'error']) %}
+                {% for message in messages %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm {{ label == 'success' ? 'bg-emerald-900/40 border border-emerald-700/50 text-emerald-200' : 'bg-red-900/40 border border-red-700/50 text-red-200' }}">
+                        {{ message|trans }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {% if nodes is empty %}
+                <p class="text-gray-500 text-sm text-center py-8">{{ 'game.world_map.empty'|trans }}</p>
+            {% else %}
+                <div class="relative w-full mx-auto rounded-lg border border-indigo-900/50 bg-gradient-to-br from-slate-900 via-indigo-950/40 to-slate-900 overflow-hidden" style="max-width: 640px; aspect-ratio: 1 / 1;">
+                    {# ── Aretes (connexions) ── #}
+                    <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute inset-0 w-full h-full pointer-events-none">
+                        {% for edge in edges %}
+                            <line x1="{{ edge.x1 }}" y1="{{ edge.y1 }}" x2="{{ edge.x2 }}" y2="{{ edge.y2 }}"
+                                  stroke="#4f46e5" stroke-opacity="0.35" stroke-width="0.4" stroke-dasharray="1.4 1.2" />
+                        {% endfor %}
+                    </svg>
+
+                    {# ── Noeuds (zones) — classes Tailwind litterales (pas de construction dynamique) ── #}
+                    {% for node in nodes %}
+                        {%- if node.current -%}
+                            {%- set dotClass = 'border-amber-300 bg-amber-400/80 ring-2 ring-amber-300/40' -%}
+                        {%- elseif not node.discovered -%}
+                            {%- set dotClass = 'border-gray-600 bg-gray-800/70' -%}
+                        {%- elseif node.travelConnectionId -%}
+                            {%- if node.safe -%}{%- set dotClass = 'border-emerald-400 bg-emerald-500/70 hover:bg-emerald-400' -%}
+                            {%- elseif node.type == 'dungeon' -%}{%- set dotClass = 'border-rose-400 bg-rose-500/70 hover:bg-rose-400' -%}
+                            {%- else -%}{%- set dotClass = 'border-teal-400 bg-teal-500/70 hover:bg-teal-400' -%}{%- endif -%}
+                        {%- else -%}
+                            {%- if node.safe -%}{%- set dotClass = 'border-emerald-500 bg-emerald-700/50' -%}
+                            {%- elseif node.type == 'dungeon' -%}{%- set dotClass = 'border-rose-500 bg-rose-700/50' -%}
+                            {%- else -%}{%- set dotClass = 'border-teal-500 bg-teal-700/50' -%}{%- endif -%}
+                        {%- endif -%}
+                        <div class="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center" style="left: {{ node.x }}%; top: {{ node.y }}%;">
+                            {% if node.discovered and node.travelConnectionId %}
+                                <form method="post" action="{{ path('app_game_zone_travel', {id: node.travelConnectionId}) }}" title="{{ 'game.world_map.travel_to'|trans({'%zone%': node.name}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('travel_' ~ node.travelConnectionId) }}">
+                                    <button type="submit" class="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 {{ dotClass }}">
+                                        {% if node.hasEvent %}<span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span>{% endif %}
+                                        {% if node.expedition %}<span class="absolute -bottom-1 -right-1 text-[8px]">🧭</span>{% endif %}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div class="relative w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 {{ dotClass }}">
+                                    {% if not node.discovered %}
+                                        <span class="absolute inset-0 flex items-center justify-center text-[9px] text-gray-400">?</span>
+                                    {% endif %}
+                                    {% if node.hasEvent %}<span class="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-fuchsia-400 animate-pulse"></span>{% endif %}
+                                    {% if node.expedition %}<span class="absolute -bottom-1 -right-1 text-[8px]">🧭</span>{% endif %}
+                                </div>
+                            {% endif %}
+                            <span class="mt-1 px-1 text-[9px] sm:text-[10px] leading-tight text-center whitespace-nowrap {{ node.discovered ? 'text-gray-200' : 'text-gray-600' }}">
+                                {{ node.discovered ? node.name : '???' }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {# ── Legende ── #}
+                <div class="mt-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-[11px] text-gray-400">
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-amber-300 bg-amber-400/80"></span>{{ 'game.world_map.legend.current'|trans }}</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-teal-400 bg-teal-500/70"></span>{{ 'game.world_map.legend.travelable'|trans }}</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full border-2 border-gray-600 bg-gray-800/70"></span>{{ 'game.world_map.legend.locked'|trans }}</span>
+                    <span class="inline-flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-fuchsia-400"></span>{{ 'game.world_map.legend.event'|trans }}</span>
+                    <span class="inline-flex items-center gap-1">🧭 {{ 'game.world_map.legend.expedition'|trans }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -14,11 +14,7 @@
 
 > **ZON-15 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : couche « evenements de zone » — `GameEvent.zone` FK, `ZoneEventService` (evenements actifs par zone dans leur fenetre, `join` qui prleve `zone.energy.cost.event` et enregistre une `PlayerZoneEventParticipation` avec champ `contribution` preparant ZON-18), annonce Mercure `zone/<id>/event` (`ZoneEventAnnouncementHandler`). Surface sur l'ecran de zone (bloc evenement + bouton Rejoindre), selecteur de zone dans le formulaire admin d'evenements. Curseur BALANCE section 8. Le combat asynchrone du boss (assauts a l'energie, loot a la contribution) est generalise en **ZON-18**.
 
-### ZON-16 — Carte du monde illustree (M | ★★)
-> Prerequis : ← ZON-06
-- [ ] Image map cliquable (illustration pixel art, pas de moteur de rendu) pour garder l'intuition geographique
-- [ ] Zones decouvertes/verrouillees visibles ; clic = voyage via ZON-06
-- [ ] Indicateurs : evenements de zone actifs, expeditions en cours
+> **ZON-16 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : carte du monde illustree `/game/world-map` — rendu SVG schematique (aucun moteur de rendu type PixiJS), zones placees via `Zone.mapX`/`mapY` (declaratif dans `world_1.yaml`, ZON-11), aretes = connexions du graphe. Zones decouvertes cliquables (clic vers une zone adjacente = voyage ZON-06), zones non decouvertes masquees (« ??? »). Indicateurs : evenement de zone actif (ZON-15), expedition en cours (ZON-13). Lien dans la nav Aventure.
 
 ### ZON-17 — Cycle jour/nuit mecanique (S | ★)
 > Prerequis : ← ZON-11

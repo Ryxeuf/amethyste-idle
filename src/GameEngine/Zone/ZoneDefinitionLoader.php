@@ -111,6 +111,10 @@ class ZoneDefinitionLoader
             'safe' => (bool) ($definition['safe'] ?? false),
             'enabled' => (bool) ($definition['enabled'] ?? true),
             'source_map' => \is_string($definition['source_map'] ?? null) ? $definition['source_map'] : null,
+            // Position sur la carte du monde illustree (ZON-16), en pourcentage
+            // 0-100 du cadre ; null = zone non placee (masquee de la carte).
+            'map_x' => isset($definition['map_x']) ? (int) $definition['map_x'] : null,
+            'map_y' => isset($definition['map_y']) ? (int) $definition['map_y'] : null,
             'explore' => $this->normalizeExplore($slug, $definition['explore'] ?? null, $source),
             'gather' => $this->normalizeGather($slug, $definition['gather'] ?? null, $source),
         ];

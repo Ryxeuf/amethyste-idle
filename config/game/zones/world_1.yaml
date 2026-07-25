@@ -11,6 +11,7 @@
 #     description / description_en  texte (description_en -> descriptionTranslations.en)
 #     type                          city | wilderness | interior | dungeon
 #     safe                          true = aucune rencontre hostile
+#     map_x / map_y                 position sur la carte du monde illustree (ZON-16), % 0-100 ; absent = zone hors carte
 #     enabled                       (optionnel, defaut true)
 #     source_map                    nom de la Map TMX d'origine (legacy, optionnel)
 #     explore:                      table de rencontres / loot (optionnel -> defauts service)
@@ -29,6 +30,8 @@ zones:
         description_en: 'The central hub of World 1. Safe zone: shops, artisans and travelers cross paths here.'
         type: city
         safe: true
+        map_x: 50
+        map_y: 55
         source_map: 'Village de Lumière'
 
     foret-des-murmures:
@@ -38,6 +41,8 @@ zones:
         description_en: 'Ancient trees, clearings and a river. First dangers for adventurers.'
         type: wilderness
         safe: false
+        map_x: 28
+        map_y: 38
         source_map: 'Forêt des murmures'
         gather:
             - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 24, respawn_seconds: 900, yield_min: 1, yield_max: 3 }
@@ -51,6 +56,8 @@ zones:
         description_en: 'Tunnels and veins rich in ore, but the depths are hostile.'
         type: wilderness
         safe: false
+        map_x: 72
+        map_y: 36
         source_map: 'Mines profondes'
         gather:
             - { slug: filon-de-cuivre, item: ore-copper, profession: mining, capacity: 24, respawn_seconds: 1200, yield_min: 1, yield_max: 3 }
@@ -63,6 +70,8 @@ zones:
         description_en: 'Thick mist and stagnant waters; corrupted creatures lurk.'
         type: wilderness
         safe: false
+        map_x: 32
+        map_y: 74
         source_map: 'Marais Brumeux'
         gather:
             - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
@@ -75,6 +84,8 @@ zones:
         description_en: 'Peaks swept by violent winds; the summit shelters the toughest creatures of World 1.'
         type: wilderness
         safe: false
+        map_x: 74
+        map_y: 70
         source_map: 'Crête de Ventombre'
         gather:
             - { slug: filon-d-argent, item: ore-silver, profession: mining, capacity: 14, respawn_seconds: 1800, yield_min: 1, yield_max: 2 }
