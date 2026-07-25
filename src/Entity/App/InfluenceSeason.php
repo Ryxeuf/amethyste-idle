@@ -40,6 +40,14 @@ class InfluenceSeason
     #[ORM\Column(name: 'theme', type: 'string', length: 100, nullable: true)]
     private ?string $theme = null;
 
+    /**
+     * Marqueur « canon » (curation, NAR-12) : seules les saisons marquees canon
+     * laissent une trace durable au journal de monde a leur resolution. Les
+     * autres se cloturent sans fait de monde (au-dela des recompenses).
+     */
+    #[ORM\Column(name: 'is_canon', type: 'boolean', options: ['default' => false])]
+    private bool $isCanon = false;
+
     /** @var array<string, mixed>|null */
     #[ORM\Column(name: 'parameters', type: 'json', nullable: true)]
     private ?array $parameters = null;
@@ -138,6 +146,18 @@ class InfluenceSeason
     public function setTheme(?string $theme): self
     {
         $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function isCanon(): bool
+    {
+        return $this->isCanon;
+    }
+
+    public function setCanon(bool $isCanon): self
+    {
+        $this->isCanon = $isCanon;
 
         return $this;
     }

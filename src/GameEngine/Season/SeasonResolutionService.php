@@ -33,6 +33,12 @@ class SeasonResolutionService
      */
     public function resolve(InfluenceSeason $season, array $regionControl): int
     {
+        // Marqueur « canon » (NAR-12) : seules les saisons marquees laissent une
+        // trace durable au journal de monde. Les autres se cloturent sans fait.
+        if (!$season->isCanon()) {
+            return 0;
+        }
+
         $arc = $season->getStoryArc();
         $seasonName = $season->getName();
         $recorded = 0;

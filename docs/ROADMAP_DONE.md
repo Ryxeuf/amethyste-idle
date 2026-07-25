@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,28 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-12 — Marquage « canon » & entree journal de monde (Piste D narration, 2026-07-25)
+
+> Le monde **hybride** (§3.2) : seules les saisons marquees « canon » laissent une trace durable au journal de monde. Les autres se cloturent sans fait (au-dela des recompenses). Curation par un simple marqueur.
+
+### Changements
+
+- **`InfluenceSeason::isCanon()` / `setCanon()`** + colonne `is_canon` (BOOLEAN, defaut `false`). Migration idempotente `Version20260725SeasonCanon` (`ADD COLUMN IF NOT EXISTS ... DEFAULT false NOT NULL`).
+- **`SeasonResolutionService::resolve`** : garde en tete — `if (!$season->isCanon()) return 0;`. Une saison non-canon ne genere **aucun** fait de monde (ni credite ni neutre) ; une saison canon conserve le comportement NAR-11 (credit de la guilde controlante / fait neutre).
+- **`InfluenceSeasonFixtures`** : la Saison 1 est marquee **canon** (sa resolution s'inscrira au journal).
+
+### Verifications
+
+- `SeasonResolutionServiceTest` : le helper de saison est canon par defaut (cas existants inchanges) ; nouveau cas **saison non-canon => 0 fait, aucun appel a `recordWorldFact`**, meme avec un vainqueur.
+- `InfluenceSeasonCanonTest` (unit, 3 cas) : non-canon par defaut, aller-retour `setCanon`, convention `getStoryArc()`.
+- QA : cs-fixer OK ; PHPStan ; PHPUnit + schema:create + fixtures en CI.
+
+### Notes
+
+- Le marqueur est porte par la **saison** (grain le plus simple pour gater la resolution). Un grain plus fin (par beat) reste possible ulterieurement sans changer l'API de resolution.
 
 ---
 
