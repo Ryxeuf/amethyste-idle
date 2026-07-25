@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,31 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-09 — Quetes d'evenement de saison (Piste D narration, 2026-07-25)
+
+> Chaque beat de la Saison 1 porte sa quete d'accroche, active **seulement** dans sa fenetre temporelle — l'arc de saison devient jouable.
+
+### Changements
+
+- **`QuestFixtures`** : 4 quetes de l'arc `season_saison-1` (`arcOrder` 1-4), une par beat, rattachees au `GameEvent` du beat via la cle `gameEvent` (references `season1_beat_amorce/montee/climax/resolution`) :
+  - amorce — `explore` (l'appel des cloches) ;
+  - **montee — `monsters` (kills)**, qui nourrit l'effort des guildes pour le controle des regions ;
+  - climax — `monsters` (le boss `forest_guardian` de la Faille) ;
+  - resolution — `explore` (l'accalmie).
+  - Ajout de `SeasonArcFixtures` aux dependances de `QuestFixtures` (resolution des references de beat).
+- Le gating temporel est **automatique** : `PlayerQuestHelper::getAvailableQuests` filtre deja sur `isEventQuest() && !isEventActive()`, donc une quete n'apparait que dans la fenetre de son beat (`GameEvent::isActiveAt`, NAR-08). Aucune logique nouvelle.
+
+### Verifications
+
+- `SeasonQuestFixturesTest` (integration, 2 cas) : l'arc `season_saison-1` compte 4 quetes ordonnees, toutes rattachees a un beat ; la quete de **montee est active** (beat en cours) tandis que la quete de **climax est inactive** (beat a venir) — activation/desactivation selon la fenetre.
+- QA : cs-fixer OK ; PHPStan non concerne (fixtures exclues) ; PHPUnit + fixtures en CI.
+
+### Notes
+
+- Les quetes de climax/resolution deviennent disponibles quand leur beat entre dans sa fenetre (au fil de la saison). Le **boss de climax** proprement dit (assaut asynchrone, contribution) est generalise en **NAR-10**.
 
 ---
 

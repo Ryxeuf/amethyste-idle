@@ -125,14 +125,12 @@ moteur récurrent qui referme la boucle à trois piliers.
 > `InfluenceSeason::getStoryArc()` = `season_<slug>`. Composition déclarative (`SeasonArcFixtures`,
 > Saison 1). Tests : `GameEventBeatTest`, `SeasonArcServiceTest`, `SeasonArcFixturesTest`.
 
-### NAR-09 — Quêtes d'événement de saison (S | ★★ | MOYENNE)
-> Chaque beat porte ses quêtes d'accroche, actives seulement dans sa fenêtre.
-> Prérequis : ← NAR-08
-- [ ] Quêtes rattachées aux `GameEvent` de la saison via `Quest.gameEvent` (déjà branchable ;
-      `isEventActive()` gère la fenêtre)
-- [ ] Quêtes thématiques de montée nourrissant l'accumulation d'influence (lien pilier cité)
-- [ ] Fixtures d'exemple pour une première saison
-- [ ] Tests (activation/désactivation selon la fenêtre d'événement)
+### NAR-09 — Quêtes d'événement de saison ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> 4 quêtes de la Saison 1 (arc `season_saison-1`), une par beat, rattachées via
+> `Quest.gameEvent` → actives **seulement** dans la fenêtre de leur beat (`isEventActive()`).
+> Quête de montée = kills (nourrit l'effort de contrôle des régions). Fixtures dans
+> `QuestFixtures` (dépend de `SeasonArcFixtures`). Tests : `SeasonQuestFixturesTest`
+> (4 quêtes ordonnées rattachées à un beat, montée active / climax gaté par la fenêtre).
 
 ### NAR-10 — Boss / climax de saison (M | ★★ | MOYENNE)
 > Le climax = événement de zone à rejoindre (asynchrone, contribution).
