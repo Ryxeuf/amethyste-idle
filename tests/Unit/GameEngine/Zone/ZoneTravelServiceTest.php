@@ -12,18 +12,21 @@ use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class ZoneTravelServiceTest extends TestCase
 {
     private EntityManagerInterface&MockObject $entityManager;
     private PlayerVisitedZoneRepository&MockObject $visitedZoneRepository;
+    private EventDispatcherInterface&MockObject $eventDispatcher;
     private ZoneTravelService $service;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
-        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository);
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher);
     }
 
     private function buildZone(string $slug): Zone

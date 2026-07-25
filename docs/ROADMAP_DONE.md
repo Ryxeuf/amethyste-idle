@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-24 (NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest` ; ZON-10/09/08/07 et Sprint 7 livres le meme jour).
+> Derniere mise a jour : 2026-07-25 (NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,34 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-05 — Codex & deblocage par decouverte (Piste C narration, 2026-07-25)
+
+> Foyer de la trame de monde : chaque entree de Codex se debloque en jouant. Decision (GAME_PRINCIPLES §6) actee : **entite dediee** `CodexEntry` (et non extension des succes), pour porter proprement le journal de monde public a venir (NAR-07).
+
+### Changements
+
+- **`CodexEntry`** (`game_codex_entries`) : slug unique, `category` (`region`/`faction`/`bestiary_lore`/`world_fact`), `title`/`description` + `*_translations` (getters localises), couple de deblocage declaratif **`unlockType`** (`zone_visit`/`boss_kill`/`arc_completed`/`manual`) + **`unlockKey`** (slug cible), `illustrationPath`. Index sur `category` et `(unlock_type, unlock_key)`.
+- **`PlayerCodexEntry`** (`player_codex_entry`) : liaison joueur↔entree, `unlocked_at`, unicite `(player_id, codex_entry_id)` (deblocage idempotent).
+- **Repositories** : `CodexEntryRepository` (`findBySlug`, `findByUnlock`, `findByCategory`, `findAllOrdered`), `PlayerCodexEntryRepository` (`hasUnlocked`, `findByPlayer`, `unlockedEntryIds`), + `PlayerQuestCompletedRepository::countCompletedInArc`.
+- **`CodexUnlockService`** : `unlock()` idempotent (via `hasUnlocked`) et `unlockByTrigger(type, key)` (deblocage groupe par declencheur).
+- **Declencheurs (Event-Driven)** : `CodexZoneVisitSubscriber` (nouvel **`ZoneVisitedEvent`** emis par `ZoneTravelService::markZoneVisited` a la premiere decouverte), `CodexBossKillSubscriber` (`MobDeadEvent`, cible chaque joueur du combat), `CodexArcCompletionSubscriber` (`QuestCompletedEvent` — declenche seulement quand **tout** l'arc est complete).
+- **Migration** `Version20260725CodexEntries` idempotente (`CREATE TABLE IF NOT EXISTS`, index, FK inline `ON DELETE CASCADE`).
+- **Fixtures** `CodexEntryFixtures` : 4 entrees couvrant les 3 declencheurs (2 regions par visite de zone, 1 lore de boss `forest_guardian`, 1 chronique par fin de l'arc `intro`).
+
+### Verifications
+
+- `CodexUnlockServiceTest` (unit, 4 cas) : deblocage quand absent, idempotence quand deja acquis, deblocage groupe par declencheur, comptage des seuls nouveaux deblocages.
+- `CodexEntryTest` (unit, 6 cas) : defauts, titre/description localises avec repli, normalisation des traductions, normalisation `unlockKey`.
+- `ZoneTravelServiceTest` mis a jour (mock `EventDispatcherInterface`).
+- QA : cs-fixer OK ; PHPStan (niveau 6) ; PHPUnit + schema:create + fixtures en CI.
+
+### Notes
+
+- La **cloture de saison** comme declencheur de Codex est **deferee** a la Piste D (NAR-11/12) : ces jalons possedent le cycle de vie de saison et la generation des faits de monde (`world_fact`). NAR-05 couvre la decouverte (zone/boss/arc).
+- L'ecran de lecture du Codex arrive avec **NAR-06** ; le journal de monde public (`world_fact` debloques pour tous) avec **NAR-07**.
 
 ---
 
