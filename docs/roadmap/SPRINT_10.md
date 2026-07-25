@@ -1,6 +1,6 @@
 ## Sprint 10 — Contenu de groupe & decommission carte
 
-> **4 taches** (3 livrees) | Priorite : **Moyenne** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **4 taches** (4 livrees) ✅ | Priorite : **Moyenne** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : le PvE cooperatif en modele zone (boss asynchrones, donjons semi-synchrones) et la suppression definitive du code carte.
 > Prerequis : Sprint 9 (presence & evenements de zone)
 
@@ -22,12 +22,12 @@
 > Prerequis : ← ZON-16 (modele zone stabilise)
 > **Sous-jalon a (carte navigable) livre le 2026-07-25** : suppression du front carte — `map_pixi_controller.js`, `map_mercure_controller.js`, `SpriteAnimator`, bundle PixiJS (sorti de l'importmap), pipeline avatar client JS (`AvatarTextureComposer`, `AvatarSheetLoader`, `AvatarAnimatorFactory`, caches), overlays `dialog`/`harvest` (carte-only), vue `/game/map` + composant Twig `Map`, harness admin `avatar_test`. Toute la navigation `app_game_map` reroutee vers `app_game_zone` (nav, dashboard, boutique, donjon, quetes, combat). Tests E2E carte (Map/Combat/Shop) et `MapRedirectToFightTest` retires. Les endpoints `/api/map/*` et les services backend (pathfinding, `PlayerMoveProcessor`, publishers `Realtime/Map`, `MapFreeze`) subsistent temporairement, retires en sous-jalon b.
 > **Sous-jalon b (services runtime) livre le 2026-07-25** : suppression des endpoints `/api/map/*` (`MapApiController`), du pathfinding Dijkstra (`GameEngine/Map/*` : Dijkstra, PriorityQueue, MovementCalculator, MoveProcessor, PortalDetector), de `PlayerMoveProcessor`, des publishers `Realtime/Map/*` (7 handlers), de `MountMapPayloadBuilder`, de `MobMovedEvent` (jamais dispatche), du flag `map_frozen`/`MapFreeze` + fixture, et du rate limiter `api_move`. Deps admin traitees : `AdminFightModerationService` et `Admin/PlayerController` ne publient plus `map/move`. `SpriteConfigProvider` relocalise en `GameEngine/Sprite/` (apercus sprites admin toujours vivants). `PlayerMovedEvent` conserve (evenement domaine) mais desormais dormant — plus de dispatcher carte ; ses listeners zone/quete/tutoriel sont candidats a un rebranchement sur des evenements de zone (suivi). Preview carte retiree des formulaires admin (interim, editeur carte retire en sous-jalon c).
-- [ ] **Sous-jalon c** : retirer l'**editeur de carte admin** (`Admin/MapController`, `Admin/MapEditorController`, `Admin/TilesetController`, templates `admin/map/*`, JS `admin_map_editor`/`admin_tileset_*`/`admin_player_move_preview`, formulaires), l'engine `GameEngine/Terrain/*` et les commandes `app:terrain:*`/`app:map:dump`/`app:audit:entity-placement` ; archiver `terrain/` et `docs/TILED_GUIDE.md` ; MAJ documentation : CLAUDE.md (§7 coordonnees, §9 rendu PixiJS, routes, commandes terrain), AGENTS.md, DOCUMENTATION.md (§20 Tiled) — documenter le modele zone ; extraire au prealable ce qui se reutilise
+> **Sous-jalon c (editeur admin + terrain + doc) livre le 2026-07-25 — ZON-21 COMPLET** (voir `ROADMAP_DONE.md`) : suppression de l'editeur de carte admin (`Admin/MapController`, `Admin/MapEditorController`, `Admin/TilesetController`, templates `admin/map/*` + `admin/tileset`, JS `admin_map_editor`/`admin_tileset_*`/`admin_player_move_preview`, formulaires `MobSpawnType`/`PnjPositionType`), de l'engine `GameEngine/Terrain/*` (parser TMX, generateur procedural, biomes), du cluster transformer/storage carte (`MapModelTransformer`, `CellModelTransformer`, `MapStorage`, `CellActionsProvider`, `CellSearchEngine`, `CellTransformer`), des commandes `app:terrain:*`/`app:map:dump`/`app:audit:entity-placement`, de l'entite `Tileset` (+ migration DROP), du dossier `terrain/` et de `docs/TILED_GUIDE.md`. Liens de nav admin (Cartes/Tilesets) + carte stat dashboard retires. Documentation MAJ : CLAUDE.md (§7, stack, commandes, architecture, routes, pieges), AGENTS.md (modele zone), DOCUMENTATION.md (§1, §3, §7, §20).
 
 ---
 
 ### Definition of Done
 
-- [ ] Boss de zone jouables sans presence simultanee, loot a la contribution
+- [x] Boss de zone jouables sans presence simultanee, loot a la contribution
 - [x] Donjons de groupe jouables en semi-synchrone avec lockout/recompenses decroissantes
-- [ ] Plus aucun code carte dans le repo (PixiJS retire de l'importmap, client allege) ; documentation a jour
+- [x] Plus aucun code carte dans le repo (PixiJS retire de l'importmap, client allege) ; documentation a jour
