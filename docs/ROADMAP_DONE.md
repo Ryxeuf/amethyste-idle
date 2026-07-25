@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,33 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-14 — Tests unitaires du plan (Piste E narration, 2026-07-25)
+
+> Dernier jalon du plan narratif : consolidation de la couverture de test. Les tests ont ete livres **au fil des jalons** (NAR-01 → NAR-13) ; NAR-14 en dresse la carte et verrouille les invariants transverses.
+
+### Changements
+
+- **`docs/roadmap/NARRATIVE_TEST_COVERAGE.md`** (nouveau) : synthese cartographiant chaque exigence de test du plan (marqueur d'arc ; Codex ; arc saisonnier ; credits & canon ; onboarding & fond) vers les fichiers de tests livres. **80+ methodes de test** dediees a la narration — objectif « 25+ » **largement depasse**.
+- **`tests/Unit/Narrative/NarrativePlanContractTest.php`** (nouveau, 6 cas) : test de **contrat** garde-fou du vocabulaire declaratif du plan — categories & types de deblocage du Codex distincts, `world_fact` seul public, beats de saison distincts, convention d'arc de saison `season_<slug>`, defaut non-canon, tri d'arc « positions nulles en fin ». Renommer/casser une convention fait echouer un test.
+
+### Verifications
+
+- `NarrativePlanContractTest` (unit) + l'ensemble des tests des jalons NAR-01→13 (cf. la synthese) tournent en CI.
+- QA : cs-fixer OK ; PHPStan ; PHPUnit en CI.
+
+### Plan narratif complet — NAR-01 → NAR-14 ✅
+
+Les **14 jalons** des 5 pistes sont livres et merges :
+- **Piste A — Socle narratif** : NAR-01 (marqueur d'arc) · NAR-02 (journal par arc).
+- **Piste B — Acte d'introduction** : NAR-03 (arc intro) · NAR-04 (onboarding & kit T1).
+- **Piste C — Codex & trame** : NAR-05 (entite Codex + deblocage) · NAR-06 (ecran Codex) · NAR-07 (journal de monde).
+- **Piste D — Narration saisonniere** : NAR-08 (arc saisonnier / beats) · NAR-09 (quetes d'evenement) · NAR-10 (boss de climax) · NAR-11 (resolution & credits) · NAR-12 (canon).
+- **Piste E — Contenu de fond & tests** : NAR-13 (gabarits de quetes de fond) · NAR-14 (tests du plan).
+
+Elements deferes (documentes) : backfill des chaines Acte 2/3 vers des arcs (contenu) ; energie-par-assaut du boss de saison (NAR-10, touche le flux de mouvement, hors perimetre narratif) ; `BindType` enum (ECO-01) pour l'echangeabilite fine.
 
 ---
 
