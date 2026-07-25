@@ -4,9 +4,11 @@ namespace App\Controller\Game\Fight;
 
 use App\Entity\App\Fight;
 use App\Entity\App\Player;
+use App\Event\Fight\FightLootedEvent;
 use App\GameEngine\Dungeon\DungeonManager;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
+use App\GameEngine\Zone\LifeRegenManager;
 use App\Helper\InventoryHelper;
 use App\Helper\PlayerHelper;
 use App\Repository\DungeonRunRepository;
@@ -16,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 #[Route('/game/fight/loot/proceed', name: 'app_game_fight_loot_proceed', methods: ['POST'])]
 class FightLootProceedController extends AbstractController
@@ -28,6 +31,8 @@ class FightLootProceedController extends AbstractController
         private readonly DungeonRunRepository $dungeonRunRepository,
         private readonly DungeonManager $dungeonManager,
         private readonly InventoryHelper $inventoryHelper,
+        private readonly LifeRegenManager $lifeRegenManager,
+        private readonly EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -76,6 +81,10 @@ class FightLootProceedController extends AbstractController
 
         // Détacher ce joueur du combat
         $player->setFight(null);
+        // Ancre la regen des PV a la sortie de combat (ZON-12). La victoire
+        // suivie du butin etait le seul chemin de sortie qui l'omettait : les PV
+        // perdus se regeneraient d'un coup au prochain rafraichissement.
+        $this->lifeRegenManager->anchor($player);
         $this->entityManager->persist($player);
         $fight->removePlayer($player);
 
@@ -85,6 +94,7 @@ class FightLootProceedController extends AbstractController
 
         if ($isMultiPlayer && $remainingPlayers->count() > 0) {
             $this->entityManager->flush();
+            $this->dispatchLooted($fight);
 
             return new JsonResponse(['success' => true]);
         }
@@ -92,8 +102,13 @@ class FightLootProceedController extends AbstractController
         // Dernier joueur ou combat classique : nettoyage complet
         $this->combatLogArchiver->archive($fight);
 
+        // Emis avant la suppression : les abonnes (progression du tutoriel)
+        // resolvent le combat par son identifiant (ZON-25).
+        $this->dispatchLooted($fight);
+
         foreach ($fight->getPlayers() as $remainingPlayer) {
             $remainingPlayer->setFight(null);
+            $this->lifeRegenManager->anchor($remainingPlayer);
             $this->entityManager->persist($remainingPlayer);
         }
 
@@ -115,5 +130,16 @@ class FightLootProceedController extends AbstractController
         }
 
         return new JsonResponse(['success' => true]);
+    }
+
+    /**
+     * Notifie la fin de la sequence de butin (ZON-25).
+     *
+     * L'evenement n'avait aucun emetteur : l'etape « inventaire » du tutoriel,
+     * son seul abonne utile, ne se validait donc jamais.
+     */
+    private function dispatchLooted(Fight $fight): void
+    {
+        $this->eventDispatcher->dispatch(new FightLootedEvent($fight->getId()), FightLootedEvent::NAME);
     }
 }

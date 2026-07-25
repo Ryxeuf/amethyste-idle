@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **3 livrees** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **4 livrees** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -50,28 +50,22 @@
 > n'existent plus) et un jalon **Z** est ouvert : aucune mesure n'a encore ete faite sur le profil
 > zone, c'est le prerequis de l'objectif « 200 joueurs » de la tache 134.
 
-### ZON-25 — Residus carte & evenements orphelins (M | ★★ | HAUTE)
-> Prerequis : ← ZON-22 ✅
-> **Perimetre elargi** : le garde-fou livre avec ZON-22b (`DomainEventDispatchGuardTest`) a revele
-> **4 evenements sans emetteur** en plus de `PlayerMovedEvent`. Ils sont **anterieurs au pivot**
-> (aucun emetteur dans l'historique visible), mais deux ont un impact fonctionnel reel. Ils sont
-> tolerés par une liste d'exceptions explicite (`KNOWN_ORPHANS`) a resorber ici.
-
-- [ ] **`PnjDialogEvent` — impact reel** : seul declencheur de `QuestTalkToTrackingListener` →
-      `PlayerQuestUpdater::updateTalkedTo`. Les objectifs de quete « parler a un PNJ » (type
-      `talk_to`, quetes d'enquete) **ne progressent pas**. Emettre l'evenement depuis le dialogue PNJ
-      de l'ecran de zone.
-- [ ] **`FightLootedEvent` — impact reel** : seul declencheur de `FightCleaner::removeFight` (purge
-      du combat apres butin) et de l'etape « inventaire » du tutoriel. A emettre depuis
-      `/game/fight/loot`, ou retirer les deux abonnes si la purge se fait ailleurs.
-- [ ] **`PlayerActionHitEvent` / `PlayerActionMissEvent`** : aucun emetteur **et** aucun abonne —
-      code mort, a supprimer.
-- [ ] Retirer de `KNOWN_ORPHANS` chaque evenement traite (le garde-fou echoue si un orphelin
-      declare retrouve un emetteur, pour eviter une liste qui se perime en silence).
-- [ ] `MobRepository::findByMapWithMonster` : sans appelant depuis le retrait de `/api/map/entities`
-      — supprimer ou requalifier pour le modele zone
-- [ ] Auditer les champs herites `Player::getX()` / `getY()` / `coordinates` : documenter comme
-      champs morts (regle #7) ou planifier leur retrait par migration
+> **ZON-25 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : `FightLootedEvent` est desormais emis
+> par `FightLootProceedController` — l'etape « inventaire » du tutoriel etait bloquee. `FightCleaner`
+> supprime (son nettoyage etait deja fait en ligne par le controleur) et son **ancrage de regen des
+> PV** deplace la ou le joueur quitte le combat : la victoire suivie du butin etait le seul chemin de
+> sortie qui l'omettait, les PV perdus se regeneraient d'un coup. `MobRepository::findByMapWithMonster`
+> supprimee. Garde-fou corrige : `PlayerActionHitEvent` / `PlayerActionMissEvent` etaient des **faux
+> positifs** (classes parentes, jamais instanciees mais etendues par des evenements bien emis) — le
+> test exclut desormais les classes parentes automatiquement.
+>
+> **Audit des coordonnees heritees** : `Player::coordinates` n'est plus une reference de position
+> (regle #7), mais les coordonnees restent **utilisees** par les systemes qui placent des entites sur
+> les cartes support (routines PNJ, spawn de world boss, invasions, donjons, recolte). Leur retrait
+> est donc une migration a part entiere, pas un nettoyage : **non fait ici**, a instruire avec ZON-26.
+>
+> **Report vers ZON-27** : `PnjDialogEvent` reste sans emetteur — il en faut un ecran de dialogue PNJ,
+> qui n'existe plus. Seul orphelin encore tolere par `KNOWN_ORPHANS`.
 
 ### ZON-26 — Densification du graphe de zones (L | ★★★ | HAUTE)
 > Prerequis : ← ZON-11 ✅ | Bloque : **128** (Acte 4)
@@ -112,7 +106,7 @@
 - [x] Quetes d'exploration, escorte, quetes cachees, tutoriel et decouverte de region fonctionnels
       en modele zone (ZON-22)
 - [x] Boucle de jeu principale (zone → action → combat) couverte en E2E dans la CI (ZON-23)
-- [ ] Aucun evenement de domaine sans emetteur — liste `KNOWN_ORPHANS` videe (ZON-25)
+- [~] Aucun evenement de domaine sans emetteur — reste `PnjDialogEvent`, traite par ZON-27
 - [ ] PNJ joignables depuis la zone : boutiques et dialogues (ZON-27)
 - [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
 - [ ] World 1 jouable de bout en bout sur un graphe de zones dense (ZON-26)

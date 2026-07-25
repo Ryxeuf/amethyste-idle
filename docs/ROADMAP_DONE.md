@@ -11,6 +11,37 @@
 
 ---
 
+## ZON-25 — Residus carte & evenements orphelins (Sprint 13, 2026-07-25)
+
+> Le garde-fou livre avec ZON-22b avait signale 4 evenements sans emetteur. Instruction faite : **un seul** etait un vrai defaut a fort impact, **deux** etaient des faux positifs de mon propre outil, et le dernier depend d'un ecran disparu.
+
+### `FightLootedEvent` — rebranche
+
+L'evenement n'etait emis nulle part. Consequence : l'etape « inventaire » du tutoriel, dont c'est le seul declencheur, **ne se validait jamais** — le tutoriel restait bloque a cette etape.
+
+Il est desormais emis par `FightLootProceedController`, **avant** la suppression du combat : ses abonnes resolvent le combat par son identifiant et ne le trouveraient plus apres coup. Emis aussi dans la branche multijoueur (world boss / coop), ou le joueur a bel et bien recupere son butin.
+
+### `FightCleaner` supprime, ancrage de regen deplace
+
+Le nettoyage de `FightCleaner` (suppression des mobs, items et du combat) etait **deja fait en ligne** par le controleur de butin : le service faisait doublon. En revanche il portait une logique unique — l'**ancrage de la regeneration des PV** a la sortie de combat (ZON-12) — et cette logique a ete deplacee dans le controleur.
+
+C'etait un vrai trou de regulation : la victoire suivie du butin etait **le seul chemin de sortie de combat** qui n'ancrait pas la regen (defaite et fuite le font). Les PV perdus se regeneraient donc d'un coup au rafraichissement suivant, annulant le second regulateur voulu par le pivot (« l'energie limite les tentatives, la vie fait payer les echecs »).
+
+### Faux positifs corriges
+
+`PlayerActionHitEvent` et `PlayerActionMissEvent` n'etaient **pas** du code mort : ce sont des **classes parentes**, jamais instanciees directement mais etendues par `PlayerAttackHitEvent`, `PlayerSpellHitEvent`, `PlayerAttackMissEvent` et `PlayerSpellMissEvent`, tous emis et abonnes. Le garde-fou exclut desormais automatiquement toute classe d'evenement etendue par une autre.
+
+### Autres nettoyages
+
+- `MobRepository::findByMapWithMonster` supprimee (sans appelant depuis le retrait de `/api/map/entities`), avec l'import `Map` devenu inutile.
+- **Audit des coordonnees heritees** : `Player::coordinates` n'est plus une reference de position (regle #7), mais les coordonnees restent **utilisees** par les systemes qui placent des entites sur les cartes support — routines PNJ, spawn de world boss, invasions, donjons, recolte. Leur retrait est une migration a part entiere, pas un nettoyage : instruit avec ZON-26.
+
+### Report vers ZON-27
+
+`PnjDialogEvent` reste sans emetteur : il en faudrait un ecran de dialogue PNJ, disparu avec les overlays carte. Seul orphelin encore tolere par `KNOWN_ORPHANS`, avec sa raison.
+
+---
+
 ## ZON-24 — Realignement des scenarios de charge sur le modele zone (Sprint 13, 2026-07-25)
 
 > Les scenarios k6 mesuraient encore un profil de charge **disparu** : `mercure-streaming` s'abonnait par defaut au topic `map/move`, supprime par ZON-21. Un scenario qui cible des routes ou des topics inexistants ne mesure rien — il ne signale meme pas d'erreur, il tient juste une connexion qui ne recevra jamais rien.
