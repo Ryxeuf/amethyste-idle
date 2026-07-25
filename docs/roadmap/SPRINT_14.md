@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **4 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **5 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -45,12 +45,10 @@
 > existait deja mais **par accident** (les Gils se perdaient faute de destinataire) : il est
 > desormais explicite, journalise et verrouille par un test.
 
-### ECO-14 — Interdependance des metiers (S | ★★ | MOYENNE)
-> Aucun metier autosuffisant : chaque metier consomme la sortie d'un autre.
-> Prerequis : ∅ (parallelisable) — pose les bases de la demande avant les commandes de craft (ECO-05+)
-- [ ] Audit des recettes : identifier les metiers autosuffisants
-- [ ] Reequilibrer les `ingredients` pour croiser les metiers
-- [ ] Documenter la chaine de production dans `docs/BALANCE.md`
+> **ECO-14 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : l'audit trouvait **trois metiers sur
+> quatre autosuffisants**, le quatrieme ne dependant d'un autre qu'a partir du niveau 6. Six
+> liaisons croisees ajoutees (niveaux 2 a 5), toutes thematiquement evidentes, **aucune au palier
+> d'entree** — croiser au niveau 1 aurait casse le plancher anti cold-start d'ECO-02.
 
 ### ECO-18 — Reconcilier les arbres de talent et les recettes (M | ★★ | MOYENNE)
 > Decouvert par l'audit ECO-02 : les deux jeux de donnees ont ete ecrits separement et jamais
@@ -80,7 +78,7 @@
       la porte d'entree de chaque metier est ouverte, la profondeur des arbres reste a reconcilier (ECO-18)
 - [x] HV segmente par region, taxe reversee a la guilde controlante — ou detruite quand
       aucune guilde ne controle la region (ECO-03, ECO-04)
-- [ ] Chaine de production documentee, aucun metier autosuffisant
+- [x] Chaine de production documentee, aucun metier autosuffisant (ECO-14)
 - [ ] Escrow + journalisation des transactions operationnels
 
 ---
