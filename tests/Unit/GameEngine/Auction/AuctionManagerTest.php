@@ -435,34 +435,6 @@ class AuctionManagerTest extends TestCase
         $this->manager->placeBid($bidder, $listing, 200);
     }
 
-    /**
-     * Escrow d'objet a l'expiration : une annonce qui expire sans acheteur rend
-     * l'objet a son vendeur. L'objet quitte l'inventaire au depot — sans ce
-     * retour, il serait purement et simplement detruit.
-     */
-    public function testExpiredListingReturnsTheItemToItsSeller(): void
-    {
-        $seller = $this->createPlayer(1, 0);
-        $listing = $this->createSimpleListing($seller, 100);
-        $listing->setExpiresAt(new \DateTimeImmutable('-1 hour'));
-        $listing->getPlayerItem()->setInventory(null);
-
-        $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
-        $query->method('getResult')->willReturn([$listing]);
-        $queryBuilder = $this->createMock(\Doctrine\ORM\QueryBuilder::class);
-        foreach (['select', 'from', 'where', 'andWhere', 'setParameter'] as $fluent) {
-            $queryBuilder->method($fluent)->willReturnSelf();
-        }
-        $queryBuilder->method('getQuery')->willReturn($query);
-        $this->em->method('createQueryBuilder')->willReturn($queryBuilder);
-
-        $count = $this->manager->expireListings();
-
-        $this->assertSame(1, $count);
-        $this->assertSame(AuctionStatus::Expired, $listing->getStatus());
-        $this->assertNotNull($listing->getPlayerItem()->getInventory());
-    }
-
     private function createSimpleListing(Player $seller, int $price): AuctionListing
     {
         $listing = new AuctionListing();

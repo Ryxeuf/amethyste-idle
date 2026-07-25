@@ -478,5 +478,7 @@ laisserait l'objet et les Gils bloques indefiniment.
 L'escrow de l'hotel des ventes etait deja complet et le reste : l'objet quitte
 l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration ;
 les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la
-surenchere. ECO-16a n'a rien eu a construire de ce cote, seulement a verrouiller
-le retour d'objet a l'expiration, qui n'etait couvert par aucun test.
+surenchere. ECO-16a n'a rien eu a construire de ce cote. Le retour d'objet a **l'expiration**
+reste le seul chemin sans test : le couvrir en unitaire demanderait de simuler le
+constructeur de requetes Doctrine, un mock trop fragile pour la garantie qu'il
+apporte. A reprendre en integration avec ECO-16b.

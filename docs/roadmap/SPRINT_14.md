@@ -64,14 +64,17 @@
 > personnages d'un meme compte refuse — le jeu autorise plusieurs personnages (regle #12) et l'HV
 > ne comparait que l'identifiant de personnage, laissant un joueur blanchir objets et Gils et
 > inscrire au marche des prix qu'aucune transaction reelle n'a valides. Plafond d'echanges par
-> **couple** de joueurs, configurable. Escrow audite : il etait deja complet, seul le retour
-> d'objet a l'expiration n'etait couvert par aucun test.
+> **couple** de joueurs, configurable. Escrow audite : il etait deja complet ; seul le retour
+> d'objet a l'expiration reste sans test, repris en integration avec ECO-16b.
 
 ### ECO-16b — Journal economique & outils de moderation (S | ★★ | HAUTE)
 > Le **volet outillage** d'ECO-16, separe pour rester livrable en une session (regle projet #8).
 > Prerequis : ← ECO-16a
 - [ ] Journal/analytics des transactions pour detection d'anomalies (volume par couple,
       prix aberrants vs mediane, pics de vente)
+- [ ] Couvrir en integration le retour d'objet a **l'expiration** d'une annonce — seul chemin
+      d'escrow sans test, un mock unitaire du constructeur de requetes Doctrine etant trop
+      fragile pour la garantie qu'il apporte
 - [ ] Outils de moderation admin : annulation de n'importe quelle annonce, suspension d'un vendeur
 - [ ] Etendre l'escrow et les regles anti-abus aux canaux suivants quand ils existeront
       (commandes de craft ECO-05+, echoppes ECO-10+)

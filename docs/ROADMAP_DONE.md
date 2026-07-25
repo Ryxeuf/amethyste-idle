@@ -32,7 +32,7 @@ A l'achat et a la mise, **jamais a la finalisation d'enchere** : celle-ci est de
 
 ### Escrow : ce que l'audit a trouve
 
-Rien a construire. L'objet quitte l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration ; les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la surenchere. Le seul manque etait un **test** sur le retour d'objet a l'expiration — un chemin non couvert, donc une destruction d'objet silencieuse a un refactor pres. Il est desormais verrouille.
+Rien a construire. L'objet quitte l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration ; les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la surenchere. Le seul manque est un **test** sur le retour d'objet a l'expiration. Le couvrir en unitaire demanderait de simuler le constructeur de requetes Doctrine — un mock qui casse au premier changement de type de retour de l'ORM, pour une garantie qui merite mieux. Le chemin est laisse decouvert et suivi en ECO-16b, ou il sera repris en integration.
 
 ### Perimetre
 
