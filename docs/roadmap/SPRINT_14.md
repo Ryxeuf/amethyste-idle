@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **8 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18), **6 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **9 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18, ECO-19), **7 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -50,15 +50,23 @@
 > liaisons croisees ajoutees (niveaux 2 a 5), toutes thematiquement evidentes, **aucune au palier
 > d'entree** — croiser au niveau 1 aurait casse le plancher anti cold-start d'ECO-02.
 
-### ECO-18 — Reconcilier les arbres de talent et les recettes (M | ★★ | MOYENNE)
-> Decouvert par l'audit ECO-02 : les deux jeux de donnees ont ete ecrits separement et jamais
-> croises. Un skill qui cite un slug de recette inexistant ne debloque rien, **sans erreur**.
-> Prerequis : ← ECO-02
-- [ ] 35 slugs de recette cites par des skills n'existent pas : creer la recette ou corriger le slug
-- [ ] 39 recettes livrees ne sont debloquees par aucun skill : les rattacher a un rang d'arbre
-- [ ] Etendre `equip.tool` aux paliers fer/acier/mithril des outils d'artisanat (seul le bronze
-      est equipable depuis ECO-02 — le plancher, pas le plafond)
-- [ ] Garde-fou : test croisant les deux jeux de donnees dans les deux sens
+> **ECO-18 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : recablages evidents faits — slugs
+> fantomes **33 → 17**, recettes orphelines **37 → 1** — et progression complete des outils
+> d'artisanat (bronze → fer → acier → mithril, seul le bronze etant equipable auparavant).
+> `SkillRecipeConsistencyTest` croise les deux jeux de donnees dans les deux sens et verifie que
+> les exceptions declarees en sont encore.
+
+### ECO-19 — Ecrire les recettes manquantes des arbres (M | ★★ | MOYENNE)
+> Ce qui reste apres ECO-18 est du **contenu**, pas de la plomberie : 17 slugs cites par des
+> skills n'ont jamais eu de recette (acier, cuir de dragon, carquois, pierre a aiguiser, elixirs
+> de vitesse et de transmutation). La dette est figee dans `RECIPES_TO_AUTHOR`.
+> Prerequis : ← ECO-18, ECO-14 (respecter l'interdependance des metiers)
+- [ ] Palier **acier** du forgeron : epee, dague, hache, cotte de mailles, plaque, plaque lourde
+- [ ] Palier **cuir de dragon / enchante** du tanneur, et les deux carquois
+- [ ] Elixirs manquants de l'alchimiste : vitesse, transmutation, potion d'energie standard
+- [ ] `recipe-iron-sword` et `recipe-whetstone` (objets deja existants, recettes absentes)
+- [ ] Rattacher `recipe-poison-vial` a un nœud d'arbre d'alchimie (choix de design)
+- [ ] Vider `RECIPES_TO_AUTHOR` et `RECIPES_WITHOUT_TREE_NODE` au fur et a mesure
 
 > **ECO-16a livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **regles**. Commerce entre
 > personnages d'un meme compte refuse — le jeu autorise plusieurs personnages (regle #12) et l'HV
