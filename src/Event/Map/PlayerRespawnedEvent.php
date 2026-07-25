@@ -9,9 +9,6 @@ class PlayerRespawnedEvent extends Event
 {
     final public const NAME = 'event.map.player.respawned';
 
-    /**
-     * PlayerMovedEvent constructor.
-     */
     public function __construct(private readonly Player $player)
     {
     }

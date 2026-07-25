@@ -2,8 +2,10 @@
 
 namespace App\Tests\Unit\GameEngine\Quest;
 
+use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\PlayerQuest;
+use App\Entity\App\Zone;
 use App\Entity\Game\Monster;
 use App\GameEngine\Quest\DailyQuestService;
 use App\GameEngine\Quest\PlayerQuestHelper;
@@ -267,12 +269,12 @@ class PlayerQuestUpdaterTest extends TestCase
         $this->assertEquals(0, $quest->getTracking()['deliver'][0]['count']);
     }
 
-    public function testUpdateExploredMatchesCoordinates(): void
+    public function testUpdateExploredMatchesZoneSlug(): void
     {
         $quest = new PlayerQuest();
         $quest->setTracking([
             'explore' => [
-                ['map_id' => 1, 'coordinates' => '15.20', 'count' => 0, 'necessary' => 1, 'name' => 'Clairière'],
+                ['zone_slug' => 'foret-des-murmures', 'map_id' => null, 'coordinates' => null, 'count' => 0, 'necessary' => 1, 'name' => 'Forêt'],
             ],
         ]);
 
@@ -281,17 +283,17 @@ class PlayerQuestUpdaterTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->updater->updateExplored(1, '15.20');
+        $this->updater->updateExplored($this->makeZone('foret-des-murmures'));
 
         $this->assertEquals(1, $quest->getTracking()['explore'][0]['count']);
     }
 
-    public function testUpdateExploredWrongCoordinatesNoChange(): void
+    public function testUpdateExploredWrongZoneSlugNoChange(): void
     {
         $quest = new PlayerQuest();
         $quest->setTracking([
             'explore' => [
-                ['map_id' => 1, 'coordinates' => '15.20', 'count' => 0, 'necessary' => 1, 'name' => 'Clairière'],
+                ['zone_slug' => 'foret-des-murmures', 'map_id' => null, 'coordinates' => null, 'count' => 0, 'necessary' => 1, 'name' => 'Forêt'],
             ],
         ]);
 
@@ -300,17 +302,19 @@ class PlayerQuestUpdaterTest extends TestCase
 
         $this->entityManager->expects($this->never())->method('flush');
 
-        $this->updater->updateExplored(1, '10.10');
+        $this->updater->updateExplored($this->makeZone('mines-profondes'));
 
         $this->assertEquals(0, $quest->getTracking()['explore'][0]['count']);
     }
 
-    public function testUpdateExploredNullCoordinatesMatchesAnyOnMap(): void
+    public function testUpdateExploredMatchesLegacyMapIdViaSourceMap(): void
     {
+        // Contenu herite de la carte : la cible reste un map_id, resolu via
+        // Zone::sourceMap. Les coordonnees ne sont plus discriminantes.
         $quest = new PlayerQuest();
         $quest->setTracking([
             'explore' => [
-                ['map_id' => 1, 'coordinates' => null, 'count' => 0, 'necessary' => 1, 'name' => 'Carte entière'],
+                ['map_id' => 1, 'coordinates' => '15.20', 'count' => 0, 'necessary' => 1, 'name' => 'Clairière'],
             ],
         ]);
 
@@ -319,7 +323,7 @@ class PlayerQuestUpdaterTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->updater->updateExplored(1, '5.5');
+        $this->updater->updateExplored($this->makeZone('foret-des-murmures', 1));
 
         $this->assertEquals(1, $quest->getTracking()['explore'][0]['count']);
     }
@@ -338,9 +342,97 @@ class PlayerQuestUpdaterTest extends TestCase
 
         $this->entityManager->expects($this->never())->method('flush');
 
-        $this->updater->updateExplored(2, '5.5');
+        $this->updater->updateExplored($this->makeZone('mines-profondes', 2));
 
         $this->assertEquals(0, $quest->getTracking()['explore'][0]['count']);
+    }
+
+    public function testUpdateExploredIgnoresAlreadyCompletedEntry(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'explore' => [
+                ['zone_slug' => 'foret-des-murmures', 'count' => 1, 'necessary' => 1, 'name' => 'Forêt'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->updater->updateExplored($this->makeZone('foret-des-murmures'));
+    }
+
+    public function testUpdateEscortValidatesDestinationZone(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'escort' => [
+                ['destination_zone_slug' => 'village-de-lumiere', 'count' => 0, 'necessary' => 1, 'name' => 'Amener le marchand'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->updater->updateEscort($this->makeZone('village-de-lumiere'));
+
+        $this->assertEquals(1, $quest->getTracking()['escort'][0]['count']);
+    }
+
+    public function testUpdateEscortMatchesLegacyDestinationMapId(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'escort' => [
+                ['destination_map_id' => 2, 'destination_coordinates' => '10.10', 'count' => 0, 'necessary' => 1, 'name' => 'Amener le marchand'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->once())->method('flush');
+
+        $this->updater->updateEscort($this->makeZone('village-de-lumiere', 2));
+
+        $this->assertEquals(1, $quest->getTracking()['escort'][0]['count']);
+    }
+
+    public function testUpdateEscortWrongDestinationNoChange(): void
+    {
+        $quest = new PlayerQuest();
+        $quest->setTracking([
+            'escort' => [
+                ['destination_zone_slug' => 'village-de-lumiere', 'count' => 0, 'necessary' => 1, 'name' => 'Amener le marchand'],
+            ],
+        ]);
+
+        $this->playerQuestHelper->method('getCurrentQuests')->willReturn([$quest]);
+        $this->playerQuestHelper->method('isPlayerQuestCompleted')->willReturn(false);
+
+        $this->entityManager->expects($this->never())->method('flush');
+
+        $this->updater->updateEscort($this->makeZone('marais-brumeux'));
+
+        $this->assertEquals(0, $quest->getTracking()['escort'][0]['count']);
+    }
+
+    private function makeZone(string $slug, ?int $sourceMapId = null): Zone
+    {
+        $zone = (new Zone())->setSlug($slug)->setName(ucfirst($slug));
+
+        if ($sourceMapId !== null) {
+            $map = new Map();
+            $ref = new \ReflectionProperty(Map::class, 'id');
+            $ref->setValue($map, $sourceMapId);
+            $zone->setSourceMap($map);
+        }
+
+        return $zone;
     }
 
     public function testUpdateItemCollectedSkipsQuestWithoutCollectType(): void

@@ -119,4 +119,48 @@ class QuestTrackingFormaterTest extends TestCase
 
         $this->assertEmpty($result);
     }
+
+    public function testFormatExploreAcceptsZoneSlug(): void
+    {
+        // Forme cible depuis ZON-22 : la cible d'exploration est une zone.
+        $result = $this->formater->formatExplore([
+            'explore' => [
+                ['zone_slug' => 'foret-des-murmures', 'name' => 'Forêt des murmures'],
+            ],
+        ]);
+
+        $this->assertCount(1, $result);
+        $this->assertEquals('foret-des-murmures', $result[0]['zone_slug']);
+        $this->assertNull($result[0]['map_id']);
+        $this->assertNull($result[0]['coordinates']);
+        $this->assertEquals('Forêt des murmures', $result[0]['name']);
+    }
+
+    public function testFormatEscortAcceptsDestinationZoneSlug(): void
+    {
+        $result = $this->formater->formatEscort([
+            'escort' => [
+                ['destination_zone_slug' => 'village-de-lumiere', 'name' => 'Amener le marchand'],
+            ],
+        ]);
+
+        $this->assertCount(1, $result);
+        $this->assertEquals('village-de-lumiere', $result[0]['destination_zone_slug']);
+        $this->assertNull($result[0]['destination_map_id']);
+        $this->assertNull($result[0]['destination_coordinates']);
+    }
+
+    public function testFormatEscortKeepsLegacyMapForm(): void
+    {
+        $result = $this->formater->formatEscort([
+            'escort' => [
+                ['destination_map_id' => 2, 'destination_coordinates' => '10.10', 'name' => 'Escorte'],
+            ],
+        ]);
+
+        $this->assertCount(1, $result);
+        $this->assertNull($result[0]['destination_zone_slug']);
+        $this->assertEquals(2, $result[0]['destination_map_id']);
+        $this->assertEquals('10.10', $result[0]['destination_coordinates']);
+    }
 }

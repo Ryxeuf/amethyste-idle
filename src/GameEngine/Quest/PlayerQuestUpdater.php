@@ -3,6 +3,7 @@
 namespace App\GameEngine\Quest;
 
 use App\Entity\App\Mob;
+use App\Entity\App\Zone;
 use App\Helper\PlayerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -113,9 +114,14 @@ class PlayerQuestUpdater
     }
 
     /**
-     * Called when a player reaches specific coordinates on a map.
+     * Called when a player arrives in a zone (ZON-22).
+     *
+     * Depuis le pivot PBBG, l'exploration se compte en **zones** et non plus en
+     * coordonnees : une entree de suivi est validee si elle cible la zone
+     * atteinte, soit par `zone_slug` (forme cible), soit par `map_id` (forme
+     * heritee, resolue via `Zone::sourceMap`).
      */
-    public function updateExplored(int $mapId, string $coordinates): void
+    public function updateExplored(Zone $zone): void
     {
         $quests = $this->playerQuestHelper->getCurrentQuests();
         $changed = false;
@@ -129,13 +135,10 @@ class PlayerQuestUpdater
                 continue;
             }
             foreach ($tracking['explore'] as $idx => $entry) {
-                if ($entry['map_id'] === $mapId && $entry['count'] >= $entry['necessary']) {
+                if ($entry['count'] >= $entry['necessary']) {
                     continue;
                 }
-                if ($entry['map_id'] !== $mapId) {
-                    continue;
-                }
-                if ($entry['coordinates'] !== null && $entry['coordinates'] !== $coordinates) {
+                if (!$this->entryTargetsZone($entry, $zone)) {
                     continue;
                 }
                 $tracking['explore'][$idx]['count'] = 1;
@@ -145,16 +148,16 @@ class PlayerQuestUpdater
         }
 
         // Update daily quests
-        $this->updateDailyQuestTracking(function (array &$tracking) use ($mapId, $coordinates) {
+        $this->updateDailyQuestTracking(function (array &$tracking) use ($zone) {
             if (!isset($tracking['explore'])) {
                 return false;
             }
             $changed = false;
             foreach ($tracking['explore'] as $idx => $entry) {
-                if ($entry['map_id'] !== $mapId || $entry['count'] >= $entry['necessary']) {
+                if ($entry['count'] >= $entry['necessary']) {
                     continue;
                 }
-                if ($entry['coordinates'] !== null && $entry['coordinates'] !== $coordinates) {
+                if (!$this->entryTargetsZone($entry, $zone)) {
                     continue;
                 }
                 $tracking['explore'][$idx]['count'] = 1;
@@ -167,6 +170,24 @@ class PlayerQuestUpdater
         if ($changed) {
             $this->entityManager->flush();
         }
+    }
+
+    /**
+     * Une entree de suivi cible-t-elle la zone atteinte ?
+     *
+     * @param array<string, mixed> $entry
+     */
+    private function entryTargetsZone(array $entry, Zone $zone, string $slugKey = 'zone_slug', string $mapKey = 'map_id'): bool
+    {
+        if (isset($entry[$slugKey])) {
+            return $entry[$slugKey] === $zone->getSlug();
+        }
+
+        if (isset($entry[$mapKey])) {
+            return $entry[$mapKey] === $zone->getSourceMap()?->getId();
+        }
+
+        return false;
     }
 
     /**
@@ -292,9 +313,12 @@ class PlayerQuestUpdater
     }
 
     /**
-     * Called when a player reaches a destination (escort quests).
+     * Called when a player reaches a destination zone (escort quests, ZON-22).
+     *
+     * Cible resolue par `destination_zone_slug` (forme cible) ou
+     * `destination_map_id` (forme heritee, via `Zone::sourceMap`).
      */
-    public function updateEscort(int $mapId, string $coordinates): void
+    public function updateEscort(Zone $zone): void
     {
         $quests = $this->playerQuestHelper->getCurrentQuests();
         $changed = false;
@@ -308,12 +332,14 @@ class PlayerQuestUpdater
                 continue;
             }
             foreach ($tracking['escort'] as $idx => $entry) {
-                if ($entry['destination_map_id'] === $mapId
-                    && $entry['destination_coordinates'] === $coordinates
-                    && $entry['count'] < $entry['necessary']) {
-                    $tracking['escort'][$idx]['count'] = 1;
-                    $changed = true;
+                if ($entry['count'] >= $entry['necessary']) {
+                    continue;
                 }
+                if (!$this->entryTargetsZone($entry, $zone, 'destination_zone_slug', 'destination_map_id')) {
+                    continue;
+                }
+                $tracking['escort'][$idx]['count'] = 1;
+                $changed = true;
             }
             $quest->setTracking($tracking);
         }
