@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\App\Map;
 use App\Entity\App\Mob;
 use App\Entity\App\Zone;
 use App\Entity\Game\Monster;
@@ -56,27 +55,5 @@ class MobRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    /**
-     * Charge les mobs d'une carte avec leur Monster (ManyToOne) hydrate.
-     *
-     * Volontairement sans `leftJoin` sur les OneToMany de Monster (`spells`,
-     * `monsterItems` et leur `item`) : le seul appelant (`/api/map/entities`)
-     * n'utilise que `getName()`, `getSlug()`, `isWorldBoss()`, `isNocturnal()`
-     * et `getSpawnWeather()`. Les joins OneToMany generaient un produit
-     * cartesien (3 spells x 5 items = 15 lignes par mob sur la wire) sans
-     * benefice fonctionnel.
-     *
-     * @return Mob[]
-     */
-    public function findByMapWithMonster(Map $map): array
-    {
-        return $this->createQueryBuilder('m')
-            ->join('m.monster', 'mon')->addSelect('mon')
-            ->where('m.map = :map')
-            ->setParameter('map', $map)
-            ->getQuery()
-            ->getResult();
     }
 }

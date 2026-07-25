@@ -22,23 +22,21 @@ class DomainEventDispatchGuardTest extends TestCase
     /**
      * Evenements connus sans emetteur, tolerés le temps d'etre traites.
      *
-     * Ils **preexistent** au pivot PBBG et sont inscrits au jalon ZON-25
-     * (Sprint 13) ; deux d'entre eux ont un impact fonctionnel reel :
+     * `FightLootedEvent` a ete rebranche par ZON-25 ; `PlayerActionHitEvent` et
+     * `PlayerActionMissEvent` etaient des **faux positifs** — ce sont des classes
+     * parentes, jamais instanciees directement mais etendues par des evenements
+     * bel et bien emis (`PlayerAttackHitEvent`, `PlayerSpellHitEvent`...). Le
+     * test les exclut desormais automatiquement.
      *
-     * - `PnjDialogEvent` : seul declencheur de `PlayerQuestUpdater::updateTalkedTo`
-     *   — les objectifs de quete « parler a un PNJ » ne progressent pas.
-     * - `FightLootedEvent` : seul declencheur de `FightCleaner::removeFight` et
-     *   de l'etape « inventaire » du tutoriel — les combats ne sont pas purges
-     *   apres le butin.
-     * - `PlayerActionHitEvent` / `PlayerActionMissEvent` : aucun abonne, code mort.
+     * Reste `PnjDialogEvent` : son emission suppose un ecran de dialogue PNJ,
+     * disparu avec les overlays carte (ZON-21a). Il est traite par **ZON-27**
+     * (couche PNJ de zone) ; d'ici la, les objectifs de quete « parler a un
+     * PNJ » ne progressent pas.
      *
      * @var list<string>
      */
     private const KNOWN_ORPHANS = [
         'PnjDialogEvent',
-        'FightLootedEvent',
-        'PlayerActionHitEvent',
-        'PlayerActionMissEvent',
     ];
 
     public function testEveryDomainEventHasAnEmitter(): void
@@ -46,6 +44,7 @@ class DomainEventDispatchGuardTest extends TestCase
         $projectDir = \dirname(__DIR__, 3);
         $sources = $this->phpFilesIn($projectDir . '/src');
         $events = $this->phpFilesIn($projectDir . '/src/Event');
+        $parents = $this->parentEventNames($events);
 
         $orphans = [];
 
@@ -56,6 +55,13 @@ class DomainEventDispatchGuardTest extends TestCase
             // Seuls les evenements de domaine (constante NAME) sont concernes :
             // les classes de base abstraites n'en portent pas.
             if (!str_contains($contents, 'const NAME')) {
+                continue;
+            }
+
+            // Classe parente : jamais instanciee directement, mais etendue par
+            // des evenements qui, eux, sont emis (ex. PlayerActionHitEvent →
+            // PlayerAttackHitEvent / PlayerSpellHitEvent).
+            if (\in_array($shortName, $parents, true)) {
                 continue;
             }
 
@@ -97,6 +103,26 @@ class DomainEventDispatchGuardTest extends TestCase
                 sprintf('%s a retrouve un emetteur : retirez-le de KNOWN_ORPHANS.', $orphan)
             );
         }
+    }
+
+    /**
+     * Noms courts des classes d'evenement etendues par une autre.
+     *
+     * @param list<string> $eventFiles
+     *
+     * @return list<string>
+     */
+    private function parentEventNames(array $eventFiles): array
+    {
+        $parents = [];
+
+        foreach ($eventFiles as $file) {
+            if (preg_match('/\bclass\s+\w+\s+extends\s+(\w+)/', (string) file_get_contents($file), $matches) === 1) {
+                $parents[$matches[1]] = true;
+            }
+        }
+
+        return array_keys($parents);
     }
 
     /**
