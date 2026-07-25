@@ -46,9 +46,9 @@ class ZoneCombatFlowTest extends AbstractE2ETestCase
         }
 
         $this->waitForSelector('#panel-actions');
-        $this->assertSelectorExists('#action-attack');
-        $this->assertSelectorExists('#action-flee');
-        $this->assertSelectorExists('#combat-log');
+        $this->assertGreaterThan(0, $this->countSelector('#action-attack'), 'Selecteur absent : #action-attack');
+        $this->assertGreaterThan(0, $this->countSelector('#action-flee'), 'Selecteur absent : #action-flee');
+        $this->assertGreaterThan(0, $this->countSelector('#combat-log'), 'Selecteur absent : #combat-log');
 
         $this->resolvePendingFight();
     }

@@ -31,8 +31,8 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $this->waitForSelector('[data-testid="zone-header"]');
         $this->waitForTurbo();
 
-        $this->assertSelectorExists('[data-testid="zone-name"]');
-        $this->assertSelectorExists('[data-testid="zone-energy"]');
+        $this->assertGreaterThan(0, $this->countSelector('[data-testid="zone-name"]'), 'Selecteur absent : [data-testid="zone-name"]');
+        $this->assertGreaterThan(0, $this->countSelector('[data-testid="zone-energy"]'), 'Selecteur absent : [data-testid="zone-energy"]');
 
         $zoneName = $this->textOf('[data-testid="zone-name"]');
         $this->assertNotNull($zoneName, 'La zone courante doit etre nommee.');
@@ -57,7 +57,7 @@ class ZoneFlowTest extends AbstractE2ETestCase
         $action = $this->attributeOf('[data-testid="zone-travel-form"]', 'action');
         $this->assertNotNull($action);
         $this->assertStringContainsString('/game/zone/travel/', $action);
-        $this->assertSelectorExists('[data-testid="zone-travel-button"]');
+        $this->assertGreaterThan(0, $this->countSelector('[data-testid="zone-travel-button"]'), 'Selecteur absent : [data-testid="zone-travel-button"]');
     }
 
     public function testExploreKeepsPlayerInGame(): void
