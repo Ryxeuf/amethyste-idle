@@ -539,3 +539,43 @@ donnees **dans les deux sens**, verifie qu'un outil vendu par un PNJ est toujour
 equipable, et — surtout — verifie que **les exceptions declarees en sont encore**.
 Sans ce dernier controle, les listes de dette survivraient au probleme qu'elles
 decrivent.
+
+---
+
+## 18. Journal economique et moderation (ECO-16b)
+
+Les regles d'ECO-16a (§16) refusent ce qui est **certainement** abusif : commerce
+entre personnages d'un meme compte, echanges repetes entre deux joueurs. Restent
+les cas qui ne se prouvent pas a la transaction et ne se voient qu'a l'echelle.
+Ceux-la ne se bloquent pas, ils **se donnent a voir**.
+
+### Trois signaux, aucune preuve
+
+| Signal | Ce qu'il montre | Ce qu'il ne prouve pas |
+|--------|-----------------|------------------------|
+| Couples les plus actifs | Ce qui se passe **sous** le plafond d'ECO-16a | Deux amis peuvent commercer beaucoup |
+| Prix aberrants (×5 vs moyenne de l'objet) | Une vente hors de toute logique de marche | Un objet rare bien negocie en produit un aussi |
+| Volume quotidien (14 j) | Un pic soudain | Un evenement serveur en produit un aussi |
+
+Le seuil de detection d'un prix aberrant exige **au moins 3 ventes** de l'objet
+sur la fenetre : en dessous, la moyenne n'a aucune valeur de reference et le
+signal serait du bruit.
+
+Aucun de ces signaux ne declenche d'action automatique. C'est deliberé : une
+sanction automatique sur un signal ambigu punit d'abord les joueurs atypiques.
+
+### Deux sanctions, deux echelles
+
+**Annulation d'annonce** — l'objet revient au vendeur et **la mise en cours est
+remboursee**. La moderation retire une annonce ; elle ne confisque pas les Gils
+d'un encherisseur qui n'a rien fait. C'est la seule difference de fond avec
+l'annulation par le vendeur, qu'une enchere en cours bloque : une annonce
+frauduleuse doit pouvoir disparaitre meme si quelqu'un a mise dessus.
+
+**Suspension d'acces au marche** — le bannissement de compte existe deja mais
+coupe tout. Un joueur qui truque des prix doit pouvoir continuer a jouer pendant
+que le marche lui est ferme. La suspension **expire d'elle-meme** : une sanction
+qu'il faut penser a lever finit par ne jamais l'etre.
+
+La suspension ferme le marche entier, ventes flash comprises — c'est l'acces au
+canal qui est suspendu, pas seulement le commerce entre joueurs.

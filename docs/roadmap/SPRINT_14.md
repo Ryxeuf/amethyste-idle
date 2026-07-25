@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **9 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18, ECO-19), **7 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **9 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18, ECO-19), **8 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -56,6 +56,22 @@
 > `SkillRecipeConsistencyTest` croise les deux jeux de donnees dans les deux sens et verifie que
 > les exceptions declarees en sont encore.
 
+> **ECO-16a livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **regles**. Commerce entre
+> personnages d'un meme compte refuse — le jeu autorise plusieurs personnages (regle #12) et l'HV
+> ne comparait que l'identifiant de personnage, laissant un joueur blanchir objets et Gils et
+> inscrire au marche des prix qu'aucune transaction reelle n'a valides. Plafond d'echanges par
+> **couple** de joueurs, configurable. Escrow audite : il etait deja complet ; seul le retour
+> d'objet a l'expiration reste sans test, repris en integration avec ECO-16b.
+
+> **ECO-16b livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : journal economique avec trois
+> signaux d'anomalie (couples les plus actifs, prix aberrants, volume quotidien), annulation
+> d'annonce par la moderation avec remboursement de la mise en cours, et **suspension d'acces au
+> marche** qui expire d'elle-meme — sanction proportionnee la ou seul le bannissement de compte
+> existait. Le retour d'objet a l'expiration est desormais couvert en integration.
+>
+> **Reste ouvert** : etendre l'escrow et les regles anti-abus aux canaux suivants (commandes de
+> craft ECO-05+, echoppes ECO-10+) — ils n'existent pas encore.
+
 ### ECO-19 — Ecrire les recettes manquantes des arbres (M | ★★ | MOYENNE)
 > Ce qui reste apres ECO-18 est du **contenu**, pas de la plomberie : 17 slugs cites par des
 > skills n'ont jamais eu de recette (acier, cuir de dragon, carquois, pierre a aiguiser, elixirs
@@ -68,25 +84,6 @@
 - [ ] Rattacher `recipe-poison-vial` a un nœud d'arbre d'alchimie (choix de design)
 - [ ] Vider `RECIPES_TO_AUTHOR` et `RECIPES_WITHOUT_TREE_NODE` au fur et a mesure
 
-> **ECO-16a livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **regles**. Commerce entre
-> personnages d'un meme compte refuse — le jeu autorise plusieurs personnages (regle #12) et l'HV
-> ne comparait que l'identifiant de personnage, laissant un joueur blanchir objets et Gils et
-> inscrire au marche des prix qu'aucune transaction reelle n'a valides. Plafond d'echanges par
-> **couple** de joueurs, configurable. Escrow audite : il etait deja complet ; seul le retour
-> d'objet a l'expiration reste sans test, repris en integration avec ECO-16b.
-
-### ECO-16b — Journal economique & outils de moderation (S | ★★ | HAUTE)
-> Le **volet outillage** d'ECO-16, separe pour rester livrable en une session (regle projet #8).
-> Prerequis : ← ECO-16a
-- [ ] Journal/analytics des transactions pour detection d'anomalies (volume par couple,
-      prix aberrants vs mediane, pics de vente)
-- [ ] Couvrir en integration le retour d'objet a **l'expiration** d'une annonce — seul chemin
-      d'escrow sans test, un mock unitaire du constructeur de requetes Doctrine etant trop
-      fragile pour la garantie qu'il apporte
-- [ ] Outils de moderation admin : annulation de n'importe quelle annonce, suspension d'un vendeur
-- [ ] Etendre l'escrow et les regles anti-abus aux canaux suivants quand ils existeront
-      (commandes de craft ECO-05+, echoppes ECO-10+)
-
 ---
 
 ### Definition of Done
@@ -98,8 +95,8 @@
 - [x] HV segmente par region, taxe reversee a la guilde controlante — ou detruite quand
       aucune guilde ne controle la region (ECO-03, ECO-04)
 - [x] Chaine de production documentee, aucun metier autosuffisant (ECO-14)
-- [~] Escrow operationnel et regles anti-abus posees (ECO-16a) ; journalisation et outils
-      de moderation restent a livrer (ECO-16b)
+- [x] Escrow operationnel, regles anti-abus posees (ECO-16a), journal economique et outils
+      de moderation livres (ECO-16b)
 
 ---
 

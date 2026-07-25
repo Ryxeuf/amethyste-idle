@@ -435,6 +435,73 @@ class AuctionManagerTest extends TestCase
         $this->manager->placeBid($bidder, $listing, 200);
     }
 
+    /**
+     * ECO-16b : la suspension ferme le marche, pas seulement le commerce entre
+     * joueurs — elle vaut donc aussi face au canal systeme.
+     */
+    public function testSuspendedPlayerCannotBuy(): void
+    {
+        $buyer = $this->createPlayer(2, 1000);
+        $buyer->setTradeSuspendedUntil(new \DateTimeImmutable('+3 days'));
+
+        $this->em->expects($this->never())->method('persist');
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('acces au marche est suspendu');
+
+        $this->manager->buyListing($buyer, $this->createSimpleListing($this->createPlayer(1, 0), 100));
+    }
+
+    public function testSuspendedPlayerCannotList(): void
+    {
+        $seller = $this->createPlayer(1, 1000);
+        $seller->setTradeSuspendedUntil(new \DateTimeImmutable('+3 days'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('acces au marche est suspendu');
+
+        $this->manager->createListing($seller, $this->createPlayerItem(), 100, 1);
+    }
+
+    /**
+     * La suspension expire d'elle-meme : une sanction qu'il faut penser a lever
+     * finit par ne jamais l'etre.
+     */
+    public function testAnExpiredSuspensionNoLongerBlocks(): void
+    {
+        $buyer = $this->createPlayer(2, 1000);
+        $buyer->setTradeSuspendedUntil(new \DateTimeImmutable('-1 hour'));
+
+        $transaction = $this->manager->buyListing($buyer, $this->createSimpleListing($this->createPlayer(1, 0), 100));
+
+        $this->assertSame(100, $transaction->getTotalPrice());
+    }
+
+    /**
+     * L'annulation par la moderation se distingue de celle du vendeur sur deux
+     * points : aucun controle de propriete, et les encheres en cours ne
+     * l'empechent pas — une annonce frauduleuse doit pouvoir disparaitre meme si
+     * quelqu'un a mise dessus.
+     */
+    public function testModeratorCancelRefundsTheStandingBidAndReturnsTheItem(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 0);
+
+        $listing = $this->createSimpleListing($seller, 100);
+        $listing->setType(AuctionType::Auction);
+        $listing->setCurrentBidder($bidder);
+        $listing->setCurrentBid(250);
+        $listing->getPlayerItem()->setInventory(null);
+
+        $this->manager->cancelListingAsModerator($listing, 'prix truque');
+
+        $this->assertSame(AuctionStatus::Cancelled, $listing->getStatus());
+        $this->assertSame(250, $bidder->getGils(), 'La mise doit etre rendue : la moderation ne confisque pas.');
+        $this->assertNull($listing->getCurrentBidder());
+        $this->assertNotNull($listing->getPlayerItem()->getInventory());
+    }
+
     private function createSimpleListing(Player $seller, int $price): AuctionListing
     {
         $listing = new AuctionListing();
