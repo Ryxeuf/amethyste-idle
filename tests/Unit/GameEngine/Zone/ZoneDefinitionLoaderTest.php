@@ -155,6 +155,26 @@ class ZoneDefinitionLoaderTest extends TestCase
         $slugs = array_column($result['zones'], 'slug');
         self::assertContains('village-de-lumiere', $slugs);
         self::assertContains('crete-de-ventombre', $slugs);
-        self::assertCount(6, $result['connections']);
+        // Le compte est epingle volontairement : il attrape une edition
+        // accidentelle du graphe livre. 8 depuis ZON-26a (etoile + anneau).
+        self::assertCount(8, $result['connections']);
+    }
+
+    public function testShippedWorldOneHasNoIsolatedZone(): void
+    {
+        // ZON-26a : une zone injoignable est un contenu mort. La verification
+        // porte sur l'intention du graphe, pas sur un effectif fige.
+        $loader = new ZoneDefinitionLoader(\dirname(__DIR__, 4));
+        $result = $loader->loadFile($loader->defaultFile());
+
+        $connected = [];
+        foreach ($result['connections'] as $connection) {
+            $connected[$connection['from']] = true;
+            $connected[$connection['to']] = true;
+        }
+
+        foreach (array_column($result['zones'], 'slug') as $slug) {
+            self::assertArrayHasKey($slug, $connected, sprintf('La zone "%s" n\'est reliee a aucune autre.', $slug));
+        }
     }
 }
