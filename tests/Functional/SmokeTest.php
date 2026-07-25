@@ -58,18 +58,6 @@ class SmokeTest extends WebTestCase
         yield 'quests' => ['/game/quests'];
     }
 
-    public function testApiMapConfigDoesNotReturn500(): void
-    {
-        $this->client->request('GET', '/api/map/config');
-        $statusCode = $this->client->getResponse()->getStatusCode();
-
-        $this->assertLessThan(
-            500,
-            $statusCode,
-            sprintf('/api/map/config returned HTTP %d', $statusCode),
-        );
-    }
-
     public function testUnauthenticatedGameAccessRedirects(): void
     {
         // Ensure the kernel is shut down before creating a fresh anonymous client

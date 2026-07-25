@@ -1,12 +1,14 @@
 <?php
 
-namespace App\GameEngine\Map;
+namespace App\GameEngine\Sprite;
 
 use Symfony\Component\Asset\Packages;
 
 /**
- * Centralise la configuration des sprites pour le rendu de la carte.
- * Chaque clé correspond à un spriteKey utilisé côté frontend par SpriteAnimator.
+ * Centralise la configuration des sprites (feuilles, tailles, animations).
+ * Utilise cote serveur pour les apercus de sprites de l'admin (PNJ, monstres,
+ * joueurs) via l'extension Twig `sprite_config`. Le rendu carte client (PixiJS)
+ * a ete retire avec ZON-21.
  *
  * Métadonnées par sprite :
  *   - sheet: URL de la sprite sheet

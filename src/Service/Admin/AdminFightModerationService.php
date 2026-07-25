@@ -6,7 +6,6 @@ use App\Entity\App\Fight;
 use App\Entity\App\Player;
 use App\GameEngine\Fight\CombatLogArchiver;
 use App\GameEngine\Fight\StatusEffectManager;
-use App\GameEngine\Realtime\Map\MovedPlayerHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -17,7 +16,6 @@ class AdminFightModerationService
 {
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly CombatLogArchiver $combatLogArchiver,
         private readonly StatusEffectManager $statusEffectManager,
         private readonly LoggerInterface $logger,
@@ -28,7 +26,6 @@ class AdminFightModerationService
     {
         $player->setIsMoving($isMoving);
         $this->em->flush();
-        $this->movedPlayerHandler->movePlayer($player);
     }
 
     /**
@@ -48,7 +45,6 @@ class AdminFightModerationService
 
         if ($fight->isWorldBossFight()) {
             $this->em->flush();
-            $this->movedPlayerHandler->movePlayer($player);
 
             return;
         }
@@ -61,7 +57,6 @@ class AdminFightModerationService
         }
 
         $this->em->flush();
-        $this->movedPlayerHandler->movePlayer($player);
     }
 
     public function applyFightParameters(Fight $fight, int $step, bool $inProgress): void
@@ -92,16 +87,12 @@ class AdminFightModerationService
 
         $fight->setInProgress(false);
         $this->em->flush();
-
-        foreach ($players as $player) {
-            $this->movedPlayerHandler->movePlayer($player);
-        }
     }
 
     /**
      * Supprime le combat et les mobs (comme une fin de combat cote serveur). Destructif.
      *
-     * @return Player[] joueurs qui etaient dans le combat (pour Mercure)
+     * @return Player[] joueurs qui etaient dans le combat
      */
     public function forceDeleteFightAndMobs(Fight $fight): array
     {
@@ -127,10 +118,6 @@ class AdminFightModerationService
 
         $this->em->remove($fight);
         $this->em->flush();
-
-        foreach ($players as $player) {
-            $this->movedPlayerHandler->movePlayer($player);
-        }
 
         return $players;
     }

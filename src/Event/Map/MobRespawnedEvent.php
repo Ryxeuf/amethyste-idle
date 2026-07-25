@@ -10,7 +10,7 @@ class MobRespawnedEvent extends Event
     final public const NAME = 'event.map.mob.respawned';
 
     /**
-     * MobMovedEvent constructor.
+     * MobRespawnedEvent constructor.
      */
     public function __construct(private readonly Mob $mob)
     {

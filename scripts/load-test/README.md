@@ -4,6 +4,14 @@ Scenarios [k6](https://k6.io/) pour mesurer la tenue en charge du serveur
 (FrankenPHP + Symfony + PostgreSQL + Mercure). Non destructif : aucun scenario
 ici n'ecrit en base, tous ciblent des routes publiques.
 
+> **Note ZON-21** : la carte navigable et ses endpoints (`/game/map`,
+> `/api/map/*`) ainsi que les topics Mercure `map/move` / `map/respawn` ont ete
+> supprimes (pivot PBBG → modele zone). Le scenario `authenticated-gameplay`
+> cible desormais `/game/zone` + petites API JSON. Les sections ci-dessous qui
+> decrivent encore le profil de charge « carte » (API map, topic `map/move`)
+> sont conservees pour reference historique et seront rafraichies vers le
+> modele zone lors d'une passe load-test dediee.
+
 Premier jalon de la tache **134 — Load testing & scaling** (Sprint 12) :
 infrastructure k6 + scenario `guest-browsing`. Jalon 2 : scenario
 `metrics-stress` pour isoler la latence de collecte Prometheus / Doctrine

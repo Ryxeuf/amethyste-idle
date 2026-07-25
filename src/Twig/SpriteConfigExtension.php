@@ -2,7 +2,7 @@
 
 namespace App\Twig;
 
-use App\GameEngine\Map\SpriteConfigProvider;
+use App\GameEngine\Sprite\SpriteConfigProvider;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

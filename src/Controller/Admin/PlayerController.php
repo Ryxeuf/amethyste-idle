@@ -11,7 +11,6 @@ use App\Entity\App\PlayerQuestCompleted;
 use App\Entity\Game\Domain;
 use App\Entity\Game\Item;
 use App\Form\Admin\PlayerPositionType;
-use App\GameEngine\Realtime\Map\MovedPlayerHandler;
 use App\Helper\CellHelper;
 use App\Helper\MapCellValidator;
 use App\Service\Admin\AdminFightModerationService;
@@ -31,7 +30,6 @@ class PlayerController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly AdminLogger $adminLogger,
-        private readonly MovedPlayerHandler $movedPlayerHandler,
         private readonly AdminFightModerationService $fightModeration,
     ) {
     }
@@ -97,7 +95,6 @@ class PlayerController extends AbstractController
                     $player->setLastCoordinates($normalized);
                     $player->setIsMoving(false);
                     $this->em->flush();
-                    $this->movedPlayerHandler->movePlayer($player);
 
                     $this->adminLogger->log('update', 'Player', $player->getId(), sprintf(
                         '%s deplace vers %s sur %s',
