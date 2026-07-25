@@ -73,6 +73,17 @@
                     </div>
                 {% endfor %}
 
+                {% for result in app.flashes('expedition_result') %}
+                    <div class="mb-3 px-3 py-2 rounded-md text-sm bg-amber-900/30 border border-amber-700/50 text-amber-100">
+                        🧭 {{ 'game.zone.expedition.result'|trans({'%zone%': result.zone, '%gils%': result.gils}) }}
+                        {% if result.items is not empty %}
+                            <span class="block text-xs text-amber-200/80 mt-0.5">
+                                {% for item in result.items %}{{ item.quantity }}× {{ item.name }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            </span>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
                 {% if justArrived %}
                     <div class="mb-3 px-3 py-2 rounded-md text-sm bg-emerald-900/40 border border-emerald-700/50 text-emerald-200">
                         {{ 'game.zone.travel.flash.arrived'|trans }}
@@ -92,6 +103,54 @@
                             {% endif %}
                         </p>
                     </div>
+                {% endif %}
+
+                {# ── Expedition time-gated (ZON-13) ──────────────── #}
+                {% if expedition %}
+                    {% if expedition.active %}
+                        <div class="mb-4 px-3 py-2.5 rounded-md bg-amber-900/25 border border-amber-700/50">
+                            {% if expedition.ready %}
+                                <p class="text-sm text-amber-100 font-medium">
+                                    🧭 {{ 'game.zone.expedition.ready'|trans({'%zone%': expedition.zone.localizedName(app.request.locale)}) }}
+                                </p>
+                                <form method="post" action="{{ path('app_game_zone_expedition_claim') }}" class="mt-2">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('expedition_claim') }}">
+                                    <button type="submit"
+                                            class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-amber-800/50 border border-amber-500 text-amber-50 hover:bg-amber-700/60">
+                                        {{ 'game.zone.expedition.claim'|trans }}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p class="text-sm text-amber-100 font-medium">
+                                    🧭 {{ 'game.zone.expedition.in_progress'|trans({'%zone%': expedition.zone.localizedName(app.request.locale)}) }}
+                                </p>
+                                <p class="text-xs text-amber-200/80 mt-0.5">
+                                    {% if expedition.remainingSeconds < 60 %}
+                                        {{ 'game.zone.expedition.return_imminent'|trans }}
+                                    {% else %}
+                                        {{ 'game.zone.expedition.return_in'|trans({'%minutes%': (expedition.remainingSeconds / 60)|round(0, 'ceil')}) }}
+                                    {% endif %}
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% elseif expedition.eligible and not travel %}
+                        <div class="mb-4 px-3 py-2.5 rounded-md bg-amber-900/15 border border-amber-800/40">
+                            <p class="text-sm font-semibold text-amber-100">{{ 'game.zone.expedition.heading'|trans }}</p>
+                            <p class="text-xs text-amber-200/70 mt-0.5 mb-2">{{ 'game.zone.expedition.subtitle'|trans }}</p>
+                            <div class="flex flex-wrap gap-2">
+                                {% for key, seconds in expedition.durations %}
+                                    <form method="post" action="{{ path('app_game_zone_expedition_start', {durationKey: key}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('expedition_start_' ~ key) }}">
+                                        <button type="submit"
+                                                class="inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-amber-900/40 border border-amber-600 text-amber-100 hover:bg-amber-800/50">
+                                            {{ ('game.zone.expedition.duration.' ~ key)|trans }}
+                                            <span class="ml-2 text-[10px] uppercase tracking-wide text-amber-300/90">{{ (seconds / 3600)|round(1) }} h</span>
+                                        </button>
+                                    </form>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
 
                 {# ── En-tete de zone ─────────────────────────────── #}

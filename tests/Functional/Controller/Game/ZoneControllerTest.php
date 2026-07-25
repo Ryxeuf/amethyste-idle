@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
 use App\GameEngine\Zone\ActionEnergyManager;
+use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
 use App\GameEngine\Zone\GatherResult;
@@ -57,6 +58,7 @@ class ZoneControllerTest extends TestCase
     private ExploreService&MockObject $exploreService;
     private HuntService&MockObject $huntService;
     private GatherService&MockObject $gatherService;
+    private ExpeditionService&MockObject $expeditionService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -94,6 +96,10 @@ class ZoneControllerTest extends TestCase
         $this->gatherService = $this->createMock(GatherService::class);
         $this->gatherService->method('getGatherCost')->willReturn(3);
         $this->gatherService->method('getGatherables')->willReturn([]);
+        $this->expeditionService = $this->createMock(ExpeditionService::class);
+        $this->expeditionService->method('getActive')->willReturn(null);
+        $this->expeditionService->method('isEligibleZone')->willReturn(true);
+        $this->expeditionService->method('getDurations')->willReturn(['short' => 3600, 'medium' => 14400, 'long' => 43200]);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -109,6 +115,7 @@ class ZoneControllerTest extends TestCase
             $this->exploreService,
             $this->huntService,
             $this->gatherService,
+            $this->expeditionService,
         );
         $this->controller->setContainer($this->createContainer());
     }

@@ -1093,6 +1093,39 @@
         "tooltip": "Vos PV se régénèrent en temps réel hors combat. Sortir affaibli d'un combat impose d'attendre ou de vous soigner (objets, sorts) avant de repartir.",
         "full_in": "Plein dans ~%minutes% min"
       },
+      "expedition": {
+        "heading": "Expédition",
+        "subtitle": "Envoyez votre personnage explorer cette zone plusieurs heures. Au retour, un butin vous attend. Aucune autre action possible pendant ce temps.",
+        "duration": {
+          "short": "Courte",
+          "medium": "Moyenne",
+          "long": "Longue"
+        },
+        "in_progress": "Expédition en cours vers %zone%.",
+        "return_in": "Retour dans ~%minutes% min.",
+        "return_imminent": "Retour imminent.",
+        "ready": "Votre expédition à %zone% est terminée — un butin vous attend !",
+        "claim": "Récupérer le butin",
+        "result": "Expédition à %zone% : +%gils% gils rapportés.",
+        "flash": {
+          "started": "Expédition lancée. Votre personnage est parti."
+        },
+        "notification": {
+          "title": "Expédition terminée",
+          "message": "Votre personnage est de retour d'expédition. Un butin vous attend sur l'écran de zone."
+        },
+        "error": {
+          "busy": "Impossible : votre personnage est en expédition.",
+          "already_active": "Une expédition est déjà en cours.",
+          "traveling": "Impossible de partir en expédition pendant un voyage.",
+          "in_fight": "Impossible de partir en expédition pendant un combat.",
+          "no_zone": "Aucune zone où partir en expédition.",
+          "zone_ineligible": "Cette zone n'offre aucune expédition.",
+          "unknown_duration": "Durée d'expédition inconnue.",
+          "none": "Aucune expédition à récupérer.",
+          "not_complete": "Votre expédition n'est pas encore terminée."
+        }
+      },
       "explore": {
         "result": {
           "mob": "Vous croisez la route d'un %monster% !",

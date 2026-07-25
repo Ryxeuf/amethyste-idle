@@ -5,6 +5,27 @@
 
 ---
 
+## ZON-13 — Expeditions time-gated (Sprint 9, 2026-07-25)
+
+> Premiere tache du Sprint 9 : le monde continue de rapporter quand le joueur est deconnecte. On envoie son personnage explorer une zone plusieurs heures reelles ; au retour, un butin attend d'etre recupere. Etat exclusif, resolu paresseusement (aucun cron), butin **derive des tables declaratives de la zone** (ZON-11) — enrichir le contenu = editer la donnee de zone.
+
+### Changements
+
+- **`PlayerExpedition`** (entite + table + migration `Version20260725ZoneExpedition`) : player (UNIQUE — une expedition a la fois), zone, `durationKey`, `startedAt`, `endsAt`, `notifiedAt`. Supprimee a la recuperation du butin. `isComplete()` = heure de retour passee.
+- **`PlayerExpeditionRepository::findForPlayer`** : l'expedition en cours ou a recuperer du joueur.
+- **`ExpeditionService`** : paliers de duree (`short`/`medium`/`long`, curseurs `zone.expedition.duration.*`, defauts 1 h/4 h/12 h). `start()` (garde exclusivite : pas d'expedition existante, pas de voyage/combat, zone non sure), `settle()` (resolution paresseuse : notifie une seule fois a la fin), `claim()` (roule le butin, cree les items/gils, journalise, supprime l'expedition), `getActive()`, `isEligibleZone()`.
+- **Recompenses declaratives** : gils = fourchette « coffre » de `Zone.exploreConfig` tiree par heure ; objets = un filon de `Zone.gatherConfig` tire par heure (rendement declare). Aucune table de butin dediee.
+- **Notification de fin** : `NotificationService::notify` (persistee in-game + poussee Mercure `player/<id>/notifications` si connecte), une seule fois via `notifiedAt`.
+- **`ZoneController`** : `settle()` au chargement, panneau expedition sur l'ecran de zone (paliers proposables si zone eligible / progression / bouton « Recuperer le butin » quand pret), routes `POST /game/zone/expedition/start/{durationKey}` et `POST /game/zone/expedition/claim` (CSRF), garde `denyIfOnExpedition` sur explorer/chasser/recolter/voyager. Traductions FR/EN. Section 10 de `docs/BALANCE.md`.
+
+### Verifications
+
+- `ExpeditionServiceTest` (12 cas : durees par defaut, start OK + rejets (duree inconnue, deja active, en combat, zone sure), settle notifie une fois / pas deux fois / pas en cours, claim octroie gils+objets et supprime l'expedition + rejets none/incomplete).
+- `ZoneControllerTest` etendu (mock `ExpeditionService`) — 20 cas verts.
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-12 — Regulation par les PV (Sprint 8, 2026-07-25)
 
 > Deuxieme regulateur du pivot PBBG : l'energie limite les tentatives (ZON-07), les PV font payer les echecs. Sortir affaibli d'un combat (victoire couteuse, fuite, respawn a 50 %) impose desormais d'attendre la regeneration en temps reel ou de consommer des soins avant de repartir a pleine puissance. Aucun soin actif n'est modifie : objets et sorts existants s'ajoutent simplement au meme modele de PV.
