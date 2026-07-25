@@ -13,7 +13,7 @@
 ### ZON-19 — Donjon de groupe semi-synchrone (XL | ★★★) — **decoupe en sous-jalons**
 > Prerequis : ← ZON-14
 > **Sous-jalon 1 (modele & formation) livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : entites `GroupDungeonRun` + `GroupDungeonMember` (instantane des membres), `GroupDungeonService::launch` (le leader forme le groupe parmi les presents via `Party`, garde d'unicite/presence/taille) + `abandon`, controleur (launch/abandon), banniere de run actif sur l'ecran de zone. Reutilise `Party`.
-- [ ] **Sous-jalon 2** : sequence de combats tour par tour partagee ; delai par tour (30-60 s), action par defaut = attaque de base de l'arme (gratuite, regle materia inchangee)
+> **Sous-jalon 2 (boucle de combat) livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : combat tour par tour partage sur une rencontre a PV partages (`GroupDungeonCombatService`), ordre de tour des membres, delai par tour (`zone.dungeon.turn_seconds` defaut 45 s) resolu paresseusement — action par defaut = attaque de base auto. A 0 PV, le run est complete. Barre de PV + bouton Attaquer (a son tour) sur l'ecran de zone.
 - [ ] **Sous-jalon 3** : Mercure pour l'experience fluide quand le groupe est connecte simultanement
 
 ### ZON-20 — Lockouts & recompenses decroissantes (M | ★★)

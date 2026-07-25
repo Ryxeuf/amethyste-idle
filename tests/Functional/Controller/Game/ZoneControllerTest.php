@@ -9,6 +9,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
@@ -69,6 +70,7 @@ class ZoneControllerTest extends TestCase
     private GameTimeService&MockObject $gameTimeService;
     private ZoneBossService&MockObject $zoneBossService;
     private GroupDungeonService&MockObject $groupDungeonService;
+    private GroupDungeonCombatService&MockObject $groupDungeonCombatService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -121,6 +123,7 @@ class ZoneControllerTest extends TestCase
         $this->zoneBossService->method('getActiveBossForZone')->willReturn(null);
         $this->groupDungeonService = $this->createMock(GroupDungeonService::class);
         $this->groupDungeonService->method('getActiveRunForPlayer')->willReturn(null);
+        $this->groupDungeonCombatService = $this->createMock(GroupDungeonCombatService::class);
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -142,6 +145,7 @@ class ZoneControllerTest extends TestCase
             $this->gameTimeService,
             $this->zoneBossService,
             $this->groupDungeonService,
+            $this->groupDungeonCombatService,
         );
         $this->controller->setContainer($this->createContainer());
     }

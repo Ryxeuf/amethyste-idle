@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
+use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
@@ -73,6 +74,7 @@ class ZoneController extends AbstractController
         private readonly GameTimeService $gameTimeService,
         private readonly ZoneBossService $zoneBossService,
         private readonly GroupDungeonService $groupDungeonService,
+        private readonly GroupDungeonCombatService $groupDungeonCombatService,
     ) {
     }
 
@@ -542,11 +544,16 @@ class ZoneController extends AbstractController
             return null;
         }
 
+        // Etat de combat (resolution paresseuse des tours en retard, ZON-19 s.2).
+        $combat = $this->groupDungeonCombatService->state($run);
+
         return [
             'dungeonName' => $run->getDungeon()->getName(),
             'status' => $run->getStatus(),
             'memberCount' => $run->getMembers()->count(),
             'isLeader' => $run->getLeader()->getId() === $player->getId(),
+            'combat' => $combat,
+            'isMyTurn' => ($combat['activePlayerId'] ?? null) === $player->getId(),
         ];
     }
 

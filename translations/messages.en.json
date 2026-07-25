@@ -1185,8 +1185,14 @@
           "member_absent": "All party members must be present in the zone.",
           "already_running": "A party member is already in a group dungeon.",
           "not_active": "This group dungeon is no longer active.",
-          "unknown": "Dungeon not found."
-        }
+          "unknown": "Dungeon not found.",
+          "not_your_turn": "It is not your turn."
+        },
+        "cleared": "Encounter defeated! Group dungeon complete.",
+        "turn_in": "next turn in %seconds%s",
+        "attack": "Attack",
+        "waiting_turn": "Waiting for an ally's turn…",
+        "semisync_hint": "Each member acts on their turn; past the delay, the basic attack is played automatically (semi-synchronous)."
       },
       "explore": {
         "result": {

@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (ZON-19 sous-jalon 2 — boucle de combat de donjon de groupe ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -21,6 +21,27 @@
 - `GroupDungeonServiceTest` (8 cas : launch cree le run avec leader + membres presents, rejets sans party / non-leader / membre absent / membre deja en run / party trop grande, abandon par le leader, refus non-leader).
 - `ZoneControllerTest` adapte (mock `GroupDungeonService`).
 - Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
+## ZON-19 (sous-jalon 2) — Donjon de groupe : boucle de combat (Sprint 10, 2026-07-25)
+
+> Deuxieme sous-jalon de ZON-19 : la boucle de combat tour par tour partagee sur une rencontre a PV partages. Semi-synchrone — chaque membre agit a son tour, mais aucune presence simultanee n'est requise : un delai par tour borne l'attente et l'action par defaut (attaque de base, toujours gratuite — regle materia inchangee) est resolue paresseusement au chargement d'ecran (aucun cron).
+
+### Changements
+
+- **`GroupDungeonRun`** (etendu) : etat de combat serialise sur le run — `encounterHpMax`/`encounterHpCurrent` (rencontre a PV partages), `turnOrder` (ids des membres, JSON), `activeTurnIndex`, `turnDeadline`. Accesseurs : `setEncounterHp`, `damageEncounter` (borne a 0, retourne les degats reels), `getEncounterHpPercent`, `getTurnOrder`/`setTurnOrder`, `isCombatInitialized`, `getActivePlayerId`, `advanceTurn`, `getTurnDeadline`/`setTurnDeadline`. Migration `ADD COLUMN IF NOT EXISTS`.
+- **`GroupDungeonCombatService`** : `state(run)` (initialise le combat si besoin, resout paresseusement les tours en retard, snapshot) et `act(player, run)` (attaque volontaire du joueur actif, avec gardes tour/statut). Ordre de tour = ids des membres ; PV de rencontre = `zone.dungeon.encounter_hp_per_member` (defaut 200) x nombre de membres ; delai par tour = `zone.dungeon.turn_seconds` (defaut 45 s). Au-dela de l'echeance, `resolveOverdueTurns` applique l'attaque de base automatique du joueur actif (garde anti-boucle 100). A 0 PV, le run passe `completed` et le delai est efface. `now()` surchargeable pour les tests.
+- **`GroupDungeonController`** : `POST /game/zone/dungeon/act` (CSRF `group_dungeon_act`).
+- **`ZoneController`** : la banniere de run injecte l'etat de combat (`combat`, `isMyTurn`) via `GroupDungeonCombatService::state`.
+- **Ecran de zone** : barre de PV de rencontre, minuteur de tour, bouton « Attaquer » (visible au tour du joueur), message de rencontre vaincue. Traductions FR/EN (`game.zone.dungeon.*` : `cleared`, `turn_in`, `attack`, `waiting_turn`, `semisync_hint`, `error.not_your_turn`).
+- **`docs/BALANCE.md`** : curseurs `zone.dungeon.turn_seconds` et `zone.dungeon.encounter_hp_per_member` (section 8).
+
+### Verifications
+
+- `GroupDungeonCombatServiceTest` (5 cas : initialisation du combat, attaque reduisant la rencontre + avance de tour, refus hors-tour, resolution auto d'un tour en retard, defaite de la rencontre completant le run).
+- `ZoneControllerTest` adapte (mock `GroupDungeonCombatService`).
+- Local : suite ciblee verte (33 tests), `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
 
 ---
 
