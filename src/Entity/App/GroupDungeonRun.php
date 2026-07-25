@@ -56,6 +56,30 @@ class GroupDungeonRun
     #[ORM\Column(name: 'current_step', type: 'integer', options: ['default' => 0])]
     private int $currentStep = 0;
 
+    // ── Etat de combat tour par tour partage (ZON-19 sous-jalon 2) ──
+
+    #[ORM\Column(name: 'encounter_hp_max', type: 'integer', options: ['default' => 0])]
+    private int $encounterHpMax = 0;
+
+    #[ORM\Column(name: 'encounter_hp_current', type: 'integer', options: ['default' => 0])]
+    private int $encounterHpCurrent = 0;
+
+    /**
+     * Ordre de tour : liste des ids joueurs (instantane a l'initialisation du
+     * combat). Vide tant que le combat n'est pas initialise.
+     *
+     * @var list<int>
+     */
+    #[ORM\Column(name: 'turn_order', type: 'json')]
+    private array $turnOrder = [];
+
+    #[ORM\Column(name: 'active_turn_index', type: 'integer', options: ['default' => 0])]
+    private int $activeTurnIndex = 0;
+
+    /** Echeance du tour courant : au-dela, action par defaut (attaque de base). */
+    #[ORM\Column(name: 'turn_deadline', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $turnDeadline = null;
+
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
     private \DateTimeImmutable $createdAt;
 
@@ -131,6 +155,80 @@ class GroupDungeonRun
     public function getEndedAt(): ?\DateTimeImmutable
     {
         return $this->endedAt;
+    }
+
+    public function getEncounterHpMax(): int
+    {
+        return $this->encounterHpMax;
+    }
+
+    public function getEncounterHpCurrent(): int
+    {
+        return $this->encounterHpCurrent;
+    }
+
+    public function setEncounterHp(int $max, int $current): void
+    {
+        $this->encounterHpMax = max(0, $max);
+        $this->encounterHpCurrent = max(0, min($current, $this->encounterHpMax));
+    }
+
+    public function damageEncounter(int $damage): int
+    {
+        $dealt = min(max(0, $damage), $this->encounterHpCurrent);
+        $this->encounterHpCurrent -= $dealt;
+
+        return $dealt;
+    }
+
+    public function getEncounterHpPercent(): int
+    {
+        return $this->encounterHpMax > 0 ? (int) round(($this->encounterHpCurrent / $this->encounterHpMax) * 100) : 0;
+    }
+
+    /** @return list<int> */
+    public function getTurnOrder(): array
+    {
+        return $this->turnOrder;
+    }
+
+    /** @param int[] $turnOrder */
+    public function setTurnOrder(array $turnOrder): void
+    {
+        $this->turnOrder = array_values($turnOrder);
+    }
+
+    public function isCombatInitialized(): bool
+    {
+        return [] !== $this->turnOrder;
+    }
+
+    public function getActiveTurnIndex(): int
+    {
+        return $this->activeTurnIndex;
+    }
+
+    public function getActivePlayerId(): ?int
+    {
+        return $this->turnOrder[$this->activeTurnIndex] ?? null;
+    }
+
+    public function advanceTurn(): void
+    {
+        if ([] === $this->turnOrder) {
+            return;
+        }
+        $this->activeTurnIndex = ($this->activeTurnIndex + 1) % \count($this->turnOrder);
+    }
+
+    public function getTurnDeadline(): ?\DateTimeImmutable
+    {
+        return $this->turnDeadline;
+    }
+
+    public function setTurnDeadline(?\DateTimeImmutable $turnDeadline): void
+    {
+        $this->turnDeadline = $turnDeadline;
     }
 
     /** @return Collection<int, GroupDungeonMember> */

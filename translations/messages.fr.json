@@ -1185,8 +1185,14 @@
           "member_absent": "Tous les membres du groupe doivent etre presents dans la zone.",
           "already_running": "Un membre du groupe est deja dans un donjon de groupe.",
           "not_active": "Ce donjon de groupe n'est plus actif.",
-          "unknown": "Donjon introuvable."
-        }
+          "unknown": "Donjon introuvable.",
+          "not_your_turn": "Ce n'est pas votre tour."
+        },
+        "cleared": "Rencontre vaincue ! Donjon de groupe termine.",
+        "turn_in": "tour suivant dans %seconds% s",
+        "attack": "Attaquer",
+        "waiting_turn": "En attente du tour d'un allie…",
+        "semisync_hint": "Chacun agit a son tour ; passe le delai, l'attaque de base est jouee automatiquement (semi-synchrone)."
       },
       "explore": {
         "result": {

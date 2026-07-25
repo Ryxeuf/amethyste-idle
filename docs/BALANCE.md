@@ -131,6 +131,8 @@ Ressource qui gate l'acces aux rencontres (explorer, chasser, recolter, voyager,
 | `zone.energy.cost.event` | 10 | Cout pour rejoindre un evenement de zone (ZON-15, lu par `ZoneEventService`) |
 | `zone.energy.cost.assault` | 10 | Cout d'un assaut contre un boss de zone (ZON-18, lu par `ZoneBossService`) |
 | `zone.boss.assault_damage_factor` | 100 | Multiplicateur des degats d'assaut en % (100 = x1.0 de la stat d'attaque du joueur, ZON-18) |
+| `zone.dungeon.turn_seconds` | 45 | Delai par tour d'un donjon de groupe ; au-dela, attaque de base auto (ZON-19, lu par `GroupDungeonCombatService`) |
+| `zone.dungeon.encounter_hp_per_member` | 200 | PV de la rencontre partagee par membre du groupe (ZON-19) |
 
 `Player.maxActionEnergy` (defaut 100) est un champ par joueur : extensible plus tard via talents/equipement.
 

@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\Game\Dungeon;
+use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonException;
 use App\GameEngine\Dungeon\GroupDungeonService;
 use App\Helper\PlayerHelper;
@@ -23,8 +24,37 @@ class GroupDungeonController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly GroupDungeonService $groupDungeonService,
+        private readonly GroupDungeonCombatService $combatService,
         private readonly EntityManagerInterface $entityManager,
     ) {
+    }
+
+    #[Route('/game/zone/dungeon/act', name: 'app_game_zone_dungeon_act', methods: ['POST'])]
+    public function act(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('group_dungeon_act', (string) $request->request->get('_token'))) {
+            $this->addFlash('error', 'game.zone.travel.error.invalid_token');
+
+            return $this->redirectToRoute('app_game_zone');
+        }
+
+        $run = $this->groupDungeonService->getActiveRunForPlayer($player);
+        if (null !== $run) {
+            try {
+                $this->combatService->act($player, $run);
+            } catch (GroupDungeonException $exception) {
+                $this->addFlash('error', $exception->getMessage());
+            }
+        }
+
+        return $this->redirectToRoute('app_game_zone');
     }
 
     #[Route('/game/zone/dungeon/launch/{id}', name: 'app_game_zone_dungeon_launch', methods: ['POST'])]
