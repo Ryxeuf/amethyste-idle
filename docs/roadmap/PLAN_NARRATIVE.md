@@ -169,13 +169,19 @@ moteur récurrent qui referme la boucle à trois piliers.
 > puis **renommée** (`minRenownScore` croissant 50→100). **Non bloquant** : aucune quête
 > système ne dépend d'une quête de fond. Test : `BackgroundQuestFixturesTest`.
 
-### NAR-14 — Tests unitaires du plan (M | ★★ | HAUTE)
-> Prérequis : ← NAR-01, NAR-05, NAR-08, NAR-11
-- [ ] Tests marqueur d'arc (regroupement, tri, quêtes isolées)
-- [ ] Tests Codex (déblocage par découverte, idempotence, journal de monde public)
-- [ ] Tests arc saisonnier (séquencement des beats, quêtes d'événement selon fenêtre)
-- [ ] Tests crédits narratifs & canon (attribution guilde, génération de `world_fact`)
-- [ ] Objectif : 25+ tests unitaires
+### NAR-14 — Tests unitaires du plan ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> Tests livrés au fil des jalons (**80+ méthodes** dédiées à la narration, objectif 25+
+> largement dépassé) : marqueur d'arc, Codex, arc saisonnier, crédits & canon. Consolidation :
+> test de contrat transverse (`NarrativePlanContractTest`) verrouillant le vocabulaire
+> déclaratif, et synthèse [NARRATIVE_TEST_COVERAGE.md](NARRATIVE_TEST_COVERAGE.md).
+
+---
+
+## 🎉 Plan narratif complet — NAR-01 → NAR-14 livrés (2026-07-25)
+
+Les 14 jalons des 5 pistes (socle d'arc, acte d'introduction, Codex & trame, narration
+saisonnière, contenu de fond & tests) sont livrés et mergés. Voir `ROADMAP_DONE.md` pour le
+détail de chaque jalon.
 
 ---
 
