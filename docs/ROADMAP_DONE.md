@@ -11,6 +11,29 @@
 
 ---
 
+## ZON-27a — Couche PNJ de zone : presence & boutiques (Sprint 13, 2026-07-25)
+
+> Constat ouvert en preparant ZON-23 : la suppression du front carte (ZON-21a) a emporte les overlays PNJ **sans les remplacer**. `/game/shop/{id}` fonctionnait toujours, mais **aucun template du jeu n'y renvoyait** — les boutiques PNJ etaient injoignables, et les PNJ presents dans une zone n'apparaissaient nulle part.
+
+### Livre
+
+- **Presence PNJ sur `/game/zone`** : `ZoneController::index` expose `pnjsPresent` (PNJ rattaches a la zone courante, tries par nom) et `gameHour`. Le rattachement existait deja — `WorldEntityZoneListener` assigne la zone a la persistence — il n'etait simplement pas exploite.
+- **Point d'entree boutique** : lien vers `/game/shop/{id}` pour les PNJ marchands, avec respect des **horaires d'ouverture** (`Pnj::isShopOpen`) — un marchand ferme est affiche sans lien plutot que masque.
+- **Gating de zone** : `ShopController::index` refuse un PNJ dont la zone differe de celle du joueur. Connaitre un identifiant ne suffit plus a commercer a distance. Les PNJ **sans zone** (donnees heritees, cartes hors graphe) restent joignables : le pivot n'a pas rattache retroactivement tout le monde, et refuser par defaut couperait des boutiques encore valides.
+- **Traductions** FR/EN (`game.zone.pnjs.*`).
+
+### Tests
+
+- `ZoneControllerTest::testIndexExposesPnjsPresentInZone`
+- `ShopControllerTest::testShopIsUnreachableFromAnotherZone`
+- `ZoneShopFlowTest` (E2E) : presence des PNJ, ouverture de la boutique depuis la zone. Remplace l'ex-`ShopFlowTest`, qui trouvait ses marchands via `/api/map/entities`.
+
+### Reste (sous-jalon b)
+
+Le **dialogue PNJ**, qui debloquera `PnjDialogEvent` — dernier orphelin tolere — et donc les objectifs de quete `talk_to`.
+
+---
+
 ## ZON-25 — Residus carte & evenements orphelins (Sprint 13, 2026-07-25)
 
 > Le garde-fou livre avec ZON-22b avait signale 4 evenements sans emetteur. Instruction faite : **un seul** etait un vrai defaut a fort impact, **deux** etaient des faux positifs de mon propre outil, et le dernier depend d'un ecran disparu.

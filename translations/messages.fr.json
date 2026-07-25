@@ -1234,6 +1234,12 @@
           "unknown_resource": "Cette ressource n'est pas récoltable ici.",
           "depleted": "Le filon est épuisé — patientez le temps qu'il se reconstitue."
         }
+      },
+      "pnjs": {
+        "heading": "Personnages présents",
+        "empty": "Personne ici pour le moment.",
+        "shop": "Boutique",
+        "shop_closed": "Boutique fermée"
       }
     },
     "world_map": {

@@ -1234,6 +1234,12 @@
           "unknown_resource": "This resource cannot be harvested here.",
           "depleted": "The vein is depleted — wait for it to replenish."
         }
+      },
+      "pnjs": {
+        "heading": "Characters here",
+        "empty": "Nobody here right now.",
+        "shop": "Shop",
+        "shop_closed": "Shop closed"
       }
     },
     "world_map": {

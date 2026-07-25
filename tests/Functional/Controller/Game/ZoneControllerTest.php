@@ -6,6 +6,7 @@ use App\Controller\Game\ZoneController;
 use App\Entity\App\Map;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
+use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
@@ -54,6 +55,9 @@ class ZoneControllerTest extends TestCase
     private EntityRepository&MockObject $objectLayerRepository;
     private EntityRepository&MockObject $zoneConnectionEntityRepository;
     private EntityRepository&MockObject $monsterRepository;
+    private EntityRepository&MockObject $pnjRepository;
+    /** @var list<Pnj> PNJ presents dans la zone, surchargeable par test */
+    private array $pnjsInZone = [];
     private PlayerHelper&MockObject $playerHelper;
     private ZoneRepository&MockObject $zoneRepository;
     private ZoneConnectionRepository&MockObject $zoneConnectionRepository;
@@ -87,11 +91,17 @@ class ZoneControllerTest extends TestCase
         $this->objectLayerRepository = $this->createMock(EntityRepository::class);
         $this->zoneConnectionEntityRepository = $this->createMock(EntityRepository::class);
         $this->monsterRepository = $this->createMock(EntityRepository::class);
+        $this->pnjRepository = $this->createMock(EntityRepository::class);
+        // Par defaut, aucune presence PNJ : un test qui s'y interesse alimente
+        // $this->pnjsInZone plutot que de re-stubber le mock.
+        $this->pnjsInZone = [];
+        $this->pnjRepository->method('findBy')->willReturnCallback(fn (): array => $this->pnjsInZone);
         $this->entityManager->method('getRepository')->willReturnMap([
             [Player::class, $this->playerRepository],
             [ObjectLayer::class, $this->objectLayerRepository],
             [ZoneConnection::class, $this->zoneConnectionEntityRepository],
             [Monster::class, $this->monsterRepository],
+            [Pnj::class, $this->pnjRepository],
         ]);
 
         $this->playerHelper = $this->createMock(PlayerHelper::class);
@@ -180,6 +190,34 @@ class ZoneControllerTest extends TestCase
 
         $this->assertSame(302, $response->getStatusCode());
         $this->assertNull($this->capturedTemplateParams);
+    }
+
+    public function testIndexExposesPnjsPresentInZone(): void
+    {
+        // ZON-27 : depuis la suppression des overlays carte, l'ecran de zone est
+        // le seul endroit d'ou atteindre un PNJ (et donc sa boutique).
+        $zone = $this->buildZone('village-de-lumiere', Zone::TYPE_CITY, true);
+
+        $player = new Player();
+        $player->setMaxLife(100);
+        $player->setLife(100);
+        $player->setCurrentZone($zone);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $merchant = new Pnj();
+        $merchant->setName('Marchand du village');
+        $merchant->setZone($zone);
+        $this->pnjsInZone = [$merchant];
+
+        $this->zoneConnectionRepository->method('findEnabledFrom')->willReturn([]);
+        $this->playerRepository->method('findBy')->willReturn([$player]);
+        $this->objectLayerRepository->method('findBy')->willReturn([]);
+
+        $response = $this->controller->index();
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame([$merchant], $this->capturedTemplateParams['pnjsPresent']);
+        $this->assertIsInt($this->capturedTemplateParams['gameHour']);
     }
 
     public function testIndexRendersZoneWithConnectionsPlayersAndPoi(): void

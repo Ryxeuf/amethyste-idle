@@ -306,6 +306,35 @@
                     {% endif %}
                 </div>
 
+                {# ── PNJ presents (ZON-27) ───────────────────────── #}
+                <div class="mb-4" data-testid="zone-pnjs">
+                    <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.pnjs.heading'|trans }}</h4>
+                    {% if pnjsPresent is empty %}
+                        <p class="text-gray-500 text-sm">{{ 'game.zone.pnjs.empty'|trans }}</p>
+                    {% else %}
+                        <ul class="space-y-1.5">
+                            {% for pnj in pnjsPresent %}
+                                <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                                    <span class="text-sm text-white">{{ pnj.localizedName(app.request.locale) }}</span>
+                                    {% if pnj.isMerchant %}
+                                        {% if pnj.isShopOpen(gameHour) %}
+                                            <a href="{{ path('app_game_shop', {id: pnj.id}) }}"
+                                               data-testid="zone-pnj-shop-link"
+                                               class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-amber-900/40 border border-amber-600 text-amber-100 hover:bg-amber-800/50">
+                                                {{ 'game.zone.pnjs.shop'|trans }}
+                                            </a>
+                                        {% else %}
+                                            <span class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-gray-800/60 border border-gray-700 text-gray-500">
+                                                {{ 'game.zone.pnjs.shop_closed'|trans }}
+                                            </span>
+                                        {% endif %}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
                 {# ── Actions de zone (ZON-08..10) ────────────────── #}
                 {% if actions is not empty %}
                     <div class="mb-4">

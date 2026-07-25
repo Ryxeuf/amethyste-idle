@@ -7,6 +7,7 @@ use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
+use App\Entity\App\Zone;
 use App\Entity\Game\Item;
 use App\GameEngine\Guild\RegionBonusProvider;
 use App\GameEngine\Renown\PlayerRenownDiscountProvider;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 class ShopControllerTest extends TestCase
@@ -173,6 +175,28 @@ class ShopControllerTest extends TestCase
             'itemSlug' => $slug,
             'quantity' => $quantity,
         ]));
+    }
+
+    public function testShopIsUnreachableFromAnotherZone(): void
+    {
+        // ZON-27 : la boutique d'un PNJ ne s'ouvre que depuis sa zone. Sans ce
+        // garde-fou, connaitre l'identifiant suffirait a commercer a distance.
+        $pnjZone = $this->createMock(Zone::class);
+        $pnjZone->method('getId')->willReturn(1);
+        $playerZone = $this->createMock(Zone::class);
+        $playerZone->method('getId')->willReturn(2);
+
+        $pnj = $this->createPnjMock([]);
+        $pnj->method('getZone')->willReturn($pnjZone);
+
+        $player = $this->createPlayerMock(1000);
+        $player->method('getCurrentZone')->willReturn($playerZone);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->setupRepositories($pnj);
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->controller->index(1);
     }
 
     private function createPlayerMock(int $gils, int $renownScore = 0): Player&MockObject
