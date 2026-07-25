@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **7 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16, ECO-18), **5 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **8 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18), **6 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -60,13 +60,21 @@
       est equipable depuis ECO-02 — le plancher, pas le plafond)
 - [ ] Garde-fou : test croisant les deux jeux de donnees dans les deux sens
 
-### ECO-16 — Moderation economique (S | ★★ | HAUTE)
-> Anti price-fixing, farm par alts, RMT — a poser **avant** l'ouverture des canaux joueur.
-> Prerequis : ← ECO-03
-- [ ] Escrow systeme garanti sur tous les canaux (HV d'abord, commandes/echoppes ensuite)
-- [ ] Reutiliser les patterns anti-exploit influence (plafonds, diminishing returns)
-- [ ] Journal/analytics des transactions pour detection d'anomalies
-- [ ] Outils de moderation admin (annulation de listing, suspension)
+> **ECO-16a livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **regles**. Commerce entre
+> personnages d'un meme compte refuse — le jeu autorise plusieurs personnages (regle #12) et l'HV
+> ne comparait que l'identifiant de personnage, laissant un joueur blanchir objets et Gils et
+> inscrire au marche des prix qu'aucune transaction reelle n'a valides. Plafond d'echanges par
+> **couple** de joueurs, configurable. Escrow audite : il etait deja complet, seul le retour
+> d'objet a l'expiration n'etait couvert par aucun test.
+
+### ECO-16b — Journal economique & outils de moderation (S | ★★ | HAUTE)
+> Le **volet outillage** d'ECO-16, separe pour rester livrable en une session (regle projet #8).
+> Prerequis : ← ECO-16a
+- [ ] Journal/analytics des transactions pour detection d'anomalies (volume par couple,
+      prix aberrants vs mediane, pics de vente)
+- [ ] Outils de moderation admin : annulation de n'importe quelle annonce, suspension d'un vendeur
+- [ ] Etendre l'escrow et les regles anti-abus aux canaux suivants quand ils existeront
+      (commandes de craft ECO-05+, echoppes ECO-10+)
 
 ---
 
@@ -79,7 +87,8 @@
 - [x] HV segmente par region, taxe reversee a la guilde controlante — ou detruite quand
       aucune guilde ne controle la region (ECO-03, ECO-04)
 - [x] Chaine de production documentee, aucun metier autosuffisant (ECO-14)
-- [ ] Escrow + journalisation des transactions operationnels
+- [~] Escrow operationnel et regles anti-abus posees (ECO-16a) ; journalisation et outils
+      de moderation restent a livrer (ECO-16b)
 
 ---
 

@@ -423,3 +423,60 @@ s'achete sans bloquer la progression ; au-dela, il devient un mur.
 Le garde-fou est `tests/Integration/Economy/CraftInterdependenceTest`, qui verifie
 les deux sens (chaque metier consomme **et** est consomme) ainsi que l'immunite du
 palier d'entree.
+
+---
+
+## 16. Garde-fous anti-abus de l'hotel des ventes (economie joueur, ECO-16a)
+
+Les canaux d'echange entre joueurs sont la surface d'attaque naturelle d'une
+economie de production. Ces regles se posent **avant** l'ouverture des canaux
+suivants (commandes de craft, echoppes) : une economie qu'on assainit apres coup
+oblige a arbitrer entre corriger l'exploit et spolier les joueurs de bonne foi.
+
+### Regle 1 — pas de commerce entre personnages d'un meme compte
+
+Le jeu autorise plusieurs personnages par compte (regle projet #12). L'hotel des
+ventes ne refusait que la vente **a soi-meme**, comparee par identifiant de
+personnage : deux personnages d'un meme joueur pouvaient s'echanger objets et
+Gils librement, et surtout **inscrire au marche des prix qu'aucune transaction
+reelle n'a valides**. C'est la faille la plus simple a exploiter et la plus
+destructrice pour un historique de prix.
+
+La regle n'a aucun faux positif : l'appartenance de compte est un fait, pas une
+heuristique.
+
+### Regle 2 — plafond d'echanges par couple de joueurs
+
+| Parametre | Defaut | Effet |
+|-----------|--------|-------|
+| `pairTransactionCap` | 10 | ventes conclues entre deux joueurs sur la fenetre |
+| `pairWindowHours` | 24 | largeur de la fenetre glissante |
+
+Le plafond porte sur le **couple**, pas sur le joueur : il ne gene pas un joueur
+qui commerce largement, seulement celui qui commerce toujours avec la **meme**
+personne — la signature du blanchiment entre complices, que le controle de compte
+ne peut pas attraper. Le comptage est bidirectionnel : un aller-retour est
+precisement le motif recherche.
+
+Un plafond a `0` **desactive** la regle plutot que de tout bloquer : c'est le
+comportement attendu d'un seuil de configuration mis a zero, et cela evite qu'une
+mauvaise valeur ne ferme le marche entier.
+
+### Exception : les ventes flash
+
+Le vendeur y est l'administration. Leur appliquer les regles anti-blanchiment
+reviendrait a plafonner une promotion serveur.
+
+### Ou s'applique le controle
+
+A l'**achat** et a la **mise**, jamais a la finalisation d'enchere : celle-ci est
+declenchee par l'expiration et non par un joueur — y refuser l'operation
+laisserait l'objet et les Gils bloques indefiniment.
+
+### Escrow — etat des lieux
+
+L'escrow de l'hotel des ventes etait deja complet et le reste : l'objet quitte
+l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration ;
+les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la
+surenchere. ECO-16a n'a rien eu a construire de ce cote, seulement a verrouiller
+le retour d'objet a l'expiration, qui n'etait couvert par aucun test.

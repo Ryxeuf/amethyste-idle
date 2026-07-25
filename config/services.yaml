@@ -62,6 +62,13 @@ services:
             $minActiveMembers: 3
             $activeMemberDays: 7
 
+    # ECO-16 : seuils anti-abus de l'hotel des ventes, exposes ici pour se
+    # calibrer sans toucher au code. Un plafond a 0 desactive la regle.
+    App\GameEngine\Auction\AuctionAntiExploit:
+        arguments:
+            $pairTransactionCap: 10
+            $pairWindowHours: 24
+
     App\Service\Monitoring\HealthChecker:
         arguments:
             $mercureUrl: '%env(MERCURE_URL)%'
