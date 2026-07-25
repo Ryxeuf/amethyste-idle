@@ -2,13 +2,15 @@
 
 namespace App\Entity\App;
 
+use App\Repository\GameEventRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 
 #[ORM\Table(name: 'game_event')]
 #[ORM\Index(columns: ['status'], name: 'idx_game_event_status')]
 #[ORM\Index(columns: ['type'], name: 'idx_game_event_type')]
-#[ORM\Entity]
+#[ORM\Index(columns: ['season_id'], name: 'idx_game_event_season')]
+#[ORM\Entity(repositoryClass: GameEventRepository::class)]
 class GameEvent
 {
     use TimestampableEntity;
@@ -24,6 +26,12 @@ class GameEvent
     public const STATUS_ACTIVE = 'active';
     public const STATUS_COMPLETED = 'completed';
     public const STATUS_CANCELLED = 'cancelled';
+
+    // Beats d'un arc de saison (NAR-08) : amorce -> montee -> climax -> resolution.
+    public const BEAT_AMORCE = 'amorce';
+    public const BEAT_MONTEE = 'montee';
+    public const BEAT_CLIMAX = 'climax';
+    public const BEAT_RESOLUTION = 'resolution';
 
     #[ORM\Column(name: 'id', type: 'integer')]
     #[ORM\Id]
@@ -60,6 +68,22 @@ class GameEvent
     #[ORM\ManyToOne(targetEntity: Map::class)]
     #[ORM\JoinColumn(name: 'map_id', referencedColumnName: 'id', nullable: true)]
     private ?Map $map = null;
+
+    /**
+     * Saison a laquelle ce GameEvent est rattache comme beat d'arc (NAR-08).
+     * null pour un evenement hors saison.
+     */
+    #[ORM\ManyToOne(targetEntity: InfluenceSeason::class)]
+    #[ORM\JoinColumn(name: 'season_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    private ?InfluenceSeason $season = null;
+
+    /** Beat de l'arc de saison (amorce / montee / climax / resolution) ; null hors arc. */
+    #[ORM\Column(name: 'beat', type: 'string', length: 20, nullable: true)]
+    private ?string $beat = null;
+
+    /** Position du beat dans l'arc (1 = amorce). null hors arc. */
+    #[ORM\Column(name: 'beat_order', type: 'integer', nullable: true)]
+    private ?int $beatOrder = null;
 
     public function getId(): int
     {
@@ -168,10 +192,53 @@ class GameEvent
 
     public function isActive(): bool
     {
-        $now = new \DateTime();
+        return $this->isActiveAt(new \DateTime());
+    }
 
+    /**
+     * Actif a un instant donne : soit force `active`, soit `scheduled` avec
+     * l'instant dans la fenetre [startsAt, endsAt]. Injecter l'instant rend le
+     * sequencement des beats de saison testable (NAR-08).
+     */
+    public function isActiveAt(\DateTimeInterface $now): bool
+    {
         return $this->status === self::STATUS_ACTIVE
             || ($this->status === self::STATUS_SCHEDULED && $now >= $this->startsAt && $now <= $this->endsAt);
+    }
+
+    public function getSeason(): ?InfluenceSeason
+    {
+        return $this->season;
+    }
+
+    public function setSeason(?InfluenceSeason $season): void
+    {
+        $this->season = $season;
+    }
+
+    public function getBeat(): ?string
+    {
+        return $this->beat;
+    }
+
+    public function setBeat(?string $beat): void
+    {
+        $this->beat = $beat;
+    }
+
+    public function getBeatOrder(): ?int
+    {
+        return $this->beatOrder;
+    }
+
+    public function setBeatOrder(?int $beatOrder): void
+    {
+        $this->beatOrder = $beatOrder;
+    }
+
+    public function isSeasonBeat(): bool
+    {
+        return $this->season !== null;
     }
 
     public function isPast(): bool
