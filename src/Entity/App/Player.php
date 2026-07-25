@@ -141,6 +141,16 @@ class Player implements CharacterInterface
     #[ORM\Column(name: 'life_updated_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $lifeUpdatedAt = null;
 
+    /**
+     * Suspension d'acces aux canaux d'echange entre joueurs (ECO-16b).
+     *
+     * Sanction **proportionnee** : le bannissement de compte existe deja mais
+     * coupe tout. Un joueur qui truque des prix doit pouvoir continuer a jouer
+     * pendant que le marche lui est ferme.
+     */
+    #[ORM\Column(name: 'trade_suspended_until', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $tradeSuspendedUntil = null;
+
     #[ORM\Column(name: 'lastCoordinates', type: 'string')]
     private string $lastCoordinates;
 
@@ -409,6 +419,28 @@ class Player implements CharacterInterface
         $this->user = $user;
 
         return $this;
+    }
+
+    public function getTradeSuspendedUntil(): ?\DateTimeImmutable
+    {
+        return $this->tradeSuspendedUntil;
+    }
+
+    public function setTradeSuspendedUntil(?\DateTimeImmutable $until): self
+    {
+        $this->tradeSuspendedUntil = $until;
+
+        return $this;
+    }
+
+    /**
+     * La suspension expire d'elle-meme : une sanction qu'il faut penser a lever
+     * finit par ne jamais l'etre.
+     */
+    public function isTradeSuspended(?\DateTimeImmutable $now = null): bool
+    {
+        return null !== $this->tradeSuspendedUntil
+            && $this->tradeSuspendedUntil > ($now ?? new \DateTimeImmutable());
     }
 
     public function getUser(): User

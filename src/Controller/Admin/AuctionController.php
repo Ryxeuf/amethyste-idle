@@ -2,10 +2,12 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\GameEngine\Auction\AuctionManager;
 use App\Helper\PlayerHelper;
 use App\Repository\AuctionListingRepository;
+use App\Repository\AuctionTransactionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +22,7 @@ class AuctionController extends AbstractController
         private readonly AuctionManager $auctionManager,
         private readonly PlayerHelper $playerHelper,
         private readonly EntityManagerInterface $entityManager,
+        private readonly AuctionTransactionRepository $transactionRepository,
     ) {
     }
 
@@ -145,5 +148,92 @@ class AuctionController extends AbstractController
         }
 
         return $this->redirectToRoute('admin_auction_index');
+    }
+
+    /**
+     * Journal economique (ECO-16b).
+     *
+     * Les regles d'ECO-16a refusent ce qui est certainement abusif. Restent les
+     * cas qui ne se prouvent pas a la transaction et ne se voient qu'a
+     * l'echelle : ils ne se bloquent pas, ils se donnent a voir.
+     */
+    #[Route('/journal', name: 'journal', methods: ['GET'])]
+    public function journal(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $windowHours = max(1, $request->query->getInt('hours', 168));
+
+        return $this->render('admin/auction/journal.html.twig', [
+            'windowHours' => $windowHours,
+            'transactions' => $this->transactionRepository->findRecent(50),
+            'activeListings' => $this->listingRepository->findActiveForModeration(50),
+            'pairs' => $this->transactionRepository->findTopTradingPairs($windowHours),
+            'outliers' => $this->transactionRepository->findPriceOutliers($windowHours),
+            'dailyVolume' => $this->transactionRepository->findDailyVolume(14),
+            'outlierRatio' => AuctionTransactionRepository::OUTLIER_RATIO,
+        ]);
+    }
+
+    #[Route('/listing/{id}/cancel', name: 'listing_cancel', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    public function cancelListing(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('admin_listing_cancel_' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('admin_auction_journal');
+        }
+
+        $listing = $this->listingRepository->find($id);
+        if (!$listing) {
+            $this->addFlash('error', 'Annonce introuvable.');
+
+            return $this->redirectToRoute('admin_auction_journal');
+        }
+
+        $reason = trim((string) $request->request->get('reason', ''));
+
+        try {
+            $this->auctionManager->cancelListingAsModerator($listing, '' !== $reason ? $reason : 'moderation');
+            $this->addFlash('success', 'Annonce annulee, objet rendu au vendeur et mise eventuelle remboursee.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('admin_auction_journal');
+    }
+
+    /**
+     * Suspend l'acces au marche d'un joueur, ou leve la suspension avec `days=0`.
+     */
+    #[Route('/player/{id}/suspend', name: 'player_suspend', methods: ['POST'], requirements: ['id' => '\\d+'])]
+    public function suspendPlayer(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if (!$this->isCsrfTokenValid('admin_trade_suspend_' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('admin_auction_journal');
+        }
+
+        $player = $this->entityManager->getRepository(Player::class)->find($id);
+        if (!$player instanceof Player) {
+            $this->addFlash('error', 'Personnage introuvable.');
+
+            return $this->redirectToRoute('admin_auction_journal');
+        }
+
+        $days = max(0, min(365, $request->request->getInt('days', 7)));
+        $player->setTradeSuspendedUntil($days > 0 ? new \DateTimeImmutable(sprintf('+%d days', $days)) : null);
+        $this->entityManager->flush();
+
+        $this->addFlash('success', $days > 0
+            ? sprintf('Acces au marche suspendu %d jour(s) pour %s.', $days, $player->getName())
+            : sprintf('Suspension levee pour %s.', $player->getName()));
+
+        return $this->redirectToRoute('admin_auction_journal');
     }
 }

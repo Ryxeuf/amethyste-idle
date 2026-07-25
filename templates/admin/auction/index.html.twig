@@ -35,10 +35,16 @@
                 <h2 class="text-lg font-semibold text-gray-200">Ventes flash actives</h2>
                 <p class="text-gray-500 text-xs mt-0.5">Items rares a prix reduit et duree limitee, mis en vente par l'administration.</p>
             </div>
-            <a href="{{ path('admin_auction_flash_new') }}"
-               class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-white text-sm rounded-lg transition-colors">
-                Nouvelle vente flash
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ path('admin_auction_journal') }}"
+                   class="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">
+                    Journal economique
+                </a>
+                <a href="{{ path('admin_auction_flash_new') }}"
+                   class="px-3 py-1.5 bg-pink-600 hover:bg-pink-500 text-white text-sm rounded-lg transition-colors">
+                    Nouvelle vente flash
+                </a>
+            </div>
         </div>
 
         {% if flashSales|length > 0 %}

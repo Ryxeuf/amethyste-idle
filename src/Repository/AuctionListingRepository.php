@@ -87,6 +87,29 @@ class AuctionListingRepository extends ServiceEntityRepository
     }
 
     /**
+     * Annonces actives **toutes regions confondues** (ECO-16b).
+     *
+     * Deliberement hors du filtre regional : la moderation regarde le marche
+     * entier, sinon une annonce frauduleuse serait invisible depuis toute autre
+     * region que celle du moderateur.
+     *
+     * @return AuctionListing[]
+     */
+    public function findActiveForModeration(int $limit = 50): array
+    {
+        return $this->createQueryBuilder('l')
+            ->join('l.playerItem', 'pi')->addSelect('pi')
+            ->join('pi.genericItem', 'gi')->addSelect('gi')
+            ->join('l.seller', 's')->addSelect('s')
+            ->where('l.status = :status')
+            ->setParameter('status', AuctionStatus::Active)
+            ->orderBy('l.createdAt', 'DESC')
+            ->setMaxResults(max(1, $limit))
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @return AuctionListing[]
      */
     public function findBySeller(Player $seller, ?AuctionStatus $status = null): array

@@ -4,10 +4,12 @@ namespace App\Entity\App;
 
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: \App\Repository\AuctionTransactionRepository::class)]
 #[ORM\Table(name: 'auction_transaction')]
 #[ORM\Index(name: 'idx_auction_transaction_buyer', columns: ['buyer_id'])]
 #[ORM\Index(name: 'idx_auction_transaction_listing', columns: ['listing_id'])]
+// ECO-16b : le journal economique interroge par date, sur toutes les fenetres.
+#[ORM\Index(name: 'idx_auction_transaction_purchased_at', columns: ['purchased_at'])]
 class AuctionTransaction
 {
     #[ORM\Id]

@@ -7,7 +7,35 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-16b — Journal economique & moderation (Sprint 14, 2026-07-25)
+
+> Volet outillage d'ECO-16. Les regles refusent ce qui est certainement abusif ; restent les cas qui ne se prouvent pas a la transaction et ne se voient qu'a l'echelle.
+
+### Trois signaux, aucune preuve
+
+- **Couples acheteur/vendeur les plus actifs** — le plafond d'ECO-16a bloque au-dela d'un seuil ; ce classement montre ce qui se passe **en dessous**. Deux joueurs qui frolent la limite chaque jour sont invisibles pour la regle et evidents ici.
+- **Prix aberrants** — ventes s'ecartant d'un facteur 5 de la moyenne de l'objet, avec un minimum de 3 ventes sur la fenetre : en dessous, la moyenne n'a aucune valeur de reference et le signal serait du bruit.
+- **Volume quotidien** sur 14 jours, pour reperer un pic.
+
+Aucun signal ne declenche d'action automatique, et c'est deliberé : une sanction automatique sur un signal ambigu punit d'abord les joueurs atypiques. Le nom des deux joueurs accompagne chaque signal — un prix aberrant se lit avec le couple concerne, jamais seul.
+
+### Deux sanctions, deux echelles
+
+**Annulation d'annonce par la moderation** : l'objet revient au vendeur et **la mise en cours est remboursee**. C'est la difference de fond avec l'annulation par le vendeur, qu'une enchere en cours bloque — une annonce frauduleuse doit pouvoir disparaitre meme si quelqu'un a mise dessus, et la moderation ne confisque pas les Gils d'un encherisseur qui n'a rien fait.
+
+**Suspension d'acces au marche** (`Player::tradeSuspendedUntil`) : le bannissement de compte existait deja mais coupe tout. Un joueur qui truque des prix doit pouvoir continuer a jouer pendant que le marche lui est ferme. La suspension **expire d'elle-meme** — une sanction qu'il faut penser a lever finit par ne jamais l'etre. Elle ferme le canal entier, ventes flash comprises.
+
+### Dette d'ECO-16a : toujours ouverte
+
+Le retour d'objet a **l'expiration** d'une annonce reste le seul chemin d'escrow sans test. La couverture en integration a ete tentee dans ce jalon puis **retiree** : elle echouait en CI sans que l'erreur soit lisible depuis les logs disponibles, et empiler des correctifs a l'aveugle sur un test de confort aurait coute plus que la garantie n'en rapporte. A reprendre avec un run local, ou l'erreur sera visible en une seconde.
+
+### Reste ouvert
+
+Etendre l'escrow et les regles anti-abus aux canaux suivants (commandes de craft ECO-05+, echoppes ECO-10+) : ils n'existent pas encore. Calibrage dans `docs/BALANCE.md` §18.
 
 ---
 

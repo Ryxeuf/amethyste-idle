@@ -1,0 +1,199 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Journal economique - Admin{% endblock %}
+{% block page_title %}Journal economique{% endblock %}
+
+{% block body %}
+    <div class="flex items-center justify-between mb-6">
+        <p class="text-sm text-gray-400">
+            Fenetre d'analyse : {{ (windowHours / 24)|round }} jour(s).
+            Les signaux ci-dessous ne sont pas des preuves — ils indiquent ou regarder.
+        </p>
+        <div class="flex gap-2">
+            {% for hours in [24, 72, 168, 720] %}
+                <a href="{{ path('admin_auction_journal', {hours: hours}) }}"
+                   class="px-3 py-1.5 text-xs rounded-lg {% if windowHours == hours %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">
+                    {{ (hours / 24)|round }}j
+                </a>
+            {% endfor %}
+            <a href="{{ path('admin_auction_index') }}" class="px-3 py-1.5 text-xs rounded-lg bg-gray-800 text-gray-300 hover:bg-gray-700">Retour</a>
+        </div>
+    </div>
+
+    {# ── Signal 1 : couples les plus actifs ─────────────────────────────── #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-6">
+        <h3 class="text-sm font-semibold text-gray-100 mb-1">Couples acheteur / vendeur les plus actifs</h3>
+        <p class="text-xs text-gray-500 mb-3">
+            Le plafond d'ECO-16a bloque au-dela d'un seuil. Ce classement montre ce qui se passe
+            <strong>en dessous</strong> : deux joueurs qui frolent la limite chaque jour sont invisibles
+            pour la regle et evidents ici.
+        </p>
+        {% if pairs is empty %}
+            <p class="text-sm text-gray-500">Aucune transaction sur la periode.</p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-xs text-gray-500 uppercase tracking-wider">
+                        <tr><th class="text-left py-2">Acheteur</th><th class="text-left">Vendeur</th><th class="text-right">Ventes</th><th class="text-right">Volume</th></tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        {% for pair in pairs %}
+                            <tr class="border-t border-gray-800">
+                                <td class="py-2">{{ pair.buyer }}</td>
+                                <td>{{ pair.seller }}</td>
+                                <td class="text-right font-mono {% if pair.trades >= 5 %}text-amber-400{% endif %}">{{ pair.trades }}</td>
+                                <td class="text-right font-mono text-yellow-400">{{ pair.volume|number_format(0, ',', ' ') }} G</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Signal 2 : prix aberrants ──────────────────────────────────────── #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-6">
+        <h3 class="text-sm font-semibold text-gray-100 mb-1">Prix aberrants</h3>
+        <p class="text-xs text-gray-500 mb-3">
+            Ventes s'ecartant d'un facteur {{ outlierRatio }} ou plus de la moyenne de l'objet.
+            Un prix aberrant n'est pas une preuve : un objet rare bien negocie en produit un aussi.
+            A lire avec le couple de joueurs concerne.
+        </p>
+        {% if outliers is empty %}
+            <p class="text-sm text-gray-500">Aucun ecart significatif detecte.</p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-xs text-gray-500 uppercase tracking-wider">
+                        <tr><th class="text-left py-2">Objet</th><th class="text-right">Prix</th><th class="text-right">Moyenne</th><th class="text-right">Ecart</th><th class="text-left pl-4">Acheteur</th><th class="text-left">Vendeur</th><th class="text-left">Date</th></tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        {% for outlier in outliers %}
+                            <tr class="border-t border-gray-800">
+                                <td class="py-2">{{ outlier.item }}</td>
+                                <td class="text-right font-mono text-yellow-400">{{ outlier.price|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right font-mono text-gray-500">{{ outlier.average|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right font-mono text-red-400">×{{ outlier.ratio }}</td>
+                                <td class="pl-4">{{ outlier.buyer }}</td>
+                                <td>{{ outlier.seller }}</td>
+                                <td class="text-gray-500">{{ outlier.at|date('d/m H:i') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Signal 3 : volume par jour ─────────────────────────────────────── #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-6">
+        <h3 class="text-sm font-semibold text-gray-100 mb-3">Volume quotidien (14 jours)</h3>
+        {% if dailyVolume is empty %}
+            <p class="text-sm text-gray-500">Aucune transaction sur la periode.</p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-xs text-gray-500 uppercase tracking-wider">
+                        <tr><th class="text-left py-2">Jour</th><th class="text-right">Ventes</th><th class="text-right">Volume</th></tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        {% for row in dailyVolume %}
+                            <tr class="border-t border-gray-800">
+                                <td class="py-2 font-mono">{{ row.day }}</td>
+                                <td class="text-right font-mono">{{ row.trades }}</td>
+                                <td class="text-right font-mono text-yellow-400">{{ row.volume|number_format(0, ',', ' ') }} G</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Annonces actives : annulation par la moderation ────────────────── #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5 mb-6">
+        <h3 class="text-sm font-semibold text-gray-100 mb-1">Annonces actives</h3>
+        <p class="text-xs text-gray-500 mb-3">
+            Toutes regions confondues : la moderation regarde le marche entier, sinon une annonce
+            frauduleuse serait invisible depuis toute autre region. L'annulation rend l'objet au
+            vendeur et rembourse la mise en cours.
+        </p>
+        {% if activeListings is empty %}
+            <p class="text-sm text-gray-500">Aucune annonce active.</p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-xs text-gray-500 uppercase tracking-wider">
+                        <tr><th class="text-left py-2">Objet</th><th class="text-left">Vendeur</th><th class="text-right">Prix</th><th class="text-left pl-4">Region</th><th class="text-right">Action</th></tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        {% for listing in activeListings %}
+                            <tr class="border-t border-gray-800">
+                                <td class="py-2">{{ listing.playerItem.genericItem.name }}</td>
+                                <td>{{ listing.seller.name }}</td>
+                                <td class="text-right font-mono text-yellow-400">{{ listing.totalPrice|number_format(0, ',', ' ') }} G</td>
+                                <td class="pl-4 text-gray-500">{{ listing.region ? listing.region.slug : '—' }}</td>
+                                <td class="text-right">
+                                    <form method="post" action="{{ path('admin_auction_listing_cancel', {id: listing.id}) }}" class="inline flex gap-1 justify-end"
+                                          onsubmit="return confirm('Annuler cette annonce ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_listing_cancel_' ~ listing.id) }}">
+                                        <input type="text" name="reason" placeholder="motif" class="w-28 px-2 py-1 text-xs bg-gray-800 border border-gray-700 rounded text-gray-200">
+                                        <button type="submit" class="px-2 py-1 text-xs rounded bg-red-700 hover:bg-red-600 text-white">Annuler</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Journal + moderation ───────────────────────────────────────────── #}
+    <div class="bg-gray-900 border border-gray-800 rounded-xl p-5">
+        <h3 class="text-sm font-semibold text-gray-100 mb-3">50 dernieres transactions</h3>
+        {% if transactions is empty %}
+            <p class="text-sm text-gray-500">Aucune transaction enregistree.</p>
+        {% else %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="text-xs text-gray-500 uppercase tracking-wider">
+                        <tr>
+                            <th class="text-left py-2">Date</th><th class="text-left">Objet</th>
+                            <th class="text-right">Paye</th><th class="text-right">Taxe</th><th class="text-right">Ristourne</th>
+                            <th class="text-left pl-4">Acheteur</th><th class="text-left">Vendeur</th>
+                            <th class="text-right">Moderation</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        {% for transaction in transactions %}
+                            {% set seller = transaction.listing.seller %}
+                            <tr class="border-t border-gray-800">
+                                <td class="py-2 text-gray-500">{{ transaction.purchasedAt|date('d/m H:i') }}</td>
+                                <td>{{ transaction.listing.playerItem.genericItem.name }}</td>
+                                <td class="text-right font-mono text-yellow-400">{{ transaction.amountPaid|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right font-mono text-gray-500">{{ transaction.regionTaxAmount|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right font-mono text-purple-300">{{ transaction.memberRebateAmount|number_format(0, ',', ' ') }}</td>
+                                <td class="pl-4">{{ transaction.buyer.name }}</td>
+                                <td>
+                                    {{ seller.name }}
+                                    {% if seller.tradeSuspended %}<span class="text-red-400 text-xs">(suspendu)</span>{% endif %}
+                                </td>
+                                <td class="text-right">
+                                    <form method="post" action="{{ path('admin_auction_player_suspend', {id: seller.id}) }}" class="inline"
+                                          onsubmit="return confirm('Suspendre l\'acces au marche de {{ seller.name|e('js') }} pendant 7 jours ?')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_trade_suspend_' ~ seller.id) }}">
+                                        <input type="hidden" name="days" value="{{ seller.tradeSuspended ? 0 : 7 }}">
+                                        <button type="submit" class="px-2 py-1 text-xs rounded {% if seller.tradeSuspended %}bg-green-700 hover:bg-green-600{% else %}bg-red-700 hover:bg-red-600{% endif %} text-white">
+                                            {{ seller.tradeSuspended ? 'Lever' : 'Suspendre 7j' }}
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

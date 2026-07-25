@@ -71,6 +71,7 @@ class AuctionManager
             throw new \InvalidArgumentException('Cet objet est lie a son proprietaire et ne peut pas etre mis en vente.');
         }
 
+        $this->assertNotSuspended($seller);
         $this->validatePriceLimits($playerItem, $pricePerUnit);
         $this->validateActiveListingsLimit($seller);
         $this->validateCancelCooldown($seller);
@@ -250,6 +251,7 @@ class AuctionManager
             throw new \InvalidArgumentException('La quantite doit etre superieure a 0.');
         }
 
+        $this->assertNotSuspended($seller);
         $this->validatePriceLimits($playerItem, $startingPrice);
         $this->validateActiveListingsLimit($seller);
         $this->validateCancelCooldown($seller);
@@ -608,6 +610,10 @@ class AuctionManager
      */
     private function assertTradeAllowed(Player $buyer, AuctionListing $listing): void
     {
+        // ECO-16b : la suspension vaut aussi face au canal systeme. Elle ferme
+        // le marche, pas seulement le commerce entre joueurs.
+        $this->assertNotSuspended($buyer);
+
         // Canal systeme : le vendeur est l'administration, pas un joueur.
         if ($listing->isFlash()) {
             return;
@@ -622,6 +628,56 @@ class AuctionManager
         if ($this->antiExploit->isPairCapReached($buyer, $seller)) {
             throw new \InvalidArgumentException(sprintf('Vous avez atteint la limite d\'echanges avec ce joueur (%d sur %d heures). Reessayez plus tard.', $this->antiExploit->getPairTransactionCap(), $this->antiExploit->getPairWindowHours()));
         }
+    }
+
+    /**
+     * Un joueur suspendu ne peut ni deposer, ni acheter, ni encherir (ECO-16b).
+     */
+    private function assertNotSuspended(Player $player): void
+    {
+        if (!$player->isTradeSuspended()) {
+            return;
+        }
+
+        throw new \InvalidArgumentException(sprintf("Votre acces au marche est suspendu jusqu'au %s.", $player->getTradeSuspendedUntil()?->format('d/m/Y H:i')));
+    }
+
+    /**
+     * Annulation par la moderation (ECO-16b).
+     *
+     * Se distingue de `cancelListing` sur deux points : aucun controle de
+     * propriete, et **les encheres en cours ne l'empechent pas** — une annonce
+     * frauduleuse doit pouvoir disparaitre meme si quelqu'un a mise dessus. Le
+     * dernier encherisseur est rembourse, sinon la moderation lui volerait ses
+     * Gils au passage.
+     */
+    public function cancelListingAsModerator(AuctionListing $listing, string $reason): void
+    {
+        if (!$listing->isActive()) {
+            throw new \InvalidArgumentException('Cette annonce n\'est plus active.');
+        }
+
+        $bidder = $listing->getCurrentBidder();
+        $bid = $listing->getCurrentBid();
+        if (null !== $bidder && null !== $bid) {
+            $bidder->addGils($bid);
+            $listing->setCurrentBidder(null);
+            $listing->setCurrentBid(null);
+        }
+
+        $listing->setStatus(AuctionStatus::Cancelled);
+        $listing->setCancelledAt(new \DateTimeImmutable());
+        $this->returnItemToSeller($listing);
+
+        $this->entityManager->flush();
+
+        $this->logger->warning('Auction listing cancelled by moderation', [
+            'listing_id' => $listing->getId(),
+            'seller_id' => $listing->getSeller()->getId(),
+            'refunded_bidder_id' => $bidder?->getId(),
+            'refunded_amount' => $bidder !== null ? $bid : 0,
+            'reason' => $reason,
+        ]);
     }
 
     /**
