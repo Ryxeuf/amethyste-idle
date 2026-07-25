@@ -18,14 +18,17 @@
 > [`LOAD_TESTING_BOTTLENECKS.md`](../LOAD_TESTING_BOTTLENECKS.md) (jalons **C** et **D** ✅ :
 > indexes ciblés `/metrics`, cache TTL des collectors, partial index `idx_fight_in_progress`,
 > refactor `MobRepository::findByMapWithMonster`).
-> **Prerequis post-pivot** : les scenarios doivent d'abord etre realignes sur le modele zone
-> (cf. Sprint 13 — **ZON-24**), sinon la mesure porte sur des routes supprimees.
+> **Realignement fait** : les scenarios ciblent le modele zone depuis **ZON-24** ✅. Reste le
+> **jalon Z** de `LOAD_TESTING_BOTTLENECKS.md` : aucune mesure n'a encore ete prise sur ce profil,
+> c'est le prerequis de l'objectif 200 joueurs (les jalons C et D ont ete valides sur un profil
+> carte qui n'existe plus).
 
 - [ ] **Jalon A — Cache Redis** (cache applicatif partage, sessions, cache Doctrine de 2e niveau)
 - [ ] **Jalon B — PgBouncer** (pooling de connexions PostgreSQL)
 - [ ] **Jalon E — Hardening Mercure** (limites d'abonnes, backpressure, TTL des topics)
 - [ ] **Jalon F — Plan de scaling horizontal** (multi-instances FrankenPHP derriere Traefik)
-- [ ] **Objectif : 200 joueurs simultanes sans degradation** (mesure de validation finale, apres ZON-24)
+- [ ] **Jalon Z — passe de mesure sur le profil zone** (prerequis : etalonner les 4 scenarios realignes)
+- [ ] **Objectif : 200 joueurs simultanes sans degradation** (mesure de validation finale)
 
 ### 135 — Localisation i18n (M | ★)
 > Prerequis : ∅

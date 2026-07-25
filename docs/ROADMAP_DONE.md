@@ -11,6 +11,23 @@
 
 ---
 
+## ZON-24 — Realignement des scenarios de charge sur le modele zone (Sprint 13, 2026-07-25)
+
+> Les scenarios k6 mesuraient encore un profil de charge **disparu** : `mercure-streaming` s'abonnait par defaut au topic `map/move`, supprime par ZON-21. Un scenario qui cible des routes ou des topics inexistants ne mesure rien — il ne signale meme pas d'erreur, il tient juste une connexion qui ne recevra jamais rien.
+
+### Livre
+
+- **`mercure-streaming`** : topic par defaut → `chat/zone/<id>`, l'abonnement le plus repandu du modele zone (chaque joueur present sur l'ecran de zone en ouvre un). Nouvelle variable `MERCURE_ZONE_ID` pour viser une zone reellement peuplee ; les autres topics du modele (`zone/<id>/event`, `dungeon/run/<id>`, `event/announce`) sont documentes.
+- **`authenticated-gameplay`** : metrique morte `authed_map_api_latency` (plus jamais emise) remplacee par `authed_json_api_latency` dans le resume de fin de run.
+- **`scripts/load-test/README.md`** : sections « carte » reecrites sur le modele zone — plus aucune route supprimee n'y est decrite. Variable `MAP_RADIUS` retiree (sans consommateur). La piste « prochaines etapes » vise desormais les ecritures du modele zone (POST voyage, POST action), avec l'avertissement qu'elles sortent du profil non destructif actuel.
+- **`docs/LOAD_TESTING_BOTTLENECKS.md`** : encart de requalification. Le **jalon D** (indexes composites des APIs map) est **sans objet** — ses endpoints n'existent plus, seul `idx_mob_alive_map` reste utile. Les jalons A, B, E, F sont independants du modele de monde et restent valables.
+
+### Consequence pour la tache 134
+
+Nouveau **jalon Z** : aucune mesure n'a encore ete prise sur le profil zone. Les jalons C et D avaient ete valides sur un profil de charge qui n'existe plus — l'objectif « 200 joueurs simultanes » ne peut pas etre conclu avant une passe de mesure sur les scenarios realignes.
+
+---
+
 ## ZON-23 — Couverture E2E « zone » (Sprint 13, 2026-07-25)
 
 > Les E2E Panther Map / Combat / Shop ont ete supprimes avec ZON-21a — ils pilotaient le canvas PixiJS et l'endpoint `/api/map/move`, c'est-a-dire precisement le code retire. Il ne restait que 4 scenarios (Authentication, Craft, Inventory, Quest) : **la boucle de jeu principale n'etait plus couverte de bout en bout.**
