@@ -33,6 +33,17 @@
         </div>
 
         <div class="game-card-body">
+            {# ECO-04 : la guilde qui controle la region renonce a sa taxe pour ses
+               propres membres. C'est un argument d'adhesion : il doit se voir. #}
+            {% if memberRebateRate > 0 %}
+                <div class="mb-4 bg-purple-900/20 border border-purple-700/30 rounded-lg px-3 py-2 text-xs text-purple-200">
+                    Votre guilde controle cette region :
+                    <span class="font-semibold">-{{ (memberRebateRate * 100)|number_format(0, ',', ' ') }} %</span>
+                    sur vos achats ici. La remise est prise sur la taxe percue par votre guilde,
+                    jamais sur le revenu du vendeur.
+                </div>
+            {% endif %}
+
             {# Solde joueur #}
             <div class="flex items-center gap-1.5 mb-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2 w-fit">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

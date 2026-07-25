@@ -29,6 +29,17 @@ class AuctionTransaction
     #[ORM\Column(name: 'region_tax_amount', type: 'integer', options: ['default' => 0])]
     private int $regionTaxAmount = 0;
 
+    /**
+     * Ristourne accordee a l'acheteur membre de la guilde controlante (ECO-04).
+     *
+     * Conservee sur la transaction plutot que recalculee : la taxe, le controle
+     * de la region et l'appartenance de l'acheteur peuvent tous changer apres
+     * coup, et la detection d'anomalies (ECO-16) a besoin du montant reellement
+     * consenti, pas d'une reconstitution.
+     */
+    #[ORM\Column(name: 'member_rebate_amount', type: 'integer', options: ['default' => 0])]
+    private int $memberRebateAmount = 0;
+
     #[ORM\Column(name: 'purchased_at', type: 'datetime')]
     private \DateTimeInterface $purchasedAt;
 
@@ -83,6 +94,26 @@ class AuctionTransaction
         $this->regionTaxAmount = $regionTaxAmount;
 
         return $this;
+    }
+
+    public function getMemberRebateAmount(): int
+    {
+        return $this->memberRebateAmount;
+    }
+
+    public function setMemberRebateAmount(int $memberRebateAmount): self
+    {
+        $this->memberRebateAmount = $memberRebateAmount;
+
+        return $this;
+    }
+
+    /**
+     * Ce que l'acheteur a reellement paye, ristourne membre deduite.
+     */
+    public function getAmountPaid(): int
+    {
+        return $this->totalPrice - $this->memberRebateAmount;
     }
 
     public function getPurchasedAt(): \DateTimeInterface

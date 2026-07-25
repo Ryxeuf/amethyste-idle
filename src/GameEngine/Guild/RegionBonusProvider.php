@@ -8,8 +8,14 @@ use App\Entity\App\Player;
 
 class RegionBonusProvider
 {
-    /** Discount rate for members of the controlling guild. */
-    private const MEMBER_DISCOUNT = 0.10;
+    /**
+     * Discount rate for members of the controlling guild.
+     *
+     * Publique depuis ECO-04 : l'hotel des ventes accorde la meme remise aux
+     * membres de la guilde controlante, et deux constantes distinctes auraient
+     * diverge a la premiere retouche d'equilibrage.
+     */
+    public const MEMBER_DISCOUNT = 0.10;
 
     /** Extra shop discount per upgrade level. */
     private const UPGRADE_SHOP_DISCOUNT_PER_LEVEL = 0.05;
