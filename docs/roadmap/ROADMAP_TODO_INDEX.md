@@ -36,7 +36,7 @@
 | Sprints 1-6 — Coeur de jeu | 20/20 | ✅ Termines |
 | Plan Testing (TST) | 11/15 | ✅ Quasi-termine (integre en Sprint 1) |
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot PBBG (realise trace dans ROADMAP_DONE, reliquat abandonne) |
-| Chantier Modele zone (ZON) | 18/21 | En cours (Sprint 7 ✅ + Sprint 8 ✅ + Sprint 9 ✅ ZON-07..17 + ZON-18 boss de zone asynchrone ; gel `map_frozen` activable en test) |
+| Chantier Modele zone (ZON) | 18/21 (+ZON-19 s.1) | En cours (Sprint 7-9 ✅ ZON-07..17 + ZON-18 boss async + ZON-19 sous-jalon 1 modele/formation donjon de groupe ; gel `map_frozen` activable en test) |
 
 ---
 

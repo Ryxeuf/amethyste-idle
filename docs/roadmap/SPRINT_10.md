@@ -10,12 +10,11 @@
 
 > **ZON-18 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : boss de zone asynchrone — entite `ZoneBoss` (pool de PV partage, 1:1 `GameEvent` de zone), `ZoneBossService::assault` (chaque joueur present depense `zone.energy.cost.assault`, inflige des degats bases sur sa stat d'attaque, alimente `PlayerZoneEventParticipation.contribution`), aucune presence simultanee. A 0 PV, loot distribue a la contribution (top-3 = drops garantis + proba boostee, autres = probabiliste) — generalisation de `WorldBossLootDistributor` au modele zone. `ZoneBossManager` cree le boss a l'activation d'un evenement de zone porteur (`monster_slug`/`boss_hp`). Barre de PV + bouton Assaut sur l'ecran de zone, annonce Mercure de defaite. Curseurs BALANCE section 8.
 
-### ZON-19 — Donjon de groupe semi-synchrone (XL | ★★★)
+### ZON-19 — Donjon de groupe semi-synchrone (XL | ★★★) — **decoupe en sous-jalons**
 > Prerequis : ← ZON-14
-- [ ] Un leader forme un groupe parmi les joueurs presents dans la zone, puis lance le donjon (sequence de combats en tour par tour partage)
-- [ ] Delai par tour (30-60 s) ; au-dela, action par defaut = attaque de base de l'arme (toujours gratuite, regle materia inchangee)
-- [ ] Mercure pour l'experience fluide quand le groupe est connecte simultanement (evenement social planifie, assume)
-- [ ] Reutiliser `DungeonRun` / le systeme de groupe (Party) existants
+> **Sous-jalon 1 (modele & formation) livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : entites `GroupDungeonRun` + `GroupDungeonMember` (instantane des membres), `GroupDungeonService::launch` (le leader forme le groupe parmi les presents via `Party`, garde d'unicite/presence/taille) + `abandon`, controleur (launch/abandon), banniere de run actif sur l'ecran de zone. Reutilise `Party`.
+- [ ] **Sous-jalon 2** : sequence de combats tour par tour partagee ; delai par tour (30-60 s), action par defaut = attaque de base de l'arme (gratuite, regle materia inchangee)
+- [ ] **Sous-jalon 3** : Mercure pour l'experience fluide quand le groupe est connecte simultanement
 
 ### ZON-20 — Lockouts & recompenses decroissantes (M | ★★)
 > Prerequis : ← ZON-19

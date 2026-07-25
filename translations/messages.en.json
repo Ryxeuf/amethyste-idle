@@ -1169,6 +1169,25 @@
           "not_present": "You must be present in the boss's zone."
         }
       },
+      "dungeon": {
+        "in_progress": "Group dungeon in progress: %dungeon% (%count% members).",
+        "abandon": "Abandon",
+        "hint": "The shared turn-by-turn combat sequence is coming in a future update.",
+        "flash": {
+          "launched": "Group dungeon launched!",
+          "abandoned": "Group dungeon abandoned."
+        },
+        "error": {
+          "no_zone": "No zone to launch a group dungeon from.",
+          "no_party": "You must be in a party to launch a group dungeon.",
+          "not_leader": "Only the party leader can launch or abandon the dungeon.",
+          "too_many": "Your party exceeds this dungeon's maximum size.",
+          "member_absent": "All party members must be present in the zone.",
+          "already_running": "A party member is already in a group dungeon.",
+          "not_active": "This group dungeon is no longer active.",
+          "unknown": "Dungeon not found."
+        }
+      },
       "explore": {
         "result": {
           "mob": "You cross paths with a %monster%!",

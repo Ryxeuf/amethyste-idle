@@ -5,6 +5,25 @@
 
 ---
 
+## ZON-19 (sous-jalon 1) — Donjon de groupe : modele & formation (Sprint 10, 2026-07-25)
+
+> ZON-19 (donjon de groupe semi-synchrone, XL) est **decoupe en trois sous-jalons**. Ce premier livre le modele de donnees et la formation du groupe ; la boucle de combat tour par tour partagee (sous-jalon 2) et l'experience temps reel Mercure (sous-jalon 3) suivront.
+
+### Changements
+
+- **`GroupDungeonRun`** (entite + table + migration + repository) : donjon (`Game\Dungeon`), zone d'origine, leader, statut (`forming`/`in_progress`/`completed`/`abandoned`), `currentStep` (prepare la boucle de combat), horodatages. `isActive()`, `getMemberPlayers()`.
+- **`GroupDungeonMember`** (entite + repository) : instantane d'un participant fige a la formation (UNIQUE `run + player`), decouple le run de la `Party` mutable.
+- **`GroupDungeonService`** : `launch(leader, dungeon)` — reutilise le systeme `Party` existant : le leader et les membres de sa party presents dans sa zone forment le groupe, avec gardes (leader requis, tous presents, taille <= `dungeon.maxPlayers`, aucun membre deja en run). `getActiveRunForPlayer` (leader ou membre), `abandon(leader, run)`. `GroupDungeonException` (cle de traduction).
+- **`GroupDungeonController`** : `POST /game/zone/dungeon/launch/{id}` et `POST /game/zone/dungeon/abandon` (CSRF). Banniere de run de groupe actif sur l'ecran de zone (bouton Abandonner pour le leader). Traductions FR/EN (`game.zone.dungeon.*`).
+
+### Verifications
+
+- `GroupDungeonServiceTest` (8 cas : launch cree le run avec leader + membres presents, rejets sans party / non-leader / membre absent / membre deja en run / party trop grande, abandon par le leader, refus non-leader).
+- `ZoneControllerTest` adapte (mock `GroupDungeonService`).
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-18 — Boss de zone asynchrone (Sprint 10, 2026-07-25)
 
 > Premier jalon du Sprint 10 : le PvE cooperatif en modele zone. Un boss a large pool de PV apparait dans une zone pour une fenetre donnee ; chaque joueur present depense de l'energie pour lancer ses assauts quand il le souhaite — aucune presence simultanee requise. Le loot va a la contribution, generalisant `WorldBossLootDistributor` sans combat tour par tour.

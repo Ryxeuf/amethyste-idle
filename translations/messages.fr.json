@@ -1169,6 +1169,25 @@
           "not_present": "Vous devez etre present dans la zone du boss."
         }
       },
+      "dungeon": {
+        "in_progress": "Donjon de groupe en cours : %dungeon% (%count% membres).",
+        "abandon": "Abandonner",
+        "hint": "La sequence de combats tour par tour partagee arrive dans une prochaine mise a jour.",
+        "flash": {
+          "launched": "Donjon de groupe lance !",
+          "abandoned": "Donjon de groupe abandonne."
+        },
+        "error": {
+          "no_zone": "Aucune zone pour lancer un donjon de groupe.",
+          "no_party": "Vous devez etre dans un groupe pour lancer un donjon de groupe.",
+          "not_leader": "Seul le chef du groupe peut lancer ou abandonner le donjon.",
+          "too_many": "Votre groupe depasse la taille maximale de ce donjon.",
+          "member_absent": "Tous les membres du groupe doivent etre presents dans la zone.",
+          "already_running": "Un membre du groupe est deja dans un donjon de groupe.",
+          "not_active": "Ce donjon de groupe n'est plus actif.",
+          "unknown": "Donjon introuvable."
+        }
+      },
       "explore": {
         "result": {
           "mob": "Vous croisez la route d'un %monster% !",
