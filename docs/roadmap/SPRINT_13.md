@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **4 livrees** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **5 livrees** (ZON-27 : sous-jalon a livre) | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -79,25 +79,20 @@
 - [ ] Illustrations de zone + positions `map_x`/`map_y` sur la carte du monde (ZON-16)
 - [ ] Etalonner les couts d'energie et les durees de voyage dans `docs/BALANCE.md` sur ce graphe elargi
 
-### ZON-27 — Couche PNJ de zone (L | ★★★ | **HAUTE**)
-> Prerequis : ∅ | Decouvert en preparant ZON-23
-> **Constat** : la suppression du front carte (ZON-21a) a emporte les overlays PNJ (`dialog`,
-> boutique) **sans les remplacer**. Consequences verifiees :
-> - `/game/shop/{id}` existe et fonctionne, mais **aucun template du jeu n'y renvoie** : les boutiques
->   PNJ sont injoignables.
-> - Aucune route de **dialogue PNJ** ne subsiste ; `PnjDialogEvent` n'a plus d'emetteur (cf. ZON-25),
->   donc les objectifs de quete `talk_to` (quetes d'enquete) ne progressent pas.
-> - Les PNJ presents dans une zone ne sont exposes nulle part dans l'ecran de zone.
->
-> **Recommandation** : exposer les PNJ presents dans l'ecran de zone (liste avec leurs actions —
-> boutique, dialogue, quetes), en reutilisant l'entite `Pnj` et le rattachement de zone existants.
-> C'est la brique qui rebranche d'un coup boutiques, dialogues et quetes `talk_to`.
+> **ZON-27 sous-jalon a livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : les PNJ presents dans la
+> zone sont exposes sur `/game/zone`, avec un point d'entree **boutique** pour les marchands
+> (respectant les horaires d'ouverture). `ShopController` refuse desormais un PNJ d'une autre zone.
+> E2E `ZoneShopFlowTest` (remplace l'ex-`ShopFlowTest`). Les boutiques etaient injoignables depuis
+> ZON-21a.
 
-- [ ] Lister les PNJ presents dans la zone courante sur `/game/zone` (nom, role, actions)
-- [ ] Point d'entree **boutique** vers `/game/shop/{id}` pour les PNJ marchands (gating par la zone)
-- [ ] Ecran/action de **dialogue PNJ** emettant `PnjDialogEvent` → debloque les quetes `talk_to`
-- [ ] Couverture E2E : acces boutique depuis une zone ville (remplace l'ex-`ShopFlowTest`)
-- [ ] Tests fonctionnels : PNJ d'une autre zone inaccessible
+### ZON-27 — Couche PNJ de zone : dialogue (sous-jalon b) (M | ★★★ | HAUTE)
+> Prerequis : ← ZON-27a ✅
+> Reste le volet **dialogue**, qui debloque `PnjDialogEvent` (dernier orphelin) et les objectifs de
+> quete `talk_to` (quetes d'enquete), aujourd'hui sans aucun moyen de progresser.
+- [ ] Ecran/action de dialogue PNJ depuis l'ecran de zone (reutiliser `Pnj::getDialog()`)
+- [ ] Emission de `PnjDialogEvent` → `QuestTalkToTrackingListener` → `updateTalkedTo`
+- [ ] Retrait de `PnjDialogEvent` de `KNOWN_ORPHANS` (le garde-fou echoue s'il retrouve un emetteur)
+- [ ] Tests : progression d'un objectif `talk_to`, dialogue d'un PNJ hors zone refuse
 
 ---
 
@@ -107,6 +102,6 @@
       en modele zone (ZON-22)
 - [x] Boucle de jeu principale (zone → action → combat) couverte en E2E dans la CI (ZON-23)
 - [~] Aucun evenement de domaine sans emetteur — reste `PnjDialogEvent`, traite par ZON-27
-- [ ] PNJ joignables depuis la zone : boutiques et dialogues (ZON-27)
+- [~] PNJ joignables depuis la zone : boutiques ✅ (ZON-27a), dialogues a faire (ZON-27b)
 - [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
 - [ ] World 1 jouable de bout en bout sur un graphe de zones dense (ZON-26)

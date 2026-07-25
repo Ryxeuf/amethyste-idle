@@ -6,6 +6,7 @@ use App\Entity\App\GameEvent;
 use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\ObjectLayer;
 use App\Entity\App\Player;
+use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
@@ -127,6 +128,8 @@ class ZoneController extends AbstractController
                 'zoneEvents' => [],
                 'zoneBoss' => null,
                 'groupDungeon' => null,
+                'pnjsPresent' => [],
+                'gameHour' => $this->gameTimeService->getHour(),
                 'zoneChat' => null,
                 'phase' => $this->gameTimeService->getPhase(),
             ]);
@@ -181,6 +184,14 @@ class ZoneController extends AbstractController
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
             'zoneBoss' => $this->buildZoneBoss($zone),
             'groupDungeon' => $this->buildGroupDungeon($player),
+            // Les PNJ presents dans la zone (ZON-27) : depuis la suppression des
+            // overlays carte, l'ecran de zone est le seul endroit d'ou les
+            // atteindre — sans lui, les boutiques sont injoignables.
+            'pnjsPresent' => $this->entityManager
+                ->getRepository(Pnj::class)
+                ->findBy(['zone' => $zone], ['name' => 'ASC'], 20),
+            // Heure in-game : conditionne l'ouverture des boutiques PNJ.
+            'gameHour' => $this->gameTimeService->getHour(),
             'phase' => $this->gameTimeService->getPhase(),
             'zoneChat' => [
                 'zoneId' => $zone->getId(),

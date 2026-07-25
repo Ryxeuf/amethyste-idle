@@ -2,6 +2,7 @@
 
 namespace App\Controller\Game;
 
+use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\App\Pnj;
 use App\Entity\Game\Item;
@@ -39,10 +40,14 @@ class ShopController extends AbstractController
             throw $this->createNotFoundException('Boutique introuvable');
         }
 
+        $player = $this->playerHelper->getPlayer();
+        if (!$this->isReachableFrom($pnj, $player)) {
+            throw $this->createNotFoundException('Boutique introuvable');
+        }
+
         $gameHour = $this->gameTimeService->getHour();
         $isOpen = $pnj->isShopOpen($gameHour);
 
-        $player = $this->playerHelper->getPlayer();
         $shopItems = $this->getShopItems($pnj);
 
         // Build stock info per slug (null = unlimited)
@@ -239,5 +244,22 @@ class ShopController extends AbstractController
         }
 
         return $this->entityManager->getRepository(Item::class)->findBy(['slug' => $slugs]);
+    }
+
+    /**
+     * La boutique d'un PNJ n'est accessible que depuis sa zone (ZON-27).
+     *
+     * Les PNJ sans zone (donnees heritees, cartes hors graphe) restent
+     * joignables : le pivot n'a pas rattache retroactivement tout le monde, et
+     * refuser par defaut couperait des boutiques encore valides.
+     */
+    private function isReachableFrom(Pnj $pnj, ?Player $player): bool
+    {
+        $pnjZone = $pnj->getZone();
+        if (null === $pnjZone) {
+            return true;
+        }
+
+        return $player?->getCurrentZone()?->getId() === $pnjZone->getId();
     }
 }
