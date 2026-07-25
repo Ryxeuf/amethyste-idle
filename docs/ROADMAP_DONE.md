@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,31 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-07 — Journal de monde (Piste C narration, 2026-07-25)
+
+> Le serveur « a une histoire » : des faits canon publics, horodates, visibles de tous, forment le fil chronologique de l'histoire du monde — affiche dans l'ecran Codex.
+
+### Changements
+
+- **`CodexEntry`** : `isPublic()` (vrai pour la categorie `world_fact`) — un fait de monde est visible de tous **sans** deblocage individuel ; nouveau champ **`creditedGuildName`** (mention de la guilde creditee, alimentee en NAR-11) avec setter normalisant. Migration idempotente `Version20260725CodexWorldFacts` (`ADD COLUMN IF NOT EXISTS`).
+- **`CodexEntryRepository::findWorldFactsChronological()`** : faits de monde du plus recent au plus ancien (`createdAt DESC`).
+- **`WorldFactService::recordWorldFact(slug, title, description, ?guilde, traductions...)`** : enregistre (ou met a jour) un fait de monde public, **idempotent par slug** (jamais de doublon), horodate a la creation. Point d'entree pour les resolutions de saison canon (NAR-11/12).
+- **`CodexController`** : separe les faits de monde des entrees a collectionner — les `world_fact` sont **exclus de la completion** `n/total` et passes a part ; l'ecran affiche un bloc **« Journal du monde »** en fil chronologique (titre/corps localises, date, mention de guilde si presente).
+- **Fixtures** : un fait de monde de depart (`fondation-du-village-de-lumiere`).
+
+### Verifications
+
+- `WorldFactServiceTest` (unit, 2 cas) : creation d'un fait public quand le slug est inconnu (categorie `world_fact`, `manual`, guilde creditee, public) ; mise a jour de l'entree existante par slug **sans doublon**.
+- `CodexControllerTest` : un fait de monde est exclu de la completion et transmis dans `worldFacts` ; regroupement/comptage des entrees a collectionner inchange.
+- `CodexEntryTest` : `isPublic()` limite a `world_fact`, normalisation de `creditedGuildName`.
+- QA : cs-fixer OK ; PHPStan ; PHPUnit + schema:create + fixtures en CI.
+
+### Notes
+
+- Le **marquage « canon »** d'une resolution de saison qui **genere** ces faits (via `WorldFactService`) est cable en **NAR-11/12** ; NAR-07 fournit le mecanisme, le stockage et l'affichage.
 
 ---
 

@@ -106,14 +106,12 @@ moteur récurrent qui referme la boucle à trois piliers.
 > Lien de navigation (desktop + tiroir mobile). Tests : `CodexControllerTest` + route
 > ajoutée au `SmokeTest`.
 
-### NAR-07 — Journal de monde (S | ★★ | MOYENNE)
-> Le serveur « a une histoire » : faits canon horodatés, visibles de tous.
-> Prérequis : ← NAR-05
-- [ ] `CodexEntry` de catégorie `world_fact` générées par les résolutions de saison marquées
-      « canon » (§3.2), horodatées, **débloquées pour tous** (fait public)
-- [ ] Affichage chronologique dans le Codex (fil de l'histoire du serveur)
-- [ ] Mention de la guilde créditée quand applicable (branché en NAR-11)
-- [ ] Tests (création d'un fait canon, visibilité globale)
+### NAR-07 — Journal de monde ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> Faits canon publics, horodatés, visibles de tous. `CodexEntry` de catégorie `world_fact`
+> **publique** (`isPublic()`, hors complétion), champ `creditedGuildName` (mention de la
+> guilde, branchée en NAR-11), `WorldFactService::recordWorldFact()` idempotent par slug.
+> Affichage chronologique (fil de l'histoire du serveur, plus récent en tête) dans l'écran
+> Codex. Tests : `WorldFactServiceTest`, `CodexControllerTest` (exclusion complétion), `CodexEntryTest`.
 
 ---
 

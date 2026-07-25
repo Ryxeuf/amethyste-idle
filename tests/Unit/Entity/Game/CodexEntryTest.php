@@ -67,4 +67,23 @@ final class CodexEntryTest extends TestCase
         self::assertSame(CodexEntry::UNLOCK_BOSS_KILL, $entry->getUnlockType());
         self::assertSame('forest_guardian', $entry->getUnlockKey());
     }
+
+    public function testIsPublicOnlyForWorldFact(): void
+    {
+        self::assertFalse((new CodexEntry())->setCategory(CodexEntry::CATEGORY_REGION)->isPublic());
+        self::assertFalse((new CodexEntry())->setCategory(CodexEntry::CATEGORY_BESTIARY_LORE)->isPublic());
+        self::assertTrue((new CodexEntry())->setCategory(CodexEntry::CATEGORY_WORLD_FACT)->isPublic());
+    }
+
+    public function testCreditedGuildNameNormalisesEmptyToNull(): void
+    {
+        $entry = new CodexEntry();
+        self::assertNull($entry->getCreditedGuildName());
+
+        $entry->setCreditedGuildName('   ');
+        self::assertNull($entry->getCreditedGuildName());
+
+        $entry->setCreditedGuildName('  Les Gardiens  ');
+        self::assertSame('Les Gardiens', $entry->getCreditedGuildName());
+    }
 }

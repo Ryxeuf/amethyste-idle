@@ -73,9 +73,25 @@ class CodexEntry
     #[ORM\Column(name: 'illustration_path', type: 'string', length: 255, nullable: true)]
     private ?string $illustrationPath = null;
 
+    /**
+     * Nom de la guilde creditee pour un fait de monde (NAR-07/NAR-11). null si
+     * aucun credit de guilde ne s'applique.
+     */
+    #[ORM\Column(name: 'credited_guild_name', type: 'string', length: 255, nullable: true)]
+    private ?string $creditedGuildName = null;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Un fait de monde (`world_fact`) est public : visible de tous les joueurs,
+     * sans deblocage individuel (NAR-07).
+     */
+    public function isPublic(): bool
+    {
+        return $this->category === self::CATEGORY_WORLD_FACT;
     }
 
     public function getSlug(): string
@@ -215,6 +231,19 @@ class CodexEntry
     public function setIllustrationPath(?string $illustrationPath): self
     {
         $this->illustrationPath = $illustrationPath;
+
+        return $this;
+    }
+
+    public function getCreditedGuildName(): ?string
+    {
+        return $this->creditedGuildName;
+    }
+
+    public function setCreditedGuildName(?string $creditedGuildName): self
+    {
+        $normalized = $creditedGuildName !== null ? trim($creditedGuildName) : null;
+        $this->creditedGuildName = $normalized === '' ? null : $normalized;
 
         return $this;
     }

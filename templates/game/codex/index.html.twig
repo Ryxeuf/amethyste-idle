@@ -24,12 +24,41 @@
         </div>
 
         <div class="game-card-body">
-            {% if categories is empty %}
+            {# Journal du monde : faits canon publics, du plus recent au plus ancien (NAR-07) #}
+            {% if worldFacts is not empty %}
+                <section class="mb-6">
+                    <div class="flex items-center gap-2 mb-2">
+                        <h3 class="text-sm font-semibold text-amber-300">Journal du monde</h3>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-900/40 text-amber-300/80 border border-amber-700/40">Public</span>
+                    </div>
+                    <ol class="relative border-l border-amber-800/40 ml-2 space-y-3">
+                        {% for fact in worldFacts %}
+                            <li class="ml-4">
+                                <span class="absolute -left-1.5 mt-1.5 h-3 w-3 rounded-full bg-amber-500/70 border border-amber-300/40"></span>
+                                <div class="bg-gray-700/40 rounded-lg p-3 border border-amber-800/30">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <h4 class="text-amber-100 font-semibold text-sm sm:text-base">{{ fact.getLocalizedTitle(locale) }}</h4>
+                                        {% if fact.createdAt %}
+                                            <time class="text-[10px] text-gray-500 font-mono flex-shrink-0 mt-0.5">{{ fact.createdAt|date('Y-m-d') }}</time>
+                                        {% endif %}
+                                    </div>
+                                    <p class="text-gray-300 text-xs sm:text-sm mt-1 whitespace-pre-line">{{ fact.getLocalizedDescription(locale) }}</p>
+                                    {% if fact.creditedGuildName %}
+                                        <p class="text-purple-300/80 text-[11px] mt-1.5">Crédité à la guilde <span class="font-semibold">{{ fact.creditedGuildName }}</span></p>
+                                    {% endif %}
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ol>
+                </section>
+            {% endif %}
+
+            {% if categories is empty and worldFacts is empty %}
                 <div class="text-center py-8">
                     <p class="text-gray-500 text-sm">Le Codex se remplira à mesure de vos découvertes.</p>
                     <p class="text-gray-600 text-xs mt-1">Explorez, affrontez et menez les arcs à leur terme pour révéler la trame du monde.</p>
                 </div>
-            {% else %}
+            {% elseif categories is not empty %}
                 {% for category, entries in categories %}
                     <section class="mb-5">
                         <h3 class="text-sm font-semibold text-purple-300 mb-2">{{ category_labels[category]|default(category|replace({'_': ' '})|capitalize) }}</h3>
