@@ -11,6 +11,7 @@ use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\Game\Monster;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExploreResult;
 use App\GameEngine\Zone\ExploreService;
@@ -33,6 +34,8 @@ class ExploreServiceTest extends TestCase
     private MobRepository&MockObject $mobRepository;
     private FightHandler&MockObject $fightHandler;
     private PlayerJournalEntryRepository&MockObject $journalRepository;
+    private GameTimeService&MockObject $gameTimeService;
+    private bool $night = false;
 
     /** @var ExploreService&object{rolls: list<int>} */
     private ExploreService $service;
@@ -52,8 +55,10 @@ class ExploreServiceTest extends TestCase
         $this->mobRepository = $this->createMock(MobRepository::class);
         $this->fightHandler = $this->createMock(FightHandler::class);
         $this->journalRepository = $this->createMock(PlayerJournalEntryRepository::class);
+        $this->gameTimeService = $this->createMock(GameTimeService::class);
+        $this->gameTimeService->method('isNight')->willReturnCallback(fn (): bool => $this->night);
 
-        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->mobRepository, $this->fightHandler, $this->journalRepository) extends ExploreService {
+        $this->service = new class($this->entityManager, $this->actionEnergyManager, $this->zoneTravelService, $this->mobRepository, $this->fightHandler, $this->journalRepository, $this->gameTimeService) extends ExploreService {
             /** @var list<int> */
             public array $rolls = [];
             private int $rollIndex = 0;
@@ -77,6 +82,17 @@ class ExploreServiceTest extends TestCase
         $player->setGils(0);
 
         return $player;
+    }
+
+    private function buildMob(string $slug): Mob
+    {
+        $monster = new Monster();
+        $monster->setName(ucfirst($slug));
+        $monster->setSlug($slug);
+        $mob = new Mob();
+        $mob->setMonster($monster);
+
+        return $mob;
     }
 
     public function testRefusesWhileTraveling(): void
@@ -208,6 +224,74 @@ class ExploreServiceTest extends TestCase
 
         $this->assertSame(ExploreResult::EVENT_CHEST, $result->event);
         $this->assertSame(50, $player->getGils());
+    }
+
+    public function testNightVariantOverridesWeightsAndChestGils(): void
+    {
+        // Jour : coffre 10 gils. Nuit : le sous-bloc `night` force encore un
+        // coffre mais a 40 gils (ZON-17).
+        $config = [
+            'weights' => ['mob' => 0, 'chest' => 100, 'harvest' => 0, 'pnj' => 0, 'nothing' => 0],
+            'chest_gils_min' => 10, 'chest_gils_max' => 10,
+            'night' => [
+                'weights' => ['mob' => 0, 'chest' => 100, 'harvest' => 0, 'pnj' => 0, 'nothing' => 0],
+                'chest_gils_min' => 40, 'chest_gils_max' => 40,
+            ],
+        ];
+
+        $this->night = true;
+        $zone = $this->buildZone('foret', false, $config);
+        $player = $this->buildPlayerIn($zone);
+        $this->service->rolls = [1];
+
+        $result = $this->service->explore($player);
+
+        $this->assertSame(ExploreResult::EVENT_CHEST, $result->event);
+        $this->assertSame(40, $player->getGils());
+    }
+
+    public function testDayIgnoresNightVariant(): void
+    {
+        $config = [
+            'weights' => ['mob' => 0, 'chest' => 100, 'harvest' => 0, 'pnj' => 0, 'nothing' => 0],
+            'chest_gils_min' => 10, 'chest_gils_max' => 10,
+            'night' => ['chest_gils_min' => 40, 'chest_gils_max' => 40],
+        ];
+
+        $this->night = false;
+        $zone = $this->buildZone('foret', false, $config);
+        $player = $this->buildPlayerIn($zone);
+        $this->service->rolls = [1];
+
+        $result = $this->service->explore($player);
+
+        $this->assertSame(ExploreResult::EVENT_CHEST, $result->event);
+        $this->assertSame(10, $player->getGils());
+    }
+
+    public function testNightMobPoolRestrictsEncounters(): void
+    {
+        // Vivier de la zone : loup (jour) + squelette (nuit). La nuit, le pool
+        // `mob_slugs: [skeleton]` restreint la rencontre au squelette.
+        $wolf = $this->buildMob('wolf');
+        $skeleton = $this->buildMob('skeleton');
+        $this->mobRepository->method('findAvailableInZone')->willReturn([$wolf, $skeleton]);
+        $this->fightHandler->method('startFight')->willReturn($this->createMock(Fight::class));
+
+        $config = [
+            'weights' => ['mob' => 100, 'chest' => 0, 'harvest' => 0, 'pnj' => 0, 'nothing' => 0],
+            'night' => ['mob_slugs' => ['skeleton']],
+        ];
+
+        $this->night = true;
+        $zone = $this->buildZone('foret', false, $config);
+        $player = $this->buildPlayerIn($zone);
+        $this->service->rolls = [1, 1]; // event mob, puis 1er mob du pool filtre
+
+        $result = $this->service->explore($player);
+
+        $this->assertSame(ExploreResult::EVENT_MOB, $result->event);
+        $this->assertSame('Skeleton', $result->messageParams['%monster%']);
     }
 
     public function testExploreCostReadsParameterOverride(): void

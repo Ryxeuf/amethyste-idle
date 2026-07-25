@@ -8,6 +8,7 @@ use App\Entity\App\PlayerJournalEntry;
 use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\GameEngine\Fight\Handler\FightHandler;
+use App\GameEngine\World\GameTimeService;
 use App\Repository\MobRepository;
 use App\Repository\PlayerJournalEntryRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,7 +49,41 @@ class ExploreService
         private readonly MobRepository $mobRepository,
         private readonly FightHandler $fightHandler,
         private readonly PlayerJournalEntryRepository $journalRepository,
+        private readonly GameTimeService $gameTimeService,
     ) {
+    }
+
+    /**
+     * Config d'exploration effective pour la phase courante (ZON-17) : la nuit,
+     * le sous-bloc `night` (si present) surcharge `weights`, `chest_gils_*` et
+     * peut restreindre le vivier de rencontres a un pool nocturne dedie
+     * (`mob_slugs`). Le jour, le bloc racine est utilise tel quel.
+     *
+     * @return array<string, mixed>
+     */
+    private function effectiveExploreConfig(Zone $zone): array
+    {
+        $config = $zone->getExploreConfig() ?? [];
+        if (!$this->gameTimeService->isNight()) {
+            return $config;
+        }
+
+        $night = $config['night'] ?? null;
+        if (!\is_array($night)) {
+            return $config;
+        }
+
+        // Surcharge peu profonde : les cles nuit remplacent les cles jour.
+        if (isset($night['weights']) && \is_array($night['weights'])) {
+            $config['weights'] = array_merge($config['weights'] ?? [], $night['weights']);
+        }
+        foreach (['chest_gils_min', 'chest_gils_max', 'mob_slugs'] as $key) {
+            if (\array_key_exists($key, $night)) {
+                $config[$key] = $night[$key];
+            }
+        }
+
+        return $config;
     }
 
     /**
@@ -99,7 +134,7 @@ class ExploreService
      */
     private function drawEvent(Zone $zone): string
     {
-        $config = $zone->getExploreConfig() ?? [];
+        $config = $this->effectiveExploreConfig($zone);
         /** @var array<string, int> $weights */
         $weights = array_merge(self::DEFAULT_WEIGHTS, $config['weights'] ?? []);
 
@@ -138,6 +173,21 @@ class ExploreService
     private function resolveMob(Player $player, Zone $zone): ExploreResult
     {
         $mobs = $this->mobRepository->findAvailableInZone($zone);
+
+        // Pool nocturne dedie (ZON-17) : la nuit, si la zone declare un
+        // `night.mob_slugs`, les rencontres se restreignent a ces creatures.
+        $config = $this->effectiveExploreConfig($zone);
+        $nightPool = $config['mob_slugs'] ?? null;
+        if (\is_array($nightPool) && [] !== $nightPool) {
+            $filtered = array_values(array_filter(
+                $mobs,
+                static fn ($mob): bool => \in_array($mob->getMonster()->getSlug(), $nightPool, true),
+            ));
+            if ([] !== $filtered) {
+                $mobs = $filtered;
+            }
+        }
+
         if ([] === $mobs) {
             return $this->resolveNothing($player, $zone);
         }
@@ -157,7 +207,7 @@ class ExploreService
 
     private function resolveChest(Player $player, Zone $zone): ExploreResult
     {
-        $config = $zone->getExploreConfig() ?? [];
+        $config = $this->effectiveExploreConfig($zone);
         $min = max(0, (int) ($config['chest_gils_min'] ?? self::DEFAULT_CHEST_GILS_MIN));
         $max = max($min, (int) ($config['chest_gils_max'] ?? self::DEFAULT_CHEST_GILS_MAX));
         $gils = $min + ($max > $min ? $this->roll($max - $min + 1) - 1 : 0);

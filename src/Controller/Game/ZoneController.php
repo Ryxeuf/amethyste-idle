@@ -9,6 +9,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
 use App\GameEngine\Social\ChatManager;
+use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ExploreResult;
@@ -67,6 +68,7 @@ class ZoneController extends AbstractController
         private readonly ExpeditionService $expeditionService,
         private readonly ChatManager $chatManager,
         private readonly ZoneEventService $zoneEventService,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -115,6 +117,7 @@ class ZoneController extends AbstractController
                 'expedition' => null,
                 'zoneEvents' => [],
                 'zoneChat' => null,
+                'phase' => $this->gameTimeService->getPhase(),
             ]);
         }
 
@@ -165,6 +168,7 @@ class ZoneController extends AbstractController
             ],
             'expedition' => $this->buildExpedition($player, $zone),
             'zoneEvents' => $this->buildZoneEvents($player, $zone),
+            'phase' => $this->gameTimeService->getPhase(),
             'zoneChat' => [
                 'zoneId' => $zone->getId(),
                 'messages' => array_reverse($this->chatManager->getZoneHistory($zone, 30)),

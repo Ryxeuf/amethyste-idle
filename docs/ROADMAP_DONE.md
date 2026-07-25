@@ -5,6 +5,26 @@
 
 ---
 
+## ZON-17 — Cycle jour/nuit mecanique (Sprint 9, 2026-07-25)
+
+> **Decision tranchee (question ouverte du pivot) : le cycle jour/nuit devient mecanique**, variante RICHE. Le jour et la nuit changent reellement le jeu — rencontres, butin et evenements varient, avec un contenu nocturne dedie — au-dessus du cycle cosmetique fin existant.
+
+### Changements
+
+- **`GameTimeService::getPhase()` / `isNight()` / `isDay()`** : phase binaire jour (6h-18h) / nuit (18h-6h) au-dessus de `getTimeOfDay` (le crepuscule bascule en nuit, l'aube en jour). Ajoutee au `getSnapshot`. Aucune migration (reutilise l'horloge de jeu existante).
+- **Variance jour/nuit des rencontres et du loot** : `ExploreService::effectiveExploreConfig()` applique la nuit le sous-bloc declaratif `explore.night` d'une zone (surcharge peu profonde de `weights` et `chest_gils_*`). `drawEvent` et `resolveChest` consomment la config effective.
+- **Pool de rencontres nocturne dedie** : `explore.night.mob_slugs` restreint la nuit le vivier de rencontres aux creatures listees (fallback sur le vivier complet si aucune presente). `ZoneDefinitionLoader` parse et valide le sous-bloc `night` (weights / chest / mob_slugs) ; `ZoneImporter` le persiste dans `exploreConfig` (JSON).
+- **Evenements de zone jour/nuit** : `ZoneEventService::getActiveEventsForZone` filtre par phase via `GameEvent.parameters['phase']` (`day`|`night`) ; sans phase declaree, l'evenement est actif jour et nuit.
+- **UI** : indicateur ☀️/🌙 sur l'ecran de zone. Traductions FR/EN (`game.zone.phase.*`).
+- **Contenu** : `foret-des-murmures` gagne une variante nocturne (rencontres plus frequentes, coffres plus riches, morts-vivants `ghost`/`skeleton` la nuit) dans `world_1.yaml`.
+
+### Verifications
+
+- `GameTimeServiceTest` (+`testGetPhaseDayAndNight`) ; `ExploreServiceTest` (+3 cas : nuit surcharge weights/chest, jour ignore la variante, pool nocturne `mob_slugs`) ; `ZoneEventServiceTest` (+`testMatchesPhaseFilters`) ; `ZoneControllerTest` adapte (mock `GameTimeService`) ; `ZoneDefinitionLoaderTest` (parsing `world_1.yaml` avec bloc `night`).
+- Local : suite complete verte, `app:game:validate` OK, PHPStan niveau 5 OK, PHP-CS-Fixer clean.
+
+---
+
 ## ZON-16 — Carte du monde illustree (Sprint 9, 2026-07-25)
 
 > Une carte du monde cliquable pour garder l'intuition geographique du modele zone, sans ressusciter le moteur de rendu carte (PixiJS). Rendu SVG schematique, decouverte progressive, voyage au clic.

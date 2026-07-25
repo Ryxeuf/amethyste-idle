@@ -12,6 +12,13 @@
                     <p class="text-gray-400 text-xs mt-0.5">{{ 'game.zone.subtitle'|trans }}</p>
                 </div>
                 <div class="flex items-start gap-4">
+                    {% if phase is defined and phase %}
+                        <div class="text-right" title="{{ ('game.zone.phase.' ~ phase ~ '_tooltip')|trans }}">
+                            <p class="text-sm font-semibold {{ phase == 'night' ? 'text-indigo-300' : 'text-amber-200' }}">
+                                {{ phase == 'night' ? '🌙' : '☀️' }} {{ ('game.zone.phase.' ~ phase)|trans }}
+                            </p>
+                        </div>
+                    {% endif %}
                     {% if life %}
                         <div class="text-right" title="{{ 'game.zone.life.tooltip'|trans }}">
                             <p class="text-sm font-semibold {{ life.current < (life.max / 2) ? 'text-red-300' : 'text-rose-300' }}">

@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
 use App\GameEngine\Social\ChatManager;
+use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\ExpeditionService;
 use App\GameEngine\Zone\ExploreResult;
@@ -63,6 +64,7 @@ class ZoneControllerTest extends TestCase
     private ExpeditionService&MockObject $expeditionService;
     private ChatManager&MockObject $chatManager;
     private ZoneEventService&MockObject $zoneEventService;
+    private GameTimeService&MockObject $gameTimeService;
     private CsrfTokenManagerInterface&MockObject $csrfTokenManager;
     private Session $session;
     private ZoneController $controller;
@@ -109,6 +111,8 @@ class ZoneControllerTest extends TestCase
         $this->zoneEventService = $this->createMock(ZoneEventService::class);
         $this->zoneEventService->method('getActiveEventsForZone')->willReturn([]);
         $this->zoneEventService->method('getEventCost')->willReturn(10);
+        $this->gameTimeService = $this->createMock(GameTimeService::class);
+        $this->gameTimeService->method('getPhase')->willReturn('day');
         $this->csrfTokenManager = $this->createMock(CsrfTokenManagerInterface::class);
 
         $this->controller = new ZoneController(
@@ -127,6 +131,7 @@ class ZoneControllerTest extends TestCase
             $this->expeditionService,
             $this->chatManager,
             $this->zoneEventService,
+            $this->gameTimeService,
         );
         $this->controller->setContainer($this->createContainer());
     }

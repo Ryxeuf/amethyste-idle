@@ -1,6 +1,6 @@
 ## Sprint 9 — Time-gating, presence & evenements de zone
 
-> **5 taches** (1 livree) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **5 taches** (5 livrees ✅) | Priorite : **Haute** | Origine : Pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : le monde vit quand le joueur est deconnecte — expeditions, presence par zone, evenements annonces, carte du monde illustree.
 > Prerequis : Sprint 8 (energie & actions de zone)
 
@@ -16,10 +16,7 @@
 
 > **ZON-16 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : carte du monde illustree `/game/world-map` — rendu SVG schematique (aucun moteur de rendu type PixiJS), zones placees via `Zone.mapX`/`mapY` (declaratif dans `world_1.yaml`, ZON-11), aretes = connexions du graphe. Zones decouvertes cliquables (clic vers une zone adjacente = voyage ZON-06), zones non decouvertes masquees (« ??? »). Indicateurs : evenement de zone actif (ZON-15), expedition en cours (ZON-13). Lien dans la nav Aventure.
 
-### ZON-17 — Cycle jour/nuit mecanique (S | ★)
-> Prerequis : ← ZON-11
-- [ ] Trancher la question ouverte du pivot : le cycle jour/nuit (cosmetique sur l'ancienne carte) devient mecanique
-- [ ] Si retenu : tables de rencontres jour/nuit par zone (variante dans la config declarative)
+> **ZON-17 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : **decision — le cycle jour/nuit devient mecanique** (variante RICHE). `GameTimeService::getPhase()`/`isNight()` (jour 6h-18h, nuit 18h-6h) au-dessus du cycle cosmetique. Variante declarative `explore.night` par zone (surcharge `weights`, `chest_gils_*`, pool de rencontres nocturne dedie `mob_slugs`) — rencontres ET loot varient. Evenements de zone (ZON-15) filtrables par phase via `parameters['phase']`. Indicateur jour/nuit sur l'ecran de zone. Exemple nocturne sur `foret-des-murmures` (morts-vivants + coffres plus riches la nuit).
 
 ---
 

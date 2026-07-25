@@ -1100,6 +1100,12 @@
         "tooltip": "Vos PV se régénèrent en temps réel hors combat. Sortir affaibli d'un combat impose d'attendre ou de vous soigner (objets, sorts) avant de repartir.",
         "full_in": "Plein dans ~%minutes% min"
       },
+      "phase": {
+        "day": "Jour",
+        "night": "Nuit",
+        "day_tooltip": "Il fait jour. Rencontres, butin et evenements suivent le rythme diurne de la zone.",
+        "night_tooltip": "Il fait nuit. Certaines zones voient surgir des creatures nocturnes, un butin different et des evenements propres a la nuit."
+      },
       "expedition": {
         "heading": "Expédition",
         "subtitle": "Envoyez votre personnage explorer cette zone plusieurs heures. Au retour, un butin vous attend. Aucune autre action possible pendant ce temps.",

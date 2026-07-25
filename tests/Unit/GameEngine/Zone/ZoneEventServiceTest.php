@@ -7,6 +7,7 @@ use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerZoneEventParticipation;
 use App\Entity\App\Zone;
+use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
 use App\GameEngine\Zone\NotEnoughActionEnergyException;
 use App\GameEngine\Zone\ZoneActionException;
@@ -23,6 +24,7 @@ class ZoneEventServiceTest extends TestCase
     private EntityRepository&MockObject $parameterRepository;
     private PlayerZoneEventParticipationRepository&MockObject $participationRepository;
     private ActionEnergyManager&MockObject $actionEnergyManager;
+    private GameTimeService&MockObject $gameTimeService;
     private ZoneEventService $service;
 
     protected function setUp(): void
@@ -35,11 +37,14 @@ class ZoneEventServiceTest extends TestCase
 
         $this->participationRepository = $this->createMock(PlayerZoneEventParticipationRepository::class);
         $this->actionEnergyManager = $this->createMock(ActionEnergyManager::class);
+        $this->gameTimeService = $this->createMock(GameTimeService::class);
+        $this->gameTimeService->method('getPhase')->willReturn(GameTimeService::PHASE_DAY);
 
         $this->service = new ZoneEventService(
             $this->entityManager,
             $this->participationRepository,
             $this->actionEnergyManager,
+            $this->gameTimeService,
         );
     }
 
@@ -88,6 +93,24 @@ class ZoneEventServiceTest extends TestCase
         $this->parameterRepository->method('findOneBy')->willReturn($parameter);
 
         $this->assertSame(25, $this->service->getEventCost());
+    }
+
+    public function testMatchesPhaseFilters(): void
+    {
+        $method = new \ReflectionMethod(ZoneEventService::class, 'matchesPhase');
+
+        $anytime = $this->buildEvent($this->buildZone());
+        $this->assertTrue($method->invoke($this->service, $anytime, GameTimeService::PHASE_DAY));
+        $this->assertTrue($method->invoke($this->service, $anytime, GameTimeService::PHASE_NIGHT));
+
+        $nightOnly = $this->buildEvent($this->buildZone());
+        $nightOnly->setParameters(['phase' => 'night']);
+        $this->assertFalse($method->invoke($this->service, $nightOnly, GameTimeService::PHASE_DAY));
+        $this->assertTrue($method->invoke($this->service, $nightOnly, GameTimeService::PHASE_NIGHT));
+
+        $bogus = $this->buildEvent($this->buildZone());
+        $bogus->setParameters(['phase' => 'eclipse']);
+        $this->assertTrue($method->invoke($this->service, $bogus, GameTimeService::PHASE_DAY));
     }
 
     public function testJoinRecordsParticipationAndSpendsEnergy(): void

@@ -7,6 +7,7 @@ use App\Entity\App\Parameter;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerZoneEventParticipation;
 use App\Entity\App\Zone;
+use App\GameEngine\World\GameTimeService;
 use App\Repository\PlayerZoneEventParticipationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -33,6 +34,7 @@ class ZoneEventService
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerZoneEventParticipationRepository $participationRepository,
         private readonly ActionEnergyManager $actionEnergyManager,
+        private readonly GameTimeService $gameTimeService,
     ) {
     }
 
@@ -55,7 +57,27 @@ class ZoneEventService
             ->getQuery()
             ->getResult();
 
-        return array_values(array_filter($events, static fn (GameEvent $e): bool => $e->isActiveAt($now)));
+        $phase = $this->gameTimeService->getPhase();
+
+        return array_values(array_filter(
+            $events,
+            fn (GameEvent $e): bool => $e->isActiveAt($now) && $this->matchesPhase($e, $phase),
+        ));
+    }
+
+    /**
+     * Un evenement de zone peut etre restreint a une phase jour/nuit (ZON-17)
+     * via `GameEvent.parameters['phase']` (`day` | `night`). Sans phase declaree
+     * (ou valeur inconnue), l'evenement est actif de jour comme de nuit.
+     */
+    private function matchesPhase(GameEvent $event, string $phase): bool
+    {
+        $required = $event->getParameters()['phase'] ?? null;
+        if (!\is_string($required) || !\in_array($required, [GameTimeService::PHASE_DAY, GameTimeService::PHASE_NIGHT], true)) {
+            return true;
+        }
+
+        return $required === $phase;
     }
 
     public function hasJoined(Player $player, GameEvent $event): bool
