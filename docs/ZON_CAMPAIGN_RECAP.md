@@ -79,12 +79,17 @@ Décisions tranchées en autonomie pendant la campagne (l'utilisateur ayant dél
 
 ---
 
-## 4. Suivis identifiés (hors périmètre, non bloquants)
+## 4. Suivis identifiés → **Sprint 13 (Consolidation post-pivot)**
 
-- **Couverture E2E « zone »** : remplacer les E2E carte supprimés par des scénarios pilotant les actions de zone (explorer/chasser → combat, voyage, boutique).
-- **`PlayerMovedEvent` dormant** : décider de rebrancher ses écouteurs (zone-sync legacy, quêtes explore/escort, tutoriel, découverte de région) sur des événements de zone existants, ou de les retirer.
-- **Rafraîchissement des scénarios de charge k6** : les sections « carte » de `scripts/load-test/README.md` décrivent encore l'ancien profil (topic `map/move`, API map) — à réaligner sur le modèle zone lors d'une passe load-test dédiée. Le scénario `authenticated-gameplay` est déjà repointé sur `/game/zone`.
-- **Résidu legacy `MobRepository::findByMapWithMonster`** : méthode de requête devenue sans appelant après le retrait de `/api/map/entities` (nettoyage mineur possible).
+> **Mise à jour 2026-07-25** (point de roadmap post-pivot) : ces suivis sont désormais planifiés en
+> [Sprint 13](roadmap/SPRINT_13.md), jalons **ZON-22 → ZON-26**. La sévérité du premier point a été
+> **réévaluée à la hausse** : ce n'est pas un simple nettoyage.
+
+- **`PlayerMovedEvent` orphelin — ZON-22, CRITIQUE.** L'événement n'a plus **aucun dispatcher**, mais conserve **6 abonnés**. Sont donc inertes en production : progression des quêtes d'exploration (`QuestExploreTrackingListener`) et d'escorte (`QuestEscortTrackingListener`), déclencheurs de quêtes cachées sur déplacement (`HiddenQuestTriggerListener`), étape « se déplacer » du tutoriel (`TutorialProgressListener`), découverte de région (`RegionDiscoveryTracker`), et la branche déplacement de `PlayerZoneSynchronizer`. Côté zone, seul `ZoneVisitedEvent` existe — émis uniquement à la **première** découverte d'une zone, donc insuffisant comme point d'accroche : un `PlayerTraveledEvent` (à chaque voyage) est nécessaire.
+- **Couverture E2E « zone » — ZON-23.** Les E2E carte (Map/Combat/Shop) ont été supprimés sans remplacement ; il ne reste que 4 scénarios (Authentication, Craft, Inventory, Quest). La boucle de jeu principale (zone → action → combat → butin) n'est plus couverte.
+- **Scénarios de charge k6 — ZON-24.** `mercure-streaming` s'abonne par défaut au topic supprimé `map/move` et le README décrit encore `/game/map` et `/api/map/*` : la mesure ne porte plus sur des routes servies. Bloque l'objectif « 200 joueurs » de la tâche 134.
+- **Résidu legacy `MobRepository::findByMapWithMonster` — ZON-25.** Méthode sans appelant depuis le retrait de `/api/map/entities`.
+- **Volume de contenu du graphe — ZON-26** (constat ajouté au point de roadmap) : `config/game/zones/world_1.yaml` ne définit que **5 zones, 6 connexions et 10 filons**. Le modèle déclaratif fonctionne, mais le monde est trop petit pour que la boucle énergie / voyage / time-gating ait un terrain de jeu.
 
 ---
 
