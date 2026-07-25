@@ -288,7 +288,7 @@ abstract class AbstractE2ETestCase extends PantherTestCase
      *
      * @return bool true si le joueur n'est plus en combat
      */
-    protected function resolvePendingFight(int $maxTurns = 25): bool
+    protected function resolvePendingFight(int $maxTurns = 8): bool
     {
         static::$pantherClient->request('GET', '/game/fight');
         $this->waitForTurbo();
@@ -313,6 +313,13 @@ abstract class AbstractE2ETestCase extends PantherTestCase
             $this->dismissAlertIfAny();
 
             $this->waitForTurbo();
+
+            // Les actions de combat sont limitees a 5 requetes/seconde par
+            // joueur (`config/packages/rate_limiter.yaml`). Enchainer les
+            // attaques sans pause fait ejecter la requete par le limiteur et
+            // laisse le navigateur sur une page d'erreur, ce qui fait tomber
+            // les tests suivants pour une cause sans rapport.
+            usleep(300_000);
         }
 
         return !str_contains(static::$pantherClient->getCurrentURL(), '/game/fight');

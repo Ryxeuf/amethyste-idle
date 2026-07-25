@@ -19,13 +19,16 @@ namespace App\Tests\E2E;
  *
  * Aucune reference d'element n'est conservee d'une assertion a l'autre : Turbo
  * remplace le corps du document, ce qui invalide les references WebDriver.
+ *
+ * Ces scenarios ne resolvent volontairement pas un combat en cours : l'ecran de
+ * zone reste consultable pendant un combat, et enchainer des attaques pour en
+ * sortir se heurte au limiteur de debit des actions de combat.
  */
 class ZoneFlowTest extends AbstractE2ETestCase
 {
     public function testZoneScreenShowsZoneAndResources(): void
     {
         $this->login();
-        $this->resolvePendingFight();
 
         static::$pantherClient->request('GET', '/game/zone');
         $this->waitForSelector('[data-testid="zone-header"]', self::WAIT_TIMEOUT_SLOW);
@@ -42,7 +45,6 @@ class ZoneFlowTest extends AbstractE2ETestCase
     public function testZoneOffersTravelConnections(): void
     {
         $this->login();
-        $this->resolvePendingFight();
 
         static::$pantherClient->request('GET', '/game/zone');
         $this->waitForSelector('[data-testid="zone-header"]', self::WAIT_TIMEOUT_SLOW);
@@ -63,7 +65,6 @@ class ZoneFlowTest extends AbstractE2ETestCase
     public function testExploreKeepsPlayerInGame(): void
     {
         $this->login();
-        $this->resolvePendingFight();
 
         static::$pantherClient->request('GET', '/game/zone');
         $this->waitForSelector('[data-testid="zone-header"]', self::WAIT_TIMEOUT_SLOW);
@@ -81,7 +82,5 @@ class ZoneFlowTest extends AbstractE2ETestCase
             str_contains($url, '/game/zone') || str_contains($url, '/game/fight'),
             sprintf('Explorer doit rester dans le jeu (zone ou combat), URL obtenue : %s', $url)
         );
-
-        $this->resolvePendingFight();
     }
 }
