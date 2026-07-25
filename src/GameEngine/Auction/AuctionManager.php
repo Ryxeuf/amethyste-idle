@@ -620,11 +620,7 @@ class AuctionManager
         }
 
         if ($this->antiExploit->isPairCapReached($buyer, $seller)) {
-            throw new \InvalidArgumentException(sprintf(
-                'Vous avez atteint la limite d\'echanges avec ce joueur (%d sur %d heures). Reessayez plus tard.',
-                $this->antiExploit->getPairTransactionCap(),
-                $this->antiExploit->getPairWindowHours(),
-            ));
+            throw new \InvalidArgumentException(sprintf('Vous avez atteint la limite d\'echanges avec ce joueur (%d sur %d heures). Reessayez plus tard.', $this->antiExploit->getPairTransactionCap(), $this->antiExploit->getPairWindowHours()));
         }
     }
 
