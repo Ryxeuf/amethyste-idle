@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **5 livrees** | 1 restante : **ZON-26** | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **5 livrees + ZON-26a** | reste : **ZON-26b** (zones declaratives) | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -67,23 +67,23 @@
 > **Report vers ZON-27** : `PnjDialogEvent` reste sans emetteur — il en faut un ecran de dialogue PNJ,
 > qui n'existe plus. Seul orphelin encore tolere par `KNOWN_ORPHANS`.
 
-### ZON-26 — Densification du graphe de zones (L | ★★★ | HAUTE)
-> Prerequis : ← ZON-11 ✅ | Bloque : **128** (Acte 4)
-> **Constat** : la promesse du pivot est « ajouter du contenu = ajouter de la donnee ». Le graphe
-> actuel ne compte que **5 zones, 6 connexions et 10 filons** (`config/game/zones/world_1.yaml`) —
-> le modele fonctionne mais le monde est vide, et la boucle energie/voyage n'a pas de terrain de jeu.
-- [ ] Porter les zones restantes du World 1 (interieurs, zones secondaires) en configuration declarative
-- [ ] Etoffer les tables `explore` / `gather` par zone (variete de rencontres, filons par profession)
-- [ ] Densifier le graphe de connexions (routes alternatives, durees differenciees) — condition pour
-      que la monture (tache 130) et le time-gating aient un sens
-- [ ] Illustrations de zone + positions `map_x`/`map_y` sur la carte du monde (ZON-16)
-- [ ] Etalonner les couts d'energie et les durees de voyage dans `docs/BALANCE.md` sur ce graphe elargi
+> **ZON-26 sous-jalon a livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : tables d'exploration et
+> variance jour/nuit ajoutees aux Mines, au Marais et a la Crete (seule la Foret en avait) ; filons
+> portes de 10 a 13 ; **anneau peripherique** ferme (8 connexions au lieu de 6), pour que contourner
+> le hub devienne une alternative credible. Calibrage documente dans `BALANCE.md` §11.
 
-> **ZON-27 sous-jalon a livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : les PNJ presents dans la
-> zone sont exposes sur `/game/zone`, avec un point d'entree **boutique** pour les marchands
-> (respectant les horaires d'ouverture). `ShopController` refuse desormais un PNJ d'une autre zone.
-> E2E `ZoneShopFlowTest` (remplace l'ex-`ShopFlowTest`). Les boutiques etaient injoignables depuis
-> ZON-21a.
+### ZON-26 — Nouvelles zones declaratives (sous-jalon b) (L | ★★★ | HAUTE)
+> Prerequis : ← ZON-26a ✅ | Bloque : **128** (Acte 4)
+> **Blocage identifie** : la promesse « ajouter du contenu = ajouter de la donnee » **n'est pas
+> encore tenue pour les rencontres**. Une zone declaree en YAML sans `source_map` fonctionne (voyage,
+> coffres, filons), mais son vivier de mobs reste vide : `ExploreService::resolveMob` lit
+> `MobRepository::findAvailableInZone`, et les `Mob` sont seedes par `MobFixtures` **en PHP**, a
+> partir d'une carte. `Mob::map` etant nullable et la requete filtrant sur `mob.zone`, rien n'empeche
+> techniquement une zone sans carte — il manque le **chemin declaratif**.
+- [ ] Section `mobs:` dans la config de zone (slug de monstre + effectif), consommee par `ZoneImporter`
+- [ ] Idem pour les PNJ (`pnjs:`) — sinon une nouvelle zone n'a ni marchand ni dialogue (cf. ZON-27)
+- [ ] Alors seulement : ajouter les nouvelles zones du World 1 (interieurs, zones secondaires)
+- [ ] Illustrations de zone + positions `map_x`/`map_y` sur la carte du monde (ZON-16)
 
 > **ZON-27 sous-jalon b livre le 2026-07-25** (voir `ROADMAP_DONE.md`) : dialogue PNJ
 > server-rendered (`/game/pnj/{id}/talk`), accessible depuis l'ecran de zone, emettant
@@ -104,4 +104,5 @@
 - [x] Aucun evenement de domaine sans emetteur — liste `KNOWN_ORPHANS` vide
 - [x] PNJ joignables depuis la zone : boutiques (ZON-27a) et dialogues (ZON-27b)
 - [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
-- [ ] World 1 jouable de bout en bout sur un graphe de zones dense (ZON-26)
+- [~] World 1 sur un graphe dense : anneau + tables enrichies ✅ (ZON-26a) ; nouvelles zones
+      bloquees par l'absence de chemin declaratif pour les mobs et PNJ (ZON-26b)

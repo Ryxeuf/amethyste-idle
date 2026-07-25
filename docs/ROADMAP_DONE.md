@@ -11,6 +11,23 @@
 
 ---
 
+## ZON-26a — Densification du graphe de zones (Sprint 13, 2026-07-25)
+
+> Le modele declaratif fonctionnait, mais le monde etait maigre : **5 zones, 6 connexions, 10 filons**, et une seule zone (la Foret) declarait une table d'exploration — les trois autres tombaient sur les defauts du service, sans variance jour/nuit.
+
+### Livre (pur YAML)
+
+- **Tables d'exploration + variance nocturne** pour les Mines, le Marais et la Crete, avec un profil par zone : Mines = recolte (poids `harvest` eleve), Marais = hostile et pauvre en butin, Crete = le plus hostile mais les meilleurs coffres. Pools nocturnes thematiques via `night.mob_slugs` (constructs, creatures corrompues, creatures ailees).
+- **Filons portes de 10 a 13** : veine d'or aux Mines, spores fantomes et belladone au Marais, givrecoiffe a la Crete. Regle appliquee — plus la ressource est rare, plus la capacite est faible et le respawn long.
+- **Anneau peripherique ferme** : 8 connexions au lieu de 6 (ajout Foret↔Mines et Marais↔Crete). Le graphe etait une etoile pure autour du hub : tout trajet y passait, et le choix d'itineraire n'existait pas. La reduction de temps de voyage des montures (tache 130) n'aurait rien eu a optimiser.
+- **`BALANCE.md` §11** : topologie, durees, regles de calibrage des poids et des filons.
+
+### Ce que ce jalon a revele (→ ZON-26b)
+
+La promesse « ajouter du contenu = ajouter de la donnee » **n'est pas encore tenue pour les rencontres**. Une zone declaree sans `source_map` fonctionne (voyage, coffres, filons) mais son vivier de mobs reste vide : `ExploreService::resolveMob` lit `MobRepository::findAvailableInZone`, et les `Mob` sont seedes **en PHP** par `MobFixtures`, a partir d'une carte. Rien ne l'empeche techniquement — `Mob::map` est nullable, la requete filtre sur `mob.zone` — il manque simplement une section `mobs:` (et `pnjs:`) dans la config de zone. C'est le prerequis reel de nouvelles zones, donc de l'Acte 4 (tache 128).
+
+---
+
 ## ZON-27b — Couche PNJ de zone : dialogue (Sprint 13, 2026-07-25)
 
 > Dernier orphelin du garde-fou. Les dialogues PNJ etaient un overlay de la carte, supprime avec ZON-21a : plus aucun ecran n'y menait, `PnjDialogEvent` n'avait plus d'emetteur, et les objectifs de quete `talk_to` (quetes d'enquete) **ne progressaient plus**.
