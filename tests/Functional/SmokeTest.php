@@ -55,6 +55,7 @@ class SmokeTest extends WebTestCase
         yield 'skills' => ['/game/skills'];
         yield 'bestiary' => ['/game/bestiary'];
         yield 'achievements' => ['/game/achievements'];
+        yield 'codex' => ['/game/codex'];
         yield 'quests' => ['/game/quests'];
     }
 
