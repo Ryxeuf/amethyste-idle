@@ -5,6 +5,7 @@ namespace App\GameEngine\Dungeon;
 use App\Entity\App\GroupDungeonRun;
 use App\Entity\App\Parameter;
 use App\Entity\App\Player;
+use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -33,6 +34,7 @@ class GroupDungeonCombatService
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly GroupDungeonCombatPublisher $publisher,
     ) {
     }
 
@@ -44,14 +46,21 @@ class GroupDungeonCombatService
      */
     public function state(GroupDungeonRun $run): array
     {
+        $changed = false;
         if (GroupDungeonRun::STATUS_IN_PROGRESS === $run->getStatus() && !$run->isCombatInitialized()) {
             $this->initializeCombat($run);
+            $changed = true;
         }
 
-        $this->resolveOverdueTurns($run);
+        $changed = $this->resolveOverdueTurns($run) > 0 || $changed;
         $this->entityManager->flush();
 
-        return $this->snapshot($run);
+        $snapshot = $this->snapshot($run);
+        if ($changed) {
+            $this->publisher->publishState($run, $snapshot);
+        }
+
+        return $snapshot;
     }
 
     /**
@@ -78,7 +87,10 @@ class GroupDungeonCombatService
         $this->applyAction($run, $player);
         $this->entityManager->flush();
 
-        return $this->snapshot($run);
+        $snapshot = $this->snapshot($run);
+        $this->publisher->publishState($run, $snapshot);
+
+        return $snapshot;
     }
 
     private function initializeCombat(GroupDungeonRun $run): void
@@ -100,8 +112,10 @@ class GroupDungeonCombatService
     /**
      * Applique les actions par defaut pour tous les tours dont l'echeance est
      * passee (l'attaquant actif rate son tour -> attaque de base auto).
+     *
+     * @return int nombre de tours resolus automatiquement
      */
-    private function resolveOverdueTurns(GroupDungeonRun $run): void
+    private function resolveOverdueTurns(GroupDungeonRun $run): int
     {
         $guard = 0;
         while (
@@ -122,6 +136,8 @@ class GroupDungeonCombatService
             }
             $this->applyAction($run, $active);
         }
+
+        return $guard;
     }
 
     /**

@@ -10,6 +10,7 @@ use App\Entity\App\Zone;
 use App\Entity\Game\Dungeon;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonException;
+use App\GameEngine\Realtime\Dungeon\GroupDungeonCombatPublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -35,11 +36,12 @@ class GroupDungeonCombatServiceTest extends TestCase
         ]);
         $this->now = new \DateTimeImmutable('2026-07-25 12:00:00');
 
+        $publisher = $this->createMock(GroupDungeonCombatPublisher::class);
         $test = $this;
-        $this->service = new class($this->entityManager, $test) extends GroupDungeonCombatService {
-            public function __construct(EntityManagerInterface $em, private $test)
+        $this->service = new class($this->entityManager, $publisher, $test) extends GroupDungeonCombatService {
+            public function __construct(EntityManagerInterface $em, GroupDungeonCombatPublisher $publisher, private $test)
             {
-                parent::__construct($em);
+                parent::__construct($em, $publisher);
             }
 
             protected function now(): \DateTimeImmutable

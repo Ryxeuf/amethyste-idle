@@ -1,7 +1,26 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (ZON-19 sous-jalon 2 — boucle de combat de donjon de groupe ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ZON-19 (sous-jalon 3) — Donjon de groupe : Mercure temps reel (Sprint 10, 2026-07-25)
+
+> Troisieme et dernier sous-jalon de ZON-19 : l'experience fluide quand le groupe est connecte simultanement. **ZON-19 est desormais complet.** Le modele reste semi-synchrone (aucune presence simultanee requise, resolution paresseuse cote serveur) ; Mercure n'est qu'un confort d'affichage quand les membres sont en ligne.
+
+### Changements
+
+- **`GroupDungeonCombatPublisher`** (`Realtime/Dungeon/`) : publie l'etat de combat (snapshot) sur le topic `dungeon/run/<id>` via Mercure. Publication tolerante aux pannes (try/catch + log), jamais bloquante pour la requete.
+- **`GroupDungeonCombatService`** : publie a chaque changement d'etat effectif — `act()` (attaque volontaire), et `state()` uniquement si un tour en retard a ete resolu ou si le combat vient d'etre initialise (`resolveOverdueTurns` renvoie desormais le nombre de resolutions). Pas de publication au simple rechargement d'ecran sans changement.
+- **`group_dungeon_controller.js`** (Stimulus) : s'abonne a `dungeon/run/<id>`, met a jour barre de PV, texte PV, minuteur de tour et bascule bouton Attaquer / label « en attente » sans recharger. Decompte local du minuteur (1 s) entre deux evenements. A la defaite, bascule vers le message de rencontre vaincue et masque le bouton Abandonner.
+- **`ZoneController`** : la banniere expose `runId` et `viewerId` pour le controleur temps reel.
+- **Ecran de zone** : banniere de donjon cablee au controleur `group-dungeon` (cibles hpBar/hpText/turn/attack/waiting/cleared/combat/abandon), label de tour traduit passe en valeur pour l'i18n cote JS.
+
+### Verifications
+
+- `GroupDungeonCombatServiceTest` adapte (mock `GroupDungeonCombatPublisher`), 5 cas toujours verts.
+- Local : suite ciblee verte (33 tests), PHPStan niveau 5 OK, PHP-CS-Fixer clean.
 
 ---
 

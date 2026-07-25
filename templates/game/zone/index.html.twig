@@ -232,13 +232,20 @@
 
                 {# ── Donjon de groupe semi-synchrone (ZON-19) ────── #}
                 {% if groupDungeon %}
-                    <div class="mb-4 px-3 py-2.5 rounded-md bg-cyan-900/25 border border-cyan-700/50">
+                    <div class="mb-4 px-3 py-2.5 rounded-md bg-cyan-900/25 border border-cyan-700/50"
+                         data-controller="group-dungeon"
+                         data-group-dungeon-mercure-url-value="{{ (mercure_url is defined and mercure_url starts with 'http') ? mercure_url : (app.request.schemeAndHttpHost ~ '/.well-known/mercure') }}"
+                         data-group-dungeon-run-id-value="{{ groupDungeon.runId }}"
+                         data-group-dungeon-player-id-value="{{ groupDungeon.viewerId }}"
+                         data-group-dungeon-turn-label-value="{{ 'game.zone.dungeon.turn_in'|trans({'%seconds%': '{s}'}) }}">
                         <div class="flex flex-wrap items-center justify-between gap-2">
                             <p class="text-sm font-semibold text-cyan-100">
                                 🛡️ {{ 'game.zone.dungeon.in_progress'|trans({'%dungeon%': groupDungeon.dungeonName, '%count%': groupDungeon.memberCount}) }}
                             </p>
-                            {% if groupDungeon.isLeader and groupDungeon.combat.status != 'completed' %}
-                                <form method="post" action="{{ path('app_game_zone_dungeon_abandon') }}">
+                            {% if groupDungeon.isLeader %}
+                                <form method="post" action="{{ path('app_game_zone_dungeon_abandon') }}"
+                                      data-group-dungeon-target="abandon"
+                                      {{ groupDungeon.combat.status == 'completed' ? 'class=hidden' : '' }}>
                                     <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_abandon') }}">
                                     <button type="submit" class="text-xs px-2.5 py-1 rounded bg-red-900/40 border border-red-700/50 text-red-200 hover:bg-red-800/50">
                                         {{ 'game.zone.dungeon.abandon'|trans }}
@@ -247,31 +254,31 @@
                             {% endif %}
                         </div>
 
-                        {% if groupDungeon.combat.status == 'completed' %}
-                            <p class="text-sm text-emerald-200 mt-1.5">🏆 {{ 'game.zone.dungeon.cleared'|trans }}</p>
-                        {% else %}
+                        <p class="text-sm text-emerald-200 mt-1.5 {{ groupDungeon.combat.status == 'completed' ? '' : 'hidden' }}"
+                           data-group-dungeon-target="cleared">🏆 {{ 'game.zone.dungeon.cleared'|trans }}</p>
+
+                        <div data-group-dungeon-target="combat" class="{{ groupDungeon.combat.status == 'completed' ? 'hidden' : '' }}">
                             <div class="mt-2 mb-1 h-2 w-full rounded-full bg-gray-900 overflow-hidden">
-                                <div class="h-full bg-cyan-500/80" style="width: {{ groupDungeon.combat.encounterHpPercent }}%"></div>
+                                <div class="h-full bg-cyan-500/80" style="width: {{ groupDungeon.combat.encounterHpPercent }}%"
+                                     data-group-dungeon-target="hpBar"></div>
                             </div>
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-[11px] text-cyan-200/80">
-                                    {{ groupDungeon.combat.encounterHpCurrent }} / {{ groupDungeon.combat.encounterHpMax }} PV
-                                    {% if groupDungeon.combat.turnRemainingSeconds is not null %}
-                                        · {{ 'game.zone.dungeon.turn_in'|trans({'%seconds%': groupDungeon.combat.turnRemainingSeconds}) }}
-                                    {% endif %}
+                                    <span data-group-dungeon-target="hpText">{{ groupDungeon.combat.encounterHpCurrent }} / {{ groupDungeon.combat.encounterHpMax }} PV</span>
+                                    <span data-group-dungeon-target="turn">{% if groupDungeon.combat.turnRemainingSeconds is not null %}· {{ 'game.zone.dungeon.turn_in'|trans({'%seconds%': groupDungeon.combat.turnRemainingSeconds}) }}{% endif %}</span>
                                 </span>
-                                {% if groupDungeon.isMyTurn %}
-                                    <form method="post" action="{{ path('app_game_zone_dungeon_act') }}">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_act') }}">
-                                        <button type="submit" class="text-xs px-3 py-1 rounded bg-cyan-800/50 border border-cyan-500 text-cyan-50 hover:bg-cyan-700/60 font-medium">
-                                            {{ 'game.zone.dungeon.attack'|trans }}
-                                        </button>
-                                    </form>
-                                {% else %}
-                                    <span class="text-[11px] text-cyan-300/60">{{ 'game.zone.dungeon.waiting_turn'|trans }}</span>
-                                {% endif %}
+                                <form method="post" action="{{ path('app_game_zone_dungeon_act') }}"
+                                      data-group-dungeon-target="attack"
+                                      {{ groupDungeon.isMyTurn ? '' : 'class=hidden' }}>
+                                    <input type="hidden" name="_token" value="{{ csrf_token('group_dungeon_act') }}">
+                                    <button type="submit" class="text-xs px-3 py-1 rounded bg-cyan-800/50 border border-cyan-500 text-cyan-50 hover:bg-cyan-700/60 font-medium">
+                                        {{ 'game.zone.dungeon.attack'|trans }}
+                                    </button>
+                                </form>
+                                <span class="text-[11px] text-cyan-300/60 {{ groupDungeon.isMyTurn ? 'hidden' : '' }}"
+                                      data-group-dungeon-target="waiting">{{ 'game.zone.dungeon.waiting_turn'|trans }}</span>
                             </div>
-                        {% endif %}
+                        </div>
                         <p class="text-[11px] text-cyan-200/60 mt-1.5">{{ 'game.zone.dungeon.semisync_hint'|trans }}</p>
                     </div>
                 {% endif %}
