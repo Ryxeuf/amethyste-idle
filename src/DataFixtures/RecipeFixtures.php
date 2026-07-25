@@ -91,6 +91,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-iron', 'quantity' => 4],
                     ['slug' => 'ore-copper', 'quantity' => 2],
+                    // ECO-14 : les enarmes. Premier point ou le forgeron depend
+                    // du tanneur — un bouclier sans sangle ne se porte pas.
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
                 ],
                 'result_ref' => 'iron_shield',
                 'crafting_time' => 10,
@@ -380,6 +383,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'leather-raw', 'quantity' => 4],
                     ['slug' => 'leather-thick', 'quantity' => 1],
+                    // ECO-14 : le bain de tannage. Le tanneur ne travaille pas
+                    // une peau sans chimie — il depend de l'alchimiste.
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
                 ],
                 'result_ref' => 'leather_armor',
                 'crafting_time' => 10,
@@ -472,6 +478,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'leather-thick', 'quantity' => 4],
                     ['slug' => 'crafted-leather-strip', 'quantity' => 2],
                     ['slug' => 'leather-bone', 'quantity' => 1],
+                    // ECO-14 : les rivets. Un plastron « renforce » l'est par du
+                    // metal — le tanneur depend du forgeron.
+                    ['slug' => 'crafted-bronze-ingot', 'quantity' => 1],
                 ],
                 'result_ref' => 'hardened_vest',
                 'crafting_time' => 12,
@@ -743,6 +752,9 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                     ['slug' => 'crafted-potion-base', 'quantity' => 2],
                     ['slug' => 'plant-mandrake', 'quantity' => 2],
                     ['slug' => 'plant-ginseng', 'quantity' => 1],
+                    // ECO-14 : la gemme catalytique. L'alchimiste ne dependait du
+                    // joaillier qu'au niveau 10 — donc, en pratique, jamais.
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
                 ],
                 'result_ref' => 'elixir_vitality',
                 'crafting_time' => 12,
@@ -866,6 +878,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'ore-gold', 'quantity' => 3],
                     ['slug' => 'crafted-gem-fine', 'quantity' => 1],
+                    // ECO-14 : le cordon. Une amulette se porte au cou — le
+                    // joaillier depend du tanneur des le milieu de palier, et
+                    // plus seulement du forgeron au niveau 6.
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
                 ],
                 'result_ref' => 'gold_amulet',
                 'crafting_time' => 10,
@@ -913,6 +929,10 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'ingredients' => [
                     ['slug' => 'crafted-gem-rare', 'quantity' => 1],
                     ['slug' => 'ore-platinum', 'quantity' => 1],
+                    // ECO-14 : le bain d'enchantement. Le joaillier depend de
+                    // l'alchimiste — et la boucle se referme, chaque metier
+                    // consommant la sortie d'un autre.
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
                 ],
                 'result_ref' => 'crafted_gem_enchanted',
                 'crafting_time' => 15,

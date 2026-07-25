@@ -371,3 +371,55 @@ sur la transaction (`member_rebate_amount`) plutot que recalcule : le taux, le
 controle de la region et l'appartenance de l'acheteur peuvent tous changer apres
 coup, et la detection d'anomalies (ECO-16) a besoin du montant consenti, pas d'une
 reconstitution.
+
+---
+
+## 15. Chaine de production entre metiers (economie joueur, ECO-14)
+
+Une economie de production joueur ne tient que si les metiers ont besoin les uns
+des autres. **Un metier autosuffisant produit un joueur autosuffisant** : il n'a
+rien a acheter, donc rien a vendre non plus, et le marche se vide.
+
+### L'etat trouve par l'audit
+
+Trois metiers sur quatre etaient **entierement autosuffisants** — forgeron,
+tanneur, et alchimiste a une seule recette de niveau 10 pres, donc en pratique.
+Seul le joaillier consommait la production d'un autre metier, et seulement a
+partir du **niveau 6**. Un joueur pouvait monter un metier complet du niveau 1 au
+niveau 10 sans jamais acheter quoi que ce soit a personne.
+
+### La chaine livree
+
+| Metier | Consomme | Est consomme par |
+|--------|----------|------------------|
+| Forgeron | tanneur (niv 2) | tanneur, joaillier |
+| Tanneur | alchimiste (niv 2), forgeron (niv 3) | forgeron, joaillier |
+| Joaillier | tanneur (niv 4), alchimiste (niv 5), forgeron (niv 6) | alchimiste |
+| Alchimiste | joaillier (niv 5) | tanneur, joaillier |
+
+Les six liaisons sont thematiquement evidentes, jamais arbitraires — c'est la
+condition pour qu'un joueur les accepte plutot que de les subir :
+
+- **Bouclier de fer** ← laniere de cuir : les enarmes. Un bouclier sans sangle ne
+  se porte pas.
+- **Armure de cuir** ← base de potion : le bain de tannage. On ne travaille pas
+  une peau sans chimie.
+- **Plastron de cuir renforce** ← lingot de bronze : les rivets. « Renforce »
+  veut dire renforce **par du metal**.
+- **Amulette d'or** ← laniere de cuir : le cordon. Une amulette se porte au cou.
+- **Enchantement de gemme** ← base de potion : le bain d'enchantement.
+- **Elixir de vitalite** ← gemme brute taillee : la gemme catalytique.
+
+### Deux regles de calibrage
+
+**Jamais au palier d'entree.** Croiser les metiers au niveau 1 rendrait le premier
+craft dependant d'un autre joueur — exactement le cold-start que le plancher T1
+(§12) existe pour empecher. La premiere dependance apparait au **niveau 2**.
+
+**Quantite 1 aux paliers bas.** L'interdependance doit creer de la demande, pas de
+la friction. Un ingredient externe en quantite 1 au niveau 2-3 se troque ou
+s'achete sans bloquer la progression ; au-dela, il devient un mur.
+
+Le garde-fou est `tests/Integration/Economy/CraftInterdependenceTest`, qui verifie
+les deux sens (chaque metier consomme **et** est consomme) ainsi que l'immunite du
+palier d'entree.

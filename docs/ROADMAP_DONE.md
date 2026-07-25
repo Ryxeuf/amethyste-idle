@@ -7,7 +7,38 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-14 — Interdependance des metiers (Sprint 14, 2026-07-25)
+
+> Une economie de production joueur ne tient que si les metiers ont besoin les uns des autres. Un metier autosuffisant produit un joueur autosuffisant : il n'a rien a acheter, donc rien a vendre non plus.
+
+### L'audit
+
+**Trois metiers sur quatre entierement autosuffisants** : forgeron, tanneur, et alchimiste a une seule recette de niveau 10 pres — donc en pratique. Seul le joaillier consommait la production d'un autre metier, et seulement a partir du niveau 6. Un joueur pouvait monter un metier complet du niveau 1 au niveau 10 sans jamais acheter quoi que ce soit a personne : le marche n'avait aucune raison structurelle d'exister.
+
+### Livre — six liaisons croisees
+
+| Recette | Ingredient ajoute | Lecture |
+|---------|-------------------|---------|
+| Bouclier de fer (niv 2) | laniere de cuir | les enarmes — un bouclier sans sangle ne se porte pas |
+| Armure de cuir (niv 2) | base de potion | le bain de tannage |
+| Plastron de cuir renforce (niv 3) | lingot de bronze | les rivets — « renforce » veut dire renforce par du metal |
+| Amulette d'or (niv 4) | laniere de cuir | le cordon |
+| Enchantement de gemme (niv 5) | base de potion | le bain d'enchantement |
+| Elixir de vitalite (niv 5) | gemme brute taillee | la gemme catalytique |
+
+Chaque metier consomme desormais la sortie d'au moins un autre **et** voit sa propre sortie consommee. Les liaisons sont thematiquement evidentes, jamais arbitraires : c'est la condition pour qu'un joueur les accepte plutot que de les subir.
+
+### La contrainte qui borne le jalon
+
+**Aucune liaison au palier d'entree.** Croiser les metiers au niveau 1 rendrait le premier craft dependant d'un autre joueur — exactement le cold-start que le plancher T1 (ECO-02) existe pour empecher. La premiere dependance apparait au niveau 2, en quantite 1 : l'interdependance doit creer de la demande, pas de la friction.
+
+### Tests
+
+`CraftInterdependenceTest` verifie les deux sens du graphe (chaque metier consomme **et** est consomme) et l'immunite du palier d'entree — les deux garanties sont en tension, et c'est cette tension qu'il faut verrouiller. Chaine documentee dans `docs/BALANCE.md` §15.
 
 ---
 
