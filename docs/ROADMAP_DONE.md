@@ -1,7 +1,7 @@
 # Roadmap realisee — Amethyste-Idle
 
 > Historique des phases completees. Ce fichier est la reference pour tout ce qui a ete implemente.
-> Derniere mise a jour : 2026-07-25 (NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
 
 ---
 
@@ -48,6 +48,29 @@
 ### Notes
 
 - Aucun impact sur les quetes existantes : les deux colonnes sont nullables et par defaut `null` (quete isolee). Le regroupement cote joueur arrive avec NAR-02.
+
+---
+
+## NAR-06 — Ecran Codex (Piste C narration, 2026-07-25)
+
+> Donne un foyer lisible a la trame de monde : le joueur consulte le Codex a son rythme, hors du flux de jeu.
+
+### Changements
+
+- **`CodexController`** (`GET /game/codex`, `app_game_codex`) : charge toutes les entrees (`findAllOrdered`), les regroupe par categorie, marque celles debloquees pour le joueur (`unlockedEntryIds`) et compte la completion.
+- **`templates/game/codex/index.html.twig`** : sections par categorie ; entree **debloquee** = titre + corps **localises** (`getLocalizedTitle`/`getLocalizedDescription` selon la locale) ; entree **verrouillee** = titre masque (« Entree verrouillee ») + **indice de deblocage** selon `unlockType` (visite de zone / boss / fin d'arc / recit) ; completion `n/total` dans l'en-tete.
+- **Navigation** : lien « Codex » ajoute au menu Personnage (desktop) et au tiroir mobile, avec mise en surbrillance de la route active.
+
+### Verifications
+
+- `CodexControllerTest` (2 cas) : regroupement par categorie + comptage des deblocages, et cas sans deblocage.
+- Route `/game/codex` ajoutee au `SmokeTest` (rendu reel, HTTP < 500, en CI).
+- QA : cs-fixer OK ; PHPStan ; PHPUnit en CI.
+
+### Notes
+
+- Pas de nouvelle cle de traduction : libelles de categories/indices en dur (FR), titres/corps des entrees localises via les champs `*_translations`.
+- Le journal de monde public (`world_fact` debloques pour tous, fil chronologique) arrive avec **NAR-07** et s'affichera dans ce meme ecran.
 
 ---
 

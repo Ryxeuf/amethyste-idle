@@ -99,14 +99,12 @@ moteur récurrent qui referme la boucle à trois piliers.
 > Piste D (NAR-11/12). Décision actée : **entité dédiée** (pas d'extension des succès).
 > Migration idempotente, fixtures (4 entrées), tests `CodexUnlockServiceTest` + `CodexEntryTest`.
 
-### NAR-06 — Écran Codex (S | ★★ | MOYENNE)
-> Lecture de la trame large, au rythme du joueur, hors du flux de jeu.
-> Prérequis : ← NAR-05
-- [ ] Route/UI `/game/codex` : entrées débloquées par catégorie, entrées verrouillées en
-      teasing (titre grisé + indice de déblocage)
-- [ ] Complétion affichée (n/total) — objectif de collection, à croiser avec les succès
-- [ ] Localisation via les champs `*_translations`
-- [ ] Tests de rendu (débloqué / verrouillé / complétion)
+### NAR-06 — Écran Codex ✅ (livré 2026-07-25 — cf. `ROADMAP_DONE.md`)
+> Route/UI `/game/codex` (`CodexController` + `game/codex/index.html.twig`) : entrées
+> débloquées lisibles par catégorie, entrées verrouillées teasées (titre masqué + indice
+> de déblocage par type), complétion `n/total`, localisation via `getLocalizedTitle/Description`.
+> Lien de navigation (desktop + tiroir mobile). Tests : `CodexControllerTest` + route
+> ajoutée au `SmokeTest`.
 
 ### NAR-07 — Journal de monde (S | ★★ | MOYENNE)
 > Le serveur « a une histoire » : faits canon horodatés, visibles de tous.

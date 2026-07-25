@@ -1,0 +1,61 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Codex{% endblock %}
+
+{% block game_content %}
+{% set locale = app.request.locale %}
+{% set category_labels = {
+    'region': "Régions",
+    'faction': "Factions",
+    'bestiary_lore': "Bestiaire & légendes",
+    'world_fact': "Faits de monde"
+} %}
+{% set unlock_hints = {
+    'zone_visit': "Se débloque en explorant une nouvelle zone.",
+    'boss_kill': "Se débloque en vainquant un adversaire redoutable.",
+    'arc_completed': "Se débloque en menant un arc narratif à son terme.",
+    'manual': "Se révélera au fil du récit du monde."
+} %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <h2 class="text-base sm:text-lg font-semibold text-white">Codex</h2>
+            <span class="text-sm text-gray-400" title="Entrées débloquées">{{ unlockedCount }}/{{ totalCount }}</span>
+        </div>
+
+        <div class="game-card-body">
+            {% if categories is empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 text-sm">Le Codex se remplira à mesure de vos découvertes.</p>
+                    <p class="text-gray-600 text-xs mt-1">Explorez, affrontez et menez les arcs à leur terme pour révéler la trame du monde.</p>
+                </div>
+            {% else %}
+                {% for category, entries in categories %}
+                    <section class="mb-5">
+                        <h3 class="text-sm font-semibold text-purple-300 mb-2">{{ category_labels[category]|default(category|replace({'_': ' '})|capitalize) }}</h3>
+                        <div class="space-y-2 sm:space-y-3">
+                            {% for entry in entries %}
+                                {% set isUnlocked = entry.id in unlockedIds %}
+                                <div class="bg-gray-700/50 rounded-lg p-3 sm:p-4 border {% if isUnlocked %}border-purple-600/40{% else %}border-gray-700 border-dashed{% endif %}">
+                                    {% if isUnlocked %}
+                                        <h4 class="text-white font-semibold text-sm sm:text-base">{{ entry.getLocalizedTitle(locale) }}</h4>
+                                        <p class="text-gray-300 text-xs sm:text-sm mt-1 whitespace-pre-line">{{ entry.getLocalizedDescription(locale) }}</p>
+                                    {% else %}
+                                        <div class="flex items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                            </svg>
+                                            <h4 class="text-gray-500 font-semibold text-sm sm:text-base italic">Entrée verrouillée</h4>
+                                        </div>
+                                        <p class="text-gray-600 text-xs sm:text-sm mt-1">{{ unlock_hints[entry.unlockType]|default("Se débloque en jouant.") }}</p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
