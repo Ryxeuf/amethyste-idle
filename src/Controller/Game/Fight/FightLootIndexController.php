@@ -33,7 +33,7 @@ class FightLootIndexController extends AbstractController
             return new JsonResponse(['error' => 'Fight not found'], Response::HTTP_NOT_FOUND);
         }
         // if (!$fight->isTerminated()) {
-        //     return $this->redirectToRoute('app_game_map');
+        //     return $this->redirectToRoute('app_game_zone');
         // }
 
         // Calculer les récompenses

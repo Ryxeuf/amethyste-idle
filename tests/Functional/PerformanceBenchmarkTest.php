@@ -42,7 +42,7 @@ class PerformanceBenchmarkTest extends WebTestCase
         $this->client->loginUser($user);
 
         // Warm-up: first request pays kernel boot cost — exclude from measurements
-        $this->client->request('GET', '/game/map');
+        $this->client->request('GET', '/game/zone');
     }
 
     #[DataProvider('criticalRoutesProvider')]
@@ -76,7 +76,7 @@ class PerformanceBenchmarkTest extends WebTestCase
     public static function criticalRoutesProvider(): iterable
     {
         // Game pages
-        yield 'map' => ['/game/map', 'Game: Map'];
+        yield 'zone' => ['/game/zone', 'Game: Zone'];
         yield 'inventory' => ['/game/inventory', 'Game: Inventory'];
         yield 'skills' => ['/game/skills', 'Game: Skills'];
         yield 'bestiary' => ['/game/bestiary', 'Game: Bestiary'];

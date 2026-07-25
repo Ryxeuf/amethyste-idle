@@ -89,7 +89,7 @@ class ApiCorsSubscriberTest extends TestCase
     {
         $subscriber = new ApiCorsSubscriber('https://app.example');
 
-        $request = Request::create('/game/map', 'GET');
+        $request = Request::create('/game/zone', 'GET');
         $request->headers->set('Origin', 'https://app.example');
         $event = $this->responseEvent($request, $response = new Response());
 

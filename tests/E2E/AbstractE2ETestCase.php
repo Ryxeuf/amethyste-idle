@@ -44,19 +44,6 @@ abstract class AbstractE2ETestCase extends PantherTestCase
     }
 
     /**
-     * Wait for PixiJS canvas to be rendered inside .map-canvas-container.
-     * The map_pixi Stimulus controller appends a <canvas> element once initialized.
-     */
-    protected function waitForPixi(int $timeout = self::WAIT_TIMEOUT): void
-    {
-        static::$pantherClient->wait($timeout)->until(
-            WebDriverExpectedCondition::presenceOfElementLocated(
-                WebDriverBy::cssSelector('.map-canvas-container canvas')
-            )
-        );
-    }
-
-    /**
      * Wait for Turbo Drive navigation to settle.
      * Checks that no turbo-frame is in a loading state and the document is ready.
      */

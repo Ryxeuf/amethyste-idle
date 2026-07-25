@@ -20,7 +20,7 @@
                         <span class="text-purple-300 text-sm font-medium">{{ 'game.dungeon.active_run.heading'|trans }}</span>
                         <p class="text-white text-xs mt-0.5">{{ activeRun.dungeon|localized_dungeon_name }} — <span class="{{ activeRun.difficulty.cssClass }}">{{ ('game.dungeon.difficulty.' ~ activeRun.difficulty.value)|trans }}</span></p>
                     </div>
-                    <a href="{{ path('app_game_map') }}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
+                    <a href="{{ path('app_game_zone') }}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs rounded transition-colors">
                         {{ 'game.dungeon.active_run.return_button'|trans }}
                     </a>
                 </div>

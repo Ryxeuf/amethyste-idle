@@ -18,10 +18,10 @@
 
 > **ZON-20 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : recompenses de donjon de groupe **decroissantes** plutot que lockout dur. A la reussite d'un run, chaque membre recoit des gils (`zone.dungeon.reward.base_gils`, defaut 150) ; chaque reussite supplementaire du meme donjon dans la fenetre glissante (`zone.dungeon.lockout.window_hours`, defaut 24 h) reduit la recompense d'un facteur `zone.dungeon.lockout.decay` (defaut 0.5), borne par `zone.dungeon.lockout.min_factor` (defaut 0.25). Le joueur peut toujours rejouer (variete de contenu, cooperation) — le farm rapporte de moins en moins. Entite `GroupDungeonClear` (trace par membre), `GroupDungeonRewardService`, recompense affichee dans la banniere de zone.
 
-### ZON-21 — Suppression du code carte (L | ★)
+### ZON-21 — Suppression du code carte (L | ★) — **decoupe en 3 sous-jalons**
 > Prerequis : ← ZON-16 (modele zone stabilise)
-- [ ] Supprimer : `map_pixi_controller.js`, `SpriteAnimator`, bundle PixiJS (sortie de l'importmap), pipeline avatar client (`AvatarTextureComposer`, `AvatarSheetLoader`, caches), pathfinding Dijkstra, `PlayerMoveProcessor`, publishers `Realtime/Map`
-- [ ] Deprecier puis supprimer les endpoints `/api/map/*` ; retirer `app:index:cell` (Typesense garde objets/entites)
+> **Sous-jalon a (carte navigable) livre le 2026-07-25** : suppression du front carte — `map_pixi_controller.js`, `map_mercure_controller.js`, `SpriteAnimator`, bundle PixiJS (sorti de l'importmap), pipeline avatar client JS (`AvatarTextureComposer`, `AvatarSheetLoader`, `AvatarAnimatorFactory`, caches), overlays `dialog`/`harvest` (carte-only), vue `/game/map` + composant Twig `Map`, harness admin `avatar_test`. Toute la navigation `app_game_map` reroutee vers `app_game_zone` (nav, dashboard, boutique, donjon, quetes, combat). Tests E2E carte (Map/Combat/Shop) et `MapRedirectToFightTest` retires. Les endpoints `/api/map/*` et les services backend (pathfinding, `PlayerMoveProcessor`, publishers `Realtime/Map`, `MapFreeze`) subsistent temporairement, retires en sous-jalon b.
+- [ ] **Sous-jalon b** : deprecier puis supprimer les endpoints `/api/map/*`, pathfinding Dijkstra, `PlayerMoveProcessor`, publishers `Realtime/Map`, flag `map_frozen`/`MapFreeze` ; traiter les deps admin (`AdminFightModerationService::movePlayer`)
 - [ ] Archiver `terrain/` et `docs/TILED_GUIDE.md` avec le code carte (reutilisables par le projet Zelda-like separe)
 - [ ] MAJ documentation : CLAUDE.md (§7 coordonnees, §9 rendu PixiJS, routes), AGENTS.md, DOCUMENTATION.md (§20 Tiled) — documenter le modele zone
 - [ ] Extraire au prealable ce qui se reutilise (entites, spawns, donnees de zones)

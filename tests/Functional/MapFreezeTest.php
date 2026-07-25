@@ -11,7 +11,9 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Gel de la carte (pivot PBBG, ZON-01) : quand le flag `map_frozen` est actif,
- * /game/map redirige vers /game/zone et les endpoints de deplacement refusent.
+ * les endpoints de deplacement /api/map/* refusent (403). La page carte
+ * navigable a ete supprimee avec ZON-21 ; seuls les refus d'API subsistent
+ * jusqu'au retrait des endpoints (ZON-21b).
  */
 class MapFreezeTest extends WebTestCase
 {
@@ -53,28 +55,6 @@ class MapFreezeTest extends WebTestCase
         }
         $flag->setEnabled($enabled);
         $this->entityManager->flush();
-    }
-
-    public function testMapPageDoesNotRedirectToZoneWhenNotFrozen(): void
-    {
-        $this->setFlagEnabled(false);
-
-        $this->client->request('GET', '/game/map');
-        $response = $this->client->getResponse();
-
-        $this->assertLessThan(500, $response->getStatusCode());
-        // D'autres redirections metier restent legitimes (combat en cours...),
-        // mais jamais vers l'ecran de zone tant que la carte n'est pas gelee.
-        $this->assertNotSame('/game/zone', $response->headers->get('Location'));
-    }
-
-    public function testMapPageRedirectsToZoneWhenFrozen(): void
-    {
-        $this->setFlagEnabled(true);
-
-        $this->client->request('GET', '/game/map');
-
-        $this->assertResponseRedirects('/game/zone');
     }
 
     public function testMoveApiRefusesWhenFrozen(): void

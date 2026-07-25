@@ -26,7 +26,7 @@ class RequestMetricsListenerTest extends TestCase
     public function testRequestResponseCycleRecordsMetrics(): void
     {
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = Request::create('/game/map', 'GET');
+        $request = Request::create('/game/zone', 'GET');
 
         $requestEvent = new RequestEvent($kernel, $request, HttpKernelInterface::MAIN_REQUEST);
         $this->listener->onKernelRequest($requestEvent);
@@ -60,7 +60,7 @@ class RequestMetricsListenerTest extends TestCase
     public function testSubRequestsAreIgnored(): void
     {
         $kernel = $this->createMock(HttpKernelInterface::class);
-        $request = Request::create('/game/map', 'GET');
+        $request = Request::create('/game/zone', 'GET');
 
         $requestEvent = new RequestEvent($kernel, $request, HttpKernelInterface::SUB_REQUEST);
         $this->listener->onKernelRequest($requestEvent);
