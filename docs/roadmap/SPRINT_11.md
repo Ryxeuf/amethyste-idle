@@ -50,9 +50,12 @@ pour rendre les demeures **visitables** par le graphe.
 - [x] Achat **sur place**, 25 000 Gils = gold sink (GAME_PRINCIPLES §4.7)
 - [x] Ecran de la demeure, renommage, liste du voisinage
 
-**HOU-02 — Jardin : recolte passive** (M | ★★★)
-- [ ] Parcelles plantables, rendement en temps reel sur le modele `PlayerExpedition`
-- [ ] Recolte a la visite ; c'est le pilier PBBG de la tache
+**HOU-02 — Jardin : recolte passive** ✅ **livre le 2026-07-26** (voir `ROADMAP_DONE.md`)
+- [x] 4 parcelles par demeure, creees a la demande
+- [x] On seme **la plante elle-meme** (le jeu n'a pas d'objet graine) : 1 unite consommee,
+      2 a 3 rendues en 3 h — le jardin multiplie lentement ce qu'on possede deja
+- [x] Aucune energie, aucune presence : c'est ce qui le distingue de la recolte de zone
+- [ ] Reste ouvert : calibrage du rendement et de la duree dans `BALANCE.md`
 
 **HOU-03 — Visites** (S | ★★)
 - [ ] Visiter la demeure d'un voisin depuis la zone residentielle
