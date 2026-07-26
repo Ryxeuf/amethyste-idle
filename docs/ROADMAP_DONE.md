@@ -7,7 +7,40 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-20c — L'etabli est temporise (Sprint 15, 2026-07-26)
+
+> Troisieme et dernier point d'ECO-20. Arbitrage utilisateur : **chantier maintenant**.
+
+### Le defaut corrige
+
+`Recipe.craftingTime` etait affiche au joueur sur chaque carte de recette (« Temps : 12s »), calibre a la main sur les 82 recettes — de 3 s a 45 s, mediane 12 s — et **applique nulle part** : `craft()` consommait les ingredients et creait l'objet dans la meme requete. Depuis ECO-07a, les commandes de craft respectaient ce temps ; l'etabli, non. Le jeu avait deux regimes de temps pour la meme action, asymetrie que ce jalon supprime.
+
+### Livre
+
+- **`CraftJob`** : un travail a la fois par artisan — un etabli est un etabli. L'unicite porte sur `player_id` **en base**, parce que deux requetes concurrentes ne doivent pas pouvoir ouvrir deux travaux, ce qu'un controle applicatif seul ne garantit pas.
+- **`startCraft()`** : valide, consomme les ingredients, use l'outil, ouvre le chantier.
+- **`collectCraft()`** : produit les pieces, tire la qualite **par piece**, accorde l'XP, emet `CraftEvent`.
+- **Bandeau « Etabli occupe »** avec decompte (`craft-job`) et bouton de recuperation, desactive tant que le travail dure.
+
+### Trois decisions
+
+**Les ingredients sont consommes au depart**, comme l'escrow d'une commande. Sans cela, un artisan lancerait un travail puis revendrait sa matiere avant de recuperer l'objet.
+
+**Un lot de dix occupe dix fois plus longtemps.** C'est ce qui donne son sens a la quantite : autrement, demander dix pieces resterait dix crafts instantanes enchainement gratuits.
+
+**La qualite est tiree par piece, a la recuperation.** Un lot n'est pas homogene — c'est la que le savoir-faire se voit.
+
+### Ce qui a ete retire
+
+`craftMultiple()` est **supprimee** : elle produisait un lot entier en une requete et serait devenue le contournement du minuteur. `craft()` ne subsiste que pour `ExperimentationManager`, ou la decouverte d'une recette est elle-meme le cout ; aucune route ne l'expose, et l'ouvrir rouvrirait le contournement que ce jalon ferme.
+
+### Reste ouvert
+
+Notifier la fin du travail par Mercure, pour eviter au joueur de recharger. Le canal existe deja (`GameEngine/Realtime`) ; c'est une amelioration de confort, pas une condition de fonctionnement.
 
 ---
 

@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Crafting;
 
+use App\Entity\App\CraftJob;
 use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
@@ -12,6 +13,7 @@ use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
+use App\Repository\CraftJobRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -28,6 +30,7 @@ class CraftingManager
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly CraftSpecializationService $craftSpecializationService,
         private readonly RecipeUnlockCatalog $recipeUnlockCatalog,
+        private readonly CraftJobRepository $craftJobRepository,
     ) {
     }
 
@@ -225,68 +228,6 @@ class CraftingManager
     }
 
     /**
-     * Fabrique une recette plusieurs fois d'affilee.
-     * Valide les ingredients pour la quantite totale avant de commencer.
-     *
-     * @return array{success: bool, crafted: int, totalXp: int, results: list<array{item: Item, quality: string}>, message: string}
-     */
-    public function craftMultiple(Player $player, Recipe $recipe, int $quantity): array
-    {
-        $quantity = max(1, min($quantity, 99));
-
-        // Verifier l'outil
-        $toolCheck = $this->checkCraftTool($player, $recipe->getCraft());
-        if (!$toolCheck['ok']) {
-            return ['success' => false, 'crafted' => 0, 'totalXp' => 0, 'results' => [], 'message' => $toolCheck['message']];
-        }
-
-        // Verifier qu'on peut crafter la quantite demandee
-        $maxPossible = $this->maxCraftable($player, $recipe);
-        if ($maxPossible < $quantity) {
-            return [
-                'success' => false,
-                'crafted' => 0,
-                'totalXp' => 0,
-                'results' => [],
-                'message' => sprintf('Ingredients insuffisants. Vous pouvez fabriquer %d exemplaire(s) maximum.', $maxPossible),
-            ];
-        }
-
-        $crafted = 0;
-        $totalXp = 0;
-        $results = [];
-
-        for ($i = 0; $i < $quantity; ++$i) {
-            $result = $this->craft($player, $recipe);
-
-            if (!$result['success']) {
-                break;
-            }
-
-            ++$crafted;
-            $results[] = ['item' => $result['item'], 'quality' => $result['quality']];
-        }
-
-        // Calculer le XP total accorde
-        $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($player->getMap());
-        $totalXp = (int) round($recipe->getXpReward() * $xpMultiplier) * $crafted;
-
-        if ($crafted === 0) {
-            return ['success' => false, 'crafted' => 0, 'totalXp' => 0, 'results' => [], 'message' => 'La fabrication a echoue.'];
-        }
-
-        $itemName = $recipe->getResult()->getName();
-
-        return [
-            'success' => true,
-            'crafted' => $crafted,
-            'totalXp' => $totalXp,
-            'results' => $results,
-            'message' => sprintf('Vous avez fabrique %dx %s (+%d XP)', $crafted, $itemName, $totalXp),
-        ];
-    }
-
-    /**
      * Qualite obtenue par ce joueur sur cette recette, tirage compris.
      *
      * Publique depuis ECO-20 : les commandes de craft doivent produire une
@@ -303,7 +244,169 @@ class CraftingManager
     }
 
     /**
-     * Execute la fabrication : consomme les ingredients, cree l'item, accorde l'XP.
+     * Verifie qu'un artisan peut entreprendre cette recette **maintenant**.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function checkCanStart(Player $player, Recipe $recipe): array
+    {
+        $toolCheck = $this->checkCraftTool($player, $recipe->getCraft());
+        if (!$toolCheck['ok']) {
+            return $toolCheck;
+        }
+
+        $requiredSpec = $recipe->getRequiredSpecialization();
+        if ($requiredSpec !== null && $player->getCraftSpecialization() !== $requiredSpec) {
+            return ['ok' => false, 'message' => sprintf('Cette recette est reservee aux %s.', $requiredSpec->label())];
+        }
+
+        // ECO-20 : l'ecran ne proposait que les recettes disponibles, mais rien
+        // ne verifiait le niveau ni le plan **a l'execution** — une requete
+        // forgee suffisait a fabriquer n'importe quoi. Le filtre d'affichage
+        // n'est pas une regle metier.
+        if (!$this->isRecipeUnlocked($player, $recipe)) {
+            return ['ok' => false, 'message' => 'Vous n\'avez pas appris cette recette.'];
+        }
+
+        return ['ok' => true, 'message' => ''];
+    }
+
+    public function getActiveJob(Player $player): ?CraftJob
+    {
+        return $this->craftJobRepository->findActiveForPlayer($player);
+    }
+
+    /**
+     * Met une fabrication en chantier (ECO-20).
+     *
+     * Les ingredients sont consommes **au depart**, comme l'escrow d'une
+     * commande : sans cela, un artisan lancerait un travail puis revendrait sa
+     * matiere avant de recuperer l'objet.
+     *
+     * @return array{success: bool, job: ?CraftJob, message: string}
+     */
+    public function startCraft(Player $player, Recipe $recipe, int $quantity = 1): array
+    {
+        $quantity = max(1, $quantity);
+
+        if (null !== $this->getActiveJob($player)) {
+            return ['success' => false, 'job' => null, 'message' => 'Votre etabli est deja occupe.'];
+        }
+
+        $check = $this->checkCanStart($player, $recipe);
+        if (!$check['ok']) {
+            return ['success' => false, 'job' => null, 'message' => $check['message']];
+        }
+
+        $affordable = min($quantity, $this->maxCraftable($player, $recipe));
+        if ($affordable < 1) {
+            $missing = array_map(
+                fn (array $m) => sprintf('%s (%d/%d)', $m['slug'], $m['have'], $m['need']),
+                $this->canCraft($player, $recipe)['missing']
+            );
+
+            return ['success' => false, 'job' => null, 'message' => 'Ingredients manquants : ' . implode(', ', $missing)];
+        }
+
+        for ($i = 0; $i < $affordable; ++$i) {
+            $this->removeIngredients($player, $recipe);
+        }
+
+        $this->wearCraftTool($recipe, $affordable);
+
+        $job = new CraftJob();
+        $job->setPlayer($player);
+        $job->setRecipe($recipe);
+        $job->setQuantity($affordable);
+        // Un lot de dix occupe dix fois plus longtemps : c'est ce qui donne son
+        // sens a la quantite, au lieu de dix crafts instantanes enchaines.
+        $job->setReadyAt(new \DateTimeImmutable(sprintf('+%d seconds', max(1, $recipe->getCraftingTime()) * $affordable)));
+
+        $this->entityManager->persist($job);
+        $this->entityManager->flush();
+
+        return [
+            'success' => true,
+            'job' => $job,
+            'message' => sprintf('Fabrication lancee : %dx %s dans %ds.', $affordable, $recipe->getResult()->getName(), $job->getRemainingSeconds()),
+        ];
+    }
+
+    /**
+     * Recupere le travail termine (ECO-20).
+     *
+     * La qualite est tiree **par piece** : un lot n'est pas homogene, et c'est
+     * la que le savoir-faire de l'artisan se voit.
+     *
+     * @return array{success: bool, crafted: int, totalXp: int, message: string}
+     */
+    public function collectCraft(Player $player): array
+    {
+        $job = $this->getActiveJob($player);
+        if (null === $job) {
+            return ['success' => false, 'crafted' => 0, 'totalXp' => 0, 'message' => 'Aucune fabrication en cours.'];
+        }
+
+        if (!$job->isReady()) {
+            return ['success' => false, 'crafted' => 0, 'totalXp' => 0, 'message' => sprintf('Encore %d seconde(s) de travail.', $job->getRemainingSeconds())];
+        }
+
+        $recipe = $job->getRecipe();
+        $resultItem = $recipe->getResult();
+        $units = $job->getQuantity() * max(1, $recipe->getResultQuantity());
+
+        for ($i = 0; $i < $units; ++$i) {
+            $playerItem = $this->playerItemGenerator->generateFromItemId($resultItem->getId());
+            $playerItem->setCraftQuality($this->computeQuality($player, $recipe));
+            $this->inventoryHelper->addItem($playerItem, false);
+        }
+
+        $totalXp = 0;
+        for ($i = 0; $i < $job->getQuantity(); ++$i) {
+            $totalXp += $this->grantCraftingXp($player, $recipe->getCraft(), $recipe->getXpReward());
+        }
+
+        $this->entityManager->remove($job);
+        $this->entityManager->flush();
+
+        $this->eventDispatcher->dispatch(
+            new CraftEvent($player, $recipe, $resultItem, $units),
+            CraftEvent::NAME
+        );
+
+        return [
+            'success' => true,
+            'crafted' => $units,
+            'totalXp' => $totalXp,
+            'message' => sprintf('Vous recuperez %dx %s (+%d XP).', $units, $resultItem->getName(), $totalXp),
+        ];
+    }
+
+    /**
+     * Reduit la durabilite de l'outil de craft, une fois par piece entreprise.
+     */
+    private function wearCraftTool(Recipe $recipe, int $times): void
+    {
+        $requiredToolType = Item::CRAFT_TOOL_TYPES[$recipe->getCraft()] ?? null;
+        if ($requiredToolType === null) {
+            return;
+        }
+
+        $craftTool = $this->gearHelper->getEquippedToolByType($requiredToolType);
+        if ($craftTool !== null) {
+            $craftTool->reduceDurability($times);
+            $this->entityManager->persist($craftTool);
+        }
+    }
+
+    /**
+     * Fabrication immediate, reservee a l'experimentation (ECO-20).
+     *
+     * Depuis que l'etabli est temporise (`startCraft()` / `collectCraft()`),
+     * c'est le **seul** chemin qui produise un objet sans attente — et il n'est
+     * atteignable que par `ExperimentationManager`, ou la decouverte d'une
+     * recette est elle-meme le cout. Aucune route ne l'expose : l'ouvrir
+     * rouvrirait le contournement que ce jalon ferme.
      *
      * @return array{success: bool, item: ?Item, quality: ?string, message: string}
      */
