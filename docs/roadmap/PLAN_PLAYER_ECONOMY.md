@@ -176,13 +176,19 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 - [ ] Slots upgradables (gold sink) : `slotCount` existe et est borné à 24, l'achat de slots
       reste à câbler — reporté à ECO-12 avec la vitrine.
 
-### ECO-12 — Vitrine UI & recherche transversale (M | ★★ | MOYENNE)
+### ECO-12a — Vitrine UI (M | ★★ | MOYENNE) ✅
 > Découvrabilité : une vitrine invisible ne sert à rien.
-> Prérequis : ← ECO-11
-- [ ] Page vitrine : nom d'artisan, enseigne, listings, réputation, **plans en commande directe**
+> Prérequis : ← ECO-11 ✅
+- [x] Page vitrine `/game/shops/{id}` : nom d'artisan, enseigne, lots, réputation par métier
+- [x] Écran de gestion `/game/shops` : ouverture (les deux gardiens annoncés **avant** le bouton),
+      enseigne, approvisionnement, retrait, caisse, loyer, rideau, journal des ventes
+- [x] Présence par zone : les échoppes ouvertes apparaissent sur l'écran de zone, à côté des PNJ
+
+### ECO-12b — Recherche transversale (S | ★★ | MOYENNE)
+> Prérequis : ← ECO-12a
 - [ ] Recherche transversale : « qui vend / peut crafter l'objet X, dans quelle zone ? »
 - [ ] Point d'entrée commande directe (ECO-07) depuis la vitrine
-- [ ] Présence par zone : échoppes visibles par les joueurs présents
+- [ ] Achat d'emplacements supplémentaires (`slotCount` existe, borné à 24)
 
 ### ECO-13 — Emplacements d'échoppe = actif de ville (S | ★ | BASSE, option)
 > Renforce le contrôle de cité : la guilde contrôlante attribue/loue les emplacements.

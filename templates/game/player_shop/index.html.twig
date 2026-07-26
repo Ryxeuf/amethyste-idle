@@ -1,0 +1,169 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Mon echoppe{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">
+                {{ shop ? shop.name : 'Ouvrir une echoppe' }}
+            </h2>
+            <p class="text-gray-400 text-xs mt-0.5">
+                {% if shop %}
+                    {{ shop.zone.localizedName(app.request.locale) }} · {{ shop.status.label }}
+                    {% if shop.rentDueAt %} · loyer du {{ shop.rentDueAt|date('d/m/Y') }}{% endif %}
+                    {% if shop.sign %}<br><em class="text-gray-500">« {{ shop.sign }} »</em>{% endif %}
+                {% else %}
+                    Une vitrine qui vend pendant que vous n'etes pas la.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="game-card-body">
+        {% if not shop %}
+            {# Les deux gardiens, annonces avant le bouton : un refus doit se
+               comprendre sans l'avoir declenche. #}
+            <ul class="text-xs space-y-1 mb-4">
+                <li class="{{ house ? 'text-emerald-300' : 'text-gray-500' }}">
+                    {{ house ? '✔' : '✖' }} Posseder une demeure
+                    {%- if house %} — {{ house.zone.localizedName(app.request.locale) }}{% endif %}
+                </li>
+                <li class="{{ craftLevel >= minCraftLevel ? 'text-emerald-300' : 'text-gray-500' }}">
+                    {{ craftLevel >= minCraftLevel ? '✔' : '✖' }}
+                    Niveau {{ minCraftLevel }} dans un metier d'artisanat (votre meilleur : {{ craftLevel }})
+                </li>
+            </ul>
+
+            {% if house and craftLevel >= minCraftLevel %}
+                <form method="post" action="{{ path('app_game_player_shop_open') }}" class="flex flex-wrap items-end gap-2">
+                    <input type="hidden" name="_token" value="{{ csrf_token('shop_open') }}">
+                    <div class="grow min-w-48">
+                        <label for="shop_name" class="block text-xs text-gray-400 mb-1">Nom de l'echoppe</label>
+                        <input type="text" name="name" id="shop_name" maxlength="60" required
+                               class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-lg transition-colors">Ouvrir</button>
+                </form>
+            {% else %}
+                <p class="text-xs text-gray-600">Un artisan a besoin d'une adresse et d'un metier avant d'avoir une clientele.</p>
+            {% endif %}
+        {% else %}
+            <div class="grid gap-3 sm:grid-cols-3 mb-5">
+                <div class="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                    <p class="text-xs text-gray-500">Caisse</p>
+                    <p class="text-lg text-amber-200 font-mono">{{ shop.vaultGils }} <span class="text-xs">Gils</span></p>
+                    {% if shop.vaultGils > 0 %}
+                        <form method="post" action="{{ path('app_game_player_shop_vault') }}" class="mt-2">
+                            <input type="hidden" name="_token" value="{{ csrf_token('shop_vault') }}">
+                            <button type="submit" class="px-2.5 py-1 text-xs rounded-lg bg-amber-900/40 border border-amber-700 text-amber-100">Encaisser</button>
+                        </form>
+                    {% endif %}
+                </div>
+                <div class="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                    <p class="text-xs text-gray-500">Loyer</p>
+                    <p class="text-lg text-gray-200 font-mono">{{ rentAmount }} <span class="text-xs">Gils / 7 j</span></p>
+                    <form method="post" action="{{ path('app_game_player_shop_rent') }}" class="mt-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('shop_rent') }}">
+                        <button type="submit" class="px-2.5 py-1 text-xs rounded-lg bg-gray-800 border border-gray-700 text-gray-300">Payer</button>
+                    </form>
+                </div>
+                <div class="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                    <p class="text-xs text-gray-500">Vitrine</p>
+                    <p class="text-lg text-gray-200 font-mono">{{ listings|length }} / {{ shop.slotCount }}</p>
+                    <form method="post" action="{{ path('app_game_player_shop_shutters') }}" class="mt-2">
+                        <input type="hidden" name="_token" value="{{ csrf_token('shop_shutters') }}">
+                        <input type="hidden" name="open" value="{{ shop.sells ? 0 : 1 }}">
+                        <button type="submit" class="px-2.5 py-1 text-xs rounded-lg bg-gray-800 border border-gray-700 text-gray-300">
+                            {{ shop.sells ? 'Baisser le rideau' : 'Lever le rideau' }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if reputations|length > 0 %}
+                <div class="flex flex-wrap gap-2 mb-5">
+                    {% for reputation in reputations %}
+                        <span class="inline-flex items-center gap-1 rounded-full border border-purple-700/50 bg-purple-900/20 px-2 py-0.5 text-[11px] text-purple-200">
+                            {{ reputation.craft|capitalize }} · {{ reputation.title }}
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form method="post" action="{{ path('app_game_player_shop_sign') }}" class="flex flex-wrap items-end gap-2 mb-5">
+                <input type="hidden" name="_token" value="{{ csrf_token('shop_sign') }}">
+                <div class="grow min-w-48">
+                    <label for="shop_sign" class="block text-xs text-gray-400 mb-1">Enseigne</label>
+                    <input type="text" name="sign" id="shop_sign" maxlength="140" value="{{ shop.sign }}"
+                           class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                </div>
+                <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Repeindre</button>
+            </form>
+
+            <h3 class="text-sm font-semibold text-gray-200 mb-2">En vitrine</h3>
+            {% if listings is empty %}
+                <p class="text-xs text-gray-600 mb-4">Rien a vendre pour l'instant.</p>
+            {% else %}
+                <ul class="space-y-1.5 mb-4">
+                    {% for listing in listings %}
+                        <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                            <span class="text-sm text-gray-100">
+                                {{ listing.playerItem.genericItem.name }}
+                                <span class="text-xs text-gray-500">×{{ listing.quantity }}</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs text-amber-200 font-mono">{{ listing.unitPrice }} Gils / u.</span>
+                                <form method="post" action="{{ path('app_game_player_shop_unstock', {id: listing.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('shop_unstock_' ~ listing.id) }}">
+                                    <button type="submit" class="px-2 py-0.5 text-xs rounded bg-gray-800 border border-gray-700 text-gray-400 hover:text-white">Retirer</button>
+                                </form>
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if listings|length < shop.slotCount and sellables|length > 0 %}
+                <form method="post" action="{{ path('app_game_player_shop_stock') }}" class="flex flex-wrap items-end gap-2 mb-5">
+                    <input type="hidden" name="_token" value="{{ csrf_token('shop_stock') }}">
+                    <div class="grow min-w-48">
+                        <label for="stock_item" class="block text-xs text-gray-400 mb-1">Objet</label>
+                        <select name="player_item_id" id="stock_item" class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                            {% for item in sellables %}
+                                <option value="{{ item.id }}">{{ item.genericItem.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="stock_qty" class="block text-xs text-gray-400 mb-1">Quantite</label>
+                        <input type="number" name="quantity" id="stock_qty" min="1" value="1" class="w-24 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                    </div>
+                    <div>
+                        <label for="stock_price" class="block text-xs text-gray-400 mb-1">Prix / unite</label>
+                        <input type="number" name="unit_price" id="stock_price" min="1" value="100" class="w-28 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-purple-700 hover:bg-purple-600 text-white text-sm rounded-lg transition-colors">Exposer</button>
+                </form>
+            {% endif %}
+
+            <h3 class="text-sm font-semibold text-gray-200 mb-2">Ventes recentes</h3>
+            {% if sales is empty %}
+                <p class="text-xs text-gray-600">L'echoppe n'a encore rien vendu.</p>
+            {% else %}
+                <ul class="space-y-1">
+                    {% for sale in sales %}
+                        <li class="flex items-center justify-between text-[11px] text-gray-400">
+                            <span>{{ sale.soldAt|date('d/m H:i') }} — {{ sale.itemName }} ×{{ sale.quantity }} a {{ sale.buyerName }}</span>
+                            <span class="font-mono text-amber-200">
+                                +{{ sale.netGils }}{% if sale.taxGils > 0 %} <span class="text-gray-600">(taxe {{ sale.taxGils }})</span>{% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

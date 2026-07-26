@@ -306,6 +306,28 @@
                     {% endif %}
                 </div>
 
+                {# ── Echoppes joueur (ECO-12) ────────────────────── #}
+                {% if shopsPresent|default([])|length > 0 %}
+                    <div class="mb-4" data-testid="zone-shops">
+                        <h4 class="text-sm font-semibold text-gray-200 mb-2">Echoppes</h4>
+                        <ul class="space-y-1.5">
+                            {% for playerShop in shopsPresent %}
+                                <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                                    <span class="text-sm text-white">
+                                        {{ playerShop.name }}
+                                        <span class="text-xs text-gray-500">— {{ playerShop.owner.name }}</span>
+                                    </span>
+                                    <a href="{{ path('app_game_player_shop_visit', {id: playerShop.id}) }}"
+                                       data-testid="zone-player-shop-link"
+                                       class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-amber-900/40 border border-amber-600 text-amber-100 hover:bg-amber-800/50">
+                                        Entrer
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
                 {# ── PNJ presents (ZON-27) ───────────────────────── #}
                 <div class="mb-4" data-testid="zone-pnjs">
                     <h4 class="text-sm font-semibold text-gray-200 mb-2">{{ 'game.zone.pnjs.heading'|trans }}</h4>
