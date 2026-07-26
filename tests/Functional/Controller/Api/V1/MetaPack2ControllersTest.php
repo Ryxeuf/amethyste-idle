@@ -57,6 +57,9 @@ class MetaPack2ControllersTest extends WebTestCase
         $this->assertIsArray($data['top']);
         $this->assertArrayHasKey('rank', $data['me']);
         $this->assertArrayHasKey('total', $data['me']);
+        // Le classement porte sur la saison en cours (tache 132) : la charge
+        // utile doit dire laquelle, quitte a repondre « aucune ».
+        $this->assertArrayHasKey('season', $data);
 
         if ($data['top'] !== []) {
             $entry = $data['top'][0];

@@ -511,6 +511,7 @@
     "ranking": {
       "title": "Classement",
       "subtitle": "Comparez vos exploits avec ceux des autres aventuriers",
+      "subtitle_season": "%season% — seule la progression accomplie depuis son ouverture compte",
       "tab": {
         "kills": "Éliminations",
         "quests": "Quêtes",
@@ -525,11 +526,12 @@
       },
       "your_rank": "Votre rang : #%rank%",
       "your_rank_none": "Non classé",
-      "your_kills": "Vos éliminations : %count%",
-      "your_quests": "Vos quêtes complétées : %count%",
-      "your_xp": "Votre XP totale : %count%",
+      "your_kills": "Vos éliminations cette saison : %count%",
+      "your_quests": "Vos quêtes complétées cette saison : %count%",
+      "your_xp": "Votre XP gagnée cette saison : %count%",
       "empty": "Aucun joueur classé pour l'instant. Soyez le premier !",
-      "top_limit_note": "Top %limit% joueurs (classement global, toutes saisons confondues)",
+      "empty_season_hint": "Le classement repart de zéro à chaque saison.",
+      "top_limit_note": "Top %limit% joueurs de la saison en cours",
       "you": "Vous",
       "titles": {
         "heading": "Mes titres saisonniers",
@@ -548,7 +550,7 @@
         "season_number": "Saison #%number%",
         "no_data": "Aucun champion enregistré.",
         "empty": "Aucune saison archivée pour l'instant. Les podiums apparaîtront ici à la fin de chaque saison.",
-        "note": "Top 3 par catégorie, fige à la fin de chaque saison."
+        "note": "Top 3 par catégorie, figé à la fin de chaque saison. Les valeurs sont celles de la saison, pas des totaux cumulés."
       }
     },
     "fishing": {

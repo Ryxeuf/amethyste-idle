@@ -3,14 +3,19 @@
 {% block title %}{{ 'game.ranking.title'|trans }}{% endblock %}
 
 {% block game_content %}
-{% set valueKey = tab == 'quests' ? 'totalQuests' : (tab == 'xp' ? 'totalXp' : 'totalKills') %}
 {% set colLabel = tab == 'quests' ? 'game.ranking.col.quests'|trans : (tab == 'xp' ? 'game.ranking.col.xp'|trans : 'game.ranking.col.kills'|trans) %}
 <div class="game-page">
     <div class="game-card">
         <div class="game-card-header flex items-center justify-between">
             <div>
                 <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.ranking.title'|trans }}</h2>
-                <p class="text-gray-400 text-xs mt-0.5">{{ 'game.ranking.subtitle'|trans }}</p>
+                <p class="text-gray-400 text-xs mt-0.5">
+                    {% if season %}
+                        {{ 'game.ranking.subtitle_season'|trans({'%season%': season.name}) }}
+                    {% else %}
+                        {{ 'game.ranking.subtitle'|trans }}
+                    {% endif %}
+                </p>
             </div>
             <a href="{{ path('app_game_rankings_history') }}"
                class="text-xs text-purple-300 hover:text-purple-200 underline">
@@ -92,6 +97,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <p class="text-gray-500 text-sm">{{ 'game.ranking.empty'|trans }}</p>
+                    <p class="text-gray-600 text-xs mt-1">{{ 'game.ranking.empty_season_hint'|trans }}</p>
                 </div>
             {% else %}
                 <div class="overflow-x-auto">
@@ -124,7 +130,7 @@
                                             <span class="ml-1 text-[10px] text-purple-400">({{ 'game.ranking.you'|trans }})</span>
                                         {% endif %}
                                     </td>
-                                    <td class="py-2 px-2 text-right text-purple-400 font-mono">{{ attribute(entry, valueKey) }}</td>
+                                    <td class="py-2 px-2 text-right text-purple-400 font-mono">{{ entry.total }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>

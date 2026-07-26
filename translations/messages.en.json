@@ -511,6 +511,7 @@
     "ranking": {
       "title": "Rankings",
       "subtitle": "Compare your deeds with other adventurers",
+      "subtitle_season": "%season% — only progress made since it opened counts",
       "tab": {
         "kills": "Kills",
         "quests": "Quests",
@@ -525,11 +526,12 @@
       },
       "your_rank": "Your rank: #%rank%",
       "your_rank_none": "Unranked",
-      "your_kills": "Your kills: %count%",
-      "your_quests": "Your quests completed: %count%",
-      "your_xp": "Your total XP: %count%",
+      "your_kills": "Your kills this season: %count%",
+      "your_quests": "Your quests completed this season: %count%",
+      "your_xp": "Your XP earned this season: %count%",
       "empty": "No ranked players yet. Be the first!",
-      "top_limit_note": "Top %limit% players (all-time global ranking)",
+      "empty_season_hint": "The ranking resets at the start of each season.",
+      "top_limit_note": "Top %limit% players this season",
       "you": "You",
       "titles": {
         "heading": "My seasonal titles",
@@ -548,7 +550,7 @@
         "season_number": "Season #%number%",
         "no_data": "No champion recorded.",
         "empty": "No archived season yet. Podiums will appear here at the end of each season.",
-        "note": "Top 3 per category, locked at the end of each season."
+        "note": "Top 3 per category, locked at the end of each season. Values are per-season, not lifetime totals."
       }
     },
     "fishing": {

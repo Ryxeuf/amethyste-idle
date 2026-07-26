@@ -7,10 +7,9 @@ use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerSeasonReward;
 use App\Enum\RankingTab;
+use App\GameEngine\Guild\SeasonManager;
+use App\GameEngine\Season\RankingBaselineService;
 use App\Helper\PlayerHelper;
-use App\Repository\DomainExperienceRepository;
-use App\Repository\PlayerBestiaryRepository;
-use App\Repository\PlayerQuestCompletedRepository;
 use App\Repository\PlayerSeasonRewardRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -23,9 +22,8 @@ use Twig\Environment as TwigEnvironment;
 class RankingControllerTest extends TestCase
 {
     private PlayerHelper&MockObject $playerHelper;
-    private PlayerBestiaryRepository&MockObject $bestiaryRepository;
-    private PlayerQuestCompletedRepository&MockObject $questCompletedRepository;
-    private DomainExperienceRepository&MockObject $domainExperienceRepository;
+    private RankingBaselineService&MockObject $baselineService;
+    private SeasonManager&MockObject $seasonManager;
     private PlayerSeasonRewardRepository&MockObject $seasonRewardRepository;
     private RankingController $controller;
 
@@ -35,17 +33,15 @@ class RankingControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->playerHelper = $this->createMock(PlayerHelper::class);
-        $this->bestiaryRepository = $this->createMock(PlayerBestiaryRepository::class);
-        $this->questCompletedRepository = $this->createMock(PlayerQuestCompletedRepository::class);
-        $this->domainExperienceRepository = $this->createMock(DomainExperienceRepository::class);
+        $this->baselineService = $this->createMock(RankingBaselineService::class);
+        $this->seasonManager = $this->createMock(SeasonManager::class);
         $this->seasonRewardRepository = $this->createMock(PlayerSeasonRewardRepository::class);
         $this->seasonRewardRepository->method('findByPlayer')->willReturn([]);
 
         $this->controller = new RankingController(
             $this->playerHelper,
-            $this->bestiaryRepository,
-            $this->questCompletedRepository,
-            $this->domainExperienceRepository,
+            $this->baselineService,
+            $this->seasonManager,
             $this->seasonRewardRepository,
         );
 
@@ -58,20 +54,17 @@ class RankingControllerTest extends TestCase
         $other = $this->createMock(Player::class);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $topKillers = [
-            ['player' => $other, 'totalKills' => 200],
-            ['player' => $player, 'totalKills' => 150],
+        $top = [
+            ['player' => $other, 'total' => 200],
+            ['player' => $player, 'total' => 150],
         ];
 
-        $this->bestiaryRepository->expects($this->once())
-            ->method('findTopKillers')->with(50)->willReturn($topKillers);
-        $this->bestiaryRepository->expects($this->once())
-            ->method('getPlayerKillRank')->with($player)->willReturn(2);
-        $this->bestiaryRepository->expects($this->once())
-            ->method('getTotalKills')->with($player)->willReturn(150);
-
-        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
-        $this->domainExperienceRepository->expects($this->never())->method('findTopXpEarners');
+        $this->baselineService->expects($this->once())
+            ->method('topOfSeason')->with(RankingTab::Kills, 50)->willReturn($top);
+        $this->baselineService->expects($this->once())
+            ->method('currentSeasonRankFor')->with($player, RankingTab::Kills)->willReturn(2);
+        $this->baselineService->expects($this->once())
+            ->method('currentSeasonTotalFor')->with($player, RankingTab::Kills)->willReturn(150);
 
         $response = $this->controller->index(new Request());
 
@@ -79,40 +72,47 @@ class RankingControllerTest extends TestCase
         $this->assertNotNull($this->capturedTemplateParams);
         $this->assertSame('kills', $this->capturedTemplateParams['tab']);
         $this->assertSame($player, $this->capturedTemplateParams['player']);
-        $this->assertSame($topKillers, $this->capturedTemplateParams['topEntries']);
+        $this->assertSame($top, $this->capturedTemplateParams['topEntries']);
         $this->assertSame(2, $this->capturedTemplateParams['playerRank']);
         $this->assertSame(150, $this->capturedTemplateParams['playerTotal']);
         $this->assertSame(50, $this->capturedTemplateParams['topLimit']);
     }
 
-    public function testIndexQuestsTabShowsQuestRanking(): void
+    public function testIndexQuestsTabQueriesTheQuestTab(): void
     {
         $player = $this->createMock(Player::class);
-        $other = $this->createMock(Player::class);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $topQuests = [
-            ['player' => $other, 'totalQuests' => 42],
-            ['player' => $player, 'totalQuests' => 17],
-        ];
+        $top = [['player' => $player, 'total' => 17]];
 
-        $this->questCompletedRepository->expects($this->once())
-            ->method('findTopQuestCompleters')->with(50)->willReturn($topQuests);
-        $this->questCompletedRepository->expects($this->once())
-            ->method('getPlayerQuestRank')->with($player)->willReturn(2);
-        $this->questCompletedRepository->expects($this->once())
-            ->method('countQuestsCompleted')->with($player)->willReturn(17);
-
-        $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
-        $this->domainExperienceRepository->expects($this->never())->method('findTopXpEarners');
+        $this->baselineService->expects($this->once())
+            ->method('topOfSeason')->with(RankingTab::Quests, 50)->willReturn($top);
+        $this->baselineService->method('currentSeasonRankFor')->with($player, RankingTab::Quests)->willReturn(2);
+        $this->baselineService->method('currentSeasonTotalFor')->with($player, RankingTab::Quests)->willReturn(17);
 
         $response = $this->controller->index(new Request(['tab' => 'quests']));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('quests', $this->capturedTemplateParams['tab']);
-        $this->assertSame($topQuests, $this->capturedTemplateParams['topEntries']);
+        $this->assertSame($top, $this->capturedTemplateParams['topEntries']);
         $this->assertSame(2, $this->capturedTemplateParams['playerRank']);
         $this->assertSame(17, $this->capturedTemplateParams['playerTotal']);
+    }
+
+    public function testIndexXpTabQueriesTheXpTab(): void
+    {
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+
+        $this->baselineService->expects($this->once())
+            ->method('topOfSeason')->with(RankingTab::Xp, 50)->willReturn([]);
+        $this->baselineService->method('currentSeasonRankFor')->willReturn(null);
+        $this->baselineService->method('currentSeasonTotalFor')->willReturn(0);
+
+        $response = $this->controller->index(new Request(['tab' => 'xp']));
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('xp', $this->capturedTemplateParams['tab']);
     }
 
     public function testIndexUnknownTabFallsBackToKills(): void
@@ -120,10 +120,10 @@ class RankingControllerTest extends TestCase
         $player = $this->createMock(Player::class);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $this->bestiaryRepository->expects($this->once())->method('findTopKillers')->willReturn([]);
-        $this->bestiaryRepository->method('getPlayerKillRank')->willReturn(null);
-        $this->bestiaryRepository->method('getTotalKills')->willReturn(0);
-        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
+        $this->baselineService->expects($this->once())
+            ->method('topOfSeason')->with(RankingTab::Kills, 50)->willReturn([]);
+        $this->baselineService->method('currentSeasonRankFor')->willReturn(null);
+        $this->baselineService->method('currentSeasonTotalFor')->willReturn(0);
 
         $response = $this->controller->index(new Request(['tab' => 'guilds']));
 
@@ -135,60 +135,64 @@ class RankingControllerTest extends TestCase
     {
         $this->playerHelper->method('getPlayer')->willReturn(null);
 
-        $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
-        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
+        $this->baselineService->expects($this->never())->method('topOfSeason');
 
         $response = $this->controller->index(new Request());
 
         $this->assertEquals(302, $response->getStatusCode());
     }
 
-    public function testIndexXpTabShowsXpRanking(): void
-    {
-        $player = $this->createMock(Player::class);
-        $other = $this->createMock(Player::class);
-        $this->playerHelper->method('getPlayer')->willReturn($player);
-
-        $topXp = [
-            ['player' => $other, 'totalXp' => 12500],
-            ['player' => $player, 'totalXp' => 9800],
-        ];
-
-        $this->domainExperienceRepository->expects($this->once())
-            ->method('findTopXpEarners')->with(50)->willReturn($topXp);
-        $this->domainExperienceRepository->expects($this->once())
-            ->method('getPlayerXpRank')->with($player)->willReturn(2);
-        $this->domainExperienceRepository->expects($this->once())
-            ->method('getTotalXpEarned')->with($player)->willReturn(9800);
-
-        $this->bestiaryRepository->expects($this->never())->method('findTopKillers');
-        $this->questCompletedRepository->expects($this->never())->method('findTopQuestCompleters');
-
-        $response = $this->controller->index(new Request(['tab' => 'xp']));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame('xp', $this->capturedTemplateParams['tab']);
-        $this->assertSame($topXp, $this->capturedTemplateParams['topEntries']);
-        $this->assertSame(2, $this->capturedTemplateParams['playerRank']);
-        $this->assertSame(9800, $this->capturedTemplateParams['playerTotal']);
-    }
-
-    public function testIndexHandlesUnrankedPlayerInXpTab(): void
+    public function testIndexHandlesUnrankedPlayer(): void
     {
         $player = $this->createMock(Player::class);
         $this->playerHelper->method('getPlayer')->willReturn($player);
 
-        $this->domainExperienceRepository->method('findTopXpEarners')->willReturn([]);
-        $this->domainExperienceRepository->method('getPlayerXpRank')->willReturn(null);
-        $this->domainExperienceRepository->method('getTotalXpEarned')->willReturn(0);
+        $this->baselineService->method('topOfSeason')->willReturn([]);
+        $this->baselineService->method('currentSeasonRankFor')->willReturn(null);
+        $this->baselineService->method('currentSeasonTotalFor')->willReturn(0);
 
         $response = $this->controller->index(new Request(['tab' => 'xp']));
 
         $this->assertEquals(200, $response->getStatusCode());
-        $this->assertSame('xp', $this->capturedTemplateParams['tab']);
         $this->assertNull($this->capturedTemplateParams['playerRank']);
         $this->assertSame(0, $this->capturedTemplateParams['playerTotal']);
         $this->assertSame([], $this->capturedTemplateParams['topEntries']);
+    }
+
+    /**
+     * La saison est nommee a l'ecran : sans elle, « classement de la saison »
+     * reste une affirmation que le joueur ne peut pas verifier.
+     */
+    public function testIndexPassesTheCurrentSeasonToTheTemplate(): void
+    {
+        $player = $this->createMock(Player::class);
+        $season = $this->createMock(InfluenceSeason::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->seasonManager->method('getCurrentSeason')->willReturn($season);
+
+        $this->baselineService->method('topOfSeason')->willReturn([]);
+        $this->baselineService->method('currentSeasonRankFor')->willReturn(null);
+        $this->baselineService->method('currentSeasonTotalFor')->willReturn(0);
+
+        $this->controller->index(new Request());
+
+        $this->assertSame($season, $this->capturedTemplateParams['season']);
+    }
+
+    public function testIndexToleratesNoActiveSeason(): void
+    {
+        $player = $this->createMock(Player::class);
+        $this->playerHelper->method('getPlayer')->willReturn($player);
+        $this->seasonManager->method('getCurrentSeason')->willReturn(null);
+
+        $this->baselineService->method('topOfSeason')->willReturn([]);
+        $this->baselineService->method('currentSeasonRankFor')->willReturn(null);
+        $this->baselineService->method('currentSeasonTotalFor')->willReturn(0);
+
+        $response = $this->controller->index(new Request());
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertNull($this->capturedTemplateParams['season']);
     }
 
     public function testIndexPassesPlayerTitlesToTemplate(): void
@@ -204,38 +208,20 @@ class RankingControllerTest extends TestCase
 
         $controller = new RankingController(
             $this->playerHelper,
-            $this->bestiaryRepository,
-            $this->questCompletedRepository,
-            $this->domainExperienceRepository,
+            $this->baselineService,
+            $this->seasonManager,
             $repo,
         );
         $controller->setContainer($this->createContainer());
 
-        $this->bestiaryRepository->method('findTopKillers')->willReturn([]);
-        $this->bestiaryRepository->method('getPlayerKillRank')->willReturn(null);
-        $this->bestiaryRepository->method('getTotalKills')->willReturn(0);
+        $this->baselineService->method('topOfSeason')->willReturn([]);
+        $this->baselineService->method('currentSeasonRankFor')->willReturn(null);
+        $this->baselineService->method('currentSeasonTotalFor')->willReturn(0);
 
         $response = $controller->index(new Request());
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame([$reward], $this->capturedTemplateParams['playerTitles']);
-    }
-
-    public function testIndexHandlesUnrankedPlayerInQuestsTab(): void
-    {
-        $player = $this->createMock(Player::class);
-        $this->playerHelper->method('getPlayer')->willReturn($player);
-
-        $this->questCompletedRepository->method('findTopQuestCompleters')->willReturn([]);
-        $this->questCompletedRepository->method('getPlayerQuestRank')->willReturn(null);
-        $this->questCompletedRepository->method('countQuestsCompleted')->willReturn(0);
-
-        $response = $this->controller->index(new Request(['tab' => 'quests']));
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertNull($this->capturedTemplateParams['playerRank']);
-        $this->assertSame(0, $this->capturedTemplateParams['playerTotal']);
-        $this->assertSame([], $this->capturedTemplateParams['topEntries']);
     }
 
     private function createContainer(): ContainerInterface&MockObject
