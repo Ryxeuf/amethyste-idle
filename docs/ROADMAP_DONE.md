@@ -7,7 +7,48 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## HOU-02 — Le jardin (tache 129, 2026-07-26)
+
+> Le **pilier PBBG** du housing : une production qui avance quand le joueur n'est pas la.
+
+### Livre
+
+- **`GardenPlot`** : 4 parcelles par demeure, creees **a la demande** plutot qu'a l'achat — cela evite une migration de donnees pour les maisons deja baties et rend le jardin robuste si une parcelle venait a manquer.
+- **`GardenService`** : semer, recolter, et l'inventaire des plantes semables du sac.
+- Ecran du jardin dans la demeure : semis par parcelle, decompte de pousse, recolte.
+
+### La decision qui structure le jalon
+
+**Le jeu n'a aucun objet « graine ».** Il a sept plantes recoltables (`plant-chamomile`, `plant-sage`, `plant-nettle`...). Plutot que d'inventer sept graines — ce qui doublerait le catalogue vegetal pour ne rien ajouter au jeu — **on seme la plante elle-meme** : une unite consommee, 2 a 3 rendues en 3 heures.
+
+Le jardin **multiplie lentement ce qu'on possede deja**. C'est auto-limitant par construction, puisqu'il faut d'abord etre alle recolter dehors, et cela n'introduit aucune donnee nouvelle.
+
+L'unite semee est consommee **immediatement** : sans cela, un joueur pourrait semer puis revendre la plante avant la recolte, et le jardin produirait a partir de rien.
+
+### Ce qui le distingue de la recolte de zone
+
+| | Recolte de zone | Jardin |
+|---|---|---|
+| Energie | oui | **non** |
+| Presence | requise | **non** |
+| Rendement | immediat | 3 h |
+| Limite | filons partages | 4 parcelles |
+
+Quatre parcelles : assez pour que semer soit un choix — quelle plante, laquelle attend — pas assez pour couvrir la demande d'un alchimiste. Le jardin **complete** la recolte de zone, il ne la remplace pas.
+
+Le prefixe `plant-` sert de critere de culture plutot qu'une liste figee : une plante ajoutee au monde devient cultivable sans qu'on ait a y penser, ce qui est le bon defaut pour de la matiere premiere.
+
+### Reste ouvert
+
+Le **calibrage** — rendement 2-3, pousse 3 h, 4 parcelles — est le seul choix du jalon qui engage l'equilibrage. Les valeurs sont conservatrices et tenues en constantes ; a etalonner dans `BALANCE.md` quand le jardin aura tourne.
+
+### Tests
+
+Neuf cas : seul un objet `plant-` se cultive, le semis consomme **une** unite, semer sans la plante est refuse, une parcelle occupee ne se replante pas, un objet non cultivable est refuse, la recolte rend **plus** que ce qui a ete seme et libere la parcelle, recolter avant maturite est refuse, recolter une parcelle vide est refuse, et cultiver le jardin d'autrui est refuse.
 
 ---
 

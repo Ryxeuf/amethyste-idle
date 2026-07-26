@@ -30,8 +30,52 @@
                     <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Renommer</button>
                 </form>
 
-                <p class="text-xs text-gray-500">
-                    Le jardin, l'atelier et les visites arrivent dans les jalons suivants.
+                {# HOU-02 : le jardin pousse en temps reel, sans energie et sans
+                   presence. C'est le pilier PBBG du housing. #}
+                <h3 class="text-sm font-semibold text-emerald-300 mb-2">Le jardin</h3>
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {% for plot in plots %}
+                        <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3">
+                            {% if plot.empty %}
+                                {% if plantableStock is empty %}
+                                    <p class="text-xs text-gray-500">Parcelle en friche. Recoltez des plantes dehors pour en semer ici.</p>
+                                {% else %}
+                                    <form method="post" action="{{ path('app_game_house_plant', {id: plot.id}) }}" class="flex items-end gap-2">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('garden_plant_' ~ plot.id) }}">
+                                        <div class="grow">
+                                            <label class="block text-xs text-gray-500 mb-1">Parcelle {{ plot.position + 1 }}</label>
+                                            <select name="crop" class="w-full px-2 py-1.5 bg-gray-800 border border-gray-700 rounded text-xs text-gray-200">
+                                                {% for entry in plantableStock %}
+                                                    <option value="{{ entry.item.slug }}">{{ entry.item.name }} ({{ entry.count }})</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Semer</button>
+                                    </form>
+                                {% endif %}
+                            {% else %}
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="min-w-0">
+                                        <p class="text-sm text-gray-100 truncate">{{ plot.crop.name }}</p>
+                                        <p class="text-xs text-gray-500 mt-0.5">
+                                            {% if plot.ripe %}A maturite{% else %}Pousse encore {{ (plot.remainingSeconds / 60)|round(0, 'ceil') }} min{% endif %}
+                                        </p>
+                                    </div>
+                                    {% if plot.ripe %}
+                                        <form method="post" action="{{ path('app_game_house_harvest', {id: plot.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('garden_harvest_' ~ plot.id) }}">
+                                            <button type="submit" class="px-3 py-1.5 text-xs rounded bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Recolter</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <p class="text-xs text-gray-600 mt-3">
+                    Une parcelle rend 2 a 3 unites de ce qu'on y seme, en 3 heures.
+                    L'atelier et les visites arrivent dans les jalons suivants.
                 </p>
             {% elseif canBuyHere %}
                 <div class="flex items-center gap-1.5 mb-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2 w-fit">
