@@ -27,6 +27,7 @@
                     <option value="drop_bonus" {% if event is defined and event.type == 'drop_bonus' %}selected{% endif %}>Bonus drop</option>
                     <option value="gathering_bonus" {% if event is defined and event.type == 'gathering_bonus' %}selected{% endif %}>Bonus recolte</option>
                     <option value="invasion" {% if event is defined and event.type == 'invasion' %}selected{% endif %}>Invasion</option>
+                    <option value="ephemeral_quest" {% if event is defined and event.type == 'ephemeral_quest' %}selected{% endif %}>Quete ephemere</option>
                     <option value="custom" {% if (event is not defined) or event.type == 'custom' %}selected{% endif %}>Personnalise</option>
                 </select>
             </div>
@@ -75,6 +76,19 @@
                         <option value="{{ z.id }}" {% if event is defined and event.zone and event.zone.id == z.id %}selected{% endif %}>{{ z.name }}</option>
                     {% endfor %}
                 </select>
+            </div>
+
+            <div class="sm:col-span-2 mb-2">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Quetes ephemeres (tache 131)</label>
+                <select name="quest_ids[]" multiple size="6" class="bg-gray-800 border border-gray-700 text-gray-200 rounded-lg px-3 py-2 w-full">
+                    {% for q in quests|default([]) %}
+                        <option value="{{ q.id }}" {% if event is defined and q.gameEvent and q.gameEvent.id == event.id %}selected{% endif %}>{{ q.name }}</option>
+                    {% endfor %}
+                </select>
+                <p class="text-xs text-gray-500 mt-1">
+                    Les quetes rattachees ne sont proposables et rendables que pendant l'evenement.
+                    A sa cloture, celles qui sont en cours sont retirees des journaux ; celles deja rendues restent acquises.
+                </p>
             </div>
 
             <div class="mb-2">
