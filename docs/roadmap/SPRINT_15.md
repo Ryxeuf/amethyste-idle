@@ -65,6 +65,11 @@
       inatteignable
 - [x] Compensation : `respec_count` remis a zero, le respec existant permettant de se reorienter
       au tarif de base
+- [x] Fixtures : les joueurs de demo recoivent les nœuds d'entree des quatre metiers (gratuits,
+      0 point) — sans eux, un personnage ne voit plus **aucune** recette
+- [ ] **Suivi onboarding** : rien dans le tutoriel n'oriente un nouveau joueur vers ces nœuds
+      d'entree. Ils sont gratuits, donc personne n'est bloque, mais l'artisanat n'est plus
+      decouvert par accident — a rapprocher du plancher T1 d'ECO-02
 
 **2. `Recipe.craftingTime` a l'etabli** (trouve pendant ECO-07a)
 - [ ] Le champ est affiche dans `_recipe_card.html.twig` et `_recipe_card_locked.html.twig`
