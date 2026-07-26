@@ -13,6 +13,8 @@ declare(strict_types=1);
  * Sortie :
  *   - missing : cles utilisees mais absentes des deux catalogues
  *   - parity  : ecart FR-EN / EN-FR
+ *   - hardcoded : texte francais ecrit en dur dans un gabarit (informatif :
+ *     la dette est gelee par HardcodedTextTest, ce rapport la detaille)
  *
  * Usage : php scripts/audit-translations.php [--active-only]
  *         --active-only ignore templates/old_game/ (heritage pre-pivot).
@@ -20,6 +22,7 @@ declare(strict_types=1);
  * Sort en code 1 si au moins un ecart est trouve, 0 sinon.
  */
 
+use App\Translation\HardcodedTextScanner;
 use App\Translation\TranslationCatalogAudit;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -37,6 +40,16 @@ printf("Cles utilisees (scan) : %d\n", count($audit->usedKeys($activeOnly)));
 printf("Cles manquantes : %d%s\n", count($missing), $activeOnly ? ' (active-only)' : '');
 foreach ($missing as $key => $files) {
     printf("  - %s  <-  %s\n", $key, implode(', ', array_slice($files, 0, 2)));
+}
+
+$hardcoded = (new HardcodedTextScanner($root))->scan();
+printf(
+    "Texte code en dur : %d extraits dans %d gabarits\n",
+    array_sum(array_map('count', $hardcoded)),
+    count($hardcoded),
+);
+foreach ($hardcoded as $template => $hits) {
+    printf("  - %-58s %d  (%s)\n", $template, count($hits), $hits[0]);
 }
 
 if ([] !== $parity['fr_only'] || [] !== $parity['en_only']) {
