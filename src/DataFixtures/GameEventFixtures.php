@@ -3,15 +3,27 @@
 namespace App\DataFixtures;
 
 use App\Entity\App\GameEvent;
+use App\Entity\App\Zone;
 use App\Entity\Game\Item;
 use App\Entity\Game\Quest;
 use App\Enum\BindType;
 use App\Enum\ItemRarity;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class GameEventFixtures extends Fixture
+class GameEventFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * Le graphe de zones doit exister : un evenement de zone (ZON-15) et un
+     * boss de zone (ZON-18) sont rattaches a une `Zone`, et `ZoneBossManager`
+     * ignore purement et simplement un evenement qui n'en a pas.
+     */
+    public function getDependencies(): array
+    {
+        return [ZoneGraphFixtures::class];
+    }
+
     public function load(ObjectManager $manager): void
     {
         // --- Base game events (bonus, festivals) ---
@@ -28,6 +40,17 @@ class GameEventFixtures extends Fixture
             $event->setParameters($data['parameters'] ?? null);
             $event->setRecurring($data['recurring'] ?? false);
             $event->setRecurrenceInterval($data['recurrence_interval'] ?? null);
+
+            // Rattachement a une zone (ZON-15) : sans lui, un evenement de type
+            // `boss_spawn` ne fait naitre aucun boss — `ZoneBossManager` sort
+            // des la premiere ligne.
+            if (isset($data['zone'])) {
+                $zone = $manager->getRepository(Zone::class)->findOneBy(['slug' => $data['zone']]);
+                if ($zone instanceof Zone) {
+                    $event->setZone($zone);
+                }
+            }
+
             $event->setCreatedAt(new \DateTime());
             $event->setUpdatedAt(new \DateTime());
 
@@ -151,6 +174,33 @@ class GameEventFixtures extends Fixture
     private function getEventsData(): array
     {
         return [
+            // === Boss final de l'Acte 4 (tache 128d) ===
+            //
+            // Le boss de zone naît de l'**activation** de cet evenement
+            // (`ZoneBossManager` ecoute `GameEventActivatedEvent`) : il faut
+            // donc une zone et un `monster_slug`, sans quoi rien ne se passe.
+            //
+            // `boss_hp` est fixe ici et non sur le monstre : la barre d'un
+            // combat collectif se regle par evenement, pour qu'un ajustement
+            // d'affluence ne touche pas au bestiaire.
+            //
+            // Recurrent toutes les 72 h : un boss de zone qu'on ne peut affronter
+            // qu'une fois est un contenu que la moitie du serveur manquera.
+            'event_acte4_premier_silence' => [
+                'name' => 'Le Premier Silence',
+                'type' => GameEvent::TYPE_BOSS_SPAWN,
+                'description' => 'Quelque chose se reveille sous le Glacier du Silence. La glace craque a des lieues a la ronde.',
+                'status' => GameEvent::STATUS_SCHEDULED,
+                'starts_at' => '+1 hour',
+                'ends_at' => '+7 hours',
+                'zone' => 'glacier-du-silence',
+                'parameters' => [
+                    'monster_slug' => 'the_first_silence',
+                    'boss_hp' => 60000,
+                ],
+                'recurring' => true,
+                'recurrence_interval' => 4320, // 72 h en minutes
+            ],
             'event_festival_lune' => [
                 'name' => 'Festival de la Lune',
                 'type' => GameEvent::TYPE_XP_BONUS,
