@@ -60,6 +60,12 @@ jobs:
       - name: Run PHP-CS-Fixer (dry-run)
         run: vendor/bin/php-cs-fixer fix --dry-run --diff
 
+      # Doublonne volontairement TranslationCatalogAuditTest : les deux echouent
+      # sur le meme defaut, mais ce job-ci rend son verdict sans base de donnees,
+      # donc bien avant la suite PHPUnit. Le script liste les cles fautives.
+      - name: Audit des traductions (parite FR/EN)
+        run: php scripts/audit-translations.php --active-only
+
   # ---------------------------------------------------------------------------
   # 2. Analyse statique (PHPStan)
   # ---------------------------------------------------------------------------

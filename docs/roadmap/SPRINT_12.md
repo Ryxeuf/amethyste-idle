@@ -45,8 +45,10 @@
 - [ ] **Passe de non-regression i18n post-pivot** : les ecrans nes du pivot (`/game/zone`,
       `/game/world-map`, banniere de donjon de groupe, banniere de boss de zone) doivent etre
       couverts par `messages.{fr,en}.json` au meme niveau que le reste de l'UI
-- [ ] Garde-fou CI : echec du build si la parite de cles FR/EN regresse (le script d'audit existe,
-      il n'est pas branche sur la CI)
+- [x] **Garde-fou CI** ✅ — `App\Translation\TranslationCatalogAudit` porte la logique,
+      `TranslationCatalogAuditTest` la verifie a chaque build, et le job `lint` rend le meme verdict
+      sans base de donnees. Premiere execution : une cle indefinie trouvee
+      (`game.inventory.paper_doll_label`, dont le `|default` de repli etait mort a l'ecriture).
 
 ---
 
