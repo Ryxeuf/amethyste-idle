@@ -101,6 +101,21 @@ class GuildVaultManager
         $playerItem->setInventory($bag);
         $bag->addItem($playerItem);
 
+        // Liaison a l'obtention (ECO-01), comme le fait `InventoryHelper::addItem()`.
+        //
+        // Aucun objet lie a l'obtention ne devrait pouvoir se trouver dans un
+        // coffre : `deposit()` refuse ce qui est deja lie, et un tel objet l'est
+        // des son entree en inventaire. La regle repose donc entierement sur la
+        // garde du depot — un objet dont le type passe a « lie a l'obtention »
+        // alors qu'il dort deja dans un coffre ressortirait libre.
+        //
+        // Le coffre ne peut pas passer par `InventoryHelper` : celui-ci ecrit
+        // dans le sac du joueur **de la session**, la ou le retrait resout le
+        // sac du joueur qu'on lui donne. La regle est donc reappliquee ici.
+        if ($playerItem->getGenericItem()->isBoundOnPickup() && !$playerItem->isBound()) {
+            $playerItem->setBoundToPlayerId($player->getId());
+        }
+
         $log = new GuildVaultLog();
         $log->setGuild($guild);
         $log->setPlayer($player);

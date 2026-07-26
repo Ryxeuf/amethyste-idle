@@ -248,13 +248,29 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
       AuctionTransaction, CraftOrder fulfilled)
 - [ ] Outils de modération admin (suspension d'échoppe, annulation de listing)
 
-### ECO-17 — Tests unitaires du plan (M | ★★ | HAUTE)
-> Prérequis : ← ECO-05, ECO-07, ECO-10
-- [ ] Tests liaison (BindType, bind-on-pickup via commande)
-- [ ] Tests escrow (commandes, échoppes : dépôt, restitution, livraison)
-- [ ] Tests taxe région → trésor de guilde (HV, commande, échoppe)
-- [ ] Tests anti-abus & modération
-- [ ] Objectif : 30+ tests unitaires
+### ECO-17 — Tests unitaires du plan (M | ★★ | HAUTE) ✅
+> Prérequis : ← ECO-05 ✅, ECO-07 ✅, ECO-10 ✅
+- [x] Tests liaison — 11 fichiers touchent `BindType` / bind-on-pickup
+- [x] Tests escrow — couverts par `AuctionManagerTest`, `CraftOrderManagerTest` (47 tests),
+      `ShopManagerTest`, `ShopRentServiceTest`
+- [x] Tests taxe région → trésor de guilde — les trois canaux
+- [x] Tests anti-abus & modération — `AuctionAntiExploitTest`, `InfluenceAntiExploitTest`
+- [x] **Objectif dépassé** : l'audit a trouvé **211 tests unitaires** déjà écrits sur le domaine
+
+> **Le trou n'était pas le volume.** Les 211 tests sont tous **par canal** ; aucun n'énonçait
+> la **loi** que les trois canaux partagent via `AuctionSettlement::compute()`.
+> `AuctionSettlementTest` épinglait huit scénarios chiffrés à la main.
+>
+> Livré à la place : **8 lois** balayées sur **630 combinaisons** (`EconomyInvariantTest`) —
+> conservation, destruction comme seul changement de masse (le lien direct avec ECO-15),
+> indépendance du vendeur, plancher à zéro, plafond de ristourne, taux négatif inoffensif.
+> Plus **6 gardes des points d'étranglement** (`EconomyChokePointTest`).
+>
+> **Défaut trouvé** : `GuildVaultManager::withdraw()` remettait l'objet en sac sans appliquer
+> la liaison à l'obtention. Latent — la garde du dépôt le couvrait — mais un objet dont le type
+> passe à « lié à l'obtention » pendant qu'il dort dans le coffre en serait ressorti libre.
+
+**Piste E complète : ECO-14 → ECO-17.**
 
 ---
 
