@@ -16,6 +16,34 @@
         </div>
 
         <div class="game-card-body">
+            {# ECO-07b : ces commandes ne paraissent nulle part ailleurs. #}
+            {% if directOrders is not empty %}
+                <div class="mb-4">
+                    <h3 class="text-sm font-semibold text-indigo-300 mb-2">Commandes qui vous sont adressees</h3>
+                    <div class="space-y-2">
+                        {% for order in directOrders %}
+                            <div class="bg-indigo-950/40 border border-indigo-800/50 rounded-lg p-3 flex items-center justify-between gap-4">
+                                <div class="min-w-0">
+                                    <p class="text-sm text-gray-100 font-medium truncate">{{ order.recipe.result.name }}</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">
+                                        de {{ order.requester.name }}
+                                        · {{ order.recipe.craft }}
+                                        · expire le {{ order.expiresAt|date('d/m H:i') }}
+                                    </p>
+                                </div>
+                                <div class="flex items-center gap-3 shrink-0">
+                                    <span class="text-yellow-400 font-mono font-semibold text-sm">{{ order.commission|number_format(0, ',', ' ') }} G</span>
+                                    <form method="post" action="{{ path('app_game_craft_order_claim', {id: order.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('craft_order_claim_' ~ order.id) }}">
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white transition-colors">Accepter</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
             {% if orders is empty %}
                 <p class="text-sm text-gray-500 py-6 text-center">
                     Aucune commande en cours. Le <a href="{{ path('app_game_craft_order') }}" class="text-indigo-400 hover:text-indigo-300">tableau de votre region</a> en propose peut-etre.

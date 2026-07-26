@@ -3,6 +3,7 @@
 namespace App\Controller\Game;
 
 use App\Entity\App\CraftOrder;
+use App\Entity\App\Player;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftOrderManager;
@@ -91,6 +92,8 @@ class CraftOrderController extends AbstractController
         return $this->render('game/craft_order/workshop.html.twig', [
             'player' => $player,
             'orders' => $this->orderRepository->findClaimedByCrafter($player),
+            // ECO-07b : les commandes qui m'ont ete adressees nommement.
+            'directOrders' => $this->orderRepository->findOpenDirectFor($player),
         ]);
     }
 
@@ -184,9 +187,29 @@ class CraftOrderController extends AbstractController
             return $this->redirectToRoute('app_game_craft_order_new');
         }
 
+        // ECO-07b : un nom d'artisan transforme la commande en commande directe.
+        $targetName = trim((string) $request->request->get('target_crafter', ''));
+        $targetCrafter = null;
+        if ('' !== $targetName) {
+            $targetCrafter = $this->entityManager->getRepository(Player::class)->findOneBy(['name' => $targetName]);
+            if (!$targetCrafter instanceof Player) {
+                $this->addFlash('error', sprintf('Aucun personnage nomme « %s ».', $targetName));
+
+                return $this->redirectToRoute('app_game_craft_order_new');
+            }
+        }
+
         try {
-            $this->orderManager->createOrder($player, $recipe, $materials, $request->request->getInt('commission'));
-            $this->addFlash('success', 'Commande publiee : materiaux et commission sont bloques jusqu\'a la livraison.');
+            $this->orderManager->createOrder(
+                $player,
+                $recipe,
+                $materials,
+                $request->request->getInt('commission'),
+                targetCrafter: $targetCrafter,
+            );
+            $this->addFlash('success', null !== $targetCrafter
+                ? sprintf('Commande adressee a %s : materiaux et commission sont bloques jusqu\'a la livraison.', $targetCrafter->getName())
+                : 'Commande publiee : materiaux et commission sont bloques jusqu\'a la livraison.');
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
 
@@ -219,6 +242,10 @@ class CraftOrderController extends AbstractController
             return $this->redirectToRoute('app_game_craft_order');
         }
 
+        // Une commande directe se prend depuis l'atelier : y renvoyer evite de
+        // faire atterrir l'artisan sur un tableau ou elle ne figure pas.
+        $back = $order->isDirect() ? 'app_game_craft_order_workshop' : 'app_game_craft_order';
+
         try {
             $this->orderManager->claimOrder($player, $order);
             $this->addFlash('success', 'Commande prise en charge : elle vous est desormais reservee.');
@@ -226,7 +253,7 @@ class CraftOrderController extends AbstractController
             $this->addFlash('error', $e->getMessage());
         }
 
-        return $this->redirectToRoute('app_game_craft_order');
+        return $this->redirectToRoute($back);
     }
 
     #[Route('/{id}/cancel', name: 'app_game_craft_order_cancel', methods: ['POST'], requirements: ['id' => '\d+'])]

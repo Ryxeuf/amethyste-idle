@@ -1,6 +1,6 @@
 ## Sprint 15 — Commandes de craft (Piste C)
 
-> **7 jalons** (ECO-05 → ECO-09, ECO-20), **3 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
+> **7 jalons** (ECO-05 → ECO-09, ECO-20), **4 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
 > Objectif : le **troisieme canal d'echange**, et le seul qui produise du stuff **lie**.
 > Prerequis : Sprint 14 ✅ (socle economie joueur complet, 9/9)
 
@@ -27,13 +27,10 @@
 > applique nulle part jusqu'ici. `AuctionSettlement` est reutilise tel quel : un canal qui
 > taxerait differemment deviendrait le canal ou l'on evite la taxe de l'autre.
 
-### ECO-07b — Commande directe (S | ★★ | HAUTE)
-> Le client cible un artisan precis, au lieu de publier au tableau.
-> Prerequis : ← ECO-07a
-- [ ] `CraftOrder.targetCrafter` : la commande n'est prenable que par lui
-- [ ] La commande directe **ne parait pas** au tableau public (sinon elle serait les deux)
-- [ ] Ecran « commandes qui me sont adressees » + choix de l'artisan au depot
-- [ ] Tests
+> **ECO-07b livree le 2026-07-26** (voir `ROADMAP_DONE.md`) : `CraftOrder.targetCrafter`, exclusion
+> du tableau public, section « commandes qui vous sont adressees » dans l'atelier. Les refus de la
+> prise en charge sont appliques **au depot** : sans cela, le commanditaire immobiliserait son
+> escrow pour une commande que l'artisan vise ne pourra jamais prendre.
 
 ### ECO-08 — Bind-on-pickup via commande & reputation d'artisan (M | ★★★ | HAUTE)
 > Le seul canal produisant du stuff lie ; l'objet nait lie au commanditaire.

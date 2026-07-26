@@ -517,6 +517,94 @@ class CraftOrderManagerTest extends TestCase
         self::assertSame(CraftOrderStatus::Fulfilled, $order->getStatus());
     }
 
+    // ---------------------------------------------------------------------
+    // ECO-07b — commande directe
+    // ---------------------------------------------------------------------
+
+    public function testADirectOrderIsReservedToItsTargetCrafter(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $target = $this->createPlayer(2, 0);
+        $order = $this->openOrder($requester, targetCrafter: $target);
+
+        self::assertTrue($order->isDirect());
+        self::assertSame($target, $order->getTargetCrafter());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('adressee a un artisan en particulier');
+
+        $this->manager->claimOrder($this->createPlayer(3, 0), $order);
+    }
+
+    public function testTheTargetCrafterCanClaimTheOrderAddressedToThem(): void
+    {
+        $target = $this->createPlayer(2, 0);
+        $order = $this->openOrder($this->createPlayer(1, 1_000), targetCrafter: $target);
+
+        $this->manager->claimOrder($target, $order);
+
+        self::assertSame(CraftOrderStatus::Claimed, $order->getStatus());
+        self::assertSame($target, $order->getCrafter());
+    }
+
+    /**
+     * Les refus de la prise en charge s'appliquent **au depot**. Sans cela, le
+     * commanditaire immobiliserait son escrow pour une commande que l'artisan
+     * vise ne pourra jamais prendre, jusqu'a l'expiration.
+     */
+    public function testAnOrderCannotBeAddressedToOneself(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('a vous-meme');
+
+        $this->openOrder($requester, targetCrafter: $requester);
+    }
+
+    public function testAnOrderCannotBeAddressedToAnotherCharacterOfTheSameAccount(): void
+    {
+        $this->antiExploit->method('isSameAccount')->willReturn(true);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('un autre de vos personnages');
+
+        $this->openOrder($this->createPlayer(1, 1_000), targetCrafter: $this->createPlayer(2, 0, 42));
+    }
+
+    public function testAnOrderCannotBeAddressedToASuspendedCrafter(): void
+    {
+        $target = $this->createPlayer(2, 0);
+        $target->setTradeSuspendedUntil(new \DateTimeImmutable('+2 days'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('ne peut pas recevoir de commande');
+
+        $this->openOrder($this->createPlayer(1, 1_000), targetCrafter: $target);
+    }
+
+    /**
+     * Un depot refuse ne doit rien couter : ni materiaux, ni Gils.
+     */
+    public function testARefusedDirectOrderLeavesTheEscrowUntouched(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
+        $recipe = $this->createRecipe([['slug' => 'ore-iron', 'quantity' => 2]]);
+
+        try {
+            $this->manager->createOrder($requester, $recipe, $materials, 300, targetCrafter: $requester);
+            self::fail('Le depot aurait du echouer.');
+        } catch (\InvalidArgumentException) {
+            // attendu
+        }
+
+        self::assertSame(1_000, $requester->getGils(), 'La commission n\'a pas ete prelevee.');
+        foreach ($materials as $material) {
+            self::assertNotNull($material->getInventory());
+        }
+    }
+
     /**
      * Le journal du chemin « taxe brulee » lit le slug de la region : une
      * region de test sans slug ferait echouer le test sur une donnee absente
@@ -557,13 +645,13 @@ class CraftOrderManagerTest extends TestCase
         return $order;
     }
 
-    private function openOrder(Player $requester, int $requiredLevel = 1): CraftOrder
+    private function openOrder(Player $requester, int $requiredLevel = 1, ?Player $targetCrafter = null): CraftOrder
     {
         $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
         $recipe = $this->createRecipe([['slug' => 'ore-iron', 'quantity' => 2]]);
         $recipe->setRequiredLevel($requiredLevel);
 
-        return $this->manager->createOrder($requester, $recipe, $materials, 300);
+        return $this->manager->createOrder($requester, $recipe, $materials, 300, targetCrafter: $targetCrafter);
     }
 
     /**
