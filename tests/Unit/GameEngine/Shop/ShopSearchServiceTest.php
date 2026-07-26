@@ -9,45 +9,33 @@ use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Shop\ShopSearchService;
-use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\QueryBuilder;
+use App\Repository\PlayerShopRepository;
+use App\Repository\RecipeRepository;
+use App\Repository\ShopListingRepository;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ShopSearchServiceTest extends TestCase
 {
-    private EntityManagerInterface&MockObject $entityManager;
+    private ShopListingRepository&MockObject $listingRepository;
+    private RecipeRepository&MockObject $recipeRepository;
+    private PlayerShopRepository&MockObject $shopRepository;
     private CraftingManager&MockObject $craftingManager;
     private ShopSearchService $service;
 
     protected function setUp(): void
     {
-        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->listingRepository = $this->createMock(ShopListingRepository::class);
+        $this->recipeRepository = $this->createMock(RecipeRepository::class);
+        $this->shopRepository = $this->createMock(PlayerShopRepository::class);
         $this->craftingManager = $this->createMock(CraftingManager::class);
 
-        $this->service = new ShopSearchService($this->entityManager, $this->craftingManager);
-    }
-
-    /**
-     * Le constructeur de requetes est chaine : chaque appel se renvoie
-     * lui-meme, et le dernier maillon rend le resultat voulu.
-     *
-     * @param list<object> $result
-     */
-    private function stubQueryBuilder(array $result): void
-    {
-        $query = $this->createMock(AbstractQuery::class);
-        $query->method('getResult')->willReturn($result);
-
-        $qb = $this->createMock(QueryBuilder::class);
-        foreach (['select', 'from', 'join', 'andWhere', 'setParameter', 'orderBy', 'setMaxResults'] as $method) {
-            $qb->method($method)->willReturnSelf();
-        }
-        $qb->method('getQuery')->willReturn($query);
-
-        $this->entityManager->method('createQueryBuilder')->willReturn($qb);
+        $this->service = new ShopSearchService(
+            $this->listingRepository,
+            $this->recipeRepository,
+            $this->shopRepository,
+            $this->craftingManager,
+        );
     }
 
     private function shopOf(Player $owner): PlayerShop
@@ -81,12 +69,24 @@ class ShopSearchServiceTest extends TestCase
         return $recipe;
     }
 
-    public function testAnEmptyQueryReturnsNothing(): void
+    public function testAnEmptyQueryNeverTouchesTheDatabase(): void
     {
-        $this->entityManager->expects($this->never())->method('createQueryBuilder');
+        $this->listingRepository->expects($this->never())->method('searchOnSale');
+        $this->recipeRepository->expects($this->never())->method('searchByName');
 
         $this->assertSame([], $this->service->findOnSale('   '));
         $this->assertSame([], $this->service->findCrafters(''));
+    }
+
+    public function testOnSaleDelegatesToTheListingRepository(): void
+    {
+        $listing = $this->createMock(\App\Entity\App\ShopListing::class);
+        $this->listingRepository->expects($this->once())
+            ->method('searchOnSale')
+            ->with('epee', ShopSearchService::RESULT_LIMIT)
+            ->willReturn([$listing]);
+
+        $this->assertSame([$listing], $this->service->findOnSale('  epee  '));
     }
 
     /**
@@ -98,11 +98,8 @@ class ShopSearchServiceTest extends TestCase
         $capable = $this->shopOf($this->player(1));
         $novice = $this->shopOf($this->player(2));
 
-        $this->stubQueryBuilder([$this->recipe('forgeron', 5)]);
-
-        $shopRepository = $this->createMock(EntityRepository::class);
-        $shopRepository->method('findBy')->willReturn([$capable, $novice]);
-        $this->entityManager->method('getRepository')->willReturn($shopRepository);
+        $this->recipeRepository->method('searchByName')->willReturn([$this->recipe('forgeron', 5)]);
+        $this->shopRepository->method('findBy')->willReturn([$capable, $novice]);
 
         $this->craftingManager->method('getCraftingLevel')
             ->willReturnCallback(static fn (Player $p) => 1 === $p->getId() ? 7 : 2);
@@ -122,11 +119,8 @@ class ShopSearchServiceTest extends TestCase
         $good = $this->shopOf($this->player(1));
         $better = $this->shopOf($this->player(2));
 
-        $this->stubQueryBuilder([$this->recipe('forgeron', 1)]);
-
-        $shopRepository = $this->createMock(EntityRepository::class);
-        $shopRepository->method('findBy')->willReturn([$good, $better]);
-        $this->entityManager->method('getRepository')->willReturn($shopRepository);
+        $this->recipeRepository->method('searchByName')->willReturn([$this->recipe('forgeron', 1)]);
+        $this->shopRepository->method('findBy')->willReturn([$good, $better]);
 
         $this->craftingManager->method('getCraftingLevel')
             ->willReturnCallback(static fn (Player $p) => 1 === $p->getId() ? 4 : 9);
@@ -136,10 +130,13 @@ class ShopSearchServiceTest extends TestCase
         $this->assertSame([9, 4], array_column($matches, 'level'));
     }
 
-    public function testNoRecipeMeansNoCrafterLookup(): void
+    /**
+     * Sans recette correspondante, inutile de lire la liste des echoppes.
+     */
+    public function testNoRecipeMeansNoShopLookup(): void
     {
-        $this->stubQueryBuilder([]);
-        $this->entityManager->expects($this->never())->method('getRepository');
+        $this->recipeRepository->method('searchByName')->willReturn([]);
+        $this->shopRepository->expects($this->never())->method('findBy');
 
         $this->assertSame([], $this->service->findCrafters('objet inexistant'));
     }

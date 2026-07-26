@@ -7,7 +7,9 @@ use App\Entity\App\ShopListing;
 use App\Entity\Game\Recipe;
 use App\Enum\ShopStatus;
 use App\GameEngine\Crafting\CraftingManager;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\PlayerShopRepository;
+use App\Repository\RecipeRepository;
+use App\Repository\ShopListingRepository;
 
 /**
  * Recherche transversale du marche joueur (ECO-12b).
@@ -20,13 +22,21 @@ use Doctrine\ORM\EntityManagerInterface;
  * trouve **ni** l'objet **ni** l'artisan est un marche qu'on cesse de
  * consulter : l'echoppe vide doit renvoyer vers la commande, sinon la
  * decouvrabilite s'arrete au premier resultat vide.
+ *
+ * Les deux requetes vivent dans leur **depot** respectif, pas ici. La lecon
+ * d'ECO-16b vaut aussi pour le code neuf : un service qui construit ses
+ * requetes lui-meme ne se teste qu'en simulant le constructeur de requetes
+ * Doctrine — ce qui est le signe qu'elles sont mal placees, pas qu'il faut un
+ * meilleur mock.
  */
 class ShopSearchService
 {
     public const RESULT_LIMIT = 30;
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        private readonly ShopListingRepository $listingRepository,
+        private readonly RecipeRepository $recipeRepository,
+        private readonly PlayerShopRepository $shopRepository,
         private readonly CraftingManager $craftingManager,
     ) {
     }
@@ -46,20 +56,7 @@ class ShopSearchService
             return [];
         }
 
-        return $this->entityManager->createQueryBuilder()
-            ->select('l', 's', 'i')
-            ->from(ShopListing::class, 'l')
-            ->join('l.shop', 's')
-            ->join('l.playerItem', 'pi')
-            ->join('pi.genericItem', 'i')
-            ->andWhere('s.status = :open')
-            ->andWhere('LOWER(i.name) LIKE :needle')
-            ->setParameter('open', ShopStatus::Open->value)
-            ->setParameter('needle', '%' . mb_strtolower($query) . '%')
-            ->orderBy('l.unitPrice', 'ASC')
-            ->setMaxResults(self::RESULT_LIMIT)
-            ->getQuery()
-            ->getResult();
+        return $this->listingRepository->searchOnSale($query, self::RESULT_LIMIT);
     }
 
     /**
@@ -79,23 +76,12 @@ class ShopSearchService
             return [];
         }
 
-        /** @var Recipe[] $recipes */
-        $recipes = $this->entityManager->createQueryBuilder()
-            ->select('r', 'i')
-            ->from(Recipe::class, 'r')
-            ->join('r.result', 'i')
-            ->andWhere('LOWER(i.name) LIKE :needle OR LOWER(r.name) LIKE :needle')
-            ->setParameter('needle', '%' . mb_strtolower($query) . '%')
-            ->setMaxResults(self::RESULT_LIMIT)
-            ->getQuery()
-            ->getResult();
-
+        $recipes = $this->recipeRepository->searchByName($query, self::RESULT_LIMIT);
         if ([] === $recipes) {
             return [];
         }
 
-        /** @var PlayerShop[] $shops */
-        $shops = $this->entityManager->getRepository(PlayerShop::class)->findBy(['status' => ShopStatus::Open]);
+        $shops = $this->shopRepository->findBy(['status' => ShopStatus::Open]);
 
         $matches = [];
         foreach ($recipes as $recipe) {
