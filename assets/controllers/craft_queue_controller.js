@@ -59,7 +59,9 @@ export default class extends Controller {
             const data = await resp.json();
 
             if (data.success) {
-                this.buttonTextTarget.textContent = `${data.crafted}/${quantity} ${this._label('crafted_done', 'fabriques !')}`;
+                // ECO-20 : l'etabli est temporise — la reponse annonce un chantier
+                // lance, plus un lot deja fabrique.
+                this.buttonTextTarget.textContent = `${this._label('crafting_started', 'En cours')} (${data.remainingSeconds}s)`;
                 if (window.Toast) {
                     window.Toast.show('success', data.message);
                 }

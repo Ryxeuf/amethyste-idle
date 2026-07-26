@@ -39,7 +39,30 @@ class CraftingApiController extends AbstractController
         $data = json_decode($request->getContent(), true);
         $quantity = max(1, min((int) ($data['quantity'] ?? 1), 99));
 
-        $result = $this->craftingManager->craftMultiple($player, $recipe, $quantity);
+        $result = $this->craftingManager->startCraft($player, $recipe, $quantity);
+
+        return $this->json([
+            'success' => $result['success'],
+            'message' => $result['message'],
+            'remainingSeconds' => $result['job']?->getRemainingSeconds() ?? 0,
+            'quantity' => $result['job']?->getQuantity() ?? 0,
+        ]);
+    }
+
+    /**
+     * Recupere le travail termine (ECO-20).
+     */
+    #[Route('/collect', name: 'api_craft_collect', methods: ['POST'])]
+    public function collect(): JsonResponse
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return $this->json(['success' => false, 'message' => 'Joueur introuvable.'], 403);
+        }
+
+        $result = $this->craftingManager->collectCraft($player);
 
         return $this->json([
             'success' => $result['success'],

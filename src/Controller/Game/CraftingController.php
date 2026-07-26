@@ -40,6 +40,9 @@ class CraftingController extends AbstractController
             return $this->redirectToRoute('app_game');
         }
 
+        // ECO-20 : un seul travail a la fois — un etabli est un etabli.
+        $activeJob = $this->craftingManager->getActiveJob($player);
+
         $crafts = ['forgeron', 'tanneur', 'alchimiste', 'joaillier'];
         $recipesByCraft = [];
         $canCraftByCraft = [];
@@ -96,6 +99,7 @@ class CraftingController extends AbstractController
         $activeEnchantments = $this->enchantmentManager->getActiveEnchantmentsForPlayer($player);
 
         return $this->render('game/crafting/index.html.twig', [
+            'activeJob' => $activeJob,
             'crafts' => $crafts,
             'recipesByCraft' => $recipesByCraft,
             'canCraftByCraft' => $canCraftByCraft,
@@ -157,7 +161,23 @@ class CraftingController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $result = $this->craftingManager->craft($player, $recipe);
+        // ECO-20 : l'etabli est desormais temporise. Cette route sans JS met en
+        // chantier ; la recuperation se fait par `app_game_craft_collect`.
+        $result = $this->craftingManager->startCraft($player, $recipe);
+        $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
+
+        return $this->redirectToRoute('app_game_craft');
+    }
+
+    #[Route('/collect', name: 'app_game_craft_collect', methods: ['POST'])]
+    public function collect(): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if ($player === null) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $result = $this->craftingManager->collectCraft($player);
         $this->addFlash($result['success'] ? 'success' : 'warning', $result['message']);
 
         return $this->redirectToRoute('app_game_craft');

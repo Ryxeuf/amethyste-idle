@@ -46,6 +46,32 @@
         {% endif %}
     </div>
 
+    {# ECO-20 : le travail en cours a l'etabli. Le `craftingTime` des recettes
+       etait affiche depuis toujours et applique nulle part. #}
+    {% if activeJob %}
+        <div class="mb-6 bg-amber-950/40 border border-amber-800/50 rounded-lg p-4"
+             data-controller="craft-job"
+             data-craft-job-remaining-value="{{ activeJob.remainingSeconds }}">
+            <div class="flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <h3 class="text-sm font-semibold text-amber-200">Etabli occupe</h3>
+                    <p class="text-xs text-gray-400 mt-0.5">
+                        {{ activeJob.quantity }}x {{ activeJob.recipe.result.name }}
+                        · <span data-craft-job-target="countdown">{{ activeJob.remainingSeconds }}</span>s restantes
+                    </p>
+                </div>
+                <form method="post" action="{{ path('app_game_craft_collect') }}">
+                    <button type="submit"
+                            data-craft-job-target="button"
+                            {{ activeJob.ready ? '' : 'disabled' }}
+                            class="px-4 py-2 text-sm rounded-lg bg-emerald-700 hover:bg-emerald-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white transition-colors">
+                        Recuperer
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
     {# Onglets des professions d'artisanat #}
     <div class="mb-6">
         <div class="border-b border-gray-700">

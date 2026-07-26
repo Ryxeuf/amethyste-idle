@@ -1,6 +1,6 @@
 ## Sprint 15 — Commandes de craft (Piste C)
 
-> **8 jalons** (ECO-05 → ECO-09, ECO-20), **7 livrees + ECO-20a/b** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
+> **8 jalons** (ECO-05 → ECO-09, ECO-20), **8 livrees — sprint complet** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
 > Objectif : le **troisieme canal d'echange**, et le seul qui produise du stuff **lie**.
 > Prerequis : Sprint 14 ✅ (socle economie joueur complet, 9/9)
 
@@ -71,14 +71,16 @@
       d'entree. Ils sont gratuits, donc personne n'est bloque, mais l'artisanat n'est plus
       decouvert par accident — a rapprocher du plancher T1 d'ECO-02
 
-**2. `Recipe.craftingTime` a l'etabli** (trouve pendant ECO-07a)
-- [ ] Le champ est affiche dans `_recipe_card.html.twig` et `_recipe_card_locked.html.twig`
-      (« Temps : 5s ») et **aucun code ne le lit** : `CraftingManager::craft()` consomme et
-      produit dans la meme requete. Le craft direct est instantane
-- [ ] ECO-07a l'a rendu reel **cote commandes** (`CraftOrder.readyAt`) : l'etabli et les
-      commandes ont donc desormais deux regimes de temps differents
-- [ ] Decider : temporiser aussi l'etabli (ce qui touche la boucle de jeu de l'ecran
-      d'artisanat, d'ou le refus de l'elargir a ECO-07a) ou retirer l'affichage trompeur
+**2. `Recipe.craftingTime` a l'etabli** — ✅ **livre le 2026-07-26** (ECO-20c, chantier)
+- [x] Entite `CraftJob` : un travail a la fois par artisan, unicite garantie en base
+- [x] `startCraft()` consomme les ingredients **au depart** (comme l'escrow d'une commande) et
+      use l'outil ; `collectCraft()` produit, tire la qualite **par piece** et accorde l'XP
+- [x] Un lot de dix occupe dix fois plus longtemps — c'est ce qui donne son sens a la quantite
+- [x] `craftMultiple()` supprimee : elle serait devenue un contournement du minuteur
+- [x] `craft()` ne subsiste que pour `ExperimentationManager`, ou la decouverte est elle-meme le
+      cout ; aucune route ne l'expose
+- [x] Bandeau « Etabli occupe » avec decompte (`craft-job`) et bouton de recuperation
+- [ ] Reste ouvert : Mercure pour notifier la fin du travail sans rechargement
 
 **3. La qualite de craft ne survit pas au craft** — ✅ **livre le 2026-07-26** (ECO-20a)
 - [x] `PlayerItem.craftQuality` : la qualite calculee est conservee, a l'etabli **et** sur

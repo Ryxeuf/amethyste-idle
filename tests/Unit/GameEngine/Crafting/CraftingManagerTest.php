@@ -20,6 +20,7 @@ use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
 use App\Helper\GearHelper;
 use App\Helper\InventoryHelper;
+use App\Repository\CraftJobRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
@@ -60,6 +61,7 @@ class CraftingManagerTest extends TestCase
             $this->createMock(PlayerActionHelper::class),
             $this->createMock(CraftSpecializationService::class),
             $this->createMock(RecipeUnlockCatalog::class),
+            $this->createMock(CraftJobRepository::class),
         );
     }
 
