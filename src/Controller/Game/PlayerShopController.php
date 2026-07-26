@@ -11,6 +11,7 @@ use App\GameEngine\Housing\HousingManager;
 use App\GameEngine\Shop\ShopManager;
 use App\GameEngine\Shop\ShopRentService;
 use App\GameEngine\Shop\ShopSaleService;
+use App\GameEngine\Shop\ShopSearchService;
 use App\GameEngine\Shop\ShopStallService;
 use App\Helper\PlayerHelper;
 use App\Repository\CrafterReputationRepository;
@@ -45,6 +46,7 @@ class PlayerShopController extends AbstractController
         private readonly ShopSaleService $saleService,
         private readonly ShopRentService $rentService,
         private readonly ShopStallService $stallService,
+        private readonly ShopSearchService $searchService,
         private readonly HousingManager $housingManager,
         private readonly ShopListingRepository $listingRepository,
         private readonly ShopSaleLogRepository $saleLogRepository,
@@ -84,6 +86,32 @@ class PlayerShopController extends AbstractController
             'stallPrice' => null !== $shop ? $this->stallService->nextStallPrice($shop) : null,
             'stallsLeft' => null !== $shop ? $this->stallService->remainingStalls($shop) : 0,
             'maxSlots' => PlayerShop::MAX_SLOTS,
+        ]);
+    }
+
+    /**
+     * Recherche transversale (ECO-12b).
+     *
+     * Declaree **avant** `/{id}` : la contrainte `\d+` suffirait a les
+     * departager, mais l'ordre de lecture doit refleter l'ordre de matching.
+     */
+    #[Route('/search', name: 'app_game_player_shop_search', methods: ['GET'])]
+    public function search(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $query = trim((string) $request->query->get('q', ''));
+
+        return $this->render('game/player_shop/search.html.twig', [
+            'player' => $player,
+            'query' => $query,
+            'onSale' => $this->searchService->findOnSale($query),
+            // Quand personne ne vend, on renvoie vers ceux qui savent faire :
+            // un resultat vide qui n'ouvre sur rien fait cesser la recherche.
+            'crafters' => $this->searchService->findCrafters($query),
         ]);
     }
 
