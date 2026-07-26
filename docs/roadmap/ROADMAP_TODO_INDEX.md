@@ -151,13 +151,14 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 11. [Sprint 11 — Monde vivant](SPRINT_11.md)
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
 13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 6/7 (reste ZON-26b)
-14. **[Sprint 14 — Economie joueur (socle)](SPRINT_14.md)** ← **Prochain**
+14. [Sprint 14 — Economie joueur (socle)](SPRINT_14.md) ✅ 9/9
+15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ← **En cours** (1/5)
 
 **Plans annexes :**
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
 - [Recapitulatif de la campagne ZON](../ZON_CAMPAIGN_RECAP.md) — bilan ZON-12→21 + suivis identifies
 - [Principes de jeu (design)](../GAME_PRINCIPLES.md) — **source de verite du game design**
-- [Economie joueur (ECO-01 a ECO-17)](PLAN_PLAYER_ECONOMY.md) — **0/17, prochain grand chantier** (Sprint 14 en couvre 6)
+- [Economie joueur (ECO-01 a ECO-17)](PLAN_PLAYER_ECONOMY.md) — Pistes A et B **completes** (Sprint 14, 9 jalons dont ECO-18/19 nes de la campagne) ; Piste C en cours (Sprint 15)
 - [Narration (NAR-01 a NAR-14)](PLAN_NARRATIVE.md) ✅ — plan complet (2026-07-25)
 - [Controle de cite par les guildes (GCC-01 a GCC-20)](PLAN_GUILD_CITY_CONTROL.md) ✅
 - [Testing & qualite (TST-01 a TST-15)](PLAN_TESTING.md) ✅ — plan complet

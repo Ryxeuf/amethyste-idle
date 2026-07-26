@@ -30,6 +30,7 @@ class RoadmapController extends AbstractController
         'sprint_12' => 'SPRINT_12.md',
         'sprint_13' => 'SPRINT_13.md',
         'sprint_14' => 'SPRINT_14.md',
+        'sprint_15' => 'SPRINT_15.md',
     ];
 
     private const TODO_PART_LABELS = [
@@ -49,10 +50,11 @@ class RoadmapController extends AbstractController
         'sprint_12' => 'Sprint 12',
         'sprint_13' => 'Sprint 13',
         'sprint_14' => 'Sprint 14',
+        'sprint_15' => 'Sprint 15',
     ];
 
     /** @var list<string> */
-    private const ALLOWED_TODO_PARTS = ['all', 'index', 'sprint_1', 'sprint_2', 'sprint_3', 'sprint_4', 'sprint_5', 'sprint_6', 'sprint_7', 'sprint_8', 'sprint_9', 'sprint_10', 'sprint_11', 'sprint_12', 'sprint_13', 'sprint_14'];
+    private const ALLOWED_TODO_PARTS = ['all', 'index', 'sprint_1', 'sprint_2', 'sprint_3', 'sprint_4', 'sprint_5', 'sprint_6', 'sprint_7', 'sprint_8', 'sprint_9', 'sprint_10', 'sprint_11', 'sprint_12', 'sprint_13', 'sprint_14', 'sprint_15'];
 
     public function __construct(
         private readonly MarkdownParser $markdownParser,

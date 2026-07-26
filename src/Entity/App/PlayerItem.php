@@ -112,6 +112,18 @@ class PlayerItem
     private ?GuildVault $guildVault = null;
 
     /**
+     * Commande de craft detenant cet objet en escrow (ECO-05).
+     *
+     * Un materiau confie a une commande n'est dans **aucun** inventaire : il
+     * n'appartient plus au commanditaire tant que la commande vit, et pas encore
+     * a l'artisan. Meme mecanique que le depot a l'hotel des ventes, avec une
+     * relation de collection puisqu'une commande porte plusieurs materiaux.
+     */
+    #[ORM\ManyToOne(targetEntity: CraftOrder::class, inversedBy: 'materials')]
+    #[ORM\JoinColumn(name: 'craft_order_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?CraftOrder $craftOrder = null;
+
+    /**
      * Si l'item est généré à la mort d'un mob, il s'agit du mob sur lequel on loot cet objet.
      */
     #[ORM\ManyToOne(targetEntity: Mob::class, inversedBy: 'items')]
@@ -192,6 +204,18 @@ class PlayerItem
     public function setSlotSet(?Slot $slotSet): void
     {
         $this->slotSet = $slotSet;
+    }
+
+    public function getCraftOrder(): ?CraftOrder
+    {
+        return $this->craftOrder;
+    }
+
+    public function setCraftOrder(?CraftOrder $craftOrder): self
+    {
+        $this->craftOrder = $craftOrder;
+
+        return $this;
     }
 
     public function getInventory(): ?Inventory
