@@ -51,6 +51,14 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         $playerRemy->setUpdatedAt(new \DateTime());
         $playerRemy->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
         $playerRemy->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
+        // ECO-20 : depuis que le gardien « plan appris » est branche, un
+        // personnage sans nœud d'artisanat ne voit **aucune** recette. Les
+        // joueurs de fixtures recoivent donc les nœuds d'entree des quatre
+        // metiers — gratuits (0 point) et destines a etre le premier achat de
+        // tout artisan.
+        foreach (['smith_dagger', 'leather_light_armor', 'alchi_health_pot', 'jewel_cut_basic'] as $craftSkill) {
+            $playerRemy->addSkill($this->getReference($craftSkill, Skill::class));
+        }
         $manager->persist($playerRemy);
         $this->addReference('player_remy', $playerRemy);
 
@@ -76,6 +84,14 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         // Ajout des compétences
         $playerDemo->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
         $playerDemo->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
+        // ECO-20 : depuis que le gardien « plan appris » est branche, un
+        // personnage sans nœud d'artisanat ne voit **aucune** recette. Les
+        // joueurs de fixtures recoivent donc les nœuds d'entree des quatre
+        // metiers — gratuits (0 point) et destines a etre le premier achat de
+        // tout artisan.
+        foreach (['smith_dagger', 'leather_light_armor', 'alchi_health_pot', 'jewel_cut_basic'] as $craftSkill) {
+            $playerDemo->addSkill($this->getReference($craftSkill, Skill::class));
+        }
 
         $manager->persist($playerDemo);
         $this->addReference('player_demo', $playerDemo);
@@ -102,6 +118,14 @@ class PlayerFixtures extends Fixture implements DependentFixtureInterface
         // Ajout des compétences
         $playerDemo2->addSkill($this->getReference('pyro_apprenti_1', Skill::class));
         $playerDemo2->addSkill($this->getReference('soldier_apprenti_1', Skill::class));
+        // ECO-20 : depuis que le gardien « plan appris » est branche, un
+        // personnage sans nœud d'artisanat ne voit **aucune** recette. Les
+        // joueurs de fixtures recoivent donc les nœuds d'entree des quatre
+        // metiers — gratuits (0 point) et destines a etre le premier achat de
+        // tout artisan.
+        foreach (['smith_dagger', 'leather_light_armor', 'alchi_health_pot', 'jewel_cut_basic'] as $craftSkill) {
+            $playerDemo2->addSkill($this->getReference($craftSkill, Skill::class));
+        }
 
         $manager->persist($playerDemo2);
         $this->addReference('player_demo_2', $playerDemo2);

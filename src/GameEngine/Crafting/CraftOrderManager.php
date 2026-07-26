@@ -300,9 +300,9 @@ class CraftOrderManager
      * L'artisan sait-il faire ?
      *
      * Le controle reprend **exactement** les regles que l'ecran d'artisanat
-     * applique (`CraftingManager`) : niveau de metier et specialisation. Pouvoir
-     * prendre une commande qu'on ne saurait pas realiser a son etabli n'aurait
-     * aucun sens.
+     * applique (`CraftingManager::isRecipeUnlocked()`) : niveau de metier,
+     * specialisation et plan appris. Pouvoir prendre une commande qu'on ne
+     * saurait pas realiser a son etabli n'aurait aucun sens.
      */
     private function assertQualified(Player $crafter, CraftOrder $order): void
     {
@@ -316,6 +316,12 @@ class CraftOrderManager
         $required = $recipe->getRequiredSpecialization();
         if (null !== $required && $required !== $crafter->getCraftSpecialization()) {
             throw new \InvalidArgumentException('Cette recette exige une specialisation que vous n\'avez pas.');
+        }
+
+        // ECO-20 : le « plan possede » existe enfin comme gardien. ECO-06 avait
+        // du s'aligner sur le niveau de metier seul, faute de quoi s'appuyer.
+        if (!$this->craftingManager->isRecipeUnlocked($crafter, $recipe)) {
+            throw new \InvalidArgumentException('Vous n\'avez pas appris cette recette.');
         }
     }
 

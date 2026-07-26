@@ -15,6 +15,7 @@ use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftSpecializationService;
 use App\GameEngine\Crafting\QualityCalculator;
+use App\GameEngine\Crafting\RecipeUnlockCatalog;
 use App\GameEngine\Event\GameEventBonusProvider;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Player\PlayerActionHelper;
@@ -73,6 +74,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createMock(\App\Helper\GearHelper::class),
             $this->createMock(PlayerActionHelper::class),
             $this->createMock(CraftSpecializationService::class),
+            $this->createMock(RecipeUnlockCatalog::class),
         );
 
         $result = $craftingManager->craft($player, $recipe);
@@ -127,6 +129,7 @@ class EventBonusIntegrationTest extends TestCase
             $this->createMock(\App\Helper\GearHelper::class),
             $this->createMock(PlayerActionHelper::class),
             $this->createMock(CraftSpecializationService::class),
+            $this->createMock(RecipeUnlockCatalog::class),
         );
 
         $result = $manager->craft($player, $recipe);

@@ -1,6 +1,6 @@
 ## Sprint 15 — Commandes de craft (Piste C)
 
-> **8 jalons** (ECO-05 → ECO-09, ECO-20), **7 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
+> **8 jalons** (ECO-05 → ECO-09, ECO-20), **7 livrees + ECO-20a/b** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
 > Objectif : le **troisieme canal d'echange**, et le seul qui produise du stuff **lie**.
 > Prerequis : Sprint 14 ✅ (socle economie joueur complet, 9/9)
 
@@ -53,22 +53,23 @@
 > conception : des regles ecrites dans les donnees, affichees au joueur, et jamais branchees.
 > Prerequis : ∅ (independant de la Piste C, mais il en conditionne le sens)
 
-**1. Les deblocages de recettes des arbres**
-- [ ] `PlayerActionHelper::getActions()` ne traite specifiquement que `tool_slot.unlock` (lit `slot`)
-      et `equip.tool` (lit `slugs`) ; **toute autre cle lit `spots`**. Une action `craft` porte
-      `recipes` → elle contribue un tableau **vide**. Ajouter la branche `craft` (lecture de
-      `recipes`) + un `getUnlockedRecipeSlugs()`
-- [ ] Aucun code de `src/` ne lit `action == 'craft'`. `CraftingController` filtre les recettes
-      via le seul `CraftingManager::getAvailableRecipes()` (niveau de metier + specialisation) :
-      **les ~60 nœuds d'arbre qui « debloquent » des recettes ne debloquent rien aujourd'hui**
-- [ ] Decider et appliquer la regle : soit le skill devient un **prerequis reel** (et il faut
-      verifier qu'aucune recette ne devienne inatteignable — ECO-18/19 ont reconcilie les slugs,
-      pas les chemins), soit les `actions.craft` sont **retirees des fixtures** et le niveau de
-      metier reste le seul gardien assume
-- [ ] Repercuter la decision dans `CraftOrderManager::assertQualified()` (aligne aujourd'hui sur
-      `CraftingManager`, faute de gardien cote skills) et dans `docs/GAME_PRINCIPLES.md`
-- [ ] Tests : un garde-fou du type `SkillRecipeConsistencyTest` verifiant que chaque recette citee
-      par un skill reste atteignable par un chemin d'arbre valide
+**1. Les deblocages de recettes des arbres** — ✅ **livre le 2026-07-26** (ECO-20b, option A)
+- [x] `PlayerActionHelper` lit enfin le champ `recipes` des actions `craft` ; le champ lu depend
+      desormais explicitement de la cle (`slot` / `slugs` / `recipes` / `spots`)
+- [x] `CraftingManager::isRecipeUnlocked()` : trois gardiens — niveau de metier, specialisation,
+      **plan appris**. Filtrage de l'ecran **et** verification a l'execution de `craft()`, qui ne
+      controlait meme pas le niveau
+- [x] `CraftOrderManager::assertQualified()` s'appuie enfin sur le vrai gardien
+- [x] `RecipeUnlockCatalog` : une recette qu'aucun arbre ne revendique reste gatee par les deux
+      premiers gardiens seulement — brancher le gardien ne doit jamais rendre une recette
+      inatteignable
+- [x] Compensation : `respec_count` remis a zero, le respec existant permettant de se reorienter
+      au tarif de base
+- [x] Fixtures : les joueurs de demo recoivent les nœuds d'entree des quatre metiers (gratuits,
+      0 point) — sans eux, un personnage ne voit plus **aucune** recette
+- [ ] **Suivi onboarding** : rien dans le tutoriel n'oriente un nouveau joueur vers ces nœuds
+      d'entree. Ils sont gratuits, donc personne n'est bloque, mais l'artisanat n'est plus
+      decouvert par accident — a rapprocher du plancher T1 d'ECO-02
 
 **2. `Recipe.craftingTime` a l'etabli** (trouve pendant ECO-07a)
 - [ ] Le champ est affiche dans `_recipe_card.html.twig` et `_recipe_card_locked.html.twig`
@@ -98,7 +99,7 @@
 - [x] Les objets lies naissent lies a leur commanditaire (ECO-08a)
 - [x] La reputation d'artisan existe (ECO-08b)
 - [x] Escrow restitue automatiquement a l'expiration (ECO-09)
-- [ ] La qualification d'un artisan repose sur un gardien **branche** (ECO-20)
+- [x] La qualification d'un artisan repose sur un gardien **branche** (ECO-20b)
 
 ---
 

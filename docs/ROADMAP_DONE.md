@@ -7,7 +7,49 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-20b — Les arbres de talent gardent enfin les recettes (Sprint 15, 2026-07-26)
+
+> Deuxieme des trois points d'ECO-20. Arbitrage utilisateur : **option A — brancher**, plutot que retirer les donnees.
+
+### Le defaut corrige
+
+`PlayerActionHelper::getActions()` ne traitait specifiquement que `tool_slot.unlock` (champ `slot`) et `equip.tool` (champ `slugs`). Toute autre cle lisait un champ `spots`. Une action `craft` portant ses donnees dans `recipes` contribuait donc **un tableau vide**, et aucun code de `src/` ne lisait jamais `action == 'craft'`.
+
+Consequence : **51 nœuds d'arbre citant 82 recettes ne debloquaient rien**. Un forgeron niveau 10 fabriquait les 29 recettes de forge sans avoir achete un seul nœud.
+
+### Ce que le branchement change vraiment
+
+| | Points |
+|---|---:|
+| Acheter tous les nœuds d'artisanat | 2090 |
+| Plafond global (`MAX_TOTAL_SKILL_POINTS`) | 500 |
+| Metier le moins cher (joaillier) | 495 |
+| Metier le plus cher (forgeron) | 565 |
+
+Aucun joueur ne peut acheter l'integralite d'un seul metier, et encore moins les quatre. **La specialisation devient reelle**, et avec elle la necessite de commander a autrui ce qu'on ne sait pas faire — l'hypothese sur laquelle repose toute la Piste C, et qui jusqu'ici n'etait pas verifiee.
+
+### Livre
+
+- **`PlayerActionHelper`** : le champ lu depend explicitement de la cle d'action (`match`), et tous les accesseurs acceptent un joueur explicite — les commandes de craft doivent qualifier un artisan qui n'est pas celui de la session. Les appels existants sans argument continuent de viser le joueur de la session.
+- **`CraftingManager::isRecipeUnlocked()`** : trois gardiens en un seul point — niveau de metier, specialisation, plan appris.
+- **`craft()` verifie desormais a l'execution.** L'ecran ne proposait que les recettes disponibles, mais rien ne controlait le niveau ni le plan au moment de fabriquer : une requete forgee suffisait. Le filtre d'affichage n'est pas une regle metier.
+- **`CraftOrderManager::assertQualified()`** s'appuie enfin sur le vrai gardien, ce qu'ECO-06 n'avait pas pu faire.
+
+### Le filet de securite
+
+`RecipeUnlockCatalog` recense les recettes revendiquees par au moins un arbre. Une recette qu'aucun nœud ne cite reste gatee par les deux premiers gardiens seulement : **brancher le gardien ne doit jamais rendre une recette inatteignable**. La couverture est aujourd'hui totale (82/82, reconciliees par ECO-18 et ECO-19), mais c'est une propriete des donnees, pas une garantie du code — et `SkillRecipeConsistencyTest` la surveille.
+
+### Compensation des personnages existants
+
+Un personnage qui fabriquait par son seul niveau perd l'acces aux recettes dont il n'a pas achete le nœud, pour une correction qui n'est pas de son fait. Le respec existe deja et son cout croit de 25 % par usage : la migration remet `respec_count` a zero, de sorte que la reorientation reste payante mais ne soit pas surtaxee par un historique constitue sous d'autres regles.
+
+### Tests
+
+Cinq cas sur la lecture des actions (`recipes` lu, `spots` ignore pour une action `craft`, les autres cles inchangees, dedoublonnage, joueur sans skill), plus le refus de prise en charge d'une commande dont l'artisan n'a pas appris la recette.
 
 ---
 

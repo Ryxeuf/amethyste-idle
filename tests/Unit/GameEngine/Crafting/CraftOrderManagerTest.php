@@ -70,6 +70,9 @@ class CraftOrderManagerTest extends TestCase
         $this->orderRepository->method('countActiveByRequester')->willReturn(0);
         $this->craftingManager = $this->createMock(CraftingManager::class);
         $this->craftingManager->method('getCraftingLevel')->willReturn(99);
+        // ECO-20 : le gardien « plan appris » a sa propre suite de tests ; ici
+        // on veut isoler les regles du canal des commandes.
+        $this->craftingManager->method('isRecipeUnlocked')->willReturn(true);
         // Tirage neutralise : la regle testee est le seuil, pas le hasard.
         $this->craftingManager->method('computeQuality')->willReturn(QualityCalculator::QUALITY_RARE);
         $this->antiExploit = $this->createMock(AuctionAntiExploit::class);
@@ -936,6 +939,26 @@ class CraftOrderManagerTest extends TestCase
         $order->setMinQuality('mythique-inexistant');
 
         self::assertNotNull($this->manager->fulfillOrder($crafter, $order));
+    }
+
+    /**
+     * ECO-20 : le « plan possede » existe enfin comme gardien. ECO-06 avait du
+     * s'aligner sur le niveau de metier seul, faute de quoi s'appuyer.
+     */
+    public function testClaimIsRefusedWhenTheCrafterHasNotLearnedTheRecipe(): void
+    {
+        $craftingManager = $this->createMock(CraftingManager::class);
+        $craftingManager->method('getCraftingLevel')->willReturn(99);
+        $craftingManager->method('isRecipeUnlocked')->willReturn(false);
+
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
+
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('pas appris cette recette');
+
+        $manager->claimOrder($this->createPlayer(2, 0), $order);
     }
 
     /**
