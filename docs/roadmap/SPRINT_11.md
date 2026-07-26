@@ -39,7 +39,11 @@ peuple de faune de tier 1-3, indiscernable de l'Acte 1. Le contenu vient donc av
       rejoignent pas. **Correctif au passage** : quatre plantes nourrissaient 8 recettes
       d'alchimie de niveau 2-10 sans qu'aucune zone ne les produise — la mandragore etait meme
       exigee par une quete. Elles rejoignent les **zones de depart**, pas l'Acte 4.
-- [ ] **128c — Chaine de quetes Acte 4** (arc narratif dedie via `storyArc`, cf. NAR-01 ✅)
+- [x] **128c — Chaine de quetes Acte 4** : « Ce que le sel a garde », 5 quetes chainees
+      (`storyArc: acte4`), premiere chaine a cibler ses etapes par `zone_slug` plutot que par
+      `map_id` + coordonnees. **Deux defauts trouves** : les quetes Ochu et Ondine citaient les
+      cles de `MobFixtures` au lieu des slugs de monstre — leurs objectifs ne pouvaient jamais
+      se valider.
 - [ ] **128d — Boss final Acte 4** (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
 
 ### 129 — Housing joueur ✅ **TERMINE** (L | ★★) — 5 sous-jalons (regle #8)
