@@ -117,6 +117,7 @@ class ZoneDefinitionLoader
             'map_y' => isset($definition['map_y']) ? (int) $definition['map_y'] : null,
             'explore' => $this->normalizeExplore($slug, $definition['explore'] ?? null, $source),
             'gather' => $this->normalizeGather($slug, $definition['gather'] ?? null, $source),
+            'mobs' => $this->normalizeMobs($slug, $definition['mobs'] ?? null, $source),
         ];
     }
 
@@ -239,6 +240,49 @@ class ZoneDefinitionLoader
         }
 
         return $resources === [] ? null : $resources;
+    }
+
+    /**
+     * Population de creatures d'une zone (ZON-26b).
+     *
+     * Jusqu'ici, un `Mob` n'atteignait sa zone que **par une carte** :
+     * `WorldEntityZoneListener` derive `Mob.zone` de `Mob.map` via
+     * `Zone::sourceMap`. Une zone declaree sans carte d'origine — c'est-a-dire
+     * toute zone nouvelle depuis le pivot — ne pouvait donc **avoir aucune
+     * rencontre**. C'est ce qui bloquait l'Acte 4.
+     *
+     * @return list<array<string, mixed>>|null
+     */
+    private function normalizeMobs(string $slug, mixed $mobs, string $source): ?array
+    {
+        if ($mobs === null) {
+            return null;
+        }
+        if (!\is_array($mobs)) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid "mobs" block in "%s".', $slug, $source));
+        }
+
+        $population = [];
+        foreach ($mobs as $entry) {
+            if (!\is_array($entry)) {
+                throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid mob entry in "%s".', $slug, $source));
+            }
+            if (!\is_string($entry['monster'] ?? null) || trim((string) $entry['monster']) === '') {
+                throw new ZoneDefinitionException(sprintf('Mob entry of zone "%s" is missing "monster" in "%s".', $slug, $source));
+            }
+
+            $population[] = [
+                'monster' => (string) $entry['monster'],
+                // Le nombre d'individus, pas d'espece : trois gobelins sont
+                // trois rencontres possibles, et un combat en cours n'asseche
+                // pas la zone pour les autres joueurs.
+                'count' => max(1, (int) ($entry['count'] ?? 1)),
+                'nocturnal' => (bool) ($entry['nocturnal'] ?? false),
+                'group_tag' => \is_string($entry['group_tag'] ?? null) ? (string) $entry['group_tag'] : null,
+            ];
+        }
+
+        return $population === [] ? null : $population;
     }
 
     /**

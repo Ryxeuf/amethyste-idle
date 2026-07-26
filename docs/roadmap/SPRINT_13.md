@@ -1,6 +1,6 @@
 ## Sprint 13 — Consolidation post-pivot
 
-> **6 taches** (ZON-22 → ZON-27), **5 livrees + ZON-26a** | reste : **ZON-26b** (zones declaratives) | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
+> **6 taches** (ZON-22 → ZON-27), **toutes livrees** ✅ | Priorite : **Critique** | Origine : dette identifiee a la cloture de la campagne ZON ([docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md) §4)
 > Objectif : refermer les trous laisses par la suppression du code carte (ZON-21) — remettre en
 > marche les systemes qui dependaient du deplacement, retablir la couverture de test, et donner au
 > modele zone le volume de contenu qui justifie le pivot.
@@ -104,5 +104,7 @@
 - [x] Aucun evenement de domaine sans emetteur — liste `KNOWN_ORPHANS` vide
 - [x] PNJ joignables depuis la zone : boutiques (ZON-27a) et dialogues (ZON-27b)
 - [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
-- [~] World 1 sur un graphe dense : anneau + tables enrichies ✅ (ZON-26a) ; nouvelles zones
-      bloquees par l'absence de chemin declaratif pour les mobs et PNJ (ZON-26b)
+- [x] World 1 sur un graphe dense : anneau + tables enrichies (ZON-26a) ; **population de zone
+      declarative** (ZON-26b-a) — une zone se peuple desormais sans carte d'origine
+- [ ] Suite : `pnjs:` declaratifs (ZON-26b-b), les PNJ etant des objets riches (dialogues,
+      boutiques, horaires) repartis dans 7 fixtures — un jalon a lui seul

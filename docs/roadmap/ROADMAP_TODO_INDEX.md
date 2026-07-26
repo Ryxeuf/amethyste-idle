@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
+> Derniere mise a jour : 2026-07-26 (**Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
 > **PIVOT PBBG (juillet 2026)** : le jeu a abandonne la carte en tuiles au profit d'un monde en graphe de zones (energie, time-gating reel). Decision et equivalences : [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md) ; bilan de campagne : [docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md).
 
 ---
@@ -32,7 +32,7 @@
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot (realise trace dans ROADMAP_DONE, reliquat abandonne) |
 | Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) |
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
-| **Consolidation post-pivot (ZON-22→27)** | **6/7** | ✅ Sprint 13 quasi termine — reste **ZON-26b** (zones declaratives) |
+| **Consolidation post-pivot (ZON-22→27)** | **7/7** | ✅ Sprint 13 termine (2026-07-26) — reste le sous-jalon PNJ declaratifs |
 | **Plan Economie joueur (ECO)** | **Pistes A/B/C completes** | ✅ Sprints 14-15 — reste Piste D (echoppes, ← housing) |
 | Sprint 11 — Monde vivant | ~8 items | En cours (montures/events/classement quasi finis) |
 | Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
@@ -53,7 +53,7 @@
 | **Sprint 8** | Energie & actions de zone (ZON-07..12) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 9** | Time-gating, presence & evenements (ZON-13..17) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 10** | Contenu de groupe & decommission carte (ZON-18..21) | Moyenne | ✅ Termine (2026-07-25) |
-| **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ 6/7 — reste ZON-26b |
+| **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ Termine 7/7 (2026-07-26) |
 | **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | ✅ Termine 9/9 |
 | **Sprint 15** | **Commandes de craft — Piste C (ECO-05..09, ECO-20)** | **Haute** | ✅ Termine 8/8 (2026-07-26) |
 | **Sprint 11** | Monde vivant (128-133) | Basse | En cours |
@@ -78,8 +78,14 @@ du pivot), et les fixtures laissaient les joueurs sans zone, sur la « Carte de 
 Le garde-fou `DomainEventDispatchGuardTest` verrouille la recidive : **plus aucun evenement de
 domaine sans emetteur**, liste d'exceptions vide.
 
-**Reste ZON-26b** : les rencontres ne sont pas encore declaratives (les `Mob` sont seedes en PHP a
-partir d'une carte), ce qui bloque la creation de nouvelles zones — donc l'Acte 4.
+**Cloture le 2026-07-26 par ZON-26b-a** : les rencontres sont desormais **declaratives**. Un `Mob`
+n'atteignait sa zone que par une carte (`WorldEntityZoneListener` derive `Mob.zone` de `Mob.map`),
+si bien qu'une zone nouvelle — donc sans carte, le moteur ayant ete supprime par ZON-21 — ne pouvait
+avoir aucune rencontre. Le bloc `mobs:` leve le verrou, et les **Dunes d'Ambre** sont la premiere
+zone livree sans `source_map`. L'Acte 4 (tache 128) est debloque.
+
+Reste le sous-jalon **PNJ declaratifs** (ZON-26b-b) : objets riches sans slug, repartis dans 7
+fixtures — un jalon a lui seul, et sans effet sur le deblocage de l'Acte 4.
 
 ---
 
@@ -88,14 +94,15 @@ partir d'une carte), ce qui bloque la creation de nouvelles zones — donc l'Act
 ```
 CAMPAGNE ZON — MODELE ZONE ✅ TERMINEE (Sprints 7-10, ZON-01..21)
 
-SPRINT 13 — CONSOLIDATION POST-PIVOT (← ZON-21)     ✅ 6/7
+SPRINT 13 — CONSOLIDATION POST-PIVOT (← ZON-21)     ✅ 7/7
   ZON-22 Rebranchement PlayerMovedEvent   ✅
   ZON-23 Couverture E2E zone              ✅
   ZON-24 Realignement scenarios k6        ✅        → debloque 134
   ZON-25 Evenements orphelins & residus   ✅
   ZON-27 Couche PNJ (boutiques, dialogue) ✅
   ZON-26a Densification du graphe         ✅
-  ZON-26b Zones declaratives (mobs/pnjs)  ← ZON-26a → debloque 128
+  ZON-26b-a Population declarative (mobs)  ✅ → debloque 128
+  ZON-26b-b PNJ declaratifs                ← ZON-26b-a
 
 SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
   ECO-01 BindType                         ∅   ← CRITIQUE (bloque ECO-02/05/10)
@@ -106,7 +113,7 @@ SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
   ECO-16 Moderation economique            ← ECO-03
 
 SPRINT 11 — MONDE VIVANT (← Sprints 7-10)
-  128 Nouvelles zones Acte 4              ← ZON-26
+  128 Nouvelles zones Acte 4              ← ZON-26 ✅ debloque
   129 Housing joueur                      ← 116 ✅        → debloque ECO-10
   130 Montures (temps de voyage)          ← ZON-06 ✅ (reste la transposition)
   131 Events live                         ← ZON-15 ✅ (reste l'UI admin)
@@ -151,7 +158,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 10. [Sprint 10 — Contenu de groupe & decommission carte](SPRINT_10.md) ✅
 11. [Sprint 11 — Monde vivant](SPRINT_11.md)
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
-13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 6/7 (reste ZON-26b)
+13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 7/7
 14. [Sprint 14 — Economie joueur (socle)](SPRINT_14.md) ✅ 9/9
 15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ✅ **8/8 — termine** (ECO-07, ECO-08 et ECO-20 scindees en sous-jalons ; ECO-20 nee des audits ECO-06/07)
 
