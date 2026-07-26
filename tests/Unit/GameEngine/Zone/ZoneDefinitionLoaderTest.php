@@ -326,7 +326,6 @@ class ZoneDefinitionLoaderTest extends TestCase
         self::assertContains('dunes-caravanier-yazid', array_column($dunes['pnjs'], 'slug'));
     }
 
-
     /**
      * Tout ingredient recoltable exige par une recette doit se trouver
      * quelque part (correctif 128b).
