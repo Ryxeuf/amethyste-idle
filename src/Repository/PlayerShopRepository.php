@@ -25,6 +25,27 @@ class PlayerShopRepository extends ServiceEntityRepository
     }
 
     /**
+     * Echoppes dont le loyer est echu (ECO-11).
+     *
+     * Les echoppes deja en impaye sont exclues : le rideau est deja tombe, et
+     * les repasser a chaque cycle ferait grimper la dette sans qu'aucun
+     * mecanisme ne permette de la solder.
+     *
+     * @return PlayerShop[]
+     */
+    public function findWithRentDue(\DateTimeImmutable $now): array
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.rentDueAt IS NOT NULL')
+            ->andWhere('s.rentDueAt <= :now')
+            ->andWhere('s.status != :arrears')
+            ->setParameter('now', $now)
+            ->setParameter('arrears', ShopStatus::Arrears->value)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Echoppes visibles depuis une zone : seules celles qui vendent.
      *
      * Une echoppe fermee ou en impaye reste en base — rien n'est confisque —

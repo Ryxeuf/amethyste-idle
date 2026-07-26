@@ -159,16 +159,22 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 - [ ] Reste hors périmètre : la **réputation** n'est pas dupliquée sur `PlayerShop` —
       `CrafterReputation` (ECO-08b) existe déjà, par métier. La vitrine la lira (ECO-12).
 
-### ECO-11 — Vente asynchrone, caisse & loyer (M | ★★ | MOYENNE)
+### ECO-11 — Vente asynchrone, caisse & loyer (M | ★★ | MOYENNE) ✅
 > Vend pendant que le propriétaire est déconnecté ; loyer = gold sink auto-régulateur.
-> Prérequis : ← ECO-10
-- [ ] Approvisionnement : dépôt d'objets en escrow, prix par lot
-- [ ] Achat asynchrone : débit acheteur, livraison, gils (moins taxe) → `ShopVault`
-- [ ] Encaissement de la caisse à la reconnexion + journal des ventes
-- [ ] **Loyer/entretien** (gils/jour ou /saison) ; non-paiement → échoppe fermée
-- [ ] Taxe de vente → guilde contrôlante (cohérence ECO-04)
-- [ ] Slots limités, upgradables (gold sink)
-- [ ] Tests
+> Prérequis : ← ECO-10 ✅
+- [x] Approvisionnement : dépôt d'objets en escrow, prix par lot (livré en ECO-10)
+- [x] Achat asynchrone : débit acheteur, livraison, gils (moins taxe) → caisse
+- [x] Encaissement de la caisse + journal des ventes (`ShopSaleLog`)
+- [x] **Loyer/entretien** (1 000 Gils / 7 jours) ; non-paiement → rideau baissé, **rien n'est
+      confisqué**. La caisse paie avant la bourse : une échoppe qui vend s'entretient seule.
+      Commande `app:shop:rent`.
+- [x] Taxe de vente → guilde contrôlante : **réutilise `AuctionSettlement`** (ECO-04) plutôt
+      qu'un second calcul. Deux calculs concurrents auraient fini par diverger, et un vendeur
+      aurait appris à arbitrer entre HV et échoppe sur un détail d'implémentation.
+- [x] Achat **sur place** : une échoppe est une adresse (règle #7). À distance, elle serait un
+      second HV et annulerait le coût de voyage.
+- [ ] Slots upgradables (gold sink) : `slotCount` existe et est borné à 24, l'achat de slots
+      reste à câbler — reporté à ECO-12 avec la vitrine.
 
 ### ECO-12 — Vitrine UI & recherche transversale (M | ★★ | MOYENNE)
 > Découvrabilité : une vitrine invisible ne sert à rien.
