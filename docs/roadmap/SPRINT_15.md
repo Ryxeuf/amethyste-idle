@@ -79,13 +79,13 @@
 - [ ] Decider : temporiser aussi l'etabli (ce qui touche la boucle de jeu de l'ecran
       d'artisanat, d'ou le refus de l'elargir a ECO-07a) ou retirer l'affichage trompeur
 
-**3. La qualite de craft ne survit pas au craft** (trouve pendant ECO-07a)
-- [ ] `QualityCalculator` calcule une qualite, `CraftingManager::craft()` la met dans son
-      message de retour, et **`PlayerItem` n'a pas de champ qualite** : elle est perdue
-- [ ] Consequence directe : `CraftOrder.minQuality` est **inapplicable** — ECO-07a ne le
-      verifie pas, faute de pouvoir lire la qualite du resultat
-- [ ] Persister la qualite sur `PlayerItem` (et la refleter sur les stats) ou retirer les deux
-      champs
+**3. La qualite de craft ne survit pas au craft** — ✅ **livre le 2026-07-26** (ECO-20a)
+- [x] `PlayerItem.craftQuality` : la qualite calculee est conservee, a l'etabli **et** sur
+      commande, par la meme formule (`CraftingManager::computeQuality()`)
+- [x] `CraftOrder.minQuality` devient applicable : une piece sous le seuil est **retravaillee**,
+      pas refusee, et le champ est enfin expose au depot
+- [ ] Reste ouvert : refleter la qualite sur les **stats** de l'objet (changement d'equilibrage,
+      volontairement hors de ce jalon)
 
 ---
 

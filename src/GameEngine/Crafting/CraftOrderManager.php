@@ -331,7 +331,7 @@ class CraftOrderManager
      * immobilises depuis le depot. C'est toute la difference avec l'etabli —
      * ici il vend son plan et son temps, pas sa reserve.
      */
-    public function fulfillOrder(Player $crafter, CraftOrder $order): AuctionSettlement
+    public function fulfillOrder(Player $crafter, CraftOrder $order): ?AuctionSettlement
     {
         if (!$order->isClaimed()) {
             throw new \InvalidArgumentException('Cette commande n\'est pas en cours de realisation.');
@@ -353,8 +353,27 @@ class CraftOrderManager
         $requester = $order->getRequester();
         $recipe = $order->getRecipe();
 
+        // ECO-20 : la qualite existe enfin sur l'objet, donc `minQuality` cesse
+        // d'etre decoratif. Une piece en dessous du seuil est **retravaillee**,
+        // pas refusee : refuser piegerait la commande, et l'artisan vend
+        // precisement du temps.
+        $quality = $this->craftingManager->computeQuality($crafter, $recipe);
+        if (!$this->satisfiesMinQuality($order, $quality)) {
+            $order->setReadyAt(new \DateTimeImmutable(sprintf('+%d seconds', max(1, $recipe->getCraftingTime()))));
+            $this->entityManager->flush();
+
+            $this->logger->info('Craft order reworked (below requested quality)', [
+                'order_id' => $order->getId(),
+                'crafter_id' => $crafter->getId(),
+                'rolled' => $quality,
+                'required' => $order->getMinQuality(),
+            ]);
+
+            return null;
+        }
+
         $this->consumeEscrowMaterials($order);
-        $this->deliverResult($order, $requester);
+        $this->deliverResult($order, $requester, $quality);
 
         // La guilde controlante est resolue **une seule fois** : la repartition
         // et le versement en ont tous deux besoin, et deux lectures laisseraient
@@ -387,6 +406,7 @@ class CraftOrderManager
             'tax' => $settlement->taxAmount,
             'burned' => $settlement->burnedAmount,
             'xp' => $grantedXp,
+            'quality' => $quality,
             'reputation' => $reputation->getPoints(),
         ]);
 
@@ -420,7 +440,7 @@ class CraftOrderManager
      * par lui aurait lie l'objet a celui qui le fabrique au lieu de celui qui
      * l'a commande : exactement l'inverse de ce que ce canal doit produire.
      */
-    private function deliverResult(CraftOrder $order, Player $requester): void
+    private function deliverResult(CraftOrder $order, Player $requester, string $quality): void
     {
         $recipe = $order->getRecipe();
         $result = $recipe->getResult();
@@ -429,6 +449,7 @@ class CraftOrderManager
         for ($i = 0; $i < max(1, $recipe->getResultQuantity()); ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($result->getId());
             $playerItem->setInventory($bag);
+            $playerItem->setCraftQuality($quality);
 
             if ($result->isBoundOnPickup()) {
                 $playerItem->setBoundToPlayerId($requester->getId());
@@ -436,6 +457,31 @@ class CraftOrderManager
 
             $this->entityManager->persist($playerItem);
         }
+    }
+
+    /**
+     * La piece atteint-elle la qualite demandee par le commanditaire ?
+     *
+     * Une commande sans exigence accepte tout — c'est le cas courant. Un seuil
+     * inconnu de l'echelle est traite comme absent plutot que comme
+     * infranchissable : une donnee erronee ne doit pas rendre une commande
+     * impossible a honorer.
+     */
+    private function satisfiesMinQuality(CraftOrder $order, string $quality): bool
+    {
+        $required = $order->getMinQuality();
+        if (null === $required) {
+            return true;
+        }
+
+        $requiredIndex = array_search($required, QualityCalculator::QUALITY_TIERS, true);
+        $rolledIndex = array_search($quality, QualityCalculator::QUALITY_TIERS, true);
+
+        if (false === $requiredIndex || false === $rolledIndex) {
+            return true;
+        }
+
+        return $rolledIndex >= $requiredIndex;
     }
 
     /**

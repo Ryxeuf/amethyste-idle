@@ -18,6 +18,7 @@ use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Crafting\CrafterReputationManager;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftOrderManager;
+use App\GameEngine\Crafting\QualityCalculator;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\TownControlManager;
@@ -69,6 +70,8 @@ class CraftOrderManagerTest extends TestCase
         $this->orderRepository->method('countActiveByRequester')->willReturn(0);
         $this->craftingManager = $this->createMock(CraftingManager::class);
         $this->craftingManager->method('getCraftingLevel')->willReturn(99);
+        // Tirage neutralise : la regle testee est le seuil, pas le hasard.
+        $this->craftingManager->method('computeQuality')->willReturn(QualityCalculator::QUALITY_RARE);
         $this->antiExploit = $this->createMock(AuctionAntiExploit::class);
         $this->reputationRepository = $this->createMock(CrafterReputationRepository::class);
         // Le vrai manager : la regle de points est ce qu'on veut verifier.
@@ -865,6 +868,74 @@ class CraftOrderManagerTest extends TestCase
         $this->expectExceptionMessage('trop travaille pour ce commanditaire');
 
         $this->manager->claimOrder($this->createPlayer(2, 0), $order);
+    }
+
+    // ---------------------------------------------------------------------
+    // ECO-20 — la qualite de craft survit au craft, donc minQuality s'applique
+    // ---------------------------------------------------------------------
+
+    /**
+     * `QualityCalculator` calculait une qualite depuis toujours, `craft()` la
+     * placait dans son message de retour, et **rien ne la conservait**.
+     */
+    public function testTheDeliveredItemCarriesTheQualityItWasMadeWith(): void
+    {
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($this->createPlayer(1, 1_000), $crafter);
+
+        $this->manager->fulfillOrder($crafter, $order);
+
+        self::assertSame(QualityCalculator::QUALITY_RARE, $this->deliveredItem()->getCraftQuality());
+    }
+
+    /**
+     * Une piece en dessous du seuil est **retravaillee**, pas refusee : refuser
+     * piegerait la commande, et l'artisan vend precisement du temps.
+     */
+    public function testAPieceBelowTheRequestedQualityIsReworkedInsteadOfDelivered(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($requester, $crafter);
+        $order->setMinQuality(QualityCalculator::QUALITY_LEGENDARY);
+        $materials = $order->getMaterials()->toArray();
+
+        $settlement = $this->manager->fulfillOrder($crafter, $order);
+
+        self::assertNull($settlement, 'Aucune vente : la commande reste en cours.');
+        self::assertSame(CraftOrderStatus::Claimed, $order->getStatus());
+        self::assertFalse($order->isReady(), 'Le retravail relance l\'horloge d\'atelier.');
+        self::assertSame(0, $crafter->getGils(), 'Rien n\'est encaisse sur une piece non livree.');
+
+        foreach ($materials as $material) {
+            self::assertNotContains($material, $this->removed, 'L\'escrow n\'est consomme qu\'a la livraison.');
+        }
+        self::assertSame([], array_filter($this->persisted, static fn (object $e) => $e instanceof PlayerItem));
+    }
+
+    public function testAPieceAtOrAboveTheRequestedQualityIsDelivered(): void
+    {
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($this->createPlayer(1, 1_000), $crafter);
+        $order->setMinQuality(QualityCalculator::QUALITY_UNCOMMON);
+
+        $settlement = $this->manager->fulfillOrder($crafter, $order);
+
+        self::assertNotNull($settlement);
+        self::assertSame(CraftOrderStatus::Fulfilled, $order->getStatus());
+    }
+
+    /**
+     * Un seuil inconnu de l'echelle est traite comme absent : une donnee erronee
+     * ne doit pas rendre une commande impossible a honorer.
+     */
+    public function testAnUnknownQualityThresholdDoesNotTrapTheOrder(): void
+    {
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($this->createPlayer(1, 1_000), $crafter);
+        $order->setMinQuality('mythique-inexistant');
+
+        self::assertNotNull($this->manager->fulfillOrder($crafter, $order));
     }
 
     /**

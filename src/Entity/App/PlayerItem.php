@@ -152,6 +152,17 @@ class PlayerItem
     #[ORM\Column(name: 'bound_to_player_id', type: 'integer', nullable: true)]
     private ?int $boundToPlayerId = null;
 
+    /**
+     * Qualite obtenue a la fabrication (ECO-20).
+     *
+     * `QualityCalculator` la calculait depuis toujours, `CraftingManager::craft()`
+     * la placait dans son message de retour, et **rien ne la conservait** : le
+     * joueur lisait « Qualite : Rare » une fois, puis l'objet devenait
+     * indiscernable d'un autre. Nulle pour tout ce qui ne sort pas d'un etabli.
+     */
+    #[ORM\Column(name: 'craft_quality', type: 'string', length: 20, nullable: true)]
+    private ?string $craftQuality = null;
+
     #[ORM\Column(name: 'custom_name', type: 'string', length: 100, nullable: true)]
     private ?string $customName = null;
 
@@ -346,6 +357,16 @@ class PlayerItem
     public function isBound(): bool
     {
         return $this->boundToPlayerId !== null;
+    }
+
+    public function getCraftQuality(): ?string
+    {
+        return $this->craftQuality;
+    }
+
+    public function setCraftQuality(?string $craftQuality): void
+    {
+        $this->craftQuality = $craftQuality;
     }
 
     /**

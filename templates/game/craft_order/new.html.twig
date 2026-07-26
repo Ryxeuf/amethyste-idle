@@ -44,6 +44,22 @@
                     </p>
                 </div>
 
+                {# ECO-20 : la qualite existe enfin sur l'objet, donc l'exiger a un sens. #}
+                <div>
+                    <label for="min_quality" class="block text-xs text-gray-400 mb-1">Qualite minimale (optionnel)</label>
+                    <select name="min_quality" id="min_quality"
+                            class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                        <option value="">Aucune exigence</option>
+                        <option value="uncommon">Peu commun</option>
+                        <option value="rare">Rare</option>
+                        <option value="epic">Epique</option>
+                        <option value="legendary">Legendaire</option>
+                    </select>
+                    <p class="text-xs text-gray-600 mt-1">
+                        L'artisan retravaille la piece jusqu'a l'atteindre : exiger beaucoup allonge le delai.
+                    </p>
+                </div>
+
                 {# ECO-07b : nommer un artisan transforme la commande en commande directe. #}
                 <div>
                     <label for="target_crafter" class="block text-xs text-gray-400 mb-1">Artisan (optionnel)</label>

@@ -275,6 +275,22 @@ class CraftingManager
     }
 
     /**
+     * Qualite obtenue par ce joueur sur cette recette, tirage compris.
+     *
+     * Publique depuis ECO-20 : les commandes de craft doivent produire une
+     * qualite par la **meme** formule que l'etabli. La dupliquer aurait laisse
+     * les deux voies diverger au premier reglage d'equilibrage.
+     */
+    public function computeQuality(Player $player, Recipe $recipe): string
+    {
+        return $this->qualityCalculator->calculateQuality(
+            $recipe->getQuality() ?? QualityCalculator::QUALITY_NORMAL,
+            $this->getCraftingLevel($player, $recipe->getCraft()),
+            $this->craftSpecializationService->getQualityBonusFor($player, $recipe->getCraft())
+        );
+    }
+
+    /**
      * Execute la fabrication : consomme les ingredients, cree l'item, accorde l'XP.
      *
      * @return array{success: bool, item: ?Item, quality: ?string, message: string}
@@ -322,11 +338,7 @@ class CraftingManager
         // Retirer les ingredients de l'inventaire
         $this->removeIngredients($player, $recipe);
 
-        // Determiner la qualite
-        $baseQuality = $recipe->getQuality() ?? QualityCalculator::QUALITY_NORMAL;
-        $skillLevel = $this->getCraftingLevel($player, $recipe->getCraft());
-        $specializationBonus = $this->craftSpecializationService->getQualityBonusFor($player, $recipe->getCraft());
-        $finalQuality = $this->qualityCalculator->calculateQuality($baseQuality, $skillLevel, $specializationBonus);
+        $finalQuality = $this->computeQuality($player, $recipe);
 
         // Creer l'item resultat
         $resultItem = $recipe->getResult();
@@ -334,6 +346,9 @@ class CraftingManager
 
         for ($i = 0; $i < $recipe->getResultQuantity(); ++$i) {
             $playerItem = $this->playerItemGenerator->generateFromItemId($resultItem->getId());
+            // ECO-20 : la qualite calculee survit desormais au craft. Elle etait
+            // affichee une fois dans le message de retour, puis perdue.
+            $playerItem->setCraftQuality($finalQuality);
             $this->inventoryHelper->addItem($playerItem, false);
             $lastPlayerItem = $playerItem;
         }
