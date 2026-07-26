@@ -34,8 +34,11 @@ peuple de faune de tier 1-3, indiscernable de l'Acte 1. Le contenu vient donc av
 - [x] **128a — Bestiaire tier 4** (niveau 26-40) : 9 creatures, deux biomes aux profils
       opposes (le desert use, la toundra fige), table `BALANCE.md` etendue, et un garde-fou
       sur les references de sort du contenu declaratif
-- [ ] **128b — Les 4 zones** de contenu via `config/game/zones/*.yaml` (biomes desert et
-      toundra), avec leurs blocs `mobs:` et `gather:`
+- [x] **128b — Les 4 zones** de contenu via `config/game/zones/*.yaml` : Mer de Sel et Cite
+      Ensevelie au sud, Pas de Givre et Glacier du Silence au nord. Deux bras longs qui ne se
+      rejoignent pas. **Correctif au passage** : quatre plantes nourrissaient 8 recettes
+      d'alchimie de niveau 2-10 sans qu'aucune zone ne les produise — la mandragore etait meme
+      exigee par une quete. Elles rejoignent les **zones de depart**, pas l'Acte 4.
 - [ ] **128c — Chaine de quetes Acte 4** (arc narratif dedie via `storyArc`, cf. NAR-01 ✅)
 - [ ] **128d — Boss final Acte 4** (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
 

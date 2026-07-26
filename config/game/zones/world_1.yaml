@@ -63,11 +63,17 @@ zones:
         gather:
             - { slug: herbes-de-la-foret, item: plant-mint, profession: herbalism, capacity: 24, respawn_seconds: 900, yield_min: 1, yield_max: 3 }
             - { slug: sauge-sauvage, item: plant-sage, profession: herbalism, capacity: 16, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: ginseng-des-sous-bois, item: plant-ginseng, profession: herbalism, capacity: 16, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
             - { slug: truites-de-riviere, item: fish-trout, profession: fishing, capacity: 18, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
             # ECO-02 : la camomille n'avait aucune source dans le monde livre, ce
             # qui rendait `recipe_potion_base` — la premiere recette d'alchimie —
             # impossible a realiser.
             - { slug: camomille-des-clairieres, item: plant-chamomile, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            # Correctif 128b : ces herbes nourrissaient 8 recettes d'alchimie de
+            # niveau 2 a 10 et n'etaient recoltables nulle part. Elles rejoignent
+            # les zones de depart — les gater derriere l'Acte 4 aurait mis une
+            # recette de niveau 2 hors de portee jusqu'au niveau 30.
+            - { slug: aloes-des-clairieres, item: plant-aloe-vera, profession: herbalism, capacity: 18, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
 
     mines-profondes:
         name: 'Mines profondes'
@@ -123,6 +129,9 @@ zones:
                 mob_slugs: [will_o_wisp, creeping_shadow, specter]
         gather:
             - { slug: ortie-des-marais, item: plant-nettle, profession: herbalism, capacity: 20, respawn_seconds: 1200, yield_min: 1, yield_max: 2 }
+            - { slug: valeriane-des-tourbieres, item: plant-valerian, profession: herbalism, capacity: 14, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
+            # Pire cas des quatre : une quete en demande deux exemplaires.
+            - { slug: mandragore-des-tourbieres, item: plant-mandrake, profession: herbalism, capacity: 12, respawn_seconds: 1800, yield_min: 1, yield_max: 1 }
             - { slug: carpes-stagnantes, item: fish-carp, profession: fishing, capacity: 16, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
             - { slug: spores-fantomes, item: plant-ghostshroom, profession: herbalism, capacity: 12, respawn_seconds: 2100, yield_min: 1, yield_max: 2 }
             - { slug: belladone-des-tourbieres, item: plant-nightshade, profession: herbalism, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
@@ -211,6 +220,110 @@ zones:
             - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 12, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
 
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
+    # === Acte 4 (tache 128b) ===
+    #
+    # Deux bras longs partant du monde connu, l'un au sud vers le sel, l'autre
+    # au nord vers la glace. Ils ne se rejoignent pas : le desert et la toundra
+    # doivent rester loin l'un de l'autre, sinon leurs deux facons de tuer
+    # (l'usure et le gel, cf. 128a) se melangent en une seule.
+
+    mer-de-sel:
+        name: 'Mer de Sel'
+        name_en: 'Salt Sea'
+        description: "Une croute blanche a perte de vue, craquelee par la chaleur. Ce qui bouge ici a appris a ne plus avoir soif."
+        description_en: 'A white crust as far as the eye can see, cracked by the heat. What moves here has learned to stop being thirsty.'
+        type: wilderness
+        safe: false
+        map_x: 24
+        map_y: 88
+        explore:
+            weights: { mob: 55, chest: 14, harvest: 10, pnj: 3, nothing: 18 }
+            chest_gils_min: 25
+            chest_gils_max: 90
+            night:
+                weights: { mob: 66, chest: 16, harvest: 4, pnj: 0, nothing: 14 }
+                mob_slugs: [dune_wraith, basilisk]
+        mobs:
+            - { monster: sand_stalker, count: 4 }
+            - { monster: salt_colossus, count: 3 }
+            - { monster: basilisk, count: 2 }
+            - { monster: dune_wraith, count: 2, nocturnal: true }
+        gather:
+            - { slug: gemme-de-sel, item: ore-ruby, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+
+    cite-ensevelie:
+        name: 'Cite Ensevelie'
+        name_en: 'Buried City'
+        description: "Des toits qui affleurent le sable. On ne sait pas qui vivait la, et ce qui l'occupe aujourd'hui ne le dira pas."
+        description_en: 'Rooftops breaking the surface of the sand. Nobody knows who lived here, and what occupies it today will not say.'
+        type: wilderness
+        safe: false
+        map_x: 18
+        map_y: 96
+        explore:
+            weights: { mob: 58, chest: 18, harvest: 8, pnj: 2, nothing: 14 }
+            chest_gils_min: 40
+            chest_gils_max: 140
+            night:
+                weights: { mob: 70, chest: 20, harvest: 2, pnj: 0, nothing: 8 }
+                mob_slugs: [dune_wraith, basilisk]
+        mobs:
+            - { monster: dune_wraith, count: 5 }
+            - { monster: basilisk, count: 3 }
+            - { monster: sand_stalker, count: 3, group_tag: pillards }
+        gather:
+            - { slug: fruit-du-vide, item: plant-voidfruit, profession: herbalism, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+            - { slug: eclat-de-diamant, item: ore-diamond, profession: mining, capacity: 6, respawn_seconds: 5400, yield_min: 1, yield_max: 1 }
+
+    pas-de-givre:
+        name: 'Pas de Givre'
+        name_en: 'Frostgate Pass'
+        description: "Le col au-dela de la crete. Le vent y porte des choses qui hurlent, et le froid ne laisse pas s'arreter."
+        description_en: 'The pass beyond the ridge. The wind carries things that howl, and the cold does not let you stop.'
+        type: wilderness
+        safe: false
+        map_x: 74
+        map_y: 14
+        explore:
+            weights: { mob: 56, chest: 14, harvest: 12, pnj: 2, nothing: 16 }
+            chest_gils_min: 25
+            chest_gils_max: 90
+            night:
+                weights: { mob: 68, chest: 16, harvest: 4, pnj: 0, nothing: 12 }
+                mob_slugs: [hoarfrost_shade, frost_warg]
+        mobs:
+            - { monster: frost_warg, count: 5, group_tag: meute }
+            - { monster: winter_harpy, count: 3 }
+            - { monster: hoarfrost_shade, count: 2, nocturnal: true }
+        gather:
+            - { slug: fleur-de-lune-des-neiges, item: plant-moonflower, profession: herbalism, capacity: 12, respawn_seconds: 2400, yield_min: 1, yield_max: 2 }
+            - { slug: filon-d-emeraude, item: ore-emerald, profession: mining, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+
+    glacier-du-silence:
+        name: 'Glacier du Silence'
+        name_en: 'Glacier of Silence'
+        description: "Rien n'y pousse, rien n'y crie. Ce qu'on entend sous la glace n'a pas de nom, et il vaut mieux ne pas s'arreter pour ecouter."
+        description_en: 'Nothing grows, nothing cries out. What is heard beneath the ice has no name, and it is better not to stop and listen.'
+        type: wilderness
+        safe: false
+        map_x: 80
+        map_y: 6
+        explore:
+            weights: { mob: 62, chest: 18, harvest: 6, pnj: 0, nothing: 14 }
+            chest_gils_min: 40
+            chest_gils_max: 150
+            night:
+                weights: { mob: 74, chest: 20, harvest: 2, pnj: 0, nothing: 4 }
+                mob_slugs: [rime_drake, hoarfrost_shade]
+        mobs:
+            - { monster: permafrost_golem, count: 3 }
+            - { monster: hoarfrost_shade, count: 3 }
+            - { monster: rime_drake, count: 2 }
+            - { monster: winter_harpy, count: 2, nocturnal: true }
+        gather:
+            - { slug: feuille-de-dragon-gelee, item: plant-dragonleaf, profession: herbalism, capacity: 8, respawn_seconds: 3600, yield_min: 1, yield_max: 1 }
+            - { slug: fleur-de-phenix, item: plant-phoenixflower, profession: herbalism, capacity: 5, respawn_seconds: 5400, yield_min: 1, yield_max: 1 }
+
 connections:
     - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }
     - { from: village-de-lumiere, to: foret-des-murmures, travel_seconds: 300, bidirectional: true }
@@ -226,3 +339,10 @@ connections:
     # au choix d'itineraire (et a la reduction de temps de voyage des montures).
     - { from: foret-des-murmures, to: mines-profondes, travel_seconds: 480, bidirectional: true }
     - { from: marais-brumeux, to: crete-de-ventombre, travel_seconds: 540, bidirectional: true }
+
+    # Acte 4 (tache 128b) : deux bras longs. Les durees disent l'eloignement —
+    # on ne va pas au bout du monde entre deux actions.
+    - { from: dunes-d-ambre, to: mer-de-sel, travel_seconds: 720, bidirectional: true }
+    - { from: mer-de-sel, to: cite-ensevelie, travel_seconds: 600, bidirectional: true }
+    - { from: crete-de-ventombre, to: pas-de-givre, travel_seconds: 780, bidirectional: true }
+    - { from: pas-de-givre, to: glacier-du-silence, travel_seconds: 660, bidirectional: true }
