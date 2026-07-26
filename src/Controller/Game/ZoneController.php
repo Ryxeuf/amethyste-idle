@@ -31,6 +31,7 @@ use App\GameEngine\Zone\ZoneTravelException;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Helper\PlayerHelper;
 use App\Repository\GroupDungeonClearRepository;
+use App\Repository\PlayerShopRepository;
 use App\Repository\PlayerVisitedZoneRepository;
 use App\Repository\ZoneConnectionRepository;
 use App\Repository\ZoneRepository;
@@ -81,6 +82,7 @@ class ZoneController extends AbstractController
         private readonly GroupDungeonCombatService $groupDungeonCombatService,
         private readonly GroupDungeonClearRepository $groupDungeonClearRepository,
         private readonly MountTravelSpeed $mountTravelSpeed,
+        private readonly PlayerShopRepository $playerShopRepository,
     ) {
     }
 
@@ -113,6 +115,7 @@ class ZoneController extends AbstractController
                 'zone' => null,
                 'connections' => [],
                 'mount' => null,
+                'shopsPresent' => [],
                 'playersPresent' => [],
                 'poiCounts' => [],
                 'actions' => [],
@@ -202,6 +205,10 @@ class ZoneController extends AbstractController
             // Les PNJ presents dans la zone (ZON-27) : depuis la suppression des
             // overlays carte, l'ecran de zone est le seul endroit d'ou les
             // atteindre — sans lui, les boutiques sont injoignables.
+            // ECO-12 : les echoppes tenues par des joueurs, a cote des PNJ.
+            // Une vitrine invisible ne sert a rien — et l'achat exige d'etre
+            // sur place, donc c'est ici qu'elle doit apparaitre.
+            'shopsPresent' => $this->playerShopRepository->findOpenInZone($zone),
             'pnjsPresent' => $this->entityManager
                 ->getRepository(Pnj::class)
                 ->findBy(['zone' => $zone], ['name' => 'ASC'], 20),

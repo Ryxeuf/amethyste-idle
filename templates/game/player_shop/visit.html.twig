@@ -1,0 +1,65 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ shop.name }}{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ shop.name }}</h2>
+            <p class="text-gray-400 text-xs mt-0.5">
+                Tenue par {{ shop.owner.name }} · {{ shop.zone.localizedName(app.request.locale) }}
+                {% if shop.sign %}<br><em class="text-gray-500">« {{ shop.sign }} »</em>{% endif %}
+            </p>
+        </div>
+
+        <div class="game-card-body">
+            {% if reputations|length > 0 %}
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for reputation in reputations %}
+                        <span class="inline-flex items-center gap-1 rounded-full border border-purple-700/50 bg-purple-900/20 px-2 py-0.5 text-[11px] text-purple-200">
+                            {{ reputation.craft|capitalize }} · {{ reputation.title }}
+                            <span class="text-purple-400/70">({{ reputation.deliveries }} livraisons)</span>
+                        </span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if not shop.sells %}
+                <p class="text-sm text-gray-500">Le rideau est baisse.</p>
+            {% elseif listings is empty %}
+                <p class="text-sm text-gray-500">La vitrine est vide.</p>
+            {% else %}
+                {% if not onSite %}
+                    {# Le dire avant le clic : un refus qu'on ne pouvait pas
+                       anticiper passe pour un bug. #}
+                    <p class="text-xs text-amber-300/80 mb-3">
+                        Rendez-vous a {{ shop.zone.localizedName(app.request.locale) }} pour acheter ici.
+                    </p>
+                {% endif %}
+                <ul class="space-y-1.5">
+                    {% for listing in listings %}
+                        <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
+                            <span class="text-sm text-gray-100">
+                                {{ listing.playerItem.genericItem.name }}
+                                <span class="text-xs text-gray-500">×{{ listing.quantity }}</span>
+                            </span>
+                            <span class="flex items-center gap-2">
+                                <span class="text-xs text-amber-200 font-mono">{{ listing.totalPrice }} Gils</span>
+                                {% if onSite and not isOwn %}
+                                    <form method="post" action="{{ path('app_game_player_shop_buy', {id: listing.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('shop_buy_' ~ listing.id) }}">
+                                        <button type="submit" class="px-2.5 py-1 text-xs rounded-lg bg-purple-900/40 border border-purple-600 text-purple-100 hover:bg-purple-800/50">Acheter</button>
+                                    </form>
+                                {% else %}
+                                    <span class="px-2.5 py-1 text-xs rounded-lg bg-gray-800/60 border border-gray-700 text-gray-600">Acheter</span>
+                                {% endif %}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
