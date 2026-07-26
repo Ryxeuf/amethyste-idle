@@ -7,7 +7,37 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-25 (**ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-19 — Ecrire les recettes manquantes des arbres (Sprint 14, 2026-07-25)
+
+> Ce qu'ECO-18 avait fige comme dette : 17 slugs cites par des skills sans qu'aucune recette ne porte le nom. Un joueur pouvait acheter le skill « Forge d'acier » et ne rien voir apparaitre dans son etabli.
+
+### Livre
+
+**17 recettes** et **15 objets resultats** — aucun des objets n'existait non plus, a l'exception de l'epee de fer que les PNJ vendaient deja sans que personne puisse la forger.
+
+| Metier | Recettes ecrites | Paliers couverts |
+|--------|------------------|------------------|
+| Forgeron | cotte de mailles de fer, epee de fer, pierre a aiguiser, dague / epee / cotte / plastron d'acier, hache d'acier, harnois d'acier lourd | 1 → 7 |
+| Tanneur | carquois de cuir, carquois renforce, plastron et bottes d'ecailles de dragon, plastron de cuir enchante | 3 → 8 |
+| Alchimiste | potion d'energie standard, elixir de vitesse, transmutation en mithril | 3 → 7 |
+
+`recipe-poison-vial`, derniere orpheline, a rejoint le nœud « Concentration alchimique » — le seul de l'arbre ou concentrer un principe actif jusqu'a le rendre letal a du sens.
+
+### Trois decisions de calibrage
+
+**L'acier ne passe pas par un lingot.** Ajouter un `crafted-steel-ingot` aurait cree une recette qu'aucun skill ne debloque — exactement le defaut qu'ECO-18 venait de corriger. L'acier se forge directement : `ore-iron` + `ore-cobalt`, le cobalt tenant le role du carbone.
+
+**Chaque palier ≥ 2 porte une dependance croisee quand le theme la rend evidente** (ECO-14) : poignee de cuir sur une epee, huile d'affutage sur une pierre, cercle de bronze sur un carquois, gemme de visee sur un harnois. La seule recette de niveau 1 n'utilise que du minerai brut — le palier d'entree reste realisable en solo (ECO-02).
+
+**La transmutation produit du mithril**, et c'est le choix le plus structurant du jalon. `ore-mithril` est consomme par cinq recettes de forge et de joaillerie, mais **aucun filon du monde livre n'en donne** — un trou herite, jamais releve. Plutot que d'ajouter un filon, ce qui aurait banalise le materiau le plus rare, la transmutation alchimique en devient la **seule source** : trois lingots d'argent, deux d'or et une gemme rare pour deux mithril. Le mithril devient un produit d'artisanat et non de recolte ; un forgeron doit passer par un alchimiste, et l'alchimie gagne au palier haut un role economique qu'elle n'avait pas.
+
+### Tests
+
+Les deux listes d'exception de `SkillRecipeConsistencyTest` sont **vides**. Le garde-fou passe donc en mode strict : tout nouveau slug fantome ou toute nouvelle recette orpheline echoue immediatement. `CraftInterdependenceTest` continue de verifier que le palier d'entree ne depend d'aucun autre metier. Calibrage documente dans `docs/BALANCE.md` §19.
 
 ---
 

@@ -481,3 +481,126 @@ App\Entity\Game\Item:
     level: 15
     materia_slots: 2
     effect: '{"action":"elemental_damage_boost","element":"dark","amount":12}'
+
+  # ── ECO-19 : resultats des recettes citees par les arbres de talent ────────
+  # Ces objets manquaient : les skills les debloquaient deja, mais ni la recette
+  # ni l'objet n'existaient. Le skill s'apprenait sans rien produire.
+  iron_chainmail (extends item):
+    name: "Cotte de mailles en fer"
+    description: "Des milliers d'anneaux de fer rivetes un a un, la premiere vraie armure d'un forgeron"
+    type: "gear"
+    slug: 'iron-chainmail'
+    price: 90
+    gear_location: 'chest'
+    nbUsages: 120
+    rarity: 'common'
+    protection: 4
+    materia_slots: 1
+    level: 4
+    space: 3
+  steel_chainmail (extends item):
+    name: "Cotte de mailles en acier"
+    description: "Les memes anneaux, mais trempes : l'acier ne cede pas la ou le fer plie"
+    type: "gear"
+    slug: 'steel-chainmail'
+    price: 260
+    gear_location: 'chest'
+    nbUsages: 180
+    rarity: 'uncommon'
+    protection: 8
+    materia_slots: 1
+    level: 12
+    space: 3
+  steel_plate (extends item):
+    name: "Plastron d'acier"
+    description: "Une plaque d'acier martelee d'une piece, lourde et sans compromis"
+    type: "gear"
+    slug: 'steel-plate'
+    price: 380
+    gear_location: 'chest'
+    nbUsages: 200
+    rarity: 'uncommon'
+    protection: 11
+    materia_slots: 2
+    level: 14
+    space: 4
+  heavy_steel_plate (extends item):
+    name: "Harnois d'acier lourd"
+    description: "Une armure complete d'acier double de mithril, taillee pour tenir la ligne"
+    type: "gear"
+    slug: 'heavy-steel-plate'
+    price: 1200
+    gear_location: 'chest'
+    nbUsages: 250
+    rarity: 'rare'
+    protection: 18
+    materia_slots: 2
+    level: 22
+    space: 5
+  leather_quiver (extends item):
+    name: "Carquois de cuir"
+    description: "Un carquois souple qui garde les empennages secs"
+    type: "gear"
+    slug: 'leather-quiver'
+    price: 70
+    gear_location: 'ammo'
+    nbUsages: 120
+    rarity: 'common'
+    protection: 1
+    materia_slots: 1
+    level: 6
+    space: 2
+  hardened_quiver (extends item):
+    name: "Carquois renforce"
+    description: "Cuir bouilli cercle de bronze : il encaisse une chute sans plier"
+    type: "gear"
+    slug: 'hardened-quiver'
+    price: 240
+    gear_location: 'ammo'
+    nbUsages: 180
+    rarity: 'uncommon'
+    protection: 3
+    materia_slots: 1
+    level: 14
+    space: 2
+  dragon_vest (extends item):
+    name: "Plastron d'ecailles de dragon"
+    description: "Des ecailles se recouvrant comme des tuiles ; la chaleur glisse dessus sans mordre"
+    type: "gear"
+    slug: 'dragon-vest'
+    price: 1600
+    gear_location: 'chest'
+    nbUsages: 220
+    rarity: 'rare'
+    element: 'fire'
+    protection: 16
+    materia_slots: 2
+    level: 24
+    space: 3
+  dragon_boots (extends item):
+    name: "Bottes d'ecailles de dragon"
+    description: "Semelles d'ecailles cousues de lanieres : silencieuses et insensibles a la braise"
+    type: "gear"
+    slug: 'dragon-boots'
+    price: 900
+    gear_location: 'foot'
+    nbUsages: 200
+    rarity: 'rare'
+    element: 'fire'
+    protection: 9
+    materia_slots: 1
+    level: 24
+    space: 2
+  enchanted_vest (extends item):
+    name: "Plastron de cuir enchante"
+    description: "Fourrure de loup-garou tannee dans un bain runique, une gemme enchassee au plexus"
+    type: "gear"
+    slug: 'enchanted-vest'
+    price: 2400
+    gear_location: 'chest'
+    nbUsages: 250
+    rarity: 'epic'
+    protection: 20
+    materia_slots: 3
+    level: 28
+    space: 3

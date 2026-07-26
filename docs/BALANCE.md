@@ -498,8 +498,8 @@ livre mais inatteignable.
 
 | Sens | Avant | Apres |
 |------|-------|-------|
-| Slugs cites par un skill sans recette livree | 33 | 17 |
-| Recettes livrees qu'aucun skill ne debloque | 37 | 1 |
+| Slugs cites par un skill sans recette livree | 33 | 17 (ECO-18) → **0** (ECO-19) |
+| Recettes livrees qu'aucun skill ne debloque | 37 | 1 (ECO-18) → **0** (ECO-19) |
 | Paliers d'outils d'artisanat equipables | bronze seul | bronze → fer → acier → mithril |
 
 ### Ce qui a ete recable, et ce qui ne l'a pas ete
@@ -509,14 +509,11 @@ l'objet a ete branche sur la recette correspondante (« Forge de plaques » →
 plastron, jambieres, casque, gantelets, bottes de fer ; « Maitre forgeron » → lame
 du maitre ; « Alliages speciaux » → les quatre lingots ; etc.).
 
-Les **17 slugs restants** correspondent a du contenu qui n'existe pas : aucune
+Les **17 slugs restants** correspondaient a du contenu qui n'existait pas : aucune
 recette d'acier, de cuir de dragon, de carquois, de pierre a aiguiser, ni d'elixir
-de vitesse ou de transmutation n'a jamais ete ecrite. Les creer est une decision
-de contenu, pas une correction de plomberie — elles sont declarees dans
-`RECIPES_TO_AUTHOR` plutot qu'inventees a la va-vite.
-
-La derniere recette orpheline (`recipe-poison-vial`) attend de meme un skill :
-aucun nœud d'alchimie ne parle de poison, et en creer un est un choix de design.
+de vitesse ou de transmutation n'avait jamais ete ecrite. Elles ont ete ecrites en
+**ECO-19** (voir §19), et `recipe-poison-vial` a rejoint le nœud « Concentration
+alchimique ». Les deux listes d'exception sont vides.
 
 ### Progression des outils d'artisanat
 
@@ -580,3 +577,42 @@ qu'il faut penser a lever finit par ne jamais l'etre.
 
 La suspension ferme le marche entier, ventes flash comprises — c'est l'acces au
 canal qui est suspendu, pas seulement le commerce entre joueurs.
+
+---
+
+## 19. Le palier acier et les paliers manquants (ECO-19)
+
+ECO-18 avait rattache tout ce qui pouvait l'etre ; restaient **17 slugs cites par
+des skills sans qu'aucune recette ne porte le nom**, et **15 objets resultats
+inexistants**. Un joueur pouvait acheter le skill « Forge d'acier » et ne rien voir
+apparaitre dans son etabli.
+
+### Ce qui a ete ecrit
+
+| Metier | Recettes | Paliers |
+|--------|----------|---------|
+| Forgeron | cotte de mailles de fer, epee de fer, pierre a aiguiser, dague / epee / cotte / plastron d'acier, hache d'acier, harnois lourd | 1 → 7 |
+| Tanneur | carquois de cuir, carquois renforce, plastron et bottes d'ecailles de dragon, plastron enchante | 3 → 8 |
+| Alchimiste | potion d'energie standard, elixir de vitesse, transmutation en mithril | 3 → 7 |
+
+### Trois regles de calibrage
+
+**L'acier ne passe pas par un lingot.** Ajouter un `crafted-steel-ingot` aurait cree
+une recette qu'aucun skill ne debloque — exactement le defaut qu'ECO-18 venait de
+corriger. L'acier se forge donc directement : `ore-iron` + `ore-cobalt`, le cobalt
+jouant le role du carbone.
+
+**Chaque palier ≥ 2 porte une dependance croisee quand le theme la rend evidente**
+(ECO-14) : la poignee de cuir d'une epee, l'huile d'affutage d'une pierre, le
+cercle de bronze d'un carquois, la gemme de visee d'un harnois. La seule recette de
+niveau 1 (`recipe-iron-chainmail`) n'utilise que du minerai brut — le palier
+d'entree doit rester realisable en solo (ECO-02).
+
+**La transmutation produit du mithril.** C'est le choix le plus structurant du
+jalon : `ore-mithril` est consomme par cinq recettes de forge et de joaillerie mais
+**aucun filon du monde livre n'en donne**. Plutot que d'ajouter un filon — ce qui
+aurait banalise le materiau le plus rare — la transmutation alchimique en devient la
+**seule source**, au prix de trois lingots d'argent, deux d'or et une gemme rare.
+Le mithril devient ainsi un produit d'artisanat, pas de recolte : il oblige un
+forgeron a passer par un alchimiste, et donne a l'alchimie un role economique au
+palier haut qu'elle n'avait pas.

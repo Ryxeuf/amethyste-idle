@@ -1,6 +1,6 @@
 ## Sprint 14 — Economie joueur (socle)
 
-> **9 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18, ECO-19), **8 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
+> **9 jalons** (ECO-01 → ECO-04, ECO-14, ECO-16a/b, ECO-18, ECO-19), **9 livrees** — sprint complet | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md), decline de [GAME_PRINCIPLES.md](../GAME_PRINCIPLES.md) §4
 > Objectif : poser le socle de l'economie de production joueur — liaison des objets, plancher T1
 > anti cold-start, et hotel des ventes **regional** branche sur le controle de cite.
 > Prerequis : Sprint 5 ✅ (HV), GCC ✅ (controle de cite), Sprints 7-10 ✅ (modele zone / regions)
@@ -74,17 +74,14 @@
 > point ; (2) etendre l'escrow et les regles anti-abus aux canaux suivants (commandes de craft
 > ECO-05+, echoppes ECO-10+) — ils n'existent pas encore.
 
-### ECO-19 — Ecrire les recettes manquantes des arbres (M | ★★ | MOYENNE)
-> Ce qui reste apres ECO-18 est du **contenu**, pas de la plomberie : 17 slugs cites par des
-> skills n'ont jamais eu de recette (acier, cuir de dragon, carquois, pierre a aiguiser, elixirs
-> de vitesse et de transmutation). La dette est figee dans `RECIPES_TO_AUTHOR`.
-> Prerequis : ← ECO-18, ECO-14 (respecter l'interdependance des metiers)
-- [ ] Palier **acier** du forgeron : epee, dague, hache, cotte de mailles, plaque, plaque lourde
-- [ ] Palier **cuir de dragon / enchante** du tanneur, et les deux carquois
-- [ ] Elixirs manquants de l'alchimiste : vitesse, transmutation, potion d'energie standard
-- [ ] `recipe-iron-sword` et `recipe-whetstone` (objets deja existants, recettes absentes)
-- [ ] Rattacher `recipe-poison-vial` a un nœud d'arbre d'alchimie (choix de design)
-- [ ] Vider `RECIPES_TO_AUTHOR` et `RECIPES_WITHOUT_TREE_NODE` au fur et a mesure
+> **ECO-19 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **17 recettes** manquantes et
+> les **15 objets** resultats ecrits, `recipe-poison-vial` rattache au nœud « Concentration
+> alchimique ». Les deux listes d'exception de `SkillRecipeConsistencyTest` sont **vides** :
+> plus aucun slug fantome, plus aucune recette orpheline.
+>
+> **Choix structurant** : la transmutation alchimique devient la **seule source de mithril** du
+> monde livre — aucun filon n'en donne, et cinq recettes en consomment. Le mithril devient un
+> produit d'artisanat plutot que de recolte.
 
 ---
 
@@ -99,6 +96,7 @@
 - [x] Chaine de production documentee, aucun metier autosuffisant (ECO-14)
 - [x] Escrow operationnel, regles anti-abus posees (ECO-16a), journal economique et outils
       de moderation livres (ECO-16b) ; le retour d'objet a l'expiration reste sans test
+- [x] Arbres de talent et recettes reconcilies dans les deux sens (ECO-18, ECO-19)
 
 ---
 

@@ -4898,6 +4898,9 @@ class SkillFixtures extends Fixture implements DependentFixtureInterface
                 'slug' => 'alchi-concentration',
                 'title' => 'Concentration alchimique',
                 'description' => 'Chance de brasser une potion bonus',
+                // ECO-19 : le seul nœud d'alchimie ou une fiole de poison a sa place —
+                // concentrer un principe actif jusqu'a le rendre letal.
+                'actions' => [['action' => 'craft', 'recipes' => ['recipe-poison-vial']]],
                 'requiredPoints' => 40,
                 'domain' => $d,
                 'critical' => 2,

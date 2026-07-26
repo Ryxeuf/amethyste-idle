@@ -1095,6 +1095,299 @@ class RecipeFixtures extends Fixture implements DependentFixtureInterface
                 'description' => 'Reservee aux Maitres Joailliers. Cisele un anneau pulsant d\'energie pure.',
                 'name_translations' => ['en' => 'Master Jeweler\'s Ring'],
             ],
+
+            // ── ECO-19 : recettes citees par les arbres de talent ──────────────
+            // Ces slugs etaient debloques par des skills sans qu'aucune recette
+            // ne porte le nom. Le skill s'apprenait, le joueur depensait ses
+            // points, et rien n'apparaissait dans son etabli.
+            //
+            // Calibrage : quantite croissante avec le palier, et une dependance
+            // croisee des que le theme la rend evidente (ECO-14). La seule
+            // recette de niveau 1 n'utilise que du minerai brut — le palier
+            // d'entree doit rester realisable en solo (ECO-02).
+
+            // --- Forge : chaine du fer a l'acier ---
+            'recipe_iron_chainmail' => [
+                'name' => 'Cotte de mailles en fer',
+                'slug' => 'recipe-iron-chainmail',
+                'craft' => 'forgeron',
+                'required_level' => 1,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 4],
+                ],
+                'result_ref' => 'iron_chainmail',
+                'crafting_time' => 10,
+                'xp_reward' => 20,
+                'description' => 'Rivete un a un des milliers d\'anneaux de fer.',
+                'name_translations' => ['en' => 'Iron Chainmail'],
+            ],
+            'recipe_iron_sword' => [
+                'name' => 'Epee en fer',
+                'slug' => 'recipe-iron-sword',
+                'craft' => 'forgeron',
+                'required_level' => 2,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 4],
+                    // La poignee : une lame sans prise ne se tient pas.
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'iron_sword',
+                'crafting_time' => 12,
+                'xp_reward' => 25,
+                'description' => 'Forge une epee en fer bien equilibree.',
+                'name_translations' => ['en' => 'Iron Sword'],
+            ],
+            'recipe_whetstone' => [
+                'name' => 'Pierre a aiguiser',
+                'slug' => 'recipe-whetstone',
+                'craft' => 'forgeron',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 1],
+                    // L'huile d'affutage vient de l'alchimiste.
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
+                ],
+                'result_ref' => 'whetstone',
+                'crafting_time' => 6,
+                'xp_reward' => 18,
+                'description' => 'Taille un grain fin et l\'imbibe d\'huile.',
+                'name_translations' => ['en' => 'Whetstone'],
+            ],
+            'recipe_steel_dagger' => [
+                'name' => 'Dague en acier',
+                'slug' => 'recipe-steel-dagger',
+                'craft' => 'forgeron',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 3],
+                    ['slug' => 'ore-cobalt', 'quantity' => 1],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'steel_dagger',
+                'crafting_time' => 14,
+                'xp_reward' => 40,
+                'description' => 'Trempe une lame courte a haute teneur en carbone.',
+                'name_translations' => ['en' => 'Steel Dagger'],
+            ],
+            'recipe_steel_sword' => [
+                'name' => 'Epee en acier',
+                'slug' => 'recipe-steel-sword',
+                'craft' => 'forgeron',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 5],
+                    ['slug' => 'ore-cobalt', 'quantity' => 2],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'steel_sword',
+                'crafting_time' => 18,
+                'xp_reward' => 50,
+                'description' => 'L\'arme de reference d\'un forgeron confirme.',
+                'name_translations' => ['en' => 'Steel Sword'],
+            ],
+            'recipe_steel_chainmail' => [
+                'name' => 'Cotte de mailles en acier',
+                'slug' => 'recipe-steel-chainmail',
+                'craft' => 'forgeron',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 5],
+                    ['slug' => 'ore-cobalt', 'quantity' => 2],
+                ],
+                'result_ref' => 'steel_chainmail',
+                'crafting_time' => 18,
+                'xp_reward' => 50,
+                'description' => 'Les memes anneaux que le fer, mais trempes.',
+                'name_translations' => ['en' => 'Steel Chainmail'],
+            ],
+            'recipe_steel_plate' => [
+                'name' => 'Plastron d\'acier',
+                'slug' => 'recipe-steel-plate',
+                'craft' => 'forgeron',
+                'required_level' => 4,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 6],
+                    ['slug' => 'ore-cobalt', 'quantity' => 3],
+                    ['slug' => 'crafted-bronze-ingot', 'quantity' => 1],
+                ],
+                'result_ref' => 'steel_plate',
+                'crafting_time' => 22,
+                'xp_reward' => 60,
+                'description' => 'Martele une plaque d\'une seule piece.',
+                'name_translations' => ['en' => 'Steel Plate'],
+            ],
+            'recipe_steel_axe' => [
+                'name' => 'Hache d\'acier',
+                'slug' => 'recipe-steel-axe',
+                'craft' => 'forgeron',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 4],
+                    ['slug' => 'ore-cobalt', 'quantity' => 2],
+                    // Le manche est ligature de cuir sur toute sa longueur.
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                ],
+                'result_ref' => 'steel_axe',
+                'crafting_time' => 20,
+                'xp_reward' => 65,
+                'description' => 'Lourde, mal equilibree, devastatrice.',
+                'name_translations' => ['en' => 'Steel Axe'],
+            ],
+            'recipe_heavy_steel_plate' => [
+                'name' => 'Harnois d\'acier lourd',
+                'slug' => 'recipe-heavy-steel-plate',
+                'craft' => 'forgeron',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'ore-iron', 'quantity' => 8],
+                    ['slug' => 'ore-cobalt', 'quantity' => 4],
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 1],
+                    // Gemme de visee sertie dans la visiere.
+                    ['slug' => 'crafted-gem-fine', 'quantity' => 1],
+                ],
+                'result_ref' => 'heavy_steel_plate',
+                'crafting_time' => 35,
+                'xp_reward' => 120,
+                'description' => 'Une armure complete, taillee pour tenir la ligne.',
+                'name_translations' => ['en' => 'Heavy Steel Plate'],
+            ],
+
+            // --- Tannerie : carquois, cuir de dragon, cuir enchante ---
+            'recipe_leather_quiver' => [
+                'name' => 'Carquois de cuir',
+                'slug' => 'recipe-leather-quiver',
+                'craft' => 'tanneur',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'leather-raw', 'quantity' => 3],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 1],
+                ],
+                'result_ref' => 'leather_quiver',
+                'crafting_time' => 10,
+                'xp_reward' => 30,
+                'description' => 'Coud un carquois souple qui garde les empennages secs.',
+                'name_translations' => ['en' => 'Leather Quiver'],
+            ],
+            'recipe_hardened_quiver' => [
+                'name' => 'Carquois renforce',
+                'slug' => 'recipe-hardened-quiver',
+                'craft' => 'tanneur',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'leather-thick', 'quantity' => 3],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                    // Cercle de bronze : la piece qui l'empeche de plier.
+                    ['slug' => 'crafted-bronze-ingot', 'quantity' => 1],
+                ],
+                'result_ref' => 'hardened_quiver',
+                'crafting_time' => 16,
+                'xp_reward' => 70,
+                'description' => 'Cuir bouilli cercle de bronze.',
+                'name_translations' => ['en' => 'Hardened Quiver'],
+            ],
+            'recipe_dragon_vest' => [
+                'name' => 'Plastron d\'ecailles de dragon',
+                'slug' => 'recipe-dragon-vest',
+                'craft' => 'tanneur',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'leather-dragon-scale', 'quantity' => 4],
+                    ['slug' => 'leather-thick', 'quantity' => 2],
+                    ['slug' => 'crafted-mithril-ingot', 'quantity' => 1],
+                ],
+                'result_ref' => 'dragon_vest',
+                'crafting_time' => 40,
+                'xp_reward' => 150,
+                'description' => 'Assemble les ecailles en tuiles se recouvrant.',
+                'name_translations' => ['en' => 'Dragonscale Vest'],
+            ],
+            'recipe_dragon_boots' => [
+                'name' => 'Bottes d\'ecailles de dragon',
+                'slug' => 'recipe-dragon-boots',
+                'craft' => 'tanneur',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'leather-dragon-scale', 'quantity' => 2],
+                    ['slug' => 'leather-thick', 'quantity' => 2],
+                    ['slug' => 'crafted-leather-strip', 'quantity' => 2],
+                ],
+                'result_ref' => 'dragon_boots',
+                'crafting_time' => 30,
+                'xp_reward' => 120,
+                'description' => 'Coud des semelles d\'ecailles sur des lanieres.',
+                'name_translations' => ['en' => 'Dragonscale Boots'],
+            ],
+            'recipe_enchanted_vest' => [
+                'name' => 'Plastron de cuir enchante',
+                'slug' => 'recipe-enchanted-vest',
+                'craft' => 'tanneur',
+                'required_level' => 8,
+                'ingredients' => [
+                    ['slug' => 'leather-werewolf-fur', 'quantity' => 3],
+                    // La gemme enchassee et le bain runique : deux metiers.
+                    ['slug' => 'crafted-gem-enchanted', 'quantity' => 1],
+                    ['slug' => 'crafted-potion-base', 'quantity' => 2],
+                ],
+                'result_ref' => 'enchanted_vest',
+                'crafting_time' => 45,
+                'xp_reward' => 200,
+                'description' => 'Tanne la fourrure dans un bain runique.',
+                'name_translations' => ['en' => 'Enchanted Vest'],
+            ],
+
+            // --- Alchimie : paliers manquants ---
+            'recipe_energy_potion_standard' => [
+                'name' => 'Potion d\'energie standard',
+                'slug' => 'recipe-energy-potion-standard',
+                'craft' => 'alchimiste',
+                'required_level' => 3,
+                'ingredients' => [
+                    ['slug' => 'crafted-potion-base', 'quantity' => 1],
+                    ['slug' => 'plant-ginseng', 'quantity' => 2],
+                    ['slug' => 'plant-lavender', 'quantity' => 1],
+                ],
+                'result_ref' => 'energy_potion_standard',
+                'crafting_time' => 12,
+                'xp_reward' => 35,
+                'description' => 'Le palier au-dessus de la fiole mineure.',
+                'name_translations' => ['en' => 'Standard Energy Potion'],
+            ],
+            'recipe_speed_elixir' => [
+                'name' => 'Elixir de vitesse',
+                'slug' => 'recipe-speed-elixir',
+                'craft' => 'alchimiste',
+                'required_level' => 5,
+                'ingredients' => [
+                    ['slug' => 'crafted-potion-base', 'quantity' => 2],
+                    ['slug' => 'plant-mint', 'quantity' => 3],
+                    // La gemme sert de catalyseur, comme pour l'elixir de vitalite.
+                    ['slug' => 'crafted-gem-basic', 'quantity' => 1],
+                ],
+                'result_ref' => 'speed_elixir',
+                'crafting_time' => 20,
+                'xp_reward' => 80,
+                'description' => 'Accelere le porteur — et la note se paie apres.',
+                'name_translations' => ['en' => 'Speed Elixir'],
+            ],
+            'recipe_transmute_rare' => [
+                'name' => 'Transmutation en mithril',
+                'slug' => 'recipe-transmute-rare',
+                'craft' => 'alchimiste',
+                'required_level' => 7,
+                'ingredients' => [
+                    ['slug' => 'ore-silver', 'quantity' => 3],
+                    ['slug' => 'ore-gold', 'quantity' => 2],
+                    ['slug' => 'crafted-gem-rare', 'quantity' => 1],
+                ],
+                // Seule source de mithril du monde livre : la transmutation est
+                // la reponse alchimique a un minerai qu'aucun filon ne donne.
+                'result_ref' => 'ore_mithril',
+                'result_quantity' => 2,
+                'crafting_time' => 40,
+                'xp_reward' => 160,
+                'description' => 'Transmute les metaux nobles en mithril brut.',
+                'name_translations' => ['en' => 'Mithril Transmutation'],
+            ],
         ];
     }
 

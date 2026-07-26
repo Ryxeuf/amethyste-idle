@@ -9,7 +9,7 @@ use App\Entity\Game\Skill;
 use App\Tests\Integration\AbstractIntegrationTestCase;
 
 /**
- * Coherence entre les arbres de talent et les recettes (ECO-18).
+ * Coherence entre les arbres de talent et les recettes (ECO-18, ECO-19).
  *
  * Les deux jeux de donnees ont ete ecrits separement et jamais croises. Un skill
  * qui cite un slug de recette inexistant **ne debloque rien, sans la moindre
@@ -18,56 +18,39 @@ use App\Tests\Integration\AbstractIntegrationTestCase;
  * du contenu mort.
  *
  * L'audit trouvait 33 slugs cites inexistants et 37 recettes jamais debloquees.
- * Les rattachements evidents ont ete faits ; le reste demande de **creer du
- * contenu** (recettes d'acier, de cuir de dragon, carquois, elixirs manquants),
- * ce qui n'est pas de la plomberie et sort du perimetre de ce jalon.
+ * ECO-18 a fait les rattachements evidents (33 → 17, 37 → 1) ; ECO-19 a ecrit
+ * les 17 recettes manquantes et rattache la derniere orpheline. **Les deux
+ * listes d'exception sont desormais vides.**
  *
- * Les deux listes ci-dessous figent donc la dette restante : elle est visible,
- * elle ne peut plus grandir en silence, et chaque entree devra disparaitre avec
- * la recette correspondante.
+ * Elles restent en place comme soupape : y ajouter une entree est un aveu
+ * explicite, et le troisieme test verifie qu'une entree declaree correspond
+ * toujours a un manque reel.
  */
 final class SkillRecipeConsistencyTest extends AbstractIntegrationTestCase
 {
     /**
      * Slugs cites par un skill mais sans recette livree.
      *
-     * Tous correspondent a du **contenu a ecrire**, pas a une faute de frappe :
-     * il n'existe aucune recette d'acier, de cuir de dragon, de carquois, de
-     * pierre a aiguiser, ni d'elixir de vitesse ou de transmutation.
+     * **La liste est vide** : les 17 recettes que l'audit ECO-18 avait relevees
+     * comme du contenu a ecrire ont ete ecrites en ECO-19.
+     *
+     * Y ajouter une entree est un aveu explicite, pas une commodite — le
+     * troisieme test verifie qu'une entree declaree est toujours reellement
+     * manquante.
      *
      * @var list<string>
      */
-    private const RECIPES_TO_AUTHOR = [
-        'recipe-dragon-boots',
-        'recipe-dragon-vest',
-        'recipe-enchanted-vest',
-        'recipe-energy-potion-standard',
-        'recipe-hardened-quiver',
-        'recipe-heavy-steel-plate',
-        'recipe-iron-chainmail',
-        'recipe-iron-sword',
-        'recipe-leather-quiver',
-        'recipe-speed-elixir',
-        'recipe-steel-axe',
-        'recipe-steel-chainmail',
-        'recipe-steel-dagger',
-        'recipe-steel-plate',
-        'recipe-steel-sword',
-        'recipe-transmute-rare',
-        'recipe-whetstone',
-    ];
+    private const RECIPES_TO_AUTHOR = [];
 
     /**
      * Recettes livrees qu'aucun skill ne debloque.
      *
-     * Une seule subsiste : aucun skill d'alchimie ne parle de poison, et en
-     * inventer un serait une decision de game design, pas une correction.
+     * **La liste est vide** : `recipe-poison-vial`, seule rescapee apres
+     * ECO-18, a rejoint le nœud « Concentration alchimique ».
      *
      * @var list<string>
      */
-    private const RECIPES_WITHOUT_TREE_NODE = [
-        'recipe-poison-vial',
-    ];
+    private const RECIPES_WITHOUT_TREE_NODE = [];
 
     public function testEverySkillCitesAnExistingRecipe(): void
     {
