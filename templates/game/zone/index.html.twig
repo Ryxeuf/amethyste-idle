@@ -445,7 +445,9 @@
                             <p class="text-gray-500 text-sm">{{ 'game.zone.connections.empty'|trans }}</p>
                         {% else %}
                             <ul class="space-y-1.5">
-                                {% for connection in connections %}
+                                {% for row in connections %}
+                                    {% set connection = row.connection %}
+                                    {% set seconds = row.seconds %}
                                     {% set locked = connection.requiresDiscovery and connection.toZone.id not in visitedZoneIds %}
                                     <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
                                         <span class="text-sm text-white">
@@ -455,7 +457,6 @@
                                             {% endif %}
                                         </span>
                                         <span class="flex items-center gap-2">
-                                            {% set seconds = travelSeconds[connection.id] ?? connection.travelSeconds %}
                                             <span class="text-xs {{ seconds < connection.travelSeconds ? 'text-emerald-300' : 'text-gray-400' }}">
                                                 {% if seconds == 0 %}
                                                     {{ 'game.zone.connections.travel_instant'|trans }}

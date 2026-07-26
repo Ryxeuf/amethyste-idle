@@ -12,6 +12,7 @@ use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
+use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -79,6 +80,7 @@ class ZoneController extends AbstractController
         private readonly GroupDungeonService $groupDungeonService,
         private readonly GroupDungeonCombatService $groupDungeonCombatService,
         private readonly GroupDungeonClearRepository $groupDungeonClearRepository,
+        private readonly MountTravelSpeed $mountTravelSpeed,
     ) {
     }
 
@@ -110,7 +112,6 @@ class ZoneController extends AbstractController
             return $this->render('game/zone/index.html.twig', [
                 'zone' => null,
                 'connections' => [],
-                'travelSeconds' => [],
                 'mount' => null,
                 'playersPresent' => [],
                 'poiCounts' => [],
@@ -158,18 +159,20 @@ class ZoneController extends AbstractController
             ];
         }
 
-        // Duree reellement subie, monture comprise (tache 130) : annoncer la
-        // duree de reference alors qu'une monture la raccourcit ferait passer
-        // le bonus pour inoperant.
-        $travelSeconds = [];
+        // Chaque liaison porte la duree **reellement subie**, monture comprise
+        // (tache 130) : annoncer la duree de reference alors qu'une monture la
+        // raccourcit ferait passer le bonus pour inoperant.
+        $connectionRows = [];
         foreach ($connections as $connection) {
-            $travelSeconds[$connection->getId()] = $this->zoneTravelService->travelSecondsFor($player, $connection);
+            $connectionRows[] = [
+                'connection' => $connection,
+                'seconds' => $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds()),
+            ];
         }
 
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
-            'connections' => $connections,
-            'travelSeconds' => $travelSeconds,
+            'connections' => $connectionRows,
             'mount' => $player->getActiveMount(),
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,

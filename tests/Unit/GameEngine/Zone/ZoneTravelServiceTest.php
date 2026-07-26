@@ -80,10 +80,14 @@ class ZoneTravelServiceTest extends TestCase
     public function testActiveMountDoesNotResurrectInstantConnections(): void
     {
         $from = $this->buildZone('village');
+        $to = $this->buildZone('taverne');
         $player = $this->buildPlayerIn($from);
         $player->setActiveMount((new Mount())->setSpeedBonus(75));
 
-        $this->assertSame(0, $this->service->travelSecondsFor($player, new ZoneConnection($from, $this->buildZone('taverne'), 0)));
+        $this->service->startTravel($player, new ZoneConnection($from, $to, 0));
+
+        $this->assertSame($to, $player->getCurrentZone());
+        $this->assertFalse($player->isTraveling());
     }
 
     public function testInstantConnectionArrivesImmediately(): void

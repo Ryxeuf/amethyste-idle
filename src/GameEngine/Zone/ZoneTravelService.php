@@ -32,17 +32,6 @@ class ZoneTravelService
     }
 
     /**
-     * Temps de voyage reellement applique, monture comprise (tache 130).
-     *
-     * Expose pour l'affichage : la liste des connexions doit annoncer la duree
-     * que le joueur subira, pas la duree de reference.
-     */
-    public function travelSecondsFor(Player $player, ZoneConnection $connection): int
-    {
-        return $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
-    }
-
-    /**
      * Demarre un voyage via une connexion. Retourne l'horodatage d'arrivee
      * (deja passe si la liaison est instantanee : l'arrivee est reglee inline).
      *
@@ -68,7 +57,11 @@ class ZoneTravelService
             throw new ZoneTravelException('game.zone.travel.error.not_discovered');
         }
 
-        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $this->travelSecondsFor($player, $connection)));
+        // Duree reellement subie : la monture active raccourcit le voyage
+        // (tache 130), sans jamais alterer la duree de reference du graphe.
+        $seconds = $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
+
+        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $seconds));
         $player->setTravelToZone($connection->getToZone());
         $player->setTravelArrivesAt($arrivesAt);
 
