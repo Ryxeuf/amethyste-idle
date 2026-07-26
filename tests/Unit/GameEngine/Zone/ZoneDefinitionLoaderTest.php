@@ -300,11 +300,15 @@ class ZoneDefinitionLoaderTest extends TestCase
         // ZON-26b : la premiere zone livree **sans carte d'origine**. Elle est
         // la preuve que le chemin declaratif fonctionne de bout en bout.
         self::assertContains('dunes-d-ambre', $slugs);
+        // Acte 4 (tache 128b) : les deux bras longs, sel au sud et glace au nord.
+        self::assertContains('mer-de-sel', $slugs);
+        self::assertContains('glacier-du-silence', $slugs);
         // Le compte est epingle volontairement : il attrape une edition
         // accidentelle du graphe livre. 8 depuis ZON-26a (etoile + anneau),
         // 9 depuis HOU-01 (rattachement du Quartier des Jardins au hub),
-        // 10 depuis ZON-26b (les Dunes d'Ambre au sud du marais).
-        self::assertCount(10, $result['connections']);
+        // 10 depuis ZON-26b (les Dunes d'Ambre au sud du marais),
+        // 14 depuis 128b (les quatre zones de l'Acte 4).
+        self::assertCount(14, $result['connections']);
 
         $dunes = null;
         foreach ($result['zones'] as $zone) {
@@ -320,6 +324,57 @@ class ZoneDefinitionLoaderTest extends TestCase
         // declare, cette branche du tirage ne menerait a rien.
         self::assertNotNull($dunes['pnjs'], 'Une zone sans carte d\'origine n\'a d\'habitants que declares.');
         self::assertContains('dunes-caravanier-yazid', array_column($dunes['pnjs'], 'slug'));
+    }
+
+    /**
+     * Tout ingredient recoltable exige par une recette doit se trouver
+     * quelque part (correctif 128b).
+     *
+     * Quatre plantes nourrissaient huit recettes d'alchimie de niveau 2 a 10
+     * sans qu'aucune zone ne les produise — et l'une d'elles, la mandragore,
+     * etait meme **exigee par une quete**. Le contenu existait, la boucle qui
+     * y menait n'existait pas.
+     *
+     * Les plantes vendues en boutique PNJ sont exclues : elles ont deja une
+     * source.
+     */
+    public function testEveryGatherableIngredientOfARecipeIsReachable(): void
+    {
+        $root = \dirname(__DIR__, 4);
+        $items = (string) file_get_contents($root . '/src/DataFixtures/ItemFixtures.php');
+        $recipes = (string) file_get_contents($root . '/src/DataFixtures/RecipeFixtures.php');
+
+        $pnjStock = '';
+        foreach ((array) glob($root . '/src/DataFixtures/*PnjFixtures.php') as $file) {
+            $pnjStock .= (string) file_get_contents((string) $file);
+        }
+
+        preg_match_all("/'slug' => '((?:ore|plant|fish)-[a-z-]+)'/", $items, $matches);
+
+        $loader = new ZoneDefinitionLoader($root);
+        $definition = $loader->loadFile($loader->defaultFile());
+        $gathered = [];
+        foreach ($definition['zones'] as $zone) {
+            foreach ($zone['gather'] ?? [] as $resource) {
+                $gathered[] = $resource['item'];
+            }
+        }
+
+        $unreachable = [];
+        foreach (array_unique($matches[1]) as $slug) {
+            if (\in_array($slug, $gathered, true)) {
+                continue;
+            }
+            if (!str_contains($recipes, "'" . $slug . "'")) {
+                continue;
+            }
+            if (str_contains($pnjStock, "'" . $slug . "'")) {
+                continue;
+            }
+            $unreachable[] = $slug;
+        }
+
+        self::assertSame([], $unreachable, 'Une recette exige un ingredient qu\'aucune zone ne produit et qu\'aucun PNJ ne vend.');
     }
 
     public function testShippedWorldOneHasNoIsolatedZone(): void
