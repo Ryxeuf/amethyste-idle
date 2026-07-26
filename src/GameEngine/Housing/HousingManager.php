@@ -5,6 +5,7 @@ namespace App\GameEngine\Housing;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerHouse;
 use App\Entity\App\Zone;
+use App\Enum\HouseStyle;
 use App\Repository\PlayerHouseRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -123,9 +124,7 @@ class HousingManager
      */
     public function payRent(Player $player, PlayerHouse $house): void
     {
-        if ($house->getOwner()->getId() !== $player->getId()) {
-            throw new \InvalidArgumentException('Cette demeure n\'est pas la votre.');
-        }
+        $this->assertOwnership($player, $house);
 
         if (!$player->removeGils(PlayerHouse::RENT_AMOUNT)) {
             throw new \InvalidArgumentException(sprintf('Il vous faut %d Gils pour le loyer.', PlayerHouse::RENT_AMOUNT));
@@ -180,11 +179,59 @@ class HousingManager
         return ['charged' => $charged, 'unpaid' => $unpaid];
     }
 
-    public function rename(Player $player, PlayerHouse $house, string $name): void
+    /**
+     * Installe un ameublement (HOU-05).
+     *
+     * Purement cosmetique et payant : un **gold sink** qui ne cree aucune
+     * pression a depenser chez ceux que l'apparence n'interesse pas.
+     */
+    public function furnish(Player $player, PlayerHouse $house, HouseStyle $style): void
+    {
+        $this->assertOwnership($player, $house);
+
+        if ($house->getStyle() === $style) {
+            throw new \InvalidArgumentException('Votre demeure est deja meublee ainsi.');
+        }
+
+        $price = $style->price();
+        if ($price > 0 && !$player->removeGils($price)) {
+            throw new \InvalidArgumentException(sprintf('Il vous faut %s Gils pour cet ameublement.', number_format($price, 0, ',', ' ')));
+        }
+
+        $house->setStyle($style);
+        $this->entityManager->flush();
+
+        $this->logger->info('House furnished', [
+            'player_id' => $player->getId(),
+            'style' => $style->value,
+            'price' => $price,
+        ]);
+    }
+
+    /**
+     * Grave la devise du fronton (HOU-05).
+     *
+     * Gratuite, contrairement a l'ameublement : on ne fait pas payer un joueur
+     * pour ecrire une phrase chez lui.
+     */
+    public function setMotto(Player $player, PlayerHouse $house, ?string $motto): void
+    {
+        $this->assertOwnership($player, $house);
+
+        $house->setMotto($motto);
+        $this->entityManager->flush();
+    }
+
+    private function assertOwnership(Player $player, PlayerHouse $house): void
     {
         if ($house->getOwner()->getId() !== $player->getId()) {
             throw new \InvalidArgumentException('Cette demeure n\'est pas la votre.');
         }
+    }
+
+    public function rename(Player $player, PlayerHouse $house, string $name): void
+    {
+        $this->assertOwnership($player, $house);
 
         $name = trim($name);
         if ('' === $name) {

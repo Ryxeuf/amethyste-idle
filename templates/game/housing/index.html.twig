@@ -11,7 +11,8 @@
             </h2>
             <p class="text-gray-400 text-xs mt-0.5">
                 {% if house %}
-                    {{ house.zone.localizedName(app.request.locale) }} · acquise le {{ house.purchasedAt|date('d/m/Y') }}
+                    {{ house.zone.localizedName(app.request.locale) }} · {{ house.style.label }} · acquise le {{ house.purchasedAt|date('d/m/Y') }}
+                    {% if house.motto %}<br><em class="text-gray-500">« {{ house.motto }} »</em>{% endif %}
                 {% else %}
                     Un terrain s'achete sur place, dans un quartier residentiel.
                 {% endif %}
@@ -29,6 +30,25 @@
                     </div>
                     <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Renommer</button>
                 </form>
+
+                {# HOU-05 : le coffre et l'atelier existent deja ailleurs — la
+                   demeure les rassemble, elle ne les enferme pas. #}
+                <div class="grid gap-2 sm:grid-cols-2 mb-4">
+                    <a href="{{ path('app_game_inventory') }}" class="bg-gray-900/60 hover:bg-gray-800/60 border border-gray-800 rounded-lg p-3 transition-colors">
+                        <p class="text-sm text-gray-100">Le coffre</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ bankInventory.items|length }} / {{ bankInventory.size }} emplacements occupes</p>
+                    </a>
+                    <a href="{{ path('app_game_craft') }}" class="bg-gray-900/60 hover:bg-gray-800/60 border border-gray-800 rounded-lg p-3 transition-colors">
+                        <p class="text-sm text-gray-100">L'atelier</p>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            {% if activeJob %}
+                                {{ activeJob.quantity }}x {{ activeJob.recipe.result.name }} — {{ activeJob.remainingSeconds }}s
+                            {% else %}
+                                Aucun ouvrage en cours
+                            {% endif %}
+                        </p>
+                    </a>
+                </div>
 
                 {# HOU-04 : le loyer est un gold sink recurrent. Une demeure en
                    arriere dort — rien n'est confisque. #}
@@ -98,8 +118,42 @@
 
                 <p class="text-xs text-gray-600 mt-3">
                     Une parcelle rend 2 a 3 unites de ce qu'on y seme, en 3 heures.
-                    L'atelier et les visites arrivent dans les jalons suivants.
                 </p>
+
+                {# HOU-05 : l'ameublement se paie, la devise non. #}
+                <h3 class="text-sm font-semibold text-indigo-300 mt-5 mb-2">Ameublement</h3>
+                <div class="grid gap-2 sm:grid-cols-2">
+                    {% for style in styles %}
+                        <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <p class="text-sm text-gray-100">{{ style.label }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ style.description }}</p>
+                            </div>
+                            {% if house.style == style %}
+                                <span class="text-xs text-emerald-400 shrink-0">Installe</span>
+                            {% else %}
+                                <form method="post" action="{{ path('app_game_house_furnish') }}" class="shrink-0">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('house_furnish') }}">
+                                    <input type="hidden" name="style" value="{{ style.value }}">
+                                    <button type="submit" {{ player.gils >= style.price ? '' : 'disabled' }}
+                                            class="px-3 py-1.5 text-xs rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-700 disabled:cursor-not-allowed text-white transition-colors">
+                                        {{ style.price|number_format(0, ',', ' ') }} G
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <form method="post" action="{{ path('app_game_house_motto') }}" class="flex flex-wrap items-end gap-2 mt-4">
+                    <input type="hidden" name="_token" value="{{ csrf_token('house_motto') }}">
+                    <div class="grow min-w-48">
+                        <label for="house_motto" class="block text-xs text-gray-400 mb-1">Devise du fronton (gratuite)</label>
+                        <input type="text" name="motto" id="house_motto" maxlength="140" value="{{ house.motto }}"
+                               class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                    </div>
+                    <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Graver</button>
+                </form>
             {% elseif canBuyHere %}
                 <div class="flex items-center gap-1.5 mb-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2 w-fit">
                     <span class="text-sm font-semibold text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }} Gils</span>

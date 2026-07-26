@@ -2,6 +2,7 @@
 
 namespace App\Entity\App;
 
+use App\Enum\HouseStyle;
 use App\Repository\PlayerHouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -79,6 +80,19 @@ class PlayerHouse
      */
     #[ORM\Column(name: 'rent_due_at', type: 'datetime_immutable')]
     private \DateTimeImmutable $rentDueAt;
+
+    /** Ameublement, visible des visiteurs (HOU-05). */
+    #[ORM\Column(name: 'style', type: 'string', length: 20, enumType: HouseStyle::class, options: ['default' => 'bare'])]
+    private HouseStyle $style = HouseStyle::Bare;
+
+    /**
+     * Devise gravee au fronton, libre et gratuite.
+     *
+     * Le style se paie, la devise non : on ne fait pas payer un joueur pour
+     * ecrire une phrase chez lui.
+     */
+    #[ORM\Column(name: 'motto', type: 'string', length: 140, nullable: true)]
+    private ?string $motto = null;
 
     public function getId(): ?int
     {
@@ -163,6 +177,31 @@ class PlayerHouse
      * A partir de l'echeance et non de « maintenant » : payer en retard ne doit
      * pas offrir une periode pleine, sinon attendre serait rentable.
      */
+    public function getStyle(): HouseStyle
+    {
+        return $this->style;
+    }
+
+    public function setStyle(HouseStyle $style): self
+    {
+        $this->style = $style;
+
+        return $this;
+    }
+
+    public function getMotto(): ?string
+    {
+        return $this->motto;
+    }
+
+    public function setMotto(?string $motto): self
+    {
+        $motto = null === $motto ? null : trim($motto);
+        $this->motto = ('' === $motto || null === $motto) ? null : mb_substr($motto, 0, 140);
+
+        return $this;
+    }
+
     public function extendRent(): self
     {
         $this->rentDueAt = $this->rentDueAt->modify(sprintf('+%d days', self::RENT_PERIOD_DAYS));

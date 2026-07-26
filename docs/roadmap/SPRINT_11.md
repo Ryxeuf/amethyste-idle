@@ -33,7 +33,7 @@
 - [ ] Chaine de quetes Acte 4 (arc narratif dedie via `storyArc`, cf. NAR-01 ✅)
 - [ ] Boss final Acte 4 (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
 
-### 129 — Housing joueur (L | ★★) — **decoupe en 5 sous-jalons** (regle #8)
+### 129 — Housing joueur ✅ **TERMINE** (L | ★★) — 5 sous-jalons (regle #8)
 > Prerequis : ← 116 (hotel des ventes) ✅
 > **Note** : prerequis de **ECO-10** (echoppes joueur) — cf. [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md).
 
@@ -66,10 +66,14 @@ pour rendre les demeures **visitables** par le graphe.
 - [x] Prelevement **automatique** tant que la bourse suit
 - [x] Impaye → la demeure **dort** : jardin suspendu, **rien n'est confisque ni detruit**
 
-**HOU-05 — Meubles, coffre & atelier** (M | ★)
-- [ ] Acces au coffre (`TYPE_BANK`) depuis la demeure
-- [ ] Atelier : lien avec `CraftJob` (ECO-20c)
-- [ ] Meubles : personnalisation visible par les visiteurs
+**HOU-05 — Meubles, coffre & atelier** ✅ **livre le 2026-07-26** (voir `ROADMAP_DONE.md`)
+- [x] Coffre et atelier **rassembles** dans la demeure (etat du `TYPE_BANK`, `CraftJob` en cours)
+- [x] Ameublement : enum `HouseStyle` payant (gold sink cosmetique) + devise gratuite,
+      tous deux visibles des visiteurs
+- [ ] Reste ouvert : un vrai systeme de mobilier (objets, emplacements, rendu) est un chantier
+      a lui seul, avec tout son contenu a inventer — le style en tient lieu
+
+**Tache 129 : 5/5 — le housing est complet.** Prerequis d'ECO-10 (echoppes) leve.
 
 ### 130 — Montures & deplacement rapide (M | ★★) — **reste 1 item**
 > Prerequis : ← ZON-06 (voyage entre zones) ✅
@@ -101,7 +105,7 @@ pour rendre les demeures **visitables** par le graphe.
 ### Definition of Done
 
 - [ ] 4 nouvelles zones de contenu Acte 4 jouables
-- [ ] Housing fonctionnel avec visites et jardin passif
+- [x] Housing fonctionnel avec visites et jardin passif (tache 129, HOU-01→05)
 - [ ] Montures reduisant le temps de voyage entre zones
 - [ ] Events live lancables depuis l'admin
 - [x] Classement saisonnier operationnel

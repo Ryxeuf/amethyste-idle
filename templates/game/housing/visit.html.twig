@@ -11,8 +11,12 @@
                 <p class="text-gray-400 text-xs mt-0.5">
                     Demeure de {{ house.owner.name }}
                     · {{ house.zone.localizedName(app.request.locale) }}
+                    · {{ house.style.label }}
                     · batie le {{ house.purchasedAt|date('d/m/Y') }}
                 </p>
+                {% if house.motto %}
+                    <p class="text-xs text-gray-500 italic mt-1">« {{ house.motto }} »</p>
+                {% endif %}
             </div>
             <a href="{{ path('app_game_house') }}" class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm rounded-lg transition-colors shrink-0">
                 {{ isOwn ? 'Ma demeure' : 'Retour' }}
