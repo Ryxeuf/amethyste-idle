@@ -83,6 +83,33 @@ class PlayerBestiaryRepository extends ServiceEntityRepository
     }
 
     /**
+     * Total cumule de mobs tues pour **chaque** joueur, indexe par identifiant.
+     *
+     * Sert a figer les references de fin de saison (tache 132) : le classement
+     * saisonnier est un delta, et un delta demande la valeur de tout le monde,
+     * pas seulement celle du top-N.
+     *
+     * @return array<int, int>
+     */
+    public function sumKillsByPlayerId(): array
+    {
+        /** @var array<int, array{playerId: string|int, totalKills: string|int|null}> $rows */
+        $rows = $this->createQueryBuilder('pb')
+            ->select('IDENTITY(pb.player) AS playerId', 'SUM(pb.killCount) AS totalKills')
+            ->groupBy('pb.player')
+            ->having('SUM(pb.killCount) > 0')
+            ->getQuery()
+            ->getArrayResult();
+
+        $totals = [];
+        foreach ($rows as $row) {
+            $totals[(int) $row['playerId']] = (int) $row['totalKills'];
+        }
+
+        return $totals;
+    }
+
+    /**
      * Top joueurs par nombre total de mobs tues (all-time).
      *
      * @return array<int, array{player: Player, totalKills: int}>

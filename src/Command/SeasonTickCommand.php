@@ -7,6 +7,7 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
@@ -34,6 +35,7 @@ class SeasonTickCommand extends Command
         private readonly SeasonRankingSnapshotService $rankingSnapshotService,
         private readonly SeasonRewardsManager $rewardsManager,
         private readonly SeasonResolutionService $resolutionService,
+        private readonly RankingBaselineService $baselineService,
     ) {
         parent::__construct();
     }
@@ -85,6 +87,11 @@ class SeasonTickCommand extends Command
         // Credits narratifs : la guilde controlante s'inscrit au journal de monde (NAR-11)
         $factsRecorded = $this->resolutionService->resolve($activeSeason, $results);
 
+        // Reference du classement (tache 132) : **apres** l'archivage et les
+        // titres. La saison qui s'acheve se juge sur la reference de la
+        // precedente ; figer avant remettrait tout le monde a zero.
+        $baselineCounts = $this->baselineService->capture($activeSeason);
+
         $this->seasonManager->endSeason($activeSeason);
 
         $controlSummary = [];
@@ -112,6 +119,13 @@ class SeasonTickCommand extends Command
             $rewardCounts['kills'] ?? 0,
             $rewardCounts['quests'] ?? 0,
             $rewardCounts['xp'] ?? 0,
+        ));
+
+        $io->info(sprintf(
+            'Références de classement figées : %d kills, %d quêtes, %d XP.',
+            $baselineCounts['kills'] ?? 0,
+            $baselineCounts['quests'] ?? 0,
+            $baselineCounts['xp'] ?? 0,
         ));
     }
 

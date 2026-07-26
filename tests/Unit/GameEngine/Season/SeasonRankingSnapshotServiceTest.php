@@ -6,10 +6,8 @@ use App\Entity\App\InfluenceSeason;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerSeasonRankingSnapshot;
 use App\Enum\RankingTab;
+use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
-use App\Repository\DomainExperienceRepository;
-use App\Repository\PlayerBestiaryRepository;
-use App\Repository\PlayerQuestCompletedRepository;
 use App\Repository\PlayerSeasonRankingSnapshotRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,25 +16,19 @@ use PHPUnit\Framework\TestCase;
 class SeasonRankingSnapshotServiceTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
-    private PlayerBestiaryRepository&MockObject $bestiaryRepo;
-    private PlayerQuestCompletedRepository&MockObject $questRepo;
-    private DomainExperienceRepository&MockObject $xpRepo;
+    private RankingBaselineService&MockObject $baselineService;
     private PlayerSeasonRankingSnapshotRepository&MockObject $snapshotRepo;
     private SeasonRankingSnapshotService $service;
 
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->bestiaryRepo = $this->createMock(PlayerBestiaryRepository::class);
-        $this->questRepo = $this->createMock(PlayerQuestCompletedRepository::class);
-        $this->xpRepo = $this->createMock(DomainExperienceRepository::class);
+        $this->baselineService = $this->createMock(RankingBaselineService::class);
         $this->snapshotRepo = $this->createMock(PlayerSeasonRankingSnapshotRepository::class);
 
         $this->service = new SeasonRankingSnapshotService(
             $this->em,
-            $this->bestiaryRepo,
-            $this->questRepo,
-            $this->xpRepo,
+            $this->baselineService,
             $this->snapshotRepo,
         );
     }
@@ -49,26 +41,20 @@ class SeasonRankingSnapshotServiceTest extends TestCase
 
         $this->snapshotRepo->method('countForSeason')->with($season)->willReturn(0);
 
-        $this->bestiaryRepo->expects($this->once())
-            ->method('findTopKillers')
-            ->with(50)
-            ->willReturn([
-                ['player' => $p1, 'totalKills' => 120],
-                ['player' => $p2, 'totalKills' => 80],
-            ]);
-
-        $this->questRepo->expects($this->once())
-            ->method('findTopQuestCompleters')
-            ->with(50)
-            ->willReturn([
-                ['player' => $p1, 'totalQuests' => 42],
-            ]);
-
-        $this->xpRepo->expects($this->once())
-            ->method('findTopXpEarners')
-            ->with(50)
-            ->willReturn([
-                ['player' => $p2, 'totalXp' => 9999],
+        // Les valeurs archivees sont celles de la saison, pas le cumul (tache 132).
+        $this->baselineService->expects($this->exactly(3))
+            ->method('topOfSeason')
+            ->willReturnMap([
+                [RankingTab::Kills, 50, [
+                    ['player' => $p1, 'total' => 120],
+                    ['player' => $p2, 'total' => 80],
+                ]],
+                [RankingTab::Quests, 50, [
+                    ['player' => $p1, 'total' => 42],
+                ]],
+                [RankingTab::Xp, 50, [
+                    ['player' => $p2, 'total' => 9999],
+                ]],
             ]);
 
         $persisted = [];
@@ -108,9 +94,7 @@ class SeasonRankingSnapshotServiceTest extends TestCase
 
         $this->snapshotRepo->method('countForSeason')->with($season)->willReturn(150);
 
-        $this->bestiaryRepo->expects($this->never())->method('findTopKillers');
-        $this->questRepo->expects($this->never())->method('findTopQuestCompleters');
-        $this->xpRepo->expects($this->never())->method('findTopXpEarners');
+        $this->baselineService->expects($this->never())->method('topOfSeason');
         $this->em->expects($this->never())->method('persist');
         $this->em->expects($this->never())->method('flush');
 
@@ -128,9 +112,7 @@ class SeasonRankingSnapshotServiceTest extends TestCase
         $season = $this->createSeason();
 
         $this->snapshotRepo->method('countForSeason')->with($season)->willReturn(0);
-        $this->bestiaryRepo->method('findTopKillers')->willReturn([]);
-        $this->questRepo->method('findTopQuestCompleters')->willReturn([]);
-        $this->xpRepo->method('findTopXpEarners')->willReturn([]);
+        $this->baselineService->method('topOfSeason')->willReturn([]);
 
         $this->em->expects($this->never())->method('persist');
         $this->em->expects($this->once())->method('flush');
@@ -150,9 +132,13 @@ class SeasonRankingSnapshotServiceTest extends TestCase
 
         $this->snapshotRepo->method('countForSeason')->with($season)->willReturn(0);
 
-        $this->bestiaryRepo->expects($this->once())->method('findTopKillers')->with(10)->willReturn([]);
-        $this->questRepo->expects($this->once())->method('findTopQuestCompleters')->with(10)->willReturn([]);
-        $this->xpRepo->expects($this->once())->method('findTopXpEarners')->with(10)->willReturn([]);
+        $this->baselineService->expects($this->exactly(3))
+            ->method('topOfSeason')
+            ->willReturnMap([
+                [RankingTab::Kills, 10, []],
+                [RankingTab::Quests, 10, []],
+                [RankingTab::Xp, 10, []],
+            ]);
 
         $this->service->snapshot($season, 10);
     }

@@ -44,6 +44,31 @@ class PlayerQuestCompletedRepository extends ServiceEntityRepository
     }
 
     /**
+     * Nombre de quetes achevees par **chaque** joueur, indexe par identifiant.
+     *
+     * Sert a figer les references de fin de saison (tache 132).
+     *
+     * @return array<int, int>
+     */
+    public function countQuestsByPlayerId(): array
+    {
+        /** @var array<int, array{playerId: string|int, totalQuests: string|int|null}> $rows */
+        $rows = $this->createQueryBuilder('pqc')
+            ->select('IDENTITY(pqc.player) AS playerId', 'COUNT(pqc.id) AS totalQuests')
+            ->groupBy('pqc.player')
+            ->having('COUNT(pqc.id) > 0')
+            ->getQuery()
+            ->getArrayResult();
+
+        $totals = [];
+        foreach ($rows as $row) {
+            $totals[(int) $row['playerId']] = (int) $row['totalQuests'];
+        }
+
+        return $totals;
+    }
+
+    /**
      * Top joueurs par nombre de quetes completees (all-time).
      *
      * @return array<int, array{player: Player, totalQuests: int}>
