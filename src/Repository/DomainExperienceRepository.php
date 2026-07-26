@@ -45,6 +45,32 @@ class DomainExperienceRepository extends ServiceEntityRepository
     }
 
     /**
+     * XP cumulee de **chaque** joueur, tous domaines confondus, indexee par
+     * identifiant.
+     *
+     * Sert a figer les references de fin de saison (tache 132).
+     *
+     * @return array<int, int>
+     */
+    public function sumXpByPlayerId(): array
+    {
+        /** @var array<int, array{playerId: string|int, totalXp: string|int|null}> $rows */
+        $rows = $this->createQueryBuilder('de')
+            ->select('IDENTITY(de.player) AS playerId', 'SUM(de.totalExperience) AS totalXp')
+            ->groupBy('de.player')
+            ->having('SUM(de.totalExperience) > 0')
+            ->getQuery()
+            ->getArrayResult();
+
+        $totals = [];
+        foreach ($rows as $row) {
+            $totals[(int) $row['playerId']] = (int) $row['totalXp'];
+        }
+
+        return $totals;
+    }
+
+    /**
      * Top joueurs par XP totale cumulee sur tous les domaines (all-time).
      *
      * @return array<int, array{player: Player, totalXp: int}>

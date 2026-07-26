@@ -92,10 +92,18 @@ pour rendre les demeures **visitables** par le graphe.
 - [ ] Interface admin pour lancer des events en temps reel (bouton « Lancer maintenant »)
 - [ ] Type « quete ephemere » (les types boss/invasion sont couverts par `ZoneBoss` / ZON-18 ✅)
 
-### 132 — Classement saisonnier global (M | ★★) — **quasi termine**
+### 132 — Classement saisonnier global (M | ★★) — **reste 132b**
 > Prerequis : ← 92 ✅
-- [ ] Passe de verification de fin de saison sur donnees reelles (archivage + attribution des
-      titres) — toutes les sous-phases fonctionnelles sont livrees.
+> **La passe de verification a trouve un defaut de fond** : les trois classements agregent des
+> compteurs **cumulatifs** (`PlayerBestiary::killCount`, quetes achevees, `DomainExperience`)
+> sans aucune fenetre de saison. Le classement « saisonnier » etait le palmares de toute
+> l'histoire du serveur, rearchive a chaque cloture sous une etiquette differente.
+- [x] **132a — Reference de classement** : `PlayerRankingBaseline` (une ligne par joueur/onglet,
+      reecrite a chaque cloture), `RankingBaselineService`, capture branchee en fin de
+      `app:season:tick` **apres** archivage et titres. L'archive de fin de saison est desormais
+      saisonniere.
+- [ ] **132b — Ecrans** : `/game/rankings` et l'API affichent le classement de la saison en cours
+      (total et rang), le Hall of Fame indique que ses archives sont saisonnieres.
 
 ### 133 — Mini-jeux (M | ★) — **reste 1 item**
 > Prerequis : ∅

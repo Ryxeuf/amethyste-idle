@@ -8,6 +8,7 @@ use App\Enum\SeasonStatus;
 use App\GameEngine\Guild\PrestigeTitleManager;
 use App\GameEngine\Guild\SeasonManager;
 use App\GameEngine\Guild\TownControlManager;
+use App\GameEngine\Season\RankingBaselineService;
 use App\GameEngine\Season\SeasonRankingSnapshotService;
 use App\GameEngine\Season\SeasonResolutionService;
 use App\GameEngine\Season\SeasonRewardsManager;
@@ -27,6 +28,7 @@ class SeasonTickCommandTest extends TestCase
     private SeasonRankingSnapshotService&MockObject $rankingSnapshotService;
     private SeasonRewardsManager&MockObject $rewardsManager;
     private SeasonResolutionService&MockObject $resolutionService;
+    private RankingBaselineService&MockObject $baselineService;
     private EntityRepository&MockObject $seasonRepo;
     private CommandTester $tester;
 
@@ -39,6 +41,8 @@ class SeasonTickCommandTest extends TestCase
         $this->rankingSnapshotService = $this->createMock(SeasonRankingSnapshotService::class);
         $this->rewardsManager = $this->createMock(SeasonRewardsManager::class);
         $this->resolutionService = $this->createMock(SeasonResolutionService::class);
+        $this->baselineService = $this->createMock(RankingBaselineService::class);
+        $this->baselineService->method('capture')->willReturn(['kills' => 0, 'quests' => 0, 'xp' => 0]);
         $this->seasonRepo = $this->createMock(EntityRepository::class);
 
         $this->em->method('getRepository')
@@ -53,6 +57,7 @@ class SeasonTickCommandTest extends TestCase
             $this->rankingSnapshotService,
             $this->rewardsManager,
             $this->resolutionService,
+            $this->baselineService,
         );
 
         $app = new Application();
@@ -108,6 +113,72 @@ class SeasonTickCommandTest extends TestCase
         $this->assertStringContainsString('Les Valeureux', $this->tester->getDisplay());
         $this->assertStringContainsString('Classement archivé', $this->tester->getDisplay());
         $this->assertStringContainsString('Titres du podium attribués', $this->tester->getDisplay());
+        $this->assertStringContainsString('Références de classement figées', $this->tester->getDisplay());
+    }
+
+    /**
+     * L'ordre de la cloture est porteur de sens (tache 132).
+     *
+     * Figer les references avant l'archivage remettrait tout le monde a zero
+     * juste avant de mesurer : la saison qui s'acheve doit etre jugee sur la
+     * reference de la precedente.
+     */
+    public function testBaselineIsCapturedAfterSnapshotAndRewards(): void
+    {
+        $season = $this->createSeason(1, SeasonStatus::Active, '-1 day', '-1 hour');
+
+        $callCount = 0;
+        $this->seasonManager->method('getCurrentSeason')
+            ->willReturnCallback(function () use ($season, &$callCount) {
+                ++$callCount;
+
+                return $callCount <= 1 ? $season : null;
+            });
+
+        $this->townControlManager->method('attributeControl')->willReturn([]);
+        $this->seasonRepo->method('findOneBy')->willReturn(null);
+        $this->seasonManager->method('getOrCreateNextSeason')
+            ->willReturn($this->createSeason(2, SeasonStatus::Scheduled, '+1 day', '+29 days'));
+
+        $order = [];
+        $this->rankingSnapshotService->method('snapshot')
+            ->willReturnCallback(function () use (&$order) {
+                $order[] = 'snapshot';
+
+                return ['kills' => 0, 'quests' => 0, 'xp' => 0];
+            });
+        $this->rewardsManager->method('awardPodium')
+            ->willReturnCallback(function () use (&$order) {
+                $order[] = 'rewards';
+
+                return ['kills' => 0, 'quests' => 0, 'xp' => 0];
+            });
+
+        // Le mock de reference est deja arme dans setUp : on le remplace pour
+        // enregistrer son rang dans la sequence.
+        $baselineService = $this->createMock(RankingBaselineService::class);
+        $baselineService->method('capture')
+            ->willReturnCallback(function () use (&$order) {
+                $order[] = 'baseline';
+
+                return ['kills' => 0, 'quests' => 0, 'xp' => 0];
+            });
+
+        $command = new SeasonTickCommand(
+            $this->em,
+            $this->seasonManager,
+            $this->townControlManager,
+            $this->prestigeTitleManager,
+            $this->rankingSnapshotService,
+            $this->rewardsManager,
+            $this->resolutionService,
+            $baselineService,
+        );
+        $app = new Application();
+        $app->add($command);
+        (new CommandTester($app->find('app:season:tick')))->execute([]);
+
+        $this->assertSame(['snapshot', 'rewards', 'baseline'], $order);
     }
 
     public function testDoesNotEndActiveSeasonBeforeEndsAt(): void
