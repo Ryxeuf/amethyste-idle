@@ -186,4 +186,42 @@ class HousingController extends AbstractController
 
         return $this->redirectToRoute('app_game_house');
     }
+
+    /**
+     * Visite de la demeure d'un voisin (HOU-03).
+     *
+     * Vue **en lecture seule** : le visiteur voit le jardin pousser, il n'y
+     * touche pas. C'est ce qui fait la difference entre montrer sa demeure et
+     * la partager.
+     */
+    #[Route('/visit/{id}', name: 'app_game_house_visit', methods: ['GET'], requirements: ['id' => '\\d+'])]
+    public function visit(int $id): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $house = $this->houseRepository->find($id);
+        if (!$house instanceof PlayerHouse) {
+            $this->addFlash('error', 'Cette demeure n\'existe pas.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        try {
+            $this->housingManager->assertCanVisit($player, $house);
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        return $this->render('game/housing/visit.html.twig', [
+            'player' => $player,
+            'house' => $house,
+            'plots' => $this->gardenService->getPlots($house),
+            'isOwn' => $house->getOwner()->getId() === $player->getId(),
+        ]);
+    }
 }

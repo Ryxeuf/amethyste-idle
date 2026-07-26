@@ -94,6 +94,23 @@ class HousingManager
         return $house;
     }
 
+    /**
+     * Conditions de visite d'une demeure (HOU-03).
+     *
+     * Il faut se trouver **dans sa zone**. La position d'un joueur est sa zone
+     * (regle #7) : une visite consultable de n'importe ou ferait du voisinage
+     * un annuaire, la ou c'est un lieu.
+     *
+     * On peut visiter la sienne — c'est la meme vue, et l'interdire obligerait
+     * l'appelant a traiter un cas particulier sans aucun gain.
+     */
+    public function assertCanVisit(Player $visitor, PlayerHouse $house): void
+    {
+        if ($visitor->getCurrentZone()?->getId() !== $house->getZone()->getId()) {
+            throw new \InvalidArgumentException('Rendez-vous dans son quartier pour visiter cette demeure.');
+        }
+    }
+
     public function rename(Player $player, PlayerHouse $house, string $name): void
     {
         if ($house->getOwner()->getId() !== $player->getId()) {
