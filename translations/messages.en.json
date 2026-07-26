@@ -1043,6 +1043,7 @@
         "empty": "No known route.",
         "travel_minutes": "%count% min travel",
         "travel_instant": "Instant passage",
+        "travel_mounted": "%mount%: %base% min on foot",
         "locked": "Fast link: zone discovery required"
       },
       "players": {

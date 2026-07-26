@@ -12,6 +12,7 @@ use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
 use App\GameEngine\Dungeon\GroupDungeonCombatService;
 use App\GameEngine\Dungeon\GroupDungeonService;
+use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Social\ChatManager;
 use App\GameEngine\World\GameTimeService;
 use App\GameEngine\Zone\ActionEnergyManager;
@@ -160,6 +161,7 @@ class ZoneControllerTest extends TestCase
             $this->groupDungeonService,
             $this->groupDungeonCombatService,
             $this->groupDungeonClearRepository,
+            new MountTravelSpeed(),
         );
         $this->controller->setContainer($this->createContainer());
     }
@@ -250,7 +252,8 @@ class ZoneControllerTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame($zone, $this->capturedTemplateParams['zone']);
-        $this->assertSame([$connection], $this->capturedTemplateParams['connections']);
+        // Chaque liaison est accompagnee de sa duree reellement subie (tache 130).
+        $this->assertSame([['connection' => $connection, 'seconds' => 300]], $this->capturedTemplateParams['connections']);
         $this->assertSame([$player], $this->capturedTemplateParams['playersPresent']);
         $this->assertSame(
             [ObjectLayer::TYPE_HARVEST_SPOT => 2, ObjectLayer::TYPE_FORGE => 1],

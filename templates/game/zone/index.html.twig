@@ -445,7 +445,9 @@
                             <p class="text-gray-500 text-sm">{{ 'game.zone.connections.empty'|trans }}</p>
                         {% else %}
                             <ul class="space-y-1.5">
-                                {% for connection in connections %}
+                                {% for row in connections %}
+                                    {% set connection = row.connection %}
+                                    {% set seconds = row.seconds %}
                                     {% set locked = connection.requiresDiscovery and connection.toZone.id not in visitedZoneIds %}
                                     <li class="flex items-center justify-between gap-2 rounded-md bg-gray-800/40 border border-gray-700/60 px-3 py-2">
                                         <span class="text-sm text-white">
@@ -455,11 +457,14 @@
                                             {% endif %}
                                         </span>
                                         <span class="flex items-center gap-2">
-                                            <span class="text-xs text-gray-400">
-                                                {% if connection.travelSeconds == 0 %}
+                                            <span class="text-xs {{ seconds < connection.travelSeconds ? 'text-emerald-300' : 'text-gray-400' }}">
+                                                {% if seconds == 0 %}
                                                     {{ 'game.zone.connections.travel_instant'|trans }}
                                                 {% else %}
-                                                    {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (connection.travelSeconds / 60)|round}) }}
+                                                    {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (seconds / 60)|round}) }}
+                                                {% endif %}
+                                                {% if seconds < connection.travelSeconds %}
+                                                    <span title="{{ 'game.zone.connections.travel_mounted'|trans({'%mount%': mount|localized_mount_name, '%base%': (connection.travelSeconds / 60)|round}) }}">🐎</span>
                                                 {% endif %}
                                             </span>
                                             {% if locked %}

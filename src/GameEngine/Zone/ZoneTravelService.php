@@ -8,6 +8,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
+use App\GameEngine\Mount\MountTravelSpeed;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -26,6 +27,7 @@ class ZoneTravelService
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly MountTravelSpeed $mountTravelSpeed,
     ) {
     }
 
@@ -55,7 +57,11 @@ class ZoneTravelService
             throw new ZoneTravelException('game.zone.travel.error.not_discovered');
         }
 
-        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $connection->getTravelSeconds()));
+        // Duree reellement subie : la monture active raccourcit le voyage
+        // (tache 130), sans jamais alterer la duree de reference du graphe.
+        $seconds = $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
+
+        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $seconds));
         $player->setTravelToZone($connection->getToZone());
         $player->setTravelArrivesAt($arrivesAt);
 

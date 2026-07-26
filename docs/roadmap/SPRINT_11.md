@@ -1,6 +1,6 @@
 ## Sprint 11 — Monde vivant
 
-> **6 taches** (2 quasi-livrees, 4 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (129 et 130 **terminees**, 4 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : etendre le monde avec de nouvelles zones de contenu, du housing, des montures et des events live.
 > Prerequis : Sprints 7-10 ✅ (modele zone, energie, evenements, contenu de groupe)
 
@@ -14,7 +14,7 @@
 
 | Tache | Etat | Livre |
 |-------|------|-------|
-| **130 — Montures & deplacement rapide** | 90 % | Catalogue `Mount` + UI `/game/mounts` (badge « Possedee »), ownership `PlayerMount`, obtention achat/quete/drop, activation + `speedBonus`, teleportation entre villes decouvertes. Sous-phase 4b (rendu PixiJS) **annulee par le pivot**. |
+| **130 — Montures & deplacement rapide** | ✅ 100 % | Catalogue `Mount` + UI `/game/mounts` (badge « Possedee »), ownership `PlayerMount`, obtention achat/quete/drop, activation + `speedBonus`, teleportation entre villes decouvertes, reduction du temps de voyage (`MountTravelSpeed`). Sous-phase 4b (rendu PixiJS) **annulee par le pivot**. |
 | **131 — Events live & outils GM** | 80 % | Type `gathering_bonus` (+ extension aux 3 managers de recolte), historique `/admin/events/history`, annonce globale Mercure. |
 | **132 — Classement saisonnier global** | 95 % | `/game/rankings` (kills / quetes / XP), archivage par `InfluenceSeason`, titres de podium + affichage (classement & profil), Hall of Fame `/game/rankings/history`, recompenses cosmetiques. |
 | **133 — Mini-jeux** | 50 % | Peche active (mini-jeu de timing, zone parfaite, bonus XP, i18n). |
@@ -75,11 +75,13 @@ pour rendre les demeures **visitables** par le graphe.
 
 **Tache 129 : 5/5 — le housing est complet.** Prerequis d'ECO-10 (echoppes) leve.
 
-### 130 — Montures & deplacement rapide (M | ★★) — **reste 1 item**
+### 130 — Montures & deplacement rapide (M | ★★) — ✅ **terminee**
 > Prerequis : ← ZON-06 (voyage entre zones) ✅
-- [ ] **Transposer l'effet monture au modele zone** : la monture active reduit le `travel_seconds`
-      des connexions du graphe (reutiliser `Mount.speedBonus`). `getEffectiveSpeed()` / `stepDelay`
-      sont sans objet depuis la suppression de la carte (ZON-21).
+- [x] **Transposer l'effet monture au modele zone** : `MountTravelSpeed` reduit le `travel_seconds`
+      des connexions du graphe a partir de `Mount.speedBonus`, plafond a -50 %. `getEffectiveSpeed()`
+      **supprime** (sans consommateur depuis ZON-21).
+
+**Tache 130 : terminee.** Les montures livrees (achat/quete/drop) ont enfin un effet.
 
 ---
 
@@ -106,6 +108,6 @@ pour rendre les demeures **visitables** par le graphe.
 
 - [ ] 4 nouvelles zones de contenu Acte 4 jouables
 - [x] Housing fonctionnel avec visites et jardin passif (tache 129, HOU-01→05)
-- [ ] Montures reduisant le temps de voyage entre zones
+- [x] Montures reduisant le temps de voyage entre zones (tache 130)
 - [ ] Events live lancables depuis l'admin
 - [x] Classement saisonnier operationnel
