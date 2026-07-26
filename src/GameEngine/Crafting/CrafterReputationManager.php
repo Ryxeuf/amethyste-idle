@@ -2,8 +2,8 @@
 
 namespace App\GameEngine\Crafting;
 
-use App\Entity\App\CraftOrder;
 use App\Entity\App\CrafterReputation;
+use App\Entity\App\CraftOrder;
 use App\Entity\App\Player;
 use App\Repository\CrafterReputationRepository;
 use Doctrine\ORM\EntityManagerInterface;

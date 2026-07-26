@@ -2,8 +2,8 @@
 
 namespace App\Tests\Unit\GameEngine\Crafting;
 
-use App\Entity\App\CraftOrder;
 use App\Entity\App\CrafterReputation;
+use App\Entity\App\CraftOrder;
 use App\Entity\App\Guild;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
