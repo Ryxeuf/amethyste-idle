@@ -122,9 +122,7 @@ class CraftOrderManager
         }
 
         if (!$order->isOpen()) {
-            throw new \InvalidArgumentException($order->isClaimed()
-                ? 'Un artisan a deja pris cette commande en charge.'
-                : 'Cette commande n\'est plus active.');
+            throw new \InvalidArgumentException($order->isClaimed() ? 'Un artisan a deja pris cette commande en charge.' : 'Cette commande n\'est plus active.');
         }
 
         $this->releaseEscrow($order, CraftOrderStatus::Cancelled);
