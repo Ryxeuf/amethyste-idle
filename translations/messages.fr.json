@@ -1043,6 +1043,7 @@
         "empty": "Aucune liaison connue.",
         "travel_minutes": "%count% min de voyage",
         "travel_instant": "Passage immédiat",
+        "travel_mounted": "%mount% : %base% min à pied",
         "locked": "Liaison rapide : découverte de la zone requise"
       },
       "players": {

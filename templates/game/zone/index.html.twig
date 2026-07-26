@@ -455,11 +455,15 @@
                                             {% endif %}
                                         </span>
                                         <span class="flex items-center gap-2">
-                                            <span class="text-xs text-gray-400">
-                                                {% if connection.travelSeconds == 0 %}
+                                            {% set seconds = travelSeconds[connection.id] ?? connection.travelSeconds %}
+                                            <span class="text-xs {{ seconds < connection.travelSeconds ? 'text-emerald-300' : 'text-gray-400' }}">
+                                                {% if seconds == 0 %}
                                                     {{ 'game.zone.connections.travel_instant'|trans }}
                                                 {% else %}
-                                                    {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (connection.travelSeconds / 60)|round}) }}
+                                                    {{ 'game.zone.connections.travel_minutes'|trans({'%count%': (seconds / 60)|round}) }}
+                                                {% endif %}
+                                                {% if seconds < connection.travelSeconds %}
+                                                    <span title="{{ 'game.zone.connections.travel_mounted'|trans({'%mount%': mount|localized_mount_name, '%base%': (connection.travelSeconds / 60)|round}) }}">🐎</span>
                                                 {% endif %}
                                             </span>
                                             {% if locked %}

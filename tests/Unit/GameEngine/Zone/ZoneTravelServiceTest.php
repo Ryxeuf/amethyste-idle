@@ -7,7 +7,9 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerVisitedZone;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Entity\Game\Mount;
 use App\Event\Zone\PlayerTraveledEvent;
+use App\GameEngine\Mount\MountTravelSpeed;
 use App\GameEngine\Zone\ZoneTravelService;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,7 +29,7 @@ class ZoneTravelServiceTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->visitedZoneRepository = $this->createMock(PlayerVisitedZoneRepository::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher);
+        $this->service = new ZoneTravelService($this->entityManager, $this->visitedZoneRepository, $this->eventDispatcher, new MountTravelSpeed());
     }
 
     private function buildZone(string $slug): Zone
@@ -58,6 +60,30 @@ class ZoneTravelServiceTest extends TestCase
         $this->assertSame($arrivesAt, $player->getTravelArrivesAt());
         $this->assertEqualsWithDelta(time() + 300, $arrivesAt->getTimestamp(), 2);
         $this->assertSame($from, $player->getCurrentZone(), 'Le joueur reste dans sa zone tant que le voyage n\'est pas arrive.');
+    }
+
+    public function testActiveMountShortensTravel(): void
+    {
+        $from = $this->buildZone('village');
+        $to = $this->buildZone('foret');
+        $player = $this->buildPlayerIn($from);
+        $player->setActiveMount((new Mount())->setSpeedBonus(50));
+        $connection = new ZoneConnection($from, $to, 300);
+
+        $arrivesAt = $this->service->startTravel($player, $connection);
+
+        // +50 % de vitesse : 300 * 100/150 = 200 s.
+        $this->assertEqualsWithDelta(time() + 200, $arrivesAt->getTimestamp(), 2);
+        $this->assertSame(300, $connection->getTravelSeconds(), 'La duree de reference de la connexion n\'est pas alteree.');
+    }
+
+    public function testActiveMountDoesNotResurrectInstantConnections(): void
+    {
+        $from = $this->buildZone('village');
+        $player = $this->buildPlayerIn($from);
+        $player->setActiveMount((new Mount())->setSpeedBonus(75));
+
+        $this->assertSame(0, $this->service->travelSecondsFor($player, new ZoneConnection($from, $this->buildZone('taverne'), 0)));
     }
 
     public function testInstantConnectionArrivesImmediately(): void

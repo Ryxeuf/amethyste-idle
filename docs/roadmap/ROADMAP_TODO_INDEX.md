@@ -1,7 +1,7 @@
 # Roadmap a venir — Index
 
 > Les taches detaillees sont reparties par **sprint** dans les fichiers ci-dessous.
-> Derniere mise a jour : 2026-07-26 (**Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
+> Derniere mise a jour : 2026-07-26 (**tache 130** montures, **Sprint 13 clos** par ZON-26b-a, **Sprints 14-15 termines**, **housing complet**) ; 2026-07-25 (**point post-pivot** : campagne ZON close, menage des sprints 11-12, ouverture des Sprints 13-14)
 > **PIVOT PBBG (juillet 2026)** : le jeu a abandonne la carte en tuiles au profit d'un monde en graphe de zones (energie, time-gating reel). Decision et equivalences : [docs/PIVOT_PBBG.md](../PIVOT_PBBG.md) ; bilan de campagne : [docs/ZON_CAMPAIGN_RECAP.md](../ZON_CAMPAIGN_RECAP.md).
 
 ---
@@ -34,7 +34,7 @@
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
 | **Consolidation post-pivot (ZON-22→27)** | **7/7** | ✅ Sprint 13 termine (2026-07-26) — reste le sous-jalon PNJ declaratifs |
 | **Plan Economie joueur (ECO)** | **Pistes A/B/C completes** | ✅ Sprints 14-15 — reste Piste D (echoppes, ← housing) |
-| Sprint 11 — Monde vivant | ~8 items | En cours (montures/events/classement quasi finis) |
+| Sprint 11 — Monde vivant | ~6 items | En cours (housing ✅, montures ✅) |
 | Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
 
 ---
@@ -114,8 +114,8 @@ SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
 
 SPRINT 11 — MONDE VIVANT (← Sprints 7-10)
   128 Nouvelles zones Acte 4              ← ZON-26 ✅ debloque
-  129 Housing joueur                      ← 116 ✅        → debloque ECO-10
-  130 Montures (temps de voyage)          ← ZON-06 ✅ (reste la transposition)
+  129 Housing joueur                      ✅ complet      → debloque ECO-10
+  130 Montures (temps de voyage)          ✅ transposee au modele zone
   131 Events live                         ← ZON-15 ✅ (reste l'UI admin)
   132 Classement saisonnier               quasi termine
   133 Mini-jeux                           ∅ (peche ✅, defis chrono a faire)

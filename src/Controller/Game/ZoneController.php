@@ -110,6 +110,8 @@ class ZoneController extends AbstractController
             return $this->render('game/zone/index.html.twig', [
                 'zone' => null,
                 'connections' => [],
+                'travelSeconds' => [],
+                'mount' => null,
                 'playersPresent' => [],
                 'poiCounts' => [],
                 'actions' => [],
@@ -156,9 +158,19 @@ class ZoneController extends AbstractController
             ];
         }
 
+        // Duree reellement subie, monture comprise (tache 130) : annoncer la
+        // duree de reference alors qu'une monture la raccourcit ferait passer
+        // le bonus pour inoperant.
+        $travelSeconds = [];
+        foreach ($connections as $connection) {
+            $travelSeconds[$connection->getId()] = $this->zoneTravelService->travelSecondsFor($player, $connection);
+        }
+
         return $this->render('game/zone/index.html.twig', [
             'zone' => $zone,
             'connections' => $connections,
+            'travelSeconds' => $travelSeconds,
+            'mount' => $player->getActiveMount(),
             'playersPresent' => $playersPresent,
             'poiCounts' => $poiCounts,
             'actions' => $this->buildActions(),

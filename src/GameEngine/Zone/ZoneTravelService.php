@@ -8,6 +8,7 @@ use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Event\Zone\PlayerTraveledEvent;
 use App\Event\Zone\ZoneVisitedEvent;
+use App\GameEngine\Mount\MountTravelSpeed;
 use App\Repository\PlayerVisitedZoneRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -26,7 +27,19 @@ class ZoneTravelService
         private readonly EntityManagerInterface $entityManager,
         private readonly PlayerVisitedZoneRepository $visitedZoneRepository,
         private readonly EventDispatcherInterface $eventDispatcher,
+        private readonly MountTravelSpeed $mountTravelSpeed,
     ) {
+    }
+
+    /**
+     * Temps de voyage reellement applique, monture comprise (tache 130).
+     *
+     * Expose pour l'affichage : la liste des connexions doit annoncer la duree
+     * que le joueur subira, pas la duree de reference.
+     */
+    public function travelSecondsFor(Player $player, ZoneConnection $connection): int
+    {
+        return $this->mountTravelSpeed->effectiveTravelSeconds($player, $connection->getTravelSeconds());
     }
 
     /**
@@ -55,7 +68,7 @@ class ZoneTravelService
             throw new ZoneTravelException('game.zone.travel.error.not_discovered');
         }
 
-        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $connection->getTravelSeconds()));
+        $arrivesAt = (new \DateTimeImmutable())->modify(sprintf('+%d seconds', $this->travelSecondsFor($player, $connection)));
         $player->setTravelToZone($connection->getToZone());
         $player->setTravelArrivesAt($arrivesAt);
 
