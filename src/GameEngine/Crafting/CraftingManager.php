@@ -27,6 +27,7 @@ class CraftingManager
         private readonly GearHelper $gearHelper,
         private readonly PlayerActionHelper $playerActionHelper,
         private readonly CraftSpecializationService $craftSpecializationService,
+        private readonly RecipeUnlockCatalog $recipeUnlockCatalog,
     ) {
     }
 
@@ -44,21 +45,46 @@ class CraftingManager
             'craft' => $craft,
         ]);
 
-        $craftingLevel = $this->getCraftingLevel($player, $craft);
-        $playerSpecialization = $player->getCraftSpecialization();
+        return array_filter($recipes, fn (Recipe $recipe) => $this->isRecipeUnlocked($player, $recipe));
+    }
 
-        return array_filter($recipes, function (Recipe $recipe) use ($craftingLevel, $playerSpecialization) {
-            if ($craftingLevel < $recipe->getRequiredLevel()) {
-                return false;
-            }
+    /**
+     * Ce joueur peut-il fabriquer cette recette ?
+     *
+     * Trois gardiens, dans l'ordre du moins au plus specifique :
+     *
+     * 1. le **niveau de metier**, tire de l'XP du domaine ;
+     * 2. la **specialisation**, quand la recette en exige une ;
+     * 3. le **plan appris** dans l'arbre de talent (ECO-20).
+     *
+     * Le troisieme etait ecrit dans les donnees depuis toujours — 51 nœuds
+     * d'arbre citant 82 recettes — et **n'etait lu nulle part** : un forgeron
+     * niveau 10 fabriquait les 29 recettes de forge sans avoir achete un seul
+     * nœud. Le brancher est ce qui rend la specialisation reelle : acheter tous
+     * les nœuds d'artisanat couterait 2090 points pour un plafond de 500.
+     *
+     * Une recette qu'aucun skill ne cite reste gatee par les deux premiers
+     * gardiens seulement : le troisieme ne doit jamais rendre une recette
+     * inatteignable faute d'avoir ete citee.
+     */
+    public function isRecipeUnlocked(Player $player, Recipe $recipe): bool
+    {
+        if ($this->getCraftingLevel($player, $recipe->getCraft()) < $recipe->getRequiredLevel()) {
+            return false;
+        }
 
-            $required = $recipe->getRequiredSpecialization();
-            if ($required !== null && $required !== $playerSpecialization) {
-                return false;
-            }
+        $required = $recipe->getRequiredSpecialization();
+        if ($required !== null && $required !== $player->getCraftSpecialization()) {
+            return false;
+        }
 
+        // Aucun arbre ne revendique cette recette : le troisieme gardien ne
+        // s'applique pas, sinon brancher le gardien la rendrait inatteignable.
+        if (!$this->recipeUnlockCatalog->isGatedBySkill($recipe->getSlug())) {
             return true;
-        });
+        }
+
+        return $this->playerActionHelper->hasUnlockedRecipe($recipe->getSlug(), $player);
     }
 
     /**
@@ -74,21 +100,7 @@ class CraftingManager
             ['requiredLevel' => 'ASC']
         );
 
-        $craftingLevel = $this->getCraftingLevel($player, $craft);
-        $playerSpecialization = $player->getCraftSpecialization();
-
-        return array_values(array_filter($recipes, function (Recipe $recipe) use ($craftingLevel, $playerSpecialization) {
-            if ($craftingLevel < $recipe->getRequiredLevel()) {
-                return true;
-            }
-
-            $required = $recipe->getRequiredSpecialization();
-            if ($required !== null && $required !== $playerSpecialization) {
-                return true;
-            }
-
-            return false;
-        }));
+        return array_values(array_filter($recipes, fn (Recipe $recipe) => !$this->isRecipeUnlocked($player, $recipe)));
     }
 
     /**
@@ -316,6 +328,19 @@ class CraftingManager
                 'item' => null,
                 'quality' => null,
                 'message' => sprintf('Cette recette est reservee aux %s.', $requiredSpec->label()),
+            ];
+        }
+
+        // ECO-20 : l'ecran ne proposait que les recettes disponibles, mais rien
+        // ne verifiait le niveau ni le plan **a l'execution** — une requete
+        // forgee suffisait a fabriquer n'importe quoi. Le filtre d'affichage
+        // n'est pas une regle metier.
+        if (!$this->isRecipeUnlocked($player, $recipe)) {
+            return [
+                'success' => false,
+                'item' => null,
+                'quality' => null,
+                'message' => 'Vous n\'avez pas appris cette recette.',
             ];
         }
 

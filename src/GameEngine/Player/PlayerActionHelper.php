@@ -2,6 +2,7 @@
 
 namespace App\GameEngine\Player;
 
+use App\Entity\App\Player;
 use App\Helper\CellHelper;
 use App\Helper\PlayerHelper;
 
@@ -10,10 +11,14 @@ class PlayerActionHelper
     final public const HARVEST = 'harvest';
     final public const TOOL_SLOT_UNLOCK = 'tool_slot.unlock';
     final public const EQUIP_TOOL = 'equip.tool';
+    final public const CRAFT = 'craft';
     final public const MOVEMENT_SWIM = 'movement.swim';
     final public const MOVEMENT_CLIMB = 'movement.climb';
 
     private ?array $actions = null;
+
+    /** @var array<int, array<string, list<string>>> actions resolues par joueur */
+    private array $actionsByPlayer = [];
 
     public function __construct(private readonly PlayerHelper $playerHelper)
     {
@@ -42,11 +47,9 @@ class PlayerActionHelper
      *
      * @return string[]
      */
-    public function getUnlockedToolSlots(): array
+    public function getUnlockedToolSlots(?Player $player = null): array
     {
-        $actions = $this->getActions();
-
-        return $actions[self::TOOL_SLOT_UNLOCK] ?? [];
+        return $this->actionsFor($player)[self::TOOL_SLOT_UNLOCK] ?? [];
     }
 
     /**
@@ -54,11 +57,33 @@ class PlayerActionHelper
      *
      * @return string[]
      */
-    public function getEquippableToolSlugs(): array
+    public function getEquippableToolSlugs(?Player $player = null): array
     {
-        $actions = $this->getActions();
+        return $this->actionsFor($player)[self::EQUIP_TOOL] ?? [];
+    }
 
-        return $actions[self::EQUIP_TOOL] ?? [];
+    /**
+     * Recettes debloquees par les skills du joueur (ECO-20).
+     *
+     * Le champ lu est `recipes`, la ou `equip.tool` lit `slugs` et
+     * `tool_slot.unlock` lit `slot`. Avant ce jalon, une action `craft` tombait
+     * dans la branche generique qui cherche `spots` : elle ne contribuait donc
+     * **rien**, et les 51 nœuds d'arbre qui debloquent des recettes ne
+     * debloquaient rien du tout.
+     *
+     * Prend un joueur explicite : les commandes de craft (ECO-06) doivent
+     * qualifier un artisan qui n'est pas forcement celui de la session.
+     *
+     * @return list<string>
+     */
+    public function getUnlockedRecipeSlugs(?Player $player = null): array
+    {
+        return array_values(array_unique($this->actionsFor($player)[self::CRAFT] ?? []));
+    }
+
+    public function hasUnlockedRecipe(string $recipeSlug, ?Player $player = null): bool
+    {
+        return \in_array($recipeSlug, $this->getUnlockedRecipeSlugs($player), true);
     }
 
     /**
@@ -74,11 +99,9 @@ class PlayerActionHelper
      *
      * @return string[]
      */
-    public function getHarvestSpots(): array
+    public function getHarvestSpots(?Player $player = null): array
     {
-        $actions = $this->getActions();
-
-        return $actions[self::HARVEST] ?? [];
+        return $this->actionsFor($player)[self::HARVEST] ?? [];
     }
 
     /**
@@ -116,17 +139,41 @@ class PlayerActionHelper
         return $mask;
     }
 
+    /**
+     * Actions d'un joueur donne, ou du joueur de la session a defaut.
+     *
+     * @return array<string, list<string>>
+     */
+    private function actionsFor(?Player $player): array
+    {
+        return $player === null ? $this->getActions() : $this->resolveActions($player);
+    }
+
     private function getActions(): array
     {
         if ($this->actions !== null) {
             return $this->actions;
         }
 
-        $this->actions = [];
         $player = $this->playerHelper->getPlayer();
-        if ($player === null) {
-            return $this->actions;
+        $this->actions = $player === null ? [] : $this->resolveActions($player);
+
+        return $this->actions;
+    }
+
+    /**
+     * Agrege les actions des skills d'un joueur donne.
+     *
+     * @return array<string, list<string>>
+     */
+    private function resolveActions(Player $player): array
+    {
+        $cacheKey = $player->getId() ?? 0;
+        if (isset($this->actionsByPlayer[$cacheKey]) && $cacheKey !== 0) {
+            return $this->actionsByPlayer[$cacheKey];
         }
+
+        $actions = [];
         foreach ($player->getSkills() as $skill) {
             if ($skill->getActions()) {
                 foreach ($skill->getActions() as $action) {
@@ -138,41 +185,40 @@ class PlayerActionHelper
                         continue;
                     }
 
+                    if (!isset($actions[$actionKey])) {
+                        $actions[$actionKey] = [];
+                    }
+
                     if ($actionKey === self::TOOL_SLOT_UNLOCK) {
                         $slot = $action['slot'] ?? null;
                         if (\is_string($slot) && $slot !== '') {
-                            if (!isset($this->actions[$actionKey])) {
-                                $this->actions[$actionKey] = [];
-                            }
-                            $this->actions[$actionKey][] = $slot;
+                            $actions[$actionKey][] = $slot;
                         }
                         continue;
                     }
 
-                    if ($actionKey === self::EQUIP_TOOL) {
-                        $slugs = $action['slugs'] ?? [];
-                        if (!\is_array($slugs)) {
-                            $slugs = [];
-                        }
-                        if (!isset($this->actions[$actionKey])) {
-                            $this->actions[$actionKey] = [];
-                        }
-                        $this->actions[$actionKey] = array_merge($this->actions[$actionKey], $slugs);
-                        continue;
-                    }
+                    // Chaque cle d'action porte ses donnees dans un champ qui lui
+                    // est propre. Une cle inconnue tombe sur `spots` : c'est ce
+                    // qui rendait les actions `craft` (champ `recipes`) muettes.
+                    $field = match ($actionKey) {
+                        self::EQUIP_TOOL => 'slugs',
+                        self::CRAFT => 'recipes',
+                        default => 'spots',
+                    };
 
-                    $spots = $action['spots'] ?? [];
-                    if (!\is_array($spots)) {
-                        $spots = [];
+                    $values = $action[$field] ?? [];
+                    if (!\is_array($values)) {
+                        $values = [];
                     }
-                    if (!isset($this->actions[$actionKey])) {
-                        $this->actions[$actionKey] = [];
-                    }
-                    $this->actions[$actionKey] = array_merge($this->actions[$actionKey], $spots);
+                    $actions[$actionKey] = array_merge($actions[$actionKey], array_values($values));
                 }
             }
         }
 
-        return $this->actions;
+        if ($cacheKey !== 0) {
+            $this->actionsByPlayer[$cacheKey] = $actions;
+        }
+
+        return $actions;
     }
 }
