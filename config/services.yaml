@@ -68,6 +68,9 @@ services:
         arguments:
             $pairTransactionCap: 10
             $pairWindowHours: 24
+            # ECO-09 : plafond du canal des commandes, plus bas car il produit
+            # du stuff lie, indetectable une fois livre.
+            $craftOrderPairCap: 5
 
     App\Service\Monitoring\HealthChecker:
         arguments:

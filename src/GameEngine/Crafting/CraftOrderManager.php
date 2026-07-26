@@ -45,6 +45,15 @@ class CraftOrderManager
      */
     public const MAX_ACTIVE_ORDERS = 10;
 
+    /**
+     * Delai de livraison accorde a un artisan a partir de sa prise en charge.
+     *
+     * Sans lui, l'echeance d'une commande prise resterait celle du tableau : un
+     * artisan qui prend une commande a sa 71e heure aurait une heure pour
+     * livrer, et serait sanctionne pour un delai qu'il n'a pas choisi.
+     */
+    public const DELIVERY_WINDOW_HOURS = 24;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly CraftOrderRepository $orderRepository,
@@ -213,6 +222,13 @@ class CraftOrderManager
             throw new \InvalidArgumentException('Cette commande est adressee a un artisan en particulier.');
         }
 
+        // ECO-09 : le plafond par couple mord ici et non a la livraison. Une
+        // commande prise immobilise le tableau ; refuser au dernier moment
+        // aurait laisse l'artisan travailler pour rien.
+        if ($this->antiExploit->isCraftOrderPairCapReached($order->getRequester(), $crafter)) {
+            throw new \InvalidArgumentException('Vous avez trop travaille pour ce commanditaire recemment.');
+        }
+
         $this->assertSameMarket($crafter, $order);
         $this->assertQualified($crafter, $order);
 
@@ -223,6 +239,13 @@ class CraftOrderManager
         $order->setClaimedAt($now);
         // ECO-07 : le `craftingTime` de la recette devient une attente reelle.
         $order->setReadyAt($now->modify(sprintf('+%d seconds', max(1, $order->getRecipe()->getCraftingTime()))));
+
+        // ECO-09 : l'echeance cesse d'etre celle du tableau pour devenir celle
+        // de la **livraison**, comptee depuis la prise en charge.
+        $deadline = $now->modify(sprintf('+%d hours', self::DELIVERY_WINDOW_HOURS));
+        if ($deadline > $order->getExpiresAt()) {
+            $order->setExpiresAt($deadline);
+        }
 
         $this->entityManager->flush();
 
@@ -493,6 +516,53 @@ class CraftOrderManager
             'order_id' => $order->getId(),
             'requester_id' => $player->getId(),
         ]);
+    }
+
+    /**
+     * Restitue l'escrow des commandes echues (ECO-09).
+     *
+     * `findExpirable()` et `releaseEscrow()` existaient depuis ECO-05 sans que
+     * rien ne les appelle : une commande que personne ne prenait immobilisait
+     * materiaux et Gils **indefiniment**. C'est le seul chemin de sortie
+     * automatique de l'escrow, et il manquait.
+     *
+     * @return array{released: int, penalised: int}
+     */
+    public function expireOrders(?\DateTimeImmutable $now = null): array
+    {
+        $now ??= new \DateTimeImmutable();
+        $released = 0;
+        $penalised = 0;
+
+        foreach ($this->orderRepository->findExpirable($now) as $order) {
+            $crafter = $order->getCrafter();
+
+            // Une commande **prise** et non livree n'est pas la meme faute
+            // qu'une commande que personne n'a voulue : l'artisan s'etait
+            // engage, et il a bloque le tableau pour les autres.
+            if ($order->isClaimed() && null !== $crafter) {
+                $this->reputationManager->recordFailure($crafter, $order);
+                ++$penalised;
+
+                $this->logger->info('Craft order not delivered in time', [
+                    'order_id' => $order->getId(),
+                    'crafter_id' => $crafter->getId(),
+                    'recipe' => $order->getRecipe()->getSlug(),
+                ]);
+            }
+
+            // Dans les deux cas le commanditaire recupere tout : il n'a commis
+            // aucune faute, et lui faire payer l'inaction d'un tiers serait la
+            // pire lecon a tirer d'une commande non honoree.
+            $this->releaseEscrow($order, CraftOrderStatus::Expired);
+            ++$released;
+        }
+
+        if ($released > 0) {
+            $this->entityManager->flush();
+        }
+
+        return ['released' => $released, 'penalised' => $penalised];
     }
 
     /**

@@ -100,6 +100,21 @@ class CrafterReputation
     }
 
     /**
+     * Sanction de non-livraison (ECO-09).
+     *
+     * Le compteur de livraisons **ne bouge pas** : l'artisan n'a rien livre, et
+     * le decrementer effacerait des services reellement rendus par le passe.
+     * Les points ne descendent pas sous zero — une reputation negative n'aurait
+     * pas de sens sur une echelle qui commence a « Novice ».
+     */
+    public function recordFailure(int $points): self
+    {
+        $this->points = max(0, $this->points - max(0, $points));
+
+        return $this;
+    }
+
+    /**
      * Titre affiche au client.
      *
      * Les paliers sont larges a dessein : un client ne choisit pas un artisan au

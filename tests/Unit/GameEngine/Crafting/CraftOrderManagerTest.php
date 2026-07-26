@@ -762,6 +762,111 @@ class CraftOrderManagerTest extends TestCase
         return $found[0];
     }
 
+    // ---------------------------------------------------------------------
+    // ECO-09 — expiration, non-livraison et plafonds anti-farm
+    // ---------------------------------------------------------------------
+
+    /**
+     * Le defaut que ce jalon corrige : `findExpirable()` et `releaseEscrow()`
+     * existaient depuis ECO-05 sans que rien ne les appelle, donc une commande
+     * que personne ne prenait immobilisait materiaux et Gils indefiniment.
+     */
+    public function testExpiringAnUntakenOrderReturnsEverythingToTheRequester(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $order = $this->openOrder($requester);
+        $order->setExpiresAt(new \DateTimeImmutable('-1 hour'));
+        $materials = $order->getMaterials()->toArray();
+
+        $this->orderRepository->method('findExpirable')->willReturn([$order]);
+
+        $report = $this->manager->expireOrders();
+
+        self::assertSame(['released' => 1, 'penalised' => 0], $report);
+        self::assertSame(CraftOrderStatus::Expired, $order->getStatus());
+        self::assertSame(1_000, $requester->getGils(), 'La commission revient integralement.');
+        foreach ($materials as $material) {
+            self::assertNotNull($material->getInventory(), 'Les materiaux retournent au sac.');
+            self::assertNull($material->getCraftOrder());
+        }
+    }
+
+    /**
+     * Un artisan qui s'engage puis ne livre pas a bloque le tableau pour les
+     * autres. Sans contrepartie, accaparer les commandes serait gratuit et le
+     * classement d'ECO-08b deviendrait manipulable par la seule inaction.
+     */
+    public function testAClaimedOrderThatExpiresCostsTheCrafterReputation(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($requester, $crafter);
+        $order->getRecipe()->setRequiredLevel(5);
+        $order->setExpiresAt(new \DateTimeImmutable('-1 hour'));
+
+        $reputation = new CrafterReputation();
+        $reputation->setPlayer($crafter);
+        $reputation->setCraft('forgeron');
+        $reputation->recordDelivery(100);
+
+        $this->reputationRepository->method('findOneForPlayerAndCraft')->willReturn($reputation);
+        $this->orderRepository->method('findExpirable')->willReturn([$order]);
+
+        $report = $this->manager->expireOrders();
+
+        self::assertSame(['released' => 1, 'penalised' => 1], $report);
+        // 5 * POINTS_PER_RECIPE_LEVEL * FAILURE_MULTIPLIER = 20
+        self::assertSame(80, $reputation->getPoints());
+        self::assertSame(1, $reputation->getDeliveries(), 'Les livraisons passees ne sont pas effacees.');
+        self::assertSame(1_000, $requester->getGils(), 'Le commanditaire n\'a commis aucune faute.');
+    }
+
+    public function testReputationNeverGoesBelowZero(): void
+    {
+        $reputation = new CrafterReputation();
+        $reputation->recordDelivery(4);
+
+        $reputation->recordFailure(100);
+
+        self::assertSame(0, $reputation->getPoints());
+        self::assertSame('Novice', $reputation->getTitle());
+    }
+
+    /**
+     * La prise en charge devient l'origine du delai : un artisan qui prend une
+     * commande a sa 71e heure aurait sinon une heure pour livrer, et serait
+     * sanctionne pour un delai qu'il n'a pas choisi.
+     */
+    public function testClaimingPushesTheDeadlineToTheDeliveryWindow(): void
+    {
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+        $order->setExpiresAt(new \DateTimeImmutable('+30 minutes'));
+
+        $this->manager->claimOrder($this->createPlayer(2, 0), $order);
+
+        self::assertGreaterThan(
+            new \DateTimeImmutable('+23 hours'),
+            $order->getExpiresAt(),
+            'L\'echeance devient celle de la livraison, comptee depuis la prise en charge.'
+        );
+    }
+
+    /**
+     * Le plafond mord a la prise en charge et non a la livraison : refuser au
+     * dernier moment aurait laisse l'artisan travailler pour rien.
+     */
+    public function testTheCraftOrderPairCapBlocksTheClaim(): void
+    {
+        $this->antiExploit->method('isCraftOrderPairCapReached')->willReturn(true);
+
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('trop travaille pour ce commanditaire');
+
+        $this->manager->claimOrder($this->createPlayer(2, 0), $order);
+    }
+
     /**
      * Le journal du chemin « taxe brulee » lit le slug de la region : une
      * region de test sans slug ferait echouer le test sur une donnee absente
