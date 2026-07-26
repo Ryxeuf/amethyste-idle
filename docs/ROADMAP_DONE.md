@@ -7,7 +7,37 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-20a — La qualite de craft survit au craft (Sprint 15, 2026-07-26)
+
+> Premier des trois points d'ECO-20, le jalon qui recense les regles d'artisanat ecrites dans les donnees et branchees sur rien.
+
+### Le defaut corrige
+
+`QualityCalculator` calculait une qualite depuis toujours, `CraftingManager::craft()` la placait dans son message de retour — et **`PlayerItem` n'avait aucun champ pour la stocker**. Le joueur lisait « Qualite : Rare » une fois, puis l'objet devenait indiscernable de n'importe quel autre. Consequence directe, relevee en livrant ECO-07a : `CraftOrder.minQuality` etait **inapplicable**, faute de pouvoir lire la qualite du resultat.
+
+### Livre
+
+- **`PlayerItem.craftQuality`**, nullable — tout ce qui ne sort pas d'un etabli n'a pas de qualite de craft, et inventer une valeur retroactive aux objets deja en circulation fausserait la seule donnee que ce champ doit porter.
+- **`CraftingManager::computeQuality()`** rendue publique et extraite : l'etabli et les commandes produisent une qualite par la **meme** formule. La dupliquer aurait laisse les deux voies diverger au premier reglage d'equilibrage.
+- **`CraftOrder.minQuality` applique**, et enfin expose au depot — un champ que le formulaire ne remplissait jamais.
+
+### La regle du retravail
+
+Une piece en dessous du seuil demande est **retravaillee**, pas refusee. Refuser piegerait la commande : l'artisan aurait consomme son temps sans pouvoir ni livrer ni rendre. Le retravail relance l'horloge d'atelier, **ne consomme pas l'escrow**, et ne verse rien — l'artisan paie en temps, c'est-a-dire dans la seule monnaie qu'il vend. Un seuil inconnu de l'echelle est traite comme absent plutot que comme infranchissable : une donnee erronee ne doit pas rendre une commande impossible a honorer.
+
+`fulfillOrder()` retourne desormais `?AuctionSettlement` — `null` signalant le retravail, qui n'est pas un echec mais un tour de plus.
+
+### Volontairement hors du jalon
+
+Refleter la qualite sur les **stats** de l'objet. C'est un changement d'equilibrage, pas une correction de donnee inerte, et il merite d'etre calibre pour lui-meme.
+
+### Tests
+
+Quatre cas : l'objet livre porte sa qualite, une piece sous le seuil est retravaillee (escrow intact, rien d'encaisse, horloge relancee), une piece au niveau ou au-dessus est livree, et un seuil inconnu ne piege pas la commande.
 
 ---
 

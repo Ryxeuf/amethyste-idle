@@ -124,6 +124,18 @@ class CraftOrderController extends AbstractController
 
         try {
             $settlement = $this->orderManager->fulfillOrder($player, $order);
+
+            // null = la piece n'atteignait pas la qualite demandee : l'artisan la
+            // retravaille. Ce n'est pas un echec, c'est le metier.
+            if (null === $settlement) {
+                $this->addFlash('warning', sprintf(
+                    'La piece n\'atteint pas la qualite demandee (%s) : vous la retravaillez.',
+                    $order->getMinQuality() ?? '',
+                ));
+
+                return $this->redirectToRoute('app_game_craft_order_workshop');
+            }
+
             $this->addFlash('success', sprintf(
                 'Commande livree : %s remis a %s, %d Gils encaisses (%d de taxe de region).',
                 $order->getRecipe()->getResult()->getName(),
@@ -229,11 +241,14 @@ class CraftOrderController extends AbstractController
         }
 
         try {
+            $minQuality = trim((string) $request->request->get('min_quality', ''));
+
             $this->orderManager->createOrder(
                 $player,
                 $recipe,
                 $materials,
                 $request->request->getInt('commission'),
+                '' !== $minQuality ? $minQuality : null,
                 targetCrafter: $targetCrafter,
             );
             $this->addFlash('success', null !== $targetCrafter
