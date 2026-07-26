@@ -145,15 +145,19 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 
 ## Piste D — Échoppes (séquentiel)
 
-### ECO-10 — Entités échoppe & gating (M | ★★ | MOYENNE)
+### ECO-10 — Entités échoppe & gating (M | ★★ | MOYENNE) ✅
 > Vitrine persistante d'un artisan, rattachée à une zone, gated.
-> Prérequis : ← ECO-01, housing (Sprint 11)
-- [ ] Entité `PlayerShop` : owner, name, zone, status, rentPaidUntil, slotCount, reputation
-- [ ] Entité `ShopListing` : shop, playerItem (escrow), quantity, unitPrice
-- [ ] Entités `ShopVault` (caisse à encaisser) et `ShopSaleLog` (journal)
-- [ ] **Gating** : housing possédé + rang de métier requis pour ouvrir
-- [ ] Refus de dépôt d'un objet lié (cohérence ECO-01)
-- [ ] Migration + tests
+> Prérequis : ← ECO-01 ✅, housing (Sprint 11) ✅
+- [x] Entité `PlayerShop` : owner (unique), name, sign, zone, status, slotCount, vaultGils, rentDueAt
+- [x] Entité `ShopListing` : shop, playerItem (escrow), quantity, unitPrice
+- [x] `ShopSaleLog` (journal). **La caisse est un entier sur `PlayerShop`, pas une entité** :
+      une caisse n'a qu'un solde, et lui donner une table ajouterait une jointure à chaque vente
+      pour ne rien exprimer de plus. Le détail vit dans le journal.
+- [x] **Gating** : demeure possédée + niveau 5 dans un métier d'artisanat
+- [x] Refus de dépôt d'un objet lié (cohérence ECO-01)
+- [x] Migration + tests
+- [ ] Reste hors périmètre : la **réputation** n'est pas dupliquée sur `PlayerShop` —
+      `CrafterReputation` (ECO-08b) existe déjà, par métier. La vitrine la lira (ECO-12).
 
 ### ECO-11 — Vente asynchrone, caisse & loyer (M | ★★ | MOYENNE)
 > Vend pendant que le propriétaire est déconnecté ; loyer = gold sink auto-régulateur.
