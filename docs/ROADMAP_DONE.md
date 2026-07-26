@@ -7,7 +7,73 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-17** — les lois de l'economie, **Piste E complete** ; **ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-17 — Les lois de l'economie, et ses deux points d'etranglement (Piste E, 2026-07-26)
+
+### Le trou n'etait pas le volume
+
+ECO-17 visait « 30+ tests unitaires ». L'audit en a trouve **211** deja ecrits sur le domaine
+economique, et les quatre axes du jalon couverts : liaison, escrow, taxe vers le tresor, anti-abus.
+
+Mais ils sont tous **par canal**. L'hotel des ventes teste l'hotel des ventes, l'echoppe teste
+l'echoppe. `AuctionSettlementTest` epingle huit scenarios chiffres a la main.
+
+Aucun n'enonce la **loi**. Or les trois canaux marchands partagent une seule autorite de
+repartition, `AuctionSettlement::compute()`. Une loi violee la l'est partout a la fois — et un cas
+chiffre ne la verrait que s'il tombe pile dessus.
+
+### Huit lois, 630 combinaisons
+
+`EconomyInvariantTest` balaie l'espace des entrees au lieu d'y piocher : sept prix, six taux de
+taxe, cinq taux de ristourne, trois regimes de controle de region.
+
+La plus structurante relie ce jalon au precedent : **la destruction est le seul changement de masse
+monetaire**. Hors `burnedAmount`, une vente entre joueurs deplace des Gils sans en creer ni en
+detruire un seul. C'est exactement ce qui rend la mesure de stock d'ECO-15 insensible a la
+velocite — les deux jalons se tiennent.
+
+Le balayage est **interne aux methodes**, pas porte par un fournisseur de donnees : la CI tourne en
+`--testdox`, et 630 lignes par loi noieraient le rapport pour un gain nul — le message d'echec porte
+deja les entrees fautives.
+
+### Deux etranglements bien tenus, et rien pour les garder
+
+L'audit a trouve deux points de passage uniques, corrects, et sans protection :
+
+- **La repartition des Gils** — les trois canaux appellent `AuctionSettlement::compute()`. Un
+  quatrieme qui calculerait sa taxe lui-meme echapperait d'un coup a toutes les lois.
+- **L'entree en inventaire** — les treize services qui donnent un objet a un joueur passent par
+  `InventoryHelper::addItem()`, seul endroit qui applique la liaison a l'obtention (ECO-01).
+
+Aucune des deux fuites ne leverait d'erreur. La premiere ferait un canal detaxe, la seconde un canal
+de blanchiment.
+
+### Le defaut que le garde-fou a trouve
+
+`GuildVaultManager::withdraw()` remettait l'objet dans le sac du joueur **sans** appliquer la
+liaison. Latent, pas actif : `deposit()` refuse ce qui est deja lie, et un objet lie a l'obtention
+l'est des son entree en inventaire — donc aucun ne peut se trouver dans un coffre.
+
+La regle reposait donc entierement sur la garde du **depot**. Un objet dont le type passe a « lie a
+l'obtention » alors qu'il dort deja dans un coffre en serait ressorti libre.
+
+Le coffre ne peut pas deleguer a `InventoryHelper` : celui-ci ecrit dans le sac du joueur **de la
+session**, la ou le retrait resout le sac du joueur qu'on lui **passe**. La regle est donc
+reappliquee sur place, et l'exception au garde-fou est elle-meme gardee — sans quoi la ligne
+d'exception survivrait a la suppression de la regle qu'elle justifie.
+
+### Livre
+
+- `tests/Unit/GameEngine/Economy/EconomyInvariantTest.php` — 8 lois, 630 combinaisons, avec une
+  borne sur le nombre de combinaisons (une constante videe rendrait chaque loi verte sur zero cas)
+- `tests/Unit/GameEngine/Economy/EconomyChokePointTest.php` — 6 gardes : personne ne calcule sa
+  taxe, les trois canaux passent par l'autorite commune, rien n'entre en inventaire hors du point
+  unique, le point unique lie toujours, l'exception applique la regle, tout canal refuse le
+  non-cessible
+- `src/GameEngine/Guild/GuildVaultManager.php` — liaison a l'obtention au retrait
 
 ---
 
