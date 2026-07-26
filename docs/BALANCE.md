@@ -478,11 +478,12 @@ laisserait l'objet et les Gils bloques indefiniment.
 L'escrow de l'hotel des ventes etait deja complet et le reste : l'objet quitte
 l'inventaire au depot et revient au vendeur a l'annulation comme a l'expiration ;
 les Gils d'une mise sont verrouilles chez l'encherisseur et rembourses a la
-surenchere. ECO-16a n'a rien eu a construire de ce cote. Le retour d'objet a **l'expiration**
-reste le seul chemin sans test : le couvrir en unitaire demanderait de simuler le
-constructeur de requetes Doctrine, et la tentative en integration (ECO-16b) a du
-etre retiree faute de pouvoir diagnostiquer son echec a distance. A reprendre avec
-un run local.
+surenchere. ECO-16a n'a rien eu a construire de ce cote. Le retour d'objet a **l'expiration** est
+desormais couvert lui aussi. Le blocage n'etait pas la testabilite mais la **place**
+de la requete : elle vivait dans `AuctionManager`, seul endroit du service a en
+construire une, la ou les sept autres lectures d'annonce etaient deja dans le depot.
+Deplacee dans `AuctionListingRepository::findExpirable()`, le chemin se teste en
+unitaire sans simuler quoi que ce soit de Doctrine.
 
 ---
 

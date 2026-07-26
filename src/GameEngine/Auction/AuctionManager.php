@@ -201,17 +201,7 @@ class AuctionManager
 
     public function expireListings(): int
     {
-        $now = new \DateTimeImmutable();
-
-        $expired = $this->entityManager->createQueryBuilder()
-            ->select('l')
-            ->from(AuctionListing::class, 'l')
-            ->where('l.status = :status')
-            ->andWhere('l.expiresAt <= :now')
-            ->setParameter('status', AuctionStatus::Active)
-            ->setParameter('now', $now)
-            ->getQuery()
-            ->getResult();
+        $expired = $this->listingRepository->findExpirable(new \DateTimeImmutable());
 
         $count = 0;
         /** @var AuctionListing $listing */
