@@ -61,9 +61,10 @@ pour rendre les demeures **visitables** par le graphe.
 - [x] Visite depuis le voisinage, **gatee sur la presence dans la zone** (regle #7)
 - [x] Vue en lecture seule : le visiteur voit le jardin pousser, il n'y touche pas
 
-**HOU-04 — Entretien** (S | ★★)
-- [ ] Loyer periodique = gold sink recurrent (GAME_PRINCIPLES §4.7), commande planifiee
-- [ ] Que se passe-t-il si le loyer n'est pas paye (jamais de confiscation seche)
+**HOU-04 — Entretien** ✅ **livre le 2026-07-26** (voir `ROADMAP_DONE.md`)
+- [x] 500 Gils / semaine (2 % du terrain), commande `app:house:rent`
+- [x] Prelevement **automatique** tant que la bourse suit
+- [x] Impaye → la demeure **dort** : jardin suspendu, **rien n'est confisque ni detruit**
 
 **HOU-05 — Meubles, coffre & atelier** (M | ★)
 - [ ] Acces au coffre (`TYPE_BANK`) depuis la demeure

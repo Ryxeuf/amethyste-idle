@@ -56,6 +56,7 @@ class HousingController extends AbstractController
             'zone' => $zone,
             'canBuyHere' => null !== $zone && $this->housingManager->isResidential($zone),
             'landPrice' => PlayerHouse::LAND_PRICE,
+            'rentAmount' => PlayerHouse::RENT_AMOUNT,
             // Le voisinage : visible des maintenant, visitable en HOU-03.
             'neighbours' => null !== $zone ? $this->houseRepository->findInZone($zone) : [],
         ]);
@@ -223,5 +224,36 @@ class HousingController extends AbstractController
             'plots' => $this->gardenService->getPlots($house),
             'isOwn' => $house->getOwner()->getId() === $player->getId(),
         ]);
+    }
+
+    #[Route('/rent', name: 'app_game_house_rent', methods: ['POST'])]
+    public function payRent(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('house_rent', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        $house = $this->housingManager->getHouse($player);
+        if (!$house instanceof PlayerHouse) {
+            $this->addFlash('error', 'Vous ne possedez pas de demeure.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        try {
+            $this->housingManager->payRent($player, $house);
+            $this->addFlash('success', sprintf('Loyer regle. Prochaine echeance le %s.', $house->getRentDueAt()->format('d/m/Y')));
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_house');
     }
 }

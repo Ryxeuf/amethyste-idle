@@ -34,6 +34,16 @@ class PlayerHouse
      */
     public const LAND_PRICE = 25_000;
 
+    /**
+     * Loyer d'entretien, en Gils, et sa periode.
+     *
+     * 500 Gils par semaine, soit 2 % du terrain : assez pour etre un **gold
+     * sink recurrent** (GAME_PRINCIPLES §4.7), assez peu pour qu'oublier une
+     * echeance ne ruine personne.
+     */
+    public const RENT_AMOUNT = 500;
+    public const RENT_PERIOD_DAYS = 7;
+
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[ORM\Column(name: 'id', type: 'integer')]
@@ -59,6 +69,16 @@ class PlayerHouse
 
     #[ORM\Column(name: 'purchased_at', type: 'datetime_immutable')]
     private \DateTimeImmutable $purchasedAt;
+
+    /**
+     * Echeance du prochain loyer.
+     *
+     * L'arriere se **deduit** de cette date plutot que d'un drapeau : un etat
+     * de plus serait un etat de plus a garder coherent, et la date suffit a
+     * repondre aux deux questions (doit-on ? depuis quand ?).
+     */
+    #[ORM\Column(name: 'rent_due_at', type: 'datetime_immutable')]
+    private \DateTimeImmutable $rentDueAt;
 
     public function getId(): ?int
     {
@@ -109,6 +129,43 @@ class PlayerHouse
     public function setPurchasedAt(\DateTimeImmutable $purchasedAt): self
     {
         $this->purchasedAt = $purchasedAt;
+
+        return $this;
+    }
+
+    public function getRentDueAt(): \DateTimeImmutable
+    {
+        return $this->rentDueAt;
+    }
+
+    public function setRentDueAt(\DateTimeImmutable $rentDueAt): self
+    {
+        $this->rentDueAt = $rentDueAt;
+
+        return $this;
+    }
+
+    /**
+     * Le loyer est-il en retard ?
+     *
+     * Une demeure en arriere **ne se perd pas** : elle dort. Rien n'est
+     * confisque, rien n'est detruit — elle cesse simplement de rendre service
+     * jusqu'a ce que le loyer soit paye.
+     */
+    public function isInArrears(?\DateTimeImmutable $now = null): bool
+    {
+        return $this->rentDueAt < ($now ?? new \DateTimeImmutable());
+    }
+
+    /**
+     * Reporte l'echeance d'une periode a partir de la precedente.
+     *
+     * A partir de l'echeance et non de « maintenant » : payer en retard ne doit
+     * pas offrir une periode pleine, sinon attendre serait rentable.
+     */
+    public function extendRent(): self
+    {
+        $this->rentDueAt = $this->rentDueAt->modify(sprintf('+%d days', self::RENT_PERIOD_DAYS));
 
         return $this;
     }

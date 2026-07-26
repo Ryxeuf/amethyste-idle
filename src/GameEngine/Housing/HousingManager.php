@@ -80,7 +80,10 @@ class HousingManager
         $house->setOwner($player);
         $house->setZone($zone);
         $house->setName($name);
-        $house->setPurchasedAt(new \DateTimeImmutable());
+        $house->setPurchasedAt($now = new \DateTimeImmutable());
+        // La premiere periode est offerte : on ne fait pas payer un loyer le
+        // jour meme ou l'on vient de debourser le terrain.
+        $house->setRentDueAt($now->modify(sprintf('+%d days', PlayerHouse::RENT_PERIOD_DAYS)));
 
         $this->entityManager->persist($house);
         $this->entityManager->flush();
@@ -109,6 +112,72 @@ class HousingManager
         if ($visitor->getCurrentZone()?->getId() !== $house->getZone()->getId()) {
             throw new \InvalidArgumentException('Rendez-vous dans son quartier pour visiter cette demeure.');
         }
+    }
+
+    /**
+     * Paiement du loyer par le proprietaire (HOU-04).
+     *
+     * L'echeance est reportee a partir de la **precedente** et non de
+     * « maintenant » : payer en retard ne doit pas offrir une periode pleine,
+     * sinon attendre serait rentable.
+     */
+    public function payRent(Player $player, PlayerHouse $house): void
+    {
+        if ($house->getOwner()->getId() !== $player->getId()) {
+            throw new \InvalidArgumentException('Cette demeure n\'est pas la votre.');
+        }
+
+        if (!$player->removeGils(PlayerHouse::RENT_AMOUNT)) {
+            throw new \InvalidArgumentException(sprintf('Il vous faut %d Gils pour le loyer.', PlayerHouse::RENT_AMOUNT));
+        }
+
+        $house->extendRent();
+        $this->entityManager->flush();
+
+        $this->logger->info('House rent paid', [
+            'player_id' => $player->getId(),
+            'amount' => PlayerHouse::RENT_AMOUNT,
+            'next_due' => $house->getRentDueAt()->format(\DateTimeInterface::ATOM),
+        ]);
+    }
+
+    /**
+     * Preleve les loyers echus (HOU-04).
+     *
+     * Prelevement automatique tant que la bourse suit : un joueur solvable ne
+     * doit pas perdre l'usage de sa demeure pour avoir oublie un bouton. Quand
+     * la bourse ne suit pas, **rien n'est confisque** — la demeure passe en
+     * arriere et cesse de rendre service jusqu'au paiement.
+     *
+     * @return array{charged: int, unpaid: int}
+     */
+    public function collectDueRents(?\DateTimeImmutable $now = null): array
+    {
+        $now ??= new \DateTimeImmutable();
+        $charged = 0;
+        $unpaid = 0;
+
+        foreach ($this->houseRepository->findWithRentDue($now) as $house) {
+            $owner = $house->getOwner();
+
+            if ($owner->removeGils(PlayerHouse::RENT_AMOUNT)) {
+                $house->extendRent();
+                ++$charged;
+                continue;
+            }
+
+            ++$unpaid;
+            $this->logger->info('House rent unpaid, dwelling dormant', [
+                'player_id' => $owner->getId(),
+                'due_since' => $house->getRentDueAt()->format(\DateTimeInterface::ATOM),
+            ]);
+        }
+
+        if ($charged > 0) {
+            $this->entityManager->flush();
+        }
+
+        return ['charged' => $charged, 'unpaid' => $unpaid];
     }
 
     public function rename(Player $player, PlayerHouse $house, string $name): void

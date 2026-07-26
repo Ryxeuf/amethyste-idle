@@ -133,6 +133,104 @@ final class HousingManagerTest extends TestCase
     }
 
     // ---------------------------------------------------------------------
+    // HOU-04 — entretien
+    // ---------------------------------------------------------------------
+
+    public function testBuyingAHouseGrantsAFirstFreePeriod(): void
+    {
+        $zone = $this->residentialZone();
+        $player = $this->playerIn($zone, PlayerHouse::LAND_PRICE);
+
+        $house = $this->manager->buyLand($player, $zone, 'Neuve');
+
+        self::assertFalse($house->isInArrears(), 'On ne fait pas payer un loyer le jour de l\'achat.');
+        self::assertGreaterThan(new \DateTimeImmutable('+6 days'), $house->getRentDueAt());
+    }
+
+    /**
+     * L'echeance est reportee a partir de la **precedente** : payer en retard
+     * ne doit pas offrir une periode pleine, sinon attendre serait rentable.
+     */
+    public function testPayingLateDoesNotGrantAFullPeriod(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), 1_000);
+        $house = new PlayerHouse();
+        $house->setOwner($player);
+        $overdue = new \DateTimeImmutable('-3 days');
+        $house->setRentDueAt($overdue);
+
+        $this->manager->payRent($player, $house);
+
+        self::assertSame(1_000 - PlayerHouse::RENT_AMOUNT, $player->getGils());
+        self::assertEquals($overdue->modify('+7 days'), $house->getRentDueAt());
+        self::assertFalse($house->isInArrears());
+    }
+
+    public function testPayingRentWithoutEnoughGilsIsRefused(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), PlayerHouse::RENT_AMOUNT - 1);
+        $house = new PlayerHouse();
+        $house->setOwner($player);
+        $house->setRentDueAt(new \DateTimeImmutable('-1 day'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Gils pour le loyer');
+
+        $this->manager->payRent($player, $house);
+    }
+
+    public function testPayingSomeoneElsesRentIsRefused(): void
+    {
+        $house = new PlayerHouse();
+        $house->setOwner($this->playerIn($this->residentialZone(), 0, 1));
+        $house->setRentDueAt(new \DateTimeImmutable('+1 day'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('n\'est pas la votre');
+
+        $this->manager->payRent($this->playerIn($this->residentialZone(), 10_000, 2), $house);
+    }
+
+    /**
+     * Un joueur solvable ne doit pas perdre l'usage de sa demeure pour avoir
+     * oublie un bouton : le prelevement est automatique.
+     */
+    public function testDueRentIsCollectedAutomaticallyFromASolventOwner(): void
+    {
+        $owner = $this->playerIn($this->residentialZone(), 5_000);
+        $house = new PlayerHouse();
+        $house->setOwner($owner);
+        $house->setRentDueAt(new \DateTimeImmutable('-1 hour'));
+        $this->houseRepository->method('findWithRentDue')->willReturn([$house]);
+
+        $report = $this->manager->collectDueRents();
+
+        self::assertSame(['charged' => 1, 'unpaid' => 0], $report);
+        self::assertSame(5_000 - PlayerHouse::RENT_AMOUNT, $owner->getGils());
+        self::assertFalse($house->isInArrears());
+    }
+
+    /**
+     * Insolvable : la demeure **dort**, rien n'est confisque ni detruit.
+     */
+    public function testAnInsolventOwnerKeepsEverythingButFallsIntoArrears(): void
+    {
+        $owner = $this->playerIn($this->residentialZone(), 10);
+        $house = new PlayerHouse();
+        $house->setOwner($owner);
+        $house->setName('Le Repos');
+        $house->setRentDueAt(new \DateTimeImmutable('-1 hour'));
+        $this->houseRepository->method('findWithRentDue')->willReturn([$house]);
+
+        $report = $this->manager->collectDueRents();
+
+        self::assertSame(['charged' => 0, 'unpaid' => 1], $report);
+        self::assertSame(10, $owner->getGils(), 'On ne preleve pas ce qui n\'existe pas.');
+        self::assertSame('Le Repos', $house->getName(), 'La demeure n\'est ni saisie ni renommee.');
+        self::assertTrue($house->isInArrears());
+    }
+
+    // ---------------------------------------------------------------------
     // HOU-03 — visites
     // ---------------------------------------------------------------------
 

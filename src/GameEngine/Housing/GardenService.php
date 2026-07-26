@@ -110,6 +110,11 @@ class GardenService
             throw new \InvalidArgumentException('Cet objet ne se cultive pas.');
         }
 
+        // HOU-04 : on ne seme pas dans un jardin a l'abandon.
+        if ($plot->getHouse()->isInArrears()) {
+            throw new \InvalidArgumentException('Votre demeure est en arriere de loyer : le jardin est a l\'abandon.');
+        }
+
         if (!$this->consumeOne($player, $crop)) {
             throw new \InvalidArgumentException(sprintf('Il vous faut un(e) %s a planter.', $crop->getName()));
         }
@@ -134,6 +139,13 @@ class GardenService
 
         if (!$plot->isRipe()) {
             throw new \InvalidArgumentException(sprintf('Encore %d seconde(s) de pousse.', $plot->getRemainingSeconds()));
+        }
+
+        // HOU-04 : une demeure en arriere de loyer **dort**. La recolte est
+        // suspendue, mais la plante reste en terre — rien n'est detruit, et le
+        // paiement remet tout en marche.
+        if ($plot->getHouse()->isInArrears()) {
+            throw new \InvalidArgumentException('Votre demeure est en arriere de loyer : le jardin est a l\'abandon.');
         }
 
         $quantity = random_int(GardenPlot::YIELD_MIN, GardenPlot::YIELD_MAX);

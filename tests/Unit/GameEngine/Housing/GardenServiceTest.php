@@ -174,6 +174,30 @@ final class GardenServiceTest extends TestCase
     }
 
     /**
+     * HOU-04 : une demeure en arriere de loyer dort. La recolte est suspendue,
+     * mais la plante **reste en terre** — rien n'est detruit, et le paiement
+     * remet tout en marche.
+     */
+    public function testAGardenIsDormantWhileTheRentIsUnpaid(): void
+    {
+        $crop = $this->item('plant-sage');
+        $player = $this->playerWith([]);
+        $plot = $this->plot($player, new \DateTimeImmutable('-1 day'));
+        $plot->plant($crop, new \DateTimeImmutable('-1 second'));
+
+        try {
+            $this->service->harvest($player, $plot);
+            self::fail('La recolte aurait du etre refusee.');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('arriere de loyer', $e->getMessage());
+        }
+
+        self::assertFalse($plot->isEmpty(), 'La plante reste en terre.');
+        self::assertSame($crop, $plot->getCrop());
+        self::assertSame([], $this->added);
+    }
+
+    /**
      * @param list<Item> $bagItems
      */
     private function playerWith(array $bagItems, int $id = 1): Player
@@ -198,10 +222,11 @@ final class GardenServiceTest extends TestCase
         return $player;
     }
 
-    private function plot(Player $owner): GardenPlot
+    private function plot(Player $owner, ?\DateTimeImmutable $rentDueAt = null): GardenPlot
     {
         $house = new PlayerHouse();
         $house->setOwner($owner);
+        $house->setRentDueAt($rentDueAt ?? new \DateTimeImmutable('+7 days'));
 
         $plot = new GardenPlot();
         $plot->setHouse($house);
