@@ -30,6 +30,29 @@
                     <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Renommer</button>
                 </form>
 
+                {# HOU-04 : le loyer est un gold sink recurrent. Une demeure en
+                   arriere dort — rien n'est confisque. #}
+                <div class="mb-4 rounded-lg px-3 py-2 flex flex-wrap items-center justify-between gap-3
+                            {{ house.inArrears ? 'bg-red-950/40 border border-red-800/50' : 'bg-gray-900/60 border border-gray-800' }}">
+                    <div>
+                        <p class="text-xs {{ house.inArrears ? 'text-red-300' : 'text-gray-400' }}">
+                            {% if house.inArrears %}
+                                Loyer en retard depuis le {{ house.rentDueAt|date('d/m/Y') }} — le jardin est a l'abandon.
+                            {% else %}
+                                Prochain loyer : {{ house.rentDueAt|date('d/m/Y') }}
+                            {% endif %}
+                        </p>
+                        <p class="text-xs text-gray-600 mt-0.5">{{ rentAmount|number_format(0, ',', ' ') }} Gils par semaine. Rien n'est jamais confisque.</p>
+                    </div>
+                    <form method="post" action="{{ path('app_game_house_rent') }}">
+                        <input type="hidden" name="_token" value="{{ csrf_token('house_rent') }}">
+                        <button type="submit" {{ player.gils >= rentAmount ? '' : 'disabled' }}
+                                class="px-3 py-1.5 text-xs rounded-lg bg-amber-700 hover:bg-amber-600 disabled:bg-gray-700 disabled:cursor-not-allowed text-white transition-colors">
+                            Payer le loyer
+                        </button>
+                    </form>
+                </div>
+
                 {# HOU-02 : le jardin pousse en temps reel, sans energie et sans
                    presence. C'est le pilier PBBG du housing. #}
                 <h3 class="text-sm font-semibold text-emerald-300 mb-2">Le jardin</h3>

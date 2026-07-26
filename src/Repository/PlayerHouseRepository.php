@@ -24,6 +24,21 @@ class PlayerHouseRepository extends ServiceEntityRepository
     }
 
     /**
+     * Demeures dont le loyer est echu (HOU-04).
+     *
+     * @return PlayerHouse[]
+     */
+    public function findWithRentDue(\DateTimeImmutable $now): array
+    {
+        return $this->createQueryBuilder('h')
+            ->join('h.owner', 'o')->addSelect('o')
+            ->where('h.rentDueAt <= :now')
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Le voisinage : les demeures d'une zone, base de la visite (HOU-03).
      *
      * @return PlayerHouse[]
