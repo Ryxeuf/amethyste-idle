@@ -243,7 +243,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $orderRepository = $this->createMock(CraftOrderRepository::class);
         $orderRepository->method('countActiveByRequester')->willReturn(CraftOrderManager::MAX_ACTIVE_ORDERS);
-        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
 
         $requester = $this->createPlayer(1, 1_000);
         $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
@@ -276,7 +276,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $craftingManager = $this->createMock(CraftingManager::class);
         $craftingManager->method('getCraftingLevel')->willReturn(2);
-        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
 
         $order = $this->openOrder($this->createPlayer(1, 1_000), 5);
 
@@ -460,9 +460,7 @@ class CraftOrderManagerTest extends TestCase
         $crafter = $this->createPlayer(2, 0);
         $order = $this->claimedOrder($requester, $crafter);
 
-        $region = new Region();
-        $region->setTaxRate('0.1000');
-        $order->setRegion($region);
+        $order->setRegion($this->createRegion());
 
         $guild = new Guild();
         $guild->setName('Les Forgerons');
@@ -491,9 +489,7 @@ class CraftOrderManagerTest extends TestCase
         $crafter = $this->createPlayer(2, 0);
         $order = $this->claimedOrder($requester, $crafter);
 
-        $region = new Region();
-        $region->setTaxRate('0.1000');
-        $order->setRegion($region);
+        $order->setRegion($this->createRegion());
 
         $this->townControl->method('getControllingGuild')->willReturn(null);
 
@@ -519,6 +515,21 @@ class CraftOrderManagerTest extends TestCase
         $this->manager->fulfillOrder($crafter, $order);
 
         self::assertSame(CraftOrderStatus::Fulfilled, $order->getStatus());
+    }
+
+    /**
+     * Le journal du chemin « taxe brulee » lit le slug de la region : une
+     * region de test sans slug ferait echouer le test sur une donnee absente
+     * plutot que sur la regle testee.
+     */
+    private function createRegion(string $taxRate = '0.1000'): Region
+    {
+        $region = new Region();
+        $region->setName('Plaines');
+        $region->setSlug('plaines');
+        $region->setTaxRate($taxRate);
+
+        return $region;
     }
 
     /**
