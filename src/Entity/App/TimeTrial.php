@@ -164,7 +164,12 @@ class TimeTrial
         return $this->checkpoints;
     }
 
-    /** @param list<string> $checkpoints */
+    /**
+     * L'entree est reindexee : le parcours se lit par position, et une cle
+     * conservee depuis un tableau filtre decalerait toutes les etapes.
+     *
+     * @param array<array-key, string> $checkpoints
+     */
     public function setCheckpoints(array $checkpoints): self
     {
         $this->checkpoints = array_values($checkpoints);
