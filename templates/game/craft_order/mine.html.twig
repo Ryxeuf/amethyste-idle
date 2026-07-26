@@ -1,0 +1,54 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Mes commandes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">Mes commandes</h2>
+                <p class="text-gray-400 text-xs mt-0.5">
+                    Materiaux et commission restent bloques tant que la commande vit.
+                </p>
+            </div>
+            <a href="{{ path('app_game_craft_order') }}" class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm rounded-lg transition-colors">Tableau</a>
+        </div>
+
+        <div class="game-card-body">
+            {% if orders is empty %}
+                <p class="text-sm text-gray-500 py-6 text-center">Aucune commande en cours.</p>
+            {% else %}
+                <div class="space-y-2">
+                    {% for order in orders %}
+                        <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm text-gray-100 font-medium truncate">{{ order.recipe.name }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    {{ order.status.label }}
+                                    {% if order.crafter %}· artisan : {{ order.crafter.name }}{% endif %}
+                                    · {{ order.materials|length }} materiau{{ order.materials|length > 1 ? 'x' : '' }} bloque{{ order.materials|length > 1 ? 's' : '' }}
+                                    · expire le {{ order.expiresAt|date('d/m H:i') }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="text-yellow-400 font-mono font-semibold text-sm">{{ order.commission|number_format(0, ',', ' ') }} G</span>
+                                {% if order.open %}
+                                    <form method="post" action="{{ path('app_game_craft_order_cancel', {id: order.id}) }}"
+                                          onsubmit="return confirm('Annuler cette commande ? Materiaux et commission vous seront rendus.')">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('craft_order_cancel_' ~ order.id) }}">
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-red-700 hover:bg-red-600 text-white transition-colors">Annuler</button>
+                                    </form>
+                                {% else %}
+                                    {# Une fois l'artisan engage, annuler lui ferait perdre son travail. #}
+                                    <span class="text-gray-500 text-xs italic">Prise en charge</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

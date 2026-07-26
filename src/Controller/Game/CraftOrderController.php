@@ -1,0 +1,206 @@
+<?php
+
+namespace App\Controller\Game;
+
+use App\Entity\App\CraftOrder;
+use App\Entity\Game\Item;
+use App\Entity\Game\Recipe;
+use App\GameEngine\Crafting\CraftOrderManager;
+use App\GameEngine\Region\PlayerRegionResolver;
+use App\Helper\PlayerHelper;
+use App\Repository\CraftOrderRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Tableau de commandes de craft (ECO-06).
+ *
+ * Canal **anonyme** : n'importe quel artisan qualifie de la region peut prendre
+ * une commande ouverte. C'est ce qui le distingue de la commande directe
+ * (ECO-07) — ici, le commanditaire ne choisit pas son artisan, il choisit son
+ * prix.
+ */
+#[Route('/game/craft-order')]
+class CraftOrderController extends AbstractController
+{
+    public function __construct(
+        private readonly PlayerHelper $playerHelper,
+        private readonly CraftOrderRepository $orderRepository,
+        private readonly CraftOrderManager $orderManager,
+        private readonly PlayerRegionResolver $regionResolver,
+        private readonly EntityManagerInterface $entityManager,
+    ) {
+    }
+
+    #[Route('', name: 'app_game_craft_order', methods: ['GET'])]
+    public function index(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $craft = trim((string) $request->query->get('craft', ''));
+        // Le tableau est local, comme le marche : on ne prend pas une commande
+        // d'une region ou l'on ne se trouve pas (ECO-03).
+        $region = $this->regionResolver->resolve($player);
+
+        return $this->render('game/craft_order/index.html.twig', [
+            'player' => $player,
+            'region' => $region,
+            'craft' => $craft,
+            'crafts' => array_keys(Item::CRAFT_TOOL_TYPES),
+            'orders' => $this->orderRepository->findOpenInRegion($region, '' !== $craft ? $craft : null),
+        ]);
+    }
+
+    #[Route('/mine', name: 'app_game_craft_order_mine', methods: ['GET'])]
+    public function mine(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        return $this->render('game/craft_order/mine.html.twig', [
+            'player' => $player,
+            'orders' => $this->orderRepository->findActiveByRequester($player),
+        ]);
+    }
+
+    #[Route('/new', name: 'app_game_craft_order_new', methods: ['GET'])]
+    public function newForm(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        // Le commanditaire commande ce qu'il ne sait pas faire : toutes les
+        // recettes sont proposees, pas seulement les siennes.
+        $recipes = $this->entityManager->getRepository(Recipe::class)->findBy([], ['craft' => 'ASC', 'requiredLevel' => 'ASC']);
+
+        return $this->render('game/craft_order/new.html.twig', [
+            'player' => $player,
+            'recipes' => $recipes,
+            'region' => $this->regionResolver->resolve($player),
+        ]);
+    }
+
+    #[Route('/new', name: 'app_game_craft_order_create', methods: ['POST'])]
+    public function create(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('craft_order_create', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        $recipe = $this->entityManager->getRepository(Recipe::class)->find($request->request->getInt('recipe_id'));
+        if (!$recipe instanceof Recipe) {
+            $this->addFlash('error', 'Recette introuvable.');
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        $materials = $this->orderManager->collectMaterials($player, $recipe);
+        if ([] === $materials) {
+            $this->addFlash('error', 'Votre sac ne contient pas les materiaux de cette recette.');
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        try {
+            $this->orderManager->createOrder($player, $recipe, $materials, $request->request->getInt('commission'));
+            $this->addFlash('success', 'Commande publiee : materiaux et commission sont bloques jusqu\'a la livraison.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+
+            return $this->redirectToRoute('app_game_craft_order_new');
+        }
+
+        return $this->redirectToRoute('app_game_craft_order_mine');
+    }
+
+    #[Route('/{id}/claim', name: 'app_game_craft_order_claim', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function claim(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('craft_order_claim_' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_craft_order');
+        }
+
+        $order = $this->orderRepository->find($id);
+        if (!$order instanceof CraftOrder) {
+            $this->addFlash('error', 'Commande introuvable.');
+
+            return $this->redirectToRoute('app_game_craft_order');
+        }
+
+        try {
+            $this->orderManager->claimOrder($player, $order);
+            $this->addFlash('success', 'Commande prise en charge : elle vous est desormais reservee.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_craft_order');
+    }
+
+    #[Route('/{id}/cancel', name: 'app_game_craft_order_cancel', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function cancel(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('craft_order_cancel_' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_craft_order_mine');
+        }
+
+        $order = $this->orderRepository->find($id);
+        if (!$order instanceof CraftOrder) {
+            $this->addFlash('error', 'Commande introuvable.');
+
+            return $this->redirectToRoute('app_game_craft_order_mine');
+        }
+
+        try {
+            $this->orderManager->cancelOrder($player, $order);
+            $this->addFlash('success', 'Commande annulee : materiaux et commission vous sont rendus.');
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_craft_order_mine');
+    }
+}

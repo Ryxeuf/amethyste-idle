@@ -8,6 +8,7 @@ use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftOrderStatus;
+use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Repository\CraftOrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,6 +43,8 @@ class CraftOrderManager
         private readonly EntityManagerInterface $entityManager,
         private readonly CraftOrderRepository $orderRepository,
         private readonly PlayerRegionResolver $regionResolver,
+        private readonly CraftingManager $craftingManager,
+        private readonly AuctionAntiExploit $antiExploit,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -108,6 +111,131 @@ class CraftOrderManager
         ]);
 
         return $order;
+    }
+
+    /**
+     * Reserve dans le sac du commanditaire les objets couvrant la recette.
+     *
+     * Le client dit « je veux cet objet, voila ma commission » — c'est au jeu de
+     * prelever les bons materiaux. Lui faire cocher chaque minerai un a un
+     * n'ajouterait qu'une occasion de se tromper.
+     *
+     * @return list<PlayerItem> vide si le sac ne couvre pas la recette
+     */
+    public function collectMaterials(Player $requester, Recipe $recipe): array
+    {
+        $bag = $this->getBagInventory($requester);
+
+        $needed = [];
+        foreach ($recipe->getIngredients() as $ingredient) {
+            if (\is_array($ingredient) && isset($ingredient['slug'])) {
+                $needed[(string) $ingredient['slug']] = (int) ($ingredient['quantity'] ?? 1);
+            }
+        }
+
+        $collected = [];
+        foreach ($bag->getItems() as $playerItem) {
+            $slug = $playerItem->getGenericItem()->getSlug();
+            if (($needed[$slug] ?? 0) <= 0 || !$playerItem->isExchangeable()) {
+                continue;
+            }
+            --$needed[$slug];
+            $collected[] = $playerItem;
+        }
+
+        foreach ($needed as $remaining) {
+            if ($remaining > 0) {
+                return [];
+            }
+        }
+
+        return $collected;
+    }
+
+    /**
+     * Prise en charge par un artisan (ECO-06).
+     *
+     * Le verrou anti-double-prise repose sur le statut : la commande passe a
+     * `claimed` et n'est plus servie par le tableau. Deux artisans qui cliquent
+     * a la meme milliseconde restent theoriquement possibles — la parade
+     * definitive est un verrou pessimiste, disproportionne ici : le perdant
+     * recoit un refus explicite et n'a rien engage.
+     */
+    public function claimOrder(Player $crafter, CraftOrder $order): void
+    {
+        if (!$order->isOpen()) {
+            throw new \InvalidArgumentException('Cette commande a deja ete prise en charge.');
+        }
+
+        if ($order->isExpired()) {
+            throw new \InvalidArgumentException('Cette commande a expire.');
+        }
+
+        if ($order->getRequester()->getId() === $crafter->getId()) {
+            throw new \InvalidArgumentException('Vous ne pouvez pas prendre en charge votre propre commande.');
+        }
+
+        // ECO-16b : la suspension ferme les canaux d'echange, celui-ci compris.
+        if ($crafter->isTradeSuspended()) {
+            throw new \InvalidArgumentException('Votre acces au marche est suspendu.');
+        }
+
+        // ECO-16a : le commerce entre personnages d'un meme compte n'a pas plus
+        // de sens ici qu'a l'hotel des ventes — se commander a soi-meme du stuff
+        // lie contournerait tout l'interet du canal.
+        if ($this->antiExploit->isSameAccount($crafter, $order->getRequester())) {
+            throw new \InvalidArgumentException('Vous ne pouvez pas honorer la commande d\'un autre de vos personnages.');
+        }
+
+        $this->assertSameMarket($crafter, $order);
+        $this->assertQualified($crafter, $order);
+
+        $order->setCrafter($crafter);
+        $order->setStatus(CraftOrderStatus::Claimed);
+        $order->setClaimedAt(new \DateTimeImmutable());
+
+        $this->entityManager->flush();
+
+        $this->logger->info('Craft order claimed', [
+            'order_id' => $order->getId(),
+            'crafter_id' => $crafter->getId(),
+            'recipe' => $order->getRecipe()->getSlug(),
+        ]);
+    }
+
+    /**
+     * Un artisan ne voit et ne prend que les commandes de la region ou il se
+     * trouve — meme regle que l'hotel des ventes (ECO-03). Le filtre de l'ecran
+     * n'est pas une regle metier.
+     */
+    private function assertSameMarket(Player $crafter, CraftOrder $order): void
+    {
+        if (!$this->regionResolver->isSameMarket($this->regionResolver->resolve($crafter), $order->getRegion())) {
+            throw new \InvalidArgumentException('Cette commande appartient au tableau d\'une autre region : rendez-vous sur place.');
+        }
+    }
+
+    /**
+     * L'artisan sait-il faire ?
+     *
+     * Le controle reprend **exactement** les regles que l'ecran d'artisanat
+     * applique (`CraftingManager`) : niveau de metier et specialisation. Pouvoir
+     * prendre une commande qu'on ne saurait pas realiser a son etabli n'aurait
+     * aucun sens.
+     */
+    private function assertQualified(Player $crafter, CraftOrder $order): void
+    {
+        $recipe = $order->getRecipe();
+
+        $level = $this->craftingManager->getCraftingLevel($crafter, $recipe->getCraft());
+        if ($level < $recipe->getRequiredLevel()) {
+            throw new \InvalidArgumentException(sprintf('Niveau de %s insuffisant : %d requis, vous avez %d.', $recipe->getCraft(), $recipe->getRequiredLevel(), $level));
+        }
+
+        $required = $recipe->getRequiredSpecialization();
+        if (null !== $required && $required !== $crafter->getCraftSpecialization()) {
+            throw new \InvalidArgumentException('Cette recette exige une specialisation que vous n\'avez pas.');
+        }
     }
 
     /**

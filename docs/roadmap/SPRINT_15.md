@@ -1,6 +1,6 @@
 ## Sprint 15 — Commandes de craft (Piste C)
 
-> **5 jalons** (ECO-05 → ECO-09), **1 livree** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
+> **6 jalons** (ECO-05 → ECO-09, ECO-20), **2 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
 > Objectif : le **troisieme canal d'echange**, et le seul qui produise du stuff **lie**.
 > Prerequis : Sprint 14 ✅ (socle economie joueur complet, 9/9)
 
@@ -17,14 +17,10 @@
 > l'inventaire, la commission quitte la bourse. La couverture des materiaux est verifiee **au
 > depot** et non a l'execution : un artisan qui prend une commande doit pouvoir la realiser.
 
-### ECO-06 — Tableau de commandes regional public (M | ★★ | HAUTE)
-> Canal anonyme : n'importe quel artisan qualifie peut prendre la commande.
-> Prerequis : ← ECO-05
-- [ ] Route/UI : liste des commandes ouvertes de la region (`findOpenInRegion` existe deja)
-- [ ] Filtre par metier (`Recipe.craft`) / recette
-- [ ] Prise en charge : verifie plan possede + `requiredLevel` + `requiredSpecialization`
-- [ ] Une commande `claimed` est reservee a l'artisan (verrou anti-double-prise)
-- [ ] Tests
+> **ECO-06 livree le 2026-07-26** (voir `ROADMAP_DONE.md`) : tableau regional public,
+> `claimOrder()` avec verrou anti-double-prise, et une **qualification alignee sur le seul gardien
+> reel** (niveau de metier + specialisation). L'audit a montre que les deblocages de recettes des
+> arbres de talent **ne gardent rien** — d'ou le jalon **ECO-20** ci-dessous.
 
 ### ECO-07 — Execution de commande & commande directe (M | ★★★ | HAUTE)
 > Le craft consomme l'escrow, respecte le time-gating, livre au client.
@@ -56,15 +52,37 @@
       laisse ouvert, ce canal n'existant pas encore)
 - [ ] Tests
 
+### ECO-20 — Les deblocages de recettes des arbres ne gardent rien (M | ★★★ | HAUTE)
+> **Defaut trouve pendant ECO-06.** Ni une regression ni une dette de conception : un gardien
+> ecrit dans les donnees et jamais branche.
+> Prerequis : ∅ (independant de la Piste C, mais il en conditionne le sens)
+- [ ] `PlayerActionHelper::getActions()` ne traite specifiquement que `tool_slot.unlock` (lit `slot`)
+      et `equip.tool` (lit `slugs`) ; **toute autre cle lit `spots`**. Une action `craft` porte
+      `recipes` → elle contribue un tableau **vide**. Ajouter la branche `craft` (lecture de
+      `recipes`) + un `getUnlockedRecipeSlugs()`
+- [ ] Aucun code de `src/` ne lit `action == 'craft'`. `CraftingController` filtre les recettes
+      via le seul `CraftingManager::getAvailableRecipes()` (niveau de metier + specialisation) :
+      **les ~60 nœuds d'arbre qui « debloquent » des recettes ne debloquent rien aujourd'hui**
+- [ ] Decider et appliquer la regle : soit le skill devient un **prerequis reel** (et il faut
+      verifier qu'aucune recette ne devienne inatteignable — ECO-18/19 ont reconcilie les slugs,
+      pas les chemins), soit les `actions.craft` sont **retirees des fixtures** et le niveau de
+      metier reste le seul gardien assume
+- [ ] Repercuter la decision dans `CraftOrderManager::assertQualified()` (aligne aujourd'hui sur
+      `CraftingManager`, faute de gardien cote skills) et dans `docs/GAME_PRINCIPLES.md`
+- [ ] Tests : un garde-fou du type `SkillRecipeConsistencyTest` verifiant que chaque recette citee
+      par un skill reste atteignable par un chemin d'arbre valide
+
 ---
 
 ### Definition of Done
 
 - [x] Escrow des deux cotes, restitution integrale a l'annulation (ECO-05)
-- [ ] Un artisan qualifie peut prendre et honorer une commande de sa region
+- [x] Un artisan qualifie peut **prendre** une commande de sa region (ECO-06)
+- [ ] Un artisan qualifie peut **honorer** une commande de sa region
 - [ ] La commission est taxee comme une vente, au profit de la guilde controlante
 - [ ] Les objets lies naissent lies a leur commanditaire, et la reputation d'artisan existe
 - [ ] Escrow restitue automatiquement a l'expiration
+- [ ] La qualification d'un artisan repose sur un gardien **branche** (ECO-20)
 
 ---
 

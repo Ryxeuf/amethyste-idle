@@ -1,0 +1,55 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Publier une commande{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">Publier une commande</h2>
+            <p class="text-gray-400 text-xs mt-0.5">
+                Vous fournissez les materiaux et la commission ; un artisan de votre region fournit
+                le savoir-faire. Les deux sont bloques des la publication.
+                {% if region %}<span class="text-gray-500">Tableau : {{ region.localizedName(app.request.locale) }}.</span>{% endif %}
+            </p>
+        </div>
+
+        <div class="game-card-body">
+            <div class="flex items-center gap-1.5 mb-4 bg-yellow-900/20 border border-yellow-700/30 rounded-lg px-3 py-2 w-fit">
+                <span class="text-sm font-semibold text-yellow-400">{{ player.gils|number_format(0, ',', ' ') }} Gils</span>
+            </div>
+
+            <form method="post" action="{{ path('app_game_craft_order_create') }}" class="space-y-4">
+                <input type="hidden" name="_token" value="{{ csrf_token('craft_order_create') }}">
+
+                <div>
+                    <label for="recipe_id" class="block text-xs text-gray-400 mb-1">Objet commande</label>
+                    <select name="recipe_id" id="recipe_id" required
+                            class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                        {% for recipe in recipes %}
+                            <option value="{{ recipe.id }}">{{ recipe.craft }} — {{ recipe.name }} (niv. {{ recipe.requiredLevel }})</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-xs text-gray-600 mt-1">
+                        Les materiaux sont preleves automatiquement dans votre sac : inutile de les cocher un a un.
+                    </p>
+                </div>
+
+                <div>
+                    <label for="commission" class="block text-xs text-gray-400 mb-1">Commission (Gils)</label>
+                    <input type="number" name="commission" id="commission" min="1" value="100" required
+                           class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                    <p class="text-xs text-gray-600 mt-1">
+                        Prelevee immediatement. Elle revient integralement si la commande est annulee ou expire.
+                    </p>
+                </div>
+
+                <div class="flex gap-2">
+                    <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors">Publier</button>
+                    <a href="{{ path('app_game_craft_order') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Annuler</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
