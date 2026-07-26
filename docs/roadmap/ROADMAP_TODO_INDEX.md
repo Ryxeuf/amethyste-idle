@@ -33,7 +33,7 @@
 | Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) |
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
 | **Consolidation post-pivot (ZON-22→27)** | **6/7** | ✅ Sprint 13 quasi termine — reste **ZON-26b** (zones declaratives) |
-| **Plan Economie joueur (ECO)** | **0/17** | 🟠 **A faire — Sprint 14 puis suite** |
+| **Plan Economie joueur (ECO)** | **Pistes A/B/C completes** | ✅ Sprints 14-15 — reste Piste D (echoppes, ← housing) |
 | Sprint 11 — Monde vivant | ~8 items | En cours (montures/events/classement quasi finis) |
 | Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
 
@@ -54,7 +54,8 @@
 | **Sprint 9** | Time-gating, presence & evenements (ZON-13..17) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 10** | Contenu de groupe & decommission carte (ZON-18..21) | Moyenne | ✅ Termine (2026-07-25) |
 | **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ 6/7 — reste ZON-26b |
-| **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | 🟠 **Prochain** |
+| **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | ✅ Termine 9/9 |
+| **Sprint 15** | **Commandes de craft — Piste C (ECO-05..09, ECO-20)** | **Haute** | ✅ Termine 8/8 (2026-07-26) |
 | **Sprint 11** | Monde vivant (128-133) | Basse | En cours |
 | **Sprint 12** | Technique & i18n (134-135) | Basse | En cours (← bloque par ZON-24) |
 
@@ -152,7 +153,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
 13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 6/7 (reste ZON-26b)
 14. [Sprint 14 — Economie joueur (socle)](SPRINT_14.md) ✅ 9/9
-15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ← **En cours** ✅ **8/8** (ECO-07, ECO-08 et ECO-20 scindees en sous-jalons ; ECO-20 nee des audits ECO-06/07)
+15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ✅ **8/8 — termine** (ECO-07, ECO-08 et ECO-20 scindees en sous-jalons ; ECO-20 nee des audits ECO-06/07)
 
 **Plans annexes :**
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**
