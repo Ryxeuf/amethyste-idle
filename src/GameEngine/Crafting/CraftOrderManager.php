@@ -70,6 +70,7 @@ class CraftOrderManager
         int $commission,
         ?string $minQuality = null,
         int $durationHours = self::DEFAULT_DURATION_HOURS,
+        ?Player $targetCrafter = null,
     ): CraftOrder {
         if ($commission < 1) {
             throw new \InvalidArgumentException('La commission doit etre superieure a 0.');
@@ -86,6 +87,10 @@ class CraftOrderManager
         $this->assertMaterialsBelongTo($requester, $materials);
         $this->assertMaterialsCoverRecipe($recipe, $materials);
 
+        if (null !== $targetCrafter) {
+            $this->assertTargetIsAcceptable($requester, $targetCrafter);
+        }
+
         // La commission part **avant** la creation : si la bourse ne suit pas,
         // rien n'est engage et les materiaux restent en place.
         if (!$requester->removeGils($commission)) {
@@ -97,6 +102,7 @@ class CraftOrderManager
         $order->setRecipe($recipe);
         $order->setCommission($commission);
         $order->setMinQuality($minQuality);
+        $order->setTargetCrafter($targetCrafter);
         $order->setRegion($this->regionResolver->resolve($requester));
         $order->setStatus(CraftOrderStatus::Open);
         $order->setExpiresAt(new \DateTimeImmutable(sprintf('+%d hours', max(1, $durationHours))));
@@ -117,6 +123,7 @@ class CraftOrderManager
             'commission' => $commission,
             'materials' => \count($materials),
             'region' => $order->getRegion()?->getSlug(),
+            'target_crafter_id' => $targetCrafter?->getId(),
         ]);
 
         return $order;
@@ -196,6 +203,15 @@ class CraftOrderManager
             throw new \InvalidArgumentException('Vous ne pouvez pas honorer la commande d\'un autre de vos personnages.');
         }
 
+        // ECO-07b : une commande directe est **adressee**, pas publiee. Le
+        // controle vit ici et pas seulement dans la requete du tableau : sans
+        // lui, une requete forgee avec l'identifiant d'une commande directe la
+        // detournerait entierement.
+        $target = $order->getTargetCrafter();
+        if (null !== $target && $target->getId() !== $crafter->getId()) {
+            throw new \InvalidArgumentException('Cette commande est adressee a un artisan en particulier.');
+        }
+
         $this->assertSameMarket($crafter, $order);
         $this->assertQualified($crafter, $order);
 
@@ -214,6 +230,34 @@ class CraftOrderManager
             'crafter_id' => $crafter->getId(),
             'recipe' => $order->getRecipe()->getSlug(),
         ]);
+    }
+
+    /**
+     * Destinataires acceptables d'une commande directe (ECO-07b).
+     *
+     * Les memes refus qu'a la prise en charge, appliques **au depot** : sans
+     * cela, un commanditaire immobiliserait son escrow pour une commande que
+     * l'artisan vise ne pourra jamais prendre, jusqu'a l'expiration.
+     */
+    private function assertTargetIsAcceptable(Player $requester, Player $target): void
+    {
+        if ($target->getId() === $requester->getId()) {
+            throw new \InvalidArgumentException('Vous ne pouvez pas vous adresser une commande a vous-meme.');
+        }
+
+        // ECO-16a : le commerce entre personnages d'un meme compte n'a pas plus
+        // de sens ici qu'a l'hotel des ventes.
+        if ($this->antiExploit->isSameAccount($requester, $target)) {
+            throw new \InvalidArgumentException('Vous ne pouvez pas adresser une commande a un autre de vos personnages.');
+        }
+
+        if ($target->isTradeSuspended()) {
+            throw new \InvalidArgumentException('Cet artisan ne peut pas recevoir de commande pour le moment.');
+        }
+
+        if (!$this->regionResolver->isSameMarket($this->regionResolver->resolve($requester), $this->regionResolver->resolve($target))) {
+            throw new \InvalidArgumentException('Cet artisan ne se trouve pas dans votre region.');
+        }
     }
 
     /**

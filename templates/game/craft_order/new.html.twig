@@ -44,6 +44,17 @@
                     </p>
                 </div>
 
+                {# ECO-07b : nommer un artisan transforme la commande en commande directe. #}
+                <div>
+                    <label for="target_crafter" class="block text-xs text-gray-400 mb-1">Artisan (optionnel)</label>
+                    <input type="text" name="target_crafter" id="target_crafter" maxlength="60" placeholder="Laisser vide pour publier au tableau"
+                           class="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-sm text-gray-200">
+                    <p class="text-xs text-gray-600 mt-1">
+                        Nommer un artisan lui reserve la commande : elle ne parait pas au tableau public.
+                        Il doit se trouver dans votre region.
+                    </p>
+                </div>
+
                 <div class="flex gap-2">
                     <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm rounded-lg transition-colors">Publier</button>
                     <a href="{{ path('app_game_craft_order') }}" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors">Annuler</a>

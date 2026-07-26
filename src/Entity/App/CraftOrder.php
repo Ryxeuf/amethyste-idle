@@ -29,6 +29,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(name: 'idx_craft_order_requester', columns: ['requester_id'])]
 #[ORM\Index(name: 'idx_craft_order_crafter', columns: ['crafter_id'])]
 #[ORM\Index(name: 'idx_craft_order_workshop', columns: ['crafter_id', 'status'])]
+#[ORM\Index(name: 'idx_craft_order_target', columns: ['target_crafter_id', 'status'])]
 class CraftOrder
 {
     use TimestampableEntity;
@@ -58,6 +59,17 @@ class CraftOrder
      * l'hotel des ventes (ECO-03). Un artisan ne voit que les commandes de la
      * region ou il se trouve.
      */
+    /**
+     * Artisan cible d'une **commande directe** (ECO-07b).
+     *
+     * Quand il est renseigne, la commande ne parait pas au tableau public et
+     * lui seul peut la prendre. C'est le canal inverse du tableau : le client
+     * choisit son artisan au lieu de choisir son prix.
+     */
+    #[ORM\ManyToOne(targetEntity: Player::class)]
+    #[ORM\JoinColumn(name: 'target_crafter_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    private ?Player $targetCrafter = null;
+
     #[ORM\ManyToOne(targetEntity: Region::class)]
     #[ORM\JoinColumn(name: 'region_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     private ?Region $region = null;
@@ -151,6 +163,23 @@ class CraftOrder
         $this->crafter = $crafter;
 
         return $this;
+    }
+
+    public function getTargetCrafter(): ?Player
+    {
+        return $this->targetCrafter;
+    }
+
+    public function setTargetCrafter(?Player $targetCrafter): self
+    {
+        $this->targetCrafter = $targetCrafter;
+
+        return $this;
+    }
+
+    public function isDirect(): bool
+    {
+        return null !== $this->targetCrafter;
     }
 
     public function getRegion(): ?Region
