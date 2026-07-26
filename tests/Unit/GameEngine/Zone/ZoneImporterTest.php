@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\GameEngine\Zone;
 
 use App\Entity\App\Map;
+use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\GameEngine\Zone\ZoneImporter;
@@ -17,6 +18,7 @@ class ZoneImporterTest extends TestCase
     private EntityRepository&MockObject $zoneRepository;
     private EntityRepository&MockObject $connectionRepository;
     private EntityRepository&MockObject $mapRepository;
+    private EntityRepository&MockObject $pnjRepository;
     private ZoneImporter $importer;
 
     /** @var list<object> */
@@ -28,11 +30,13 @@ class ZoneImporterTest extends TestCase
         $this->zoneRepository = $this->createMock(EntityRepository::class);
         $this->connectionRepository = $this->createMock(EntityRepository::class);
         $this->mapRepository = $this->createMock(EntityRepository::class);
+        $this->pnjRepository = $this->createMock(EntityRepository::class);
 
         $this->entityManager->method('getRepository')->willReturnMap([
             [Zone::class, $this->zoneRepository],
             [ZoneConnection::class, $this->connectionRepository],
             [Map::class, $this->mapRepository],
+            [Pnj::class, $this->pnjRepository],
         ]);
 
         $this->persisted = [];
@@ -167,6 +171,78 @@ class ZoneImporterTest extends TestCase
     }
 
     /**
+     * Le verrou que ZON-26b-b leve : un `Pnj` n'atteignait sa zone que par une
+     * carte, et une zone sans carte d'origine ne pouvait avoir aucun habitant.
+     * Ici la zone est posee **directement**.
+     */
+    public function testDeclaredPnjsAreAttachedToTheZoneWithoutAMap(): void
+    {
+        $this->zoneRepository->method('findOneBy')->willReturn(null);
+        $this->connectionRepository->method('findOneBy')->willReturn(null);
+        $this->mapRepository->method('findOneBy')->willReturn(null);
+        $this->pnjRepository->method('findOneBy')->willReturn(null);
+
+        $data = $this->zoneData('dune', 'Dune', 'wilderness', false);
+        $data['pnjs'] = [$this->pnjData('dunes-caravanier', 'Yazid')];
+
+        $report = $this->importer->import(['zones' => [$data], 'connections' => []]);
+
+        $pnjs = array_values(array_filter($this->persisted, static fn (object $e) => $e instanceof Pnj));
+        self::assertCount(1, $pnjs);
+        self::assertSame('dunes-caravanier', $pnjs[0]->getSlug());
+        self::assertSame('Yazid', $pnjs[0]->getName());
+        self::assertNotNull($pnjs[0]->getZone(), 'Sans zone posee directement, l\'habitant serait invisible.');
+        self::assertNull($pnjs[0]->getMap(), 'Une zone declarative n\'a pas de carte a offrir.');
+        self::assertSame(1, $report->pnjsCreated);
+    }
+
+    /**
+     * Un PNJ est un individu : re-jouer l'import doit le mettre a jour, pas en
+     * creer un second.
+     */
+    public function testAnExistingPnjIsUpdatedNotDuplicated(): void
+    {
+        $this->zoneRepository->method('findOneBy')->willReturn(null);
+        $this->connectionRepository->method('findOneBy')->willReturn(null);
+        $this->mapRepository->method('findOneBy')->willReturn(null);
+
+        $existing = new Pnj();
+        $existing->setSlug('dunes-caravanier');
+        $existing->setName('Ancien nom');
+        $existing->setCoordinates('0.0');
+        $this->pnjRepository->method('findOneBy')->willReturn($existing);
+
+        $data = $this->zoneData('dune', 'Dune', 'wilderness', false);
+        $data['pnjs'] = [$this->pnjData('dunes-caravanier', 'Yazid')];
+
+        $report = $this->importer->import(['zones' => [$data], 'connections' => []]);
+
+        self::assertSame('Yazid', $existing->getName());
+        self::assertSame(0, $report->pnjsCreated);
+        self::assertSame(1, $report->pnjsUpdated);
+        self::assertCount(1, array_filter($this->persisted, static fn (object $e) => $e instanceof Pnj));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function pnjData(string $slug, string $name): array
+    {
+        return [
+            'slug' => $slug,
+            'name' => $name,
+            'name_en' => null,
+            'class_type' => 'merchant',
+            'life' => 10,
+            'portrait' => null,
+            'greeting' => null,
+            'shop_items' => null,
+            'opens_at' => null,
+            'closes_at' => null,
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function zoneData(string $slug, string $name, string $type, bool $safe): array
@@ -183,6 +259,8 @@ class ZoneImporterTest extends TestCase
             'source_map' => null,
             'explore' => null,
             'gather' => null,
+            'mobs' => null,
+            'pnjs' => null,
         ];
     }
 }

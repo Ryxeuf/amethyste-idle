@@ -4,6 +4,7 @@ namespace App\GameEngine\Zone;
 
 use App\Entity\App\Map;
 use App\Entity\App\Mob;
+use App\Entity\App\Pnj;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
 use App\Entity\Game\Monster;
@@ -55,6 +56,7 @@ class ZoneImporter
         // referencent une zone qui doit avoir un id).
         foreach ($definition['zones'] as $zoneData) {
             $this->syncMobs($bySlug[$zoneData['slug']], $zoneData['mobs'] ?? null, $dryRun, $report);
+            $this->syncPnjs($bySlug[$zoneData['slug']], $zoneData['pnjs'] ?? null, $dryRun, $report);
         }
 
         foreach ($definition['connections'] as $connectionData) {
@@ -204,6 +206,72 @@ class ZoneImporter
         }
 
         return $mob;
+    }
+
+    /**
+     * Habitants declares d'une zone (ZON-26b-b).
+     *
+     * Un PNJ est un **individu**, la ou une creature est un effectif : l'upsert
+     * porte sur le slug, et re-jouer l'import met a jour au lieu de dupliquer.
+     * C'est aussi ce qui permet de corriger un horaire de boutique en editant
+     * le YAML, sans repasser par une migration.
+     *
+     * @param list<array<string, mixed>>|null $pnjs
+     */
+    private function syncPnjs(Zone $zone, ?array $pnjs, bool $dryRun, ZoneImportReport $report): void
+    {
+        if (null === $pnjs || [] === $pnjs) {
+            return;
+        }
+
+        foreach ($pnjs as $entry) {
+            $slug = (string) $entry['slug'];
+            $pnj = $this->entityManager->getRepository(Pnj::class)->findOneBy(['slug' => $slug]);
+
+            if (null === $pnj) {
+                $pnj = new Pnj();
+                $pnj->setSlug($slug);
+                // La zone est posee explicitement : `WorldEntityZoneListener`
+                // respecte une zone deja fixee et n'ira pas chercher de carte.
+                // C'est ce qui leve le verrou — une zone sans carte d'origine
+                // ne pouvait avoir aucun habitant.
+                $pnj->setZone($zone);
+                // Champ herite de l'ere carte (regle #7), sans usage depuis
+                // ZON-21 mais non nullable en base.
+                $pnj->setCoordinates('0.0');
+                ++$report->pnjsCreated;
+            } else {
+                $pnj->setZone($zone);
+                ++$report->pnjsUpdated;
+            }
+
+            $this->applyPnj($pnj, $entry);
+
+            if (!$dryRun) {
+                $this->entityManager->persist($pnj);
+            }
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $entry
+     */
+    private function applyPnj(Pnj $pnj, array $entry): void
+    {
+        $pnj->setName((string) $entry['name']);
+        $pnj->setNameTranslations(null !== $entry['name_en'] ? ['en' => (string) $entry['name_en']] : null);
+        $pnj->setClassType((string) $entry['class_type']);
+        $pnj->setLife((int) $entry['life']);
+        $pnj->setMaxLife((int) $entry['life']);
+        $pnj->setPortrait(null !== $entry['portrait'] ? (string) $entry['portrait'] : null);
+        $pnj->setShopItems(\is_array($entry['shop_items']) ? $entry['shop_items'] : null);
+        $pnj->setOpensAt(null !== $entry['opens_at'] ? (int) $entry['opens_at'] : null);
+        $pnj->setClosesAt(null !== $entry['closes_at'] ? (int) $entry['closes_at'] : null);
+
+        // Une replique d'accueil suffit a rendre un habitant vivant. Les arbres
+        // de dialogue restent aux fixtures : les decrire en YAML demanderait un
+        // second langage pour un gain nul sur le verrou leve ici.
+        $pnj->setDialog(null !== $entry['greeting'] ? ['greeting' => (string) $entry['greeting']] : []);
     }
 
     private function resolveSourceMap(mixed $name, string $zoneSlug, ZoneImportReport $report): ?Map

@@ -106,5 +106,9 @@
 - [x] Scenarios k6 mesurant des routes reellement servies (ZON-24)
 - [x] World 1 sur un graphe dense : anneau + tables enrichies (ZON-26a) ; **population de zone
       declarative** (ZON-26b-a) — une zone se peuple desormais sans carte d'origine
-- [ ] Suite : `pnjs:` declaratifs (ZON-26b-b), les PNJ etant des objets riches (dialogues,
-      boutiques, horaires) repartis dans 7 fixtures — un jalon a lui seul
+- [x] `pnjs:` declaratifs (ZON-26b-b) : `Pnj::slug` comme cle d'idempotence, bloc `pnjs:` dans
+      le format de zone, deux habitants livres sur les **Dunes d'Ambre** — zone sans carte
+      d'origine. Les 7 fixtures historiques ne sont **pas** migrees : elles fonctionnent, et les
+      reecrire serait du risque pur pour aucun gain. Les arbres de dialogue restent aux fixtures.
+
+**Sprint 13 : 8/8 — la dette du pivot est soldee.**
