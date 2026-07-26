@@ -71,7 +71,12 @@ class ZoneImportCommand extends Command
         if ($dryRun) {
             $io->note('Dry-run : aucune ecriture en base.');
         } else {
-            $io->success(sprintf('%d zone(s) et %d liaison(s) synchronisees.', $report->zonesTouched(), $report->connectionsTouched()));
+            $io->success(sprintf(
+                '%d zone(s), %d liaison(s) et %d creature(s) synchronisees.',
+                $report->zonesTouched(),
+                $report->connectionsTouched(),
+                $report->mobsTouched(),
+            ));
         }
 
         return Command::SUCCESS;

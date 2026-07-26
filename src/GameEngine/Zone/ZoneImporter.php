@@ -3,8 +3,10 @@
 namespace App\GameEngine\Zone;
 
 use App\Entity\App\Map;
+use App\Entity\App\Mob;
 use App\Entity\App\Zone;
 use App\Entity\App\ZoneConnection;
+use App\Entity\Game\Monster;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
@@ -47,6 +49,12 @@ class ZoneImporter
         // Les zones doivent exister (id genere) avant de creer les liaisons.
         if (!$dryRun) {
             $this->entityManager->flush();
+        }
+
+        // ZON-26b : la population declaree, apres le flush des zones (les mobs
+        // referencent une zone qui doit avoir un id).
+        foreach ($definition['zones'] as $zoneData) {
+            $this->syncMobs($bySlug[$zoneData['slug']], $zoneData['mobs'] ?? null, $dryRun, $report);
         }
 
         foreach ($definition['connections'] as $connectionData) {
@@ -108,6 +116,86 @@ class ZoneImporter
         }
 
         return [$zone, $isNew];
+    }
+
+    /**
+     * Materialise la population declaree d'une zone (ZON-26b).
+     *
+     * Un `Mob` n'atteignait sa zone que **par une carte**
+     * (`WorldEntityZoneListener` derive `Mob.zone` de `Mob.map`). Une zone sans
+     * carte d'origine — toute zone nouvelle depuis le pivot — ne pouvait donc
+     * avoir aucune rencontre. Ici, la zone est posee **directement**.
+     *
+     * L'import est **idempotent et non destructif** : on complete jusqu'au
+     * compte declare, on ne supprime jamais. Un mob peut etre en combat ou
+     * blesse au moment de l'import, et le rejouer ne doit ni voler une
+     * rencontre en cours ni ressusciter la faune d'un coup.
+     *
+     * @param list<array<string, mixed>>|null $mobs
+     */
+    private function syncMobs(Zone $zone, ?array $mobs, bool $dryRun, ZoneImportReport $report): void
+    {
+        if (null === $mobs || [] === $mobs) {
+            return;
+        }
+
+        foreach ($mobs as $entry) {
+            $slug = (string) $entry['monster'];
+            $monster = $this->entityManager->getRepository(Monster::class)->findOneBy(['slug' => $slug]);
+
+            if (null === $monster) {
+                $report->addWarning(sprintf('Zone "%s": unknown monster "%s", population skipped.', $zone->getSlug(), $slug));
+                continue;
+            }
+
+            $existing = $this->countZoneMobs($zone, $monster, $dryRun);
+            $missing = max(0, (int) $entry['count'] - $existing);
+
+            for ($i = 0; $i < $missing; ++$i) {
+                if (!$dryRun) {
+                    $this->entityManager->persist($this->spawn($zone, $monster, $entry));
+                }
+                ++$report->mobsCreated;
+            }
+        }
+    }
+
+    private function countZoneMobs(Zone $zone, Monster $monster, bool $dryRun): int
+    {
+        if ($dryRun && null === $zone->getId()) {
+            return 0;
+        }
+
+        return (int) $this->entityManager->createQueryBuilder()
+            ->select('COUNT(m.id)')
+            ->from(Mob::class, 'm')
+            ->where('m.zone = :zone')
+            ->andWhere('m.monster = :monster')
+            ->setParameter('zone', $zone)
+            ->setParameter('monster', $monster)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @param array<string, mixed> $entry
+     */
+    private function spawn(Zone $zone, Monster $monster, array $entry): Mob
+    {
+        $mob = new Mob();
+        $mob->setMonster($monster);
+        // La zone est posee explicitement : `WorldEntityZoneListener` respecte
+        // une zone deja fixee et n'ira pas chercher de carte.
+        $mob->setZone($zone);
+        $mob->setLife($monster->getLife());
+        $mob->setLevel($monster->getLevel());
+        $mob->setNocturnal((bool) $entry['nocturnal']);
+
+        if (null !== $entry['group_tag']) {
+            $mob->setGroupTag((string) $entry['group_tag']);
+        }
+
+        return $mob;
     }
 
     private function resolveSourceMap(mixed $name, string $zoneSlug, ZoneImportReport $report): ?Map

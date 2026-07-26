@@ -11,6 +11,7 @@ class ZoneImportReport
     public int $zonesUpdated = 0;
     public int $connectionsCreated = 0;
     public int $connectionsUpdated = 0;
+    public int $mobsCreated = 0;
 
     /** @var list<string> */
     public array $warnings = [];
@@ -23,6 +24,11 @@ class ZoneImportReport
     public function zonesTouched(): int
     {
         return $this->zonesCreated + $this->zonesUpdated;
+    }
+
+    public function mobsTouched(): int
+    {
+        return $this->mobsCreated;
     }
 
     public function connectionsTouched(): int

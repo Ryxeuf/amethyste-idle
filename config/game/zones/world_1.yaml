@@ -17,6 +17,10 @@
 #     explore:                      table de rencontres / loot (optionnel -> defauts service)
 #       weights: { mob, chest, harvest, pnj, nothing }
 #       chest_gils_min / chest_gils_max
+#     mobs:                         population de creatures (ZON-26b, optionnel)
+#       - { monster, count, nocturnal, group_tag }
+#       Seul chemin pour peupler une zone SANS carte d'origine : `Mob.zone`
+#       etait sinon derive de `Mob.map` via `Zone::sourceMap`.
 #     gather:                       filons recoltables partages (optionnel)
 #       - { slug, item, profession, capacity, respawn_seconds, yield_min, yield_max }
 #   connections:
@@ -160,6 +164,32 @@ zones:
         map_y: 46
         source_map: 'Village de Lumière'
 
+    dunes-d-ambre:
+        name: 'Dunes d''Ambre'
+        name_en: 'Amber Dunes'
+        description: "Une mer de sable ocre au sud du marais. Rien n'y pousse, tout y rampe — et la premiere zone du monde a n'avoir jamais eu de carte."
+        description_en: 'A sea of ochre sand south of the marshes. Nothing grows there, everything crawls — and the first zone in the world that never had a map.'
+        type: wilderness
+        safe: false
+        map_x: 30
+        map_y: 78
+        explore:
+            weights: { mob: 50, chest: 12, harvest: 14, pnj: 2, nothing: 22 }
+            chest_gils_min: 10
+            chest_gils_max: 40
+            night:
+                weights: { mob: 62, chest: 14, harvest: 6, pnj: 0, nothing: 18 }
+                mob_slugs: [scorpion, creeping_shadow]
+        # ZON-26b : population declaree. Cette zone n'a **pas** de `source_map` —
+        # c'est precisement ce que le chemin declaratif rend possible.
+        mobs:
+            - { monster: scorpion, count: 4 }
+            - { monster: venom_snake, count: 3 }
+            - { monster: salamander, count: 2 }
+            - { monster: creeping_shadow, count: 2, nocturnal: true }
+        gather:
+            - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 12, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
+
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
 connections:
     - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }
@@ -168,6 +198,7 @@ connections:
     - { from: village-de-lumiere, to: mines-profondes, travel_seconds: 600, bidirectional: true }
     - { from: village-de-lumiere, to: crete-de-ventombre, travel_seconds: 900, bidirectional: true }
     - { from: foret-des-murmures, to: marais-brumeux, travel_seconds: 300, bidirectional: true }
+    - { from: marais-brumeux, to: dunes-d-ambre, travel_seconds: 480, bidirectional: true }
     - { from: mines-profondes, to: crete-de-ventombre, travel_seconds: 480, bidirectional: true }
     # ZON-26 : fermeture de l'anneau. Le graphe etait une etoile autour du hub
     # avec deux liaisons laterales ; passer par la peripherie devient une

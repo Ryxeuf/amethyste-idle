@@ -147,6 +147,76 @@ class ZoneDefinitionLoaderTest extends TestCase
         ]);
     }
 
+    /**
+     * ZON-26b — la population declaree.
+     *
+     * Un `Mob` n'atteignait sa zone que par une carte : `WorldEntityZoneListener`
+     * derive `Mob.zone` de `Mob.map` via `Zone::sourceMap`. Une zone declaree
+     * sans carte ne pouvait donc avoir **aucune rencontre**, ce qui bloquait
+     * toute nouvelle zone hostile.
+     */
+    public function testMobsBlockIsNormalized(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'dune' => [
+                    'name' => 'Dune',
+                    'type' => 'wilderness',
+                    'mobs' => [
+                        ['monster' => 'scorpion', 'count' => 3],
+                        ['monster' => 'creeping_shadow', 'nocturnal' => true, 'group_tag' => 'nuit'],
+                    ],
+                ],
+            ],
+        ]);
+
+        $mobs = $result['zones'][0]['mobs'];
+        self::assertCount(2, $mobs);
+        self::assertSame('scorpion', $mobs[0]['monster']);
+        self::assertSame(3, $mobs[0]['count']);
+        self::assertFalse($mobs[0]['nocturnal']);
+        self::assertNull($mobs[0]['group_tag']);
+        self::assertSame(1, $mobs[1]['count'], 'Un effectif absent vaut un individu, pas zero.');
+        self::assertTrue($mobs[1]['nocturnal']);
+        self::assertSame('nuit', $mobs[1]['group_tag']);
+    }
+
+    public function testAMobEntryWithoutMonsterIsRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+        $this->expectExceptionMessage('missing "monster"');
+
+        $this->loader->normalize([
+            'zones' => [
+                'dune' => ['name' => 'Dune', 'type' => 'wilderness', 'mobs' => [['count' => 3]]],
+            ],
+        ]);
+    }
+
+    /**
+     * Un effectif nul viderait la zone en silence : le plancher a 1 rend le
+     * cas impossible plutot que de le laisser passer.
+     */
+    public function testAZeroCountIsFlooredToOne(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'dune' => ['name' => 'Dune', 'type' => 'wilderness', 'mobs' => [['monster' => 'scorpion', 'count' => 0]]],
+            ],
+        ]);
+
+        self::assertSame(1, $result['zones'][0]['mobs'][0]['count']);
+    }
+
+    public function testAZoneWithoutMobsBlockHasNullPopulation(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => ['calme' => ['name' => 'Calme', 'type' => 'city']],
+        ]);
+
+        self::assertNull($result['zones'][0]['mobs']);
+    }
+
     public function testLoadFileParsesShippedWorldOne(): void
     {
         $loader = new ZoneDefinitionLoader(\dirname(__DIR__, 4));
@@ -158,10 +228,25 @@ class ZoneDefinitionLoaderTest extends TestCase
         // HOU-01 : le lotissement doit rester joignable — une zone
         // residentielle coupee du hub rendrait le housing inaccessible.
         self::assertContains('quartier-des-jardins', $slugs);
+        // ZON-26b : la premiere zone livree **sans carte d'origine**. Elle est
+        // la preuve que le chemin declaratif fonctionne de bout en bout.
+        self::assertContains('dunes-d-ambre', $slugs);
         // Le compte est epingle volontairement : il attrape une edition
         // accidentelle du graphe livre. 8 depuis ZON-26a (etoile + anneau),
-        // 9 depuis HOU-01 (rattachement du Quartier des Jardins au hub).
-        self::assertCount(9, $result['connections']);
+        // 9 depuis HOU-01 (rattachement du Quartier des Jardins au hub),
+        // 10 depuis ZON-26b (les Dunes d'Ambre au sud du marais).
+        self::assertCount(10, $result['connections']);
+
+        $dunes = null;
+        foreach ($result['zones'] as $zone) {
+            if ('dunes-d-ambre' === $zone['slug']) {
+                $dunes = $zone;
+            }
+        }
+
+        self::assertNotNull($dunes);
+        self::assertNull($dunes['source_map'], 'Les Dunes n\'ont aucune carte : c\'est tout l\'interet.');
+        self::assertNotNull($dunes['mobs'], 'Une zone hostile sans population declaree n\'aurait aucune rencontre.');
     }
 
     public function testShippedWorldOneHasNoIsolatedZone(): void
