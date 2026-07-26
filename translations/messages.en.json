@@ -73,6 +73,7 @@
         "social": "Social"
       },
       "catalog": "Catalog",
+      "time_trials": "Time trials",
       "zone": "Zone",
       "world_map": "World map"
     },
@@ -551,6 +552,35 @@
         "no_data": "No champion recorded.",
         "empty": "No archived season yet. Podiums will appear here at the end of each season.",
         "note": "Top 3 per category, locked at the end of each season. Values are per-season, not lifetime totals."
+      }
+    },
+    "time_trial": {
+      "title": "Time trials",
+      "subtitle": "Reach a sequence of zones as fast as you can, on your own schedule",
+      "empty": "No open course right now.",
+      "running": "Run in progress: %trial%",
+      "progress": "%reached% / %total% checkpoints",
+      "elapsed": "Elapsed: %time%",
+      "next": "Next checkpoint: %zone%",
+      "abandon": "Abandon",
+      "abandoned": "Run abandoned.",
+      "started": "« %trial% »: you're off, the clock is running.",
+      "start": "Start",
+      "start_zone": "Start: %zone%",
+      "steps": "%count% checkpoints",
+      "energy": "%cost% energy",
+      "personal_best": "Your best time: %time%",
+      "no_personal_best": "You have no time on this course yet.",
+      "go_to_start": "Head to %zone% to start.",
+      "board": "Best times",
+      "board_empty": "Nobody has completed this course yet.",
+      "error": {
+        "disabled": "This course is closed.",
+        "no_checkpoint": "This course has no checkpoints.",
+        "traveling": "You cannot start while traveling.",
+        "wrong_zone": "You are not at the starting line.",
+        "already_running": "A run is already in progress.",
+        "not_running": "You have no run in progress."
       }
     },
     "fishing": {

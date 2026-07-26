@@ -73,6 +73,7 @@
         "social": "Social"
       },
       "catalog": "Herbier",
+      "time_trials": "Parcours chrono",
       "zone": "Zone",
       "world_map": "Carte du monde"
     },
@@ -551,6 +552,35 @@
         "no_data": "Aucun champion enregistré.",
         "empty": "Aucune saison archivée pour l'instant. Les podiums apparaîtront ici à la fin de chaque saison.",
         "note": "Top 3 par catégorie, figé à la fin de chaque saison. Les valeurs sont celles de la saison, pas des totaux cumulés."
+      }
+    },
+    "time_trial": {
+      "title": "Parcours chronometres",
+      "subtitle": "Rallier une suite de zones le plus vite possible, chacun de son cote",
+      "empty": "Aucun parcours ouvert pour l'instant.",
+      "running": "Course en cours : %trial%",
+      "progress": "%reached% / %total% etapes",
+      "elapsed": "Temps ecoule : %time%",
+      "next": "Prochaine etape : %zone%",
+      "abandon": "Abandonner",
+      "abandoned": "Course abandonnee.",
+      "started": "« %trial% » : c'est parti, le chrono tourne.",
+      "start": "Prendre le depart",
+      "start_zone": "Depart : %zone%",
+      "steps": "%count% etapes",
+      "energy": "%cost% energie",
+      "personal_best": "Votre meilleur temps : %time%",
+      "no_personal_best": "Vous n'avez pas encore de temps sur ce parcours.",
+      "go_to_start": "Rendez-vous a %zone% pour prendre le depart.",
+      "board": "Meilleurs temps",
+      "board_empty": "Personne n'a encore boucle ce parcours.",
+      "error": {
+        "disabled": "Ce parcours est ferme.",
+        "no_checkpoint": "Ce parcours n'a aucune etape.",
+        "traveling": "Impossible de prendre le depart en plein voyage.",
+        "wrong_zone": "Vous n'etes pas sur la ligne de depart.",
+        "already_running": "Une course est deja en cours.",
+        "not_running": "Vous n'avez aucune course en cours."
       }
     },
     "fishing": {

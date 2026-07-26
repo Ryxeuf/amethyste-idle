@@ -1,0 +1,112 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}{{ 'game.time_trial.title'|trans }}{% endblock %}
+
+{% macro duration(seconds) %}
+    {%- set m = (seconds / 60)|round(0, 'floor') -%}
+    {%- set s = seconds % 60 -%}
+    {{- m }}m {{ '%02d'|format(s) }}s
+{% endmacro %}
+
+{% block game_content %}
+{# L'import vit dans le bloc : en heritage Twig, ce qui est declare au niveau
+   du template n'est pas visible depuis les blocs rendus par le parent. #}
+{% import _self as fmt %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header">
+            <h2 class="text-base sm:text-lg font-semibold text-white">{{ 'game.time_trial.title'|trans }}</h2>
+            <p class="text-gray-400 text-xs mt-0.5">{{ 'game.time_trial.subtitle'|trans }}</p>
+        </div>
+
+        <div class="game-card-body">
+            {% if run %}
+                {# Course en cours : l'etape attendue et le chrono passent avant tout le reste. #}
+                <div class="mb-5 rounded-lg border border-amber-600/50 bg-amber-900/20 p-4">
+                    <p class="text-sm text-amber-100">
+                        {{ 'game.time_trial.running'|trans({'%trial%': run.trial.localizedName(app.request.locale)}) }}
+                    </p>
+                    <p class="text-xs text-amber-200/80 mt-1">
+                        {{ 'game.time_trial.progress'|trans({
+                            '%reached%': run.reachedIndex,
+                            '%total%': run.trial.countCheckpoints,
+                        }) }}
+                        ·
+                        {{ 'game.time_trial.elapsed'|trans({'%time%': fmt.duration(runElapsed)}) }}
+                    </p>
+                    {% if run.nextCheckpoint %}
+                        <p class="text-xs text-amber-300 mt-1">
+                            {{ 'game.time_trial.next'|trans({'%zone%': run.nextCheckpoint}) }}
+                        </p>
+                    {% endif %}
+                    <form method="post" action="{{ path('app_game_time_trial_abandon') }}" class="mt-3">
+                        <input type="hidden" name="_token" value="{{ csrf_token('time_trial_abandon') }}">
+                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:text-white transition-colors">
+                            {{ 'game.time_trial.abandon'|trans }}
+                        </button>
+                    </form>
+                </div>
+            {% endif %}
+
+            {% if trials is empty %}
+                <p class="text-gray-500 text-sm">{{ 'game.time_trial.empty'|trans }}</p>
+            {% endif %}
+
+            <div class="grid gap-4 lg:grid-cols-2">
+                {% for entry in trials %}
+                    {% set trial = entry.trial %}
+                    <div class="rounded-lg border border-gray-800 bg-gray-900/60 p-4">
+                        <h3 class="text-sm font-semibold text-gray-100">{{ trial.localizedName(app.request.locale) }}</h3>
+                        <p class="text-xs text-gray-500 mt-1">{{ trial.localizedDescription(app.request.locale) }}</p>
+
+                        <p class="text-[11px] text-gray-500 mt-2">
+                            {{ 'game.time_trial.start_zone'|trans({'%zone%': trial.startZone.localizedName(app.request.locale)}) }}
+                            · {{ 'game.time_trial.steps'|trans({'%count%': trial.countCheckpoints}) }}
+                            · {{ 'game.time_trial.energy'|trans({'%cost%': trial.energyCost}) }}
+                        </p>
+
+                        <p class="text-[11px] text-gray-400 mt-2">
+                            {% if entry.personalBest %}
+                                {{ 'game.time_trial.personal_best'|trans({'%time%': fmt.duration(entry.personalBest.elapsedSeconds)}) }}
+                            {% else %}
+                                {{ 'game.time_trial.no_personal_best'|trans }}
+                            {% endif %}
+                        </p>
+
+                        {% if entry.canStart %}
+                            <form method="post" action="{{ path('app_game_time_trial_start', {id: trial.id}) }}" class="mt-3">
+                                <input type="hidden" name="_token" value="{{ csrf_token('time_trial_start_' ~ trial.id) }}">
+                                <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-purple-900/50 border border-purple-600 text-purple-100 hover:bg-purple-800/60 transition-colors">
+                                    {{ 'game.time_trial.start'|trans }}
+                                </button>
+                            </form>
+                        {% elseif not run %}
+                            <p class="text-[11px] text-gray-600 mt-3">
+                                {{ 'game.time_trial.go_to_start'|trans({'%zone%': trial.startZone.localizedName(app.request.locale)}) }}
+                            </p>
+                        {% endif %}
+
+                        <div class="mt-4 border-t border-gray-800 pt-3">
+                            <h4 class="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                                {{ 'game.time_trial.board'|trans }}
+                            </h4>
+                            {% if entry.leaderboard is empty %}
+                                <p class="text-[11px] text-gray-600">{{ 'game.time_trial.board_empty'|trans }}</p>
+                            {% else %}
+                                <ol class="space-y-1">
+                                    {% for best in entry.leaderboard %}
+                                        <li class="flex items-center justify-between text-[11px] {% if best.player.id == player.id %}text-purple-200{% else %}text-gray-400{% endif %}">
+                                            <span>{{ loop.index }}. {{ best.player.name }}</span>
+                                            <span class="font-mono">{{ fmt.duration(best.elapsedSeconds) }}</span>
+                                        </li>
+                                    {% endfor %}
+                                </ol>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
