@@ -168,8 +168,11 @@ class PlayerActionHelper
      */
     private function resolveActions(Player $player): array
     {
-        $cacheKey = $player->getId() ?? 0;
-        if (isset($this->actionsByPlayer[$cacheKey]) && $cacheKey !== 0) {
+        // Cle d'identite d'objet plutot que l'identifiant persiste : `getId()`
+        // est declare `int` et **leve** sur une entite non encore persistee,
+        // cas normal en test comme a la creation d'un personnage.
+        $cacheKey = spl_object_id($player);
+        if (isset($this->actionsByPlayer[$cacheKey])) {
             return $this->actionsByPlayer[$cacheKey];
         }
 
@@ -215,9 +218,7 @@ class PlayerActionHelper
             }
         }
 
-        if ($cacheKey !== 0) {
-            $this->actionsByPlayer[$cacheKey] = $actions;
-        }
+        $this->actionsByPlayer[$cacheKey] = $actions;
 
         return $actions;
     }

@@ -7,7 +7,7 @@ use App\GameEngine\Player\PlayerActionHelper;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * Quelles recettes sont revendiquees par un arbre de talent ? (ECO-20)
+ * Recettes revendiquees par au moins un arbre de talent (ECO-20).
  *
  * Filet de securite du gardien « plan appris ». Une recette qu'aucun skill ne
  * cite ne doit **jamais** devenir inatteignable du seul fait qu'on a branche le
