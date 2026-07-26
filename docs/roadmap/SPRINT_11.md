@@ -27,11 +27,17 @@
 > Prerequis : ← 94 (Acte 3 termine) ✅, ← 141 (monstres tier 2-3) ✅, ← ZON-11 (config declarative) ✅
 > **Note post-pivot** : depend du volume de contenu de zone (cf. Sprint 13, ZON-26). Le graphe
 > actuel ne compte que **5 zones / 6 connexions** — l'Acte 4 doit s'appuyer sur un World 1 densifie.
-- [ ] 4 nouvelles zones de contenu via la configuration declarative (`config/game/zones/*.yaml`)
-- [ ] Nouveaux biomes : desert, tundra (illustrations de zone + tables dediees)
-- [ ] Monstres tier 4 (level 30-40)
-- [ ] Chaine de quetes Acte 4 (arc narratif dedie via `storyArc`, cf. NAR-01 ✅)
-- [ ] Boss final Acte 4 (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
+**Decoupage (regle #8)** — l'audit du 2026-07-26 a montre que le bestiaire s'arretait au
+niveau 24 pour les creatures normales : livrer les zones d'abord aurait donne un Acte 4
+peuple de faune de tier 1-3, indiscernable de l'Acte 1. Le contenu vient donc avant la carte.
+
+- [x] **128a — Bestiaire tier 4** (niveau 26-40) : 9 creatures, deux biomes aux profils
+      opposes (le desert use, la toundra fige), table `BALANCE.md` etendue, et un garde-fou
+      sur les references de sort du contenu declaratif
+- [ ] **128b — Les 4 zones** de contenu via `config/game/zones/*.yaml` (biomes desert et
+      toundra), avec leurs blocs `mobs:` et `gather:`
+- [ ] **128c — Chaine de quetes Acte 4** (arc narratif dedie via `storyArc`, cf. NAR-01 ✅)
+- [ ] **128d — Boss final Acte 4** (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
 
 ### 129 — Housing joueur ✅ **TERMINE** (L | ★★) — 5 sous-jalons (regle #8)
 > Prerequis : ← 116 (hotel des ventes) ✅

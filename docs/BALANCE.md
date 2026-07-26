@@ -60,7 +60,18 @@ Les items `boundToPlayer = true` (soulbound) ne peuvent pas etre vendus.
 | 8-12 | 150 - 500 | 15 - 35 | 80 - 120 |
 | 13-18 | 300 - 900 | 25 - 50 | 130 - 180 |
 | 19-25 | 500 - 1500 | 40 - 80 | 190 - 250 |
+| 26-32 | 900 - 2200 | 70 - 120 | 260 - 320 |
+| 33-40 | 1500 - 3500 | 100 - 170 | 330 - 400 |
 | Boss (any level) | x2 - x3 du palier | x1.5 du palier | x5 du normal |
+
+**Tier 4 (26-40, tache 128a)** : le bestiaire s'arretait au niveau 24 pour les creatures
+normales — les deux seules entrees a 30 etaient des boss. Les zones de l'Acte 4 auraient
+donc ete peuplees de faune de tier 1-3, et un « Acte 4 » indiscernable de l'Acte 1.
+
+Les deux biomes du palier tuent differemment, et c'est delibere : le **desert** use (venins,
+sables mouvants, degats qui s'accumulent), la **toundra** fige (gel, entraves, gros coups
+espaces). Un joueur qui s'equipe contre l'un se retrouve mal arme contre l'autre — la
+resistance elementaire cesse d'etre un chiffre pour devenir un choix.
 
 **Formule XP monstre :** `10 * niveau` (normal) ou `10 * niveau * 5` (boss).
 

@@ -910,6 +910,172 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                     ],
                 ],
             ],
+            // === Bestiaire tier 4 — Acte 4 (tache 128a) ===
+            //
+            // Le bestiaire s'arretait au niveau 24 pour les creatures normales :
+            // les deux seules entrees a 30 sont des boss. Sans ce palier, les
+            // zones de l'Acte 4 auraient ete peuplees de faune de tier 1-3, et
+            // un « Acte 4 » indiscernable de l'Acte 1.
+            //
+            // Deux biomes, deux facons de tuer. Le desert **use** : venins,
+            // sables mouvants, chaleur — des degats qui s'accumulent. La
+            // toundra **fige** : gel, entraves, gros coups espaces. Un joueur
+            // qui equipe contre l'un se retrouve mal arme contre l'autre.
+
+            // --- Desert profond (26-32) ---
+            'sand_stalker' => [
+                'name' => 'Rodeur des sables',
+                'name_translations' => ['en' => 'Sand Stalker'],
+                'life' => 950,
+                'hit' => 88,
+                'speed' => 22,
+                'attack' => 'sharp_blade',
+                'level' => 26,
+                'difficulty' => 4,
+                'spells' => ['quicksand', 'poison_arrow'],
+                'aiPattern' => [
+                    'spell_chance' => 35,
+                    'preferred_element' => 'earth',
+                ],
+            ],
+            'dune_wraith' => [
+                'name' => 'Spectre des dunes',
+                'name_translations' => ['en' => 'Dune Wraith'],
+                'life' => 1100,
+                'hit' => 90,
+                'speed' => 16,
+                'attack' => 'necrotic_touch',
+                'level' => 28,
+                'difficulty' => 4,
+                'spells' => ['shadow_wave', 'death_coil'],
+                'aiPattern' => [
+                    'spell_chance' => 45,
+                    'preferred_element' => 'dark',
+                ],
+            ],
+            'basilisk' => [
+                'name' => 'Basilic des ergs',
+                'name_translations' => ['en' => 'Erg Basilisk'],
+                'life' => 1400,
+                'hit' => 86,
+                'speed' => 12,
+                'attack' => 'venomous_bite',
+                'level' => 30,
+                'difficulty' => 5,
+                'spells' => ['poison_cloud', 'stone_spikes'],
+                'aiPattern' => [
+                    'spell_chance' => 40,
+                    'preferred_element' => 'earth',
+                    'danger_alert' => [
+                        'threshold' => 35,
+                        'message' => 'Le basilic fixe sa proie — sa peau se durcit en ecailles de pierre.',
+                        'spell' => 'stone-spikes',
+                    ],
+                ],
+            ],
+            'salt_colossus' => [
+                'name' => 'Colosse de sel',
+                'name_translations' => ['en' => 'Salt Colossus'],
+                'life' => 1900,
+                'hit' => 80,
+                'speed' => 6,
+                'attack' => 'iron_fist',
+                'level' => 32,
+                'difficulty' => 5,
+                'spells' => ['earthquake', 'stone_wall'],
+                'aiPattern' => [
+                    'spell_chance' => 30,
+                    'preferred_element' => 'earth',
+                ],
+            ],
+
+            // --- Toundra (30-38) ---
+            'frost_warg' => [
+                'name' => 'Warg des glaces',
+                'name_translations' => ['en' => 'Frost Warg'],
+                'life' => 1250,
+                'hit' => 89,
+                'speed' => 24,
+                'attack' => 'sharp_blade',
+                'level' => 30,
+                'difficulty' => 4,
+                'spells' => ['frost_bolt', 'ice_shard'],
+                'aiPattern' => [
+                    'spell_chance' => 35,
+                    'preferred_element' => 'ice',
+                ],
+            ],
+            'hoarfrost_shade' => [
+                'name' => 'Ombre de givre',
+                'name_translations' => ['en' => 'Hoarfrost Shade'],
+                'life' => 1500,
+                'hit' => 92,
+                'speed' => 18,
+                'attack' => 'frost_bolt',
+                'level' => 33,
+                'difficulty' => 5,
+                'spells' => ['frost_mist', 'glacial_prison', 'shadow_bolt'],
+                'aiPattern' => [
+                    'spell_chance' => 55,
+                    'preferred_element' => 'ice',
+                    'danger_alert' => [
+                        'threshold' => 40,
+                        'message' => 'L\'air se fige — l\'ombre de givre scelle sa proie dans la glace.',
+                        'spell' => 'glacial-prison',
+                    ],
+                ],
+            ],
+            'permafrost_golem' => [
+                'name' => 'Golem de permafrost',
+                'name_translations' => ['en' => 'Permafrost Golem'],
+                'life' => 2400,
+                'hit' => 82,
+                'speed' => 5,
+                'attack' => 'iron_fist',
+                'level' => 35,
+                'difficulty' => 5,
+                'spells' => ['ice_storm', 'stone_skin'],
+                'aiPattern' => [
+                    'spell_chance' => 30,
+                    'preferred_element' => 'ice',
+                ],
+            ],
+            'winter_harpy' => [
+                'name' => 'Harpie hivernale',
+                'name_translations' => ['en' => 'Winter Harpy'],
+                'life' => 1700,
+                'hit' => 94,
+                'speed' => 28,
+                'attack' => 'wind_lame',
+                'level' => 36,
+                'difficulty' => 5,
+                'spells' => ['cyclone', 'ice_lance', 'wind_scythe'],
+                'aiPattern' => [
+                    'spell_chance' => 50,
+                    'preferred_element' => 'air',
+                ],
+            ],
+            'rime_drake' => [
+                'name' => 'Drakan de rime',
+                'name_translations' => ['en' => 'Rime Drake'],
+                'life' => 2800,
+                'hit' => 93,
+                'speed' => 14,
+                'attack' => 'frost_bolt',
+                'level' => 38,
+                'difficulty' => 5,
+                'spells' => ['frost_maelstrom', 'ice_storm', 'glacial_prison'],
+                'aiPattern' => [
+                    'spell_chance' => 60,
+                    'preferred_element' => 'ice',
+                    'danger_alert' => [
+                        'threshold' => 35,
+                        'message' => 'Le drakan inspire — le souffle qui vient gele jusqu\'a l\'os.',
+                        'spell' => 'frost-maelstrom',
+                    ],
+                ],
+            ],
+
             // === World boss (tâche 71) ===
             'ancient_wyrm' => [
                 'name' => 'Wyrm Ancien',
