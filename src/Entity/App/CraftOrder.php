@@ -28,6 +28,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 #[ORM\Index(name: 'idx_craft_order_board', columns: ['region_id', 'status', 'expires_at'])]
 #[ORM\Index(name: 'idx_craft_order_requester', columns: ['requester_id'])]
 #[ORM\Index(name: 'idx_craft_order_crafter', columns: ['crafter_id'])]
+#[ORM\Index(name: 'idx_craft_order_workshop', columns: ['crafter_id', 'status'])]
 class CraftOrder
 {
     use TimestampableEntity;
@@ -94,6 +95,17 @@ class CraftOrder
 
     #[ORM\Column(name: 'fulfilled_at', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $fulfilledAt = null;
+
+    /**
+     * Fin du travail d'atelier, posee a la prise en charge (ECO-07).
+     *
+     * C'est le `craftingTime` de la recette rendu **reel** : jusqu'ici il etait
+     * affiche au joueur (« Temps : 5s ») sans que rien ne l'applique. Sur ce
+     * canal, l'attente est ce qui distingue une commande d'un achat — sans elle,
+     * prendre et livrer seraient le meme clic.
+     */
+    #[ORM\Column(name: 'ready_at', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $readyAt = null;
 
     public function __construct()
     {
@@ -265,5 +277,41 @@ class CraftOrder
     public function isExpired(?\DateTimeImmutable $now = null): bool
     {
         return $this->expiresAt <= ($now ?? new \DateTimeImmutable());
+    }
+
+    public function getReadyAt(): ?\DateTimeImmutable
+    {
+        return $this->readyAt;
+    }
+
+    public function setReadyAt(?\DateTimeImmutable $readyAt): self
+    {
+        $this->readyAt = $readyAt;
+
+        return $this;
+    }
+
+    /**
+     * Le travail d'atelier est-il termine ?
+     *
+     * Une commande sans `readyAt` est prete : les commandes prises avant ECO-07
+     * n'ont pas d'echeance de travail, et les bloquer indefiniment punirait les
+     * artisans pour une migration.
+     */
+    public function isReady(?\DateTimeImmutable $now = null): bool
+    {
+        return null === $this->readyAt || $this->readyAt <= ($now ?? new \DateTimeImmutable());
+    }
+
+    /**
+     * Secondes restantes avant la fin du travail (0 si termine).
+     */
+    public function getRemainingWorkSeconds(?\DateTimeImmutable $now = null): int
+    {
+        if (null === $this->readyAt) {
+            return 0;
+        }
+
+        return max(0, $this->readyAt->getTimestamp() - ($now ?? new \DateTimeImmutable())->getTimestamp());
     }
 }

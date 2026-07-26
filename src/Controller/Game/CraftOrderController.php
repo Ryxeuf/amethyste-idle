@@ -75,6 +75,64 @@ class CraftOrderController extends AbstractController
         ]);
     }
 
+    /**
+     * L'atelier : les commandes que j'ai prises et dois livrer (ECO-07).
+     */
+    #[Route('/workshop', name: 'app_game_craft_order_workshop', methods: ['GET'])]
+    public function workshop(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        return $this->render('game/craft_order/workshop.html.twig', [
+            'player' => $player,
+            'orders' => $this->orderRepository->findClaimedByCrafter($player),
+        ]);
+    }
+
+    #[Route('/{id}/fulfill', name: 'app_game_craft_order_fulfill', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function fulfill(int $id, Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('craft_order_fulfill_' . $id, $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_craft_order_workshop');
+        }
+
+        $order = $this->orderRepository->find($id);
+        if (!$order instanceof CraftOrder) {
+            $this->addFlash('error', 'Commande introuvable.');
+
+            return $this->redirectToRoute('app_game_craft_order_workshop');
+        }
+
+        try {
+            $settlement = $this->orderManager->fulfillOrder($player, $order);
+            $this->addFlash('success', sprintf(
+                'Commande livree : %s remis a %s, %d Gils encaisses (%d de taxe de region).',
+                $order->getRecipe()->getResult()->getName(),
+                $order->getRequester()->getName(),
+                $settlement->sellerRevenue,
+                $settlement->taxAmount,
+            ));
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_craft_order_workshop');
+    }
+
     #[Route('/new', name: 'app_game_craft_order_new', methods: ['GET'])]
     public function newForm(): Response
     {

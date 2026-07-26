@@ -3,12 +3,18 @@
 namespace App\GameEngine\Crafting;
 
 use App\Entity\App\CraftOrder;
+use App\Entity\App\Guild;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Recipe;
 use App\Enum\CraftOrderStatus;
 use App\GameEngine\Auction\AuctionAntiExploit;
+use App\GameEngine\Auction\AuctionSettlement;
+use App\GameEngine\Generator\PlayerItemGenerator;
+use App\GameEngine\Guild\GuildManager;
+use App\GameEngine\Guild\RegionBonusProvider;
+use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Repository\CraftOrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,6 +51,9 @@ class CraftOrderManager
         private readonly PlayerRegionResolver $regionResolver,
         private readonly CraftingManager $craftingManager,
         private readonly AuctionAntiExploit $antiExploit,
+        private readonly TownControlManager $townControlManager,
+        private readonly GuildManager $guildManager,
+        private readonly PlayerItemGenerator $playerItemGenerator,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -190,9 +199,13 @@ class CraftOrderManager
         $this->assertSameMarket($crafter, $order);
         $this->assertQualified($crafter, $order);
 
+        $now = new \DateTimeImmutable();
+
         $order->setCrafter($crafter);
         $order->setStatus(CraftOrderStatus::Claimed);
-        $order->setClaimedAt(new \DateTimeImmutable());
+        $order->setClaimedAt($now);
+        // ECO-07 : le `craftingTime` de la recette devient une attente reelle.
+        $order->setReadyAt($now->modify(sprintf('+%d seconds', max(1, $order->getRecipe()->getCraftingTime()))));
 
         $this->entityManager->flush();
 
@@ -235,6 +248,164 @@ class CraftOrderManager
         $required = $recipe->getRequiredSpecialization();
         if (null !== $required && $required !== $crafter->getCraftSpecialization()) {
             throw new \InvalidArgumentException('Cette recette exige une specialisation que vous n\'avez pas.');
+        }
+    }
+
+    /**
+     * Livraison de la commande par l'artisan qui l'a prise (ECO-07).
+     *
+     * Trois choses se passent en meme temps, et aucune ne peut manquer sans
+     * leser quelqu'un : l'escrow de materiaux est **consomme** (pas rendu), le
+     * resultat va au commanditaire, la commission va a l'artisan moins la taxe
+     * de region.
+     *
+     * L'artisan ne fournit **aucun** materiau : ceux de la commande sont deja
+     * immobilises depuis le depot. C'est toute la difference avec l'etabli —
+     * ici il vend son plan et son temps, pas sa reserve.
+     */
+    public function fulfillOrder(Player $crafter, CraftOrder $order): AuctionSettlement
+    {
+        if (!$order->isClaimed()) {
+            throw new \InvalidArgumentException('Cette commande n\'est pas en cours de realisation.');
+        }
+
+        if ($order->getCrafter()?->getId() !== $crafter->getId()) {
+            throw new \InvalidArgumentException('Cette commande a ete prise en charge par un autre artisan.');
+        }
+
+        if (!$order->isReady()) {
+            throw new \InvalidArgumentException(sprintf('Le travail n\'est pas termine : encore %d seconde(s).', $order->getRemainingWorkSeconds()));
+        }
+
+        // L'expiration ne s'applique **pas** a une commande deja prise : le delai
+        // d'affichage protege le commanditaire d'une commande qui dort, pas
+        // l'artisan qui travaille. Sanctionner la non-livraison est un sujet
+        // distinct (ECO-09).
+
+        $requester = $order->getRequester();
+        $recipe = $order->getRecipe();
+
+        $this->consumeEscrowMaterials($order);
+        $this->deliverResult($order, $requester);
+
+        // La guilde controlante est resolue **une seule fois** : la repartition
+        // et le versement en ont tous deux besoin, et deux lectures laisseraient
+        // une bascule de controle entre les deux produire une incoherence.
+        $region = $order->getRegion();
+        $ruler = null !== $region ? $this->townControlManager->getControllingGuild($region) : null;
+
+        $settlement = $this->settleCommission($order, $ruler);
+        $this->grantCommission($order, $crafter, $settlement, $ruler);
+
+        // L'artisan progresse : c'est du travail d'atelier comme un autre.
+        $grantedXp = $this->craftingManager->grantCraftingXp($crafter, $recipe->getCraft(), $recipe->getXpReward());
+
+        $order->setStatus(CraftOrderStatus::Fulfilled);
+        $order->setFulfilledAt(new \DateTimeImmutable());
+
+        $this->entityManager->flush();
+
+        $this->logger->info('Craft order fulfilled', [
+            'order_id' => $order->getId(),
+            'crafter_id' => $crafter->getId(),
+            'requester_id' => $requester->getId(),
+            'recipe' => $recipe->getSlug(),
+            'commission' => $order->getCommission(),
+            'crafter_revenue' => $settlement->sellerRevenue,
+            'tax' => $settlement->taxAmount,
+            'burned' => $settlement->burnedAmount,
+            'xp' => $grantedXp,
+        ]);
+
+        return $settlement;
+    }
+
+    /**
+     * Les materiaux en escrow **disparaissent** : ils ont ete transformes.
+     *
+     * On les detruit plutot que de les rendre a qui que ce soit — les rendre au
+     * commanditaire lui offrirait l'objet **et** sa matiere, et les donner a
+     * l'artisan ferait de chaque commande une source de materiaux gratuits.
+     */
+    private function consumeEscrowMaterials(CraftOrder $order): void
+    {
+        foreach ($order->getMaterials() as $material) {
+            $material->setCraftOrder(null);
+            $this->entityManager->remove($material);
+        }
+    }
+
+    /**
+     * L'objet fabrique va directement dans le sac du **commanditaire**.
+     *
+     * Il ne transite jamais par l'inventaire de l'artisan : ce detour ouvrirait
+     * la porte a une commande honoree puis gardee.
+     */
+    private function deliverResult(CraftOrder $order, Player $requester): void
+    {
+        $recipe = $order->getRecipe();
+        $bag = $this->getBagInventory($requester);
+
+        for ($i = 0; $i < max(1, $recipe->getResultQuantity()); ++$i) {
+            $playerItem = $this->playerItemGenerator->generateFromItemId($recipe->getResult()->getId());
+            $playerItem->setInventory($bag);
+            $this->entityManager->persist($playerItem);
+        }
+    }
+
+    /**
+     * Repartition de la commission, avec **exactement** les regles de l'hotel
+     * des ventes (ECO-04).
+     *
+     * Un canal d'echange qui taxerait differemment deviendrait le canal ou l'on
+     * evite la taxe de l'autre. `AuctionSettlement` est reutilise tel quel : la
+     * commission joue le role du prix, l'artisan celui du vendeur.
+     *
+     * La ristourne membre revient au **commanditaire**, qui a paye au depot.
+     * L'invariant tient : l'artisan touche `commission - taxe`, quelle que soit
+     * l'appartenance de guilde de son client.
+     */
+    private function settleCommission(CraftOrder $order, ?Guild $ruler): AuctionSettlement
+    {
+        $requesterGuild = null !== $ruler ? $this->guildManager->getPlayerGuild($order->getRequester()) : null;
+        $requesterIsMember = null !== $ruler && null !== $requesterGuild && $requesterGuild->getId() === $ruler->getId();
+
+        return AuctionSettlement::compute(
+            $order->getCommission(),
+            $order->getRegion()?->getTaxRateFloat() ?? 0.0,
+            null !== $ruler,
+            $requesterIsMember,
+            RegionBonusProvider::MEMBER_DISCOUNT,
+        );
+    }
+
+    /**
+     * Verse les parts : artisan, tresor de guilde — ou le neant.
+     *
+     * Quand la region n'a pas de maitre, la taxe est **detruite**. Ce n'est pas
+     * un oubli : c'est le gold sink du canal, identique a celui de l'hotel des
+     * ventes, et on le journalise pour qu'une refonte ne le rende pas a
+     * l'artisan en croyant colmater une fuite.
+     */
+    private function grantCommission(CraftOrder $order, Player $crafter, AuctionSettlement $settlement, ?Guild $ruler): void
+    {
+        $crafter->addGils($settlement->sellerRevenue);
+
+        if ($settlement->memberRebate > 0) {
+            $order->getRequester()->addGils($settlement->memberRebate);
+        }
+
+        if ($settlement->burnedAmount > 0) {
+            $this->logger->info('Craft order tax burned (region has no ruling guild)', [
+                'region' => $order->getRegion()?->getSlug(),
+                'amount' => $settlement->burnedAmount,
+            ]);
+
+            return;
+        }
+
+        if (null !== $ruler && $settlement->treasuryAmount > 0) {
+            $ruler->addGilsTreasury($settlement->treasuryAmount);
         }
     }
 

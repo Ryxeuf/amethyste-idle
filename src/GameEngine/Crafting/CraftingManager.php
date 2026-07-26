@@ -395,8 +395,12 @@ class CraftingManager
 
     /**
      * Accorde de l'XP de craft au joueur dans le domaine correspondant.
+     *
+     * Publique depuis ECO-07 : une commande de craft est du travail d'atelier
+     * comme un autre, elle doit faire progresser l'artisan. Dupliquer le calcul
+     * cote commandes aurait fait diverger les deux voies de progression.
      */
-    private function grantCraftingXp(Player $player, string $craft, int $xpAmount): int
+    public function grantCraftingXp(Player $player, string $craft, int $xpAmount): int
     {
         $xpMultiplier = $this->gameEventBonusProvider->getXpMultiplier($player->getMap());
         $finalXp = (int) round($xpAmount * $xpMultiplier);

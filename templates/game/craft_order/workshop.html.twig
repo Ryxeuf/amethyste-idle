@@ -1,0 +1,54 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Mon atelier{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">Mon atelier</h2>
+                <p class="text-gray-400 text-xs mt-0.5">
+                    Les materiaux sont fournis par le commanditaire : vous vendez votre plan et votre temps.
+                </p>
+            </div>
+            <a href="{{ path('app_game_craft_order') }}" class="px-3 py-1.5 bg-gray-600 hover:bg-gray-500 text-white text-xs sm:text-sm rounded-lg transition-colors">Tableau</a>
+        </div>
+
+        <div class="game-card-body">
+            {% if orders is empty %}
+                <p class="text-sm text-gray-500 py-6 text-center">
+                    Aucune commande en cours. Le <a href="{{ path('app_game_craft_order') }}" class="text-indigo-400 hover:text-indigo-300">tableau de votre region</a> en propose peut-etre.
+                </p>
+            {% else %}
+                <div class="space-y-2">
+                    {% for order in orders %}
+                        <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm text-gray-100 font-medium truncate">{{ order.recipe.result.name }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    pour {{ order.requester.name }}
+                                    · {{ order.recipe.craft }}
+                                    · {{ order.materials|length }} materiau{{ order.materials|length > 1 ? 'x' : '' }} fourni{{ order.materials|length > 1 ? 's' : '' }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="text-yellow-400 font-mono font-semibold text-sm">{{ order.commission|number_format(0, ',', ' ') }} G</span>
+                                {% if order.ready %}
+                                    <form method="post" action="{{ path('app_game_craft_order_fulfill', {id: order.id}) }}">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('craft_order_fulfill_' ~ order.id) }}">
+                                        <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white transition-colors">Livrer</button>
+                                    </form>
+                                {% else %}
+                                    {# Le craftingTime de la recette, rendu reel par ECO-07. #}
+                                    <span class="text-gray-400 text-xs italic">Travail en cours — {{ order.remainingWorkSeconds }}s</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
