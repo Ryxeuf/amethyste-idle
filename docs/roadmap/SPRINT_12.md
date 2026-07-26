@@ -42,9 +42,15 @@
 - [ ] **2c — Traduction EN du contenu de jeu restant** : dialogues PNJ (arbres de dialogue),
       descriptions de sorts, et les entites ajoutees depuis le pivot (`Zone`, `CodexEntry`,
       `GameEvent`, `ZoneBoss`, `GroupDungeonRun`) — verifier la parite via `scripts/audit-translations.php`
-- [ ] **Passe de non-regression i18n post-pivot** : les ecrans nes du pivot (`/game/zone`,
-      `/game/world-map`, banniere de donjon de groupe, banniere de boss de zone) doivent etre
-      couverts par `messages.{fr,en}.json` au meme niveau que le reste de l'UI
+- [x] **Passe de non-regression i18n post-pivot** ✅ — les quatre ecrans nes du pivot sont
+      **integralement traduits** (mesure faite, aucun texte code en dur) et `HardcodedTextTest` les
+      maintient a zero. Le reste de l'interface joueur porte **163 extraits sur 42 gabarits**,
+      **geles** par plan de reference : un gabarit hors plan doit etre propre, un gabarit endette ne
+      doit pas empirer. Les nombres sont faits pour baisser (voir lots ci-dessous).
+- [ ] **Resorption de la dette gelee**, par lots. Les plus lourds : `housing/index` (16),
+      `quest/index` (10), `auction/index` et `skills/index` (9), `inventory/equipment/_list` (8,
+      dont douze libelles d'emplacement passes en dur a une macro), `craft_order/new` (8).
+      `templates/admin/` reste hors perimetre (ecrans d'exploitant).
 - [x] **Garde-fou CI** ✅ — `App\Translation\TranslationCatalogAudit` porte la logique,
       `TranslationCatalogAuditTest` la verifie a chaque build, et le job `lint` rend le meme verdict
       sans base de donnees. Premiere execution : une cle indefinie trouvee
