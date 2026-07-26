@@ -155,9 +155,13 @@ class ZoneDefinitionLoaderTest extends TestCase
         $slugs = array_column($result['zones'], 'slug');
         self::assertContains('village-de-lumiere', $slugs);
         self::assertContains('crete-de-ventombre', $slugs);
+        // HOU-01 : le lotissement doit rester joignable — une zone
+        // residentielle coupee du hub rendrait le housing inaccessible.
+        self::assertContains('quartier-des-jardins', $slugs);
         // Le compte est epingle volontairement : il attrape une edition
-        // accidentelle du graphe livre. 8 depuis ZON-26a (etoile + anneau).
-        self::assertCount(8, $result['connections']);
+        // accidentelle du graphe livre. 8 depuis ZON-26a (etoile + anneau),
+        // 9 depuis HOU-01 (rattachement du Quartier des Jardins au hub).
+        self::assertCount(9, $result['connections']);
     }
 
     public function testShippedWorldOneHasNoIsolatedZone(): void
