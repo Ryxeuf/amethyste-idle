@@ -1,6 +1,6 @@
 ## Sprint 15 — Commandes de craft (Piste C)
 
-> **8 jalons** (ECO-05 → ECO-09, ECO-20), **6 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
+> **8 jalons** (ECO-05 → ECO-09, ECO-20), **7 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
 > Objectif : le **troisieme canal d'echange**, et le seul qui produise du stuff **lie**.
 > Prerequis : Sprint 14 ✅ (socle economie joueur complet, 9/9)
 
@@ -42,16 +42,11 @@
 > artisans, qui donne son sens a la commande directe — sans lui, nommer un artisan supposerait de
 > le connaitre deja.
 
-### ECO-09 — Anti-abus commandes (S | ★★ | MOYENNE)
-> Expiration, annulation, restitution propre de l'escrow.
-> Prerequis : ← ECO-05
-- [ ] Expiration commande non prise → restitution materiaux + commission (`findExpirable` et
-      `releaseEscrow` existent deja, reste la commande planifiee)
-- [x] Annulation par le client tant que `open` (non `claimed`) — livre avec ECO-05
-- [ ] Non-livraison dans le delai apres `claimed` → liberation + penalite reputation artisan
-- [ ] Plafonds anti-farm : etendre `AuctionAntiExploit` au canal des commandes (ECO-16b l'avait
-      laisse ouvert, ce canal n'existant pas encore)
-- [ ] Tests
+> **ECO-09 livree le 2026-07-26** (voir `ROADMAP_DONE.md`) : commande `app:craft-order:expire`,
+> fenetre de livraison de 24 h comptee depuis la prise en charge, sanction de reputation en cas de
+> non-livraison, et plafond par couple commanditaire/artisan. `findExpirable()` et
+> `releaseEscrow()` existaient depuis ECO-05 **sans que rien ne les appelle** : l'escrow n'avait
+> aucune sortie automatique.
 
 ### ECO-20 — Donnees d'artisanat declaratives qui ne gardent rien (M | ★★★ | HAUTE)
 > **Trois defauts trouves pendant ECO-06 et ECO-07.** Ni des regressions ni des dettes de
@@ -102,7 +97,7 @@
 - [x] La commission est taxee comme une vente, au profit de la guilde controlante (ECO-07a)
 - [x] Les objets lies naissent lies a leur commanditaire (ECO-08a)
 - [x] La reputation d'artisan existe (ECO-08b)
-- [ ] Escrow restitue automatiquement a l'expiration
+- [x] Escrow restitue automatiquement a l'expiration (ECO-09)
 - [ ] La qualification d'un artisan repose sur un gardien **branche** (ECO-20)
 
 ---

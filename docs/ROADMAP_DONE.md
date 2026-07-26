@@ -7,7 +7,40 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-09 — Anti-abus des commandes de craft (Sprint 15, 2026-07-26)
+
+> Dernier verrou fonctionnel de la Piste C.
+
+### Le defaut corrige
+
+`findExpirable()` et `releaseEscrow()` ont ete ecrits avec ECO-05, et **rien ne les appelait**. Une commande que personne ne prenait immobilisait materiaux et Gils **indefiniment** : l'escrow n'avait aucune sortie automatique. La commande `app:craft-order:expire` — pendant du `app:auction:expire` de l'hotel des ventes, memes options `--loop` et `--dry-run` — la lui donne.
+
+### Livre
+
+- **`CraftOrderManager::expireOrders()`** : restitue l'escrow, sanctionne la non-livraison, rend un compte-rendu `{released, penalised}`.
+- **`CraftOrder::DELIVERY_WINDOW_HOURS`** : la prise en charge repousse l'echeance a 24 h.
+- **`CrafterReputation::recordFailure()`** et **`CrafterReputationManager::recordFailure()`**.
+- **`AuctionAntiExploit::isCraftOrderPairCapReached()`** : plafond par couple, 5 commandes / 24 h, calibre dans `services.yaml`.
+
+### Quatre decisions
+
+**L'echeance d'une commande prise cesse d'etre celle du tableau.** Un artisan qui prend une commande a sa 71e heure aurait sinon une heure pour livrer, et serait sanctionne pour un delai qu'il n'a pas choisi.
+
+**Le commanditaire recupere tout, dans tous les cas.** Qu'aucun artisan n'ait voulu la commande ou qu'un artisan l'ait prise sans la livrer, il n'a commis aucune faute — lui faire payer l'inaction d'un tiers serait la pire lecon a tirer d'une commande non honoree.
+
+**Une non-livraison coute deux fois ce qu'une livraison rapporte.** Sinon accaparer serait rentable en moyenne : l'artisan prendrait tout et ne livrerait que le plus lucratif, en absorbant la sanction avec ce qu'il a gagne ailleurs. Le compteur de livraisons, lui, ne bouge pas : le decrementer effacerait des services reellement rendus.
+
+**Le plafond du canal des commandes est plus bas que celui de l'hotel des ventes** (5 contre 10). La commande est le seul canal produisant du stuff **lie** (ECO-08a) : un objet lie ne pouvant plus etre revendu, il echappe a toute detection en aval. Le controle doit donc mordre a la prise en charge — refuser a la livraison aurait laisse l'artisan travailler pour rien. Seules les commandes **honorees** comptent dans le plafond, sinon un tiers saturerait celui d'autrui en publiant des commandes qu'il annule.
+
+`AuctionAntiExploit` a de fait depasse son nom : elle garde les echanges entre joueurs, pas seulement l'hotel des ventes. Le renommage attendra le troisieme canal (echoppes, ECO-10) plutot que de deplacer cinq points d'injection pour un gain cosmetique.
+
+### Tests
+
+Cinq cas : restitution integrale d'une commande jamais prise, sanction d'une commande prise et non livree (avec les livraisons passees preservees et le commanditaire rembourse), plancher a zero de la reputation, report de l'echeance a la prise en charge, et refus de prise en charge au plafond.
 
 ---
 

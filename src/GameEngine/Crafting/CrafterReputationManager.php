@@ -30,6 +30,15 @@ class CrafterReputationManager
     /** Plancher : meme la commande la plus simple vaut d'avoir ete honoree. */
     public const MINIMUM_POINTS = 1;
 
+    /**
+     * Une non-livraison coute plus cher qu'une livraison ne rapporte.
+     *
+     * Sinon accaparer des commandes serait rentable en moyenne : l'artisan
+     * prendrait tout et ne livrerait que le plus lucratif, en absorbant la
+     * sanction avec ce qu'il a gagne ailleurs.
+     */
+    public const FAILURE_MULTIPLIER = 2;
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly CrafterReputationRepository $repository,
@@ -49,6 +58,24 @@ class CrafterReputationManager
         }
 
         $reputation->recordDelivery($this->pointsFor($order));
+
+        return $reputation;
+    }
+
+    /**
+     * Sanctionne un artisan qui a pris une commande sans la livrer (ECO-09).
+     *
+     * Sans cette contrepartie, accaparer les commandes du tableau serait gratuit
+     * — et le classement d'ECO-08b deviendrait manipulable par la seule
+     * inaction, un artisan pouvant assecher le tableau sans jamais rien risquer.
+     */
+    public function recordFailure(Player $crafter, CraftOrder $order): ?CrafterReputation
+    {
+        $reputation = $this->repository->findOneForPlayerAndCraft($crafter, $order->getRecipe()->getCraft());
+
+        // Rien a sanctionner chez un artisan qui n'a jamais rien livre : creer
+        // une reputation a zero pour la punir n'aurait aucun effet.
+        $reputation?->recordFailure($this->pointsFor($order) * self::FAILURE_MULTIPLIER);
 
         return $reputation;
     }
