@@ -148,7 +148,7 @@ class ZoneImporter
                 continue;
             }
 
-            $existing = $this->countZoneMobs($zone, $monster, $dryRun);
+            $existing = $this->countZoneMobs($zone, $monster);
             $missing = max(0, (int) $entry['count'] - $existing);
 
             for ($i = 0; $i < $missing; ++$i) {
@@ -160,9 +160,17 @@ class ZoneImporter
         }
     }
 
-    private function countZoneMobs(Zone $zone, Monster $monster, bool $dryRun): int
+    /**
+     * Effectif deja present d'une espece dans une zone.
+     *
+     * Le test porte sur le **suivi Doctrine** et non sur `getId()` : `Zone::$id`
+     * est declare `int` non nullable et **leve** sur une zone pas encore
+     * persistee — cas normal en dry-run, ou aucune zone neuve n'est ecrite.
+     * Une zone non suivie n'a par definition aucune creature en base.
+     */
+    private function countZoneMobs(Zone $zone, Monster $monster): int
     {
-        if ($dryRun && null === $zone->getId()) {
+        if (!$this->entityManager->contains($zone)) {
             return 0;
         }
 
