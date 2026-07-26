@@ -18,6 +18,16 @@ class Pnj
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     private $id;
 
+    /**
+     * Identite declarative (ZON-26b-b).
+     *
+     * Nullable : les PNJ historiques vivent dans sept fichiers de fixtures et
+     * n'en portent pas. Un slug n'est requis que pour un PNJ declare dans
+     * `config/game/zones/*.yaml`, ou il sert de cle d'idempotence a l'import.
+     */
+    #[ORM\Column(name: 'slug', type: 'string', length: 80, nullable: true, unique: true)]
+    private ?string $slug = null;
+
     #[ORM\Column(name: 'name', type: 'string', length: 255)]
     private $name;
 
@@ -99,6 +109,18 @@ class Pnj
      *
      * @return Pnj
      */
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(?string $slug): self
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
     public function setName($name)
     {
         $this->name = $name;

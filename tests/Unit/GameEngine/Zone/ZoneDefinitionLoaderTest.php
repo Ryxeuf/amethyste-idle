@@ -155,6 +155,75 @@ class ZoneDefinitionLoaderTest extends TestCase
      * sans carte ne pouvait donc avoir **aucune rencontre**, ce qui bloquait
      * toute nouvelle zone hostile.
      */
+    public function testPnjsBlockIsNormalized(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => [
+                'dune' => [
+                    'name' => 'Dune',
+                    'type' => 'wilderness',
+                    'pnjs' => [
+                        [
+                            'slug' => 'dunes-caravanier',
+                            'name' => 'Yazid',
+                            'name_en' => 'Yazid',
+                            'class_type' => 'merchant',
+                            'greeting' => 'Le sable avale tout.',
+                            'shop_items' => ['antidote', 'life-potion'],
+                            'opens_at' => 6,
+                            'closes_at' => 19,
+                        ],
+                        ['slug' => 'dunes-guetteuse', 'name' => 'Tahira'],
+                    ],
+                ],
+            ],
+        ]);
+
+        $pnjs = $result['zones'][0]['pnjs'];
+        self::assertCount(2, $pnjs);
+        self::assertSame('dunes-caravanier', $pnjs[0]['slug']);
+        self::assertSame(['antidote', 'life-potion'], $pnjs[0]['shop_items']);
+        self::assertSame(6, $pnjs[0]['opens_at']);
+        self::assertSame('villager', $pnjs[1]['class_type'], 'Un habitant sans metier est un villageois.');
+        self::assertNull($pnjs[1]['shop_items'], 'Sans boutique declaree, le PNJ ne vend rien.');
+        self::assertNull($pnjs[1]['opens_at'], 'Sans horaire, le PNJ est toujours joignable.');
+    }
+
+    /**
+     * Un PNJ est un individu, la ou une creature est un effectif : sans slug,
+     * re-jouer l'import le dupliquerait.
+     */
+    public function testAPnjEntryWithoutSlugIsRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+
+        $this->loader->normalize([
+            'zones' => [
+                'dune' => ['name' => 'Dune', 'pnjs' => [['name' => 'Yazid']]],
+            ],
+        ]);
+    }
+
+    public function testAPnjEntryWithoutNameIsRejected(): void
+    {
+        $this->expectException(ZoneDefinitionException::class);
+
+        $this->loader->normalize([
+            'zones' => [
+                'dune' => ['name' => 'Dune', 'pnjs' => [['slug' => 'dunes-caravanier']]],
+            ],
+        ]);
+    }
+
+    public function testAZoneWithoutPnjsBlockHasNoResident(): void
+    {
+        $result = $this->loader->normalize([
+            'zones' => ['dune' => ['name' => 'Dune']],
+        ]);
+
+        self::assertNull($result['zones'][0]['pnjs']);
+    }
+
     public function testMobsBlockIsNormalized(): void
     {
         $result = $this->loader->normalize([
@@ -247,6 +316,10 @@ class ZoneDefinitionLoaderTest extends TestCase
         self::assertNotNull($dunes);
         self::assertNull($dunes['source_map'], 'Les Dunes n\'ont aucune carte : c\'est tout l\'interet.');
         self::assertNotNull($dunes['mobs'], 'Une zone hostile sans population declaree n\'aurait aucune rencontre.');
+        // ZON-26b-b : le bloc `explore` des Dunes tire un PNJ ; sans habitant
+        // declare, cette branche du tirage ne menerait a rien.
+        self::assertNotNull($dunes['pnjs'], 'Une zone sans carte d\'origine n\'a d\'habitants que declares.');
+        self::assertContains('dunes-caravanier-yazid', array_column($dunes['pnjs'], 'slug'));
     }
 
     public function testShippedWorldOneHasNoIsolatedZone(): void

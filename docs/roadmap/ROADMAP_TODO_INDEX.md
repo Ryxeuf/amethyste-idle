@@ -32,7 +32,7 @@
 | Plan Avatar (AVT) | 34/38 | ⛔ Clos par le pivot (realise trace dans ROADMAP_DONE, reliquat abandonne) |
 | Plan Narration (NAR) | 14/14 | ✅ Termine (2026-07-25) |
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
-| **Consolidation post-pivot (ZON-22→27)** | **7/7** | ✅ Sprint 13 termine (2026-07-26) — reste le sous-jalon PNJ declaratifs |
+| **Consolidation post-pivot (ZON-22→27)** | **8/8** | ✅ Sprint 13 termine (2026-07-26) — dette du pivot soldee |
 | **Plan Economie joueur (ECO)** | **Pistes A/B/C completes** | ✅ Sprints 14-15 — reste Piste D (echoppes, ← housing) |
 | Sprint 11 — Monde vivant | ~6 items | En cours (housing ✅, montures ✅) |
 | Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
@@ -53,7 +53,7 @@
 | **Sprint 8** | Energie & actions de zone (ZON-07..12) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 9** | Time-gating, presence & evenements (ZON-13..17) | Haute | ✅ Termine (2026-07-25) |
 | **Sprint 10** | Contenu de groupe & decommission carte (ZON-18..21) | Moyenne | ✅ Termine (2026-07-25) |
-| **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ Termine 7/7 (2026-07-26) |
+| **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ Termine 8/8 (2026-07-26) |
 | **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | ✅ Termine 9/9 |
 | **Sprint 15** | **Commandes de craft — Piste C (ECO-05..09, ECO-20)** | **Haute** | ✅ Termine 8/8 (2026-07-26) |
 | **Sprint 11** | Monde vivant (128-133) | Basse | En cours |
@@ -84,8 +84,10 @@ si bien qu'une zone nouvelle — donc sans carte, le moteur ayant ete supprime p
 avoir aucune rencontre. Le bloc `mobs:` leve le verrou, et les **Dunes d'Ambre** sont la premiere
 zone livree sans `source_map`. L'Acte 4 (tache 128) est debloque.
 
-Reste le sous-jalon **PNJ declaratifs** (ZON-26b-b) : objets riches sans slug, repartis dans 7
-fixtures — un jalon a lui seul, et sans effet sur le deblocage de l'Acte 4.
+**Clos definitivement par ZON-26b-b** : les PNJ aussi sont declaratifs. `Pnj::slug` sert de cle
+d'idempotence, et les **Dunes d'Ambre** — zone sans carte d'origine — ont desormais deux habitants.
+Les 7 fixtures historiques ne sont pas migrees : elles fonctionnent, et les reecrire serait du
+risque pur pour aucun gain.
 
 ---
 
@@ -102,7 +104,7 @@ SPRINT 13 — CONSOLIDATION POST-PIVOT (← ZON-21)     ✅ 7/7
   ZON-27 Couche PNJ (boutiques, dialogue) ✅
   ZON-26a Densification du graphe         ✅
   ZON-26b-a Population declarative (mobs)  ✅ → debloque 128
-  ZON-26b-b PNJ declaratifs                ← ZON-26b-a
+  ZON-26b-b PNJ declaratifs                ✅
 
 SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
   ECO-01 BindType                         ∅   ← CRITIQUE (bloque ECO-02/05/10)
@@ -158,7 +160,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 10. [Sprint 10 — Contenu de groupe & decommission carte](SPRINT_10.md) ✅
 11. [Sprint 11 — Monde vivant](SPRINT_11.md)
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
-13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 7/7
+13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 8/8
 14. [Sprint 14 — Economie joueur (socle)](SPRINT_14.md) ✅ 9/9
 15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ✅ **8/8 — termine** (ECO-07, ECO-08 et ECO-20 scindees en sous-jalons ; ECO-20 nee des audits ECO-06/07)
 

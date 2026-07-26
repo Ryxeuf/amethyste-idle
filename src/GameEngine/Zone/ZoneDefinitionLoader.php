@@ -118,6 +118,7 @@ class ZoneDefinitionLoader
             'explore' => $this->normalizeExplore($slug, $definition['explore'] ?? null, $source),
             'gather' => $this->normalizeGather($slug, $definition['gather'] ?? null, $source),
             'mobs' => $this->normalizeMobs($slug, $definition['mobs'] ?? null, $source),
+            'pnjs' => $this->normalizePnjs($slug, $definition['pnjs'] ?? null, $source),
         ];
     }
 
@@ -283,6 +284,85 @@ class ZoneDefinitionLoader
         }
 
         return $population === [] ? null : $population;
+    }
+
+    /**
+     * Bloc `pnjs:` d'une zone (ZON-26b-b).
+     *
+     * Contrairement aux creatures, un PNJ est un **individu** : re-jouer
+     * l'import ne doit pas le dupliquer. D'ou le `slug` obligatoire, qui sert
+     * de cle d'idempotence.
+     *
+     * Le format couvre ce qu'il faut pour peupler une zone — identite, tenue de
+     * boutique, horaires, replique d'accueil. Les arbres de dialogue et les
+     * chaines de quete restent dans les fixtures : les decrire en YAML
+     * demanderait un second langage, pour un gain nul sur le verrou que ce
+     * jalon leve.
+     *
+     * @return list<array<string, mixed>>|null
+     */
+    private function normalizePnjs(string $slug, mixed $pnjs, string $source): ?array
+    {
+        if ($pnjs === null) {
+            return null;
+        }
+        if (!\is_array($pnjs)) {
+            throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid "pnjs" block in "%s".', $slug, $source));
+        }
+
+        $residents = [];
+        foreach ($pnjs as $entry) {
+            if (!\is_array($entry)) {
+                throw new ZoneDefinitionException(sprintf('Zone "%s" has an invalid pnj entry in "%s".', $slug, $source));
+            }
+            if (!\is_string($entry['slug'] ?? null) || trim((string) $entry['slug']) === '') {
+                throw new ZoneDefinitionException(sprintf('Pnj entry of zone "%s" is missing "slug" in "%s".', $slug, $source));
+            }
+            if (!\is_string($entry['name'] ?? null) || trim((string) $entry['name']) === '') {
+                throw new ZoneDefinitionException(sprintf('Pnj "%s" of zone "%s" is missing "name" in "%s".', $entry['slug'], $slug, $source));
+            }
+
+            $residents[] = [
+                'slug' => trim((string) $entry['slug']),
+                'name' => trim((string) $entry['name']),
+                'name_en' => \is_string($entry['name_en'] ?? null) ? (string) $entry['name_en'] : null,
+                'class_type' => \is_string($entry['class_type'] ?? null) ? (string) $entry['class_type'] : 'villager',
+                'life' => max(1, (int) ($entry['life'] ?? 10)),
+                'portrait' => \is_string($entry['portrait'] ?? null) ? (string) $entry['portrait'] : null,
+                'greeting' => \is_string($entry['greeting'] ?? null) ? (string) $entry['greeting'] : null,
+                'shop_items' => $this->normalizePnjShop($slug, $entry, $source),
+                'opens_at' => isset($entry['opens_at']) ? (int) $entry['opens_at'] : null,
+                'closes_at' => isset($entry['closes_at']) ? (int) $entry['closes_at'] : null,
+            ];
+        }
+
+        return $residents === [] ? null : $residents;
+    }
+
+    /**
+     * @param array<string, mixed> $entry
+     *
+     * @return list<string>|null
+     */
+    private function normalizePnjShop(string $slug, array $entry, string $source): ?array
+    {
+        $shop = $entry['shop_items'] ?? null;
+        if ($shop === null) {
+            return null;
+        }
+        if (!\is_array($shop)) {
+            throw new ZoneDefinitionException(sprintf('Pnj "%s" of zone "%s" has an invalid "shop_items" in "%s".', $entry['slug'], $slug, $source));
+        }
+
+        $items = [];
+        foreach ($shop as $itemSlug) {
+            if (!\is_string($itemSlug) || trim($itemSlug) === '') {
+                throw new ZoneDefinitionException(sprintf('Pnj "%s" of zone "%s" has an invalid shop item in "%s".', $entry['slug'], $slug, $source));
+            }
+            $items[] = trim($itemSlug);
+        }
+
+        return $items === [] ? null : $items;
     }
 
     /**

@@ -187,6 +187,26 @@ zones:
             - { monster: venom_snake, count: 3 }
             - { monster: salamander, count: 2 }
             - { monster: creeping_shadow, count: 2, nocturnal: true }
+        # ZON-26b-b : habitants declares. Comme les creatures, ils sont rattaches
+        # a la zone **directement** : sans ce chemin, une zone sans carte
+        # d'origine ne pouvait avoir aucun PNJ, et le tirage `pnj: 2` de son
+        # bloc `explore` ci-dessus ne menait a rien.
+        pnjs:
+            - slug: dunes-caravanier-yazid
+              name: 'Yazid le caravanier'
+              name_en: 'Yazid the Caravanner'
+              class_type: merchant
+              greeting: "Le sable avale tout, voyageur. Fais tes emplettes avant qu'il ne t'avale aussi."
+              shop_items: [antidote, life-potion, healing-potion-small]
+              opens_at: 6
+              closes_at: 19
+            - slug: dunes-guetteuse-tahira
+              name: 'Tahira, guetteuse des dunes'
+              name_en: 'Tahira, Dune Watcher'
+              class_type: hunter
+              life: 40
+              greeting: 'Les scorpions sortent au crepuscule. Les ombres, elles, ne dorment jamais.'
+
         gather:
             - { slug: filon-de-cuivre-des-dunes, item: ore-copper, profession: mining, capacity: 12, respawn_seconds: 1500, yield_min: 1, yield_max: 2 }
 
