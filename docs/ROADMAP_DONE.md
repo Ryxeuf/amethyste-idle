@@ -7,7 +7,40 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-07a — Execution de commande, time-gating et taxe (Sprint 15, 2026-07-26)
+
+> ECO-07 decoupee en deux (regle #8) : l'execution ici, la commande directe en ECO-07b.
+
+### Livre
+
+- **`CraftOrderManager::fulfillOrder()`** : trois mouvements qui ne peuvent pas se dissocier — l'escrow de materiaux est **consomme**, le resultat va au commanditaire, la commission va a l'artisan moins la taxe de region.
+- **`CraftOrder::readyAt`** : le `craftingTime` de la recette devient une **attente reelle**.
+- **`CraftOrderRepository::findClaimedByCrafter()`** + ecran **« Mon atelier »** : les commandes prises, avec le decompte du travail restant.
+- **`CraftingManager::grantCraftingXp()`** rendue publique : une commande fait progresser l'artisan comme n'importe quel travail d'atelier. Dupliquer le calcul aurait fait diverger les deux voies de progression.
+
+### Quatre decisions
+
+**Les materiaux en escrow sont detruits, pas rendus.** Ils ont ete transformes. Les rendre au commanditaire lui offrirait l'objet **et** sa matiere ; les donner a l'artisan ferait de chaque commande une source de materiaux gratuits.
+
+**L'objet ne transite jamais par l'inventaire de l'artisan.** Il est cree directement dans le sac du commanditaire — un detour ouvrirait la porte a une commande honoree puis gardee.
+
+**`AuctionSettlement` est reutilise tel quel**, sans variante « commandes ». Un canal d'echange qui taxerait differemment deviendrait le canal ou l'on evite la taxe de l'autre. La commission joue le role du prix, l'artisan celui du vendeur, et l'invariant d'ECO-04 tient : l'artisan touche `commission - taxe` quelle que soit l'appartenance de guilde de son client. La ristourne membre revient au commanditaire, qui a paye au depot. Sans guilde controlante, la taxe **brule** — meme gold sink que l'hotel des ventes.
+
+**L'expiration ne s'applique pas a une commande deja prise.** Le delai protege le commanditaire d'une commande qui dort, pas l'artisan qui travaille. Sanctionner la non-livraison est un sujet distinct (ECO-09).
+
+### Deux champs declaratifs de plus, trouves en chemin → ECO-20
+
+**`Recipe.craftingTime` n'etait applique nulle part.** Il est affiche au joueur dans les deux cartes de recette (« Temps : 5s ») et `CraftingManager::craft()` consomme et produit dans la meme requete. Ce jalon le rend reel **cote commandes seulement** : temporiser aussi l'etabli toucherait la boucle de jeu de l'ecran d'artisanat, ce qui depasse ECO-07.
+
+**La qualite de craft ne survit pas au craft.** `QualityCalculator` la calcule, `craft()` la place dans son message de retour, et `PlayerItem` **n'a pas de champ qualite**. Consequence directe : `CraftOrder.minQuality` est inapplicable, et ECO-07a ne le verifie pas — il n'y a rien a lire.
+
+### Tests
+
+`CraftOrderManagerTest` passe a 25 cas. Les nouveaux couvrent le demarrage de l'horloge de travail, le refus de livrer avant la fin, le refus d'un autre artisan, le refus d'une commande non prise, le cas nominal (escrow detruit + objet chez le commanditaire + artisan paye), la taxe versee au tresor de la guilde controlante, et la taxe **brulee** quand la region n'a pas de maitre — en verifiant qu'elle ne revient a personne.
 
 ---
 

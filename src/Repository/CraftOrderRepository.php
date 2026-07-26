@@ -37,6 +37,26 @@ class CraftOrderRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * L'atelier d'un artisan : les commandes qu'il a prises et pas encore
+     * livrees (ECO-07).
+     *
+     * @return CraftOrder[]
+     */
+    public function findClaimedByCrafter(Player $crafter): array
+    {
+        return $this->createQueryBuilder('o')
+            ->join('o.recipe', 'r')->addSelect('r')
+            ->join('o.requester', 'p')->addSelect('p')
+            ->where('o.crafter = :crafter')
+            ->andWhere('o.status = :claimed')
+            ->setParameter('crafter', $crafter)
+            ->setParameter('claimed', CraftOrderStatus::Claimed)
+            ->orderBy('o.readyAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     public function countActiveByRequester(Player $requester): int
     {
         return (int) $this->createQueryBuilder('o')
