@@ -149,6 +149,28 @@ class AuctionListingRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * Annonces actives dont l'echeance est passee (ECO-16).
+     *
+     * La requete vivait dans `AuctionManager::expireListings()`, seul endroit
+     * du service a construire une requete lui-meme — ce qui rendait le chemin
+     * d'expiration intestable autrement qu'en simulant le constructeur de
+     * requetes Doctrine. C'etait un defaut de place, pas de testabilite : les
+     * sept autres lectures d'annonce etaient deja ici.
+     *
+     * @return AuctionListing[]
+     */
+    public function findExpirable(\DateTimeImmutable $now): array
+    {
+        return $this->createQueryBuilder('l')
+            ->andWhere('l.status = :status')
+            ->andWhere('l.expiresAt <= :now')
+            ->setParameter('status', AuctionStatus::Active)
+            ->setParameter('now', $now)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function countActiveBySeller(Player $seller): int
     {
         return (int) $this->createQueryBuilder('l')
