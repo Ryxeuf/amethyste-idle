@@ -5,6 +5,7 @@ namespace App\Tests\Unit\GameEngine\Housing;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerHouse;
 use App\Entity\App\Zone;
+use App\Enum\HouseStyle;
 use App\GameEngine\Housing\HousingManager;
 use App\Repository\PlayerHouseRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -228,6 +229,95 @@ final class HousingManagerTest extends TestCase
         self::assertSame(10, $owner->getGils(), 'On ne preleve pas ce qui n\'existe pas.');
         self::assertSame('Le Repos', $house->getName(), 'La demeure n\'est ni saisie ni renommee.');
         self::assertTrue($house->isInArrears());
+    }
+
+    // ---------------------------------------------------------------------
+    // HOU-05 — ameublement & devise
+    // ---------------------------------------------------------------------
+
+    public function testFurnishingCostsGilsAndChangesTheStyle(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), 10_000);
+        $house = $this->ownedHouse($player);
+
+        $this->manager->furnish($player, $house, HouseStyle::Rustic);
+
+        self::assertSame(HouseStyle::Rustic, $house->getStyle());
+        self::assertSame(10_000 - HouseStyle::Rustic->price(), $player->getGils());
+    }
+
+    public function testFurnishingWithoutEnoughGilsLeavesTheStyleUntouched(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), 10);
+        $house = $this->ownedHouse($player);
+
+        try {
+            $this->manager->furnish($player, $house, HouseStyle::Bourgeois);
+            self::fail('L\'ameublement aurait du etre refuse.');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('Gils', $e->getMessage());
+        }
+
+        self::assertSame(HouseStyle::Bare, $house->getStyle());
+        self::assertSame(10, $player->getGils());
+    }
+
+    public function testBuyingTheStyleAlreadyInstalledIsRefused(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), 10_000);
+        $house = $this->ownedHouse($player);
+        $house->setStyle(HouseStyle::Rustic);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('deja meublee ainsi');
+
+        $this->manager->furnish($player, $house, HouseStyle::Rustic);
+    }
+
+    public function testFurnishingSomeoneElsesHouseIsRefused(): void
+    {
+        $house = $this->ownedHouse($this->playerIn($this->residentialZone(), 0, 1));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('n\'est pas la votre');
+
+        $this->manager->furnish($this->playerIn($this->residentialZone(), 99_999, 2), $house, HouseStyle::Rustic);
+    }
+
+    /**
+     * Le style se paie, la devise non : on ne fait pas payer un joueur pour
+     * ecrire une phrase chez lui.
+     */
+    public function testTheMottoIsFreeAndTrimmed(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), 500);
+        $house = $this->ownedHouse($player);
+
+        $this->manager->setMotto($player, $house, '  Ici on forge  ');
+
+        self::assertSame('Ici on forge', $house->getMotto());
+        self::assertSame(500, $player->getGils());
+    }
+
+    public function testAnEmptyMottoClearsIt(): void
+    {
+        $player = $this->playerIn($this->residentialZone(), 0);
+        $house = $this->ownedHouse($player);
+        $house->setMotto('Ancienne');
+
+        $this->manager->setMotto($player, $house, '   ');
+
+        self::assertNull($house->getMotto());
+    }
+
+    private function ownedHouse(Player $owner): PlayerHouse
+    {
+        $house = new PlayerHouse();
+        $house->setOwner($owner);
+        $house->setZone($this->residentialZone());
+        $house->setRentDueAt(new \DateTimeImmutable('+7 days'));
+
+        return $house;
     }
 
     // ---------------------------------------------------------------------

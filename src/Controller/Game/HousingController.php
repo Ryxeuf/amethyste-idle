@@ -4,6 +4,8 @@ namespace App\Controller\Game;
 
 use App\Entity\App\PlayerHouse;
 use App\Entity\Game\Item;
+use App\Enum\HouseStyle;
+use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Housing\GardenService;
 use App\GameEngine\Housing\HousingManager;
 use App\Helper\PlayerHelper;
@@ -31,6 +33,7 @@ class HousingController extends AbstractController
         private readonly HousingManager $housingManager,
         private readonly PlayerHouseRepository $houseRepository,
         private readonly GardenService $gardenService,
+        private readonly CraftingManager $craftingManager,
         private readonly GardenPlotRepository $plotRepository,
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -57,6 +60,11 @@ class HousingController extends AbstractController
             'canBuyHere' => null !== $zone && $this->housingManager->isResidential($zone),
             'landPrice' => PlayerHouse::LAND_PRICE,
             'rentAmount' => PlayerHouse::RENT_AMOUNT,
+            // HOU-05 : le coffre et l'atelier existent deja ailleurs ; la
+            // demeure les rassemble au lieu de les enfermer.
+            'bankInventory' => $this->playerHelper->getBankInventory(),
+            'activeJob' => $this->craftingManager->getActiveJob($player),
+            'styles' => HouseStyle::purchasable(),
             // Le voisinage : visible des maintenant, visitable en HOU-03.
             'neighbours' => null !== $zone ? $this->houseRepository->findInZone($zone) : [],
         ]);
@@ -250,6 +258,70 @@ class HousingController extends AbstractController
         try {
             $this->housingManager->payRent($player, $house);
             $this->addFlash('success', sprintf('Loyer regle. Prochaine echeance le %s.', $house->getRentDueAt()->format('d/m/Y')));
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_house');
+    }
+
+    #[Route('/furnish', name: 'app_game_house_furnish', methods: ['POST'])]
+    public function furnish(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('house_furnish', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        $house = $this->housingManager->getHouse($player);
+        $style = HouseStyle::tryFrom((string) $request->request->get('style', ''));
+
+        if (!$house instanceof PlayerHouse || null === $style) {
+            $this->addFlash('error', 'Ameublement introuvable.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        try {
+            $this->housingManager->furnish($player, $house, $style);
+            $this->addFlash('success', sprintf('Votre demeure est desormais %s.', mb_strtolower($style->label())));
+        } catch (\InvalidArgumentException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+
+        return $this->redirectToRoute('app_game_house');
+    }
+
+    #[Route('/motto', name: 'app_game_house_motto', methods: ['POST'])]
+    public function motto(Request $request): Response
+    {
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        if (!$this->isCsrfTokenValid('house_motto', $request->request->get('_token'))) {
+            $this->addFlash('error', 'Token de securite invalide.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        $house = $this->housingManager->getHouse($player);
+        if (!$house instanceof PlayerHouse) {
+            $this->addFlash('error', 'Vous ne possedez pas de demeure.');
+
+            return $this->redirectToRoute('app_game_house');
+        }
+
+        try {
+            $this->housingManager->setMotto($player, $house, (string) $request->request->get('motto', ''));
+            $this->addFlash('success', 'Devise gravee.');
         } catch (\InvalidArgumentException $e) {
             $this->addFlash('error', $e->getMessage());
         }
