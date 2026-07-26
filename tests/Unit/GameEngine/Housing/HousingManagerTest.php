@@ -132,6 +132,58 @@ final class HousingManagerTest extends TestCase
         $this->manager->rename($this->playerIn($this->residentialZone(), 0, 2), $house, 'Vole');
     }
 
+    // ---------------------------------------------------------------------
+    // HOU-03 — visites
+    // ---------------------------------------------------------------------
+
+    /**
+     * La position d'un joueur est sa zone (regle #7) : une visite consultable
+     * de n'importe ou ferait du voisinage un annuaire, la ou c'est un lieu.
+     */
+    public function testVisitingRequiresBeingInTheHousesZone(): void
+    {
+        $quarter = $this->residentialZone();
+        $house = new PlayerHouse();
+        $house->setOwner($this->playerIn($quarter, 0, 1));
+        $house->setZone($quarter);
+
+        $visitor = $this->playerIn($this->zone('village-de-lumiere'), 0, 2);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('son quartier');
+
+        $this->manager->assertCanVisit($visitor, $house);
+    }
+
+    public function testANeighbourInTheSameZoneMayVisit(): void
+    {
+        $quarter = $this->residentialZone();
+        $house = new PlayerHouse();
+        $house->setOwner($this->playerIn($quarter, 0, 1));
+        $house->setZone($quarter);
+
+        $this->expectNotToPerformAssertions();
+
+        $this->manager->assertCanVisit($this->playerIn($quarter, 0, 2), $house);
+    }
+
+    /**
+     * Visiter la sienne est la meme vue : l'interdire obligerait l'appelant a
+     * traiter un cas particulier sans aucun gain.
+     */
+    public function testOneMayVisitOnesOwnHouse(): void
+    {
+        $quarter = $this->residentialZone();
+        $owner = $this->playerIn($quarter, 0, 1);
+        $house = new PlayerHouse();
+        $house->setOwner($owner);
+        $house->setZone($quarter);
+
+        $this->expectNotToPerformAssertions();
+
+        $this->manager->assertCanVisit($owner, $house);
+    }
+
     private function residentialZone(): Zone
     {
         return $this->zone(HousingManager::RESIDENTIAL_ZONE_SLUGS[0]);

@@ -113,10 +113,11 @@
             <div class="game-card-body">
                 <div class="space-y-1.5">
                     {% for neighbour in neighbours %}
-                        <div class="bg-gray-900/60 border border-gray-800 rounded-lg px-3 py-2 flex items-center justify-between gap-3">
+                        <a href="{{ path('app_game_house_visit', {id: neighbour.id}) }}"
+                           class="bg-gray-900/60 hover:bg-gray-800/60 border border-gray-800 rounded-lg px-3 py-2 flex items-center justify-between gap-3 transition-colors">
                             <span class="text-sm text-gray-100 truncate">{{ neighbour.name }}</span>
                             <span class="text-xs text-gray-500 shrink-0">{{ neighbour.owner.name }}</span>
-                        </div>
+                        </a>
                     {% endfor %}
                 </div>
             </div>

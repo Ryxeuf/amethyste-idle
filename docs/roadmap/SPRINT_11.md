@@ -57,9 +57,9 @@ pour rendre les demeures **visitables** par le graphe.
 - [x] Aucune energie, aucune presence : c'est ce qui le distingue de la recolte de zone
 - [ ] Reste ouvert : calibrage du rendement et de la duree dans `BALANCE.md`
 
-**HOU-03 — Visites** (S | ★★)
-- [ ] Visiter la demeure d'un voisin depuis la zone residentielle
-- [ ] Ce que le visiteur voit (nom, jardin) et ce qu'il ne touche pas
+**HOU-03 — Visites** ✅ **livre le 2026-07-26** (voir `ROADMAP_DONE.md`)
+- [x] Visite depuis le voisinage, **gatee sur la presence dans la zone** (regle #7)
+- [x] Vue en lecture seule : le visiteur voit le jardin pousser, il n'y touche pas
 
 **HOU-04 — Entretien** (S | ★★)
 - [ ] Loyer periodique = gold sink recurrent (GAME_PRINCIPLES §4.7), commande planifiee
