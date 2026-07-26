@@ -1,6 +1,6 @@
 ## Sprint 11 — Monde vivant
 
-> **6 taches** (129, 130, 131, 132 et 133 **terminees**, reste 128) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches — toutes terminees** (2026-07-26) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : etendre le monde avec de nouvelles zones de contenu, du housing, des montures et des events live.
 > Prerequis : Sprints 7-10 ✅ (modele zone, energie, evenements, contenu de groupe)
 
@@ -23,7 +23,7 @@
 
 ### Piste A — Contenu monde
 
-### 128 — Nouvelles zones — Acte 4 (XL | ★★★)
+### 128 — Nouvelles zones — Acte 4 (XL | ★★★) ✅ **TERMINEE**
 > Prerequis : ← 94 (Acte 3 termine) ✅, ← 141 (monstres tier 2-3) ✅, ← ZON-11 (config declarative) ✅
 > **Note post-pivot** : depend du volume de contenu de zone (cf. Sprint 13, ZON-26). Le graphe
 > actuel ne compte que **5 zones / 6 connexions** — l'Acte 4 doit s'appuyer sur un World 1 densifie.
@@ -44,7 +44,12 @@ peuple de faune de tier 1-3, indiscernable de l'Acte 1. Le contenu vient donc av
       `map_id` + coordonnees. **Deux defauts trouves** : les quetes Ochu et Ondine citaient les
       cles de `MobFixtures` au lieu des slugs de monstre — leurs objectifs ne pouvaient jamais
       se valider.
-- [ ] **128d — Boss final Acte 4** (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
+- [x] **128d — Boss final Acte 4** : « Le Premier Silence » (niveau 40, 60 000 PV partages) sur
+      le Glacier du Silence, via un `GameEvent` de type `boss_spawn` rattache a la zone.
+      `GameEventFixtures` savait declarer un evenement mais **pas le rattacher a une zone** —
+      sans quoi `ZoneBossManager` sort a la premiere ligne et aucun boss n'apparait.
+
+**Tache 128 : terminee. Sprint 11 : 6/6.**
 
 ### 129 — Housing joueur ✅ **TERMINE** (L | ★★) — 5 sous-jalons (regle #8)
 > Prerequis : ← 116 (hotel des ventes) ✅
@@ -140,7 +145,7 @@ pour rendre les demeures **visitables** par le graphe.
 
 ### Definition of Done
 
-- [ ] 4 nouvelles zones de contenu Acte 4 jouables
+- [x] 4 nouvelles zones de contenu Acte 4 jouables (tache 128)
 - [x] Housing fonctionnel avec visites et jardin passif (tache 129, HOU-01→05)
 - [x] Montures reduisant le temps de voyage entre zones (tache 130)
 - [x] Events live lancables depuis l'admin (tache 131)

@@ -34,7 +34,7 @@
 | Chantier Modele zone (ZON-01→21) | 21/21 | ✅ Termine (Sprints 7-10) |
 | **Consolidation post-pivot (ZON-22→27)** | **8/8** | ✅ Sprint 13 termine (2026-07-26) — dette du pivot soldee |
 | **Plan Economie joueur (ECO)** | **Pistes A/B/C completes** | ✅ Sprints 14-15 — reste Piste D (echoppes, ← housing) |
-| Sprint 11 — Monde vivant | ~6 items | En cours (housing ✅, montures ✅) |
+| Sprint 11 — Monde vivant | 6/6 | ✅ Termine (2026-07-26) |
 | Sprint 12 — Technique & i18n | ~9 items | En cours (jalons A/B/E/F + i18n contenu) |
 
 ---
@@ -56,7 +56,7 @@
 | **Sprint 13** | **Consolidation post-pivot (ZON-22..27)** | **Critique** | ✅ Termine 8/8 (2026-07-26) |
 | **Sprint 14** | **Economie joueur — socle (ECO-01..04, 14, 16)** | **Haute** | ✅ Termine 9/9 |
 | **Sprint 15** | **Commandes de craft — Piste C (ECO-05..09, ECO-20)** | **Haute** | ✅ Termine 8/8 (2026-07-26) |
-| **Sprint 11** | Monde vivant (128-133) | Basse | En cours |
+| **Sprint 11** | Monde vivant (128-133) | Basse | ✅ Termine 6/6 (2026-07-26) |
 | **Sprint 12** | Technique & i18n (134-135) | Basse | En cours (← bloque par ZON-24) |
 
 > **Numerotation** : les Sprints 7-10 reutilisent les numeros de l'ancien chantier Avatar (clos par
@@ -115,7 +115,7 @@ SPRINT 14 — ECONOMIE JOUEUR : SOCLE (‖ Sprint 13)
   ECO-16 Moderation economique            ← ECO-03
 
 SPRINT 11 — MONDE VIVANT (← Sprints 7-10)
-  128 Nouvelles zones Acte 4              ← ZON-26 ✅ debloque
+  128 Nouvelles zones Acte 4              ✅ complet (128a→d)
   129 Housing joueur                      ✅ complet      → debloque ECO-10
   130 Montures (temps de voyage)          ✅ transposee au modele zone
   131 Events live                         ← ZON-15 ✅ (reste l'UI admin)
@@ -158,7 +158,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 8. [Sprint 8 — Energie & actions de zone](SPRINT_08.md) ✅
 9. [Sprint 9 — Time-gating, presence & evenements](SPRINT_09.md) ✅
 10. [Sprint 10 — Contenu de groupe & decommission carte](SPRINT_10.md) ✅
-11. [Sprint 11 — Monde vivant](SPRINT_11.md)
+11. [Sprint 11 — Monde vivant](SPRINT_11.md) ✅ 6/6
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
 13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 8/8
 14. [Sprint 14 — Economie joueur (socle)](SPRINT_14.md) ✅ 9/9

@@ -1076,6 +1076,33 @@ class MonsterFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ],
 
+            // === Boss final de l'Acte 4 (tache 128d) ===
+            //
+            // Ce qui dormait sous la glace. Ses HP sont fixes par l'evenement
+            // qui l'invoque (`boss_hp`), pas ici : un boss de zone est un
+            // **combat collectif** dont la barre doit se regler sans toucher au
+            // bestiaire.
+            'the_first_silence' => [
+                'name' => 'Le Premier Silence',
+                'name_translations' => ['en' => 'The First Silence'],
+                'life' => 3200,
+                'hit' => 96,
+                'speed' => 16,
+                'attack' => 'frost_bolt',
+                'level' => 40,
+                'difficulty' => 5,
+                'isBoss' => true,
+                'spells' => ['frost_maelstrom', 'glacial_prison', 'ice_storm', 'death_nova'],
+                'aiPattern' => [
+                    'spell_chance' => 70,
+                    'preferred_element' => 'ice',
+                    'danger_alert' => [
+                        'threshold' => 30,
+                        'message' => 'Le silence se rompt — et ce qui parle n\'a pas de bouche.',
+                        'spell' => 'frost-maelstrom',
+                    ],
+                ],
+            ],
             // === World boss (tâche 71) ===
             'ancient_wyrm' => [
                 'name' => 'Wyrm Ancien',
