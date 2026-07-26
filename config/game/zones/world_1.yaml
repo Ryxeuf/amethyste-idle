@@ -149,8 +149,20 @@ zones:
             - { slug: filon-de-cobalt, item: ore-cobalt, profession: mining, capacity: 10, respawn_seconds: 2400, yield_min: 1, yield_max: 1 }
             - { slug: givrecoiffe-des-cimes, item: plant-frostcap, profession: herbalism, capacity: 12, respawn_seconds: 2100, yield_min: 1, yield_max: 2 }
 
+    quartier-des-jardins:
+        name: 'Quartier des Jardins'
+        name_en: 'Garden Quarter'
+        description: "Le lotissement de Lumiere : allees de terre battue, murets bas et parcelles a vendre. On y bruit des projets plus que des combats."
+        description_en: 'The residential quarter of Lumiere: dirt lanes, low walls and plots for sale. Plans are hatched here more often than fights.'
+        type: city
+        safe: true
+        map_x: 42
+        map_y: 46
+        source_map: 'Village de Lumière'
+
 # Liaisons du graphe. `bidirectional: true` cree les deux aretes (durees symetriques).
 connections:
+    - { from: village-de-lumiere, to: quartier-des-jardins, travel_seconds: 60, bidirectional: true }
     - { from: village-de-lumiere, to: foret-des-murmures, travel_seconds: 300, bidirectional: true }
     - { from: village-de-lumiere, to: marais-brumeux, travel_seconds: 420, bidirectional: true }
     - { from: village-de-lumiere, to: mines-profondes, travel_seconds: 600, bidirectional: true }
