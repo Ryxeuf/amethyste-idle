@@ -43,11 +43,11 @@ MMORPG navigateur web retro (Zelda + FF7/8/9 + stein.world). Vue 2D top-down, ti
 
 13. **Roadmap** : realise dans `docs/ROADMAP_DONE.md` ; a venir reparti par **sprint** dans `docs/roadmap/` :
    - `docs/roadmap/ROADMAP_TODO_INDEX.md` — Legende, graphe de dependances, liens vers les sprints
-   - `docs/roadmap/SPRINT_01.md` … `SPRINT_14.md` — Taches par sprint (14 sprints focuses, priorite Critique a Basse)
-   - `docs/ROADMAP_TODO.md` — Point d'entree (liens vers l'index et les sprints) ; l'admin `/admin/roadmap` **agrege** index + 14 sprints par defaut, avec **sous-onglets** (`?part=index`, `sprint_1` … `sprint_14`, ou `all`) pour n'afficher qu'un fichier. Ajouter un sprint = ajouter le fichier **et** l'entree dans `RoadmapController` (3 constantes)
+   - `docs/roadmap/SPRINT_01.md` … `SPRINT_15.md` — Taches par sprint (15 sprints focuses, priorite Critique a Basse)
+   - `docs/ROADMAP_TODO.md` — Point d'entree (liens vers l'index et les sprints) ; l'admin `/admin/roadmap` **agrege** index + 15 sprints par defaut, avec **sous-onglets** (`?part=index`, `sprint_1` … `sprint_15`, ou `all`) pour n'afficher qu'un fichier. Ajouter un sprint = ajouter le fichier **et** l'entree dans `RoadmapController` (3 constantes)
    - Quand une tache est **implementee**, elle est **retiree** du fichier de sprint concerne et **ajoutee** a `ROADMAP_DONE.md`. Ne jamais laisser s'accumuler le detail des sous-phases livrees dans un fichier de sprint (cf. le menage du 2026-07-25 : `SPRINT_12.md` pesait 181 Ko pour 2 taches)
-   - Sprints **actifs** apres le pivot : **Sprint 13** (consolidation post-pivot, ZON-22→26, priorite Critique) et **Sprint 14** (socle economie joueur, ECO). Sprints 11-12 en cours, priorite basse
-   - Plans annexes : `PLAN_GUILD_CITY_CONTROL.md` (GCC-01→20 ✅), `PLAN_NARRATIVE.md` (NAR-01→14 ✅), `PLAN_TESTING.md` (TST-01→15 ✅), `PLAN_PLAYER_ECONOMY.md` (**ECO-01→17, 0/17 — prochain grand chantier**)
+   - Sprints **actifs** : **Sprint 15** (commandes de craft, ECO-05→09 — Piste C, pilier endgame). Sprint 13 clos a 6/7 (reste ZON-26b), **Sprint 14 complet 9/9**. Sprints 11-12 en cours, priorite basse
+   - Plans annexes : `PLAN_GUILD_CITY_CONTROL.md` (GCC-01→20 ✅), `PLAN_NARRATIVE.md` (NAR-01→14 ✅), `PLAN_TESTING.md` (TST-01→15 ✅), `PLAN_PLAYER_ECONOMY.md` (Pistes A/B **completes** au Sprint 14 ; Piste C en cours au Sprint 15)
    - `docs/roadmap/ARCHIVE_SPRINT_11_12.md` — archive verbatim du detail livre des Sprints 11-12 (non agregee par l'admin)
 
 14. **Versioning automatique** : la version affichee dans le jeu (`app_version`) est geree dynamiquement par `VersionExtension` :

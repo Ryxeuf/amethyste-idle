@@ -7,7 +7,36 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-25 (**ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-05 — Entite CraftOrder & escrow (Sprint 15, 2026-07-26)
+
+> Premier jalon de la **Piste C**. Le troisieme canal d'echange, et le seul qui produise du stuff **lie**.
+
+### Ce que ce canal change
+
+L'hotel des ventes echange des **commodites** : tout le monde peut vendre la meme chose, le prix est la seule variable. La commande de craft echange un **service** — le commanditaire apporte la matiere et l'argent, l'artisan apporte le plan et le savoir-faire. C'est le seul canal ou la competence d'un joueur porte un nom et une valeur.
+
+### Livre
+
+- **`CraftOrderStatus`** : `open`, `claimed`, `fulfilled`, `expired`, `cancelled`, avec deux predicats qui portent le sens — `isActive()` (l'escrow est immobilise) et `refundsEscrow()` (l'etat terminal rend l'escrow, par opposition a `fulfilled` qui le consomme).
+- **`CraftOrder`** : commanditaire, recette, artisan (nul tant qu'ouverte), region figee au depot (meme regle qu'ECO-03), materiaux, commission, qualite minimale, echeances.
+- **`PlayerItem::craftOrder`** : l'escrow des materiaux est materialise par une relation, comme l'inventaire ou le coffre de guilde. Un materiau confie n'est dans **aucun** inventaire — il n'appartient plus au commanditaire, et pas encore a l'artisan.
+- **`CraftOrderManager`** : creation, annulation, restitution.
+
+### Trois decisions
+
+**L'escrow est pose des deux cotes des la creation.** Sans cela, un artisan pourrait prendre une commande, la travailler — le temps de craft est reel — et decouvrir a la livraison que le client a revendu les materiaux entre-temps. La fenetre d'abus serait exactement la duree du craft.
+
+**La couverture des materiaux est verifiee au depot, pas a l'execution.** Un artisan qui prend une commande doit pouvoir la realiser ; decouvrir qu'il manque un minerai a la livraison lui ferait perdre son temps de craft pour une faute qui n'est pas la sienne.
+
+**L'annulation n'est possible que tant que personne n'a pris la commande.** Une fois un artisan engage, annuler unilateralement lui ferait perdre le travail deja fourni.
+
+### Tests
+
+`CraftOrderManagerTest` couvre l'escrow des deux cotes, le refus d'un objet lie (ECO-01 vaut aussi pour ce canal), le refus de materiaux d'autrui, le plafond de commandes actives — et surtout le cas ou **la commission ne peut pas etre payee** : les materiaux doivent rester en place, sinon une commande refusee couterait quand meme ses materiaux au joueur.
 
 ---
 
