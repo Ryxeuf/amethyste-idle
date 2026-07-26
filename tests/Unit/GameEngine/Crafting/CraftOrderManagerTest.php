@@ -11,6 +11,7 @@ use App\Entity\App\Region;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
 use App\Entity\User;
+use App\Enum\BindType;
 use App\Enum\CraftOrderStatus;
 use App\GameEngine\Auction\AuctionAntiExploit;
 use App\GameEngine\Crafting\CraftingManager;
@@ -605,6 +606,56 @@ class CraftOrderManagerTest extends TestCase
         }
     }
 
+    // ---------------------------------------------------------------------
+    // ECO-08a — bind-on-pickup via commande
+    // ---------------------------------------------------------------------
+
+    /**
+     * Le coeur de la Piste C : l'objet nait lie **au commanditaire**, pas a
+     * l'artisan qui l'a fabrique. C'est ce qui fait de la commande le seul canal
+     * par lequel on obtient du stuff qu'on ne pourrait jamais acheter.
+     */
+    public function testABoundResultIsBoundToTheRequesterNotTheCrafter(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($requester, $crafter, bindType: BindType::BindOnPickup);
+
+        $this->manager->fulfillOrder($crafter, $order);
+
+        $delivered = $this->deliveredItem();
+        self::assertTrue($delivered->isBound());
+        self::assertSame($requester->getId(), $delivered->getBoundToPlayerId());
+        self::assertNotSame($crafter->getId(), $delivered->getBoundToPlayerId());
+        self::assertFalse($delivered->isExchangeable(), 'Un objet lie ne repart pas sur un canal d\'echange.');
+    }
+
+    /**
+     * La liaison ne s'applique qu'aux objets qui la portent : le reste de la
+     * production reste echangeable, sinon la commande assecherait l'hotel des
+     * ventes au lieu de le completer.
+     */
+    public function testAnUnboundResultStaysExchangeable(): void
+    {
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($this->createPlayer(1, 1_000), $crafter);
+
+        $this->manager->fulfillOrder($crafter, $order);
+
+        $delivered = $this->deliveredItem();
+        self::assertFalse($delivered->isBound());
+        self::assertTrue($delivered->isExchangeable());
+    }
+
+    private function deliveredItem(): PlayerItem
+    {
+        $items = array_values(array_filter($this->persisted, static fn (object $e) => $e instanceof PlayerItem));
+        self::assertCount(1, $items);
+        self::assertInstanceOf(PlayerItem::class, $items[0]);
+
+        return $items[0];
+    }
+
     /**
      * Le journal du chemin « taxe brulee » lit le slug de la region : une
      * region de test sans slug ferait echouer le test sur une donnee absente
@@ -623,7 +674,7 @@ class CraftOrderManagerTest extends TestCase
     /**
      * Commande ouverte puis prise en charge, travail deja termine.
      */
-    private function claimedOrder(Player $requester, Player $crafter, int $craftingTime = 5): CraftOrder
+    private function claimedOrder(Player $requester, Player $crafter, int $craftingTime = 5, BindType $bindType = BindType::None): CraftOrder
     {
         $order = $this->openOrder($requester);
         $order->getRecipe()->setCraftingTime($craftingTime);
@@ -632,6 +683,7 @@ class CraftOrderManagerTest extends TestCase
         $result->setName('Epee de fer');
         $result->setSlug('iron_sword');
         $result->setType(Item::TYPE_GEAR_PIECE);
+        $result->setBindType($bindType);
         (new \ReflectionProperty(Item::class, 'id'))->setValue($result, 4_242);
         $order->getRecipe()->setResult($result);
 

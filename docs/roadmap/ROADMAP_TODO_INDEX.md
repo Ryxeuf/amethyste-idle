@@ -152,7 +152,7 @@ Sprint 12 (technique) : 134 attend ZON-24 ; 135 parallelisable a tout moment
 12. [Sprint 12 — Technique & i18n](SPRINT_12.md)
 13. [Sprint 13 — Consolidation post-pivot](SPRINT_13.md) ✅ 6/7 (reste ZON-26b)
 14. [Sprint 14 — Economie joueur (socle)](SPRINT_14.md) ✅ 9/9
-15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ← **En cours** (4/7 ; ECO-07 scindee en a/b, ECO-20 nee des audits ECO-06/07)
+15. **[Sprint 15 — Commandes de craft (Piste C)](SPRINT_15.md)** ← **En cours** (5/8 ; ECO-07 et ECO-08 scindees en a/b, ECO-20 nee des audits ECO-06/07)
 
 **Plans annexes :**
 - [Pivot PBBG — decision et equivalences](../PIVOT_PBBG.md) — **source de verite du pivot**

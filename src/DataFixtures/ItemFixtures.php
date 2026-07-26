@@ -3289,6 +3289,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'protection' => 5,
                 'materiaSlots' => 3,
                 'level' => 18,
+                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
+                'bindType' => 'bind_on_pickup',
             ],
             'legendary_amulet' => [
                 'name' => 'Amulette prismatique',
@@ -3305,6 +3307,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'protection' => 6,
                 'materiaSlots' => 3,
                 'level' => 18,
+                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
+                'bindType' => 'bind_on_pickup',
             ],
 
             // === Tier 4+ : Chefs-d'oeuvre exclusifs aux maitres artisans (task 122) ===
@@ -3325,6 +3329,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'rarity' => ItemRarity::Legendary,
                 'materiaSlots' => 3,
                 'level' => 20,
+                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
+                'bindType' => 'bind_on_pickup',
             ],
 
             // Maitre Tanneur — manteau de maitre
@@ -3343,6 +3349,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'protection' => 12,
                 'materiaSlots' => 3,
                 'level' => 20,
+                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
+                'bindType' => 'bind_on_pickup',
             ],
 
             // Maitre Alchimiste — elixir supreme
@@ -3359,6 +3367,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'energy_cost' => 0,
                 'nb_usages' => 1,
                 'rarity' => ItemRarity::Legendary,
+                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
+                'bindType' => 'bind_on_pickup',
             ],
 
             // Maitre Joaillier — anneau de maitre
@@ -3377,6 +3387,8 @@ class ItemFixtures extends Fixture implements DependentFixtureInterface
                 'protection' => 8,
                 'materiaSlots' => 4,
                 'level' => 20,
+                // ECO-08 : haut de gamme endgame — lie, donc hors de l'hotel des ventes.
+                'bindType' => 'bind_on_pickup',
             ],
 
             // === Équipement Tier 2 — Variantes élémentaires (Feu, Eau, Terre, Air) ===
