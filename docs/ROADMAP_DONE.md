@@ -7,7 +7,38 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## HOU-01 — Terrain & demeure (tache 129, 2026-07-26)
+
+> Premier des cinq sous-jalons du housing (tache 129 decoupee par la regle #8). Prerequis d'ECO-10 (echoppes joueur).
+
+### Livre
+
+- **Zone `quartier-des-jardins`** : lotissement declaratif (`config/game/zones/world_1.yaml`), sur, a 60 s du hub — la distance la plus courte du graphe, parce qu'on y revient souvent.
+- **`PlayerHouse`** : une demeure par **personnage** et non par compte (regle #12 — un logement partage entre personnages effacerait le cout de s'en offrir un second), rattachee a une **zone** (regle #7 — une demeure sans zone ne serait ni visitable ni situable).
+- **Achat sur place, 25 000 Gils.** Le prix est un jalon assume : au bareme de `BALANCE.md`, l'ordre de grandeur de plusieurs equipements de palier 3. Le housing est un gold sink (GAME_PRINCIPLES §4.7), pas une commodite d'inventaire.
+- Ecran de la demeure, renommage, liste du voisinage.
+
+### Deux decisions
+
+**L'achat exige d'etre sur place.** La position d'un joueur est sa zone ; acheter a distance retirerait au lotissement le seul cout qui ne soit pas monetaire — le voyage.
+
+**Les zones residentielles sont une liste explicite dans le code**, pas un drapeau sur `Zone`. Le lotissement est une decision de contenu : un drapeau laisserait une zone devenir residentielle par accident en editant sa configuration.
+
+L'unicite porte sur `owner_id` **en base** : deux requetes d'achat concurrentes ne doivent pas pouvoir batir deux maisons, et donc prelever deux fois le prix du terrain.
+
+### Ce que l'audit a trouve
+
+**Le coffre prive existe deja.** Chaque personnage recoit un inventaire `Inventory::TYPE_BANK` de 1000 emplacements a sa creation (`PlayerFactory`). L'item « coffre prive » de la tache 129 est donc sans objet sous cette forme — il devient « rendre le coffre accessible depuis la demeure » (HOU-05).
+
+Deux modeles reutilisables reperes pour la suite : `PlayerExpedition` / `ExpeditionService` (demarrer / attendre / recolter) pour le **jardin**, et `Zone::TYPE_INTERIOR` pour rendre les demeures **visitables** par le graphe plutot que par un ecran a part.
+
+### Tests
+
+Sept cas : l'achat preleve le prix et batit la demeure, le refus faute de Gils **ne persiste rien**, l'achat a distance est refuse, une zone non residentielle ne vend rien, une seconde demeure est refusee, un nom vide est refuse, et renommer la demeure d'autrui est refuse.
 
 ---
 

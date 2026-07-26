@@ -33,13 +33,39 @@
 - [ ] Chaine de quetes Acte 4 (arc narratif dedie via `storyArc`, cf. NAR-01 ✅)
 - [ ] Boss final Acte 4 (evenement de zone + `ZoneBoss`, cf. ZON-18 ✅)
 
-### 129 — Housing joueur (L | ★★)
+### 129 — Housing joueur (L | ★★) — **decoupe en 5 sous-jalons** (regle #8)
 > Prerequis : ← 116 (hotel des ventes) ✅
 > **Note** : prerequis de **ECO-10** (echoppes joueur) — cf. [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md).
-- [ ] Terrain achetable dans une zone dediee
-- [ ] Maison personnalisable : meubles, coffre prive, atelier de craft
-- [ ] Visitabilite : les joueurs peuvent visiter les maisons des autres
-- [ ] Jardin : recolte passive en temps reel (pilier du modele PBBG)
+
+**Constat d'audit (2026-07-26)** : le **coffre prive existe deja** — chaque personnage recoit un
+inventaire `Inventory::TYPE_BANK` de 1000 emplacements a sa creation (`PlayerFactory`). L'item de
+la roadmap est donc sans objet sous cette forme ; il devient « le coffre devient accessible
+**depuis la demeure** ». Deux modeles reutilisables reperes : `PlayerExpedition` /
+`ExpeditionService` (demarrer / attendre / recolter) pour le **jardin**, et `Zone::TYPE_INTERIOR`
+pour rendre les demeures **visitables** par le graphe.
+
+**HOU-01 — Terrain & demeure** ✅ **livre le 2026-07-26** (voir `ROADMAP_DONE.md`)
+- [x] Zone residentielle `quartier-des-jardins` (declarative, a 60 s du hub)
+- [x] `PlayerHouse` : une demeure par **personnage** (regle #12), rattachee a une zone (regle #7)
+- [x] Achat **sur place**, 25 000 Gils = gold sink (GAME_PRINCIPLES §4.7)
+- [x] Ecran de la demeure, renommage, liste du voisinage
+
+**HOU-02 — Jardin : recolte passive** (M | ★★★)
+- [ ] Parcelles plantables, rendement en temps reel sur le modele `PlayerExpedition`
+- [ ] Recolte a la visite ; c'est le pilier PBBG de la tache
+
+**HOU-03 — Visites** (S | ★★)
+- [ ] Visiter la demeure d'un voisin depuis la zone residentielle
+- [ ] Ce que le visiteur voit (nom, jardin) et ce qu'il ne touche pas
+
+**HOU-04 — Entretien** (S | ★★)
+- [ ] Loyer periodique = gold sink recurrent (GAME_PRINCIPLES §4.7), commande planifiee
+- [ ] Que se passe-t-il si le loyer n'est pas paye (jamais de confiscation seche)
+
+**HOU-05 — Meubles, coffre & atelier** (M | ★)
+- [ ] Acces au coffre (`TYPE_BANK`) depuis la demeure
+- [ ] Atelier : lien avec `CraftJob` (ECO-20c)
+- [ ] Meubles : personnalisation visible par les visiteurs
 
 ### 130 — Montures & deplacement rapide (M | ★★) — **reste 1 item**
 > Prerequis : ← ZON-06 (voyage entre zones) ✅
