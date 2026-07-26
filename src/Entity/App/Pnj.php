@@ -102,13 +102,6 @@ class Pnj
         return $this->id;
     }
 
-    /**
-     * Set name.
-     *
-     * @param string $name
-     *
-     * @return Pnj
-     */
     public function getSlug(): ?string
     {
         return $this->slug;
@@ -121,6 +114,13 @@ class Pnj
         return $this;
     }
 
+    /**
+     * Set name.
+     *
+     * @param string $name
+     *
+     * @return Pnj
+     */
     public function setName($name)
     {
         $this->name = $name;
