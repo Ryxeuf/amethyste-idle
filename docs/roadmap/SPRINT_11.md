@@ -1,6 +1,6 @@
 ## Sprint 11 — Monde vivant
 
-> **6 taches** (129, 130, 131 et 132 **terminees**, 2 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (129, 130, 131, 132 et 133 **terminees**, reste 128) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : etendre le monde avec de nouvelles zones de contenu, du housing, des montures et des events live.
 > Prerequis : Sprints 7-10 ✅ (modele zone, energie, evenements, contenu de groupe)
 
@@ -17,7 +17,7 @@
 | **130 — Montures & deplacement rapide** | ✅ 100 % | Catalogue `Mount` + UI `/game/mounts` (badge « Possedee »), ownership `PlayerMount`, obtention achat/quete/drop, activation + `speedBonus`, teleportation entre villes decouvertes, reduction du temps de voyage (`MountTravelSpeed`). Sous-phase 4b (rendu PixiJS) **annulee par le pivot**. |
 | **131 — Events live & outils GM** | ✅ 100 % | Type `gathering_bonus` (+ extension aux 3 managers de recolte), historique `/admin/events/history`, annonce globale Mercure. |
 | **132 — Classement saisonnier global** | ✅ 100 % | `/game/rankings` (kills / quetes / XP), archivage par `InfluenceSeason`, titres de podium + affichage (classement & profil), Hall of Fame `/game/rankings/history`, recompenses cosmetiques. |
-| **133 — Mini-jeux** | 50 % | Peche active (mini-jeu de timing, zone parfaite, bonus XP, i18n). |
+| **133 — Mini-jeux** | ✅ 100 % | Peche active (mini-jeu de timing, zone parfaite, bonus XP, i18n). |
 
 ---
 
@@ -115,10 +115,13 @@ pour rendre les demeures **visitables** par le graphe.
 
 **Tache 132 : terminee.**
 
-### 133 — Mini-jeux (M | ★) — **reste 1 item**
+### 133 — Mini-jeux (M | ★) — ✅ **terminee**
 > Prerequis : ∅
-- [ ] Defis chrono asynchrones (ex-« courses entre joueurs », reformules par le pivot PBBG) :
-      accomplir un parcours d'objectifs le plus vite possible, classement compare
+- [x] Defis chrono asynchrones (ex-« courses entre joueurs », reformules par le pivot PBBG) :
+      `TimeTrial` / `TimeTrialRun`, rallier une suite de zones dans l'ordre, tableau des
+      meilleurs temps par parcours, ecran `/game/time-trials`, deux parcours sur le World 1.
+
+**Tache 133 : terminee.**
 
 ---
 
