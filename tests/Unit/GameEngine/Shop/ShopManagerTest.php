@@ -14,6 +14,7 @@ use App\Enum\ShopStatus;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Housing\HousingManager;
 use App\GameEngine\Shop\ShopManager;
+use App\GameEngine\Shop\ShopRentService;
 use App\Repository\PlayerShopRepository;
 use App\Repository\ShopListingRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,6 +29,7 @@ class ShopManagerTest extends TestCase
     private ShopListingRepository&MockObject $listingRepository;
     private HousingManager&MockObject $housingManager;
     private CraftingManager&MockObject $craftingManager;
+    private ShopRentService&MockObject $rentService;
     private ShopManager $manager;
 
     protected function setUp(): void
@@ -37,6 +39,7 @@ class ShopManagerTest extends TestCase
         $this->listingRepository = $this->createMock(ShopListingRepository::class);
         $this->housingManager = $this->createMock(HousingManager::class);
         $this->craftingManager = $this->createMock(CraftingManager::class);
+        $this->rentService = $this->createMock(ShopRentService::class);
 
         $this->manager = new ShopManager(
             $this->entityManager,
@@ -44,6 +47,7 @@ class ShopManagerTest extends TestCase
             $this->listingRepository,
             $this->housingManager,
             $this->craftingManager,
+            $this->rentService,
             new NullLogger(),
         );
     }
@@ -129,6 +133,22 @@ class ShopManagerTest extends TestCase
         $this->assertSame($zone, $shop->getZone(), 'L\'echoppe s\'ouvre la ou le joueur a pignon sur rue.');
         $this->assertSame(ShopStatus::Open, $shop->getStatus());
         $this->assertSame(PlayerShop::DEFAULT_SLOTS, $shop->getSlotCount());
+    }
+
+    /**
+     * La premiere periode est offerte : on ne fait pas payer un loyer avant la
+     * premiere vente.
+     */
+    public function testOpeningSchedulesTheFirstRent(): void
+    {
+        $player = $this->player();
+        $this->shopRepository->method('findForOwner')->willReturn(null);
+        $this->housingManager->method('getHouse')->willReturn($this->house($player, $this->zone()));
+        $this->craftingManager->method('getCraftingLevel')->willReturn(9);
+
+        $this->rentService->expects($this->once())->method('scheduleFirstRent');
+
+        $this->manager->open($player, 'La bonne enclume');
     }
 
     public function testOpeningRefusesASecondShop(): void

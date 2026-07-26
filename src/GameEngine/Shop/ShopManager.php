@@ -34,6 +34,7 @@ class ShopManager
         private readonly ShopListingRepository $listingRepository,
         private readonly HousingManager $housingManager,
         private readonly CraftingManager $craftingManager,
+        private readonly ShopRentService $rentService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -96,6 +97,9 @@ class ShopManager
         // L'echoppe suit la demeure : c'est la que le joueur a pignon sur rue.
         $shop->setZone($house->getZone());
         $shop->setName($name);
+        // Premiere echeance de loyer (ECO-11) : la premiere periode est
+        // offerte, on ne fait pas payer un loyer avant la premiere vente.
+        $this->rentService->scheduleFirstRent($shop);
 
         $this->entityManager->persist($shop);
         $this->entityManager->flush();

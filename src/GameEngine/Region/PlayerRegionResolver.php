@@ -4,6 +4,7 @@ namespace App\GameEngine\Region;
 
 use App\Entity\App\Player;
 use App\Entity\App\Region;
+use App\Entity\App\Zone;
 
 /**
  * Region ou se tient un joueur (ECO-03).
@@ -27,8 +28,22 @@ class PlayerRegionResolver
             return null;
         }
 
-        return $player->getCurrentZone()?->getSourceMap()?->getRegion()
+        return $this->resolveForZone($player->getCurrentZone())
             ?? $player->getMap()?->getRegion();
+    }
+
+    /**
+     * Region d'une zone du graphe.
+     *
+     * Expose separement pour ce qui est ancre a un **lieu** et non a un joueur
+     * — une echoppe, par exemple (ECO-11), dont la taxe se lit a son adresse et
+     * non a la position de l'acheteur. Une zone sans carte d'origine n'a pas de
+     * region : c'est le cas depuis ZON-26b, et il est traite comme le marche
+     * « sans region » plutot que refuse.
+     */
+    public function resolveForZone(?Zone $zone): ?Region
+    {
+        return $zone?->getSourceMap()?->getRegion();
     }
 
     /**
