@@ -11,6 +11,7 @@ use App\GameEngine\Housing\HousingManager;
 use App\GameEngine\Shop\ShopManager;
 use App\GameEngine\Shop\ShopRentService;
 use App\GameEngine\Shop\ShopSaleService;
+use App\GameEngine\Shop\ShopStallService;
 use App\Helper\PlayerHelper;
 use App\Repository\CrafterReputationRepository;
 use App\Repository\ShopListingRepository;
@@ -43,6 +44,7 @@ class PlayerShopController extends AbstractController
         private readonly ShopManager $shopManager,
         private readonly ShopSaleService $saleService,
         private readonly ShopRentService $rentService,
+        private readonly ShopStallService $stallService,
         private readonly HousingManager $housingManager,
         private readonly ShopListingRepository $listingRepository,
         private readonly ShopSaleLogRepository $saleLogRepository,
@@ -76,6 +78,12 @@ class PlayerShopController extends AbstractController
             // metier depuis ECO-08b (cf. ECO-10).
             'reputations' => $this->reputationRepository->findForPlayer($player),
             'sellables' => $this->sellableItems($player),
+            // ECO-13 : les emplacements au-dela des six de base sont loues a
+            // la cite. La place du marche est finie — c'est ce qui en fait un
+            // actif et non un simple gold sink.
+            'stallPrice' => null !== $shop ? $this->stallService->nextStallPrice($shop) : null,
+            'stallsLeft' => null !== $shop ? $this->stallService->remainingStalls($shop) : 0,
+            'maxSlots' => PlayerShop::MAX_SLOTS,
         ]);
     }
 
@@ -181,6 +189,16 @@ class PlayerShopController extends AbstractController
             $this->rentService->payRent($player, $shop);
 
             return sprintf('Loyer regle. Prochaine echeance le %s.', $shop->getRentDueAt()?->format('d/m/Y') ?? '—');
+        });
+    }
+
+    #[Route('/stall', name: 'app_game_player_shop_stall', methods: ['POST'])]
+    public function stall(Request $request): Response
+    {
+        return $this->act($request, 'shop_stall', function (Player $player): string {
+            $price = $this->stallService->leaseStall($player, $this->requireShop($player));
+
+            return sprintf('Etal loue pour %s Gils — il revient a la guilde qui tient la cite.', number_format($price, 0, ',', ' '));
         });
     }
 
