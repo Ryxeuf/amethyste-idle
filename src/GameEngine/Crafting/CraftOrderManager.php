@@ -51,6 +51,7 @@ class CraftOrderManager
         private readonly PlayerRegionResolver $regionResolver,
         private readonly CraftingManager $craftingManager,
         private readonly AuctionAntiExploit $antiExploit,
+        private readonly CrafterReputationManager $reputationManager,
         private readonly TownControlManager $townControlManager,
         private readonly GuildManager $guildManager,
         private readonly PlayerItemGenerator $playerItemGenerator,
@@ -344,6 +345,10 @@ class CraftOrderManager
         // L'artisan progresse : c'est du travail d'atelier comme un autre.
         $grantedXp = $this->craftingManager->grantCraftingXp($crafter, $recipe->getCraft(), $recipe->getXpReward());
 
+        // ECO-08b : l'objet part chez le client et n'y revient jamais ; ce que
+        // l'artisan capitalise, c'est sa reputation.
+        $reputation = $this->reputationManager->recordDelivery($crafter, $order);
+
         $order->setStatus(CraftOrderStatus::Fulfilled);
         $order->setFulfilledAt(new \DateTimeImmutable());
 
@@ -359,6 +364,7 @@ class CraftOrderManager
             'tax' => $settlement->taxAmount,
             'burned' => $settlement->burnedAmount,
             'xp' => $grantedXp,
+            'reputation' => $reputation->getPoints(),
         ]);
 
         return $settlement;

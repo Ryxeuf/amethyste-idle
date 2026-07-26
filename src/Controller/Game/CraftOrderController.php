@@ -9,6 +9,7 @@ use App\Entity\Game\Recipe;
 use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Helper\PlayerHelper;
+use App\Repository\CrafterReputationRepository;
 use App\Repository\CraftOrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -30,6 +31,7 @@ class CraftOrderController extends AbstractController
     public function __construct(
         private readonly PlayerHelper $playerHelper,
         private readonly CraftOrderRepository $orderRepository,
+        private readonly CrafterReputationRepository $reputationRepository,
         private readonly CraftOrderManager $orderManager,
         private readonly PlayerRegionResolver $regionResolver,
         private readonly EntityManagerInterface $entityManager,
@@ -134,6 +136,33 @@ class CraftOrderController extends AbstractController
         }
 
         return $this->redirectToRoute('app_game_craft_order_workshop');
+    }
+
+    /**
+     * Classement des artisans par metier (ECO-08b).
+     *
+     * C'est l'ecran qui donne son sens a la commande directe : sans lui, nommer
+     * un artisan supposerait de le connaitre deja.
+     */
+    #[Route('/artisans', name: 'app_game_craft_order_artisans', methods: ['GET'])]
+    public function artisans(Request $request): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+
+        $player = $this->playerHelper->getPlayer();
+        if (null === $player) {
+            return $this->redirectToRoute('app_game');
+        }
+
+        $craft = trim((string) $request->query->get('craft', ''));
+
+        return $this->render('game/craft_order/artisans.html.twig', [
+            'player' => $player,
+            'craft' => $craft,
+            'crafts' => array_keys(Item::CRAFT_TOOL_TYPES),
+            'reputations' => $this->reputationRepository->findTopByCraft('' !== $craft ? $craft : null),
+            'mine' => $this->reputationRepository->findForPlayer($player),
+        ]);
     }
 
     #[Route('/new', name: 'app_game_craft_order_new', methods: ['GET'])]
