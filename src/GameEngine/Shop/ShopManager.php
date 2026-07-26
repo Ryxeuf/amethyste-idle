@@ -83,11 +83,7 @@ class ShopManager
 
         $level = $this->bestCraftLevel($player);
         if ($level < PlayerShop::MIN_CRAFT_LEVEL) {
-            throw new \InvalidArgumentException(sprintf(
-                'Il faut le niveau %d dans un metier d\'artisanat pour ouvrir une echoppe (votre meilleur : %d).',
-                PlayerShop::MIN_CRAFT_LEVEL,
-                $level,
-            ));
+            throw new \InvalidArgumentException(sprintf('Il faut le niveau %d dans un metier d\'artisanat pour ouvrir une echoppe (votre meilleur : %d).', PlayerShop::MIN_CRAFT_LEVEL, $level));
         }
 
         $name = trim($name);
