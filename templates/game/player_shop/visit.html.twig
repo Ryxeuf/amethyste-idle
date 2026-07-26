@@ -25,6 +25,16 @@
                 </div>
             {% endif %}
 
+            {# ECO-12b : la vitrine n'est pas qu'un etal. Ce qu'un artisan sait
+               faire depasse ce qu'il expose — la commande directe est la seule
+               facon d'atteindre le reste. #}
+            {% if not isOwn %}
+                <a href="{{ path('app_game_craft_order_new', {crafter: shop.owner.name}) }}"
+                   class="inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium bg-purple-900/40 border border-purple-600 text-purple-100 hover:bg-purple-800/50 mb-4">
+                    Passer commande a {{ shop.owner.name }}
+                </a>
+            {% endif %}
+
             {% if not shop.sells %}
                 <p class="text-sm text-gray-500">Le rideau est baisse.</p>
             {% elseif listings is empty %}

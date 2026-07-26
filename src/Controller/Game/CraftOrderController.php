@@ -178,7 +178,7 @@ class CraftOrderController extends AbstractController
     }
 
     #[Route('/new', name: 'app_game_craft_order_new', methods: ['GET'])]
-    public function newForm(): Response
+    public function newForm(Request $request): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
@@ -195,6 +195,9 @@ class CraftOrderController extends AbstractController
             'player' => $player,
             'recipes' => $recipes,
             'region' => $this->regionResolver->resolve($player),
+            // ECO-12b : la vitrine d'un artisan renvoie ici avec son nom. Le
+            // champ reste editable — c'est une suggestion, pas un verrou.
+            'targetCrafter' => trim((string) $request->query->get('crafter', '')),
         ]);
     }
 

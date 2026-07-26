@@ -184,11 +184,19 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
       enseigne, approvisionnement, retrait, caisse, loyer, rideau, journal des ventes
 - [x] Présence par zone : les échoppes ouvertes apparaissent sur l'écran de zone, à côté des PNJ
 
-### ECO-12b — Recherche transversale (S | ★★ | MOYENNE)
-> Prérequis : ← ECO-12a
-- [ ] Recherche transversale : « qui vend / peut crafter l'objet X, dans quelle zone ? »
-- [ ] Point d'entrée commande directe (ECO-07) depuis la vitrine
-- [ ] Achat d'emplacements supplémentaires (`slotCount` existe, borné à 24)
+### ECO-12b — Recherche transversale (S | ★★ | MOYENNE) ✅
+> Prérequis : ← ECO-12a ✅
+- [x] Recherche transversale `/game/shops/search` : **deux moitiés d'une même réponse** — qui vend
+      l'objet X et dans quelle zone, puis, à défaut, qui saurait le fabriquer. Un résultat vide qui
+      n'ouvre sur rien fait cesser la recherche.
+- [x] Critère « artisan capable » = **niveau de métier**, pas plan appris : un plan est une
+      information privée, l'exposer publierait la feuille de progression de chaque joueur
+- [x] Point d'entrée commande directe (ECO-07b) depuis la vitrine **et** depuis la recherche ;
+      `/game/craft-order/new?crafter=` pré-remplit le champ, qui reste éditable
+- [x] Achat d'emplacements supplémentaires — **livré en ECO-13** (étals de place), c'était la même
+      fonctionnalité vue d'un autre bout
+
+**Piste D complète : ECO-10 → ECO-13.**
 
 ### ECO-13 — Emplacements d'échoppe = actif de ville (S | ★ | BASSE) ✅
 > Renforce le contrôle de cité : la guilde contrôlante loue les étals.
