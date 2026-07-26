@@ -190,12 +190,18 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
 - [ ] Point d'entrée commande directe (ECO-07) depuis la vitrine
 - [ ] Achat d'emplacements supplémentaires (`slotCount` existe, borné à 24)
 
-### ECO-13 — Emplacements d'échoppe = actif de ville (S | ★ | BASSE, option)
-> Renforce le contrôle de cité : la guilde contrôlante attribue/loue les emplacements.
-> Prérequis : ← ECO-11, GCC-13 ✅
-- [ ] Emplacements d'échoppe en ville = actif de zone attribué par la guilde contrôlante
-- [ ] Loyer d'emplacement → trésor de guilde
-- [ ] Décision actée selon GAME_PRINCIPLES §6 (housing vs actif de ville)
+### ECO-13 — Emplacements d'échoppe = actif de ville (S | ★ | BASSE) ✅
+> Renforce le contrôle de cité : la guilde contrôlante loue les étals.
+> Prérequis : ← ECO-11 ✅, GCC-13 ✅
+- [x] **Décision actée** (GAME_PRINCIPLES D14, la question §6 est retirée) : *les deux*. La
+      demeure donne l'échoppe et ses 6 emplacements de base ; la cité loue les étals au-delà.
+- [x] Étals en **nombre fini par ville** (24) : la rareté est ce qui en fait un actif, sinon
+      ce ne serait qu'un gold sink de plus
+- [x] Bail → trésor de la guilde contrôlante, **détruit** si la cité n'a pas de maître
+      (cohérence ECO-04 / ECO-11)
+- [x] Prix croissant par étal : une progression linéaire aurait laissé les plus riches rafler
+      la place du marché en une transaction
+- [x] Ferme l'item d'ECO-12b « achat d'emplacements supplémentaires »
 
 ---
 

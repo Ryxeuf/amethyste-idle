@@ -57,4 +57,18 @@ class PlayerShopRepository extends ServiceEntityRepository
     {
         return $this->findBy(['zone' => $zone, 'status' => ShopStatus::Open], ['name' => 'ASC']);
     }
+
+    /**
+     * Toutes les echoppes d'une zone, ouvertes ou non (ECO-13).
+     *
+     * Le comptage des etals loues ne regarde pas le rideau : un etal reste
+     * occupe quand l'echoppe ferme, sinon baisser le rideau libererait la place
+     * du marche pour un concurrent.
+     *
+     * @return PlayerShop[]
+     */
+    public function findInZone(Zone $zone): array
+    {
+        return $this->findBy(['zone' => $zone], ['name' => 'ASC']);
+    }
 }

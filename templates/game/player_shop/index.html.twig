@@ -71,6 +71,22 @@
                 <div class="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
                     <p class="text-xs text-gray-500">Vitrine</p>
                     <p class="text-lg text-gray-200 font-mono">{{ listings|length }} / {{ shop.slotCount }}</p>
+                    {# ECO-13 : la place du marche est finie, et le bail revient
+                       a la guilde qui tient la cite. #}
+                    {% if shop.slotCount < maxSlots %}
+                        <p class="text-[11px] text-gray-600 mt-1">
+                            {{ stallsLeft }} etal(s) libre(s) sur la place
+                        </p>
+                        {% if stallsLeft > 0 %}
+                            <form method="post" action="{{ path('app_game_player_shop_stall') }}" class="mt-1">
+                                <input type="hidden" name="_token" value="{{ csrf_token('shop_stall') }}">
+                                <button type="submit" class="px-2.5 py-1 text-xs rounded-lg bg-gray-800 border border-gray-700 text-gray-300"
+                                        title="Le bail revient a la guilde controlant la cite">
+                                    Louer un etal — {{ stallPrice }} Gils
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
                     <form method="post" action="{{ path('app_game_player_shop_shutters') }}" class="mt-2">
                         <input type="hidden" name="_token" value="{{ csrf_token('shop_shutters') }}">
                         <input type="hidden" name="open" value="{{ shop.sells ? 0 : 1 }}">
