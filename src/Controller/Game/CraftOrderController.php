@@ -5,7 +5,6 @@ namespace App\Controller\Game;
 use App\Entity\App\CraftOrder;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
-use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Helper\PlayerHelper;
@@ -31,7 +30,6 @@ class CraftOrderController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly CraftOrderRepository $orderRepository,
         private readonly CraftOrderManager $orderManager,
-        private readonly CraftingManager $craftingManager,
         private readonly PlayerRegionResolver $regionResolver,
         private readonly EntityManagerInterface $entityManager,
     ) {

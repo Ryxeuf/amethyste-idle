@@ -113,7 +113,6 @@ class CraftOrderManager
         return $order;
     }
 
-
     /**
      * Reserve dans le sac du commanditaire les objets couvrant la recette.
      *
