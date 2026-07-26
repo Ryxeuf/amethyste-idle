@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Translation;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-
 /**
  * Audit des catalogues de traduction (tache 135, Sprint 12).
  *
@@ -60,8 +57,8 @@ final class TranslationCatalogAudit
         $en = array_flip($this->keys('en'));
 
         return [
-            'fr_only' => array_values(array_keys(array_diff_key($fr, $en))),
-            'en_only' => array_values(array_keys(array_diff_key($en, $fr))),
+            'fr_only' => array_keys(array_diff_key($fr, $en)),
+            'en_only' => array_keys(array_diff_key($en, $fr)),
         ];
     }
 
@@ -100,8 +97,8 @@ final class TranslationCatalogAudit
             if (!is_dir($root)) {
                 continue;
             }
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($root, RecursiveDirectoryIterator::SKIP_DOTS),
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($root, \RecursiveDirectoryIterator::SKIP_DOTS),
             );
             foreach ($iterator as $file) {
                 /* @var \SplFileInfo $file */
@@ -165,7 +162,7 @@ final class TranslationCatalogAudit
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<array-key, mixed>
      */
     private function catalog(string $locale): array
     {
@@ -180,7 +177,6 @@ final class TranslationCatalogAudit
             throw new \RuntimeException(sprintf('JSON invalide dans %s', $path));
         }
 
-        /** @var array<string, mixed> $data */
         return $data;
     }
 
