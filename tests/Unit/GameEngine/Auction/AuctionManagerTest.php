@@ -502,6 +502,81 @@ class AuctionManagerTest extends TestCase
         $this->assertNotNull($listing->getPlayerItem()->getInventory());
     }
 
+    /**
+     * La dette d'ECO-16a/16b, enfin soldee.
+     *
+     * Le retour d'objet a l'expiration etait le **seul** chemin d'escrow sans
+     * test. La couverture avait ete tentee en integration puis retiree : elle
+     * echouait en CI sans que l'erreur soit lisible. Le vrai obstacle n'etait
+     * pas la testabilite mais la **place** de la requete — elle vivait dans le
+     * manager, seul endroit du service a en construire une. Deplacee dans le
+     * depot ou vivaient deja les sept autres, le comportement se teste sans
+     * simuler quoi que ce soit de Doctrine.
+     */
+    public function testExpiringAListingReturnsTheItemToTheSellerBag(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $listing = $this->createSimpleListing($seller, 100);
+        // L'objet est en escrow depuis le depot : hors inventaire.
+        $listing->getPlayerItem()->setInventory(null);
+
+        $this->listingRepo->method('findExpirable')->willReturn([$listing]);
+        $this->em->expects($this->once())->method('flush');
+
+        $this->assertSame(1, $this->manager->expireListings());
+        $this->assertSame(AuctionStatus::Expired, $listing->getStatus());
+        $this->assertNotNull(
+            $listing->getPlayerItem()->getInventory(),
+            'Sans ce retour, une annonce expiree ferait disparaitre l\'objet du jeu.',
+        );
+        $this->assertSame($seller, $listing->getPlayerItem()->getInventory()?->getPlayer());
+    }
+
+    public function testNothingToExpireDoesNotFlush(): void
+    {
+        $this->listingRepo->method('findExpirable')->willReturn([]);
+        $this->em->expects($this->never())->method('flush');
+
+        $this->assertSame(0, $this->manager->expireListings());
+    }
+
+    /**
+     * Une enchere qui a trouve preneur ne « expire » pas : elle se conclut.
+     * Confondre les deux rendrait l'objet au vendeur alors qu'un encherisseur
+     * a deja ses Gils verrouilles.
+     */
+    public function testAnAuctionWithABidderIsFinalizedNotExpired(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $bidder = $this->createPlayer(2, 5_000);
+        $listing = $this->createAuctionListing($seller, $this->createPlayerItem(), 100, 10);
+        $listing->setCurrentBidder($bidder);
+        $listing->setCurrentBid(150);
+        $listing->getPlayerItem()->setInventory(null);
+
+        $this->listingRepo->method('findExpirable')->willReturn([$listing]);
+
+        $this->assertSame(1, $this->manager->expireListings());
+        $this->assertNotSame(AuctionStatus::Expired, $listing->getStatus());
+        $this->assertSame($bidder, $listing->getPlayerItem()->getInventory()?->getPlayer(), 'L\'objet revient a l\'encherisseur, pas au vendeur.');
+    }
+
+    /**
+     * Une enchere sans mise expire comme une vente directe : l'objet rentre.
+     */
+    public function testAnAuctionWithoutABidderExpiresBackToTheSeller(): void
+    {
+        $seller = $this->createPlayer(1, 0);
+        $listing = $this->createAuctionListing($seller, $this->createPlayerItem(), 100, 10);
+        $listing->getPlayerItem()->setInventory(null);
+
+        $this->listingRepo->method('findExpirable')->willReturn([$listing]);
+
+        $this->assertSame(1, $this->manager->expireListings());
+        $this->assertSame(AuctionStatus::Expired, $listing->getStatus());
+        $this->assertSame($seller, $listing->getPlayerItem()->getInventory()?->getPlayer());
+    }
+
     private function createSimpleListing(Player $seller, int $price): AuctionListing
     {
         $listing = new AuctionListing();

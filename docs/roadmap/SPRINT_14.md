@@ -69,10 +69,11 @@
 > marche** qui expire d'elle-meme — sanction proportionnee la ou seul le bannissement de compte
 > existait.
 >
-> **Reste ouvert** : (1) le retour d'objet a **l'expiration** d'une annonce reste sans test — la
-> couverture en integration a ete tentee puis retiree, elle demande un run local pour etre mise au
-> point ; (2) etendre l'escrow et les regles anti-abus aux canaux suivants (commandes de craft
-> ECO-05+, echoppes ECO-10+) — ils n'existent pas encore.
+> Le retour d'objet a **l'expiration** est couvert depuis le 2026-07-26 : la requete a ete
+> deplacee dans `AuctionListingRepository::findExpirable()`, ou elle aurait du etre des le depart.
+>
+> **Reste ouvert** : etendre l'escrow et les regles anti-abus aux canaux suivants — les commandes
+> de craft (ECO-05→09 ✅) et les echoppes (ECO-10→13 ✅) ont leur propre escrow depuis, a auditer.
 
 > **ECO-19 livree le 2026-07-25** (voir `ROADMAP_DONE.md`) : les **17 recettes** manquantes et
 > les **15 objets** resultats ecrits, `recipe-poison-vial` rattache au nœud « Concentration
@@ -95,7 +96,7 @@
       aucune guilde ne controle la region (ECO-03, ECO-04)
 - [x] Chaine de production documentee, aucun metier autosuffisant (ECO-14)
 - [x] Escrow operationnel, regles anti-abus posees (ECO-16a), journal economique et outils
-      de moderation livres (ECO-16b) ; le retour d'objet a l'expiration reste sans test
+      de moderation livres (ECO-16b) ; le retour d'objet a l'expiration est couvert
 - [x] Arbres de talent et recettes reconcilies dans les deux sens (ECO-18, ECO-19)
 
 ---
