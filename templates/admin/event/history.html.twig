@@ -27,6 +27,7 @@
     <a href="{{ path('admin_event_history', {status: status, type: 'drop_bonus'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'drop_bonus' %}bg-yellow-900 text-yellow-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Bonus drop</a>
     <a href="{{ path('admin_event_history', {status: status, type: 'gathering_bonus'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'gathering_bonus' %}bg-emerald-900 text-emerald-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Bonus recolte</a>
     <a href="{{ path('admin_event_history', {status: status, type: 'invasion'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'invasion' %}bg-purple-900 text-purple-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Invasion</a>
+    <a href="{{ path('admin_event_history', {status: status, type: 'ephemeral_quest'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'ephemeral_quest' %}bg-teal-900 text-teal-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Quete ephemere</a>
     <a href="{{ path('admin_event_history', {status: status, type: 'custom'}) }}" class="px-3 py-1.5 rounded-lg text-xs {% if type == 'custom' %}bg-gray-700 text-gray-200{% else %}bg-gray-800 text-gray-500 hover:text-gray-300{% endif %} transition-colors">Personnalise</a>
 </div>
 
@@ -61,6 +62,7 @@
                             {% elseif event.type == 'drop_bonus' %}bg-yellow-900 text-yellow-300
                             {% elseif event.type == 'gathering_bonus' %}bg-emerald-900 text-emerald-300
                             {% elseif event.type == 'invasion' %}bg-purple-900 text-purple-300
+                            {% elseif event.type == 'ephemeral_quest' %}bg-teal-900 text-teal-300
                             {% else %}bg-gray-700 text-gray-300{% endif %}">
                             {{ event.typeLabel }}
                         </span>

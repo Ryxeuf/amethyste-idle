@@ -286,6 +286,15 @@ class QuestController extends AbstractController
 
         $player = $this->playerHelper->getPlayer();
         $quest = $playerQuest->getQuest();
+
+        // Une quete ephemere se rend pendant son evenement (tache 131). Le
+        // retrait des journaux a la cloture couvre le cas courant ; ce garde-fou
+        // tient le temps que le scan d'evenements passe, et rend le refus
+        // explicite au lieu de dependre d'un cron.
+        if ($quest->isEventQuest() && !$quest->isEventActive()) {
+            return new JsonResponse(['error' => 'Cette quête d\'événement n\'est plus disponible'], Response::HTTP_BAD_REQUEST);
+        }
+
         $rewards = $quest->getRewards();
         $messages = [sprintf('Quête "%s" complétée !', $quest->getName())];
 

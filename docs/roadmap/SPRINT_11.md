@@ -1,6 +1,6 @@
 ## Sprint 11 — Monde vivant
 
-> **6 taches** (129, 130 et 132 **terminees**, 3 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (129, 130, 131 et 132 **terminees**, 2 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : etendre le monde avec de nouvelles zones de contenu, du housing, des montures et des events live.
 > Prerequis : Sprints 7-10 ✅ (modele zone, energie, evenements, contenu de groupe)
 
@@ -15,7 +15,7 @@
 | Tache | Etat | Livre |
 |-------|------|-------|
 | **130 — Montures & deplacement rapide** | ✅ 100 % | Catalogue `Mount` + UI `/game/mounts` (badge « Possedee »), ownership `PlayerMount`, obtention achat/quete/drop, activation + `speedBonus`, teleportation entre villes decouvertes, reduction du temps de voyage (`MountTravelSpeed`). Sous-phase 4b (rendu PixiJS) **annulee par le pivot**. |
-| **131 — Events live & outils GM** | 80 % | Type `gathering_bonus` (+ extension aux 3 managers de recolte), historique `/admin/events/history`, annonce globale Mercure. |
+| **131 — Events live & outils GM** | ✅ 100 % | Type `gathering_bonus` (+ extension aux 3 managers de recolte), historique `/admin/events/history`, annonce globale Mercure. |
 | **132 — Classement saisonnier global** | ✅ 100 % | `/game/rankings` (kills / quetes / XP), archivage par `InfluenceSeason`, titres de podium + affichage (classement & profil), Hall of Fame `/game/rankings/history`, recompenses cosmetiques. |
 | **133 — Mini-jeux** | 50 % | Peche active (mini-jeu de timing, zone parfaite, bonus XP, i18n). |
 
@@ -87,10 +87,17 @@ pour rendre les demeures **visitables** par le graphe.
 
 ### Piste B — Events & live ops
 
-### 131 — Events live & outils GM (M | ★★★) — **reste 2 items**
+### 131 — Events live & outils GM (M | ★★★) — ✅ **terminee**
 > Prerequis : ← 79 ✅, ← ZON-15 (evenements de zone) ✅
-- [ ] Interface admin pour lancer des events en temps reel (bouton « Lancer maintenant »)
-- [ ] Type « quete ephemere » (les types boss/invasion sont couverts par `ZoneBoss` / ZON-18 ✅)
+- [x] Interface admin pour lancer des events en temps reel (bouton « Lancer maintenant »).
+      **Etait deja livree** : route `admin_event_launch_now`, bouton, CSRF, garde de statut,
+      conservation de la duree, `GameEventActivatedEvent`, journal admin et 4 tests fonctionnels.
+      L'entree de roadmap etait perimee.
+- [x] Type « quete ephemere » : `GameEvent::TYPE_EPHEMERAL_QUEST`, rattachement de quetes depuis
+      le formulaire admin, retrait des journaux a la cloture (`EphemeralQuestWithdrawer`) et
+      verrou a la remise. (Les types boss/invasion sont couverts par `ZoneBoss` / ZON-18 ✅)
+
+**Tache 131 : terminee.**
 
 ### 132 — Classement saisonnier global (M | ★★) — ✅ **terminee**
 > Prerequis : ← 92 ✅
@@ -120,5 +127,5 @@ pour rendre les demeures **visitables** par le graphe.
 - [ ] 4 nouvelles zones de contenu Acte 4 jouables
 - [x] Housing fonctionnel avec visites et jardin passif (tache 129, HOU-01→05)
 - [x] Montures reduisant le temps de voyage entre zones (tache 130)
-- [ ] Events live lancables depuis l'admin
+- [x] Events live lancables depuis l'admin (tache 131)
 - [x] Classement saisonnier operationnel (tache 132 — reellement saisonnier depuis 132a/b)

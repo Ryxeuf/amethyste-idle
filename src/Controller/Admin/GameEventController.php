@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\App\GameEvent;
 use App\Entity\App\Map;
 use App\Entity\App\Zone;
+use App\Entity\Game\Quest;
 use App\Event\Game\GameEventActivatedEvent;
 use App\Service\AdminLogger;
 use Doctrine\ORM\EntityManagerInterface;
@@ -75,6 +76,7 @@ class GameEventController extends AbstractController
             GameEvent::TYPE_DROP_BONUS,
             GameEvent::TYPE_GATHERING_BONUS,
             GameEvent::TYPE_INVASION,
+            GameEvent::TYPE_EPHEMERAL_QUEST,
             GameEvent::TYPE_CUSTOM,
         ], true)) {
             $qb->andWhere('e.type = :type')->setParameter('type', $type);
@@ -105,6 +107,7 @@ class GameEventController extends AbstractController
     {
         $maps = $this->em->getRepository(Map::class)->findBy([], ['name' => 'ASC']);
         $zones = $this->em->getRepository(Zone::class)->findBy([], ['name' => 'ASC']);
+        $quests = $this->selectableQuests();
 
         if ($request->isMethod('POST')) {
             $event = new GameEvent();
@@ -144,12 +147,16 @@ class GameEventController extends AbstractController
                     return $this->render('admin/event/form.html.twig', [
                         'maps' => $maps,
                         'zones' => $zones,
+                        'quests' => $quests,
                         'title' => 'Programmer un evenement',
                     ]);
                 }
             }
 
             $this->em->persist($event);
+            $this->em->flush();
+
+            $this->syncEphemeralQuests($event, $this->submittedQuestIds($request));
             $this->em->flush();
 
             $this->adminLogger->log('create', 'GameEvent', $event->getId(), $event->getName());
@@ -161,6 +168,7 @@ class GameEventController extends AbstractController
         return $this->render('admin/event/form.html.twig', [
             'maps' => $maps,
             'zones' => $zones,
+            'quests' => $quests,
             'title' => 'Programmer un evenement',
         ]);
     }
@@ -170,6 +178,7 @@ class GameEventController extends AbstractController
     {
         $maps = $this->em->getRepository(Map::class)->findBy([], ['name' => 'ASC']);
         $zones = $this->em->getRepository(Zone::class)->findBy([], ['name' => 'ASC']);
+        $quests = $this->selectableQuests();
 
         if ($request->isMethod('POST')) {
             $event->setName($request->request->get('name', $event->getName()));
@@ -206,6 +215,7 @@ class GameEventController extends AbstractController
                     return $this->render('admin/event/form.html.twig', [
                         'maps' => $maps,
                         'zones' => $zones,
+                        'quests' => $quests,
                         'event' => $event,
                         'title' => 'Modifier l\'evenement',
                     ]);
@@ -214,6 +224,7 @@ class GameEventController extends AbstractController
                 $event->setParameters(null);
             }
 
+            $this->syncEphemeralQuests($event, $this->submittedQuestIds($request));
             $this->em->flush();
 
             $this->adminLogger->log('update', 'GameEvent', $event->getId(), $event->getName());
@@ -225,9 +236,55 @@ class GameEventController extends AbstractController
         return $this->render('admin/event/form.html.twig', [
             'maps' => $maps,
             'zones' => $zones,
+            'quests' => $quests,
             'event' => $event,
             'title' => 'Modifier l\'evenement',
         ]);
+    }
+
+    /**
+     * Rattache a l'evenement les quetes cochees, et detache les autres
+     * (tache 131).
+     *
+     * Le lien vit du cote `Quest` (`Quest::gameEvent`) : une quete appartient a
+     * au plus un evenement, et c'est ce champ que lisent la disponibilite et la
+     * remise. L'admin ne fait qu'editer ce champ depuis l'autre bout.
+     *
+     * @param list<int> $questIds
+     */
+    private function syncEphemeralQuests(GameEvent $event, array $questIds): void
+    {
+        foreach ($this->em->getRepository(Quest::class)->findBy(['gameEvent' => $event]) as $quest) {
+            if (!\in_array($quest->getId(), $questIds, true)) {
+                $quest->setGameEvent(null);
+            }
+        }
+
+        if ([] === $questIds) {
+            return;
+        }
+
+        foreach ($this->em->getRepository(Quest::class)->findBy(['id' => $questIds]) as $quest) {
+            $quest->setGameEvent($event);
+        }
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function submittedQuestIds(Request $request): array
+    {
+        $raw = $request->request->all('quest_ids');
+
+        return array_values(array_filter(array_map('intval', $raw)));
+    }
+
+    /**
+     * @return Quest[]
+     */
+    private function selectableQuests(): array
+    {
+        return $this->em->getRepository(Quest::class)->findBy(['isDaily' => false], ['name' => 'ASC']);
     }
 
     #[Route('/{id}/launch-now', name: 'launch_now', requirements: ['id' => '\d+'], methods: ['POST'])]

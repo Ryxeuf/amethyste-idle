@@ -47,6 +47,7 @@
                             {% elseif event.type == 'drop_bonus' %}bg-yellow-900 text-yellow-300
                             {% elseif event.type == 'gathering_bonus' %}bg-emerald-900 text-emerald-300
                             {% elseif event.type == 'invasion' %}bg-purple-900 text-purple-300
+                            {% elseif event.type == 'ephemeral_quest' %}bg-teal-900 text-teal-300
                             {% else %}bg-gray-700 text-gray-300{% endif %}">
                             {{ event.typeLabel }}
                         </span>

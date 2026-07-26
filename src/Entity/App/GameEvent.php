@@ -20,6 +20,8 @@ class GameEvent
     public const TYPE_DROP_BONUS = 'drop_bonus';
     public const TYPE_GATHERING_BONUS = 'gathering_bonus';
     public const TYPE_INVASION = 'invasion';
+    /** Evenement qui n'existe que pour porter une quete a duree limitee (tache 131). */
+    public const TYPE_EPHEMERAL_QUEST = 'ephemeral_quest';
     public const TYPE_CUSTOM = 'custom';
 
     public const STATUS_SCHEDULED = 'scheduled';
@@ -273,6 +275,7 @@ class GameEvent
             self::TYPE_DROP_BONUS => 'Bonus drop',
             self::TYPE_GATHERING_BONUS => 'Bonus recolte',
             self::TYPE_INVASION => 'Invasion',
+            self::TYPE_EPHEMERAL_QUEST => 'Quete ephemere',
             self::TYPE_CUSTOM => 'Personnalise',
             default => $this->type,
         };
