@@ -628,3 +628,102 @@ aurait banalise le materiau le plus rare — la transmutation alchimique en devi
 Le mithril devient ainsi un produit d'artisanat, pas de recolte : il oblige un
 forgeron a passer par un alchimiste, et donne a l'alchimie un role economique au
 palier haut qu'elle n'avait pas.
+
+---
+
+## 20. Masse monetaire et inflation (economie joueur, ECO-15)
+
+ECO-15 demandait une « alerte d'inflation, ratio entrees/sorties de Gils ». Mesurer ce
+**flux** supposerait que toute creation et toute destruction de Gils passe par un point
+unique — or **26 fichiers** appellent `addGils()` ou `removeGils()` directement. Les
+canaliser serait une refonte, et une refonte ne mesure rien tant qu'elle n'est pas finie.
+
+Le **stock** repond a la meme question sans toucher a un seul appelant : l'inflation, c'est
+la masse monetaire qui gonfle. Il a meme un avantage que le flux n'a pas — il est
+naturellement insensible a la velocite. Cent ventes entre joueurs deplacent des Gils sans
+en creer un seul, et ne bougent donc pas la mesure d'un centieme.
+
+### Ce que la masse comprend
+
+| Poste | Source | Pourquoi |
+|-------|--------|----------|
+| Bourses des joueurs | `player.gils` | le gros du stock |
+| Tresors de guilde | `guild.gils_treasury` | taxe d'HV percue, cotisations |
+| Caisses d'echoppe | `player_shop.vault_gils` | ventes non encore relevees |
+| **Escrow** | `auction_listing.current_bid` (actives), `craft_order.commission` (ouvertes ou prises en charge) | **sortis d'une bourse, pas encore arrives dans une autre** |
+
+L'escrow est le poste qu'on oublie. Ces Gils ont quitte la bourse du joueur sans etre
+detruits : ils vivent comme un nombre sur une enchere ou une commande, et ressortiront a la
+resolution. Les omettre ferait lire une **deflation a chaque fois que le marche se
+remplit**.
+
+Cote enchere, la condition retenue n'est pas le **type** de l'annonce mais la presence
+d'une mise : dans `AuctionManager::placeBid()`, poser `current_bid` et retirer les Gils du
+misant sont le meme geste. Un type futur qui accepterait des mises est compte sans qu'on ait
+a y penser.
+
+### Pourquoi « par personnage »
+
+Le total brut ne dit rien : il monte quand la population monte, et ce n'est pas de
+l'inflation. Une masse par tete qui gonfle signifie que les robinets versent plus que les
+puits n'absorbent.
+
+Le seuil d'alerte est de **±15 % par semaine** (`GilsSupplyService::WEEKLY_ALERT_PERCENT`).
+Il est calibre **a partir de rien** — aucune mesure n'existait au moment de l'ecrire. C'est
+un point de depart declare, a corriger des que la premiere semaine de releves est lisible,
+pas une valeur derivee.
+
+La deflation declenche la meme alerte : une masse qui fond aussi vite qu'elle gonflerait
+signale des puits trop gourmands, pas une economie saine.
+
+### Robinets (creation de Gils)
+
+| Source | Ou |
+|--------|-----|
+| Coffres d'exploration de zone | `ExploreService` (`chest_gils_min`/`max`, § 10) |
+| Expeditions | `ExpeditionService` |
+| Recompenses de quete | `QuestController` |
+| Donjons de groupe | `GroupDungeonRewardService` (`zone.dungeon.reward.base_gils` = 150) |
+| Succes | `AchievementTracker` |
+| Quetes de guilde | `GuildQuestManager` (reparti entre les membres) |
+| Invasions | `InvasionManager` |
+| Vente d'objet a un PNJ | `ShopController` (ratio de vente 0,3 — § 3) |
+
+### Puits (destruction de Gils)
+
+| Sortie | Montant | Ou |
+|--------|---------|-----|
+| Reparation d'equipement | 10 × multiplicateur de rarete | `GoldSinkManager` |
+| Voyage rapide | 100 de base | `GoldSinkManager` |
+| Renommage d'objet | 50 | `GoldSinkManager` |
+| Achat de terrain | 25 000 | `HousingManager` |
+| Loyer de demeure | 500 / periode | `HousingManager` |
+| Loyer d'echoppe | 1 000 / 7 jours | `ShopRentService` |
+| Etal de place | 5 000, escalade | `ShopStallService` |
+| Creation de guilde | 5 000 | `GuildManager` |
+| Enchantement | cout de la definition | `EnchantmentManager` |
+| Reinitialisation de talents | cout progressif | `SkillRespecManager` |
+| Monture | prix de la monture | `MountPurchaseService` |
+| Achat d'objet a un PNJ | prix boutique | `ShopController` |
+| **Taxe d'HV en region sans guilde** | taux de region | `AuctionManager` (§ 14) |
+
+Le dernier est le seul puits **adosse au volume d'echange entre joueurs** : il grandit
+quand l'economie tourne, la ou tous les autres sont des couts fixes ou par acte. Conquerir
+une region le convertit en revenu de guilde (§ 14) — le puits se referme, et c'est
+deliberé.
+
+### Comment lire la mesure
+
+```bash
+docker compose exec php php bin/console app:economy:snapshot            # releve (quotidien, 00h10)
+docker compose exec php php bin/console app:economy:snapshot --dry-run  # mesure sans ecrire
+docker compose exec php php bin/console app:balance:report -s economy   # repartition + tendance
+```
+
+Le releve est **planifie**, pas calcule a la demande : les Gils du passe ne sont consignes
+nulle part, une tendance ne se reconstitue pas apres coup. Il tourne **apres** le tick de
+saison (00h05) — les recompenses de cloture doivent etre versees avant qu'on compte, sinon
+la masse saute d'un cran une fois par saison sans qu'aucun robinet ait coule.
+
+Tant qu'il n'y a qu'un seul releve, aucune tendance n'est affichee. Inventer un zero de
+depart ferait apparaitre une inflation infinie au premier jour.

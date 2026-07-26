@@ -7,7 +7,80 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-15** — masse monetaire et alerte d'inflation ; **tache 135 — non-regression i18n du pivot** : le texte code en dur est detecte et la dette gelee ; **tache 135 — garde-fou i18n** : la parite FR/EN est verifiee par la CI ; **tache 128d** — Le Premier Silence, **Sprint 11 complet 6/6** ; **tache 128c** — la chaine de quetes de l'Acte 4 ; **tache 128b** — les quatre zones de l'Acte 4 ; **tache 128a** — bestiaire tier 4 ; **ECO-12b** — recherche transversale, **Piste D complete** ; **ECO-16b (dette)** — le chemin d'expiration d'escrow est couvert ; **ECO-13** — les etals de place sont un actif de cite, Piste D complete ; **ECO-12a** — la vitrine devient atteignable ; **ECO-11** — vente asynchrone, caisse & loyer ; **ECO-10** — entites echoppe & gating, ouverture de la Piste D ; **ZON-26b-b** — les PNJ deviennent declaratifs, Sprint 13 complet 8/8 ; **tache 133** — parcours chronometres asynchrones ; **tache 131** — les quetes ephemeres le sont vraiment ; **tache 132b** — les ecrans de classement disent la saison, tache 132 complete ; **tache 132a** — le classement saisonnier devient reellement saisonnier ; **tache 130** — les montures reduisent enfin le temps de voyage ; **ZON-26b-a** — population de zone declarative, **Sprint 13 complet** ; **HOU-05** — meubles, coffre & atelier : **tache 129 complete** ; **HOU-04** — entretien, gold sink recurrent ; **HOU-03** — visites de demeure ; **HOU-02** — le jardin, recolte passive ; **HOU-01** — terrain & demeure, ouverture du housing ; **ECO-20c** — l'etabli est temporise, ECO-20 complet ; **ECO-20b** — les arbres de talent gardent enfin les recettes ; **ECO-20a** — la qualite de craft survit au craft, minQuality applique ; **ECO-09** — expiration, non-livraison et plafonds anti-farm des commandes ; **ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-15 — Masse monetaire et alerte d'inflation (Piste E, 2026-07-26)
+
+### La question posee, et celle a laquelle on peut repondre
+
+ECO-15 demandait un « ratio entrees/sorties de Gils ». Mesurer ce **flux** supposerait que toute
+creation et toute destruction de Gils passe par un point unique. Or **26 fichiers** appellent
+`addGils()` ou `removeGils()` directement. Les canaliser serait une refonte — et une refonte ne
+mesure rien tant qu'elle n'est pas finie.
+
+Le **stock** repond a la meme question sans toucher a un seul appelant : l'inflation, c'est la masse
+monetaire qui gonfle. Il a meme un avantage que le flux n'a pas — il est insensible a la velocite.
+Cent ventes entre joueurs deplacent des Gils sans en creer un seul, et ne bougent pas la mesure d'un
+centieme.
+
+### Le poste qu'on oublie
+
+Les Gils en **escrow** ont quitte la bourse du joueur sans etre detruits : ils vivent comme un nombre
+sur une enchere (`current_bid`) ou une commande (`commission`), et ressortiront a la resolution. Les
+omettre ferait lire une **deflation a chaque fois que le marche se remplit**.
+
+Cote enchere, la condition retenue n'est pas le *type* de l'annonce mais la presence d'une mise :
+dans `AuctionManager::placeBid()`, poser `current_bid` et retirer les Gils du misant sont le meme
+geste. Un type futur qui accepterait des mises sera compte sans qu'on ait a y penser.
+
+### Par personnage, jamais en brut
+
+Le total brut monte quand la population monte, et ce n'est pas de l'inflation. Le seuil est de
+**±15 % par semaine** sur la masse par tete — calibre **a partir de rien**, aucune mesure n'existant
+au moment de l'ecrire. C'est un point de depart declare, pas une valeur derivee.
+
+La deflation declenche la meme alerte : une masse qui fond aussi vite qu'elle gonflerait signale des
+puits trop gourmands, pas une economie saine.
+
+Trois refus de repondre, plutot que trois reponses fausses : une base a zero rend la variation
+*indefinie* et non infinie (un serveur neuf n'a pas a alerter en permanence) ; un seul releve ne
+degage aucune tendance (inventer un zero de depart ferait apparaitre une inflation infinie au premier
+jour) ; un ecart de 3 jours est ramene a la semaine avant d'etre compare au seuil, sinon la tache
+planifiee qui saute un tour masque une derive.
+
+### Le garde-fou de couverture
+
+Rien n'obligerait un futur solde a rejoindre la somme. Une nouvelle colonne de Gils se mettrait a
+exister, a se remplir, et la masse deviendrait silencieusement fausse — la pire des issues pour un
+indicateur, puisqu'elle ressemble en tout point a une mesure juste.
+
+`GilsSupplyCoverageTest` force donc le choix : toute colonne dont le nom parle de Gils est soit un
+**solde** compte, soit declaree comme n'en etant pas un, avec sa raison. Les douze colonnes
+existantes sont classees. Un second test verifie que chaque solde declare est **reellement** somme
+par le service — sans quoi la liste pourrait grossir sans que le service change, et le garde-fou
+certifierait une couverture inexistante.
+
+### Le calendrier compte
+
+Le releve tourne a **00h10**, apres le tick de saison de 00h05 : les recompenses de cloture doivent
+etre versees avant qu'on compte, sinon la masse saute d'un cran une fois par saison sans qu'aucun
+robinet ait coule.
+
+### Livre
+
+- `src/Entity/App/GilsSupplySnapshot.php` + `GilsSupplySnapshotRepository`
+- `src/GameEngine/Economy/GilsSupplyService.php`, `GilsSupplyMeasure`, `GilsSupplyTrend`
+- `src/Command/GilsSupplySnapshotCommand.php` (`app:economy:snapshot`, `--dry-run`), planifiee
+- `app:balance:report -s economy` — repartition, tendance, et alerte remontee au bloc d'alertes
+- `migrations/Version20260726GilsSupplySnapshot.php`
+- 8 tests de tendance + 3 tests de couverture
+- [BALANCE.md § 20](BALANCE.md) — inventaire de **8 robinets et 13 puits**
+
+Les sinks eux-memes etaient deja livres : la degradation d'equipement est branchee sur la fin de
+combat depuis longtemps, et la taxe d'HV en region sans guilde reste le seul puits adosse au volume
+d'echange entre joueurs.
 
 ---
 

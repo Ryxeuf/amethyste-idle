@@ -33,6 +33,11 @@ class DefaultScheduleProvider implements ScheduleProviderInterface
                 RecurringMessage::cron('*/30 * * * *', new RunCommandMessage('app:events:random')),
                 // SeasonTick : gère le cycle de vie des saisons d'influence (1x/jour à 00h05)
                 RecurringMessage::cron('5 0 * * *', new RunCommandMessage('app:season:tick')),
+                // GilsSupply : relève la masse monétaire (ECO-15, 1x/jour à 00h10).
+                // Après le tick de saison : les récompenses de clôture doivent
+                // être versées avant qu'on compte, sinon la masse du jour saute
+                // d'un cran une fois par saison sans qu'aucun robinet ait coulé.
+                RecurringMessage::cron('10 0 * * *', new RunCommandMessage('app:economy:snapshot')),
             );
     }
 }
