@@ -7,7 +7,32 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-08a — Bind-on-pickup via commande (Sprint 15, 2026-07-26)
+
+> Le cœur de la Piste C. `docs/GAME_PRINCIPLES.md` §4.5 : « seules les commandes de craft peuvent produire du bind-on-pickup, et l'objet nait **lie au commanditaire, pas a l'artisan** ».
+
+### Livre
+
+- **La liaison est posee explicitement dans `deliverResult()`**, et non deleguee a `InventoryHelper`.
+- **Six resultats de haut palier passent `bind_on_pickup`** — un par metier, la bande « chefs-d'oeuvre » de niveau 10 : lame du maitre forgeron, manteau du maitre tanneur, elixir supreme, anneau des etoiles, anneau et amulette legendaires.
+
+### Pourquoi la liaison ne pouvait pas passer par `InventoryHelper`
+
+`InventoryHelper::addItem()` lie les objets `bind_on_pickup` au joueur de la **session**. Or au moment de la livraison, la session est celle de l'**artisan** : l'objet serait ne lie a celui qui le fabrique au lieu de celui qui l'a commande — exactement l'inverse de ce que ce canal doit produire. Le contournement d'ECO-07a (ecrire directement dans le sac du commanditaire) n'etait donc pas une commodite : c'etait la seule facon d'obtenir la bonne liaison, et ECO-08a la rend explicite.
+
+### Le mecanisme n'aurait rien lie
+
+**Aucun resultat de recette n'etait `bind_on_pickup`.** Les huit objets lies du jeu sont des fragments de quete, des artefacts de convergence et des cosmetiques — aucun ne sort d'un etabli. Livrer la logique sans la donnee aurait produit un quatrieme cas de regle ecrite et jamais declenchee, apres les trois deja verses a ECO-20.
+
+Le palier retenu est celui que §4.5 decrit : « T1 echangeable (marche libre) → haut de gamme / endgame lie ». Les six chefs-d'oeuvre quittent donc l'hotel des ventes ; les paliers intermediaires (mithril, ecailles de dragon, acier) y restent, sans quoi la commande assecherait le marche au lieu de le completer.
+
+### Tests
+
+Deux cas, qui verifient les deux moities de la regle : un resultat lie l'est **au commanditaire** et non a l'artisan (et cesse d'etre echangeable), et un resultat non marque reste echangeable.
 
 ---
 

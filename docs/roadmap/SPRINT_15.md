@@ -1,6 +1,6 @@
 ## Sprint 15 — Commandes de craft (Piste C)
 
-> **7 jalons** (ECO-05 → ECO-09, ECO-20), **4 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
+> **8 jalons** (ECO-05 → ECO-09, ECO-20), **5 livrees** | Priorite : **Haute** | Origine : [PLAN_PLAYER_ECONOMY.md](PLAN_PLAYER_ECONOMY.md) Piste C
 > Objectif : le **troisieme canal d'echange**, et le seul qui produise du stuff **lie**.
 > Prerequis : Sprint 14 ✅ (socle economie joueur complet, 9/9)
 
@@ -32,13 +32,19 @@
 > prise en charge sont appliques **au depot** : sans cela, le commanditaire immobiliserait son
 > escrow pour une commande que l'artisan vise ne pourra jamais prendre.
 
-### ECO-08 — Bind-on-pickup via commande & reputation d'artisan (M | ★★★ | HAUTE)
-> Le seul canal produisant du stuff lie ; l'objet nait lie au commanditaire.
-> Prerequis : ← ECO-07
-- [ ] Un `result` marque `bind_on_pickup` produit par commande est lie au **commanditaire**
-- [ ] Reputation d'artisan : livrer des commandes l'augmente (visibilite + tarifs)
-- [ ] Classement/recherche des artisans par metier et reputation
-- [ ] Tests (liaison au bon joueur, montee de reputation)
+> **ECO-08a livree le 2026-07-26** (voir `ROADMAP_DONE.md`) : l'objet nait lie **au
+> commanditaire**, pose explicitement a la livraison — `InventoryHelper` lie au joueur de la
+> session, qui est l'artisan. Six resultats de haut palier (un par metier) passent
+> `bind_on_pickup`, sans quoi le mecanisme n'aurait rien a lier.
+
+### ECO-08b — Reputation d'artisan (M | ★★ | HAUTE)
+> L'artisan monetise son **service**, pas l'objet : la reputation est ce qui se capitalise.
+> Prerequis : ← ECO-08a
+- [ ] Reputation par metier : livrer une commande l'augmente
+- [ ] Classement/recherche des artisans par metier et reputation (nourrit le choix de
+      l'artisan d'une commande directe, ECO-07b)
+- [ ] Visibilite : un artisan repute paraît en tete du choix au depot
+- [ ] Tests (montee de reputation, classement)
 
 ### ECO-09 — Anti-abus commandes (S | ★★ | MOYENNE)
 > Expiration, annulation, restitution propre de l'escrow.
@@ -98,7 +104,8 @@
 - [x] Un artisan qualifie peut **prendre** une commande de sa region (ECO-06)
 - [x] Un artisan qualifie peut **honorer** une commande de sa region (ECO-07a)
 - [x] La commission est taxee comme une vente, au profit de la guilde controlante (ECO-07a)
-- [ ] Les objets lies naissent lies a leur commanditaire, et la reputation d'artisan existe
+- [x] Les objets lies naissent lies a leur commanditaire (ECO-08a)
+- [ ] La reputation d'artisan existe (ECO-08b)
 - [ ] Escrow restitue automatiquement a l'expiration
 - [ ] La qualification d'un artisan repose sur un gardien **branche** (ECO-20)
 

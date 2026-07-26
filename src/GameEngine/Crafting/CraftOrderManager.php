@@ -384,15 +384,27 @@ class CraftOrderManager
      *
      * Il ne transite jamais par l'inventaire de l'artisan : ce detour ouvrirait
      * la porte a une commande honoree puis gardee.
+     *
+     * **La liaison est posee ici, explicitement** (ECO-08). `InventoryHelper`
+     * lie normalement les objets `bind_on_pickup` au joueur de la session — or
+     * la session, au moment de la livraison, est celle de l'**artisan**. Passer
+     * par lui aurait lie l'objet a celui qui le fabrique au lieu de celui qui
+     * l'a commande : exactement l'inverse de ce que ce canal doit produire.
      */
     private function deliverResult(CraftOrder $order, Player $requester): void
     {
         $recipe = $order->getRecipe();
+        $result = $recipe->getResult();
         $bag = $this->getBagInventory($requester);
 
         for ($i = 0; $i < max(1, $recipe->getResultQuantity()); ++$i) {
-            $playerItem = $this->playerItemGenerator->generateFromItemId($recipe->getResult()->getId());
+            $playerItem = $this->playerItemGenerator->generateFromItemId($result->getId());
             $playerItem->setInventory($bag);
+
+            if ($result->isBoundOnPickup()) {
+                $playerItem->setBoundToPlayerId($requester->getId());
+            }
+
             $this->entityManager->persist($playerItem);
         }
     }
