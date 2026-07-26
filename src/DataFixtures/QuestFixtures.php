@@ -545,6 +545,148 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 ],
                 // prerequisiteQuests set after flush (needs ID of quest_chain_guard_2)
             ],
+            // --- Chaîne narrative Acte 4 : Ce que le sel a garde (tache 128c) ---
+            //
+            // Premiere chaine ecrite **apres** le pivot, et premiere a cibler ses
+            // etapes d'exploration par `zone_slug` plutot que par `map_id` +
+            // coordonnees. La forme heritee marche encore — `PlayerQuestUpdater`
+            // resout les deux — mais elle demande une carte d'origine, que les
+            // zones de l'Acte 4 n'ont pas.
+            //
+            // L'arc suit le graphe : deux quetes au sud dans le sel, deux au nord
+            // dans la glace, et une derniere qui les noue. Le joueur traverse donc
+            // tout le monde connu entre la premiere et la derniere.
+            'quest_acte4_appel_du_sel' => [
+                'name' => 'Ce que le sel a garde — L\'appel',
+                'name_translations' => ['en' => 'What the Salt Kept — The Call'],
+                'description' => 'Les caravaniers des Dunes parlent d\'une croute blanche au sud, ou le sable cede la place au sel. Personne n\'en revient avec la meme histoire. Allez voir.',
+                'description_translations' => ['en' => 'The caravanners of the Dunes speak of a white crust to the south, where sand gives way to salt. Nobody comes back with the same story. Go and see.'],
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'zone_slug' => 'mer-de-sel',
+                            'name' => 'Mer de Sel',
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 400,
+                    'gold' => 200,
+                ],
+                'storyArc' => 'acte4',
+                'arcOrder' => 1,
+            ],
+            'quest_acte4_ce_qui_rampe' => [
+                'name' => 'Ce que le sel a garde — Ce qui rampe',
+                'name_translations' => ['en' => 'What the Salt Kept — What Crawls'],
+                'description' => 'La croute n\'est pas vide. Quelque chose y vit qui a appris a ne plus avoir soif, et qui ne compte pas partager. Faites de la place.',
+                'description_translations' => ['en' => 'The crust is not empty. Something lives there that has learned to stop being thirsty, and does not intend to share. Make room.'],
+                'requirements' => [
+                    'monsters' => [
+                        [
+                            'name' => 'Rodeur des sables',
+                            'slug' => 'sand_stalker',
+                            'count' => 8,
+                        ],
+                        [
+                            'name' => 'Colosse de sel',
+                            'slug' => 'salt_colossus',
+                            'count' => 3,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 550,
+                    'gold' => 280,
+                ],
+                'storyArc' => 'acte4',
+                'arcOrder' => 2,
+                // prerequisiteQuests set after flush (needs ID of quest_acte4_appel_du_sel)
+            ],
+            'quest_acte4_cite_sous_le_sable' => [
+                'name' => 'Ce que le sel a garde — La cite sous le sable',
+                'name_translations' => ['en' => 'What the Salt Kept — The City Beneath the Sand'],
+                'description' => 'Des toits affleurent, plus loin. Quelqu\'un a vecu la, et quelque chose y est reste. Les spectres des dunes savent ce qu\'on a enterre — ils ne le diront pas de leur vivant.',
+                'description_translations' => ['en' => 'Rooftops break the surface, further on. Someone lived there, and something stayed. The dune wraiths know what was buried — they will not tell it while they live.'],
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'zone_slug' => 'cite-ensevelie',
+                            'name' => 'Cite Ensevelie',
+                        ],
+                    ],
+                    'monsters' => [
+                        [
+                            'name' => 'Spectre des dunes',
+                            'slug' => 'dune_wraith',
+                            'count' => 6,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 700,
+                    'gold' => 380,
+                ],
+                'storyArc' => 'acte4',
+                'arcOrder' => 3,
+                // prerequisiteQuests set after flush (needs ID of quest_acte4_ce_qui_rampe)
+            ],
+            'quest_acte4_par_dela_la_crete' => [
+                'name' => 'Ce que le sel a garde — Par-dela la crete',
+                'name_translations' => ['en' => 'What the Salt Kept — Beyond the Ridge'],
+                'description' => 'Ce que la cite ensevelie a livre pointe vers le nord, tout au nord, au-dela de la Crete de Ventombre. Le col est garde par des meutes qui ne dorment pas.',
+                'description_translations' => ['en' => 'What the buried city gave up points north, far north, beyond Windshadow Ridge. The pass is guarded by packs that do not sleep.'],
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'zone_slug' => 'pas-de-givre',
+                            'name' => 'Pas de Givre',
+                        ],
+                    ],
+                    'monsters' => [
+                        [
+                            'name' => 'Warg des glaces',
+                            'slug' => 'frost_warg',
+                            'count' => 8,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 800,
+                    'gold' => 450,
+                ],
+                'storyArc' => 'acte4',
+                'arcOrder' => 4,
+                // prerequisiteQuests set after flush (needs ID of quest_acte4_cite_sous_le_sable)
+            ],
+            'quest_acte4_le_silence' => [
+                'name' => 'Ce que le sel a garde — Le silence',
+                'name_translations' => ['en' => 'What the Salt Kept — The Silence'],
+                'description' => 'Le glacier ne fait aucun bruit, et c\'est ce qui inquiete. Ce qui dort sous la glace a le meme age que ce qui dormait sous le sel. Allez voir ce qui vous attend au bout.',
+                'description_translations' => ['en' => 'The glacier makes no sound, and that is what worries. What sleeps beneath the ice is as old as what slept beneath the salt. Go and see what waits at the end.'],
+                'requirements' => [
+                    'explore' => [
+                        [
+                            'zone_slug' => 'glacier-du-silence',
+                            'name' => 'Glacier du Silence',
+                        ],
+                    ],
+                    'monsters' => [
+                        [
+                            'name' => 'Drakan de rime',
+                            'slug' => 'rime_drake',
+                            'count' => 2,
+                        ],
+                    ],
+                ],
+                'rewards' => [
+                    'xp' => 1000,
+                    'gold' => 600,
+                ],
+                'storyArc' => 'acte4',
+                'arcOrder' => 5,
+                // prerequisiteQuests set after flush (needs ID of quest_acte4_par_dela_la_crete)
+            ],
             // --- Chaîne narrative Acte 1 : L'Éveil (5 quêtes tutoriel) ---
             'quest_acte1_reveil' => [
                 'name' => 'L\'Éveil — Réveil',
@@ -999,8 +1141,8 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
                 'description_translations' => ['en' => 'Thadeus has sensed an ancient corruption awakening in the forest. Corrupted creatures prowl near the Mother-Tree. Eliminate them to weaken the corruption.'],
                 'requirements' => [
                     'monsters' => [
-                        ['name' => 'Ondine', 'slug' => 'forest_undine', 'count' => 2],
-                        ['name' => 'Ochu', 'slug' => 'forest_ochu', 'count' => 2],
+                        ['name' => 'Ondine', 'slug' => 'undine', 'count' => 2],
+                        ['name' => 'Ochu', 'slug' => 'ochu', 'count' => 2],
                         ['name' => 'Feu follet', 'slug' => 'will_o_wisp', 'count' => 1],
                     ],
                 ],
@@ -2243,6 +2385,16 @@ class QuestFixtures extends Fixture implements DependentFixtureInterface
 
         $chainGuard2->setPrerequisiteQuests([$chainGuard1->getId()]);
         $chainGuard3->setPrerequisiteQuests([$chainGuard2->getId()]);
+
+        // Acte 4 (tache 128c) : la chaine suit le graphe, du sel au sud a la
+        // glace au nord. Chaque etape ouvre la suivante.
+        $acte4 = [];
+        foreach (['appel_du_sel', 'ce_qui_rampe', 'cite_sous_le_sable', 'par_dela_la_crete', 'le_silence'] as $step) {
+            $acte4[] = $this->getReference('quest_acte4_' . $step, Quest::class);
+        }
+        for ($i = 1; $i < \count($acte4); ++$i) {
+            $acte4[$i]->setPrerequisiteQuests([$acte4[$i - 1]->getId()]);
+        }
 
         // Quest chains (Acte 1/2/3) and PNJ ID fixups are in QuestChainFixtures
 
