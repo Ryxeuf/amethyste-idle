@@ -1,6 +1,6 @@
 ## Sprint 11 — Monde vivant
 
-> **6 taches** (129 et 130 **terminees**, 4 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
+> **6 taches** (129, 130 et 132 **terminees**, 3 avec du reste-a-faire) | Priorite : **Basse** | Origine : Vague 10, Pistes A & B — adapte au pivot PBBG ([docs/PIVOT_PBBG.md](../PIVOT_PBBG.md))
 > Objectif : etendre le monde avec de nouvelles zones de contenu, du housing, des montures et des events live.
 > Prerequis : Sprints 7-10 ✅ (modele zone, energie, evenements, contenu de groupe)
 
@@ -16,7 +16,7 @@
 |-------|------|-------|
 | **130 — Montures & deplacement rapide** | ✅ 100 % | Catalogue `Mount` + UI `/game/mounts` (badge « Possedee »), ownership `PlayerMount`, obtention achat/quete/drop, activation + `speedBonus`, teleportation entre villes decouvertes, reduction du temps de voyage (`MountTravelSpeed`). Sous-phase 4b (rendu PixiJS) **annulee par le pivot**. |
 | **131 — Events live & outils GM** | 80 % | Type `gathering_bonus` (+ extension aux 3 managers de recolte), historique `/admin/events/history`, annonce globale Mercure. |
-| **132 — Classement saisonnier global** | 95 % | `/game/rankings` (kills / quetes / XP), archivage par `InfluenceSeason`, titres de podium + affichage (classement & profil), Hall of Fame `/game/rankings/history`, recompenses cosmetiques. |
+| **132 — Classement saisonnier global** | ✅ 100 % | `/game/rankings` (kills / quetes / XP), archivage par `InfluenceSeason`, titres de podium + affichage (classement & profil), Hall of Fame `/game/rankings/history`, recompenses cosmetiques. |
 | **133 — Mini-jeux** | 50 % | Peche active (mini-jeu de timing, zone parfaite, bonus XP, i18n). |
 
 ---
@@ -92,7 +92,7 @@ pour rendre les demeures **visitables** par le graphe.
 - [ ] Interface admin pour lancer des events en temps reel (bouton « Lancer maintenant »)
 - [ ] Type « quete ephemere » (les types boss/invasion sont couverts par `ZoneBoss` / ZON-18 ✅)
 
-### 132 — Classement saisonnier global (M | ★★) — **reste 132b**
+### 132 — Classement saisonnier global (M | ★★) — ✅ **terminee**
 > Prerequis : ← 92 ✅
 > **La passe de verification a trouve un defaut de fond** : les trois classements agregent des
 > compteurs **cumulatifs** (`PlayerBestiary::killCount`, quetes achevees, `DomainExperience`)
@@ -102,8 +102,11 @@ pour rendre les demeures **visitables** par le graphe.
       reecrite a chaque cloture), `RankingBaselineService`, capture branchee en fin de
       `app:season:tick` **apres** archivage et titres. L'archive de fin de saison est desormais
       saisonniere.
-- [ ] **132b — Ecrans** : `/game/rankings` et l'API affichent le classement de la saison en cours
-      (total et rang), le Hall of Fame indique que ses archives sont saisonnieres.
+- [x] **132b — Ecrans** : `/game/rankings` et `/api/v1/rankings` affichent le classement de la
+      saison en cours (tete, total et rang), la saison est nommee, le Hall of Fame precise que
+      ses valeurs sont saisonnieres.
+
+**Tache 132 : terminee.**
 
 ### 133 — Mini-jeux (M | ★) — **reste 1 item**
 > Prerequis : ∅
@@ -118,4 +121,4 @@ pour rendre les demeures **visitables** par le graphe.
 - [x] Housing fonctionnel avec visites et jardin passif (tache 129, HOU-01→05)
 - [x] Montures reduisant le temps de voyage entre zones (tache 130)
 - [ ] Events live lancables depuis l'admin
-- [x] Classement saisonnier operationnel
+- [x] Classement saisonnier operationnel (tache 132 — reellement saisonnier depuis 132a/b)
