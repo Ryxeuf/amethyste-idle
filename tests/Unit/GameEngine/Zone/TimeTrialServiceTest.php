@@ -56,9 +56,14 @@ class TimeTrialServiceTest extends TestCase
             ->setCheckpoints($checkpoints);
     }
 
-    private function playerIn(Zone $zone): Player
+    /**
+     * Un joueur avec son identifiant : le service journalise `getId()`, non
+     * nullable, et un joueur sans identifiant n'existe pas en production.
+     */
+    private function playerIn(Zone $zone, int $id = 42): Player
     {
         $player = new Player();
+        (new \ReflectionProperty(Player::class, 'id'))->setValue($player, $id);
         $player->setCurrentZone($zone);
 
         return $player;
