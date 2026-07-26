@@ -233,7 +233,7 @@ class CraftOrderManager
     }
 
     /**
-     * A qui peut-on adresser une commande directe ? (ECO-07b)
+     * Destinataires acceptables d'une commande directe (ECO-07b).
      *
      * Les memes refus qu'a la prise en charge, appliques **au depot** : sans
      * cela, un commanditaire immobiliserait son escrow pour une commande que
