@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\GameEngine\Crafting;
 
 use App\Entity\App\CraftOrder;
+use App\Entity\App\CrafterReputation;
 use App\Entity\App\Guild;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
@@ -14,12 +15,14 @@ use App\Entity\User;
 use App\Enum\BindType;
 use App\Enum\CraftOrderStatus;
 use App\GameEngine\Auction\AuctionAntiExploit;
+use App\GameEngine\Crafting\CrafterReputationManager;
 use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Generator\PlayerItemGenerator;
 use App\GameEngine\Guild\GuildManager;
 use App\GameEngine\Guild\TownControlManager;
 use App\GameEngine\Region\PlayerRegionResolver;
+use App\Repository\CrafterReputationRepository;
 use App\Repository\CraftOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,6 +39,8 @@ class CraftOrderManagerTest extends TestCase
     private CraftOrderRepository&MockObject $orderRepository;
     private CraftingManager&MockObject $craftingManager;
     private AuctionAntiExploit&MockObject $antiExploit;
+    private CrafterReputationRepository&MockObject $reputationRepository;
+    private CrafterReputationManager $reputationManager;
     private TownControlManager&MockObject $townControl;
     private GuildManager&MockObject $guildManager;
     private PlayerItemGenerator&MockObject $itemGenerator;
@@ -65,6 +70,9 @@ class CraftOrderManagerTest extends TestCase
         $this->craftingManager = $this->createMock(CraftingManager::class);
         $this->craftingManager->method('getCraftingLevel')->willReturn(99);
         $this->antiExploit = $this->createMock(AuctionAntiExploit::class);
+        $this->reputationRepository = $this->createMock(CrafterReputationRepository::class);
+        // Le vrai manager : la regle de points est ce qu'on veut verifier.
+        $this->reputationManager = new CrafterReputationManager($this->em, $this->reputationRepository);
         $this->townControl = $this->createMock(TownControlManager::class);
         $this->guildManager = $this->createMock(GuildManager::class);
 
@@ -89,6 +97,7 @@ class CraftOrderManagerTest extends TestCase
             new PlayerRegionResolver(),
             $this->craftingManager,
             $this->antiExploit,
+            $this->reputationManager,
             $this->townControl,
             $this->guildManager,
             $this->itemGenerator,
@@ -244,7 +253,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $orderRepository = $this->createMock(CraftOrderRepository::class);
         $orderRepository->method('countActiveByRequester')->willReturn(CraftOrderManager::MAX_ACTIVE_ORDERS);
-        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
 
         $requester = $this->createPlayer(1, 1_000);
         $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
@@ -277,7 +286,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $craftingManager = $this->createMock(CraftingManager::class);
         $craftingManager->method('getCraftingLevel')->willReturn(2);
-        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, $this->reputationManager, $this->townControl, $this->guildManager, $this->itemGenerator, new NullLogger());
 
         $order = $this->openOrder($this->createPlayer(1, 1_000), 5);
 
@@ -654,6 +663,103 @@ class CraftOrderManagerTest extends TestCase
         self::assertInstanceOf(PlayerItem::class, $items[0]);
 
         return $items[0];
+    }
+
+    // ---------------------------------------------------------------------
+    // ECO-08b — reputation d'artisan
+    // ---------------------------------------------------------------------
+
+    /**
+     * L'objet part chez le client et n'y revient jamais : ce que l'artisan
+     * capitalise, c'est sa reputation (GAME_PRINCIPLES §4.5).
+     */
+    public function testDeliveringAnOrderBuildsTheCraftersReputation(): void
+    {
+        $crafter = $this->createPlayer(2, 0);
+        $order = $this->claimedOrder($this->createPlayer(1, 1_000), $crafter);
+        $order->getRecipe()->setRequiredLevel(5);
+
+        $this->manager->fulfillOrder($crafter, $order);
+
+        $reputation = $this->recordedReputation();
+        self::assertSame('forgeron', $reputation->getCraft());
+        self::assertSame($crafter, $reputation->getPlayer());
+        self::assertSame(1, $reputation->getDeliveries());
+        self::assertSame(10, $reputation->getPoints(), '5 * POINTS_PER_RECIPE_LEVEL');
+    }
+
+    /**
+     * Sans ponderation par palier, la strategie optimale serait d'enchainer les
+     * commandes les plus triviales et le classement remonterait les artisans les
+     * plus disponibles plutot que les plus competents.
+     */
+    public function testReputationPointsScaleWithTheRecipeTier(): void
+    {
+        $novice = $this->createPlayer(2, 0);
+        $trivial = $this->claimedOrder($this->createPlayer(1, 1_000), $novice);
+        $trivial->getRecipe()->setRequiredLevel(1);
+        $this->manager->fulfillOrder($novice, $trivial);
+        $trivialPoints = $this->recordedReputation()->getPoints();
+
+        $this->persisted = [];
+
+        $master = $this->createPlayer(4, 0);
+        $masterwork = $this->claimedOrder($this->createPlayer(3, 1_000), $master);
+        $masterwork->getRecipe()->setRequiredLevel(10);
+        $this->manager->fulfillOrder($master, $masterwork);
+
+        self::assertGreaterThan($trivialPoints, $this->recordedReputation()->getPoints());
+    }
+
+    /**
+     * La reputation deja acquise dans le metier est **completee**, pas recreee :
+     * une seconde livraison ne doit pas repartir de zero.
+     */
+    public function testASecondDeliveryAccumulatesOnTheExistingReputation(): void
+    {
+        $crafter = $this->createPlayer(2, 0);
+
+        $existing = new CrafterReputation();
+        $existing->setPlayer($crafter);
+        $existing->setCraft('forgeron');
+        $existing->recordDelivery(30);
+        $this->reputationRepository->method('findOneForPlayerAndCraft')->willReturn($existing);
+
+        $order = $this->claimedOrder($this->createPlayer(1, 1_000), $crafter);
+        $order->getRecipe()->setRequiredLevel(5);
+
+        $this->manager->fulfillOrder($crafter, $order);
+
+        self::assertSame(2, $existing->getDeliveries());
+        self::assertSame(40, $existing->getPoints());
+        self::assertNotContains($existing, $this->persisted, 'Une reputation existante n\'est pas re-persistee.');
+    }
+
+    public function testReputationTitlesFollowThePointLadder(): void
+    {
+        $reputation = new CrafterReputation();
+        self::assertSame('Novice', $reputation->getTitle());
+
+        $reputation->recordDelivery(10);
+        self::assertSame('Apprenti', $reputation->getTitle());
+
+        $reputation->recordDelivery(40);
+        self::assertSame('Artisan', $reputation->getTitle());
+
+        $reputation->recordDelivery(150);
+        self::assertSame('Artisan confirme', $reputation->getTitle());
+
+        $reputation->recordDelivery(300);
+        self::assertSame('Maitre', $reputation->getTitle());
+    }
+
+    private function recordedReputation(): CrafterReputation
+    {
+        $found = array_values(array_filter($this->persisted, static fn (object $e) => $e instanceof CrafterReputation));
+        self::assertCount(1, $found);
+        self::assertInstanceOf(CrafterReputation::class, $found[0]);
+
+        return $found[0];
     }
 
     /**

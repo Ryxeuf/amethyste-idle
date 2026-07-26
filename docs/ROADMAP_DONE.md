@@ -7,7 +7,31 @@
 > [`roadmap/ARCHIVE_SPRINT_11_12.md`](roadmap/ARCHIVE_SPRINT_11_12.md). L'essentiel figure deja
 > ci-dessous ; l'archive fait foi pour les lots de fixtures i18n `3c.l`→`3c.s` et `3e.b.b.suite`.
 >
-> Derniere mise a jour : 2026-07-26 (**ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+> Derniere mise a jour : 2026-07-26 (**ECO-08b** — reputation d'artisan par metier ; **ECO-08a** — bind-on-pickup via commande, lie au commanditaire ; **ECO-07b** — commande directe adressee a un artisan nomme ; **ECO-07a** — execution de commande, time-gating reel du craftingTime et taxe de region sur la commission ; **ECO-06** — tableau de commandes regional, prise en charge, et decouverte du gardien absent des recettes → ECO-20 ; **ECO-05** — entite CraftOrder & escrow, ouverture de la Piste C ; **ECO-19** — recettes manquantes des arbres, Sprint 14 complet ; **ECO-16b** — journal economique & moderation ; **ECO-18** — reconciliation arbres de talent / recettes ; **ECO-16a** — regles anti-abus de l'HV ; **ECO-14** — interdependance des metiers ; **ECO-04** — taxe HV vers le tresor de guilde, ristourne membre et gold sink explicite ; **ECO-03** — hotel des ventes regional, segmentation stricte (D13) ; **ECO-02** — plancher T1 anti cold-start : artisanat rendu accessible (4 defauts silencieux) ; **ECO-01** — type de liaison des objets ; **ZON-21 complet** — suppression totale du code carte (front PixiJS, backend /api/map, editeur admin, terrain) ; **Sprint 10 termine** ; ZON-20 — lockouts & recompenses decroissantes de donjon de groupe ; ZON-19 **complet** — sous-jalon 3 Mercure temps reel ; sous-jalon 2 boucle de combat ; NAR-14 — tests unitaires du plan → **plan narratif NAR-01→14 complet** ; NAR-13 — gabarits de quetes de fond ; NAR-12 — marquage « canon » ; NAR-11 — resolution de saison & credits narratifs ; NAR-10 — boss/climax de saison ; NAR-09 — quetes d'evenement de saison ; NAR-08 — structure d'arc saisonnier ; NAR-07 — journal de monde ; NAR-06 — ecran Codex ; NAR-05 — Codex & deblocage par decouverte ; NAR-04 — onboarding & garantie de progression ; NAR-03 — arc d'introduction scripte ; NAR-02 — journal de quetes regroupe par arc ; ZON-11 — configuration declarative de zone ; NAR-01 — marqueur d'arc narratif sur `Quest`).
+
+---
+
+## ECO-08b — Reputation d'artisan (Sprint 15, 2026-07-26)
+
+> `GAME_PRINCIPLES` §4.5 : « l'artisan monetise son **service** (commission + reputation), pas l'objet ». L'objet part chez le client et n'y revient jamais — la reputation est donc la seule chose que l'artisan capitalise.
+
+### Livre
+
+- **`CrafterReputation`** : points et nombre de livraisons, **par metier**.
+- **`CrafterReputationManager`** : creditee a la seule livraison.
+- **Ecran « Artisans »** : classement filtrable par metier, plus sa propre reputation. Il donne son sens a la commande directe (ECO-07b) — sans lui, nommer un artisan supposerait de le connaitre deja.
+
+### Trois decisions
+
+**La reputation est par metier, pas globale.** Un maitre forgeron qui debute en alchimie n'a aucune raison d'inspirer confiance a un client alchimiste. C'est aussi ce qui la distingue des deux systemes voisins deja en place : le renom (`Player::renownScore`) mesure la place du personnage dans le monde, la reputation de faction sa place aupres d'un camp. Aucun des deux ne pouvait porter celle-ci.
+
+**Seule une livraison en accorde.** Ni le craft a l'etabli ni la prise en charge ne comptent. La reputation mesure des services rendus a d'autres joueurs — c'est exactement ce qui la rend informative pour un client, et un artisan qui prend dix commandes sans en honorer aucune ne doit rien y gagner.
+
+**Les points suivent le palier de la recette** (`requiredLevel × 2`, plancher a 1). Sans ponderation, la strategie optimale serait d'enchainer les commandes les plus triviales, et le classement remonterait les artisans les plus **disponibles** plutot que les plus **competents**. Le nombre de livraisons reste affiche a cote des points : deux artisans a 40 points ne se valent pas si l'un les a gagnes sur une commande de maitre et l'autre sur dix commandes de debutant, et le client a le droit de voir la difference.
+
+### Tests
+
+Quatre cas : la reputation nait a la livraison avec le bon metier et le bon compte, les points croissent avec le palier, une seconde livraison **complete** la reputation existante au lieu de la recreer, et l'echelle de titres suit les paliers.
 
 ---
 
