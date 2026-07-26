@@ -9,6 +9,7 @@ use App\Entity\Game\Monster;
 use App\Entity\Game\MonsterItem;
 use App\Entity\Game\Skill;
 use App\Entity\Game\Spell;
+use App\GameEngine\Economy\GilsSupplyService;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -33,6 +34,7 @@ class BalanceReportCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly Connection $connection,
+        private readonly GilsSupplyService $supplyService,
     ) {
         parent::__construct();
     }
@@ -40,7 +42,7 @@ class BalanceReportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('section', 's', InputOption::VALUE_OPTIONAL, 'Section to display: monsters, items, drops, domains, spells, combat, alerts, all', 'all')
+            ->addOption('section', 's', InputOption::VALUE_OPTIONAL, 'Section to display: monsters, items, drops, domains, spells, combat, economy, alerts, all', 'all')
             ->addOption('days', 'd', InputOption::VALUE_OPTIONAL, 'Number of days to analyse for combat stats (default: 30)', '30');
     }
 
@@ -85,6 +87,10 @@ class BalanceReportCommand extends Command
             $daysStr = $input->getOption('days');
             $days = max(1, (int) $daysStr);
             $alerts = array_merge($alerts, $this->reportCombat($io, $days));
+        }
+
+        if (\in_array($section, ['all', 'economy'], true)) {
+            $alerts = array_merge($alerts, $this->reportEconomy($io));
         }
 
         if (\in_array($section, ['all', 'alerts'], true)) {
@@ -930,6 +936,78 @@ class BalanceReportCommand extends Command
         }
 
         return $alerts;
+    }
+
+    /**
+     * Masse monetaire et tendance d'inflation (ECO-15).
+     *
+     * Cette section **lit** ce que `app:economy:snapshot` a ecrit. Elle ne
+     * recalcule pas la serie : les Gils du passe ne sont consignes nulle part,
+     * une tendance ne se reconstitue pas apres coup.
+     *
+     * @return string[]
+     */
+    private function reportEconomy(SymfonyStyle $io): array
+    {
+        $io->section('Economie — Masse monetaire et inflation');
+
+        $measure = $this->supplyService->measure();
+        $io->table(
+            ['Poste', 'Gils', 'Part'],
+            array_map(
+                static fn (array $row): array => [
+                    $row[0],
+                    number_format($row[1], 0, ',', ' '),
+                    $measure->total() > 0 ? sprintf('%.1f %%', $row[1] / $measure->total() * 100) : '—',
+                ],
+                [
+                    ['Bourses des joueurs', $measure->playerGils],
+                    ['Tresors de guilde', $measure->guildGils],
+                    ['Caisses d\'echoppe', $measure->shopGils],
+                    ['Escrow (mises, commissions)', $measure->escrowGils],
+                ],
+            ),
+        );
+        $io->writeln(sprintf(
+            '  Masse totale : <info>%s</info> Gils pour %d personnage(s), soit <info>%s</info> par tete.',
+            number_format($measure->total(), 0, ',', ' '),
+            $measure->playerCount,
+            number_format($measure->perCapita(), 0, ',', ' '),
+        ));
+
+        $trend = $this->supplyService->perCapitaTrend();
+        if (null === $trend) {
+            $io->writeln('  <comment>Pas encore deux releves : lancer app:economy:snapshot chaque jour.</comment>');
+
+            return [];
+        }
+
+        $weekly = $trend->weeklyChangePercent();
+        $io->writeln(sprintf(
+            '  Tendance : <info>%+.1f %%</info> par tete sur %d jour(s), soit <info>%+.1f %%</info> par semaine.',
+            $trend->perCapitaChangePercent() ?? 0.0,
+            $trend->elapsedDays(),
+            $weekly ?? 0.0,
+        ));
+        $io->newLine();
+
+        if ($trend->isInflationary()) {
+            return [sprintf(
+                'Inflation : masse par tete %+.1f %%/semaine (seuil %.0f %%) — les robinets versent plus que les puits n\'absorbent.',
+                $weekly ?? 0.0,
+                GilsSupplyService::WEEKLY_ALERT_PERCENT,
+            )];
+        }
+
+        if ($trend->isDeflationary()) {
+            return [sprintf(
+                'Deflation : masse par tete %+.1f %%/semaine (seuil -%.0f %%) — les puits absorbent plus que les robinets ne versent.',
+                $weekly ?? 0.0,
+                GilsSupplyService::WEEKLY_ALERT_PERCENT,
+            )];
+        }
+
+        return [];
     }
 
     /**

@@ -222,12 +222,22 @@ Piste E — Métiers & équilibrage  : ECO-14, ECO-15, ECO-16, ECO-17
       intermédiaire produit par un autre métier)
 - [ ] Documenter la chaîne de production dans BALANCE.md
 
-### ECO-15 — Gold sinks (S | ★★ | MOYENNE)
+### ECO-15 — Gold sinks (S | ★★ | MOYENNE) ✅
 > Compenser la perte du gold sink « boutique PNJ » quand tout est crafté.
-- [ ] Choisir le(s) sink(s) : durabilité/réparation (consomme des matériaux) et/ou
-      consommables perpétuels (demande de fond)
-- [ ] Étalonner faucets (récolte/PvE) vs sinks dans BALANCE.md
-- [ ] Alerte d'inflation dans `app:balance:report` (ratio entrées/sorties de gils)
+- [x] Sinks choisis — **déjà livrés** : durabilité/réparation (`GoldSinkManager`, dégradation
+      branchée sur la fin de combat), voyage rapide, renommage, loyers de demeure et d'échoppe,
+      étals de place, création de guilde, enchantement, respec, montures, et la **taxe d'HV en
+      région sans guilde** (§ 14) — le seul puits adossé au volume d'échange entre joueurs
+- [x] Faucets vs sinks inventoriés dans [BALANCE.md § 20](../BALANCE.md) — 8 robinets, 13 puits
+- [x] **Alerte d'inflation** — mesurée sur le **stock** et non le flux : 26 fichiers appellent
+      `addGils()`/`removeGils()` directement, les canaliser serait une refonte qui ne mesure rien
+      tant qu'elle n'est pas finie. `GilsSupplySnapshot` relève bourses + trésors + caisses +
+      **escrow**, `app:economy:snapshot` le planifie (00h10, après le tick de saison), et
+      `app:balance:report -s economy` alerte au-delà de ±15 %/semaine **par personnage**.
+
+> **L'escrow est le poste qu'on oublie.** Des Gils mis en enchère ou en commission de commande
+> ont quitté une bourse sans être détruits. Les omettre ferait lire une déflation à chaque fois
+> que le marché se remplit.
 
 ### ECO-16 — Modération économique (S | ★★ | HAUTE)
 > Anti price-fixing, farm par alts, RMT.
