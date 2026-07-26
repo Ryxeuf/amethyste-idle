@@ -89,13 +89,36 @@ class ShopStallServiceTest extends TestCase
         $this->assertSame(ShopStallService::STALLS_PER_CITY - 10, $this->service->remainingStalls($mine));
     }
 
+    /**
+     * Il faut **plusieurs** artisans pour saturer la place : une echoppe
+     * plafonne a `MAX_SLOTS`, soit 18 etals loues au maximum sur les 24 de la
+     * ville. Aucun joueur ne peut donc monopoliser le marche a lui seul.
+     */
+    public function testNoSingleShopCanFillTheSquare(): void
+    {
+        $glutton = $this->shop($this->player(0, 99), PlayerShop::MAX_SLOTS);
+
+        $this->shopRepository->method('findInZone')->willReturn([$glutton]);
+
+        $this->assertGreaterThan(
+            0,
+            $this->service->remainingStalls($glutton),
+            'Une echoppe seule ne doit jamais pouvoir rafler toute la place.',
+        );
+    }
+
     public function testLeasingIsRefusedWhenTheSquareIsFull(): void
     {
         $owner = $this->player(1_000_000);
         $shop = $this->shop($owner);
-        $rival = $this->shop($this->player(0, 99), PlayerShop::DEFAULT_SLOTS + ShopStallService::STALLS_PER_CITY);
 
-        $this->shopRepository->method('findInZone')->willReturn([$shop, $rival]);
+        // Deux rivaux au plafond suffisent a saturer les 24 etals.
+        $rivals = [
+            $this->shop($this->player(0, 98), PlayerShop::MAX_SLOTS),
+            $this->shop($this->player(0, 99), PlayerShop::MAX_SLOTS),
+        ];
+
+        $this->shopRepository->method('findInZone')->willReturn(array_merge([$shop], $rivals));
 
         $this->expectExceptionMessage('aucun etal libre');
         $this->service->leaseStall($owner, $shop);

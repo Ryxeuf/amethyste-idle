@@ -44,6 +44,12 @@ class ShopStallService
      *
      * La rarete **est** l'actif. Sans plafond, louer un etal ne serait qu'un
      * gold sink de plus, et la guilde controlante n'aurait rien a arbitrer.
+     *
+     * Le plafond par echoppe (`PlayerShop::MAX_SLOTS`) fait le reste : une
+     * seule enseigne ne peut louer que 18 des 24 etals, donc **aucun artisan
+     * ne peut monopoliser la place a lui seul**. Il en faut au moins deux pour
+     * la saturer — la propriete tombe du croisement des deux bornes, et un
+     * test la verrouille pour qu'un futur reglage ne la perde pas en silence.
      */
     public const STALLS_PER_CITY = 24;
 
