@@ -2,12 +2,16 @@
 
 namespace App\Tests\Unit\GameEngine\Crafting;
 
+use App\Entity\App\CraftOrder;
 use App\Entity\App\Inventory;
 use App\Entity\App\Player;
 use App\Entity\App\PlayerItem;
 use App\Entity\Game\Item;
 use App\Entity\Game\Recipe;
+use App\Entity\User;
 use App\Enum\CraftOrderStatus;
+use App\GameEngine\Auction\AuctionAntiExploit;
+use App\GameEngine\Crafting\CraftingManager;
 use App\GameEngine\Crafting\CraftOrderManager;
 use App\GameEngine\Region\PlayerRegionResolver;
 use App\Repository\CraftOrderRepository;
@@ -24,6 +28,8 @@ class CraftOrderManagerTest extends TestCase
 {
     private EntityManagerInterface&MockObject $em;
     private CraftOrderRepository&MockObject $orderRepository;
+    private CraftingManager&MockObject $craftingManager;
+    private AuctionAntiExploit&MockObject $antiExploit;
     private CraftOrderManager $manager;
 
     protected function setUp(): void
@@ -31,10 +37,15 @@ class CraftOrderManagerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->orderRepository = $this->createMock(CraftOrderRepository::class);
         $this->orderRepository->method('countActiveByRequester')->willReturn(0);
+        $this->craftingManager = $this->createMock(CraftingManager::class);
+        $this->craftingManager->method('getCraftingLevel')->willReturn(99);
+        $this->antiExploit = $this->createMock(AuctionAntiExploit::class);
         $this->manager = new CraftOrderManager(
             $this->em,
             $this->orderRepository,
             new PlayerRegionResolver(),
+            $this->craftingManager,
+            $this->antiExploit,
             new NullLogger(),
         );
     }
@@ -187,7 +198,7 @@ class CraftOrderManagerTest extends TestCase
     {
         $orderRepository = $this->createMock(CraftOrderRepository::class);
         $orderRepository->method('countActiveByRequester')->willReturn(CraftOrderManager::MAX_ACTIVE_ORDERS);
-        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), new NullLogger());
+        $manager = new CraftOrderManager($this->em, $orderRepository, new PlayerRegionResolver(), $this->craftingManager, $this->antiExploit, new NullLogger());
 
         $requester = $this->createPlayer(1, 1_000);
         $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
@@ -209,6 +220,113 @@ class CraftOrderManagerTest extends TestCase
         $this->expectExceptionMessage('commission');
 
         $this->manager->createOrder($requester, $recipe, $materials, 0);
+    }
+
+    /**
+     * ECO-06 : l'artisan doit savoir faire. Le controle reprend exactement les
+     * regles de l'ecran d'artisanat — pouvoir prendre une commande qu'on ne
+     * saurait pas realiser a son etabli n'aurait aucun sens.
+     */
+    public function testClaimIsRefusedWhenTheCraftingLevelIsTooLow(): void
+    {
+        $craftingManager = $this->createMock(CraftingManager::class);
+        $craftingManager->method('getCraftingLevel')->willReturn(2);
+        $manager = new CraftOrderManager($this->em, $this->orderRepository, new PlayerRegionResolver(), $craftingManager, $this->antiExploit, new NullLogger());
+
+        $order = $this->openOrder($this->createPlayer(1, 1_000), 5);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Niveau de forgeron insuffisant');
+
+        $manager->claimOrder($this->createPlayer(2, 0), $order);
+    }
+
+    public function testClaimSucceedsAndReservesTheOrder(): void
+    {
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+        $crafter = $this->createPlayer(2, 0);
+
+        $this->manager->claimOrder($crafter, $order);
+
+        self::assertSame(CraftOrderStatus::Claimed, $order->getStatus());
+        self::assertSame($crafter, $order->getCrafter());
+        self::assertNotNull($order->getClaimedAt());
+    }
+
+    /**
+     * Le verrou anti-double-prise : une commande deja prise n'est plus prenable.
+     */
+    public function testAnAlreadyClaimedOrderCannotBeClaimedAgain(): void
+    {
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+        $this->manager->claimOrder($this->createPlayer(2, 0), $order);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('deja ete prise en charge');
+
+        $this->manager->claimOrder($this->createPlayer(3, 0), $order);
+    }
+
+    public function testClaimingOnesOwnOrderIsRefused(): void
+    {
+        $requester = $this->createPlayer(1, 1_000);
+        $order = $this->openOrder($requester);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('votre propre commande');
+
+        $this->manager->claimOrder($requester, $order);
+    }
+
+    /**
+     * ECO-16a : se commander a soi-meme du stuff lie contournerait tout
+     * l'interet du canal.
+     */
+    public function testClaimIsRefusedBetweenTwoCharactersOfTheSameAccount(): void
+    {
+        $this->antiExploit->method('isSameAccount')->willReturn(true);
+
+        $order = $this->openOrder($this->createPlayer(1, 1_000, 42));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('un autre de vos personnages');
+
+        $this->manager->claimOrder($this->createPlayer(2, 0, 42), $order);
+    }
+
+    /**
+     * ECO-16b : la suspension ferme les canaux d'echange, celui-ci compris.
+     */
+    public function testASuspendedCrafterCannotClaim(): void
+    {
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+        $crafter = $this->createPlayer(2, 0);
+        $crafter->setTradeSuspendedUntil(new \DateTimeImmutable('+2 days'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('acces au marche est suspendu');
+
+        $this->manager->claimOrder($crafter, $order);
+    }
+
+    public function testAnExpiredOrderCannotBeClaimed(): void
+    {
+        $order = $this->openOrder($this->createPlayer(1, 1_000));
+        $order->setExpiresAt(new \DateTimeImmutable('-1 hour'));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('expire');
+
+        $this->manager->claimOrder($this->createPlayer(2, 0), $order);
+    }
+
+    private function openOrder(Player $requester, int $requiredLevel = 1): CraftOrder
+    {
+        $materials = $this->createMaterials($requester, ['ore-iron', 'ore-iron']);
+        $recipe = $this->createRecipe([['slug' => 'ore-iron', 'quantity' => 2]]);
+        $recipe->setRequiredLevel($requiredLevel);
+
+        return $this->manager->createOrder($requester, $recipe, $materials, 300);
     }
 
     /**
@@ -251,11 +369,15 @@ class CraftOrderManagerTest extends TestCase
         return $materials;
     }
 
-    private function createPlayer(int $id, int $gils): Player
+    private function createPlayer(int $id, int $gils, ?int $userId = null): Player
     {
         $player = new Player();
         (new \ReflectionProperty(Player::class, 'id'))->setValue($player, $id);
         $player->setGils($gils);
+
+        $user = new User();
+        (new \ReflectionProperty(User::class, 'id'))->setValue($user, $userId ?? $id);
+        $player->setUser($user);
 
         $bag = new Inventory();
         $bag->setType(Inventory::TYPE_BAG);

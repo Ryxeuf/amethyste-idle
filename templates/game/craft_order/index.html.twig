@@ -1,0 +1,73 @@
+{% extends 'game/game.html.twig' %}
+
+{% block title %}Tableau de commandes{% endblock %}
+
+{% block game_content %}
+<div class="game-page">
+    <div class="game-card">
+        <div class="game-card-header flex items-center justify-between">
+            <div>
+                <h2 class="text-base sm:text-lg font-semibold text-white">
+                    Tableau de commandes
+                    {# ECO-06 : le tableau est local, comme le marche. #}
+                    {% if region %}<span class="text-purple-300 font-normal">— {{ region.icon }} {{ region.localizedName(app.request.locale) }}</span>{% endif %}
+                </h2>
+                <p class="text-gray-400 text-xs mt-0.5">
+                    {{ orders|length }} commande{{ orders|length > 1 ? 's' : '' }} ouverte{{ orders|length > 1 ? 's' : '' }}.
+                    Le commanditaire fournit les materiaux et la commission ; vous fournissez le savoir-faire.
+                </p>
+            </div>
+            <div class="flex items-center gap-2">
+                <a href="{{ path('app_game_craft_order_new') }}" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-white text-xs sm:text-sm rounded-lg transition-colors">Commander</a>
+                <a href="{{ path('app_game_craft_order_mine') }}" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm rounded-lg transition-colors">Mes commandes</a>
+            </div>
+        </div>
+
+        <div class="game-card-body">
+            <div class="flex flex-wrap gap-2 mb-4">
+                <a href="{{ path('app_game_craft_order') }}"
+                   class="px-3 py-1.5 text-xs rounded-lg {% if craft == '' %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">Tous les metiers</a>
+                {% for c in crafts %}
+                    <a href="{{ path('app_game_craft_order', {craft: c}) }}"
+                       class="px-3 py-1.5 text-xs rounded-lg capitalize {% if craft == c %}bg-purple-600 text-white{% else %}bg-gray-800 text-gray-300 hover:bg-gray-700{% endif %}">{{ c }}</a>
+                {% endfor %}
+            </div>
+
+            {% if orders is empty %}
+                <div class="text-center py-8">
+                    <p class="text-gray-500 text-sm">Aucune commande ouverte sur ce tableau.</p>
+                    <p class="text-gray-600 text-xs mt-1">
+                        Chaque region a le sien : voyagez, ou publiez la premiere commande.
+                    </p>
+                </div>
+            {% else %}
+                <div class="space-y-2 sm:space-y-3">
+                    {% for order in orders %}
+                        {% set recipe = order.recipe %}
+                        <div class="bg-gray-900/60 border border-gray-800 rounded-lg p-3 flex items-center justify-between gap-4">
+                            <div class="min-w-0">
+                                <p class="text-sm text-gray-100 font-medium truncate">{{ recipe.name }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">
+                                    <span class="capitalize">{{ recipe.craft }}</span> · niveau {{ recipe.requiredLevel }}
+                                    {% if order.minQuality %}· qualite minimale : {{ order.minQuality }}{% endif %}
+                                    · demandee par {{ order.requester.name }}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0">
+                                <span class="text-yellow-400 font-mono font-semibold text-sm">{{ order.commission|number_format(0, ',', ' ') }} G</span>
+                                <form method="post" action="{{ path('app_game_craft_order_claim', {id: order.id}) }}"
+                                      onsubmit="return confirm('Prendre cette commande en charge ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('craft_order_claim_' ~ order.id) }}">
+                                    <button type="submit" class="px-3 py-1.5 text-xs rounded-lg bg-purple-600 hover:bg-purple-500 text-white transition-colors">
+                                        Prendre en charge
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
