@@ -181,6 +181,14 @@ export default class extends Controller {
             this._hideTooltip();
             this.openPanel(el);
         });
+        // Focusable au clavier, donc activable au clavier : un element qui prend
+        // le focus sans repondre a Entree est un piege.
+        el.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            if (e.target !== el) return;
+            e.preventDefault();
+            this.openPanel(el);
+        });
         el.style.cursor = 'pointer';
         if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '0');
     }
@@ -366,6 +374,9 @@ export default class extends Controller {
                 const label = btn.getAttribute('title');
                 if (label) btn.textContent = label;
             }
+            // L'action recharge la liste : garder la fiche ouverte laisserait
+            // decrire un objet dont l'etat vient de changer.
+            clone.addEventListener('submit', () => this.closePanel());
             actionsEl.appendChild(clone);
         });
         el.querySelectorAll('a[href]').forEach((link) => {
