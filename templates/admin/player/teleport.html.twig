@@ -1,0 +1,39 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Teleporter {{ player.name }} - Admin{% endblock %}
+{% block page_title %}Teleporter {{ player.name }}{% endblock %}
+
+{% block body %}
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+    <h1 class="text-xl sm:text-2xl font-bold">Teleporter "{{ player.name }}"</h1>
+    <a href="{{ path('admin_player_show', {id: player.id}) }}" class="text-gray-400 hover:text-white text-sm">Retour fiche joueur</a>
+</div>
+
+<p class="text-gray-500 text-sm mb-4">
+    Zone actuelle :
+    {% if player.currentZone %}
+        <a href="{{ path('admin_zone_show', {id: player.currentZone.id}) }}" class="text-purple-400 hover:text-purple-300">{{ player.currentZone.name }}</a>
+    {% else %}
+        <span class="text-amber-400">aucune — l'ecran de jeu affiche « position inconnue »</span>
+    {% endif %}
+    {% if player.traveling %}
+        <span class="text-amber-500"> · En voyage vers {{ player.travelToZone ? player.travelToZone.name : '?' }} (le voyage sera annule)</span>
+    {% endif %}
+    {% if player.fight %}<span class="text-amber-500"> · En combat (#{{ player.fight.id }})</span>{% endif %}
+</p>
+
+<div class="bg-gray-900 border border-gray-800 rounded-xl p-6 w-full max-w-lg">
+    {{ form_start(form) }}
+        <div class="mb-6">
+            {{ form_label(form.currentZone, null, {'label_attr': {'class': 'block text-sm font-medium text-gray-300 mb-1'}}) }}
+            {{ form_widget(form.currentZone, {'attr': {'class': 'w-full bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500'}}) }}
+            {{ form_errors(form.currentZone) }}
+        </div>
+
+        <div class="flex gap-3">
+            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm transition-colors">Teleporter</button>
+            <a href="{{ path('admin_player_show', {id: player.id}) }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition-colors">Annuler</a>
+        </div>
+    {{ form_end(form) }}
+</div>
+{% endblock %}
