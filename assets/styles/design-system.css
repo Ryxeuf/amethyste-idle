@@ -119,9 +119,11 @@
  * Un ecran converti n'utilise plus ces classes : elles sont un pont, pas une API.
  */
 @theme {
+  /* --- Neutres : la rampe est inversee, le fonce devient le papier -------- */
   --color-gray-950: #ffffff;
   --color-gray-900: #fbf8f0;
   --color-gray-800: #f4efe2;
+  --color-gray-750: #ece5d5;
   --color-gray-700: #e8e0cc;
   --color-gray-600: #ddd2ba;
   --color-gray-500: #cfc4ab;
@@ -131,6 +133,7 @@
   --color-gray-100: #2f2a22;
   --color-gray-50: #26221c;
 
+  --color-slate-950: #ffffff;
   --color-slate-900: #fbf8f0;
   --color-slate-800: #f4efe2;
   --color-slate-700: #e8e0cc;
@@ -140,87 +143,215 @@
   --color-slate-300: #5d564a;
   --color-slate-200: #3b3529;
   --color-slate-100: #2f2a22;
+  --color-slate-50: #26221c;
 
   --color-zinc-900: #fbf8f0;
   --color-zinc-800: #f4efe2;
   --color-zinc-700: #e8e0cc;
+  --color-zinc-600: #ddd2ba;
   --color-zinc-400: #8a806d;
   --color-zinc-300: #5d564a;
 
-  /* `text-white` couvre 500 usages : c'est le texte principal, donc l'encre. */
+  /* `text-white` couvre plus de 500 usages : c'est le texte principal, donc l'encre. */
   --color-white: #26221c;
 
-  /* Marque : violet Tailwind -> amethyste */
-  --color-purple-950: #2c0f63;
-  --color-purple-900: #3c1a7d;
-  --color-purple-800: #4a1f95;
-  --color-purple-700: #5b2fb0;
-  --color-purple-600: #5b2fb0;
-  --color-purple-500: #7c4ddb;
-  --color-purple-400: #5b2fb0;
-  --color-purple-300: #4a1f95;
-  --color-purple-200: #e6dcfb;
-  --color-purple-100: #e6dcfb;
-  --color-purple-50: #f3edfd;
-
-  --color-violet-950: #2c0f63;
-  --color-violet-900: #3c1a7d;
-  --color-violet-800: #4a1f95;
-  --color-violet-700: #5b2fb0;
-  --color-violet-600: #5b2fb0;
-  --color-violet-500: #7c4ddb;
-  --color-violet-400: #5b2fb0;
-  --color-violet-300: #4a1f95;
-  --color-violet-200: #e6dcfb;
-  --color-violet-100: #e6dcfb;
-
-  --color-fuchsia-600: #b0248f;
-  --color-fuchsia-500: #b0248f;
-  --color-fuchsia-400: #8c1273;
-  --color-fuchsia-300: #8c1273;
-  --color-fuchsia-200: #fadcf3;
-
-  /* Signaux : le gain, la perte, le mana et l'or ont chacun une seule valeur. */
-  --color-green-600: #145c36;
-  --color-green-500: #1f7a49;
-  --color-green-400: #1f7a49;
-  --color-green-300: #145c36;
-  --color-green-200: #d6efe0;
-  --color-green-100: #d6efe0;
-  --color-emerald-500: #1f7a49;
-  --color-emerald-400: #1f7a49;
-  --color-emerald-300: #145c36;
-
-  --color-red-600: #8f2818;
-  --color-red-500: #a8341f;
-  --color-red-400: #a8341f;
+  /*
+   * Teintes : meme inversion. 800-950 servaient de fond sombre -> teinte claire ;
+   * 500-700 restent la couleur pleine ; 50-400 servaient de texte clair -> encre.
+   * Les familles sont repliees sur les six signaux du DS : amethyste (marque),
+   * gain, perte, mana, or et amethyste de rarete.
+   */
+  --color-red-50: #8f2818;
+  --color-red-100: #8f2818;
+  --color-red-200: #8f2818;
   --color-red-300: #8f2818;
-  --color-red-200: #f6ddd6;
-  --color-red-100: #f6ddd6;
+  --color-red-400: #8f2818;
+  --color-red-500: #a8341f;
+  --color-red-600: #a8341f;
+  --color-red-700: #a8341f;
+  --color-red-800: #f6ddd6;
+  --color-red-900: #f6ddd6;
+  --color-red-950: #f6ddd6;
+
+  --color-rose-50: #8f2818;
+  --color-rose-100: #8f2818;
+  --color-rose-200: #8f2818;
+  --color-rose-300: #8f2818;
+  --color-rose-400: #8f2818;
   --color-rose-500: #a8341f;
-  --color-rose-400: #a8341f;
+  --color-rose-600: #a8341f;
+  --color-rose-700: #a8341f;
+  --color-rose-800: #f6ddd6;
+  --color-rose-900: #f6ddd6;
+  --color-rose-950: #f6ddd6;
 
-  --color-blue-600: #1c4c8a;
-  --color-blue-500: #2b5ea8;
-  --color-blue-400: #2b5ea8;
-  --color-blue-300: #1c4c8a;
-  --color-blue-200: #d8e6f8;
-  --color-blue-100: #d8e6f8;
-  --color-sky-400: #2b5ea8;
-  --color-cyan-400: #0e7490;
-  --color-cyan-300: #0e7490;
-  --color-teal-400: #0e7490;
+  --color-orange-50: #8a4a11;
+  --color-orange-100: #8a4a11;
+  --color-orange-200: #8a4a11;
+  --color-orange-300: #8a4a11;
+  --color-orange-400: #8a4a11;
+  --color-orange-500: #b8651a;
+  --color-orange-600: #b8651a;
+  --color-orange-700: #b8651a;
+  --color-orange-800: #f7e3ce;
+  --color-orange-900: #f7e3ce;
+  --color-orange-950: #f7e3ce;
 
-  --color-yellow-600: #7a5407;
-  --color-yellow-500: #c08a1e;
-  --color-yellow-400: #c08a1e;
-  --color-yellow-300: #7a5407;
-  --color-yellow-200: #f5e4b8;
-  --color-yellow-100: #f5e4b8;
-  --color-amber-500: #c08a1e;
-  --color-amber-400: #c08a1e;
+  --color-amber-50: #7a5407;
+  --color-amber-100: #7a5407;
+  --color-amber-200: #7a5407;
   --color-amber-300: #7a5407;
-  --color-orange-400: #a8341f;
+  --color-amber-400: #7a5407;
+  --color-amber-500: #c08a1e;
+  --color-amber-600: #c08a1e;
+  --color-amber-700: #c08a1e;
+  --color-amber-800: #f5e4b8;
+  --color-amber-900: #f5e4b8;
+  --color-amber-950: #f5e4b8;
+
+  --color-yellow-50: #7a5407;
+  --color-yellow-100: #7a5407;
+  --color-yellow-200: #7a5407;
+  --color-yellow-300: #7a5407;
+  --color-yellow-400: #7a5407;
+  --color-yellow-500: #c08a1e;
+  --color-yellow-600: #c08a1e;
+  --color-yellow-700: #c08a1e;
+  --color-yellow-800: #f5e4b8;
+  --color-yellow-900: #f5e4b8;
+  --color-yellow-950: #f5e4b8;
+
+  --color-green-50: #145c36;
+  --color-green-100: #145c36;
+  --color-green-200: #145c36;
+  --color-green-300: #145c36;
+  --color-green-400: #145c36;
+  --color-green-500: #1f7a49;
+  --color-green-600: #1f7a49;
+  --color-green-700: #1f7a49;
+  --color-green-800: #d6efe0;
+  --color-green-900: #d6efe0;
+  --color-green-950: #d6efe0;
+
+  --color-emerald-50: #145c36;
+  --color-emerald-100: #145c36;
+  --color-emerald-200: #145c36;
+  --color-emerald-300: #145c36;
+  --color-emerald-400: #145c36;
+  --color-emerald-500: #1f7a49;
+  --color-emerald-600: #1f7a49;
+  --color-emerald-700: #1f7a49;
+  --color-emerald-800: #d6efe0;
+  --color-emerald-900: #d6efe0;
+  --color-emerald-950: #d6efe0;
+
+  --color-teal-50: #0b5a70;
+  --color-teal-100: #0b5a70;
+  --color-teal-200: #0b5a70;
+  --color-teal-300: #0b5a70;
+  --color-teal-400: #0b5a70;
+  --color-teal-500: #0e7490;
+  --color-teal-600: #0e7490;
+  --color-teal-700: #0e7490;
+  --color-teal-800: #d6eef2;
+  --color-teal-900: #d6eef2;
+  --color-teal-950: #d6eef2;
+
+  --color-cyan-50: #0b5a70;
+  --color-cyan-100: #0b5a70;
+  --color-cyan-200: #0b5a70;
+  --color-cyan-300: #0b5a70;
+  --color-cyan-400: #0b5a70;
+  --color-cyan-500: #0e7490;
+  --color-cyan-600: #0e7490;
+  --color-cyan-700: #0e7490;
+  --color-cyan-800: #d6eef2;
+  --color-cyan-900: #d6eef2;
+  --color-cyan-950: #d6eef2;
+
+  --color-sky-50: #1c4c8a;
+  --color-sky-100: #1c4c8a;
+  --color-sky-200: #1c4c8a;
+  --color-sky-300: #1c4c8a;
+  --color-sky-400: #1c4c8a;
+  --color-sky-500: #2b5ea8;
+  --color-sky-600: #2b5ea8;
+  --color-sky-700: #2b5ea8;
+  --color-sky-800: #d8e6f8;
+  --color-sky-900: #d8e6f8;
+  --color-sky-950: #d8e6f8;
+
+  --color-blue-50: #1c4c8a;
+  --color-blue-100: #1c4c8a;
+  --color-blue-200: #1c4c8a;
+  --color-blue-300: #1c4c8a;
+  --color-blue-400: #1c4c8a;
+  --color-blue-500: #2b5ea8;
+  --color-blue-600: #2b5ea8;
+  --color-blue-700: #2b5ea8;
+  --color-blue-800: #d8e6f8;
+  --color-blue-900: #d8e6f8;
+  --color-blue-950: #d8e6f8;
+
+  --color-indigo-50: #3c1a7d;
+  --color-indigo-100: #3c1a7d;
+  --color-indigo-200: #3c1a7d;
+  --color-indigo-300: #3c1a7d;
+  --color-indigo-400: #3c1a7d;
+  --color-indigo-500: #5b2fb0;
+  --color-indigo-600: #5b2fb0;
+  --color-indigo-700: #5b2fb0;
+  --color-indigo-800: #e6dcfb;
+  --color-indigo-900: #e6dcfb;
+  --color-indigo-950: #e6dcfb;
+
+  --color-violet-50: #3c1a7d;
+  --color-violet-100: #3c1a7d;
+  --color-violet-200: #3c1a7d;
+  --color-violet-300: #3c1a7d;
+  --color-violet-400: #3c1a7d;
+  --color-violet-500: #5b2fb0;
+  --color-violet-600: #5b2fb0;
+  --color-violet-700: #5b2fb0;
+  --color-violet-800: #e6dcfb;
+  --color-violet-900: #e6dcfb;
+  --color-violet-950: #e6dcfb;
+
+  --color-purple-50: #3c1a7d;
+  --color-purple-100: #3c1a7d;
+  --color-purple-200: #3c1a7d;
+  --color-purple-300: #3c1a7d;
+  --color-purple-400: #3c1a7d;
+  --color-purple-500: #5b2fb0;
+  --color-purple-600: #5b2fb0;
+  --color-purple-700: #5b2fb0;
+  --color-purple-800: #e6dcfb;
+  --color-purple-900: #e6dcfb;
+  --color-purple-950: #e6dcfb;
+
+  --color-fuchsia-50: #8c1273;
+  --color-fuchsia-100: #8c1273;
+  --color-fuchsia-200: #8c1273;
+  --color-fuchsia-300: #8c1273;
+  --color-fuchsia-400: #8c1273;
+  --color-fuchsia-500: #b0248f;
+  --color-fuchsia-600: #b0248f;
+  --color-fuchsia-700: #b0248f;
+  --color-fuchsia-800: #fadcf3;
+  --color-fuchsia-900: #fadcf3;
+  --color-fuchsia-950: #fadcf3;
+
+  --color-pink-50: #8c1273;
+  --color-pink-100: #8c1273;
+  --color-pink-200: #8c1273;
+  --color-pink-300: #8c1273;
+  --color-pink-400: #8c1273;
+  --color-pink-500: #b0248f;
+  --color-pink-600: #b0248f;
+  --color-pink-700: #b0248f;
+  --color-pink-800: #fadcf3;
+  --color-pink-900: #fadcf3;
+  --color-pink-950: #fadcf3;
 }
 
 @layer base {
@@ -863,6 +994,93 @@
     font-size: 11px;
     font-variant-numeric: tabular-nums;
     color: var(--color-ink-on-2);
+  }
+
+  /*
+   * Barre de navigation : la meme bande d'encre en haut et en bas, sur tous
+   * les ecrans. Seul l'onglet courant porte de l'amethyste.
+   */
+  .ds-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-card);
+    color: var(--color-ink-on-2);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ds-nav-link:hover {
+    background: rgba(244, 239, 226, 0.12);
+    color: var(--color-ink-on);
+  }
+
+  .ds-nav-link--active {
+    background: var(--color-brand);
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .ds-nav-link--active:hover {
+    background: var(--color-brand-active);
+    color: #fff;
+  }
+
+  /* Icone d'action de la barre : discrete au repos, encre claire au survol. */
+  .ds-nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: var(--radius-card);
+    color: var(--color-ink-on-2);
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ds-nav-icon:hover {
+    background: rgba(244, 239, 226, 0.12);
+    color: var(--color-ink-on);
+  }
+
+  /* Panneau deroulant : il quitte l'encre, donc il repasse au papier. */
+  .ds-nav-panel {
+    background: var(--color-paper);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 8px 24px rgba(38, 34, 28, 0.16);
+  }
+
+  /* Entree de menu deroulant, posee sur le papier du panneau. */
+  .ds-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-card);
+    color: var(--color-ink-2);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ds-menu-item:hover {
+    background: var(--color-paper-2);
+    color: var(--color-ink);
+  }
+
+  .ds-menu-item--active {
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-weight: 700;
   }
 
   /* Journal de combat : le tour a gauche en mono, la phrase a droite. */
