@@ -19,7 +19,7 @@ use App\Entity\App\PlayerJournalEntry;
 final readonly class HubRecap
 {
     /**
-     * @param array<string, int> $counts type de journal => nombre d'entrees dans la fenetre
+     * @param array<string, int>       $counts  type de journal => nombre d'entrees dans la fenetre
      * @param list<PlayerJournalEntry> $entries dernieres entrees, les plus recentes d'abord
      */
     public function __construct(

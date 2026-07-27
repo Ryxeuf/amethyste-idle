@@ -26,11 +26,11 @@ final readonly class HubPendingItem
     public const TONE_LOSS = 'loss';
 
     /**
-     * @param string $key suffixe de cle de traduction sous `game.home.pending.`
-     * @param string $route route Symfony de l'action
-     * @param array<string, int|string> $params parametres de traduction (`%count%`…)
+     * @param string                    $key         suffixe de cle de traduction sous `game.home.pending.`
+     * @param string                    $route       route Symfony de l'action
+     * @param array<string, int|string> $params      parametres de traduction (`%count%`…)
      * @param array<string, int|string> $routeParams parametres de la route
-     * @param string $tone une des constantes `TONE_*`
+     * @param string                    $tone        une des constantes `TONE_*`
      */
     public function __construct(
         public string $key,
