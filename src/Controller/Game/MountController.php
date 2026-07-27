@@ -3,12 +3,8 @@
 namespace App\Controller\Game;
 
 use App\Entity\Game\Mount;
-use App\GameEngine\Mount\InsufficientGilsException;
 use App\GameEngine\Mount\MountActivationService;
-use App\GameEngine\Mount\MountAlreadyOwnedException;
 use App\GameEngine\Mount\MountNotOwnedException;
-use App\GameEngine\Mount\MountNotPurchasableException;
-use App\GameEngine\Mount\MountPurchaseService;
 use App\Helper\PlayerHelper;
 use App\Repository\PlayerMountRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,6 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/**
+ * Catalogue des montures : ce qu'on possede, ce qui existe, et comment
+ * l'obtenir.
+ *
+ * Ce n'est **pas** une boutique. L'achat direct depuis le catalogue a ete
+ * retire : une monture s'obtient par la voie que sa fiche annonce (quete,
+ * butin, succes, marchand), et laisser un bouton « acheter » ici court-circuitait
+ * cette voie pour les seules montures a prix affiche. `MountPurchaseService`
+ * reste disponible pour le vendeur qui portera cette transaction.
+ */
 class MountController extends AbstractController
 {
     public function __construct(
@@ -24,7 +30,6 @@ class MountController extends AbstractController
         private readonly PlayerHelper $playerHelper,
         private readonly PlayerMountRepository $playerMountRepository,
         private readonly MountActivationService $mountActivationService,
-        private readonly MountPurchaseService $mountPurchaseService,
     ) {
     }
 
@@ -125,42 +130,4 @@ class MountController extends AbstractController
         return $this->redirectToRoute('app_game_mounts');
     }
 
-    #[Route('/game/mounts/{id}/purchase', name: 'app_game_mounts_purchase', methods: ['POST'])]
-    public function purchase(int $id, Request $request): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_USER');
-
-        $player = $this->playerHelper->getPlayer();
-        if (null === $player) {
-            return $this->redirectToRoute('app_game_mounts');
-        }
-
-        if (!$this->isCsrfTokenValid('purchase_' . $id, (string) $request->request->get('_token'))) {
-            $this->addFlash('error', 'game.mount.flash.csrf_invalid');
-
-            return $this->redirectToRoute('app_game_mounts');
-        }
-
-        $mount = $this->entityManager->getRepository(Mount::class)->find($id);
-        if (!$mount instanceof Mount) {
-            $this->addFlash('error', 'game.mount.flash.unknown');
-
-            return $this->redirectToRoute('app_game_mounts');
-        }
-
-        try {
-            $this->mountPurchaseService->purchase($player, $mount);
-            $this->addFlash('success', 'game.mount.flash.purchased');
-        } catch (InsufficientGilsException) {
-            $this->addFlash('error', 'game.mount.flash.insufficient_gils');
-        } catch (MountNotPurchasableException) {
-            $this->addFlash('error', 'game.mount.flash.not_purchasable');
-        } catch (MountAlreadyOwnedException) {
-            $this->addFlash('error', 'game.mount.flash.already_owned');
-        } catch (\DomainException) {
-            $this->addFlash('error', 'game.mount.flash.disabled');
-        }
-
-        return $this->redirectToRoute('app_game_mounts');
-    }
 }
